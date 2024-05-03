@@ -10,6 +10,6 @@ export class UserController {
     console.log({
       user: req.user,
     });
-    return 'wow, the super secret user data';
+    return req.user;
   }
 }

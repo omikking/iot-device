@@ -21,6 +21,12 @@ export class AuthService {
         firstName: dto.firstName,
         lastName: dto.lastName,
       },
+      select: {
+        id: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return user;

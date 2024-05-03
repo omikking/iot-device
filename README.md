@@ -5,6 +5,7 @@ Monorepo powered by [Turborepo](https://turbo.build/) and [pnpm workspace](https
 ### Apps and Packages
 
 - `web`: [Next.js](https://nextjs.org/) app
+- `api`: [NestJS](https://nestjs.com/) app
 - `ui`: a stub React component library shared by `web`
 - `@gsp/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@gsp/typescript-config`: `tsconfig.json`s used throughout the monorepo

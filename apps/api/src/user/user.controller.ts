@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { User as UserModel } from '@prisma/client';
-import { User } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
+import { User } from '../auth/decorator';
+import { JwtGuard } from '../auth/guard';
 
 @Controller('users')
 export class UserController {

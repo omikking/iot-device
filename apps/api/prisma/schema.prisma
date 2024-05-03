@@ -23,6 +23,9 @@ model User {
 
   firstName String?
   lastName  String?
+  Bolts     Bolt[]
+
+  @@map("users")
 }
 
 model Bolt {
@@ -33,4 +36,9 @@ model Bolt {
   title       String
   description String?
   pass        Boolean @default(false)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("bolts")
 }

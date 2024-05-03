@@ -21,17 +21,10 @@ export class AuthService {
         firstName: dto.firstName,
         lastName: dto.lastName,
       },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
 
+    delete (user as { hash?: string }).hash;
     return user;
-
-    // return { msg: 'I have signed up' };
   }
 
   signin() {

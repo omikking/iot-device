@@ -19,6 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: { sub: number; email: string }) {
     // JWT payload. It will be appended to user object on the request body. req.user
+    // We get req.user in our custom decorator @User
     console.log('payload', payload);
 
     const user = await this.prisma.user.findUnique({

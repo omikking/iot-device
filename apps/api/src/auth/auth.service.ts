@@ -6,6 +6,9 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
+// import { User as UserModel } from '@prisma/client';
+// import { User } from '../auth/decorator';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -58,9 +61,17 @@ export class AuthService {
 
     console.log('user', user);
 
-    // delete user.hash;
-    // return user;
-    return this.signToken(user.id, user.email);
+    // return this.signToken(user.id, user.email);
+
+    // TEMPORARY!
+    const token = await this.signToken(user.id, user.email);
+
+    return {
+      user,
+      tokens: {
+        accessToken: token.access_token,
+      },
+    };
   }
 
   async signToken(

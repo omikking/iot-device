@@ -1,4 +1,6 @@
+'use client';
 import { Card } from '@gsp/ui/card';
+import SignInButton from './components/SignInButton';
 
 export default function Page(): JSX.Element {
   return (
@@ -6,6 +8,7 @@ export default function Page(): JSX.Element {
       <h1 className="text-4xl text-center font-sandvik-headline">
         Welcome to Ground Support Web! 🚀
       </h1>
+      <SignInButton />
       <div className="flex flex-col md:flex-row">
         <Card href="https://www.home.sandvik/" title="Here is a card">
           A component from the UI package.

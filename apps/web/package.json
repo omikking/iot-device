@@ -10,22 +10,23 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@gsp/ui": "workspace:*",
     "next": "^14.1.1",
+    "next-auth": "^4.24.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@gsp/ui": "workspace:*"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@gsp/eslint-config": "workspace:*",
+    "@gsp/tailwind-config": "workspace:*",
+    "@gsp/typescript-config": "workspace:*",
     "@next/eslint-plugin-next": "^14.1.1",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.18",
-    "@gsp/eslint-config": "workspace:*",
     "postcss": "^8.4.35",
-    "@gsp/tailwind-config": "workspace:*",
     "tailwindcss": "^3.4.1",
-    "@gsp/typescript-config": "workspace:*",
     "typescript": "^5.3.3"
   }
 }

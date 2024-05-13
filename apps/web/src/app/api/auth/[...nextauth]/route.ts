@@ -7,19 +7,22 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
 
       async authorize(credentials, req) {
-        if (!credentials?.username || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
-        const { username, password } = credentials;
+        const { email, password } = credentials;
+
+        console.log('username', email);
+        console.log('password', password);
 
         const response = await fetch('http://localhost:3333/auth/signin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ email, password }),
         });
 
         if (response.status == 401) {
@@ -27,7 +30,16 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (!response.ok) {
+          console.log('response not ok');
+          return null;
+        }
+
         const user = await response.json();
+
+        console.log('user response json', user);
+        console.log('response body', response.body);
+        // console.log('response', response);
         return user as any;
       },
     }),
@@ -45,6 +57,23 @@ export const authOptions: NextAuthOptions = {
   //     return session;
   //   },
   // },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) return { ...token, ...user };
+      console.log('token callback', token);
+      console.log('user callback', user);
+
+      return token;
+    },
+
+    async session(session, user) {
+      console.log('session!!!', session);
+      console.log('user', user);
+      // session.user = user.user;
+      // return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

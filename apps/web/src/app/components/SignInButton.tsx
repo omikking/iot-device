@@ -5,10 +5,10 @@ import React from 'react';
 export const SignInButton = () => {
   const { data: session } = useSession();
   console.log(session);
-  if (session && session.user) {
+  if (session && session.userData) {
     return (
       <div>
-        <p>Signed in as {session.user.email}</p>
+        <p>Signed in as {session.userData.email}</p>
         <Link href="/api/auth/signout">Sign out</Link>
       </div>
     );

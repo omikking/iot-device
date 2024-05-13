@@ -45,33 +45,21 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // callbacks: {
-  //   async jwt(token, user) {
-  //     if (user) {
-  //       token.user = user;
-  //     }
-  //     return token;
-  //   },
-  //   async session(session, user) {
-  //     session.user = user.user;
-  //     return session;
-  //   },
-  // },
-
   callbacks: {
     async jwt({ token, user }) {
-      if (user) return { ...token, ...user };
       console.log('token callback', token);
       console.log('user callback', user);
+      if (user) return { ...token, ...user };
 
       return token;
     },
 
-    async session(session, user) {
-      console.log('session!!!', session);
-      console.log('user', user);
-      // session.user = user.user;
-      // return session;
+    // todo rename user to userData to avoid confusion since user is the whole object in next-auth
+    async session({ token, session }) {
+      session.user = token.user;
+
+      session.tokens = token.tokens;
+      return session;
     },
   },
 };

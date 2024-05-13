@@ -24,3 +24,18 @@ export class SigninDto {
   @IsNotEmpty()
   password: string;
 }
+export class TokensDto {
+  accessToken: string;
+}
+
+export class UserResponseDto {
+  id: number;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+}
+
+export class SignInResponseDto {
+  tokens: TokensDto;
+  userData: UserResponseDto;
+}

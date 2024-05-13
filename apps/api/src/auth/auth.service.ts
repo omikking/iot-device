@@ -1,13 +1,15 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { SigninDto, SignupDto } from './dto';
+import {
+  SignInResponseDto,
+  SigninDto,
+  SignupDto,
+  UserResponseDto,
+} from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
-// import { User as UserModel } from '@prisma/client';
-// import { User } from '../auth/decorator';
 
 @Injectable()
 export class AuthService {
@@ -63,21 +65,25 @@ export class AuthService {
 
     // return this.signToken(user.id, user.email);
 
-    // TEMPORARY!
-    const token = await this.signToken(user.id, user.email);
+    const tokens = await this.signToken(user.id, user.email);
+
+    const userResponse: UserResponseDto = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
 
     return {
-      user,
-      tokens: {
-        accessToken: token.access_token,
-      },
-    };
+      tokens: tokens,
+      userData: userResponse,
+    } as SignInResponseDto;
   }
 
   async signToken(
     userId: number,
     email: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ accessToken: string }> {
     const payload = {
       sub: userId,
       email,
@@ -89,7 +95,7 @@ export class AuthService {
     });
 
     return {
-      access_token: token,
+      accessToken: token,
     };
   }
 }

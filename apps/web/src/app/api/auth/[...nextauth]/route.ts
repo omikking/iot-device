@@ -25,39 +25,30 @@ export const authOptions: NextAuthOptions = {
           body: JSON.stringify({ email, password }),
         });
 
-        if (response.status == 401) {
-          console.log(response.statusText);
-          return null;
-        }
-
-        if (!response.ok) {
-          console.log('response not ok');
-          return null;
-        }
+        if (!response.ok) throw new Error('Failed to sign in');
 
         const user = await response.json();
 
         console.log('user response json', user);
-        console.log('response body', response.body);
         // console.log('response', response);
-        return user as any;
+        return user;
       },
     }),
   ],
 
   callbacks: {
     async jwt({ token, user }) {
-      console.log('token callback', token);
-      console.log('user callback', user);
+      if (user) {
+        console.log('if user!!!', user);
+      }
+
       if (user) return { ...token, ...user };
 
       return token;
     },
 
-    // todo rename user to userData to avoid confusion since user is the whole object in next-auth
     async session({ token, session }) {
-      session.user = token.user;
-
+      session.userData = token.userData;
       session.tokens = token.tokens;
       return session;
     },

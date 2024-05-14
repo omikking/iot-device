@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
 
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
         const { email, password } = credentials;
@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!response.ok) throw new Error('Failed to sign in');
 
-        const user: User = await response.json();
+        const user = (await response.json()) as User;
 
         console.log('user response json', user);
         return user;

@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth/next';
+import type { User } from 'next-auth';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,10 +28,9 @@ export const authOptions: NextAuthOptions = {
 
         if (!response.ok) throw new Error('Failed to sign in');
 
-        const user = await response.json();
+        const user: User = await response.json();
 
         console.log('user response json', user);
-        // console.log('response', response);
         return user;
       },
     }),
@@ -38,10 +38,6 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        console.log('if user!!!', user);
-      }
-
       if (user) return { ...token, ...user };
 
       return token;

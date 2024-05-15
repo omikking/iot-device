@@ -90,7 +90,7 @@ export class AuthService {
     };
 
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
       secret: this.config.get('JWT_SECRET'),
     });
 

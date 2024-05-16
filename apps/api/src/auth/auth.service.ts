@@ -63,8 +63,6 @@ export class AuthService {
 
     console.log('user', user);
 
-    // return this.signToken(user.id, user.email);
-
     const tokens = await this.signToken(user.id, user.email);
 
     const userResponse: UserResponseDto = {
@@ -80,22 +78,25 @@ export class AuthService {
     } as SignInResponseDto;
   }
 
-  async signToken(
-    userId: number,
-    email: string,
-  ): Promise<{ accessToken: string }> {
+  async signToken(userId: number, email: string) {
     const payload = {
       sub: userId,
       email,
     };
 
-    const token = await this.jwt.signAsync(payload, {
+    const accessToken = await this.jwt.signAsync(payload, {
       expiresIn: parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
       secret: this.config.get('JWT_SECRET'),
     });
 
+    const refreshToken = await this.jwt.signAsync(payload, {
+      expiresIn: parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
+      secret: this.config.get('JWT_SECRET'),
+    });
+
     return {
-      accessToken: token,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     };
   }
 }

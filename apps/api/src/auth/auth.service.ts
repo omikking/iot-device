@@ -1,6 +1,11 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
+  RefreshTokenDto,
   SignInResponseDto,
   SigninDto,
   SignupDto,
@@ -76,6 +81,24 @@ export class AuthService {
       tokens: tokens,
       userData: userResponse,
     } as SignInResponseDto;
+  }
+
+  async refreshTokens(dto: RefreshTokenDto) {
+    try {
+      const payload = await this.jwt.verifyAsync(dto.refreshToken, {
+        secret: this.config.get('JWT_SECRET'),
+      });
+
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          id: payload.sub,
+        },
+      });
+
+      return this.signToken(user.id, user.email);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 
   async signToken(userId: number, email: string) {

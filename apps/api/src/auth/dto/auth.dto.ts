@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import type { ActiveUserData } from '../interfaces/active-user-data';
 export class SignupDto {
   @IsEmail()
   @IsNotEmpty()
@@ -35,14 +36,7 @@ export class TokensDto {
   accessToken: string;
 }
 
-export class UserResponseDto {
-  id: number;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-}
-
 export class SignInResponseDto {
   tokens: TokensDto;
-  userData: UserResponseDto;
+  userData: ActiveUserData;
 }

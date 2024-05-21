@@ -9,7 +9,6 @@ import {
   SignInResponseDto,
   SigninDto,
   SignupDto,
-  UserResponseDto,
 } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -20,6 +19,7 @@ import {
   RefreshTokenIdsStorage,
 } from './refresh-token-storage';
 import { randomUUID } from 'crypto';
+import { ActiveUserData } from './interfaces/active-user-data';
 
 @Injectable()
 export class AuthService {
@@ -76,7 +76,7 @@ export class AuthService {
 
     const tokens = await this.signToken(user.id, user.email);
 
-    const userResponse: UserResponseDto = {
+    const userResponse: ActiveUserData = {
       id: user.id,
       email: user.email,
       firstName: user.firstName,

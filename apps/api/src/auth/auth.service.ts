@@ -32,13 +32,7 @@ export class AuthService {
   ) {}
   async signup(dto: SignupDto) {
     try {
-      console.log(dto);
-
-      console.time('hash');
       const hash = await argon.hash(dto.password);
-      console.log('hash', hash);
-      console.timeEnd('hash');
-
       const user = await this.prisma.user.create({
         data: {
           email: dto.email,
@@ -48,8 +42,6 @@ export class AuthService {
         },
       });
 
-      // delete user.hash;
-      // return user;
       return this.generateTokens(user);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -72,8 +64,6 @@ export class AuthService {
     const passwordMatch = await argon.verify(user.hash, dto.password);
 
     if (!passwordMatch) throw new ForbiddenException('Credentails incorrect');
-
-    console.log('user', user);
 
     const tokens = await this.generateTokens(user);
 

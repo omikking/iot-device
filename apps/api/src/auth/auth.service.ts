@@ -20,6 +20,7 @@ import {
 } from './refresh-token-storage';
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
+import type { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -49,7 +50,7 @@ export class AuthService {
 
       // delete user.hash;
       // return user;
-      return this.signToken(user.id, user.email);
+      return this.generateTokens(user);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -74,7 +75,7 @@ export class AuthService {
 
     console.log('user', user);
 
-    const tokens = await this.signToken(user.id, user.email);
+    const tokens = await this.generateTokens(user);
 
     const userResponse: ActiveUserData = {
       id: user.id,
@@ -120,7 +121,7 @@ export class AuthService {
         throw new Error('Invalid refresh token');
       }
 
-      return this.signToken(user.id, user.email);
+      return this.generateTokens(user);
     } catch (error) {
       if (error instanceof InvalidatedRefreshTokenError) {
         // Log or notify that someone is trying to use invalidated refresh token.
@@ -131,31 +132,42 @@ export class AuthService {
     }
   }
 
-  async signToken(userId: number, email: string) {
+  async generateTokens(user: User) {
     const refreshTokenId = randomUUID();
-    const payload = {
-      sub: userId,
-      email,
-    };
-
-    const accessToken = await this.jwt.signAsync(payload, {
-      expiresIn: parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
-      secret: this.config.get('JWT_SECRET'),
-    });
-
-    const refreshToken = await this.jwt.signAsync(
-      { ...payload, refreshTokenId },
-      {
-        expiresIn: parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
-        secret: this.config.get('JWT_SECRET'),
-      },
-    );
-
-    await this.refreshTokenIdsStorage.insert(userId, refreshTokenId);
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signToken(
+        user.id,
+        parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
+        {
+          email: user.email,
+        },
+      ),
+      this.signToken(
+        user.id,
+        parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
+        {
+          refreshTokenId,
+        },
+      ),
+    ]);
+    await this.refreshTokenIdsStorage.insert(user.id, refreshTokenId);
 
     return {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      accessToken,
+      refreshToken,
     };
+  }
+
+  private async signToken<T>(userId: number, expiresIn: number, payload: T) {
+    return await this.jwt.signAsync(
+      {
+        sub: userId,
+        ...payload,
+      },
+      {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: expiresIn,
+      },
+    );
   }
 }

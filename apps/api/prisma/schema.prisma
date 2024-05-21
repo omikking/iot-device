@@ -43,3 +43,13 @@ model Bolt {
 
   @@map("bolts")
 }
+
+model RefreshTokenId {
+  userId    String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokenId String @unique
+
+  @@map("refresh_token_ids")
+}

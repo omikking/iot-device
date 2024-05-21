@@ -15,6 +15,11 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import {
+  InvalidatedRefreshTokenError,
+  RefreshTokenIdsStorage,
+} from './refresh-token-storage';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +27,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
+    private refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
   async signup(dto: SignupDto) {
     try {
@@ -95,13 +101,38 @@ export class AuthService {
         },
       });
 
+      const isValid = await this.refreshTokenIdsStorage.validate(
+        user.id,
+        payload.refreshTokenId,
+      );
+
+      if (isValid) {
+        await this.refreshTokenIdsStorage.invalidate(
+          user.id,
+          payload.refreshTokenId,
+        );
+
+        await this.refreshTokenIdsStorage.invalidate(
+          user.id,
+          payload.refreshTokenId,
+        );
+      } else {
+        throw new Error('Invalid refresh token');
+      }
+
       return this.signToken(user.id, user.email);
     } catch (error) {
+      if (error instanceof InvalidatedRefreshTokenError) {
+        // Log or notify that someone is trying to use invalidated refresh token.
+        // This is a security measure to log potential replay attacks or other malicious activity.
+        throw new UnauthorizedException('Access denied');
+      }
       throw new UnauthorizedException();
     }
   }
 
   async signToken(userId: number, email: string) {
+    const refreshTokenId = randomUUID();
     const payload = {
       sub: userId,
       email,
@@ -112,10 +143,15 @@ export class AuthService {
       secret: this.config.get('JWT_SECRET'),
     });
 
-    const refreshToken = await this.jwt.signAsync(payload, {
-      expiresIn: parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
-      secret: this.config.get('JWT_SECRET'),
-    });
+    const refreshToken = await this.jwt.signAsync(
+      { ...payload, refreshTokenId },
+      {
+        expiresIn: parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
+        secret: this.config.get('JWT_SECRET'),
+      },
+    );
+
+    await this.refreshTokenIdsStorage.insert(userId, refreshTokenId);
 
     return {
       accessToken: accessToken,

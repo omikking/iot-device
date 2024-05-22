@@ -1,6 +1,10 @@
 'use client';
 import { Card } from '@gsp/ui/card';
+import { Switch } from '@gsp/ui/switch';
+import { Button } from '@gsp/ui/button';
+import { Label } from '@gsp/ui/label';
 import SignInButton from './components/SignInButton';
+// import { cn } from '@gsp/ui/utils';
 
 export default function Page(): JSX.Element {
   return (
@@ -30,6 +34,9 @@ export default function Page(): JSX.Element {
           Another component from the UI package.
         </Card>
       </div>
+      <Switch id="airplane-mode" />
+      <Label htmlFor="terms">Accept terms and conditions</Label>
+      <Button className="text-red-600">Button</Button>
     </main>
   );
 }

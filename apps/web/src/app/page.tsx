@@ -1,14 +1,12 @@
 'use client';
 import { Card } from '@gsp/ui/card';
+import { Cube } from '@gsp/ui/cube';
 import SignInButton from './components/SignInButton';
 
 export default function Page(): JSX.Element {
   return (
     <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      <h1 className="text-3xl">
-        Welcome to Ground Support Web! 🚀 WHATS GOING ON ok ok ok
-      </h1>
-
+      <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
       <h1 className="body-intro">Body Intro</h1>
       <h1 className="text-3xl">3 XL</h1>
       <h1 className="text-2xl">2 XL</h1>
@@ -23,6 +21,7 @@ export default function Page(): JSX.Element {
         <Card href="https://www.home.sandvik/" title="Here is a card">
           A component from the UI package.
         </Card>
+        <Cube>Hello I'm a cube</Cube>
         <Card
           href="https://www.home.sandvik/en/about-us/sandvik-at-a-glance/"
           title="This is another card"

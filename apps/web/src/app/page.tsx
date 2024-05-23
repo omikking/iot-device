@@ -1,6 +1,5 @@
 'use client';
-import { Card } from '@gsp/ui/card';
-import { Cube } from '@gsp/ui/cube';
+import { Card, Cube } from '@gsp/ui';
 import SignInButton from './components/SignInButton';
 
 export default function Page(): JSX.Element {
@@ -21,13 +20,13 @@ export default function Page(): JSX.Element {
         <Card href="https://www.home.sandvik/" title="Here is a card">
           A component from the UI package.
         </Card>
-        <Cube>Hello I'm a cube</Cube>
         <Card
           href="https://www.home.sandvik/en/about-us/sandvik-at-a-glance/"
           title="This is another card"
         >
           Another component from the UI package.
         </Card>
+        <Cube>Hello I'm a cube</Cube>
       </div>
     </main>
   );

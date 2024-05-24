@@ -82,6 +82,7 @@ export class AuthService {
 
   async refreshTokens(dto: RefreshTokenDto) {
     try {
+      console.log('refresh token triggered');
       const payload = await this.jwt.verifyAsync(dto.refreshToken, {
         secret: this.config.get('JWT_SECRET'),
       });
@@ -98,11 +99,6 @@ export class AuthService {
       );
 
       if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(
-          user.id,
-          payload.refreshTokenId,
-        );
-
         await this.refreshTokenIdsStorage.invalidate(
           user.id,
           payload.refreshTokenId,

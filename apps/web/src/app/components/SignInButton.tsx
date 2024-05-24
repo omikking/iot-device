@@ -1,10 +1,16 @@
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import React from 'react';
 
 export const SignInButton = () => {
   const { data: session } = useSession();
   console.log(session);
+  useEffect(() => {
+    if (session?.error === 'RefreshAccessTokenError') {
+      signIn();
+    }
+  }, [session]);
+
   if (session && session.userData) {
     return (
       <div>

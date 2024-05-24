@@ -2,6 +2,45 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth/next';
 import type { User } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
+  try {
+    const response = await fetch(
+      `${process.env.BACKEND_URL}/auth/refresh-tokens`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // We could also refactor to send through Authorization header, but this works.
+        body: JSON.stringify({ refreshToken: token.tokens.refreshToken }),
+      },
+    );
+
+    const refreshedTokens: {
+      accessToken: string;
+      refreshToken: string;
+    } = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      tokens: {
+        accessToken: refreshedTokens.accessToken,
+        refreshToken: refreshedTokens.refreshToken,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -40,12 +79,18 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };
 
+      const test = true;
+      if (test) {
+        return refreshAccessToken(token);
+      }
+
       return token;
     },
 
     async session({ token, session }) {
       session.userData = token.userData;
-      session.tokens = token.tokens;
+      session.accessToken = token.tokens.accessToken;
+      session.error = token.error;
       return session;
     },
   },

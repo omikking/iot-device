@@ -10,6 +10,12 @@ const config: Pick<Config, 'content' | 'presets' | 'theme' | 'plugins'> = {
   presets: [sharedConfig],
   theme: {
     extend: {
+      spacing: {
+        xl: '128px',
+        lg: '64px',
+        md: '32px',
+        sm: '16px',
+      },
       fontSize: {
         caption: '10px',
         footnote: '10px',

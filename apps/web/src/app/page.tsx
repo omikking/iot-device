@@ -1,6 +1,11 @@
 'use client';
-import { Card, Cube } from '@gsp/ui';
+import { Card, Cube, Checkbox, Button } from '@gsp/ui';
 import SignInButton from '../components/SignInButton';
+import { z } from 'zod';
+
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+});
 
 export default function Page(): JSX.Element {
   return (
@@ -26,7 +31,13 @@ export default function Page(): JSX.Element {
         >
           Another component from the UI package.
         </Card>
+      </div>
+      <div className="flex flex-col md:flex-row">
         <Cube>Hello I'm a cube</Cube>
+        <Checkbox />
+      </div>
+      <div className="flex flex-col md:flex-row ">
+        <Button className="min-w-40 ">Sign in</Button>
       </div>
     </main>
   );

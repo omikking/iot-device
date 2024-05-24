@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         console.log('username', email);
         console.log('password', password);
 
-        const response = await fetch('http://localhost:3333/auth/signin', {
+        const response = await fetch(`${process.env.BACKEND_URL}/auth/signin`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),

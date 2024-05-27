@@ -23,7 +23,7 @@ declare module 'next-auth' {
   interface User {
     userData: {
       id: number;
-      email: email;
+      email: string;
       firstName: string;
       lastName: string;
     };
@@ -39,7 +39,7 @@ declare module 'next-auth' {
   interface Session {
     userData: {
       id: number;
-      email: email;
+      email: string;
       firstName: string;
       lastName: string;
     };

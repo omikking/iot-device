@@ -41,7 +41,7 @@ pnpm install # Install dependencies for all packages
 ```sh
 cd apps/api
 npx prisma generate # This generates the Prisma client and has to be re-run whenever changes are done to the schema.
-cp .env.example .env
+cp .env.example .env # Populate with valid values
 pnpm run db:dev:up # Start Docker Postgres DB (dev)
 pnpm run start:dev # Start NestJS in watch mode
 ```
@@ -50,6 +50,7 @@ pnpm run start:dev # Start NestJS in watch mode
 
 ```sh
 cd apps/web
+cp .env.example .env # Populate with valid values
 pnpm run dev
 ```
 

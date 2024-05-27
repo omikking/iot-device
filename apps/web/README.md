@@ -1,6 +1,13 @@
 ## Getting Started
 
-First, run the development server:
+Create environment variables file and populate the fields.
+
+```sh
+cp .env.exmaple .env
+# Populate with values
+```
+
+Then, run the development server:
 
 ```sh
 pnpm --filter=web dev

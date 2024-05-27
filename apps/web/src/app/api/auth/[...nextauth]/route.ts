@@ -54,11 +54,7 @@ export const authOptions: NextAuthOptions = {
 
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
         const { email, password } = credentials;
-
-        console.log('username', email);
-        console.log('password', password);
 
         const response = await fetch(`${process.env.BACKEND_URL}/auth/signin`, {
           method: 'POST',
@@ -69,8 +65,6 @@ export const authOptions: NextAuthOptions = {
         if (!response.ok) throw new Error('Failed to sign in');
 
         const user = (await response.json()) as User;
-
-        console.log('user response json', user);
         return user;
       },
     }),
@@ -101,6 +95,5 @@ export const authOptions: NextAuthOptions = {
 };
 
 const handler = NextAuth(authOptions);
-// const handler = (req, res) => NextAuth(req, res, authOptions);
 
 export { handler as GET, handler as POST };

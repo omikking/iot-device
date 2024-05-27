@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth/next';
 import type { User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import { jwtDecode } from 'jwt-decode';
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -22,7 +23,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     } = await response.json();
 
     if (!response.ok) {
-      throw refreshedTokens;
+      throw token;
     }
 
     return {
@@ -79,8 +80,11 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };
 
-      const test = true;
-      if (test) {
+      const { exp } = jwtDecode(token.tokens.accessToken);
+      const current = Math.floor(Date.now() / 1000);
+      const isExpired = (exp ?? 0) < current;
+
+      if (isExpired) {
         return refreshAccessToken(token);
       }
 

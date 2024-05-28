@@ -16,6 +16,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <header className="bg-gray-50 py-10">
+          <nav className="container flex flex-row justify-between">
+            <ul className="flex text-sm uppercase">
+              <li>
+                <p>Home</p>
+              </li>
+            </ul>
+            <h1 className="text-md">🚀</h1>
+          </nav>
+        </header>
         <Providers>{children}</Providers>
       </body>
     </html>

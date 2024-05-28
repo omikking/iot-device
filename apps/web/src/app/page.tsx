@@ -1,43 +1,104 @@
 'use client';
-import { Card, Cube, Checkbox, Button } from '@gsp/ui';
+import {
+  Card,
+  Cube,
+  Checkbox,
+  Button,
+  Input,
+  Form,
+  FormField,
+  FormItem,
+  FormMessage,
+  FormLabel,
+  FormControl,
+  Label,
+} from '@gsp/ui';
 import SignInButton from '../components/SignInButton';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+// A thorough documentation of how the form works
+// a schema for the form with validation rules
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
+  emailAdress: z
+    .string()
+    .min(2, { message: 'email must be at least 2 characters.' })
+    .email({ message: 'email must be a valid email address.' })
+    .max(50, { message: 'email must be at most 50 characters.' }),
+  password: z
+    .string()
+    .min(3, { message: 'password must be at least 3 characters.' }),
 });
 
 export default function Page(): JSX.Element {
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log({ values });
+  };
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      emailAdress: '',
+      password: '',
+    },
+  });
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
+    <main className="flex flex-col items-center justify-around min-h-screen p-24">
       <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
-      <h1 className="body-intro">Body Intro</h1>
-      <h1 className="text-3xl">3 XL</h1>
-      <h1 className="text-2xl">2 XL</h1>
-      <h1 className="text-xl">XL</h1>
-      <h1 className="text-lg">LG</h1>
-      <h1 className="text-md">MD</h1>
-      <h1 className="text-sm">SM</h1>
-      <h1 className="text-xs">XS</h1>
 
-      <SignInButton />
-      <div className="flex flex-col md:flex-row">
-        <Card href="https://www.home.sandvik/" title="Here is a card">
-          A component from the UI package.
-        </Card>
-        <Card
-          href="https://www.home.sandvik/en/about-us/sandvik-at-a-glance/"
-          title="This is another card"
-        >
-          Another component from the UI package.
-        </Card>
-      </div>
-      <div className="flex flex-col md:flex-row">
-        <Cube>Hello I'm a cube</Cube>
-        <Checkbox />
-      </div>
-      <div className="flex flex-col md:flex-row ">
-        <Button className="min-w-40 ">Sign in</Button>
+      <div className="flex flex-col md:flex-row max-w-md w-full">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="w-full flex flex-col gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="emailAdress"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Email address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <div>
+              <Label>
+                Forgot your password?{' '}
+                <a className="underline" href="https://www.google.se">
+                  Click here to reset.
+                </a>
+              </Label>
+            </div>
+            <Button type="submit" size={'lg'}>
+              Login
+            </Button>
+          </form>
+        </Form>
       </div>
     </main>
   );

@@ -1,15 +1,8 @@
 import * as React from 'react';
 import type * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
-import {
-  Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
-  FormProvider,
-  useFormContext,
-} from 'react-hook-form';
-
+import type { ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
+import { Controller, FormProvider, useFormContext } from 'react-hook-form';
 import { cn } from '../lib/utils';
 import { Label } from './label';
 
@@ -88,9 +81,9 @@ const FormLabel = React.forwardRef<
 
   return (
     <Label
-      ref={ref}
       className={cn(error && 'ui-text-destructive', className)}
       htmlFor={formItemId}
+      ref={ref}
       {...props}
     />
   );
@@ -106,14 +99,14 @@ const FormControl = React.forwardRef<
 
   return (
     <Slot
-      ref={ref}
-      id={formItemId}
       aria-describedby={
         !error
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={Boolean(error)}
+      id={formItemId}
+      ref={ref}
       {...props}
     />
   );
@@ -128,9 +121,9 @@ const FormDescription = React.forwardRef<
 
   return (
     <p
-      ref={ref}
-      id={formDescriptionId}
       className={cn('ui-text-sm ui-text-muted-foreground', className)}
+      id={formDescriptionId}
+      ref={ref}
       {...props}
     />
   );
@@ -150,9 +143,9 @@ const FormMessage = React.forwardRef<
 
   return (
     <p
-      ref={ref}
-      id={formMessageId}
       className={cn('ui-text-sm ui-font-medium ui-text-destructive', className)}
+      id={formMessageId}
+      ref={ref}
       {...props}
     >
       {body}

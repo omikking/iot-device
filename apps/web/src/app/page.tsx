@@ -1,6 +1,6 @@
 'use client';
 import { Card, Cube } from '@gsp/ui';
-import SignInButton from './components/SignInButton';
+import SignInButton from '../components/SignInButton';
 
 export default function Page(): JSX.Element {
   return (

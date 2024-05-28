@@ -1,7 +1,7 @@
 import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
-import Providers from './components/Providers';
+import Providers from '../components/Providers';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',

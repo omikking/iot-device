@@ -16,11 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="bg-gray-50 py-10">
-          <nav className="container flex flex-row justify-between">
+        <header className="bg-gray-50 py-10 flex flex-row justify-center">
+          <nav className="container flex flex-row justify-between items-center">
             <ul className="flex text-sm uppercase">
               <li>
-                <p>Home</p>
+                <p>Cool Logo: Sandvik</p>
               </li>
             </ul>
             <h1 className="text-md">🚀</h1>

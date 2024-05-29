@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const SignInButton = () => {
   const { data: session } = useSession();
-  console.log(session);
+  console.log('FROM SIGNIN BUTTON: ', session);
   useEffect(() => {
     if (session?.error === 'RefreshAccessTokenError') {
       signIn();

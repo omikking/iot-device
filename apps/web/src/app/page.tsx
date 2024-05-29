@@ -23,8 +23,8 @@ import { z } from 'zod';
 const formSchema = z.object({
   emailAdress: z
     .string()
-    .min(2, { message: 'email must be at least 2 characters.' })
     .email({ message: 'email must be a valid email address.' })
+    .min(2, { message: 'email must be at least 2 characters.' })
     .max(50, { message: 'email must be at most 50 characters.' }),
   password: z
     .string()
@@ -97,6 +97,7 @@ export default function Page(): JSX.Element {
             <Button type="submit" size={'lg'}>
               Login
             </Button>
+            <SignInButton />
           </form>
         </Form>
       </div>

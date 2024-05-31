@@ -16,13 +16,12 @@ const buttonVariants = cva(
         outline:
           'ui-border ui-border-input ui-bg-background hover:ui-bg-accent hover:ui-text-accent-foreground',
         secondary:
-          'ui-bg-secondary ui-text-secondary-foreground hover:ui-bg-secondary/80',
+          'ui-bg-neutral-2 ui-text-secondary-foreground hover:ui-bg-neutral-3 focus:ui-bg-neutral-4',
         ghost: 'hover:ui-bg-accent hover:ui-text-accent-foreground',
         link: 'ui-text-primary ui-underline-offset-4 hover:ui-underline',
         disabled: 'ui-bg-neutral-3 ui-text-neutral-4 ui-cursor-not-allowed',
       },
       size: {
-        // default: 'ui-h-10 ui-px-4 ui-py-2',
         default: 'ui-h-10 ui-w-20 ui-px-6 ui-py-3',
         sm: 'ui-h-9 ui-rounded-md ui-px-3',
         lg: 'ui-h-11 ui-rounded-md ui-px-8',

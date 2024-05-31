@@ -62,8 +62,8 @@ export default function SignIn() {
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
   return (
-    <div className="mx-10 flex flex-col items-center justify-evenly h-screen">
-      <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
+    <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
+      <h1 className="text-md">Welcome to Ground Support Web! 🦄</h1>
       <div className="min-w-96 h-96 flex flex-col items-center">
         {error && <p>{error}</p>}
 

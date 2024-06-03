@@ -18,8 +18,8 @@ const mockCompanyList = [
 
 export const Companies = () => {
   return (
-    <div>
-      <h3 className="px-md py-sm text-sm font-light">All companies</h3>
+    <div className="py-10 border-t-[1px] border-neutral-2">
+      <h3 className="px-md py-sm text-sm font-light bprder">All companies</h3>
       <ul className="bg-neutral-1 px-md py-md border-2 border-neutral-2">
         {mockCompanyList.map((company) => (
           <div
@@ -30,9 +30,7 @@ export const Companies = () => {
               <Label>{company.name}</Label>
             </div>
             <div className="flex gap-sm ">
-              <Button className="bg-gold-primary" size={'lg'}>
-                Administrate
-              </Button>
+              <Button size={'lg'}>Administrate</Button>
               <Button size={'lg'} variant={'secondary'}>
                 View Apps
               </Button>

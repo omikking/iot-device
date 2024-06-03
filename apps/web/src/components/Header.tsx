@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { render } from 'react-dom';
 import { Button } from '@gsp/ui';
 import { User } from 'lucide-react';
 import Sandviklogo from '../../public/sandviklogo.svg';
@@ -17,7 +16,7 @@ export const Header = () => {
             <Sandviklogo className="" />
           </li>
         </ul>
-        <div className="flex gap-10">
+        <div className="flex gap-10 ">
           {status === 'authenticated' ? (
             <div className="flex items-center gap-4">
               {/* link will lead to your profile */}

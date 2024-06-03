@@ -15,6 +15,12 @@ const config: Omit<Config, 'content'> = {
     },
 
     extend: {
+      spacing: {
+        xl: '128px',
+        lg: '64px',
+        md: '32px',
+        sm: '16px',
+      },
       colors: {
         /* The main colors shall be used for headlines and all texts, securing the relevant contrast. 
         White is also a key background fill. For dark backgrounds, use Neutral-9! */

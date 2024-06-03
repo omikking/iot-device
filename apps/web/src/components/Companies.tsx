@@ -19,7 +19,7 @@ const mockCompanyList = [
 export const Companies = () => {
   return (
     <div>
-      <h3 className="px-md text-md font-light">All companies</h3>
+      <h3 className="px-md py-sm text-sm font-light">All companies</h3>
       <ul className="bg-neutral-1 px-md py-md border-2 border-neutral-2">
         {mockCompanyList.map((company) => (
           <div

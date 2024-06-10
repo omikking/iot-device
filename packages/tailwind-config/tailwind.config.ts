@@ -15,6 +15,12 @@ const config: Omit<Config, 'content'> = {
     },
 
     extend: {
+      spacing: {
+        xl: '128px',
+        lg: '64px',
+        md: '32px',
+        sm: '16px',
+      },
       colors: {
         /* The main colors shall be used for headlines and all texts, securing the relevant contrast. 
         White is also a key background fill. For dark backgrounds, use Neutral-9! */
@@ -24,6 +30,7 @@ const config: Omit<Config, 'content'> = {
         // neutral-primary
         'neutral-1': '#F8F8F8',
         'neutral-2': '#E6E6E6',
+        // also used for disabled color
         'neutral-3': '#DADADA',
         'neutral-4': '#9D9D9D',
         'neutral-5': '#6F6F6F',

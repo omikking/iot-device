@@ -25,3 +25,20 @@ For example, in [tailwind.config.js](packages/tailwind-config/tailwind.config.js
     "../../packages/ui/*.{js,ts,jsx,tsx}",
   ],
 ```
+
+## How to add a component from ShadCN
+
+Choose what component you want in [text](https://ui.shadcn.com/docs/components)
+Scroll down to installation. Choose CLI, click pnpm and copy the link.
+For example: pnpm dlx shadcn-ui@latest add button
+
+Open the component in packages/ui/src/component/button
+Add the component you want to export, for example: export \* from './button'
+
+Import the component you want to use, example:
+import { Button } from '@gsp/ui';
+
+Use it in the JSX, example:
+<Button variant={'secondary'} onClick={() => signIn()}>
+Sign in
+</Button>

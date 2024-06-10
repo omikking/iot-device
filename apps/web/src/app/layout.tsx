@@ -2,6 +2,7 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '../components/Providers';
+import Header from '../components/Header';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );

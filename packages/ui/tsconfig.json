@@ -1,11 +1,5 @@
 {
   "extends": "@gsp/typescript-config/react-library.json",
   "include": ["."],
-  "exclude": ["dist", "build", "node_modules"],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "utils/*": ["src/lib/*"],
-    },
-  },
+  "exclude": ["dist", "build", "node_modules"]
 }

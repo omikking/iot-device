@@ -1,6 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
-import Companies from '../components/Companies';
+import Companies from '@/components/Companies';
 
 export default function Page(): JSX.Element {
   const { data: session, status } = useSession();

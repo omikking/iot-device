@@ -1,8 +1,8 @@
-import './globals.css';
+import '@/app/globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
-import Providers from '../components/Providers';
-import Header from '../components/Header';
+import Providers from '@/components/Providers';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',

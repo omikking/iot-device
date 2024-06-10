@@ -1,7 +1,12 @@
 'use client';
+
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 import {
   Button,
   Form,
@@ -13,10 +18,6 @@ import {
   Input,
   Label,
 } from '@gsp/ui';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSession } from 'next-auth/react';
 
 export default function SignIn() {
   const [error, setError] = useState('');

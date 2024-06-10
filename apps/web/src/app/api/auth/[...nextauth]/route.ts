@@ -1,9 +1,9 @@
-import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import NextAuth from 'next-auth/next';
-import type { User } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
+import type { User } from 'next-auth';
+import { NextAuthOptions } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
+import NextAuth from 'next-auth/next';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {

@@ -1,5 +1,5 @@
-import { signIn, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export const SignInButton = () => {

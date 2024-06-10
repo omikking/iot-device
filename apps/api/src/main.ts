@@ -10,5 +10,7 @@ async function bootstrap() {
     }),
   );
   await app.listen(3333);
+  console.log(`Application running on: ${await app.getUrl()}`);
+  console.log(`GraphQL Playground: ${await app.getUrl()}/graphql`);
 }
 bootstrap();

@@ -11,6 +11,7 @@ const project = resolve(process.cwd(), "tsconfig.json");
  *
  */
 
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: [
     // Very strict, especially @vercel/style-guide/eslint/typescript. Might be good to use this in the future.
@@ -29,7 +30,7 @@ module.exports = {
     require.resolve("@vercel/style-guide/eslint/next"),
     "turbo",
     // Default Turbo next eslint config END
-  ].map(require.resolve),
+  ],
   parserOptions: {
     project,
   },

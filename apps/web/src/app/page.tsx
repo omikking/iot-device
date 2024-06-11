@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import Companies from '../components/Companies';
 
 export default function Page(): JSX.Element {
-  const { data: session, status } = useSession();
+  const { data: status } = useSession();
   console.log('Status from sign in page: ', status);
   return (
     <div className="mx-10">

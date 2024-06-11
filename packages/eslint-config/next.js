@@ -57,4 +57,13 @@ module.exports = {
   rules: {
     "import/no-default-export": "off",
   },
+  // This is to get rid of the unused vars error in .d.ts files
+  overrides: [
+    {
+      files: "*.d.ts",
+      rules: {
+        "no-unused-vars": "off",
+      },
+    }
+  ]
 };

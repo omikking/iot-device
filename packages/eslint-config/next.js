@@ -14,18 +14,20 @@ const project = resolve(process.cwd(), "tsconfig.json");
 module.exports = {
   extends: [
     // Very strict, especially @vercel/style-guide/eslint/typescript. Might be good to use this in the future.
-    // "@vercel/style-guide/eslint/node",
-    // "@vercel/style-guide/eslint/typescript",
-    // "@vercel/style-guide/eslint/browser",
-    // "@vercel/style-guide/eslint/react",
-    // "@vercel/style-guide/eslint/next",
-    // "eslint-config-turbo",
+    // ...[
+    //   "@vercel/style-guide/eslint/node",
+    //   "@vercel/style-guide/eslint/typescript",
+    //   "@vercel/style-guide/eslint/browser",
+    //   "@vercel/style-guide/eslint/react",
+    //   "@vercel/style-guide/eslint/next",
+    // ].map(require.resolve),
+    // "turbo",
 
     // Default Turbo next eslint config START
     "eslint:recommended",
     "prettier",
     require.resolve("@vercel/style-guide/eslint/next"),
-    "eslint-config-turbo",
+    "turbo",
     // Default Turbo next eslint config END
   ].map(require.resolve),
   parserOptions: {

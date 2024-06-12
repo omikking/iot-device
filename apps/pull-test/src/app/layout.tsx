@@ -5,8 +5,8 @@ import Providers from '../components/Providers';
 import Header from '../components/Header';
 
 export const metadata: Metadata = {
-  title: 'Ground Support Platform',
-  description: 'For all your ground support needs.',
+  title: 'Pull Test Web',
+  description: 'The Sandvik GSP Pull Test Module',
 };
 
 export default function RootLayout({

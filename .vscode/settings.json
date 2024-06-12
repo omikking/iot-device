@@ -11,5 +11,10 @@
     {
       "mode": "auto"
     }
+  ],
+  // This adds IntelliSense for Tailwind classnames in cva.
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ]
 }

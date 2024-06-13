@@ -11,5 +11,13 @@
     {
       "mode": "auto"
     }
+  ],
+  // vscode-icons extension settings
+  "vsicons.associations.folders": [
+    {
+        "icon": "www",
+        "extensions": ["pull-test"],
+        "format": "svg"
+    }
   ]
 }

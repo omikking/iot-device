@@ -6,9 +6,7 @@ import { BoltModule } from './bolt/bolt.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-// import { join } from 'path';
-import { join } from 'path';
-import { TodoModule } from './todo/todo.module';
+import { CoffeesModule } from './coffees/coffees.module';
 
 @Module({
   imports: [
@@ -19,10 +17,9 @@ import { TodoModule } from './todo/todo.module';
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
+      typePaths: ['./**/*.graphql'],
     }),
-    TodoModule,
+    CoffeesModule,
   ],
 })
 export class AppModule {}

@@ -7,14 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Test model for graphQL, delete this when you're ready to add your own models
-model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
-
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -54,4 +46,13 @@ model RefreshTokenId {
   refreshTokenId String @unique
 
   @@map("refresh_token_ids")
+}
+
+model Coffee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  brand     String
+  flavors   String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

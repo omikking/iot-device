@@ -4,9 +4,10 @@ Monorepo powered by [Turborepo](https://turbo.build/) and [pnpm workspace](https
 
 ### Apps and Packages
 
-- `web`: [Next.js](https://nextjs.org/) app
-- `api`: [NestJS](https://nestjs.com/) app
-- `ui`: a stub React component library shared by `web`
+- `web`: [Next.js](https://nextjs.org/) app. The Ground Support Platform web portal.
+- `pull-test`: [Next.js](https://nextjs.org/) app. The pull-test client web app.
+- `api`: [NestJS](https://nestjs.com/) app. Our primary backend.
+- `ui`: a stub React component library shared by `web` & `pull-test`
 - `@gsp/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@gsp/typescript-config`: `tsconfig.json`s used throughout the monorepo
 - `@gsp/tailwind-config`: `tailwind.config.ts`
@@ -40,7 +41,7 @@ pnpm install # Install dependencies for all packages
 
 ```sh
 cd apps/api
-npx prisma generate # This generates the Prisma client and has to be re-run whenever changes are done to the schema.
+pnpm run prisma:generate # This generates the Prisma client and has to be re-run whenever changes are done to the schema.
 cp .env.example .env # Populate with valid values
 pnpm run db:dev:up # Start Docker Postgres DB (dev)
 pnpm run start:dev # Start NestJS in watch mode
@@ -50,6 +51,14 @@ pnpm run start:dev # Start NestJS in watch mode
 
 ```sh
 cd apps/web
+cp .env.example .env # Populate with valid values
+pnpm run dev
+```
+
+#### Pull Test app
+
+```sh
+cd apps/pull-test
 cp .env.example .env # Populate with valid values
 pnpm run dev
 ```

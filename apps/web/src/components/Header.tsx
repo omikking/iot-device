@@ -4,8 +4,10 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button } from '@gsp/ui';
 import { User } from 'lucide-react';
 import Sandviklogo from '../../public/sandviklogo.svg';
+import { useAuthErrorHandler } from '../hooks/useAuthErrorHandler';
 
 export const Header = () => {
+  useAuthErrorHandler();
   const { data: session, status } = useSession();
 
   return (

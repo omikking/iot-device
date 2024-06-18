@@ -12,10 +12,10 @@ export class CoffeesResolver {
   // Inject the CoffeesService
   constructor(private readonly coffeeService: CoffeesService) {}
 
-  // @Query('coffees')
-  // async findAll(): Promise<GraphQLTypes.Coffee[]> {
-  //   return this.coffeeService.findAll();
-  // }
+  @Query('coffees')
+  async findAll(): Promise<Coffee[]> {
+    return this.coffeeService.findAll();
+  }
 
   // @Query('coffee')
   // // ParseIntPipe is a built-in pipe that converts a string to an integer

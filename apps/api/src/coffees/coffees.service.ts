@@ -12,9 +12,23 @@ import { Flavor } from './interface/flavor-data';
 export class CoffeesService {
   constructor(private prisma: PrismaService) {}
 
-  // async findAll(): Promise<Coffee[]> {
-  //   return this.prisma.coffee.findMany();
-  // }
+  async findAll(): Promise<Coffee[]> {
+    const coffees = this.prisma.coffee.findMany();
+
+    return coffees;
+
+    // const coffeeWithFlavor = await this.prisma.coffee.findMany({
+    //   select: {
+    //     flavors: {
+    //       select: {
+    //         flavor: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // console.log('coffee flavors', coffeeWithFlavor[2].flavors);
+  }
 
   // async findOne(id: number): Promise<Coffee> {
   //   const coffee = await this.prisma.coffee.findUnique({ where: { id } });

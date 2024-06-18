@@ -24,7 +24,7 @@ export class Coffee {
     id: number;
     name: string;
     brand: string;
-    flavors: Flavor[];
+    flavors?: Nullable<Flavor[]>;
 }
 
 export class Flavor {

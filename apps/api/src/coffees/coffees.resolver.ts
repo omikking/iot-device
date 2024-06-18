@@ -4,7 +4,8 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeInput } from './dto/create-coffee.input';
 // import { UpdateCoffeeInput } from './dto/update-coffee.input';
-import type { Coffee } from '@prisma/client';
+// import type { Coffee } from '@prisma/client';
+import type { Coffee } from './interface/coffee-data';
 
 @Resolver()
 export class CoffeesResolver {

@@ -152,27 +152,22 @@ export class CoffeesService {
     return newCoffee;
   }
 
-  async create(createCoffeeInput: CreateCoffeeInput) {
+  async create(createCoffeeInput: CreateCoffeeInput): Promise<Coffee> {
     const flavors = await Promise.all(
       createCoffeeInput.flavors.map((name) => this.preloadFlavorByName(name)),
     );
 
     console.log('flavors', flavors);
 
-    const coffee = this.prisma.coffee.create({
+    const coffee = await this.prisma.coffee.create({
       data: {
         name: createCoffeeInput.name,
         brand: createCoffeeInput.brand,
         flavors: {
           create: flavors.map((flavor) => ({
             flavor: {
-              connectOrCreate: {
-                where: {
-                  id: flavor.id,
-                },
-                create: {
-                  name: flavor.name,
-                },
+              connect: {
+                id: flavor.id,
               },
             },
           })),
@@ -180,7 +175,7 @@ export class CoffeesService {
       },
     });
 
-    return coffee;
+    return { ...coffee, flavors };
   }
 
   // GraphQL kan ge tillbaka NULL!

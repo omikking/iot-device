@@ -17,13 +17,13 @@ export class CoffeesService {
     return coffees;
   }
 
-  // async findOne(id: number): Promise<Coffee> {
-  //   const coffee = await this.prisma.coffee.findUnique({ where: { id } });
-  //   if (!coffee) {
-  //     throw new UserInputError(`Coffee #${id} does not exist`);
-  //   }
-  //   return coffee;
-  // }
+  async findOne(id: number): Promise<Coffee> {
+    const coffee = await this.prisma.coffee.findUnique({ where: { id } });
+    if (!coffee) {
+      throw new UserInputError(`Coffee #${id} does not exist`);
+    }
+    return coffee;
+  }
 
   async create(createCoffeeInput: CreateCoffeeInput): Promise<Coffee> {
     const flavors = await Promise.all(

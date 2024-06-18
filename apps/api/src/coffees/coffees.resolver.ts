@@ -17,14 +17,12 @@ export class CoffeesResolver {
     return this.coffeeService.findAll();
   }
 
-  // @Query('coffee')
-  // // ParseIntPipe is a built-in pipe that converts a string to an integer
-  // async findOne(
-  //   @Args('id', ParseIntPipe) id: number,
-  // ): Promise<GraphQLTypes.Coffee> {
-  //   console.log('FROM RESOLVER id: ', id);
-  //   return this.coffeeService.findOne(id);
-  // }
+  @Query('coffee')
+  // ParseIntPipe is a built-in pipe that converts a string to an integer
+  async findOne(@Args('id', ParseIntPipe) id: number): Promise<Coffee> {
+    console.log('FROM RESOLVER id: ', id);
+    return this.coffeeService.findOne(id);
+  }
 
   @Mutation('createCoffee')
   async create(

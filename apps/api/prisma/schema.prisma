@@ -48,11 +48,42 @@ model RefreshTokenId {
   @@map("refresh_token_ids")
 }
 
+// model Coffee {
+//   id        Int      @id @default(autoincrement())
+//   name      String
+//   brand     String
+//   flavors   String[]
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
 model Coffee {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   name      String
   brand     String
-  flavors   String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  flavors   CoffeeFlavor[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("coffees")
+}
+
+model Flavor {
+  id        Int            @id @default(autoincrement())
+  name      String
+  coffees   CoffeeFlavor[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("flavors")
+}
+
+model CoffeeFlavor {
+  coffeeId Int
+  flavorId Int
+
+  coffee Coffee @relation(fields: [coffeeId], references: [id])
+  flavor Flavor @relation(fields: [flavorId], references: [id])
+
+  @@id([coffeeId, flavorId])
+  @@map("coffee_flavors")
 }

@@ -1,24 +1,57 @@
+#Use npx ts-node src/generate-types.ts to generate the types
+
 """
 Coffee model
+Define the Coffee model and its fields
 """
 type Coffee {
   id: ID!
   name: String!
   brand: String!
-  flavors: [String!]!
+  flavors: [Flavor!]!
 }
 
+type Flavor {
+  id: ID!
+  name: String!
+}
+
+"""
+CreateCoffeeInput
+Define the input fields to create a new coffee
+"""
 input CreateCoffeeInput {
   name: String!
   brand: String!
   flavors: [String!]!
 }
 
+"""
+UpdateCoffeeInput
+Define the input fields to update an existing coffee
+Optional are marked without the exclamation mark
+"""
+input UpdateCoffeeInput {
+  name: String
+  brand: String
+  flavors: [String!]
+}
+
+"""
+Query
+Define the queries that can be made to the Coffee model
+"""
 type Query {
   coffees: [Coffee!]!
   coffee(id: ID!): Coffee!
 }
 
+"""
+Mutation
+Define the mutations that can be made to the Coffee model
+"""
 type Mutation {
   createCoffee(createCoffeeInput: CreateCoffeeInput!): Coffee!
+  updateCoffee(id: ID!, updateCoffeeInput: UpdateCoffeeInput!): Coffee!
+  removeCoffee(id: ID!): Coffee!
 }

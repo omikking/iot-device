@@ -1,6 +1,3 @@
-export interface CoffeeData {
-  id: number;
-  name: string;
-  brand: string;
-  flavors: string[];
-}
+import * as GraphQLTypes from '../../graphql-types';
+
+export interface Coffee extends GraphQLTypes.Coffee {}

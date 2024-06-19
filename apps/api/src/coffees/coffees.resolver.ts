@@ -3,7 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CoffeesService } from './coffees.service';
 import type { Coffee } from './interface/coffee-data';
-import { CreateCoffeeInput } from './dto/create-coffee.input';
+// import { CreateCoffeeInput } from './dto/create-coffee.input';
 
 @Resolver()
 export class CoffeesResolver {
@@ -29,8 +29,7 @@ export class CoffeesResolver {
     This way, we can use the class to validate the input data.
     createCoffeeInput: GraphQLTypes.CreateCoffeeInput
     */
-    createCoffeeInput: CreateCoffeeInput,
-    // createCoffeeInput: GraphQLTypes.CreateCoffeeInput,
+    createCoffeeInput: GraphQLTypes.CreateCoffeeInput,
   ): Promise<Coffee> {
     // all we do here is get the values
 

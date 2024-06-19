@@ -1,14 +1,26 @@
 #Use npx ts-node src/generate-types.ts to generate the types
+# Custom scalar type for DateTime for the createdAt and updatedAt fields
+scalar DateTime
+
+interface Drink {
+  name: String!
+}
+
+type Tea implements Drink {
+  name: String!
+}
 
 """
 Coffee model
 Define the Coffee model and its fields
 """
-type Coffee {
+type Coffee implements Drink {
   id: ID!
   name: String!
   brand: String!
   flavors: [Flavor!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Flavor {
@@ -44,6 +56,7 @@ Define the queries that can be made to the Coffee model
 type Query {
   coffees: [Coffee!]!
   coffee(id: ID!): Coffee!
+  drinks: [Drink!]!
 }
 
 """

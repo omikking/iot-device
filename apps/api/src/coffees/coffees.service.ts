@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-// import * as GraphQLTypes from 'src/graphql-types';
 import { UserInputError } from '@nestjs/apollo';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCoffeeInput } from './dto/create-coffee.input';
-// import { UpdateCoffeeInput } from './dto/update-coffee.input';
+import { UpdateCoffeeInput } from './dto/update-coffee.input';
 import { Coffee } from './interface/coffee-data';
 import { Flavor } from './interface/flavor-data';
-// import * as GraphQLTypes from '../graphql-types';
 
 @Injectable()
 export class CoffeesService {
@@ -53,24 +51,40 @@ export class CoffeesService {
 
   // GraphQL kan ge tillbaka NULL!
   // Prisma vill endast ha undefined!!!
-
   // Behandlar prisma null och undefined annorlunda?
-  // async update(
-  //   id: number,
-  //   updateCoffeeInput: UpdateCoffeeInput,
-  // ): Promise<Coffee> {
-  //   const coffee = await this.prisma.coffee.update({
-  //     data: {
-  //       ...updateCoffeeInput,
-  //     },
-  //     where: { id },
-  //   });
 
-  //   if (!coffee) {
-  //     throw new UserInputError(`Coffee #${id} does not exist`);
-  //   }
-  //   return coffee;
-  // }
+  async update(
+    id: number,
+    updateCoffeeInput: UpdateCoffeeInput,
+  ): Promise<Coffee> {
+    const flavors =
+      updateCoffeeInput.flavors &&
+      (await Promise.all(
+        updateCoffeeInput.flavors.map((name) => this.preloadFlavorByName(name)),
+      ));
+
+    const coffee = await this.prisma.coffee.update({
+      data: {
+        name: updateCoffeeInput?.name || undefined,
+        brand: updateCoffeeInput?.brand || undefined,
+        flavors: {
+          create: flavors?.map((flavor) => ({
+            flavor: {
+              connect: {
+                id: flavor.id,
+              },
+            },
+          })),
+        },
+      },
+      where: { id },
+    });
+
+    if (!coffee) {
+      throw new UserInputError(`Coffee #${id} does not exist`);
+    }
+    return coffee;
+  }
 
   // Original
   async preloadFlavorByName(name: string): Promise<Flavor> {
@@ -79,17 +93,14 @@ export class CoffeesService {
     });
 
     if (existingFlavor) {
-      console.log('Found an existing flavor', existingFlavor);
       return existingFlavor;
     }
-    console.log('NOOOOO');
+
     return await this.prisma.flavor.create({
       data: { name },
     });
   }
-  // This will allow GraphQL to send null values which Prisma does not accept, so we need to convert null to undefined.
   // In Prisma null and undefined are treated differently.
-
   // null is a value that removes the value from the database
   // undefined is a value that does not change the value in the database. (leaves it as it is)
 
@@ -97,13 +108,13 @@ export class CoffeesService {
 
   // GraphQL covers this here: https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types/null-and-undefined#null-and-undefined-in-a-graphql-resolver
 
-  // async remove(id: number): Promise<Coffee> {
-  //   const removedCoffee = await this.prisma.coffee.delete({
-  //     where: { id },
-  //   });
-  //   if (!removedCoffee) {
-  //     throw new UserInputError(`Coffee #${id} does not exist`);
-  //   }
-  //   return removedCoffee;
-  // }
+  async remove(id: number): Promise<Coffee> {
+    const removedCoffee = await this.prisma.coffee.delete({
+      where: { id },
+    });
+    if (!removedCoffee) {
+      throw new UserInputError(`Coffee #${id} does not exist`);
+    }
+    return removedCoffee;
+  }
 }

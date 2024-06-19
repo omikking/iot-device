@@ -1,16 +1,32 @@
+import { Type } from 'class-transformer';
 import * as GraphQLTypes from '../../graphql-types';
-import { MinLength, IsOptional } from 'class-validator';
+import {
+  MinLength,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
+class FlavorInput {
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  name?: string;
+}
 export class UpdateCoffeeInput extends GraphQLTypes.UpdateCoffeeInput {
   @IsOptional()
   @MinLength(3)
-  name: string;
+  @IsString()
+  name?: string | null;
 
   @IsOptional()
   @MinLength(3)
-  brand: string;
+  @IsString()
+  brand?: string | null;
 
   @IsOptional()
   @MinLength(3)
-  flavors: string[];
+  @ValidateNested({ each: true })
+  @Type(() => FlavorInput)
+  flavors?: string[] | null;
 }

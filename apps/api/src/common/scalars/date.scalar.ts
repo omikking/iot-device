@@ -11,7 +11,6 @@ export class DateScalar {
 
   // This method is used to serialize the value before sending it to the client
   serialize(value: Date): number {
-    console.log(`Serailizing: ${value}`);
     return value.getTime();
   }
 

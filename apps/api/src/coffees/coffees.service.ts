@@ -109,6 +109,10 @@ export class CoffeesService {
   // GraphQL covers this here: https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types/null-and-undefined#null-and-undefined-in-a-graphql-resolver
 
   async remove(id: number): Promise<Coffee> {
+    await this.prisma.coffeeFlavor.deleteMany({
+      where: { coffeeId: id },
+    });
+
     const removedCoffee = await this.prisma.coffee.delete({
       where: { id },
     });

@@ -3,10 +3,30 @@ import React from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { render } from 'react-dom';
 import { Button } from '@gsp/ui';
+// import { gql, useSuspenseQuery } from '@apollo/client';
+// import { useQuery } from '@apollo/client';
 
 export const Header = () => {
-  const { data: session, status } = useSession();
+  // const userQuery = gql`
+  //   query {
+  //     coffees {
+  //       id
+  //       name
+  //       brand
+  //       createdAt
+  //       updatedAt
+  //       flavors {
+  //         id
+  //         name
+  //       }
+  //     }
+  //   }
+  // `;
+  // const { data: dataCoffee, loading } = useQuery(userQuery);
 
+  // console.log('dataCoffee: ', dataCoffee);
+  // if (loading) return <p>Loading...</p>;
+  const { data: session, status } = useSession();
   return (
     <header className=" mx-10 py-5 flex flex-row justify-center border-b-[1px] border-neutral-6">
       <nav className="container flex flex-row justify-between items-center">

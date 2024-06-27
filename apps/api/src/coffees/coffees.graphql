@@ -2,19 +2,11 @@
 # Custom scalar type for DateTime for the createdAt and updatedAt fields
 scalar DateTime
 
-interface Drink {
-  name: String!
-}
-
-type Tea implements Drink {
-  name: String!
-}
-
 """
 Coffee model
 Define the Coffee model and its fields
 """
-type Coffee implements Drink {
+type Coffee {
   id: ID!
   name: String!
   brand: String!
@@ -56,7 +48,6 @@ Define the queries that can be made to the Coffee model
 type Query {
   coffees: [Coffee!]!
   coffee(id: ID!): Coffee!
-  drinks: [Drink!]!
 }
 
 """

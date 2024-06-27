@@ -21,12 +21,18 @@ async function Coffees() {
   // if (loading) return <p>Loading...</p>;
   // if (error) return <p>Error :</p>;
 
-  console.log('DATA FRP; COFFEEE: ', data);
+  console.log('DATA FROM RSC; COFFEEE: ', data);
   return (
     <div>
-      {data?.coffees?.map(({ id, name, brand }) => (
+      {data?.coffees?.map(({ id, name, brand, flavors }) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>
+          {flavors?.map(({ id, name }) => (
+            // make new comp for flavors
+            <div key={id}>
+              <p>{name}</p>
+            </div>
+          ))}
         </div>
       ))}
     </div>

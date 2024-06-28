@@ -20,6 +20,8 @@ const config: Omit<Config, 'content'> = {
         lg: '64px',
         md: '32px',
         sm: '16px',
+        xs: '8px',
+        xxs: '4px',
       },
       colors: {
         /* The main colors shall be used for headlines and all texts, securing the relevant contrast. 

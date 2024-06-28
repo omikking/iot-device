@@ -33,12 +33,12 @@ Scroll down to installation. Choose CLI, click pnpm and copy the link.
 For example: pnpm dlx shadcn-ui@latest add button
 
 Open the component in packages/ui/src/component/button
-Add the component you want to export, for example: export \* from './button'
+Add the component you want to export in './index.ts', for example: export \* from './button';
 
 Import the component you want to use, example:
 import { Button } from '@gsp/ui';
 
-Use it in the JSX, example:
+Use it in the TSX, example:
 <Button variant={'secondary'} onClick={() => signIn()}>
 Sign in
 </Button>

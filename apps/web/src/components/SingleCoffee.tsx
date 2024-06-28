@@ -1,5 +1,4 @@
-import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { gql, ApolloError } from '@apollo/client';
 import { getClient } from '../libs/ApolloClient';
 
 //Should use the 'use client' hook to fetch data from GraphQL on a client component
@@ -19,18 +18,34 @@ const GET_COFFEE_BY_ID = gql`
 `;
 
 async function SingleCoffee({ params }: { params: { id: string } }) {
-  const { data, loading, error }: any = await getClient().query({
-    query: GET_COFFEE_BY_ID,
-    variables: { id: params?.id },
-  });
-  console.log('DATA FROM SINGLE COFFEE: ', data);
+  // Not sure what the best approach is for error handling Apollo Client in RSCs.
+  // We do not have access to the error object like in useQuery hook, no docs from Apollo.
+  let data, error;
+  try {
+    const response = await getClient().query({
+      query: GET_COFFEE_BY_ID,
+      variables: { id: params?.id },
+    });
+    data = response.data;
+    console.log('Data from single coffee', data);
+  } catch (e) {
+    error = e;
+    if (e instanceof ApolloError) {
+      console.log('Apollo Error:', e.message);
+    } else console.log('Error fetching coffee:', e);
+  }
+
+  if (error) {
+    return <p>Error fetching coffee</p>;
+  }
+
   return (
     <div>
       {data && (
         <div>
           <p>{data.coffee.name}</p>
           <p>{data.coffee.brand}</p>
-          {data.coffee.flavors.map(({ name }) => (
+          {data.coffee.flavors.map(({ name }: any) => (
             <div key={name}>
               <p>{name}</p>
             </div>

@@ -7,10 +7,12 @@ export default function Page(): JSX.Element {
     <main className="flex flex-col items-center justify-around min-h-screen p-24 ">
       <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
 
-      <CreateCoffeeForm />
-      <SingleCoffee params={{ id: '2' }} />
-      <Coffees />
-      <CoffeeClientComponent />
+      <div className="flex flex-col gap-10">
+        <CreateCoffeeForm />
+        <Coffees />
+        <SingleCoffee params={{ id: '2' }} />
+        <CoffeeClientComponent />
+      </div>
 
       <div className="flex flex-col md:flex-row max-w-md w-full"></div>
     </main>

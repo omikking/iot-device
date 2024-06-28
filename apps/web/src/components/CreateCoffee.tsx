@@ -63,10 +63,13 @@ export default function CreateCoffeeForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="name" placeholder="Coffee name" required />
-      <input name="brand" placeholder="Coffee brand" required />
-      <button type="submit">Create Coffee</button>
-    </form>
+    <div>
+      <h2 className="text-sm">Add Coffee</h2>
+      <form onSubmit={handleSubmit}>
+        <input name="name" placeholder="Coffee name" required />
+        <input name="brand" placeholder="Coffee brand" required />
+        <button type="submit">Create Coffee</button>
+      </form>
+    </div>
   );
 }

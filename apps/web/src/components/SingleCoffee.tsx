@@ -41,10 +41,13 @@ async function SingleCoffee({ params }: { params: { id: string } }) {
 
   return (
     <div>
+      <h2 className="text-sm">RSC GetCoffeeWithID</h2>
       {data && (
         <div>
-          <p>{data.coffee.name}</p>
-          <p>{data.coffee.brand}</p>
+          <p>
+            {data.coffee.name} by {data.coffee.brand}
+          </p>
+
           {data.coffee.flavors.map(({ name }: any) => (
             <div key={name}>
               <p>{name}</p>

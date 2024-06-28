@@ -29,7 +29,7 @@ function CoffeeClientComponent() {
 
   return (
     <div>
-      <h2>helloooooo</h2>
+      <h2 className="text-sm">Client GetCoffees</h2>
       {data.coffees.map(({ id, name, brand }) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>

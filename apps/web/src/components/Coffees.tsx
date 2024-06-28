@@ -16,23 +16,33 @@ const GET_COFFEES_QUERY = gql`
 `;
 
 async function Coffees() {
-  const { data }: any = await getClient().query({ query: GET_COFFEES_QUERY });
+  const { data }: any = await getClient().query({
+    query: GET_COFFEES_QUERY,
+  });
 
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error :</p>;
-
-  console.log('DATA FROM RSC; COFFEEE: ', data);
+  console.log('RSC Coffee: ', data);
   return (
     <div>
+      <h2 className="text-sm">RSC GetCoffees</h2>
       {data?.coffees?.map(({ id, name, brand, flavors }) => (
-        <div key={id}>
+        <div
+          key={id}
+          className={
+            id % 2 === 0
+              ? 'bg-gray-100 border-b-2 border-gray-800'
+              : 'bg-gray-200 border-b-2 border-gray-800'
+          }
+        >
           <p>{`${name} by ${brand}`}</p>
-          {flavors?.map(({ id, name }) => (
-            // make new comp for flavors
-            <div key={id}>
-              <p>{name}</p>
-            </div>
-          ))}
+          <p>
+            Flavours:{' '}
+            {flavors?.map(({ name }, index: number) => (
+              <span key={index} className="text-xs">
+                {name}
+                {flavors.length - 1 === index ? '' : ', '}
+              </span>
+            ))}
+          </p>
         </div>
       ))}
     </div>

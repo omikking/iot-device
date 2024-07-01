@@ -3,7 +3,6 @@ import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '../components/Providers';
 import Header from '../components/Header';
-import { ApolloProvider } from '@apollo/client';
 import { ApolloWrapper } from '../libs/ApolloWrapper';
 
 export const metadata: Metadata = {

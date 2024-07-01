@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { render } from 'react-dom';
 import { Button } from '@gsp/ui';
 // import { gql, useSuspenseQuery } from '@apollo/client';
 // import { useQuery } from '@apollo/client';
+import { User } from 'lucide-react';
+import Sandviklogo from '../../public/sandviklogo.svg';
 
 export const Header = () => {
   // const userQuery = gql`
@@ -28,19 +29,24 @@ export const Header = () => {
   // if (loading) return <p>Loading...</p>;
   const { data: session, status } = useSession();
   return (
-    <header className=" mx-10 py-5 flex flex-row justify-center border-b-[1px] border-neutral-6">
-      <nav className="container flex flex-row justify-between items-center">
+    <header className=" mx-10 py-5 flex flex-row justify-between border-b-[1px] border-neutral-6">
+      <nav className="w-full flex flex-row justify-between items-center">
         <ul className="flex text-sm uppercase">
           <li>
-            <p>Logo</p>
+            <Sandviklogo className="" />
           </li>
         </ul>
-        <div className="flex gap-10">
+        <div className="flex gap-10 ">
           {status === 'authenticated' ? (
             <div className="flex items-center gap-4">
               {/* link will lead to your profile */}
 
-              <Button size={'lg'} variant={'secondary'}>
+              <Button
+                className="flex flex-row justify-end items-end"
+                size={'lg'}
+                variant={'secondary'}
+              >
+                <User className="mr-2 h-4 w-4" />
                 {session.userData.email}
               </Button>
 

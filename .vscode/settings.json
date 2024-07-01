@@ -11,5 +11,18 @@
     {
       "mode": "auto"
     }
+  ],
+  // This adds IntelliSense for Tailwind classnames in cva.
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  // vscode-icons extension settings
+  "vsicons.associations.folders": [
+    {
+        "icon": "www",
+        "extensions": ["pull-test"],
+        "format": "svg"
+    }
   ]
 }

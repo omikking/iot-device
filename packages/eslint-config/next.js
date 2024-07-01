@@ -11,29 +11,36 @@ const project = resolve(process.cwd(), "tsconfig.json");
  *
  */
 
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: [
     // Very strict, especially @vercel/style-guide/eslint/typescript. Might be good to use this in the future.
-    // "@vercel/style-guide/eslint/node",
-    // "@vercel/style-guide/eslint/typescript",
-    // "@vercel/style-guide/eslint/browser",
-    // "@vercel/style-guide/eslint/react",
-    // "@vercel/style-guide/eslint/next",
-    // "eslint-config-turbo",
+    // ...[
+    //   "@vercel/style-guide/eslint/node",
+    //   "@vercel/style-guide/eslint/typescript",
+    //   "@vercel/style-guide/eslint/browser",
+    //   "@vercel/style-guide/eslint/react",
+    //   "@vercel/style-guide/eslint/next",
+    // ].map(require.resolve),
+    // "turbo",
 
     // Default Turbo next eslint config START
     "eslint:recommended",
     "prettier",
     require.resolve("@vercel/style-guide/eslint/next"),
-    "eslint-config-turbo",
+    "turbo",
     // Default Turbo next eslint config END
-  ].map(require.resolve),
+  ],
   parserOptions: {
     project,
   },
   globals: {
     React: true,
     JSX: true,
+  },
+  env: {
+    node: true,
+    browser: true,
   },
   settings: {
     "import/resolver": {
@@ -50,4 +57,13 @@ module.exports = {
   rules: {
     "import/no-default-export": "off",
   },
+  // This is to get rid of the unused vars error in .d.ts files
+  overrides: [
+    {
+      files: "*.d.ts",
+      rules: {
+        "no-unused-vars": "off",
+      },
+    }
+  ]
 };

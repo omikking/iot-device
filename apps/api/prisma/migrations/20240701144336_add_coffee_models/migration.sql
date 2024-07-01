@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Coffee` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "Coffee";
-
 -- CreateTable
 CREATE TABLE "coffees" (
     "id" SERIAL NOT NULL,

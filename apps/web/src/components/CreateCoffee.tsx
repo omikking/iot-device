@@ -38,7 +38,8 @@ interface CreateCoffeeInput {
 }
 
 export default function CreateCoffeeForm() {
-  const [createCoffee, { data, loading, error }] = useMutation<
+  // const [createCoffee, { data, loading, error }] = useMutation<
+  const [createCoffee] = useMutation<
     CreateCoffeeMutationResult,
     CreateCoffeeMutationVariables
   >(CREATE_COFFEE);

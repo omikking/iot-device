@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { getClient } from '../libs/ApolloClient';
 
 const GET_COFFEES_QUERY = gql`
@@ -24,7 +24,7 @@ async function Coffees() {
   return (
     <div>
       <h2 className="text-sm">RSC GetCoffees</h2>
-      {data?.coffees?.map(({ id, name, brand, flavors }) => (
+      {data?.coffees?.map(({ id, name, brand, flavors }: any) => (
         <div
           key={id}
           className={
@@ -36,7 +36,7 @@ async function Coffees() {
           <p>{`${name} by ${brand}`}</p>
           <p>
             Flavours:{' '}
-            {flavors?.map(({ name }, index: number) => (
+            {flavors?.map(({ name }: any, index: number) => (
               <span key={index} className="text-xs">
                 {name}
                 {flavors.length - 1 === index ? '' : ', '}

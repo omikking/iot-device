@@ -8,7 +8,6 @@ class FlavorInput {
   name: string;
 }
 
-// Could also import GraphQLTypes, but then we impose risks of errors
 export class CreateCoffeeInput extends GraphQLTypes.CreateCoffeeInput {
   @MinLength(3)
   name: string;

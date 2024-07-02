@@ -1,4 +1,8 @@
-#Use npx ts-node src/generate-types.ts to generate the types
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
 # Custom scalar type for DateTime for the createdAt and updatedAt fields
 scalar DateTime
 

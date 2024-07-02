@@ -6,6 +6,13 @@ import { UpdateCoffeeInput } from './dto/update-coffee.input';
 import { Coffee } from './interface/coffee-data';
 import { Flavor } from './interface/flavor-data';
 
+// In Prisma null and undefined are treated differently.
+// null is a value that removes the value from the database
+// undefined is a value that does not change the value in the database. (leaves it as it is)
+
+// This is why we need to convert null to undefined when we pass the data to Prisma. Unless we WANTED to remove the value from the database.
+// GraphQL covers this here: https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types/null-and-undefined#null-and-undefined-in-a-graphql-resolver
+
 @Injectable()
 export class CoffeesService {
   constructor(private prisma: PrismaService) {}
@@ -28,8 +35,6 @@ export class CoffeesService {
       createCoffeeInput.flavors.map((name) => this.preloadFlavorByName(name)),
     );
 
-    console.log('flavors', flavors);
-
     const coffee = await this.prisma.coffee.create({
       data: {
         name: createCoffeeInput.name,
@@ -48,10 +53,6 @@ export class CoffeesService {
 
     return { ...coffee, flavors };
   }
-
-  // GraphQL kan ge tillbaka NULL!
-  // Prisma vill endast ha undefined!!!
-  // Behandlar prisma null och undefined annorlunda?
 
   async update(
     id: number,
@@ -86,7 +87,21 @@ export class CoffeesService {
     return coffee;
   }
 
-  // Original
+  async remove(id: number): Promise<Coffee> {
+    await this.prisma.coffeeFlavor.deleteMany({
+      where: { coffeeId: id },
+    });
+
+    const removedCoffee = await this.prisma.coffee.delete({
+      where: { id },
+    });
+
+    if (!removedCoffee) {
+      throw new UserInputError(`Coffee #${id} does not exist`);
+    }
+    return removedCoffee;
+  }
+
   async preloadFlavorByName(name: string): Promise<Flavor> {
     const existingFlavor = await this.prisma.flavor.findFirst({
       where: { name },
@@ -99,26 +114,5 @@ export class CoffeesService {
     return await this.prisma.flavor.create({
       data: { name },
     });
-  }
-  // In Prisma null and undefined are treated differently.
-  // null is a value that removes the value from the database
-  // undefined is a value that does not change the value in the database. (leaves it as it is)
-
-  // This is why we need to convert null to undefined when we pass the data to Prisma. Unless we WANTED to remove the value from the database.
-
-  // GraphQL covers this here: https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types/null-and-undefined#null-and-undefined-in-a-graphql-resolver
-
-  async remove(id: number): Promise<Coffee> {
-    await this.prisma.coffeeFlavor.deleteMany({
-      where: { coffeeId: id },
-    });
-
-    const removedCoffee = await this.prisma.coffee.delete({
-      where: { id },
-    });
-    if (!removedCoffee) {
-      throw new UserInputError(`Coffee #${id} does not exist`);
-    }
-    return removedCoffee;
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { gql } from '@apollo/client';
-import { getClient } from '../libs/ApolloClient';
+import { getClient } from '../../libs/ApolloClient';
 
 const GET_COFFEES_QUERY = gql`
   query GetCoffees {
@@ -15,7 +15,7 @@ const GET_COFFEES_QUERY = gql`
   }
 `;
 
-async function Coffees() {
+async function CoffeesList() {
   const { data }: any = await getClient().query({
     query: GET_COFFEES_QUERY,
   });
@@ -23,7 +23,7 @@ async function Coffees() {
   console.log('RSC Coffee: ', data);
   return (
     <div>
-      <h2 className="text-sm">RSC GetCoffees</h2>
+      <h2 className="text-sm">RSC GetCoffees / CoffeesList</h2>
       {data?.coffees?.map(({ id, name, brand, flavors }: any) => (
         <div
           key={id}
@@ -49,4 +49,4 @@ async function Coffees() {
   );
 }
 
-export default Coffees;
+export default CoffeesList;

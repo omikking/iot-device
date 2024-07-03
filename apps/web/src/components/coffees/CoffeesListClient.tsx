@@ -19,7 +19,7 @@ const GET_COFFEES_QUERY = gql`
   }
 `;
 
-function CoffeeClientComponent() {
+function CoffeesListClient() {
   const { loading, error, data } = useQuery(GET_COFFEES_QUERY);
 
   console.log('error: ', error);
@@ -29,7 +29,7 @@ function CoffeeClientComponent() {
 
   return (
     <div>
-      <h2 className="text-sm">Client GetCoffees</h2>
+      <h2 className="text-sm">Client GetCoffees / CoffeesListClient </h2>
       {data.coffees.map(({ id, name, brand }: any) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>
@@ -39,4 +39,4 @@ function CoffeeClientComponent() {
   );
 }
 
-export default CoffeeClientComponent;
+export default CoffeesListClient;

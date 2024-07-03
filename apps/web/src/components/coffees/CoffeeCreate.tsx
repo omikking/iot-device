@@ -37,7 +37,7 @@ interface CreateCoffeeInput {
   flavors: string[];
 }
 
-export default function CreateCoffeeForm() {
+export default function CoffeeCreate() {
   // const [createCoffee, { data, loading, error }] = useMutation<
   const [createCoffee] = useMutation<
     CreateCoffeeMutationResult,

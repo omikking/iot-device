@@ -1,5 +1,5 @@
 import { gql, ApolloError } from '@apollo/client';
-import { getClient } from '../libs/ApolloClient';
+import { getClient } from '../../libs/ApolloClient';
 
 //Should use the 'use client' hook to fetch data from GraphQL on a client component
 //This way we can fetch data and render it on the client side
@@ -17,7 +17,7 @@ const GET_COFFEE_BY_ID = gql`
   }
 `;
 
-async function SingleCoffee({ params }: { params: { id: string } }) {
+async function CoffeeItem({ params }: { params: { id: string } }) {
   // Not sure what the best approach is for error handling Apollo Client in RSCs.
   // We do not have access to the error object like in useQuery hook, no docs from Apollo.
   let data, error;
@@ -41,7 +41,7 @@ async function SingleCoffee({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      <h2 className="text-sm">RSC GetCoffeeWithID</h2>
+      <h2 className="text-sm">RSC GetCoffeeWithID / CoffeeItem</h2>
       {data && (
         <div>
           <p>
@@ -59,4 +59,4 @@ async function SingleCoffee({ params }: { params: { id: string } }) {
   );
 }
 
-export default SingleCoffee;
+export default CoffeeItem;

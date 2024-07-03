@@ -1,9 +1,10 @@
 import { ParseIntPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import * as GraphQLTypes from 'src/graphql-types';
+import { CreateCoffeeInput } from './dto/create-coffee.input';
+import { UpdateCoffeeInput } from './dto/update-coffee.input';
 import { CoffeesService } from './coffees.service';
+import * as GraphQLTypes from 'src/graphql-types';
 import type { Coffee } from './interface/coffee-data';
-// import { CreateCoffeeInput } from './dto/create-coffee.input';
 
 @Resolver()
 export class CoffeesResolver {
@@ -22,17 +23,14 @@ export class CoffeesResolver {
     return this.coffeeService.findOne(id);
   }
 
+  // We can use the DTO class instead of the GraphQL type directly because the DTO class extends the GraphQL type and has the same properties.
+  // This way, we can use the class to validate the input data.
+  // createCoffeeInput: GraphQLTypes.CreateCoffeeInput
   @Mutation('createCoffee')
   async create(
-    @Args('createCoffeeInput') /* 
-     We can use the DTO class instead of the GraphQL type directly because the DTO class extends the GraphQL type and has the same properties. 
-    This way, we can use the class to validate the input data.
-    createCoffeeInput: GraphQLTypes.CreateCoffeeInput
-    */
-    createCoffeeInput: GraphQLTypes.CreateCoffeeInput,
+    @Args('createCoffeeInput')
+    createCoffeeInput: CreateCoffeeInput,
   ): Promise<Coffee> {
-    // all we do here is get the values
-
     return this.coffeeService.create(createCoffeeInput);
   }
 
@@ -40,7 +38,7 @@ export class CoffeesResolver {
   async update(
     @Args('id', ParseIntPipe) id: number,
     @Args('updateCoffeeInput')
-    updateCoffeeInput: GraphQLTypes.UpdateCoffeeInput,
+    updateCoffeeInput: UpdateCoffeeInput,
   ): Promise<Coffee> {
     return this.coffeeService.update(id, updateCoffeeInput);
   }

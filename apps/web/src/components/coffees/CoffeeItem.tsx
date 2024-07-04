@@ -1,9 +1,6 @@
 import { gql, ApolloError } from '@apollo/client';
 import { getClient } from '../../libs/ApolloClient';
 
-//Should use the 'use client' hook to fetch data from GraphQL on a client component
-//This way we can fetch data and render it on the client side
-
 const GET_COFFEE_BY_ID = gql`
   query GetCoffeeWithID($id: ID!) {
     coffee(id: $id) {

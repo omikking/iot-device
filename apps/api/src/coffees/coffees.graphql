@@ -1,0 +1,65 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+# Custom scalar type for DateTime for the createdAt and updatedAt fields
+scalar DateTime
+
+"""
+Coffee model
+Define the Coffee model and its fields
+"""
+type Coffee {
+  id: ID!
+  name: String!
+  brand: String!
+  flavors: [Flavor!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Flavor {
+  id: ID!
+  name: String!
+}
+
+"""
+CreateCoffeeInput
+Define the input fields to create a new coffee
+"""
+input CreateCoffeeInput {
+  name: String!
+  brand: String!
+  flavors: [String!]!
+}
+
+"""
+UpdateCoffeeInput
+Define the input fields to update an existing coffee
+Optional are marked without the exclamation mark
+"""
+input UpdateCoffeeInput {
+  name: String
+  brand: String
+  flavors: [String!]
+}
+
+"""
+Query
+Define the queries that can be made to the Coffee model
+"""
+type Query {
+  coffees: [Coffee!]!
+  coffee(id: ID!): Coffee!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Coffee model
+"""
+type Mutation {
+  createCoffee(createCoffeeInput: CreateCoffeeInput!): Coffee!
+  updateCoffee(id: ID!, updateCoffeeInput: UpdateCoffeeInput!): Coffee!
+  removeCoffee(id: ID!): Coffee!
+}

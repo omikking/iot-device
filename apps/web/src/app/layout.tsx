@@ -3,6 +3,7 @@ import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '../components/Providers';
 import Header from '../components/Header';
+import { ApolloWrapper } from '../libs/ApolloWrapper';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
@@ -16,11 +17,13 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en">
-      <body>
-        <Providers>
-          <Header />
-          {children}
-        </Providers>
+      <body className="min-h-screen">
+        <ApolloWrapper>
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
+        </ApolloWrapper>
       </body>
     </html>
   );

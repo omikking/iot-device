@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.10.6",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@gsp/ui": "workspace:*",
     "@hookform/resolvers": "^3.4.2",
     "@svgr/webpack": "^8.1.0",
@@ -26,7 +28,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/client-preset": "4.3.2",
     "@gsp/eslint-config": "workspace:*",
     "@gsp/tailwind-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",

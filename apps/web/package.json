@@ -14,11 +14,11 @@
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
     "@gsp/ui": "workspace:*",
     "@hookform/resolvers": "^3.4.2",
+    "@svgr/webpack": "^8.1.0",
     "graphql": "^16.9.0",
     "jwt-decode": "^4.0.0",
-    "next": "^14.1.1",
-    "@svgr/webpack": "^8.1.0",
     "lucide-react": "^0.379.0",
+    "next": "^14.1.1",
     "next-auth": "^4.24.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -26,6 +26,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
     "@gsp/eslint-config": "workspace:*",
     "@gsp/tailwind-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",

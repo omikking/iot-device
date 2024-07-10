@@ -1,6 +1,10 @@
 {
   "extends": "@gsp/typescript-config/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "plugins": [{ "name": "next" }]
   },
   "include": ["next-env.d.ts", "next-auth.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -10,13 +10,9 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
-    "./styles.css": "./dist/index.css",
-    ".": "./dist/index.js",
-    "./": "./dist/"
+    "./styles.css": "./dist/styles.css",
+    ".": "./dist/index.js"
   },
-  "files": [
-    "dist/**"
-  ],
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "lint": "eslint src/",
@@ -25,6 +21,7 @@
     "newbuild2": "tsup",
     "newbuild3": "tsup ./src --dts --clean --external react react-dom",
     "newdev": "tsup --watch",
+    "newdev2": "tsup ./src --dts --clean --watch --external react react-dom",
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {

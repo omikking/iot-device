@@ -62,6 +62,7 @@ import {
 } from '@gsp/ui';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@gsp/ui';
+import { ModeToggle } from '../../components/ThemeToggle';
 
 export default function Page(): JSX.Element {
   return (
@@ -157,6 +158,7 @@ export default function Page(): JSX.Element {
       </aside>
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+          <ModeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
@@ -379,7 +381,7 @@ export default function Page(): JSX.Element {
                       <TableBody>
                         <TableRow className="bg-accent">
                           <TableCell>
-                            <div className="font-medium">Liam Johnson</div>
+                            <div className="font-medium">Liam Johnsoan</div>
                             <div className="hidden text-sm text-muted-foreground md:inline">
                               liam@example.com
                             </div>

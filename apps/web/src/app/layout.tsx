@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Providers from '../components/Providers';
 import Header from '../components/Header';
 import { ApolloWrapper } from '../libs/ApolloWrapper';
+import { ThemeProvider } from '../components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
@@ -18,12 +19,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <ApolloWrapper>
-          <Providers>
-            <Header />
-            {children}
-          </Providers>
-        </ApolloWrapper>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ApolloWrapper>
+            <Providers>
+              <Header />
+              {children}
+            </Providers>
+          </ApolloWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

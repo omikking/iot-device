@@ -2,10 +2,18 @@ import CoffeesListClient from '../components/coffees/CoffeesListClient';
 import CoffeesList from '../components/coffees/CoffeesList';
 import CoffeeItem from '../components/coffees/CoffeeItem';
 import CoffeeCreate from '../components/coffees/CoffeeCreate';
+import { Button } from '@gsp/ui';
 export default function Page(): JSX.Element {
   return (
     <main className="flex flex-col items-center justify-around min-h-screen p-24 ">
       <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
+
+      <Button>Click me</Button>
+      <Button variant={'destructive'}>Click me</Button>
+      <Button variant={'outline'}>Click me</Button>
+      <Button variant={'secondary'}>Click me</Button>
+      <Button variant={'ghost'}>Click me</Button>
+      <Button variant={'link'}>Click me</Button>
 
       <div className="flex flex-col gap-10">
         <CoffeeCreate />

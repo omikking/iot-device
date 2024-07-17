@@ -1,0 +1,68 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+"""
+Company model
+Define the Company model and its fields
+"""
+type Company {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  companyCode: Int!
+  country: String!
+  city: String!
+  address: String!
+
+  users: [User]
+}
+
+"""
+CreateCompanyInput
+Define the input fields to create a new company
+"""
+input CreateCompanyInput {
+  name: String!
+  CompanyCode: Int!
+  country: String!
+  city: String!
+  address: String!
+
+  users: [User]
+}
+
+"""
+UpdateCompanyInput
+Define the input fields to update an existing company
+Optional are marked without the exclamation mark
+"""
+input UpdateCompanyInput {
+  name: String
+  CompanyCode: Int
+  country: String
+  city: String
+  address: String
+
+  users: [User]
+}
+
+"""
+Query
+Define the queries that can be made to the Company model
+"""
+type Query {
+  companies: [Company!]!
+  company(id: ID!): Company!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Company model
+"""
+type Mutation {
+  createCompany(createCompanyInput: CreateCompanyInput!): Company!
+  updateCompany(id: ID!, updateCompanyInput: UpdateCompanyInput!): Company!
+  removeCompany(id: ID!): Company!
+}

@@ -10,6 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  companyCode Int    @unique
+  country     String
+  city        String
+  address     String
+
+  Users User[]
+
+  @@map("companies")
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -21,7 +37,8 @@ model User {
   firstName String?
   lastName  String?
 
-  Bolts Bolt[]
+  Companies Company[]
+  Bolts     Bolt[]
 
   @@map("users")
 }

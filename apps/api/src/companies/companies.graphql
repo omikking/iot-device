@@ -19,6 +19,17 @@ type Company {
   users: [User]
 }
 
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  firstName: String
+  lastName: String
+
+  companies: [Company]
+}
+
 """
 CreateCompanyInput
 Define the input fields to create a new company

@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CoffeesModule } from './coffees/coffees.module';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CoffeesModule } from './coffees/coffees.module';
       typePaths: ['./**/*.graphql'],
     }),
     CoffeesModule,
+    CompaniesModule,
   ],
 })
 export class AppModule {}

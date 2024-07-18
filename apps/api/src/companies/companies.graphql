@@ -36,12 +36,12 @@ Define the input fields to create a new company
 """
 input CreateCompanyInput {
   name: String!
-  CompanyCode: Int!
+  companyCode: Int!
   country: String!
   city: String!
   address: String!
 
-  users: [User]
+  users: [String!]
 }
 
 """
@@ -51,12 +51,12 @@ Optional are marked without the exclamation mark
 """
 input UpdateCompanyInput {
   name: String
-  CompanyCode: Int
+  companyCode: Int
   country: String
   city: String
   address: String
 
-  users: [User]
+  users: [String!]
 }
 
 """

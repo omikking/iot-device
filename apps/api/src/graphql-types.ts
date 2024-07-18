@@ -22,20 +22,20 @@ export class UpdateCoffeeInput {
 
 export class CreateCompanyInput {
     name: string;
-    CompanyCode: number;
+    companyCode: number;
     country: string;
     city: string;
     address: string;
-    users?: Nullable<Nullable<User>[]>;
+    users?: Nullable<string[]>;
 }
 
 export class UpdateCompanyInput {
     name?: Nullable<string>;
-    CompanyCode?: Nullable<number>;
+    companyCode?: Nullable<number>;
     country?: Nullable<string>;
     city?: Nullable<string>;
     address?: Nullable<string>;
-    users?: Nullable<Nullable<User>[]>;
+    users?: Nullable<string[]>;
 }
 
 export class Coffee {

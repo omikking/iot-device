@@ -26,7 +26,7 @@ export class CreateCompanyInput {
     country: string;
     city: string;
     address: string;
-    users?: Nullable<string[]>;
+    users?: Nullable<number[]>;
 }
 
 export class UpdateCompanyInput {
@@ -35,7 +35,7 @@ export class UpdateCompanyInput {
     country?: Nullable<string>;
     city?: Nullable<string>;
     address?: Nullable<string>;
-    users?: Nullable<string[]>;
+    users?: Nullable<number[]>;
 }
 
 export class Coffee {

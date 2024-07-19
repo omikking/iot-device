@@ -41,7 +41,7 @@ input CreateCompanyInput {
   city: String!
   address: String!
 
-  users: [String!]
+  users: [Int!]
 }
 
 """
@@ -56,7 +56,7 @@ input UpdateCompanyInput {
   city: String
   address: String
 
-  users: [String!]
+  users: [Int!]
 }
 
 """

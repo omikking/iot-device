@@ -1,7 +1,9 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import * as GraphQLTypes from 'src/graphql-types';
-import { CompaniesService } from './companies.service';
 import { ParseIntPipe } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CompaniesService } from './companies.service';
+import * as GraphQLTypes from 'src/graphql-types';
+import { CreateCompanyInput } from './dto/create-company.input';
+import { UpdateCompanyInput } from './dto/update-company.input';
 
 @Resolver()
 export class CompaniesResolver {
@@ -22,7 +24,7 @@ export class CompaniesResolver {
   @Mutation('createCompany')
   async create(
     @Args('createCompanyInput')
-    createCompanyInput: GraphQLTypes.CreateCompanyInput,
+    createCompanyInput: CreateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.create(createCompanyInput);
   }
@@ -31,7 +33,7 @@ export class CompaniesResolver {
   async update(
     @Args('id', ParseIntPipe) id: number,
     @Args('updateCompanyInput')
-    updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
+    updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.update(id, updateCompanyInput);
   }

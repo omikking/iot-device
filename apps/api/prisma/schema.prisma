@@ -21,7 +21,7 @@ model Company {
   city        String
   address     String
 
-  Users User[]
+  users User[]
 
   @@map("companies")
 }
@@ -37,8 +37,8 @@ model User {
   firstName String?
   lastName  String?
 
-  Companies Company[]
-  Bolts     Bolt[]
+  companies Company[]
+  bolts     Bolt[]
 
   @@map("users")
 }

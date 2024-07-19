@@ -30,6 +30,11 @@ export class CompaniesService {
         country: createCompanyInput.country,
         city: createCompanyInput.city,
         address: createCompanyInput.address,
+        users: {
+          connect: createCompanyInput.users?.map((userId) => ({
+            id: userId,
+          })),
+        },
       },
     });
   }
@@ -46,6 +51,11 @@ export class CompaniesService {
         country: updateCompanyInput?.country || undefined,
         city: updateCompanyInput?.city || undefined,
         address: updateCompanyInput?.address || undefined,
+        users: {
+          connect: updateCompanyInput.users?.map((userId) => ({
+            id: userId,
+          })),
+        },
       },
     });
     if (!company) {

@@ -10,7 +10,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col gap-10">
         <CoffeeCreate />
         <CoffeesList />
-        <CoffeeItem params={{ id: '2' }} />
+        <CoffeeItem params={{ id: '1' }} />
         <CoffeesListClient />
       </div>
 

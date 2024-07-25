@@ -1,5 +1,4 @@
 import { Button, Label } from '@gsp/ui';
-import React from 'react';
 
 const mockCompanyList = [
   {

@@ -20,7 +20,7 @@ async function CoffeesList() {
     query: GET_COFFEES_QUERY,
   });
 
-  console.log('RSC Coffee: ', data);
+  // console.log('RSC Coffee: ', data);
   return (
     <div>
       <h2 className="text-sm">RSC GetCoffees / CoffeesList</h2>

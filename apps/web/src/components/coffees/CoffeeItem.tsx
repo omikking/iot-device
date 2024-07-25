@@ -24,7 +24,7 @@ async function CoffeeItem({ params }: { params: { id: string } }) {
       variables: { id: params?.id },
     });
     data = response.data;
-    console.log('Data from single coffee', data);
+    // console.log('Data from single coffee', data);
   } catch (e) {
     error = e;
     if (e instanceof ApolloError) {

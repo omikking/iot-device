@@ -3,7 +3,7 @@ import React from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Button } from '@gsp/ui';
 import { User } from 'lucide-react';
-import Sandviklogo from '../../public/sandviklogo.svg';
+import Sandviklogo from 'public/sandviklogo.svg';
 
 export const Header = () => {
   const { data: session, status } = useSession();

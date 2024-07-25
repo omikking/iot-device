@@ -22,8 +22,8 @@ const GET_COFFEES_QUERY = gql`
 function CoffeesListClient() {
   const { loading, error, data } = useQuery(GET_COFFEES_QUERY);
 
-  console.log('error: ', error);
-  console.log('DATA: ', data);
+  // console.log('error: ', error);
+  // console.log('DATA: ', data);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
 

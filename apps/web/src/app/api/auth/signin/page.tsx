@@ -12,6 +12,7 @@ import {
   FormMessage,
   Headline,
   Input,
+  Link,
   Text,
 } from '@gsp/ui';
 import { z } from 'zod';
@@ -113,9 +114,9 @@ export default function SignIn() {
               <Text as="span" variant={'xs'}>
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
-              <a className="underline" href="https://www.google.se">
+              <Link variant={'xs'} isUnderline href="https://www.google.se">
                 Click here to reset.
-              </a>
+              </Link>
             </div>
             <Button className="bg-white" type="submit" size={'lg'}>
               Login

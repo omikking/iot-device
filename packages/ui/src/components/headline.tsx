@@ -21,14 +21,6 @@ const headlineVariants = cva('ui-font-sandvik-headline', {
       muted: 'ui-text-muted-foreground', // @TODO update to correct color
       destructive: 'ui-text-destructive', // @TODO update to correct color
     },
-    as: {
-      h1: 'h1',
-      h2: 'h2',
-      h3: 'h3',
-      h4: 'h4',
-      h5: 'h5',
-      h6: 'h6',
-    },
   },
   defaultVariants: {
     variant: 'medium',

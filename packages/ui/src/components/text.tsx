@@ -21,10 +21,6 @@ const textVariants = cva('ui-font-sandvik-text', {
       muted: 'ui-text-muted-foreground', // @TODO update to correct color
       destructive: 'ui-text-destructive', // @TODO update to correct color
     },
-    as: {
-      p: 'p',
-      span: 'span',
-    },
   },
   defaultVariants: {
     variant: 'medium',

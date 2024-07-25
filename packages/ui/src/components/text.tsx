@@ -29,24 +29,25 @@ const textVariants = cva('ui-font-sandvik-text', {
 });
 
 export interface TextProps
-  extends React.HTMLAttributes<HTMLHeadingElement>,
+  extends React.HTMLAttributes<HTMLParagraphElement | HTMLSpanElement>,
     VariantProps<typeof textVariants> {
   as: 'p' | 'span';
 }
 
-const Text = React.forwardRef<HTMLHeadingElement, TextProps>(
-  ({ className, variant, textColor, children, as }, ref) => {
-    const TextElement = as;
-    return (
-      <TextElement
-        className={cn(textVariants({ variant, textColor }), className)}
-        ref={ref}
-      >
-        {children}
-      </TextElement>
-    );
-  },
-);
+const Text = React.forwardRef<
+  HTMLParagraphElement | HTMLSpanElement,
+  TextProps
+>(({ className, variant, textColor, children, as }, ref) => {
+  const TextElement = as;
+  return (
+    <TextElement
+      className={cn(textVariants({ variant, textColor }), className)}
+      ref={ref as React.RefObject<HTMLParagraphElement>}
+    >
+      {children}
+    </TextElement>
+  );
+});
 Text.displayName = 'Text';
 
 export { Text, textVariants };

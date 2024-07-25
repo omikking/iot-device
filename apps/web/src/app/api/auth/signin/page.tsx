@@ -12,7 +12,7 @@ import {
   FormMessage,
   Headline,
   Input,
-  Label,
+  Text,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -110,12 +110,12 @@ export default function SignIn() {
               }}
             />
             <div className="pb-8 pt-2">
-              <Label>
+              <Text as="span" variant={'xs'}>
                 Forgot your password? {/* Will lead to a reset page later */}
-                <a className="underline" href="https://www.google.se">
-                  Click here to reset.
-                </a>
-              </Label>
+              </Text>
+              <a className="underline" href="https://www.google.se">
+                Click here to reset.
+              </a>
             </div>
             <Button className="bg-white" type="submit" size={'lg'}>
               Login

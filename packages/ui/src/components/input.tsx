@@ -1,18 +1,28 @@
 import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
+import { useFormField } from './form';
 
-export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+const inputStyling = cva(
+  'ui-flex ui-h-12 ui-w-full ui-border-neutral-3 ui-rounded ui-border ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-color-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus-visible:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-color-neutral-6 disabled:ui-border-none disabled:ui-pointer-events-none',
+);
+
+const errorStyling = cva(
+  'ui-border-error hover:ui-border-error focus-visible:ui-border-error',
+);
+
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement>,
+    VariantProps<typeof inputStyling> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
+    const { error } = useFormField();
     return (
       <input
         type={type}
-        className={cn(
-          'ui-flex ui-h-10 ui-w-full ui-rounded-md ui-border ui-border-input ui-bg-background ui-px-3 ui-py-2 ui-text-sm ui-ring-offset-background file:ui-border-0 file:ui-bg-transparent file:ui-text-sm file:ui-font-medium placeholder:ui-text-muted-foreground focus-visible:ui-outline-none focus-visible:ui-ring-2 focus-visible:ui-ring-ring focus-visible:ui-ring-offset-2 disabled:ui-cursor-not-allowed disabled:ui-opacity-50',
-          className,
-        )}
+        className={cn(inputStyling(), error && errorStyling(), className)}
         ref={ref}
         {...props}
       />

@@ -13,7 +13,6 @@ const textVariants = cva('ui-font-sandvik-text', {
       medium: 'ui-text-md',
       small: 'ui-text-sm ui-tracking-wide',
       xs: 'ui-text-xs ui-tracking-wide',
-      xsUpper: 'ui-text-xs ui-uppercase ui-tracking-wide',
     },
     color: {
       foreground: 'ui-text-foreground', // @TODO update to correct color

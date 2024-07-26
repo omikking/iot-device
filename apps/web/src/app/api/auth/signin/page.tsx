@@ -122,15 +122,15 @@ export default function SignIn() {
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
 
-              <Link
-                isUnderline
-                href="https://www.google.se"
-                color={'foreground'}
-              >
-                <Text variant={'xs'} color={'foreground'}>
+              <Text variant={'xs'} color={'foreground'}>
+                <Link
+                  isUnderline
+                  href="https://www.google.se"
+                  color={'foreground'}
+                >
                   Click here to reset.
-                </Text>
-              </Link>
+                </Link>
+              </Text>
             </div>
             <Button variant="primary" size={'large'} isWide type="submit">
               <LucideLogIn size={'20'} />

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 
 // -- Usage examples --
-// <Text as="p" variant="medium" textColor="foreground">{text}<Text>
+// <Text variant="medium" textColor="foreground">{text}<Text>
 // <Text as="span" variant="small" textColor="destructive">{text}<Text>
 
 const textVariants = cva('ui-font-sandvik-text', {
@@ -30,13 +30,13 @@ export interface TextProps
       'color'
     >,
     Required<Pick<VariantProps<typeof textVariants>, 'variant' | 'color'>> {
-  as: 'p' | 'span';
+  as?: 'p' | 'span';
 }
 
 const Text = React.forwardRef<
   HTMLParagraphElement | HTMLSpanElement,
   TextProps
->(({ className, variant, color, children, as }, ref) => {
+>(({ className, variant, color, children, as = 'p' }, ref) => {
   const TextElement = as;
   return (
     <TextElement

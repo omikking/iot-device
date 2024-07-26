@@ -12,7 +12,7 @@ import {
   FormMessage,
   Headline,
   Input,
-  Label,
+  Text,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -59,11 +59,13 @@ export default function SignIn() {
     }
   };
   const { data: session, status } = useSession();
+
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
+
   return (
     <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
-      <Headline as="h1" variant={'xl'}>
+      <Headline as="h1" variant={'xl'} color={'foreground'}>
         Welcome to Ground Support Web! 🦄
       </Headline>
 
@@ -109,13 +111,13 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="pb-8 pt-2">
-              <Label>
+            <div className="flex items-center gap-2 pb-8 pt-2">
+              <Text variant={'xs'} color={'foreground'}>
                 Forgot your password? {/* Will lead to a reset page later */}
-                <a className="underline" href="https://www.google.se">
-                  Click here to reset.
-                </a>
-              </Label>
+              </Text>
+              <a className="underline" href="https://www.google.se">
+                Click here to reset.
+              </a>
             </div>
             <Button className="bg-white" type="submit" size={'lg'}>
               Login

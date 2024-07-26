@@ -6,3 +6,4 @@ export * from './form';
 export * from './label';
 export * from './input';
 export * from './headline';
+export * from './text';

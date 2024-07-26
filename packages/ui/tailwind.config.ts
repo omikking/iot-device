@@ -17,6 +17,15 @@ const config: Pick<
       },
     },
     extend: {
+      fontSize: {
+        xs: '0.75rem' /* 12px */,
+        sm: '0.875rem' /* 14px */,
+        md: '1rem' /* 16px */,
+        xl: '1.25rem' /* 20px */,
+        '2xl': '1.5rem' /* 24px */,
+        '3xl': '2rem' /* 32px */,
+        '4xl': '3.375rem' /* 54px */,
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -51,6 +60,12 @@ const config: Pick<
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+      },
+      height: {
+        '46': '2.875rem' /* 46px */,
+      },
+      spacing: {
+        '46': '2.875rem' /* 46px */,
       },
       borderRadius: {
         lg: 'var(--radius)',

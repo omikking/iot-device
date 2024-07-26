@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { LucideLogIn } from 'lucide-react';
 
 export default function SignIn() {
   const [error, setError] = useState('');
@@ -113,7 +114,9 @@ export default function SignIn() {
                 </a>
               </Label>
             </div>
-            <Button className="bg-white" type="submit" size={'lg'}>
+
+            <Button variant="primary" isWide type="submit">
+              <LucideLogIn size={'20'} />
               Login
             </Button>
           </form>

@@ -4,33 +4,50 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
+// -- Usage examples --
+// <Button type="submit">
+//   Text
+// </Button>
+
+// <Button variant="secondary" size={'small'} type="submit">
+//   <LucideChevronDown size={'16'} />
+//   Small button with small chevron 16px always
+// </Button>
+
+// <Button variant="destructive" type="submit">
+//   <LucideChevronDown size={'20'} />
+//   Large button with large chevron 20px always
+// </Button>
+
 const buttonVariants = cva(
-  'ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-text-sm ui-font-medium ui-ring-offset-background ui-transition-colors focus-visible:ui-outline-none focus-visible:ui-ring-2 focus-visible:ui-ring-ring focus-visible:ui-ring-offset-2 disabled:ui-pointer-events-none disabled:ui-opacity-50',
+  'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200',
   {
     variants: {
       variant: {
-        default:
-          'ui-bg-blue-primary ui-text-primary-foreground hover:ui-bg-blue-2 focus:ui-bg-blue-1',
-        destructive:
-          'ui-bg-destructive ui-text-destructive-foreground hover:ui-bg-destructive/90',
-        outline:
-          'ui-border ui-border-input ui-bg-background hover:ui-bg-accent hover:ui-text-accent-foreground',
+        primary:
+          'ui-bg-blue-primary ui-text-main-white hover:ui-bg-blue-1 focus:ui-bg-blue-1',
         secondary:
-          'ui-bg-neutral-2 ui-text-secondary-foreground hover:ui-bg-neutral-3 focus:ui-bg-neutral-4',
-        ghost: 'hover:ui-bg-accent hover:ui-text-accent-foreground',
-        link: 'ui-text-primary ui-underline-offset-4 hover:ui-underline',
-        disabled: 'ui-bg-neutral-3 ui-text-neutral-4 ui-cursor-not-allowed',
+          'ui-bg-gold-primary ui-text-main-white hover:ui-bg-gold-1 focus:ui-bg-gold-1',
+        outline:
+          'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-1 focus:ui-bg-blue-1',
+        disabled:
+          'ui-bg-neutral-2 ui-text-neutral-5 ui-cursor-not-allowed ui-pointer-events-none',
+        destructive:
+          'ui-bg-background ui-text-destructive ui-border ui-border-destructive hover:ui-bg-destructive hover:ui-text-background',
       },
       size: {
-        default: 'ui-h-10 ui-w-20 ui-px-6 ui-py-3',
-        sm: 'ui-h-9 ui-rounded-md ui-px-3',
-        lg: 'ui-h-11 ui-rounded-md ui-px-8',
-        icon: 'ui-h-10 ui-w-10',
+        small: 'ui-h-9 ui-px-5 ui-text-xs ui-tracking-wide ui-gap-2',
+        large: 'ui-h-[2.875rem] ui-px-7 ui-text-md ui-gap-3',
+      },
+      isWide: {
+        true: 'ui-size-auto',
+        false: 'ui-size-fit',
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'primary',
+      size: 'large',
+      isWide: false,
     },
   },
 );
@@ -42,14 +59,15 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button';
+  ({ className, variant, size, isWide, asChild = false, children }, ref) => {
+    const Component = asChild ? Slot : 'button';
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size }), className)}
+      <Component
+        className={cn(buttonVariants({ variant, size, isWide }), className)}
         ref={ref}
-        {...props}
-      />
+      >
+        {children}
+      </Component>
     );
   },
 );

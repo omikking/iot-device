@@ -111,8 +111,8 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="pb-8 pt-2">
-              <Text as="span" variant={'xs'} color={'foreground'}>
+            <div className="flex items-center gap-2 pb-8 pt-2">
+              <Text variant={'xs'} color={'foreground'}>
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
               <a className="underline" href="https://www.google.se">

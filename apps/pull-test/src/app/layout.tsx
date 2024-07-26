@@ -2,7 +2,7 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '@/components/Providers';
-import Header from '@/components/Header';
+import NavBar from '@/components/NavBar';
 
 export const metadata: Metadata = {
   title: 'Pull Test Web',
@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Header />
+          <NavBar />
           {children}
         </Providers>
       </body>

@@ -5,7 +5,7 @@ import { Button } from '@gsp/ui';
 import { User } from 'lucide-react';
 import Sandviklogo from 'public/sandviklogo.svg';
 
-export const Header = () => {
+export const NavBar = () => {
   const { data: session, status } = useSession();
 
   return (
@@ -21,18 +21,14 @@ export const Header = () => {
             <div className="flex items-center gap-4">
               {/* link will lead to your profile */}
 
-              <Button
-                className="flex flex-row justify-end items-end"
-                size={'large'}
-                variant={'secondary'}
-              >
+              <Button size={'large'} variant={'secondary'}>
                 <User className="mr-2 h-4 w-4" />
                 {session.userData.email}
               </Button>
 
               <Button
-                size={'small'}
                 variant={'secondary'}
+                size={'large'}
                 onClick={() => signOut()}
               >
                 Sign out
@@ -40,8 +36,8 @@ export const Header = () => {
             </div>
           ) : (
             <Button
-              size={'small'}
               variant={'secondary'}
+              size={'large'}
               onClick={() => signIn()}
             >
               Sign in
@@ -53,4 +49,4 @@ export const Header = () => {
   );
 };
 
-export default Header;
+export default NavBar;

@@ -2,7 +2,7 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '@/components/Providers';
-import Header from '@/components/Header';
+import NavBar from '@/components/NavBar';
 import { ApolloWrapper } from '@/libs/ApolloWrapper';
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <ApolloWrapper>
           <Providers>
-            <Header />
+            <NavBar />
             {children}
           </Providers>
         </ApolloWrapper>

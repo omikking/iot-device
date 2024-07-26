@@ -9,15 +9,15 @@ import { cn } from '../lib/utils';
 // Wrap Link inside the text or headline item
 
 // -- Usage examples --
-// <Headline variant={'medium'} color={'foreground'} as="h2">
-//   <Link href="#" color={'foreground'}>
+// <Headline variant="medium" color="foreground" as="h2">
+//   <Link href="#" color="foreground">
 //     <LucideMoveRight />
 //     Link with icon and no underline
 //   </Link>
 // </Headline>
 
-// <Text variant={'xs'} color={'foreground'}>
-//   <Link isUnderline href="#" color={'foreground'}>
+// <Text variant="xs" color="foreground">
+//   <Link isUnderline href="#" color="foreground">
 //     Link and black underline
 //   </Link>
 // </Text>

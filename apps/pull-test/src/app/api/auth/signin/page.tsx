@@ -64,13 +64,13 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
   return (
     <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
-      <Headline as="h1" variant={'xl'} color={'foreground'}>
+      <Headline as="h1" variant="xl" color="foreground">
         Welcome to Pull Test App! 🦄
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
         {error && (
-          <Text variant={'xs'} color={'destructive'}>
+          <Text variant="xs" color="destructive">
             {error}
           </Text>
         )}
@@ -115,21 +115,21 @@ export default function SignIn() {
               }}
             />
             <div className="flex items-center gap-2 pb-5 pt-1">
-              <Text variant={'xs'} color={'foreground'}>
+              <Text variant="xs" color="foreground">
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
 
-              <Text variant={'xs'} color={'foreground'}>
+              <Text variant="xs" color="foreground">
                 <Link
                   isUnderline
                   href="https://www.google.se"
-                  color={'foreground'}
+                  color="foreground"
                 >
                   Click here to reset.
                 </Link>
               </Text>
             </div>
-            <Button size={'large'} variant={'primary'} type="submit">
+            <Button size="large" variant="primary" type="submit">
               Login
             </Button>
           </form>

@@ -66,9 +66,10 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
 
   return (
-    <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-28 gap-16 bg-neutral-1">
+      {/* Is it ground support platform or login for any app? */}
       <Headline as="h1" variant="xl" color="foreground">
-        Welcome to Ground Support Web! 🦄
+        Ground Support Platform 🦄
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
@@ -81,7 +82,7 @@ export default function SignIn() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-            className="w-full flex flex-col gap-4"
+            className="w-full flex flex-col gap-6"
           >
             <FormField
               control={form.control}
@@ -117,7 +118,7 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="flex items-center gap-2 pb-5 pt-1">
+            <div className="flex items-center gap-2 pb-2">
               <Text variant="xs" color="foreground">
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>

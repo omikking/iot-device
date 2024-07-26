@@ -3,6 +3,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
+//@TODO solve handling of texts and headlines inside link
+//@TODO solve using Link from Next instead of <a> tag
+
 // Wrap Link around the components
 
 // -- Usage examples --

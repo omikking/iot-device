@@ -118,26 +118,26 @@ export default function Page(): JSX.Element {
         Links 🦄
       </Headline>
       <div className="flex flex-col items-center gap-12">
-        <Link isUnderline href="https://www.google.se" color={'foreground'}>
+        <Link isUnderline href="#" color={'foreground'}>
           <Text variant={'xs'} color={'foreground'}>
             Link with text and black underline
           </Text>
         </Link>
 
-        <Link isUnderline href="https://www.google.se" color={'destructive'}>
+        <Link isUnderline href="#" color={'destructive'}>
           <Text variant={'medium'} color={'destructive'}>
             Link with text and destructive underline
           </Text>
         </Link>
 
-        <Link href="https://www.google.se" color={'foreground'}>
+        <Link href="#" color={'foreground'}>
           <LucideMoveRight />
           <Headline variant={'medium'} color={'foreground'} as="h2">
             Link with text and no underline
           </Headline>
         </Link>
 
-        <Link href="https://www.google.se" color={'foreground'}>
+        <Link href="#" color={'foreground'}>
           <LucideMoveLeft size={'20'} />
           <Text variant={'medium'} color={'foreground'}>
             Go back

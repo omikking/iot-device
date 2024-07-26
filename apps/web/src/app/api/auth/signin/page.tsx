@@ -72,7 +72,11 @@ export default function SignIn() {
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
-        {error && <p>{error}</p>}
+        {error && (
+          <Text variant={'xs'} color={'destructive'}>
+            {error}
+          </Text>
+        )}
 
         <Form {...form}>
           <form

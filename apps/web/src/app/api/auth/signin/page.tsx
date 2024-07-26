@@ -72,7 +72,7 @@ export default function SignIn() {
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
-        {error && (
+        {error && ( //@TODO fix better displaying of this error later
           <Text variant={'xs'} color={'destructive'}>
             {error}
           </Text>

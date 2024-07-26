@@ -77,19 +77,19 @@ export default function Page(): JSX.Element {
       </Headline>
       <div className="flex flex-col items-center gap-12">
         <Headline as="h1" variant={'xl'} color="foreground">
-          XL Heading
+          XL Headline
         </Headline>
 
         <Headline as="h2" variant={'large'} color="destructive">
-          Large Heading destructive color
+          Large Headline destructive color
         </Headline>
 
         <Headline as="h3" variant={'medium'} color="muted">
-          Medium Heading muted color
+          Medium Headline muted color
         </Headline>
 
         <Headline as="h4" variant={'smallBold'} color="foreground">
-          Small bold Heading
+          Small bold Headline
         </Headline>
       </div>
 

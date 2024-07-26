@@ -12,8 +12,10 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
+import { Text } from './text';
 import { cn } from '../lib/utils';
 import { Label } from './label';
+import { LucideCircleAlert } from 'lucide-react';
 
 const Form = FormProvider;
 
@@ -95,7 +97,11 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && 'ui-text-destructive', className)}
+      className={cn(
+        error &&
+          'ui-font-sandvik-text ui-text-xs ui-text-main-black ui-tracking-wide',
+        className,
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -146,7 +152,7 @@ FormDescription.displayName = 'FormDescription';
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+>(({ children }, ref) => {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message) : children;
 
@@ -155,14 +161,12 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <p
-      ref={ref}
-      id={formMessageId}
-      className={cn('ui-text-sm ui-font-medium ui-text-destructive', className)}
-      {...props}
-    >
-      {body}
-    </p>
+    <div className="flex ui-items-center gap-2">
+      <LucideCircleAlert size="12" className="ui-stroke-error" />
+      <Text variant="xs" color="destructive" id={formMessageId} ref={ref}>
+        {body}
+      </Text>
+    </div>
   );
 });
 FormMessage.displayName = 'FormMessage';

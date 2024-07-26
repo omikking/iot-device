@@ -10,6 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Headline,
   Input,
   Label,
 } from '@gsp/ui';
@@ -62,7 +63,10 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
   return (
     <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
-      <h1 className="text-md">Welcome to Ground Support Web! 🦄</h1>
+      <Headline as="h1" variant={'xl'}>
+        Welcome to Ground Support Web! 🦄
+      </Headline>
+
       <div className="min-w-96 h-96 flex flex-col items-center">
         {error && <p>{error}</p>}
 

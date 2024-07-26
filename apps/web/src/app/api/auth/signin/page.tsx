@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { LucideLogIn } from 'lucide-react';
 
 export default function SignIn() {
   const [error, setError] = useState('');
@@ -112,7 +113,7 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="flex items-center gap-2 pb-8 pt-2">
+            <div className="flex items-center gap-2 pb-5 pt-1">
               <Text variant={'xs'} color={'foreground'}>
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
@@ -127,7 +128,8 @@ export default function SignIn() {
                 </Text>
               </Link>
             </div>
-            <Button className="bg-white" type="submit" size={'lg'}>
+            <Button variant="primary" size={'large'} isWide type="submit">
+              <LucideLogIn size={'20'} />
               Login
             </Button>
           </form>

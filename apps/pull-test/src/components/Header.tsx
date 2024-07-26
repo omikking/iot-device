@@ -21,21 +21,25 @@ export const Header = () => {
             <div className="flex items-center gap-4">
               {/* link will lead to your profile */}
 
-              <Button
-                className="flex flex-row justify-end items-end"
-                size={'lg'}
-                variant={'secondary'}
-              >
+              <Button size={'large'} variant={'secondary'}>
                 <User className="mr-2 h-4 w-4" />
                 {session.userData.email}
               </Button>
 
-              <Button variant={'secondary'} onClick={() => signOut()}>
+              <Button
+                variant={'secondary'}
+                size={'large'}
+                onClick={() => signOut()}
+              >
                 Sign out
               </Button>
             </div>
           ) : (
-            <Button variant={'secondary'} onClick={() => signIn()}>
+            <Button
+              variant={'secondary'}
+              size={'large'}
+              onClick={() => signIn()}
+            >
               Sign in
             </Button>
           )}

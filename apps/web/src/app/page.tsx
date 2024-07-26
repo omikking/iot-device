@@ -6,7 +6,7 @@ export default function Page(): JSX.Element {
       <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
       <div className="py-5">
         <p>Routes</p>
-        <Button>
+        <Button size={'large'} variant={'primary'}>
           <Link href="/coffees">Coffees</Link>
         </Button>
       </div>

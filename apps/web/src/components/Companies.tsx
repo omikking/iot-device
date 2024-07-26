@@ -29,8 +29,10 @@ export const Companies = () => {
               <Label>{company.name}</Label>
             </div>
             <div className="flex gap-sm ">
-              <Button size={'lg'}>Administrate</Button>
-              <Button size={'lg'} variant={'secondary'}>
+              <Button size={'large'} variant={'primary'}>
+                Administrate
+              </Button>
+              <Button size={'large'} variant={'secondary'}>
                 View Apps
               </Button>
             </div>

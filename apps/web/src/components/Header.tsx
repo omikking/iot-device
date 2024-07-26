@@ -23,19 +23,27 @@ export const Header = () => {
 
               <Button
                 className="flex flex-row justify-end items-end"
-                size={'lg'}
+                size={'large'}
                 variant={'secondary'}
               >
                 <User className="mr-2 h-4 w-4" />
                 {session.userData.email}
               </Button>
 
-              <Button variant={'secondary'} onClick={() => signOut()}>
+              <Button
+                size={'small'}
+                variant={'secondary'}
+                onClick={() => signOut()}
+              >
                 Sign out
               </Button>
             </div>
           ) : (
-            <Button variant={'secondary'} onClick={() => signIn()}>
+            <Button
+              size={'small'}
+              variant={'secondary'}
+              onClick={() => signIn()}
+            >
               Sign in
             </Button>
           )}

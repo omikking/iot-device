@@ -11,7 +11,9 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  Label,
+  Text,
+  Link,
+  Headline,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -62,7 +64,10 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
   return (
     <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
-      <h1 className="text-md">Welcome to Pull Test App! 🔩</h1>
+      <Headline as="h1" variant={'xl'} color={'foreground'}>
+        Welcome to Pull Test App! 🦄
+      </Headline>
+
       <div className="min-w-96 h-96 flex flex-col items-center">
         {error && <p>{error}</p>}
 
@@ -105,15 +110,22 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="pb-8 pt-2">
-              <Label>
+            <div className="flex items-center gap-2 pb-5 pt-1">
+              <Text variant={'xs'} color={'foreground'}>
                 Forgot your password? {/* Will lead to a reset page later */}
-                <a className="underline" href="https://www.google.se">
+              </Text>
+
+              <Link
+                isUnderline
+                href="https://www.google.se"
+                color={'foreground'}
+              >
+                <Text variant={'xs'} color={'foreground'}>
                   Click here to reset.
-                </a>
-              </Label>
+                </Text>
+              </Link>
             </div>
-            <Button className="bg-white" type="submit" size={'lg'}>
+            <Button size={'large'} variant={'primary'} type="submit">
               Login
             </Button>
           </form>

@@ -110,12 +110,14 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="pb-8 pt-2">
+            <div className="pb-5">
               <Text as="span" variant={'xs'}>
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
-              <Link variant={'xs'} isUnderline href="https://www.google.se">
-                Click here to reset.
+              <Link href="https://www.google.se" isUnderline>
+                <Text variant={'xs'} as="span">
+                  Click here to reset.
+                </Text>
               </Link>
             </div>
             <Button className="bg-white" type="submit" size={'lg'}>

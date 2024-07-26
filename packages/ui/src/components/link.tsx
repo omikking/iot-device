@@ -20,7 +20,7 @@ import { cn } from '../lib/utils';
 // <Link>
 
 const linkVariants = cva(
-  'ui-font-sandvik-text ui-transition ease-in-out ui-duration-200',
+  'ui-font-sandvik-text ui-transition ease-in-out ui-duration-200 ui-flex gap-4 ui-items-center',
   {
     variants: {
       color: {

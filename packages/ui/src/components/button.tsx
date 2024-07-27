@@ -40,7 +40,7 @@ const buttonVariants = cva(
         disabled:
           'ui-bg-neutral-2 ui-text-neutral-5 ui-cursor-not-allowed ui-pointer-events-none',
         destructive:
-          'ui-bg-main-black ui-text-error ui-border ui-border-error hover:ui-bg-error hover:ui-text-main-white',
+          'ui-bg-main-white ui-text-error ui-border ui-border-error hover:ui-bg-error hover:ui-text-main-white',
       },
       size: {
         small: 'ui-h-9 ui-px-5 ui-text-xs ui-tracking-wide ui-gap-2',

@@ -28,16 +28,21 @@ export interface ContentHolderProps
 const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
   ({ className, variant, headlineText, children }) => {
     return (
-      <>
+      <div>
         {!!headlineText && (
-          <Headline variant="medium" color="foreground" as="h2">
+          <Headline
+            variant="medium"
+            color="foreground"
+            as="h2"
+            className="ui-ml-8"
+          >
             {headlineText}
           </Headline>
         )}
         <div className={cn(contentHolderVariants({ variant }), className)}>
           {children}
         </div>
-      </>
+      </div>
     );
   },
 );

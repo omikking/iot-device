@@ -1,4 +1,5 @@
-import { Text, Headline, Button, NavigationCard } from '@gsp/ui';
+import { CompanyList } from '@/components/CompanyList';
+import { Headline, Button, NavigationCard, ContentHolder } from '@gsp/ui';
 import {
   LucideBuilding2,
   LucideMoveRight,
@@ -45,12 +46,9 @@ export default function Page(): JSX.Element {
 
       <hr className="w-full ui-color-gold-3" />
 
-      {/* CompanyList */}
-      <div className="py-5">
-        <Text variant="medium" color="foreground">
-          CompanyList
-        </Text>
-      </div>
+      <ContentHolder variant="table" headlineText="Companies to administrate">
+        <CompanyList />
+      </ContentHolder>
     </main>
   );
 }

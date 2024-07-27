@@ -5,6 +5,9 @@ import * as LabelPrimitive from '@radix-ui/react-label';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 
+// This Label component should only be used for Inputfields, Dropdowns, TextArea, Radio and Checkbox.
+// Should not be used in places that should have a paragraph, link or span.
+
 const labelVariants = cva(
   'ui-text-sm ui-font-medium ui-leading-none peer-disabled:ui-cursor-not-allowed peer-disabled:ui-opacity-70',
 );

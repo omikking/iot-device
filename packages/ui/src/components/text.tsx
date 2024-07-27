@@ -15,10 +15,10 @@ const textVariants = cva('ui-font-sandvik-text', {
       xs: 'ui-text-xs ui-tracking-wide',
     },
     color: {
-      foreground: 'ui-text-foreground', // @TODO update to correct color
-      background: 'ui-text-background', // @TODO update to correct color
-      muted: 'ui-text-muted-foreground', // @TODO update to correct color
-      destructive: 'ui-text-destructive', // @TODO update to correct color
+      foreground: 'ui-text-main-black', // @TODO update to correct color
+      background: 'ui-text-main-white', // @TODO update to correct color
+      muted: 'ui-text-neutral-6', // @TODO update to correct color
+      destructive: 'ui-text-error', // @TODO update to correct color
     },
   },
 });

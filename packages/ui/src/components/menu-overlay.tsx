@@ -28,7 +28,7 @@ const MenuOverlay = React.forwardRef<
 MenuOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  'ui-fixed ui-z-50 ui-gap-4 ui-bg-background ui-p-14 ui-shadow-xl ui-transition ui-ease-in-out data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-duration-300 data-[state=open]:ui-duration-500',
+  'ui-fixed ui-z-50 ui-gap-4 ui-bg-main-white ui-p-14 ui-shadow-xl ui-transition ui-ease-in-out data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-duration-300 data-[state=open]:ui-duration-500',
   {
     variants: {
       side: {
@@ -81,7 +81,7 @@ const MenuTitle = React.forwardRef<
   <SheetPrimitive.Title
     ref={ref}
     className={cn(
-      'ui-text-3xl ui-font-sandvik-headline ui-text-foreground',
+      'ui-text-3xl ui-font-sandvik-headline ui-text-main-white',
       className,
     )}
     {...props}

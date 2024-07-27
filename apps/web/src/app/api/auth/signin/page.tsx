@@ -12,7 +12,7 @@ import {
   FormMessage,
   Headline,
   Input,
-  Link,
+  Anchor,
   Text,
 } from '@gsp/ui';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import { LucideLogIn } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SignIn() {
   const [error, setError] = useState('');
@@ -124,12 +125,10 @@ export default function SignIn() {
               </Text>
 
               <Text variant="xs" color="foreground">
-                <Link
-                  isUnderline
-                  href="https://www.google.se"
-                  color="foreground"
-                >
-                  Click here to reset.
+                <Link href="https://www.google.se" passHref legacyBehavior>
+                  <Anchor isUnderline color="foreground">
+                    Click here to reset.
+                  </Anchor>
                 </Link>
               </Text>
             </div>

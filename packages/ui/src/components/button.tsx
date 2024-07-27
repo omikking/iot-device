@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 
 // -- Usage examples --
 // <Button variant="primary" size={'large'} type="submit">
-//   Text
+//   Plain button
 // </Button>
 
 // <Button variant="secondary" size={'small'} type="submit">
@@ -17,6 +17,13 @@ import { cn } from '../lib/utils';
 // <Button variant="destructive" size={'large'} type="submit" isWide>
 //   <LucideChevronDown size={'20'} />
 //   Large button with large chevron 20px always
+// </Button>
+
+// <Button variant="secondary" size="small" asChild>
+//   <Link href="#">
+//     <LucideMoveRight size="16" />
+//     Button used as link
+//   </Link>
 // </Button>
 
 const buttonVariants = cva(

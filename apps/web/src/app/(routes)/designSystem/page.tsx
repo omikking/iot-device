@@ -69,6 +69,13 @@ export default function Page(): JSX.Element {
         <Button variant="destructive" size="small">
           Destructive small
         </Button>
+
+        <Button variant="secondary" size="small" asChild>
+          <Link href="#">
+            <LucideMoveRight size="16" />
+            Button used as link
+          </Link>
+        </Button>
       </div>
 
       <hr className="w-full" />

@@ -1,7 +1,9 @@
-import { Button, Headline, Anchor, Text } from '@gsp/ui';
+import { Button, Headline, Anchor, Text, Badge } from '@gsp/ui';
 import {
   LucideBot,
   LucideChevronDown,
+  LucideCircleCheckBig,
+  LucideCloudUpload,
   LucideMoveLeft,
   LucideMoveRight,
 } from 'lucide-react';
@@ -159,6 +161,53 @@ export default function Page(): JSX.Element {
             </Anchor>
           </Link>
         </Text>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Badges 🦄
+      </Headline>
+
+      <div className="flex flex-row flex-wrap gap-12">
+        <Badge variant="primary">Primary</Badge>
+
+        <Badge variant="attention">Attention</Badge>
+
+        <Badge variant="neutral">Neutral</Badge>
+
+        <Badge variant="destructive">Destructive</Badge>
+
+        <Badge variant="success">Success</Badge>
+
+        <Badge variant="warning">Warning</Badge>
+
+        <Badge variant="primary">
+          <LucideCircleCheckBig size="14" />
+          Primary with icon
+        </Badge>
+
+        <Badge variant="attention">
+          <LucideCloudUpload size="14" />
+          Attention with icon
+        </Badge>
+
+        <Badge variant="neutral">
+          <LucideBot size="14" />
+        </Badge>
+
+        <Badge variant="primary" size="large">
+          Primary large
+        </Badge>
+
+        <Badge variant="primary" size="large">
+          <LucideBot size="18" />
+          Primary large with icon
+        </Badge>
+
+        <Badge variant="primary" size="large">
+          <LucideBot size="18" />
+        </Badge>
       </div>
     </main>
   );

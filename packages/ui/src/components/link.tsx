@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 
 // import Link from 'next/link';
-//@TODO solve using Link from Next instead of <a> tag
+//@TODO solve using Link from Next instead of <a> tag, use passHref and call this component Anchor
 
 // Wrap Link inside the text or headline item
 

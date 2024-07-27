@@ -8,3 +8,4 @@ export * from './input';
 export * from './headline';
 export * from './text';
 export * from './link';
+export * from './menu-overlay';

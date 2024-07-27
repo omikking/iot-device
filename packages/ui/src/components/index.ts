@@ -7,3 +7,4 @@ export * from './headline';
 export * from './text';
 export * from './anchor';
 export * from './menu-overlay';
+export * from './navigation-card';

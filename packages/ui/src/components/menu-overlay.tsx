@@ -62,7 +62,7 @@ const MenuContent = React.forwardRef<
       />
     </SheetPrimitive.Close>
 
-    <MenuOverlay tabIndex={-1} />
+    <MenuOverlay />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}

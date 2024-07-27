@@ -62,7 +62,7 @@ const MenuContent = React.forwardRef<
       />
     </SheetPrimitive.Close>
 
-    <MenuOverlay />
+    <MenuOverlay tabIndex={-1} />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
@@ -81,7 +81,7 @@ const MenuTitle = React.forwardRef<
   <SheetPrimitive.Title
     ref={ref}
     className={cn(
-      'ui-text-3xl ui-font-sandvik-headline ui-text-main-white',
+      'ui-text-3xl ui-font-sandvik-headline ui-text-main-black',
       className,
     )}
     {...props}

@@ -38,7 +38,7 @@ export const Menu = () => {
       </MenuTrigger>
 
       <MenuContent>
-        <div className="flex ui-flex-col gap-10">
+        <div className="flex ui-flex-col gap-8">
           {status === 'authenticated' && (
             <>
               <MenuTitle>Garpenberg</MenuTitle>

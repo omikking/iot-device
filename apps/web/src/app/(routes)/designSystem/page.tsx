@@ -1,10 +1,11 @@
-import { Button, Headline, Link, Text } from '@gsp/ui';
+import { Button, Headline, Anchor, Text } from '@gsp/ui';
 import {
   LucideBot,
   LucideChevronDown,
   LucideMoveLeft,
   LucideMoveRight,
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Page(): JSX.Element {
   return (
@@ -119,28 +120,36 @@ export default function Page(): JSX.Element {
       </Headline>
       <div className="flex flex-col items-center gap-12">
         <Text variant="xs" color="foreground">
-          <Link isUnderline href="#" color="foreground">
-            Link and black underline
+          <Link href="#" passHref legacyBehavior>
+            <Anchor isUnderline color="foreground">
+              Link and black underline
+            </Anchor>
           </Link>
         </Text>
 
         <Text variant="medium" color="destructive">
-          <Link isUnderline href="#" color="destructive">
-            Link and destructive underline
+          <Link href="#" passHref legacyBehavior>
+            <Anchor isUnderline color="destructive">
+              Link and destructive underline
+            </Anchor>
           </Link>
         </Text>
 
         <Headline variant="medium" color="foreground" as="h2">
-          <Link href="#" color="foreground">
-            <LucideMoveRight />
-            Link with icon and no underline
+          <Link href="#" passHref legacyBehavior>
+            <Anchor color="foreground">
+              <LucideMoveRight />
+              Link with icon and no underline
+            </Anchor>
           </Link>
         </Headline>
 
         <Text variant="medium" color="foreground">
-          <Link href="#" color="foreground">
-            <LucideMoveLeft size="20" />
-            Go back
+          <Link href="#" passHref legacyBehavior>
+            <Anchor color="foreground">
+              <LucideMoveLeft size="20" />
+              Go back
+            </Anchor>
           </Link>
         </Text>
       </div>

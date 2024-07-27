@@ -4,7 +4,7 @@ import React from 'react';
 import {
   Button,
   Headline,
-  Link,
+  Anchor,
   MenuWrapper,
   MenuContent,
   MenuTrigger,
@@ -21,6 +21,7 @@ import {
   LucideSettings,
 } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 export const Menu = () => {
   //   @TODO fix colors on icons
@@ -44,23 +45,29 @@ export const Menu = () => {
 
               <div className="flex ui-flex-col gap-1">
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucideMoveRight />
-                    View users
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight />
+                      View users
+                    </Anchor>
                   </Link>
                 </Headline>
 
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucideMoveRight />
-                    View sites
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight />
+                      View sites
+                    </Anchor>
                   </Link>
                 </Headline>
 
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucideMoveRight />
-                    View site locations
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight />
+                      View site locations
+                    </Anchor>
                   </Link>
                 </Headline>
 
@@ -79,23 +86,29 @@ export const Menu = () => {
 
               <div className="flex ui-flex-col gap-1">
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucideMoveRight />
-                    Overview
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight />
+                      Overview
+                    </Anchor>
                   </Link>
                 </Headline>
 
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucideMoveRight />
-                    View global technicians
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight />
+                      View global technicians
+                    </Anchor>
                   </Link>
                 </Headline>
 
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" color="foreground">
-                    <LucidePlus />
-                    Add new company
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucidePlus />
+                      Add new company
+                    </Anchor>
                   </Link>
                 </Headline>
               </div>
@@ -106,16 +119,20 @@ export const Menu = () => {
 
           <div className="flex ui-flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" color="foreground">
-                <LucideLayoutGrid className="text-orange-600" />
-                Browse apps
+              <Link href="#" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideLayoutGrid className="text-orange-600" />
+                  Browse apps
+                </Anchor>
               </Link>
             </Headline>
 
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" color="foreground">
-                <LucideSettings />
-                Settings
+              <Link href="#" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideSettings />
+                  Settings
+                </Anchor>
               </Link>
             </Headline>
 

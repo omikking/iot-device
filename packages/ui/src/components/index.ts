@@ -7,5 +7,5 @@ export * from './label';
 export * from './input';
 export * from './headline';
 export * from './text';
-export * from './link';
+export * from './anchor';
 export * from './menu-overlay';

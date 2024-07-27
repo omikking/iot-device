@@ -3,26 +3,28 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
-// import Link from 'next/link';
-//@TODO solve using Link from Next instead of <a> tag, use passHref and call this component Anchor
-
-// Wrap Link inside the text or headline item
+// We need to use this component with Link from Next, with props href, passHref and legacyBehavior on Link and nothing except styling on Anchor.
+// https://nextjs.org/docs/pages/api-reference/components/link
 
 // -- Usage examples --
 // <Headline variant="medium" color="foreground" as="h2">
-//   <Link href="#" color="foreground">
-//     <LucideMoveRight />
-//     Link with icon and no underline
+//   <Link href="#" passHref legacyBehavior>
+//     <Anchor color="foreground">
+//       <LucideMoveRight />
+//       Link with icon and no underline
+//     </Anchor>
 //   </Link>
 // </Headline>
 
 // <Text variant="xs" color="foreground">
-//   <Link isUnderline href="#" color="foreground">
-//     Link and black underline
+//   <Link href="#" passHref legacyBehavior>
+//     <Anchor isUnderline color="foreground">
+//       Link and black underline
+//     </Anchor>
 //   </Link>
 // </Text>
 
-const linkVariants = cva(
+const anchorVariants = cva(
   'ui-font-sandvik-text ui-transition ease-in-out ui-duration-200 ui-flex gap-4 ui-items-center',
   {
     variants: {
@@ -41,26 +43,26 @@ const linkVariants = cva(
   },
 );
 
-export interface LinkProps
-  extends Omit<React.HTMLAttributes<HTMLLinkElement>, 'color'>,
-    Required<Pick<VariantProps<typeof linkVariants>, 'color'>> {
-  href: string;
+export interface AnchorProps
+  extends Omit<React.HTMLAttributes<HTMLAnchorElement>, 'color'>,
+    Required<Pick<VariantProps<typeof anchorVariants>, 'color'>> {
+  href?: string;
   isUnderline?: boolean;
 }
 
-const Link = React.forwardRef<HTMLLinkElement, LinkProps>(
+const Anchor = React.forwardRef<HTMLAnchorElement, AnchorProps>(
   ({ className, isUnderline, color, href, children }, ref) => {
     return (
       <a
-        className={cn(linkVariants({ color, isUnderline }), className)}
+        className={cn(anchorVariants({ color, isUnderline }), className)}
         href={href}
-        ref={ref as React.RefObject<HTMLAnchorElement>}
+        ref={ref}
       >
         {children}
       </a>
     );
   },
 );
-Link.displayName = 'Link';
+Anchor.displayName = 'Anchor';
 
-export { Link, linkVariants };
+export { Anchor, anchorVariants };

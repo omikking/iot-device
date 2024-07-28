@@ -19,3 +19,27 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+div {
+  /* Scrollbar design */
+  ::-webkit-scrollbar {
+      width: 4px;
+  }
+   
+  /* Track */
+  ::-webkit-scrollbar-track {
+      background: #E6E6E6;
+      margin: 12px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+      background: #6F6F6F;
+      border-radius: 2px;
+  }
+   
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+      background: #6F6F6F;
+  }
+}

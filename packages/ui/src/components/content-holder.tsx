@@ -8,7 +8,7 @@ import { Headline } from './headline';
 // Use this to wrap either input/general content or table rows.
 
 const contentHolderVariants = cva(
-  'ui-my-6 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-min-w-[1320px] ui-border-2 ui-border-neutral-2',
+  'ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-min-w-[1320px] ui-border-2 ui-border-neutral-2',
   {
     variants: {
       variant: {

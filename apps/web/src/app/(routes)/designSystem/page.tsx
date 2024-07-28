@@ -35,7 +35,7 @@ export default function Page(): JSX.Element {
           Outline large
         </Button>
 
-        <Button variant="disabled" size="large">
+        <Button variant="primary" size="large" disabled>
           Disabled large
         </Button>
 
@@ -64,7 +64,7 @@ export default function Page(): JSX.Element {
           Outline small
         </Button>
 
-        <Button variant="disabled" size="small">
+        <Button variant="primary" size="small" disabled>
           Disabled small
         </Button>
 

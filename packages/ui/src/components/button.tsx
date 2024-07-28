@@ -27,7 +27,7 @@ import { cn } from '../lib/utils';
 // </Button>
 
 const buttonVariants = cva(
-  'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200',
+  'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-cursor-not-allowed disabled:ui-pointer-events-none',
   {
     variants: {
       variant: {
@@ -37,8 +37,6 @@ const buttonVariants = cva(
           'ui-bg-gold-primary ui-text-main-white hover:ui-bg-gold-1 focus:ui-bg-gold-1',
         outline:
           'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-1 focus:ui-border-blue-1',
-        disabled:
-          'ui-bg-neutral-2 ui-text-neutral-5 ui-cursor-not-allowed ui-pointer-events-none',
         destructive:
           'ui-bg-main-white ui-text-error ui-border ui-border-error hover:ui-bg-error hover:ui-text-main-white',
       },

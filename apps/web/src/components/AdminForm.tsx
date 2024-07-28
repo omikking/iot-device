@@ -88,7 +88,7 @@ export const AdminForm = () => {
                     id="person"
                     title="Select Sandvik administrator"
                     selectedId={administrator}
-                    position="top"
+                    position="bottom"
                     options={options}
                     onSelect={onHandleSelectAdministrator}
                     className="w-[400px]"

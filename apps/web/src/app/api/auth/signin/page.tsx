@@ -31,12 +31,12 @@ export default function SignIn() {
   const formSchema = z.object({
     emailAddress: z
       .string()
-      .email({ message: 'email must be a valid email address.' })
-      .min(2, { message: 'email must be at least 2 characters.' })
-      .max(50, { message: 'email must be at most 50 characters.' }),
+      .email({ message: 'Email must be a valid email address.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' }),
     password: z
       .string()
-      .min(3, { message: 'password must be at least 3 characters.' }),
+      .min(3, { message: 'Password must be at least 3 characters.' }),
   });
 
   // to validate the form
@@ -93,7 +93,11 @@ export default function SignIn() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Email address" {...field} />
+                      <Input
+                        placeholder="Email address"
+                        {...field}
+                        className="w-full"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -112,6 +116,7 @@ export default function SignIn() {
                         type="password"
                         placeholder="Password"
                         {...field}
+                        className="w-full"
                       />
                     </FormControl>
                     <FormMessage />
@@ -136,6 +141,7 @@ export default function SignIn() {
               <LucideLogIn size="20" />
               Login
             </Button>
+            {/* @TODO move button, text etc outside of this form? */}
           </form>
         </Form>
       </div>

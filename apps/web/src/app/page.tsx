@@ -1,3 +1,4 @@
+'use client';
 import { CompanyList } from '@/components/CompanyList';
 import { Headline, Button, NavigationCard, ContentHolder } from '@gsp/ui';
 import {
@@ -15,7 +16,6 @@ export default function Page(): JSX.Element {
         Administration
       </Headline>
 
-      {/* NavigationCards */}
       <div className="flex gap-8">
         <NavigationCard>
           <Headline as="h3" variant="medium" color="foreground">
@@ -23,7 +23,7 @@ export default function Page(): JSX.Element {
           </Headline>
           <LucideBuilding2 />
           <Button variant="primary" size="small" asChild>
-            <Link href="#">
+            <Link href="/company">
               <LucidePlus size="16" />
               Add new company
             </Link>

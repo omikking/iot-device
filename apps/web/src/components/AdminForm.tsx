@@ -1,16 +1,17 @@
 import {
+  Dropdown,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
 } from '@gsp/ui';
 import { useForm } from 'react-hook-form';
 
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 
 export const AdminForm = () => {
   // @TODO fix this later
@@ -26,6 +27,49 @@ export const AdminForm = () => {
     },
   });
 
+  const options = [
+    {
+      id: '1',
+      name: 'Elliot Anderson',
+    },
+    {
+      id: '2',
+      name: 'Darlene Anderson',
+    },
+    {
+      id: '3',
+      name: 'Tyrell Wellick',
+    },
+    {
+      id: '4',
+      name: 'Joanna Wellick',
+    },
+    {
+      id: '5',
+      name: 'Angela Moss',
+    },
+    {
+      id: '6',
+      name: 'Whiterose',
+    },
+    {
+      id: '7',
+      name: 'Felix Östergren',
+    },
+    {
+      id: '8',
+      name: 'Jimmy Nwadinkpa',
+    },
+  ];
+
+  const [administrator, setAdministrator] = useState<string | undefined>(
+    undefined,
+  );
+
+  const onHandleSelectAdministrator = (id: string) => {
+    setAdministrator(id);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -35,14 +79,18 @@ export const AdminForm = () => {
         <FormField
           control={form.control}
           name="assignSandvikAdministrator"
-          render={({ field }) => {
+          render={() => {
             return (
               <FormItem>
-                <FormLabel>Assign Sandvik administrator</FormLabel>
+                <FormLabel>Assigned Sandvik administrator</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Select administrator"
-                    {...field}
+                  <Dropdown
+                    id="person"
+                    title="Select Sandvik administrator"
+                    selectedId={administrator}
+                    position="top"
+                    options={options}
+                    onSelect={onHandleSelectAdministrator}
                     className="w-[400px]"
                   />
                 </FormControl>

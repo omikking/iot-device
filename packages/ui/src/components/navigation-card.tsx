@@ -8,7 +8,7 @@ interface NavigationCardProps {
 
 export const NavigationCard = ({ children }: NavigationCardProps) => {
   return (
-    <div className="flex flex-col items-center gap-4 px-16 py-8 border border-gold-3 hover:border-gold-primary hover:bg-gold-3 transition-all ease-in-out duration-200">
+    <div className="ui-flex ui-flex-col ui-items-center ui-gap-4 ui-px-16 ui-py-8 ui-border ui-border-gold-3 hover:ui-border-gold-primary hover:ui-bg-gold-3 ui-transition-all ease-in-out duration-200">
       {children}
     </div>
   );

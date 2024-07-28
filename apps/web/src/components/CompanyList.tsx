@@ -42,7 +42,7 @@ export const CompanyList = () => {
           </Text>
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
-              <Link href="#">
+              <Link href="/company">
                 <LucideMoveRight size="16" />
                 Administrate
               </Link>

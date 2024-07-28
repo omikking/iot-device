@@ -19,6 +19,7 @@ export interface DropdownProps
   options: DropdownItem[];
   selectedId?: string;
   className?: string;
+  disabled?: boolean;
   onSelect?: (id: string) => void;
 }
 
@@ -50,8 +51,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     options,
     position,
     selectedId,
-    onSelect,
+    disabled,
     className,
+    onSelect,
     ...props
   }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -91,6 +93,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           aria-haspopup="true"
           aria-expanded={isOpen}
           type="button"
+          disabled={disabled}
           onClick={() => {
             setIsOpen(!isOpen);
           }}
@@ -98,7 +101,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         >
           <Text
             variant="medium"
-            color={selectedItem?.name ? 'foreground' : 'muted'}
+            color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
           >
             {selectedItem?.name || title}
           </Text>

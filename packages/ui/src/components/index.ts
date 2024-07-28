@@ -3,6 +3,7 @@ export * from './badge';
 export * from './checkbox';
 export * from './form';
 export * from './label';
+export * from './dropdown';
 export * from './input';
 export * from './headline';
 export * from './text';

@@ -1,6 +1,7 @@
-import { Badge, Dropdown, Headline, Text } from '@gsp/ui';
+import { Badge, Dropdown, Headline, Switch, Text } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 
+// @TODO fix toggle state and bg color on plan when selected
 const PlanContainer = ({ plan }) => {
   return (
     <div className="flex justify-between items-center ui-border-b ui-border-neutral-5 py-3 px-6">
@@ -8,9 +9,7 @@ const PlanContainer = ({ plan }) => {
         {plan}
       </Text>
 
-      <Text color="foreground" variant="medium">
-        toggle here
-      </Text>
+      <Switch />
     </div>
   );
 };

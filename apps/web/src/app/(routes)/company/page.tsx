@@ -106,7 +106,7 @@ export default function Page(): JSX.Element {
         </>
       )}
 
-      {/* @TODO now sure how we should do the form and if they should not be splitted */}
+      {/* @TODO fix form to wrap whole page and not 2 separate forms */}
       <div className="mt-8 flex flex-col gap-16">
         <ContentHolder variant="general" headlineText="Company details">
           <CompanyDetailsForm />

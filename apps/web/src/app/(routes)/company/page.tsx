@@ -1,7 +1,21 @@
 'use client';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-import { Headline, Text, Anchor, ContentHolder, Button } from '@gsp/ui';
-import { LucideCircleCheckBig, LucideMoveLeft } from 'lucide-react';
+import {
+  Headline,
+  Text,
+  Anchor,
+  ContentHolder,
+  Button,
+  NavigationCard,
+} from '@gsp/ui';
+import {
+  LucideCircleCheckBig,
+  LucideMountain,
+  LucideMoveLeft,
+  LucideMoveRight,
+  LucidePyramid,
+  LucideUsers,
+} from 'lucide-react';
 import Link from 'next/link';
 import { AdminForm } from '@/components/AdminForm';
 import { CompanyPlanSelection } from '@/components/CompanyPlanSelection';
@@ -17,10 +31,14 @@ export default function Page(): JSX.Element {
       id: '2',
     },
     {
-      name: 'Pull-test',
+      name: 'Ultrabots',
       id: '3',
     },
   ];
+
+  // Just for testing Add company / Edit company state
+  const companyToEditName = 'E-Corp';
+  // const companyToEditName = false;
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -38,8 +56,55 @@ export default function Page(): JSX.Element {
       </Text>
 
       <Headline as="h1" variant="xl" color="foreground">
-        Add company
+        {companyToEditName || 'Add company'}
       </Headline>
+
+      {companyToEditName && (
+        <>
+          <div className="flex gap-8">
+            <NavigationCard>
+              <Headline as="h3" variant="medium" color="foreground">
+                Users
+              </Headline>
+              <LucideUsers />
+              <Button variant="secondary" size="small" asChild>
+                <Link href="/company">
+                  <LucideMoveRight size="16" />
+                  View users
+                </Link>
+              </Button>
+            </NavigationCard>
+
+            <NavigationCard>
+              <Headline as="h3" variant="medium" color="foreground">
+                Sites
+              </Headline>
+              <LucideMountain />
+              <Button variant="secondary" size="small" asChild>
+                <Link href="#">
+                  <LucideMoveRight size="16" />
+                  View sites
+                </Link>
+              </Button>
+            </NavigationCard>
+
+            <NavigationCard>
+              <Headline as="h3" variant="medium" color="foreground">
+                Site locations
+              </Headline>
+              <LucidePyramid />
+              <Button variant="secondary" size="small" asChild>
+                <Link href="#">
+                  <LucideMoveRight size="16" />
+                  View site locations
+                </Link>
+              </Button>
+            </NavigationCard>
+          </div>
+
+          <hr className="w-full ui-color-gold-3" />
+        </>
+      )}
 
       {/* @TODO now sure how we should do the form and if they should not be splitted */}
       <div className="mt-8 flex flex-col gap-16">

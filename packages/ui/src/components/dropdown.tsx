@@ -114,37 +114,39 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           />
         </button>
 
-        <div
-          aria-label="Dropdown menu"
-          className={cn(
-            dropdownVariants({ position }),
-            'ui-transition-full ui-duration-200',
-            isOpen
-              ? 'ui-opacity-1'
-              : 'ui-opacity-0 ui-pointer-events-none ui-scale-90',
-            className,
-          )}
-        >
-          <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
-            {options?.map((item) => (
-              <li
-                aria-hidden="true"
-                key={item.id}
-                onClick={() => {
-                  handleChange(item);
-                }}
-                className={cn(
-                  dropdownItemStyling,
-                  selectedItem?.id === item.id && 'ui-bg-neutral-1',
-                )}
-              >
-                <Text variant="medium" color="foreground">
-                  {item.name}
-                </Text>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {!!options && (
+          <div
+            aria-label="Dropdown menu"
+            className={cn(
+              dropdownVariants({ position }),
+              'ui-transition-full ui-duration-200',
+              isOpen
+                ? 'ui-opacity-1'
+                : 'ui-opacity-0 ui-pointer-events-none ui-scale-90',
+              className,
+            )}
+          >
+            <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
+              {options?.map((item) => (
+                <li
+                  aria-hidden="true"
+                  key={item.id}
+                  onClick={() => {
+                    handleChange(item);
+                  }}
+                  className={cn(
+                    dropdownItemStyling,
+                    selectedItem?.id === item.id && 'ui-bg-neutral-1',
+                  )}
+                >
+                  <Text variant="medium" color="foreground">
+                    {item.name}
+                  </Text>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   },

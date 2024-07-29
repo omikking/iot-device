@@ -1,5 +1,5 @@
 import { Badge, Calendar, FormLabel, Headline } from '@gsp/ui';
-import { LucideCircleCheckBig } from 'lucide-react';
+import { LucideCalendar, LucideCircleCheckBig } from 'lucide-react';
 import { AppPlan } from './AppPlan';
 import { useState } from 'react';
 
@@ -7,6 +7,9 @@ export const AppPlansContainer = ({ appData }) => {
   const { name, activePlan } = appData;
 
   const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const user = 'Superadmin';
+  // const user = 'Client';
 
   return (
     <div
@@ -18,7 +21,7 @@ export const AppPlansContainer = ({ appData }) => {
           {name}
         </Headline>
 
-        {activePlan && (
+        {user === 'Superadmin' && activePlan && (
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
@@ -33,15 +36,26 @@ export const AppPlansContainer = ({ appData }) => {
 
       {/* Calendar */}
       {activePlan && (
-        <div className="py-6 px-6 ui-border-b ui-border-neutral-2">
-          <FormLabel>Expiring date</FormLabel>
-          <Calendar
-            // Do we want to have it as disabled or invisible when plan is not selected?
-            // disabled={activePlan}
-            selectedDate={date}
-            onSelect={setDate}
-            className="mt-2"
-          />
+        <div className="py-5 px-6 ui-border-b ui-border-neutral-2">
+          {user === 'Client' && (
+            <Badge variant="primary">
+              <LucideCalendar size="14" />
+              Your plan expires 2025-08-10
+            </Badge>
+          )}
+
+          {user === 'Superadmin' && (
+            <>
+              <FormLabel>Expiring date</FormLabel>
+              <Calendar
+                // Do we want to have it as disabled or invisible when plan is not selected?
+                // disabled={activePlan}
+                selectedDate={date}
+                onSelect={setDate}
+                className="mt-2"
+              />
+            </>
+          )}
         </div>
       )}
     </div>

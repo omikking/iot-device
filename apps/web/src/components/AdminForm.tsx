@@ -1,32 +1,15 @@
 import {
   Dropdown,
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
-import { useForm } from 'react-hook-form';
 
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
-export const AdminForm = () => {
-  // @TODO fix this later
-  const formSchema = z.object({
-    assignSandvikAdministrator: z.string(),
-  });
-
-  // to validate the form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      assignSandvikAdministrator: '',
-    },
-  });
-
+export const AdminForm = ({ companyForm }) => {
   const options = [
     {
       id: '1',
@@ -71,35 +54,28 @@ export const AdminForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((e) => console.log(e, 'company added'))}
-        className="w-fit flex flex-row flex-wrap gap-6"
-      >
-        <FormField
-          control={form.control}
-          name="assignSandvikAdministrator"
-          render={() => {
-            return (
-              <FormItem>
-                <FormLabel>Assigned Sandvik administrator</FormLabel>
-                <FormControl>
-                  <Dropdown
-                    id="person"
-                    title="Select Sandvik administrator"
-                    selectedId={administrator}
-                    position="bottom"
-                    options={options}
-                    onSelect={onHandleSelectAdministrator}
-                    className="w-[400px]"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-      </form>
-    </Form>
+    <FormField
+      control={companyForm.control}
+      name="assignSandvikAdministrator"
+      render={() => {
+        return (
+          <FormItem>
+            <FormLabel>Assigned Sandvik administrator</FormLabel>
+            <FormControl>
+              <Dropdown
+                id="person"
+                title="Select Sandvik administrator"
+                selectedId={administrator}
+                position="bottom"
+                options={options}
+                onSelect={onHandleSelectAdministrator}
+                className="w-[400px]"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
   );
 };

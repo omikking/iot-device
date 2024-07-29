@@ -7,6 +7,7 @@ import {
   ContentHolder,
   Button,
   NavigationCard,
+  Form,
 } from '@gsp/ui';
 import {
   LucideCircleCheckBig,
@@ -18,20 +19,64 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { AdminForm } from '@/components/AdminForm';
-import { CompanyPlanSelection } from '@/components/CompanyPlanSelection';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
+// @TODO finish this later
+export const companyFormSchema = z.object({
+  companyName: z.string(),
+  fullContactName: z.string(),
+  organisationNumber: z
+    .string()
+    .min(10, { message: 'Must be 10 numbers.' })
+    .max(10, { message: 'Must be 10 numbers.' }),
+  country: z.string(),
+  city: z.string(),
+  address: z.string(),
+
+  pullTestPlan: z.string(),
+  xCyclopsPlan: z.string(),
+  ultrabotsPlan: z.string(),
+
+  assignSandvikAdministrator: z.string(),
+});
 
 export default function Page(): JSX.Element {
-  const mockAppPlansList = [
+  // to validate the form
+  const companyForm = useForm<z.infer<typeof companyFormSchema>>({
+    resolver: zodResolver(companyFormSchema),
+    defaultValues: {
+      companyName: '',
+      fullContactName: '',
+      organisationNumber: '',
+      country: '',
+      city: '',
+      address: '',
+
+      pullTestPlan: '',
+      xCyclopsPlan: '',
+      ultrabotsPlan: '',
+
+      assignSandvikAdministrator: '',
+    },
+  });
+
+  const mockAppPlans = [
     {
       name: 'Pull-test',
+      activePlan: 'Gold',
       id: '1',
     },
     {
       name: 'xCyclops',
+      activePlan: undefined,
       id: '2',
     },
     {
       name: 'Ultrabots',
+      activePlan: 'Bronze',
       id: '3',
     },
   ];
@@ -106,22 +151,33 @@ export default function Page(): JSX.Element {
         </>
       )}
 
-      {/* @TODO fix form to wrap whole page and not 2 separate forms */}
-      <div className="mt-8 flex flex-col gap-16">
-        <ContentHolder variant="general" headlineText="Company details">
-          <CompanyDetailsForm />
-        </ContentHolder>
+      <Form {...companyForm}>
+        <form
+          onSubmit={companyForm.handleSubmit((e) =>
+            console.log(e, 'company added'),
+          )}
+          className="w-fit flex flex-row flex-wrap gap-6"
+        >
+          <div className="mt-8 flex flex-col gap-16">
+            {/* Company details */}
+            <ContentHolder variant="general" headlineText="Company details">
+              <CompanyDetailsForm companyForm={companyForm} />
+            </ContentHolder>
 
-        <div className="w-full flex justify-between items-center bg-main-white">
-          {mockAppPlansList.map((appPlan) => (
-            <CompanyPlanSelection appPlan={appPlan} />
-          ))}
-        </div>
+            {/* App plans */}
+            <div className="w-full flex justify-between items-start bg-main-white">
+              {mockAppPlans.map((appData) => (
+                <AppPlansContainer appData={appData} />
+              ))}
+            </div>
 
-        <ContentHolder variant="general" headlineText="Admin">
-          <AdminForm />
-        </ContentHolder>
-      </div>
+            {/* Admin assignment */}
+            <ContentHolder variant="general" headlineText="Admin">
+              <AdminForm companyForm={companyForm} />
+            </ContentHolder>
+          </div>
+        </form>
+      </Form>
 
       <Button
         variant="primary"

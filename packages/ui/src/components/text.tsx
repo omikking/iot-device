@@ -17,7 +17,7 @@ const textVariants = cva('ui-font-sandvik-text', {
     color: {
       foreground: 'ui-text-main-black', // @TODO update to correct color
       background: 'ui-text-main-white', // @TODO update to correct color
-      muted: 'ui-text-neutral-6', // @TODO update to correct color
+      muted: 'ui-text-neutral-5', // @TODO update to correct color
       destructive: 'ui-text-error', // @TODO update to correct color
     },
   },

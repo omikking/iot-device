@@ -4,6 +4,7 @@ export * from './checkbox';
 export * from './form';
 export * from './label';
 export * from './dropdown';
+export * from './calendar';
 export * from './input';
 export * from './headline';
 export * from './text';

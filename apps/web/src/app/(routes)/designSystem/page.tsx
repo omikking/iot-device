@@ -15,6 +15,7 @@ import {
   Dropdown,
   Calendar,
   Textarea,
+  Checkbox,
 } from '@gsp/ui';
 
 import {
@@ -273,6 +274,37 @@ export default function Page(): JSX.Element {
         <Badge variant="primary" size="large">
           <LucideBot size="18" />
         </Badge>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Checkbox 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-12 justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={() => console.log('submit form')}
+            className="w-full flex flex-row justify-center flex-wrap gap-12"
+          >
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={() => {
+                return (
+                  <FormItem className="flex gap-3">
+                    <FormControl>
+                      <Checkbox />
+                    </FormControl>
+                    <FormLabel variant="medium" className="cursor-pointer">
+                      Checkbox label
+                    </FormLabel>
+                  </FormItem>
+                );
+              }}
+            />
+          </form>
+        </Form>
       </div>
 
       <hr className="w-full" />

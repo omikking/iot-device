@@ -27,7 +27,7 @@ export const buttonStyling =
   'flex justify-between items-center ui-h-12 ui-border ui-border-neutral-3 ui-rounded ui-w-full ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-none disabled:ui-pointer-events-none';
 
 const dropdownItemStyling =
-  'flex items-center cursor-pointer hover:ui-bg-neutral-1 ui-px-6 ui-py-3';
+  'flex items-center cursor-pointer hover:ui-bg-neutral-1 ui-px-6 ui-py-3 ui-transform ui-duration-200 ease-in-out';
 
 const dropdownVariants = cva(
   'absolute ui-mt-2 bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-border ui-border-neutral-3 ui-rounded ui-shadow-md ui-max-h-56 ui-z-10',

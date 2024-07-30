@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 
 const labelVariants = cva(
-  'ui-tracking-wide ui-text-main-black ui-font-sandvik-text ui-leading-none ui-cursor-pointer peer-disabled:ui-cursor-default peer-disabled:ui-text-neutral-5',
+  'ui-tracking-wide ui-text-main-black ui-font-sandvik-text ui-leading-none peer-disabled:ui-cursor-default peer-disabled:ui-text-neutral-5',
   {
     variants: {
       variant: {
@@ -16,7 +16,7 @@ const labelVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'xs',
+      variant: 'small',
     },
   },
 );

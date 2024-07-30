@@ -303,6 +303,21 @@ export default function Page(): JSX.Element {
                 );
               }}
             />
+
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={() => {
+                return (
+                  <FormItem className="flex gap-3">
+                    <FormControl>
+                      <Checkbox disabled />
+                    </FormControl>
+                    <FormLabel variant="medium">Disabled checkbox</FormLabel>
+                  </FormItem>
+                );
+              }}
+            />
           </form>
         </Form>
       </div>

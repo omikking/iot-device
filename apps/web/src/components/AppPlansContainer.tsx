@@ -1,5 +1,9 @@
 import { Badge, Calendar, FormLabel, Headline } from '@gsp/ui';
-import { LucideCalendar, LucideCircleCheckBig } from 'lucide-react';
+import {
+  LucideCalendar,
+  LucideCircleCheckBig,
+  LucideSparkles,
+} from 'lucide-react';
 import { AppPlan } from './AppPlan';
 import { useState } from 'react';
 
@@ -25,6 +29,13 @@ export const AppPlansContainer = ({ appData }) => {
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
+          </Badge>
+        )}
+
+        {user === 'Client' && !activePlan && (
+          <Badge variant="primary">
+            <LucideSparkles size="14" />
+            Available plans
           </Badge>
         )}
       </div>

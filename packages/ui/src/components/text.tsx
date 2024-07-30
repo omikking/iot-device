@@ -19,6 +19,7 @@ const textVariants = cva('ui-font-sandvik-text', {
       background: 'ui-text-main-white', // @TODO update to correct color
       muted: 'ui-text-neutral-5', // @TODO update to correct color
       destructive: 'ui-text-error', // @TODO update to correct color
+      accent: 'ui-text-orange-primary', // @TODO update to correct color
     },
   },
 });

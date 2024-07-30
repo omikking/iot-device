@@ -15,6 +15,7 @@ import {
   LucideMoveLeft,
   LucideMoveRight,
   LucidePyramid,
+  LucideSparkles,
   LucideUsers,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -84,6 +85,10 @@ export default function Page(): JSX.Element {
   // Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';
   // const companyToEditName = false;
+
+  // Create a hook to always get the type of user?
+  const user = 'Superadmin';
+  // const user = 'Client';
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -158,17 +163,51 @@ export default function Page(): JSX.Element {
           )}
           className="w-fit flex flex-row flex-wrap gap-6"
         >
-          <div className="mt-8 flex flex-col gap-16">
+          <div className="mt-8 flex flex-col gap-20">
             {/* Company details */}
             <ContentHolder variant="general" headlineText="Company details">
               <CompanyDetailsForm companyForm={companyForm} />
             </ContentHolder>
 
-            {/* App plans */}
-            <div className="w-full flex justify-between items-start bg-main-white">
-              {mockAppPlans.map((appData) => (
-                <AppPlansContainer appData={appData} />
-              ))}
+            <div>
+              <div className="flex justify-between">
+                <Headline
+                  as="h2"
+                  color="foreground"
+                  variant="medium"
+                  className="ml-8"
+                >
+                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
+                </Headline>
+
+                {user === 'Client' && (
+                  <div className="flex items-center">
+                    <LucideSparkles size="20" />
+                    <Headline
+                      as="h2"
+                      color="foreground"
+                      variant="medium"
+                      className="ml-3"
+                    >
+                      Want to update your plan?
+                    </Headline>
+                    <Text
+                      color="accent"
+                      variant="medium"
+                      className="mt-1 ml-4 ui-underline ui-underline-offset-2"
+                    >
+                      Call +46 76 040 22 44
+                    </Text>
+                  </div>
+                )}
+              </div>
+
+              {/* App plans */}
+              <div className="w-full flex justify-between items-start bg-main-white mt-4">
+                {mockAppPlans.map((appData) => (
+                  <AppPlansContainer appData={appData} />
+                ))}
+              </div>
             </div>
 
             {/* Admin assignment */}
@@ -186,7 +225,7 @@ export default function Page(): JSX.Element {
         className="self-end mt-[-40px]"
       >
         <LucideCircleCheckBig size="20" />
-        Send invitation
+        {companyToEditName ? 'Update company details' : 'Send invitation'}
       </Button>
     </main>
   );

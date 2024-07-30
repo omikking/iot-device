@@ -36,7 +36,7 @@ export default function Page(): JSX.Element {
           </Headline>
           <LucidePickaxe />
           <Button variant="secondary" size="small" asChild>
-            <Link href="#">
+            <Link href="/technicians">
               <LucideMoveRight size="16" />
               View technicians
             </Link>

@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 import { useFormField } from './form';
 
 const inputStyling = cva(
-  'ui-flex ui-h-12 ui-border-neutral-3 ui-rounded ui-border ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus-visible:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-6 disabled:ui-border-none disabled:ui-pointer-events-none',
+  'ui-flex ui-h-12 ui-border-neutral-3 ui-rounded ui-border ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus-visible:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-none disabled:ui-pointer-events-none',
 );
 
 const errorStyling = cva(

@@ -14,6 +14,7 @@ import {
   FormMessage,
   Dropdown,
   Calendar,
+  Textarea,
 } from '@gsp/ui';
 
 import {
@@ -36,6 +37,7 @@ export default function Page(): JSX.Element {
     input: z.string(),
     dropdown: z.string(),
     calendar: z.string(),
+    textarea: z.string(),
   });
 
   // to validate the form
@@ -45,6 +47,7 @@ export default function Page(): JSX.Element {
       input: '',
       dropdown: '',
       calendar: '',
+      textarea: '',
     },
   });
 
@@ -231,7 +234,6 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Badges 🦄
       </Headline>
-
       <div className="flex flex-row flex-wrap gap-12 justify-center">
         <Badge variant="primary">Primary</Badge>
 
@@ -276,9 +278,62 @@ export default function Page(): JSX.Element {
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">
+        TextArea 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-12 justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={() => console.log('submit form')}
+            className="w-full flex flex-row justify-center flex-wrap gap-12"
+          >
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Text area label</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Text area placeholder..."
+                        className="w-[400px] h-[140px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Disabled text area label</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        disabled
+                        placeholder="Text area placeholder..."
+                        className="w-[400px] h-[140px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </form>
+        </Form>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
         Input field, dropdown & calendar 🦄
       </Headline>
-
       <div>
         <Form {...form}>
           <form
@@ -353,7 +408,7 @@ export default function Page(): JSX.Element {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Input</FormLabel>
+                    <FormLabel>Disabled input</FormLabel>
                     <FormControl>
                       <Input
                         disabled
@@ -373,7 +428,7 @@ export default function Page(): JSX.Element {
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Dropdown</FormLabel>
+                    <FormLabel>Disabled dropdown</FormLabel>
                     <FormControl>
                       <Dropdown
                         disabled
@@ -396,7 +451,7 @@ export default function Page(): JSX.Element {
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Calendar</FormLabel>
+                    <FormLabel>Disabled calendar</FormLabel>
                     <FormControl>
                       <Calendar
                         disabled

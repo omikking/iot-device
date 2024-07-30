@@ -77,7 +77,7 @@ export const Menu = () => {
                   size="large"
                   tabIndex={-1}
                 >
-                  <LucideBuilding2 size="20" />
+                  <LucideBuilding2 />
                   Change company
                 </Button>
               </div>
@@ -144,7 +144,7 @@ export const Menu = () => {
                 tabIndex={-1}
                 onClick={() => signOut()}
               >
-                <LucideLogOut size="20" />
+                <LucideLogOut />
                 Logout
               </Button>
             ) : (
@@ -155,7 +155,7 @@ export const Menu = () => {
                 tabIndex={-1}
                 onClick={() => signIn()}
               >
-                <LucideLogIn size="20" />
+                <LucideLogIn />
                 Login
               </Button>
             )}

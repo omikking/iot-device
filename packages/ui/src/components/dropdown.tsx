@@ -106,9 +106,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
             {selectedItem?.name || placeholder}
           </Text>
           <LucideChevronDown
-            size="20"
+            size="22"
             className={cn(
-              'ui-transform ui-duration-200 ease-in-out',
+              'ui-transform ui-duration-200 ease-in-out ui-mt-0.5',
               isOpen && 'ui-rotate-180',
             )}
           />

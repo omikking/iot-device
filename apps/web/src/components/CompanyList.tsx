@@ -43,13 +43,13 @@ export const CompanyList = () => {
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
               <Link href="/company">
-                <LucideMoveRight size="16" />
+                <LucideMoveRight />
                 Administrate
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
               <Link href="#">
-                <LucideLayoutGrid size="16" />
+                <LucideLayoutGrid />
                 View Apps
               </Link>
             </Button>

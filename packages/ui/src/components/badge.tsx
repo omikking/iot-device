@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 // <Badge variant="attention">Attention</Badge>
 
 // <Badge variant="attention">
-//     <LucideCloudUpload size="14" />
+//     <LucideCloudUpload />
 //     Attention with icon
 // </Badge>
 
@@ -14,13 +14,8 @@ import { cn } from '../lib/utils';
 //     Primary large
 // </Badge>
 
-// <Badge variant="primary" size="large">
-//     <LucideBot size="18" />
-//     Primary large with icon
-// </Badge>
-
 const badgeVariants = cva(
-  'ui-inline-flex ui-items-center ui-justify-center ui-rounded-lg',
+  'ui-flex ui-items-center ui-justify-center ui-rounded-lg',
   {
     variants: {
       variant: {
@@ -34,8 +29,9 @@ const badgeVariants = cva(
       },
       size: {
         small:
-          'ui-h-6 ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text',
-        large: 'ui-h-9 ui-px-6 ui-text-xl ui-gap-2.5 ui-font-sandvik-headline',
+          'ui-h-[26px] ui-pt-0.5 ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text [&>svg]:ui-w-[16px] [&>svg]:ui-h-[16px] [&>svg]:ui-mb-[3px]',
+        large:
+          'ui-pt-0.5 ui-h-10 ui-px-6 ui-text-xl ui-gap-3 ui-font-sandvik-headline [&>svg]:ui-w-[20px] [&>svg]:ui-h-[20px] [&>svg]:ui-mb-[3px]',
       },
     },
     defaultVariants: {

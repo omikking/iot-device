@@ -16,6 +16,7 @@ import {
   Calendar,
   Textarea,
   Checkbox,
+  Switch,
 } from '@gsp/ui';
 
 import {
@@ -90,11 +91,11 @@ export default function Page(): JSX.Element {
       </Headline>
       <div className="flex flex-row flex-wrap justify-center gap-12">
         <Button variant="primary" size="large">
-          <LucideBot size="20" />
+          <LucideBot />
         </Button>
 
         <Button variant="secondary" size="large">
-          <LucideBot size="20" />
+          <LucideBot />
           Secondary large with icon
         </Button>
 
@@ -111,11 +112,11 @@ export default function Page(): JSX.Element {
         </Button>
 
         <Button variant="secondary" size="small">
-          <LucideChevronDown size="16" />
+          <LucideChevronDown />
         </Button>
 
         <Button variant="primary" size="small">
-          <LucideChevronDown size="16" />
+          <LucideChevronDown />
           Primary small with icon
         </Button>
 
@@ -141,7 +142,7 @@ export default function Page(): JSX.Element {
 
         <Button variant="secondary" size="small" asChild>
           <Link href="#">
-            <LucideMoveRight size="16" />
+            <LucideMoveRight />
             Button used as link
           </Link>
         </Button>
@@ -267,12 +268,12 @@ export default function Page(): JSX.Element {
         </Badge>
 
         <Badge variant="primary" size="large">
-          <LucideBot size="18" />
+          <LucideBot />
           Primary large with icon
         </Badge>
 
         <Badge variant="primary" size="large">
-          <LucideBot size="18" />
+          <LucideBot />
         </Badge>
       </div>
 
@@ -519,10 +520,14 @@ export default function Page(): JSX.Element {
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">
-        Another component 🦄
+        Switch toggle 🦄
       </Headline>
 
-      <div className="flex flex-row flex-wrap gap-12"></div>
+      <div className="flex flex-row flex-wrap gap-12">
+        <Switch checked />
+        <Switch />
+        <Switch disabled />
+      </div>
     </main>
   );
 }

@@ -119,7 +119,7 @@ export default function Page(): JSX.Element {
               <LucideUsers />
               <Button variant="secondary" size="small" asChild>
                 <Link href="/company">
-                  <LucideMoveRight size="16" />
+                  <LucideMoveRight />
                   View users
                 </Link>
               </Button>
@@ -132,7 +132,7 @@ export default function Page(): JSX.Element {
               <LucideMountain />
               <Button variant="secondary" size="small" asChild>
                 <Link href="#">
-                  <LucideMoveRight size="16" />
+                  <LucideMoveRight />
                   View sites
                 </Link>
               </Button>
@@ -145,7 +145,7 @@ export default function Page(): JSX.Element {
               <LucidePyramid />
               <Button variant="secondary" size="small" asChild>
                 <Link href="#">
-                  <LucideMoveRight size="16" />
+                  <LucideMoveRight />
                   View site locations
                 </Link>
               </Button>
@@ -224,7 +224,7 @@ export default function Page(): JSX.Element {
         type="submit"
         className="self-end mt-[-40px]"
       >
-        <LucideCircleCheckBig size="20" />
+        <LucideCircleCheckBig />
         {companyToEditName ? 'Update company details' : 'Send invitation'}
       </Button>
     </main>

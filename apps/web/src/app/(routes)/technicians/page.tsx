@@ -15,7 +15,7 @@ export default function Page(): JSX.Element {
       >
         <Link href="#" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft size="20" />
+            <LucideMoveLeft />
             Go back
           </Anchor>
         </Link>
@@ -27,7 +27,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-col items-end">
         <Button variant="primary" size="large">
-          <LucidePlus size="20" />
+          <LucidePlus />
           Add technician
         </Button>
 

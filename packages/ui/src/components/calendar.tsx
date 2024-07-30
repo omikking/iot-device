@@ -52,7 +52,7 @@ const DayPickerComponent = ({
         nav: 'ui-space-x-1 ui-flex ui-items-center',
         nav_button: cn(
           buttonVariants({ variant: 'outline' }),
-          'ui-h-7 ui-w-7 ui-bg-transparent ui-p-0 ui-opacity-50 hover:ui-opacity-100',
+          'ui-h-8 ui-w-9 ui-bg-transparent ui-p-0 ui-opacity-80 hover:ui-opacity-100',
         ),
         nav_button_previous: 'ui-absolute ui-left-1',
         nav_button_next: 'ui-absolute ui-right-1',
@@ -77,8 +77,8 @@ const DayPickerComponent = ({
         ...classNames,
       }}
       components={{
-        IconLeft: () => <LucideChevronLeft size="20" />,
-        IconRight: () => <LucideChevronRight size="20" />,
+        IconLeft: () => <LucideChevronLeft size="22" />,
+        IconRight: () => <LucideChevronRight size="22" />,
       }}
       onDayClick={(e) => {
         onSetDate(e);
@@ -141,8 +141,8 @@ const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
             {formattedDate || 'Select date'}
           </Text>
           <LucideCalendar
-            size="18"
-            className={cn('ui-transform ui-duration-200 ease-in-out')}
+            size="20"
+            className="ui-transform ui-duration-200 ease-in-out"
           />
         </button>
 

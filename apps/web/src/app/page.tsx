@@ -24,7 +24,7 @@ export default function Page(): JSX.Element {
           <LucideBuilding2 />
           <Button variant="primary" size="small" asChild>
             <Link href="/company">
-              <LucidePlus size="16" />
+              <LucidePlus />
               Add new company
             </Link>
           </Button>
@@ -37,7 +37,7 @@ export default function Page(): JSX.Element {
           <LucidePickaxe />
           <Button variant="secondary" size="small" asChild>
             <Link href="/technicians">
-              <LucideMoveRight size="16" />
+              <LucideMoveRight />
               View technicians
             </Link>
           </Button>

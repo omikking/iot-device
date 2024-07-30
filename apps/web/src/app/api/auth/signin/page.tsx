@@ -138,7 +138,7 @@ export default function SignIn() {
               </Text>
             </div>
             <Button variant="primary" size="large" isWide type="submit">
-              <LucideLogIn size="20" />
+              <LucideLogIn />
               Login
             </Button>
             {/* @TODO move button, text etc outside of this form? */}

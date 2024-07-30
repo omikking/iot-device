@@ -39,7 +39,7 @@ const buttonVariants = cva(
         small:
           'ui-h-9 ui-px-4 ui-text-sm ui-tracking-wide ui-gap-2 [&>svg]:ui-w-[18px] [&>svg]:ui-h-[18px]',
         large:
-          'ui-h-[2.875rem] ui-px-6 ui-text-md ui-gap-3 ui-pt-0.5 [&>svg]:ui-mb-0.5 [&>svg]:ui-w-5 [&>svg]:ui-h-5',
+          'ui-h-[46px] ui-px-7 ui-text-md ui-gap-3 ui-pt-[1px] [&>svg]:ui-mb-0.5 [&>svg]:ui-w-5 [&>svg]:ui-h-5',
       },
       isWide: {
         true: 'ui-size-auto',

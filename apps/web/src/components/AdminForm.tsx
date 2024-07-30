@@ -49,10 +49,6 @@ export const AdminForm = ({ companyForm }) => {
     undefined,
   );
 
-  const onHandleSelectAdministrator = (id: string) => {
-    setAdministrator(id);
-  };
-
   return (
     <FormField
       control={companyForm.control}
@@ -68,7 +64,7 @@ export const AdminForm = ({ companyForm }) => {
                 selectedId={administrator}
                 position="bottom"
                 options={options}
-                onSelect={onHandleSelectAdministrator}
+                onSelect={(e) => setAdministrator(e)}
                 className="w-[400px]"
               />
             </FormControl>

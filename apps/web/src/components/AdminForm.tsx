@@ -60,7 +60,7 @@ export const AdminForm = ({ companyForm }) => {
             <FormControl>
               <Dropdown
                 id="person"
-                title="Select Sandvik administrator"
+                placeholder="Select Sandvik administrator"
                 selectedId={administrator}
                 position="bottom"
                 options={options}

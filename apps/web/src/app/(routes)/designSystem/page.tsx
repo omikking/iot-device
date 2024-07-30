@@ -1,4 +1,21 @@
-import { Button, Headline, Anchor, Text, Badge } from '@gsp/ui';
+'use client';
+import {
+  Button,
+  Headline,
+  Anchor,
+  Text,
+  Badge,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  Input,
+  FormMessage,
+  Dropdown,
+  Calendar,
+} from '@gsp/ui';
+
 import {
   LucideBot,
   LucideChevronDown,
@@ -7,9 +24,55 @@ import {
   LucideMoveLeft,
   LucideMoveRight,
 } from 'lucide-react';
+
 import Link from 'next/link';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 
 export default function Page(): JSX.Element {
+  const formSchema = z.object({
+    input: z.string(),
+    dropdown: z.string(),
+    calendar: z.string(),
+  });
+
+  // to validate the form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      input: '',
+      dropdown: '',
+      calendar: '',
+    },
+  });
+
+  const options = [
+    {
+      id: '1',
+      name: 'Elliot Anderson',
+    },
+    {
+      id: '2',
+      name: 'Darlene Anderson',
+    },
+    {
+      id: '3',
+      name: 'Tyrell Wellick',
+    },
+    {
+      id: '4',
+      name: 'Joanna Wellick',
+    },
+  ];
+
+  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
+    undefined,
+  );
+
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
       <Headline variant="xl" as="h1" color="foreground">
@@ -21,7 +84,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄
       </Headline>
-      <div className="flex flex-row flex-wrap gap-12">
+      <div className="flex flex-row flex-wrap justify-center gap-12">
         <Button variant="primary" size="large">
           <LucideBot size="20" />
         </Button>
@@ -169,7 +232,7 @@ export default function Page(): JSX.Element {
         Badges 🦄
       </Headline>
 
-      <div className="flex flex-row flex-wrap gap-12">
+      <div className="flex flex-row flex-wrap gap-12 justify-center">
         <Badge variant="primary">Primary</Badge>
 
         <Badge variant="attention">Attention</Badge>
@@ -209,6 +272,155 @@ export default function Page(): JSX.Element {
           <LucideBot size="18" />
         </Badge>
       </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Input field, dropdown & calendar 🦄
+      </Headline>
+
+      <div>
+        <Form {...form}>
+          <form
+            onSubmit={() => console.log('submit form')}
+            className="w-full flex flex-row justify-center flex-wrap gap-12"
+          >
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Input</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Type input..."
+                        {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        id="person"
+                        placeholder="Select dropdown item"
+                        selectedId={dropdownValue}
+                        position="bottom"
+                        options={options}
+                        onSelect={(e) => setDropdownValue(e)}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Calendar</FormLabel>
+                    <FormControl>
+                      <Calendar
+                        selectedDate={date}
+                        onSelect={setDate}
+                        className="mt-2 w-[380px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Input</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        placeholder="Type input..."
+                        {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        disabled
+                        id="person"
+                        placeholder="Select dropdown item"
+                        position="bottom"
+                        options={options}
+                        onSelect={(e) => setDropdownValue(e)}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Calendar</FormLabel>
+                    <FormControl>
+                      <Calendar
+                        disabled
+                        selectedDate={date}
+                        onSelect={setDate}
+                        className="mt-2 w-[380px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </form>
+        </Form>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Another component 🦄
+      </Headline>
+
+      <div className="flex flex-row flex-wrap gap-12"></div>
     </main>
   );
 }

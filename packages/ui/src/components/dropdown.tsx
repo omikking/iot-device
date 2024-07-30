@@ -15,7 +15,7 @@ interface DropdownItem {
 export interface DropdownProps
   extends Required<Pick<VariantProps<typeof dropdownVariants>, 'position'>> {
   id: string;
-  title?: string;
+  placeholder?: string;
   options: DropdownItem[];
   selectedId?: string;
   className?: string;
@@ -47,7 +47,7 @@ const dropdownVariants = cva(
 const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
   ({
     id,
-    title = 'Select',
+    placeholder = 'Select',
     options,
     position,
     selectedId,
@@ -103,7 +103,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
             variant="medium"
             color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
           >
-            {selectedItem?.name || title}
+            {selectedItem?.name || placeholder}
           </Text>
           <LucideChevronDown
             size="20"

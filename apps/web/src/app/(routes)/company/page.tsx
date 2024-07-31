@@ -24,6 +24,7 @@ import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({
@@ -91,7 +92,7 @@ export default function Page(): JSX.Element {
   // const user = 'Client';
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
+    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
       <Text
         variant="medium"
         color="foreground"
@@ -211,8 +212,19 @@ export default function Page(): JSX.Element {
             </div>
 
             {/* Admin assignment */}
-            <ContentHolder variant="general" headlineText="Admin">
-              <AdminForm companyForm={companyForm} />
+            <ContentHolder
+              variant="general"
+              headlineText={
+                user === 'Superadmin'
+                  ? 'Admin'
+                  : 'Sandvik associate contact details'
+              }
+            >
+              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
+
+              {user === 'Client' && (
+                <AssociateDetailsForm companyForm={companyForm} />
+              )}
             </ContentHolder>
           </div>
         </form>

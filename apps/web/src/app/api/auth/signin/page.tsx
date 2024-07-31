@@ -68,18 +68,18 @@ export default function SignIn() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-28 gap-16 bg-neutral-1">
-      {/* Is it ground support platform or login for any app? */}
+      {/* @TODO is this page ground support platform login only or login for all apps? */}
       <Headline as="h1" variant="xl" color="foreground">
         Ground Support Platform 🦄
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
-        {error && ( //@TODO fix better displaying of this error later
+        {/* @TODO fix better displaying of this error later */}
+        {error && (
           <Text variant="xs" color="destructive">
             {error}
           </Text>
         )}
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
@@ -125,11 +125,11 @@ export default function SignIn() {
               }}
             />
             <div className="flex items-center gap-2 pb-2">
-              <Text variant="xs" color="foreground">
+              <Text variant="small" color="foreground">
                 Forgot your password? {/* Will lead to a reset page later */}
               </Text>
 
-              <Text variant="xs" color="foreground">
+              <Text variant="small" color="foreground">
                 <Link href="https://www.google.se" passHref legacyBehavior>
                   <Anchor isUnderline color="foreground">
                     Click here to reset.
@@ -141,7 +141,6 @@ export default function SignIn() {
               <LucideLogIn />
               Login
             </Button>
-            {/* @TODO move button, text etc outside of this form? */}
           </form>
         </Form>
       </div>

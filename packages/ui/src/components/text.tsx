@@ -3,10 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
-// -- Usage examples --
-// <Text variant="medium" textColor="foreground">{text}<Text>
-// <Text as="span" variant="small" textColor="destructive">{text}<Text>
-
 const textVariants = cva('ui-font-sandvik-text', {
   variants: {
     variant: {
@@ -15,11 +11,11 @@ const textVariants = cva('ui-font-sandvik-text', {
       xs: 'ui-text-xs ui-tracking-wide',
     },
     color: {
-      foreground: 'ui-text-main-black', // @TODO update to correct color
-      background: 'ui-text-main-white', // @TODO update to correct color
-      muted: 'ui-text-neutral-5', // @TODO update to correct color
-      destructive: 'ui-text-error', // @TODO update to correct color
-      accent: 'ui-text-orange-primary', // @TODO update to correct color
+      foreground: 'ui-text-main-black',
+      background: 'ui-text-main-white',
+      muted: 'ui-text-neutral-5',
+      destructive: 'ui-text-error',
+      accent: 'ui-text-orange-primary',
     },
   },
 });

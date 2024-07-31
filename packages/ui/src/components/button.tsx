@@ -4,23 +4,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
-// -- Usage examples --
-// <Button variant="primary" size="large" type="submit">
-//   Plain large button
-// </Button>
-
-// <Button variant="secondary" size="small" type="submit">
-//   <LucideChevronDown />
-//   Small button with icon
-// </Button>
-
-// <Button variant="secondary" size="small" asChild>
-//   <Link href="#">
-//     <LucideMoveRight />
-//     Button used as link
-//   </Link>
-// </Button>
-
 const buttonVariants = cva(
   'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-cursor-not-allowed disabled:ui-pointer-events-none',
   {
@@ -37,7 +20,7 @@ const buttonVariants = cva(
       },
       size: {
         small:
-          'ui-h-9 ui-px-4 ui-text-sm ui-tracking-wide ui-gap-2 [&>svg]:ui-w-[18px] [&>svg]:ui-h-[18px]',
+          'ui-h-9 ui-px-5 ui-text-sm ui-tracking-wide ui-gap-2 [&>svg]:ui-w-[18px] [&>svg]:ui-h-[18px]',
         large:
           'ui-h-[46px] ui-px-7 ui-text-md ui-gap-3 ui-pt-[1px] [&>svg]:ui-mb-0.5 [&>svg]:ui-w-5 [&>svg]:ui-h-5',
       },

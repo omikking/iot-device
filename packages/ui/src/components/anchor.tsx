@@ -3,26 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
-// We need to use this component with Link from Next, with props href, passHref and legacyBehavior on Link and nothing except styling on Anchor.
+// We need to use this component with Link from Next when we want text styling. Include props href, passHref, legacyBehavior on Link if used with Anchor.
 // https://nextjs.org/docs/pages/api-reference/components/link
-
-// -- Usage examples --
-// <Headline variant="medium" color="foreground" as="h2">
-//   <Link href="#" passHref legacyBehavior>
-//     <Anchor color="foreground">
-//       <LucideMoveRight />
-//       Link with icon and no underline
-//     </Anchor>
-//   </Link>
-// </Headline>
-
-// <Text variant="xs" color="foreground">
-//   <Link href="#" passHref legacyBehavior>
-//     <Anchor isUnderline color="foreground">
-//       Link and black underline
-//     </Anchor>
-//   </Link>
-// </Text>
 
 const anchorVariants = cva(
   'ui-font-sandvik-text ui-transition ease-in-out ui-duration-200 ui-flex gap-4 ui-items-center',
@@ -30,11 +12,11 @@ const anchorVariants = cva(
     variants: {
       color: {
         foreground:
-          'ui-decoration-main-black/30 hover:ui-decoration-main-black', // @TODO update to correct color
+          'ui-decoration-main-black/30 hover:ui-decoration-main-black',
         background:
-          'ui-decoration-main-white/30 hover:ui-decoration-main-white', // @TODO update to correct color
-        muted: 'ui-decoration-neutral-5/30 hover:ui-decoration-neutral-5', // @TODO update to correct color
-        destructive: 'ui-decoration-error/30 hover:ui-decoration-error', // @TODO update to correct color
+          'ui-decoration-main-white/30 hover:ui-decoration-main-white',
+        muted: 'ui-decoration-neutral-5/30 hover:ui-decoration-neutral-5',
+        destructive: 'ui-decoration-error/30 hover:ui-decoration-error',
       },
       isUnderline: {
         true: 'ui-underline ui-underline-offset-2',

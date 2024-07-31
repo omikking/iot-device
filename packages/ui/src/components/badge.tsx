@@ -2,18 +2,6 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 
-// -- Usage examples --
-// <Badge variant="attention">Attention</Badge>
-
-// <Badge variant="attention">
-//     <LucideCloudUpload />
-//     Attention with icon
-// </Badge>
-
-// <Badge variant="primary" size="large">
-//     Primary large
-// </Badge>
-
 const badgeVariants = cva(
   'ui-flex ui-items-center ui-justify-center ui-rounded-lg',
   {
@@ -29,7 +17,7 @@ const badgeVariants = cva(
       },
       size: {
         small:
-          'ui-h-[26px] ui-pt-0.5 ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text [&>svg]:ui-w-[16px] [&>svg]:ui-h-[16px] [&>svg]:ui-mb-[3px]',
+          'ui-h-[26px] ui-pt-[1px] ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text [&>svg]:ui-w-[16px] [&>svg]:ui-h-[16px] [&>svg]:ui-mb-[1px]',
         large:
           'ui-pt-0.5 ui-h-10 ui-px-6 ui-text-xl ui-gap-3 ui-font-sandvik-headline [&>svg]:ui-w-[20px] [&>svg]:ui-h-[20px] [&>svg]:ui-mb-[3px]',
       },

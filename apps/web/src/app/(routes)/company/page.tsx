@@ -205,8 +205,8 @@ export default function Page(): JSX.Element {
 
               {/* App plans */}
               <div className="w-full flex justify-between items-start bg-main-white mt-4">
-                {mockAppPlans.map((appData) => (
-                  <AppPlansContainer appData={appData} />
+                {mockAppPlans.map((appData, i) => (
+                  <AppPlansContainer appData={appData} key={i} />
                 ))}
               </div>
             </div>

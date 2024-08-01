@@ -1,15 +1,54 @@
+'use client';
+import { CompanyList } from '@/components/CompanyList';
+import { Headline, Button, NavigationCard, ContentHolder } from '@gsp/ui';
+import {
+  LucideBuilding2,
+  LucideMoveRight,
+  LucidePickaxe,
+  LucidePlus,
+} from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@gsp/ui';
+
 export default function Page(): JSX.Element {
   return (
-    <main className="flex flex-col items-center min-h-screen p-24">
-      <h1 className="text-md">Welcome to Ground Support Web! 🚀</h1>
-      <div className="py-5">
-        <p>Routes</p>
-        <Button>
-          <Link href="/coffees">Coffees</Link>
-        </Button>
+    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
+      <Headline as="h1" variant="xl" color="foreground">
+        Administration
+      </Headline>
+
+      <div className="flex gap-8">
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Companies
+          </Headline>
+          <LucideBuilding2 />
+          <Button variant="primary" size="small" asChild>
+            <Link href="/company">
+              <LucidePlus />
+              Add new company
+            </Link>
+          </Button>
+        </NavigationCard>
+
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Technicians
+          </Headline>
+          <LucidePickaxe />
+          <Button variant="secondary" size="small" asChild>
+            <Link href="/technicians">
+              <LucideMoveRight />
+              View technicians
+            </Link>
+          </Button>
+        </NavigationCard>
       </div>
+
+      <hr className="w-full ui-color-gold-3" />
+
+      <ContentHolder variant="table" headlineText="Companies to administrate">
+        <CompanyList />
+      </ContentHolder>
     </main>
   );
 }

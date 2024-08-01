@@ -3,10 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../lib/utils';
 
-// -- Usage examples --
-// <Headline as="h1" variant="medium" color="foreground">{text}<Headline>
-// <Headline as="h2" variant="large" color="destructive">{text}<Headline>
-
 const headlineVariants = cva('ui-font-sandvik-headline', {
   variants: {
     variant: {
@@ -16,10 +12,10 @@ const headlineVariants = cva('ui-font-sandvik-headline', {
       smallBold: 'ui-text-xl ui-font-bold',
     },
     color: {
-      foreground: 'ui-text-foreground', // @TODO update to correct color
-      background: 'ui-text-background', // @TODO update to correct color
-      muted: 'ui-text-muted-foreground', // @TODO update to correct color
-      destructive: 'ui-text-destructive', // @TODO update to correct color
+      foreground: 'ui-text-main-black',
+      background: 'ui-text-main-white',
+      muted: 'ui-text-neutral-5',
+      destructive: 'ui-text-error',
     },
   },
 });

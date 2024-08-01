@@ -12,8 +12,10 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
+import { Text } from './text';
 import { cn } from '../lib/utils';
 import { Label } from './label';
+import { LucideCircleAlert } from 'lucide-react';
 
 const Form = FormProvider;
 
@@ -80,7 +82,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('ui-space-y-2', className)} {...props} />
+      <div ref={ref} className={cn('ui-space-y-1.5', className)} {...props} />
     </FormItemContext.Provider>
   );
 });
@@ -90,15 +92,10 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField();
+  const { formItemId } = useFormField();
 
   return (
-    <Label
-      ref={ref}
-      className={cn(error && 'ui-text-destructive', className)}
-      htmlFor={formItemId}
-      {...props}
-    />
+    <Label ref={ref} className={className} htmlFor={formItemId} {...props} />
   );
 });
 FormLabel.displayName = 'FormLabel';
@@ -131,12 +128,12 @@ const FormDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
-
+  // @TODO when is this used? update this to use Text component instead.
   return (
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('ui-text-sm ui-text-muted-foreground', className)}
+      className={cn('ui-text-sm ui-text-neutral-5', className)}
       {...props}
     />
   );
@@ -146,7 +143,7 @@ FormDescription.displayName = 'FormDescription';
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+>(({ children }, ref) => {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message) : children;
 
@@ -155,14 +152,12 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <p
-      ref={ref}
-      id={formMessageId}
-      className={cn('ui-text-sm ui-font-medium ui-text-destructive', className)}
-      {...props}
-    >
-      {body}
-    </p>
+    <div className="flex ui-items-center gap-2">
+      <LucideCircleAlert size="12" className="ui-stroke-error" />
+      <Text variant="xs" color="destructive" id={formMessageId} ref={ref}>
+        {body}
+      </Text>
+    </div>
   );
 });
 FormMessage.displayName = 'FormMessage';

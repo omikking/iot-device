@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+  /* Removes default focus, focus should be replaced with custo styling where it's relevant */
+  outline: none; 
+
+  /* Global font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -18,4 +28,28 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+div {
+  /* Scrollbar design */
+  ::-webkit-scrollbar {
+      width: 4px;
+  }
+   
+  /* Track */
+  ::-webkit-scrollbar-track {
+      background: #E6E6E6;
+      margin: 12px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+      background: #6F6F6F;
+      border-radius: 2px;
+  }
+   
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+      background: #6F6F6F;
+  }
 }

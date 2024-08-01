@@ -1,6 +1,7 @@
 'use client';
 
 import { gql, useMutation } from '@apollo/client';
+import { Button } from '@gsp/ui';
 
 const CREATE_COFFEE = gql`
   mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {
@@ -69,7 +70,9 @@ export default function CoffeeCreate() {
       <form onSubmit={handleSubmit}>
         <input name="name" placeholder="Coffee name" required />
         <input name="brand" placeholder="Coffee brand" required />
-        <button type="submit">Create Coffee</button>
+        <Button size={'large'} variant={'primary'} type="submit">
+          Create Coffee
+        </Button>
       </form>
     </div>
   );

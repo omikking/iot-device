@@ -32,7 +32,7 @@ Import the component you want to use, example:
 import { Button } from '@gsp/ui';
 
 Use it in the JSX, example:
-<Button variant={'secondary'} onClick={() => signIn()}>
+<Button variant={'secondary'} size={'large'} onClick={() => signIn()}>
 Sign in
 </Button>
 

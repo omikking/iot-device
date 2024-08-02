@@ -43,7 +43,7 @@ const Calendar = ({
         nav_button_next: 'ui-absolute ui-right-1',
         table: 'ui-w-full ui-border-collapse ui-space-y-1',
         head_row:
-          'ui-my-2 ui-flex ui-justify-between ui-border-b ui-border-neutral-2',
+          'ui-my-2 ui-py-1 ui-flex ui-justify-between ui-border-b ui-border-neutral-2',
         head_cell:
           'ui-font-sandvik-text ui-text-neutral-4 ui-w-9 ui-text-xs ui-font-[400]',
         row: 'ui-flex ui-justify-between ui-mt-2',

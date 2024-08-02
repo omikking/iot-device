@@ -467,7 +467,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Input</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Type input..."
+                        placeholder="Enter input"
                         {...field}
                         className="w-[400px]"
                       />
@@ -487,7 +487,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Input
                         disabled
-                        placeholder="Type input..."
+                        placeholder="Enter input"
                         {...field}
                         className="w-[400px]"
                       />

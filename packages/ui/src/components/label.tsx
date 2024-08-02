@@ -21,14 +21,23 @@ const labelVariants = cva(
   },
 );
 
+interface LabelProps {
+  disabled?: boolean;
+}
+
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
-    VariantProps<typeof labelVariants>
->(({ className, variant, ...props }, ref) => (
+    VariantProps<typeof labelVariants> &
+    LabelProps
+>(({ className, variant, disabled, ...props }, ref) => (
   <LabelPrimitive.Root
     ref={ref}
-    className={cn(labelVariants({ variant }), className)}
+    className={cn(
+      labelVariants({ variant }),
+      disabled && '!ui-text-neutral-5',
+      className,
+    )}
     {...props}
   />
 ));

@@ -11,6 +11,7 @@ export * from './text';
 export * from './anchor';
 export * from './switch';
 export * from './textarea';
+export * from './modal';
 
 export * from './menu-overlay';
 export * from './navigation-card';

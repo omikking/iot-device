@@ -17,6 +17,10 @@ import {
   Textarea,
   Checkbox,
   Switch,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
 } from '@gsp/ui';
 
 import {
@@ -24,6 +28,9 @@ import {
   LucideChevronDown,
   LucideCircleCheckBig,
   LucideCloudUpload,
+  LucideGitGraph,
+  LucideGrid3X3,
+  LucideList,
   LucideMoveLeft,
   LucideMoveRight,
 } from 'lucide-react';
@@ -543,12 +550,49 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Switch toggle 🦄
       </Headline>
-
       <div className="flex flex-row flex-wrap gap-12">
         <Switch checked />
         <Switch />
         <Switch disabled />
       </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Tabs 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-12">
+        <Tabs defaultValue="tab1">
+          <TabsList>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">Tab 1 content here</TabsContent>
+          <TabsContent value="tab2">Tab 2 content here</TabsContent>
+        </Tabs>
+
+        <Tabs defaultValue="images">
+          <TabsList>
+            <TabsTrigger value="grid">
+              <LucideGrid3X3 size="18" className="mr-1.5" />
+              Grid
+            </TabsTrigger>
+            <TabsTrigger value="graphs">
+              <LucideGitGraph size="18" className="mr-1.5" />
+              Graphs
+            </TabsTrigger>
+            <TabsTrigger value="list">
+              <LucideList size="18" className="mr-1.5" />
+              List
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="grid">Grid layout</TabsContent>
+          <TabsContent value="graphs">Graphs layout</TabsContent>
+          <TabsContent value="list">List layout</TabsContent>
+        </Tabs>
+      </div>
+
+      <hr className="w-full" />
     </main>
   );
 }

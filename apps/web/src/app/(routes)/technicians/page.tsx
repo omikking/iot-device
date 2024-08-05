@@ -140,10 +140,10 @@ export default function Page(): JSX.Element {
               </TableRow>
             ))}
           </TableBody>
-          <Badge variant="neutral" className="mt-4">
-            {usersMock.length} total
-          </Badge>
         </Table>
+        <Badge variant="neutral" className="self-start">
+          {usersMock.length} total
+        </Badge>
       </div>
     </main>
   );

@@ -618,7 +618,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Table 🦄
       </Headline>
-      <div className="flex flex-row flex-wrap gap-12">
+      <div className="flex flex-row flex-wrap gap-5 max-w-[1320px]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -652,10 +652,10 @@ export default function Page(): JSX.Element {
               </TableRow>
             ))}
           </TableBody>
-          <Badge variant="neutral" className="mt-4">
-            {usersMock.length} total
-          </Badge>
         </Table>
+        <Badge variant="neutral" className="self-start">
+          {usersMock.length} total
+        </Badge>
       </div>
     </main>
   );

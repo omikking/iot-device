@@ -42,7 +42,7 @@ const CompanyCard = ({
   )[iconName];
 
   return (
-    <div className="w-96 m-sm border-2 border-gold-primary relative">
+    <div className="w-96 border-2 border-gold-primary relative">
       <div className="absolute top-0 right-0 pt-2 pr-2">
         <Badge variant={badgeVariant}>{badgeText}</Badge>
       </div>

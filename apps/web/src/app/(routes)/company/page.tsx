@@ -119,7 +119,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucideUsers />
               <Button variant="secondary" size="small" asChild>
-                <Link href="/company">
+                <Link href="/users">
                   <LucideMoveRight />
                   View users
                 </Link>

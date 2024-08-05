@@ -45,7 +45,7 @@ export const Menu = () => {
 
               <div className="flex ui-flex-col gap-1">
                 <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/users" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight />
                       View users

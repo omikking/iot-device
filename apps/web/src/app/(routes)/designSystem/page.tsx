@@ -17,6 +17,12 @@ import {
   Textarea,
   Checkbox,
   Switch,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
 } from '@gsp/ui';
 
 import {
@@ -24,8 +30,12 @@ import {
   LucideChevronDown,
   LucideCircleCheckBig,
   LucideCloudUpload,
+  LucideEllipsis,
+  LucideKey,
   LucideMoveLeft,
   LucideMoveRight,
+  LucidePickaxe,
+  LucideUser,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -77,6 +87,59 @@ export default function Page(): JSX.Element {
   );
 
   const [date, setDate] = useState<Date | undefined>(undefined);
+
+  const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
+    const badges = {
+      User: {
+        variant: 'neutral',
+        icon: <LucideUser />,
+      },
+      Technician: {
+        variant: 'neutral',
+        icon: <LucidePickaxe />,
+      },
+      Admin: {
+        variant: 'primary',
+        icon: <LucideKey />,
+      },
+    };
+    return badges[role];
+  };
+
+  const usersMock = [
+    {
+      id: '1',
+      name: 'Elliot Anderson',
+      email: 'anderson@sandvik.com',
+      appAccess: 'Pull-test, Ultrabots, xCyclops',
+      role: 'User',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '2',
+      name: 'Jimmy Nwadinkpa',
+      email: 'jimmy@sandvik.com',
+      appAccess: 'Ultrabots, xCyclops',
+      role: 'Technician',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '3',
+      name: 'Felix Östergren',
+      email: 'felix@sandvik.com',
+      appAccess: 'Pull-test',
+      role: 'User',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '4',
+      name: 'Darlene Anderson',
+      email: 'darleneanderson@sandvik.com',
+      appAccess: 'Pull-test, Ultrabots, xCyclops',
+      role: 'Admin',
+      phoneNumber: '+4683729327',
+    },
+  ];
 
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
@@ -548,6 +611,51 @@ export default function Page(): JSX.Element {
         <Switch checked />
         <Switch />
         <Switch disabled />
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Table 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-12">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[220px]">Full name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>App access</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Phone number</TableHead>
+              <TableHead className="text-right"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {usersMock.map((user, i) => (
+              <TableRow key={i}>
+                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.appAccess}</TableCell>
+                <TableCell>
+                  {/* Typing needs to be specified, do later */}
+                  <Badge variant={getRoleBadge(user.role).variant}>
+                    {getRoleBadge(user.role).icon}
+                    {user.role}
+                  </Badge>
+                </TableCell>
+                <TableCell>{user.phoneNumber}</TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="small">
+                    <LucideEllipsis />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <Badge variant="neutral" className="mt-4">
+            {usersMock.length} total
+          </Badge>
+        </Table>
       </div>
     </main>
   );

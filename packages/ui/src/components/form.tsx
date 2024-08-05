@@ -1,19 +1,30 @@
+'use client';
+
 import * as React from 'react';
-import type * as LabelPrimitive from '@radix-ui/react-label';
+import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
-import type { ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
-import { Controller, FormProvider, useFormContext } from 'react-hook-form';
+import {
+  Controller,
+  ControllerProps,
+  FieldPath,
+  FieldValues,
+  FormProvider,
+  useFormContext,
+} from 'react-hook-form';
+
+import { Text } from './text';
 import { cn } from '../lib/utils';
 import { Label } from './label';
+import { LucideCircleAlert } from 'lucide-react';
 
 const Form = FormProvider;
 
-interface FormFieldContextValue<
+type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> {
+> = {
   name: TName;
-}
+};
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
@@ -39,6 +50,10 @@ const useFormField = () => {
 
   const fieldState = getFieldState(fieldContext.name, formState);
 
+  if (!fieldContext) {
+    throw new Error('useFormField should be used within <FormField>');
+  }
+
   const { id } = itemContext;
 
   return {
@@ -51,9 +66,9 @@ const useFormField = () => {
   };
 };
 
-interface FormItemContextValue {
+type FormItemContextValue = {
   id: string;
-}
+};
 
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
@@ -67,7 +82,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('ui-space-y-2', className)} {...props} />
+      <div ref={ref} className={cn('ui-space-y-1.5', className)} {...props} />
     </FormItemContext.Provider>
   );
 });
@@ -77,15 +92,10 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField();
+  const { formItemId } = useFormField();
 
   return (
-    <Label
-      className={cn(error && 'ui-text-destructive', className)}
-      htmlFor={formItemId}
-      ref={ref}
-      {...props}
-    />
+    <Label ref={ref} className={className} htmlFor={formItemId} {...props} />
   );
 });
 FormLabel.displayName = 'FormLabel';
@@ -99,14 +109,14 @@ const FormControl = React.forwardRef<
 
   return (
     <Slot
+      ref={ref}
+      id={formItemId}
       aria-describedby={
         !error
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={Boolean(error)}
-      id={formItemId}
-      ref={ref}
+      aria-invalid={!!error}
       {...props}
     />
   );
@@ -118,12 +128,12 @@ const FormDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
-
+  // @TODO when is this used? update this to use Text component instead.
   return (
     <p
-      className={cn('ui-text-sm ui-text-muted-foreground', className)}
-      id={formDescriptionId}
       ref={ref}
+      id={formDescriptionId}
+      className={cn('ui-text-sm ui-text-neutral-5', className)}
       {...props}
     />
   );
@@ -133,23 +143,21 @@ FormDescription.displayName = 'FormDescription';
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+>(({ children }, ref) => {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error.message) : children;
+  const body = error ? String(error?.message) : children;
 
   if (!body) {
     return null;
   }
 
   return (
-    <p
-      className={cn('ui-text-sm ui-font-medium ui-text-destructive', className)}
-      id={formMessageId}
-      ref={ref}
-      {...props}
-    >
-      {body}
-    </p>
+    <div className="flex ui-items-center gap-2">
+      <LucideCircleAlert size="12" className="ui-stroke-error" />
+      <Text variant="xs" color="destructive" id={formMessageId} ref={ref}>
+        {body}
+      </Text>
+    </div>
   );
 });
 FormMessage.displayName = 'FormMessage';

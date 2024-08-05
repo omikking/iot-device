@@ -23,6 +23,11 @@
         "icon": "www",
         "extensions": ["pull-test"],
         "format": "svg"
+    },
+    {
+        "icon": "config",
+        "extensions": ["eslint-config", "tailwind-config", "typescript-config"],
+        "format": "svg"
     }
   ]
 }

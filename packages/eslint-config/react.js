@@ -34,9 +34,29 @@ module.exports = {
     },
   },
   ignorePatterns: ["node_modules/", "dist/", ".eslintrc.js", "**/*.css"],
-  // add rules configurations here
+  // Add rules configurations here
+  // I have disabled some of the more extreme rules. This helps fix so shadcn/ui components works without a bunch of errors.
   rules: {
     "import/no-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/order": "off",
+    "react/function-component-definition": "off",
+    "react/jsx-sort-props": "off",
+    "react/no-unstable-nested-components": [
+      "warn",
+      {
+        "allowAsProps": true
+      },
+    ],
+    "eslint@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/consistent-type-imports": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/no-unnecessary-condition": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "jsx-a11y/heading-has-content": "off",
+    "no-implicit-coercion": "off",
+    "object-shorthand": "off",
   },
   overrides: [
     {

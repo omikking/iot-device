@@ -2,6 +2,40 @@
 
 The Ground Support Platform Design System is a collection of React components. This package is designed to provide a consistent look and feel across applications within the platform.
 
+We are utilising shadcn/ui as our base for the design system.
+
+## Getting Started
+
+Run the development server:
+
+```sh
+# From root of /ui
+pnpm dev
+
+# From root of repo, running only ui package.
+pnpm --filter=ui dev
+
+# From root of repo, running with all other dev services (recommended)
+pnpm run dev
+```
+
+## How to add a component from ShadCN
+
+Choose what component you want in [text](https://ui.shadcn.com/docs/components)
+Scroll down to installation. Choose CLI, click pnpm and copy the link.
+For example: pnpm dlx shadcn-ui@latest add button
+
+Open the component in packages/ui/src/component/button
+Add the component you want to export, for example: export \* from './button'
+
+Import the component you want to use, example:
+import { Button } from '@gsp/ui';
+
+Use it in the JSX, example:
+<Button variant={'secondary'} size={'large'} onClick={() => signIn()}>
+Sign in
+</Button>
+
 ## Building process for `packages/ui`
 
 The `packages/ui` is a set of UI components that are compiled into the `dist` directory. The `.tsx` files are directly consumed by the Next.js apps using `transpilePackages` in `next.config.js`. This approach was chosen for the following reasons:

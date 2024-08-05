@@ -10,13 +10,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Headline,
   Input,
-  Label,
+  Anchor,
+  Text,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { LucideLogIn } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SignIn() {
   const [error, setError] = useState('');
@@ -27,12 +31,12 @@ export default function SignIn() {
   const formSchema = z.object({
     emailAddress: z
       .string()
-      .email({ message: 'email must be a valid email address.' })
-      .min(2, { message: 'email must be at least 2 characters.' })
-      .max(50, { message: 'email must be at most 50 characters.' }),
+      .email({ message: 'Email must be a valid email address.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' }),
     password: z
       .string()
-      .min(3, { message: 'password must be at least 3 characters.' }),
+      .min(3, { message: 'Password must be at least 3 characters.' }),
   });
 
   // to validate the form
@@ -58,18 +62,28 @@ export default function SignIn() {
     }
   };
   const { data: session, status } = useSession();
+
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
-  return (
-    <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
-      <h1 className="text-md">Welcome to Ground Support Web! 🦄</h1>
-      <div className="min-w-96 h-96 flex flex-col items-center">
-        {error && <p>{error}</p>}
 
+  return (
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-28 gap-16 bg-neutral-1">
+      {/* @TODO is this page ground support platform login only or login for all apps? */}
+      <Headline as="h1" variant="xl" color="foreground">
+        Ground Support Platform 🦄
+      </Headline>
+
+      <div className="min-w-96 h-96 flex flex-col items-center">
+        {/* @TODO fix better displaying of this error later */}
+        {error && (
+          <Text variant="xs" color="destructive">
+            {error}
+          </Text>
+        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-            className="w-full flex flex-col gap-4"
+            className="w-full flex flex-col gap-6"
           >
             <FormField
               control={form.control}
@@ -79,7 +93,11 @@ export default function SignIn() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Email address" {...field} />
+                      <Input
+                        placeholder="Type email..."
+                        {...field}
+                        className="w-full"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -96,8 +114,9 @@ export default function SignIn() {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder="Type password..."
                         {...field}
+                        className="w-full"
                       />
                     </FormControl>
                     <FormMessage />
@@ -105,15 +124,21 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="pb-8 pt-2">
-              <Label>
+            <div className="flex items-center gap-2 pb-2">
+              <Text variant="small" color="foreground">
                 Forgot your password? {/* Will lead to a reset page later */}
-                <a className="underline" href="https://www.google.se">
-                  Click here to reset.
-                </a>
-              </Label>
+              </Text>
+
+              <Text variant="small" color="foreground">
+                <Link href="https://www.google.se" passHref legacyBehavior>
+                  <Anchor isUnderline color="foreground">
+                    Click here to reset.
+                  </Anchor>
+                </Link>
+              </Text>
             </div>
-            <Button className="bg-white" type="submit" size={'lg'}>
+            <Button variant="primary" size="large" isWide type="submit">
+              <LucideLogIn />
               Login
             </Button>
           </form>

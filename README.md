@@ -25,8 +25,8 @@ Monorepo powered by [Turborepo](https://turbo.build/) and [pnpm workspace](https
 
 - [UNIX based OS (mac, linux or WSL2 for windows)](https://docs.microsoft.com/en-us/windows/wsl/install)
 - [Docker](https://docs.docker.com/get-docker/) to run database containers
-- [pnpm](https://pnpm.io/installation) package manager
 - [nvm](https://github.com/nvm-sh/nvm) to install and manage correct node version
+- [pnpm](https://pnpm.io/installation) package manager
 
 ### Setting up project
 
@@ -47,6 +47,8 @@ pnpm run db:dev:up # Start Docker Postgres DB (dev)
 pnpm run start:dev # Start NestJS in watch mode
 ```
 
+> ❗️ All of the services below can be run at the same time by using `pnpm run dev` in the root of project. This is what I recommend so you do not have to go into each project and open a terminal window for each app/package. ❗️
+
 #### Web app
 
 ```sh
@@ -60,6 +62,13 @@ pnpm run dev
 ```sh
 cd apps/pull-test
 cp .env.example .env # Populate with valid values
+pnpm run dev
+```
+
+#### UI Package
+
+```sh
+cd packages/ui
 pnpm run dev
 ```
 

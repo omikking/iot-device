@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
+// This is the Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -11,6 +8,22 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  companyCode Int    @unique
+  country     String
+  city        String
+  address     String
+
+  users User[]
+
+  @@map("companies")
 }
 
 model User {
@@ -24,7 +37,8 @@ model User {
   firstName String?
   lastName  String?
 
-  Bolts Bolt[]
+  companies Company[]
+  bolts     Bolt[]
 
   @@map("users")
 }
@@ -52,4 +66,36 @@ model RefreshTokenId {
   refreshTokenId String @unique
 
   @@map("refresh_token_ids")
+}
+
+model Coffee {
+  id        Int            @id @default(autoincrement())
+  name      String
+  brand     String
+  flavors   CoffeeFlavor[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("coffees")
+}
+
+model Flavor {
+  id        Int            @id @default(autoincrement())
+  name      String
+  coffees   CoffeeFlavor[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("flavors")
+}
+
+model CoffeeFlavor {
+  coffeeId Int
+  flavorId Int
+
+  coffee Coffee @relation(fields: [coffeeId], references: [id])
+  flavor Flavor @relation(fields: [flavorId], references: [id])
+
+  @@id([coffeeId, flavorId])
+  @@map("coffee_flavors")
 }

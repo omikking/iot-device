@@ -13,10 +13,11 @@ import {
   Input,
   FormMessage,
   Dropdown,
-  Calendar,
   Textarea,
   Checkbox,
   Switch,
+  RangeCalendar,
+  SingleDateCalendar,
 } from '@gsp/ui';
 
 import {
@@ -76,7 +77,14 @@ export default function Page(): JSX.Element {
     undefined,
   );
 
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  // For SingleDateCalendar
+  // const [date, setDate] = useState<Date | undefined>(undefined);
+
+  // For RangeCalendar
+  // const [rangeDate, setRangeDate] = useState<DateRange | undefined>({
+  //   from: undefined,
+  //   to: undefined,
+  // });
 
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
@@ -386,44 +394,17 @@ export default function Page(): JSX.Element {
         <Form {...form}>
           <form
             onSubmit={() => console.log('submit form')}
-            className="w-full flex flex-row justify-center flex-wrap gap-12"
+            className="w-full max-w-[1200px] flex flex-row justify-center flex-wrap gap-12"
           >
             <FormField
               control={form.control}
-              name="input"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Input</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Type input..."
-                        {...field}
-                        className="w-[400px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="dropdown"
+              name="calendar"
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Dropdown</FormLabel>
+                    <FormLabel>Single calendar</FormLabel>
                     <FormControl>
-                      <Dropdown
-                        id="person"
-                        placeholder="Select dropdown item"
-                        selectedId={dropdownValue}
-                        position="bottom"
-                        options={options}
-                        onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
-                      />
+                      <SingleDateCalendar className="w-[400px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -436,13 +417,40 @@ export default function Page(): JSX.Element {
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Calendar</FormLabel>
+                    <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <Calendar
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
-                      />
+                      <SingleDateCalendar disabled className="w-[400px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Range calendar</FormLabel>
+                    <FormControl>
+                      <RangeCalendar className="w-[400px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Disabled range calendar</FormLabel>
+                    <FormControl>
+                      <RangeCalendar disabled className="w-[400px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -456,12 +464,54 @@ export default function Page(): JSX.Element {
               render={({ field }) => {
                 return (
                   <FormItem>
+                    <FormLabel>Input</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter input"
+                        {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem>
                     <FormLabel>Disabled input</FormLabel>
                     <FormControl>
                       <Input
                         disabled
-                        placeholder="Type input..."
+                        placeholder="Enter input"
                         {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        id="person"
+                        placeholder="Select dropdown item"
+                        selectedId={dropdownValue}
+                        options={options}
+                        onSelect={(e) => setDropdownValue(e)}
                         className="w-[400px]"
                       />
                     </FormControl>
@@ -482,51 +532,9 @@ export default function Page(): JSX.Element {
                         disabled
                         id="person"
                         placeholder="Select dropdown item"
-                        position="bottom"
                         options={options}
                         onSelect={(e) => setDropdownValue(e)}
                         className="w-[400px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="calendar"
-              render={() => {
-                return (
-                  <FormItem>
-                    <FormLabel>Disabled calendar</FormLabel>
-                    <FormControl>
-                      <Calendar
-                        disabled
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="calendar"
-              render={() => {
-                return (
-                  <FormItem>
-                    <FormLabel>Range calendar WIP</FormLabel>
-                    <FormControl>
-                      <Calendar
-                        // mode="range"
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
                       />
                     </FormControl>
                     <FormMessage />

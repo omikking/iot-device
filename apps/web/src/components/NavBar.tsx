@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSession } from 'next-auth/react';
 import { Headline, Text } from '@gsp/ui';
-import { User } from 'lucide-react';
+import { LucideUser } from 'lucide-react';
 import Sandviklogo from 'public/sandviklogo.svg';
 import { Menu } from './Menu';
 
@@ -28,7 +28,7 @@ export const NavBar = () => {
               </div>
 
               <div className="flex items-center gap-1 border border-gold-3 px-5 py-1.5">
-                <User className="mr-2 h-4 w-4" />
+                <LucideUser size="16" className="mr-2" />
                 <Text variant="medium" color="foreground">
                   {session.userData.firstName} {session.userData.lastName}
                 </Text>

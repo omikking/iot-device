@@ -1,5 +1,14 @@
 'use client';
-import { Button, ContentHolder, Headline, Text, Anchor } from '@gsp/ui';
+import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
+import {
+  Button,
+  ContentHolder,
+  Headline,
+  Text,
+  Anchor,
+  Modal,
+  ModalTrigger,
+} from '@gsp/ui';
 import { LucideMoveLeft, LucidePlus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,10 +35,15 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end">
-        <Button variant="primary" size="large">
-          <LucidePlus />
-          Add technician
-        </Button>
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              Add technician
+            </Button>
+          </ModalTrigger>
+          <AddOrEditTechnicianModal />
+        </Modal>
 
         <ContentHolder variant="table"></ContentHolder>
       </div>

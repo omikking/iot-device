@@ -182,7 +182,7 @@ importers:
         version: 14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next-auth:
         specifier: ^4.24.7
-        version: 4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -237,7 +237,7 @@ importers:
         version: 3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0))
       '@apollo/experimental-nextjs-app-support':
         specifier: ^0.11.2
-        version: 0.11.2(@apollo/client@3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0)))(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        version: 0.11.2(@apollo/client@3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0)))(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@gsp/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -261,7 +261,7 @@ importers:
         version: 14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next-auth:
         specifier: ^4.24.7
-        version: 4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -304,7 +304,7 @@ importers:
         version: 8.4.35
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3))
+        version: 3.4.1(ts-node@10.9.2)
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -325,7 +325,7 @@ importers:
         version: link:../typescript-config
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3))
+        version: 3.4.1(ts-node@10.9.2)
 
   packages/typescript-config: {}
 
@@ -1398,11 +1398,11 @@ packages:
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-  '@floating-ui/core@1.6.5':
-    resolution: {integrity: sha512-8GrTWmoFhm5BsMZOTHeGD2/0FLKLQQHvO/ZmQga4tKempYRLz8aqJGqXVuQgisnMObq2YZ2SgkwctN1LOOxcqA==}
+  '@floating-ui/core@1.6.6':
+    resolution: {integrity: sha512-Vkvsw6EcpMHjvZZdMkSY+djMGFbt7CRssW99Ne8tar2WLnZ/l3dbxeTShbLQj+/s35h+Qb4cmnob+EzwtjrXGQ==}
 
-  '@floating-ui/dom@1.6.8':
-    resolution: {integrity: sha512-kx62rP19VZ767Q653wsP1XZCGIirkE09E0QUGNYTM/ttbbQHqcGPdSfWFxUyyNLc/W6aoJRBajOSXhP6GXjC0Q==}
+  '@floating-ui/dom@1.6.9':
+    resolution: {integrity: sha512-zB1PcI350t4tkm3rvUhSRKa9sT7vH5CrAbQxW+VaPYJXKAO0gsg4CTueL+6Ajp7XzAQC8CW4Jj1Wgqc0sB6oUQ==}
 
   '@floating-ui/react-dom@2.1.1':
     resolution: {integrity: sha512-4h84MJt3CHrtG18mGsXuLCHMrug49d7DFkU0RMIyshRveBeyV2hmV/pDaF2Uxtu8kgq5r46llp5E5FQiR0K2Yg==}
@@ -1410,8 +1410,8 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
-  '@floating-ui/utils@0.2.5':
-    resolution: {integrity: sha512-sTcG+QZ6fdEUObICavU+aB3Mp8HY4n14wYHdxK4fXjPmv3PXZZeY5RaguJmGyeH/CJQhX3fqKUtS4qc1LoHwhQ==}
+  '@floating-ui/utils@0.2.6':
+    resolution: {integrity: sha512-0KI3zGxIUs1KDR/pjQPdJH4Z8nGBm0yJ5WRoRfdw1Kzeh45jkIfA0rmD0kBF6fKHH+xaH7g8y4jIXyAV5MGK3g==}
 
   '@graphql-tools/merge@8.4.2':
     resolution: {integrity: sha512-XbrHAaj8yDuINph+sAfuq3QCZ/tKblrTLOpirK0+CAgNlZUCHs0Fa+xtMUURgwCVThLle1AF7svJCxFizygLsw==}
@@ -6367,7 +6367,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@apollo/experimental-nextjs-app-support@0.11.2(@apollo/client@3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0)))(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+  '@apollo/experimental-nextjs-app-support@0.11.2(@apollo/client@3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0)))(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@apollo/client': 3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0))
       '@apollo/client-react-streaming': 0.11.2(@apollo/client@3.10.8(@types/react@18.2.61)(graphql-ws@5.14.3(graphql@16.9.0))(graphql@16.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(subscriptions-transport-ws@0.11.0(graphql@16.9.0)))(react@18.2.0)
@@ -7583,22 +7583,22 @@ snapshots:
 
   '@eslint/js@8.57.0': {}
 
-  '@floating-ui/core@1.6.5':
+  '@floating-ui/core@1.6.6':
     dependencies:
-      '@floating-ui/utils': 0.2.5
+      '@floating-ui/utils': 0.2.6
 
-  '@floating-ui/dom@1.6.8':
+  '@floating-ui/dom@1.6.9':
     dependencies:
-      '@floating-ui/core': 1.6.5
-      '@floating-ui/utils': 0.2.5
+      '@floating-ui/core': 1.6.6
+      '@floating-ui/utils': 0.2.6
 
   '@floating-ui/react-dom@2.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@floating-ui/dom': 1.6.8
+      '@floating-ui/dom': 1.6.9
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@floating-ui/utils@0.2.5': {}
+  '@floating-ui/utils@0.2.6': {}
 
   '@graphql-tools/merge@8.4.2(graphql@16.9.0)':
     dependencies:
@@ -11570,7 +11570,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next-auth@4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  next-auth@4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.24.7
       '@panva/hkdf': 1.1.1
@@ -11864,14 +11864,6 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.35
 
-  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3)):
-    dependencies:
-      lilconfig: 3.0.0
-      yaml: 2.3.4
-    optionalDependencies:
-      postcss: 8.4.35
-      ts-node: 10.9.2(@types/node@20.11.24)(typescript@5.3.3)
-
   postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3)):
     dependencies:
       lilconfig: 3.0.0
@@ -11879,6 +11871,14 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.35
       ts-node: 10.9.2(@types/node@20.14.2)(typescript@5.3.3)
+
+  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2):
+    dependencies:
+      lilconfig: 3.0.0
+      yaml: 2.3.4
+    optionalDependencies:
+      postcss: 8.4.35
+      ts-node: 10.9.2(@types/node@20.11.24)(typescript@5.3.3)
 
   postcss-nested@6.0.1(postcss@8.4.35):
     dependencies:
@@ -12567,33 +12567,6 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3))
 
-  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3)):
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.0
-      lilconfig: 2.1.0
-      micromatch: 4.0.5
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.0.0
-      postcss: 8.4.35
-      postcss-import: 15.1.0(postcss@8.4.35)
-      postcss-js: 4.0.1(postcss@8.4.35)
-      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3))
-      postcss-nested: 6.0.1(postcss@8.4.35)
-      postcss-selector-parser: 6.0.13
-      resolve: 1.22.8
-      sucrase: 3.34.0
-    transitivePeerDependencies:
-      - ts-node
-
   tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
@@ -12614,6 +12587,33 @@ snapshots:
       postcss-import: 15.1.0(postcss@8.4.35)
       postcss-js: 4.0.1(postcss@8.4.35)
       postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3))
+      postcss-nested: 6.0.1(postcss@8.4.35)
+      postcss-selector-parser: 6.0.13
+      resolve: 1.22.8
+      sucrase: 3.34.0
+    transitivePeerDependencies:
+      - ts-node
+
+  tailwindcss@3.4.1(ts-node@10.9.2):
+    dependencies:
+      '@alloc/quick-lru': 5.2.0
+      arg: 5.0.2
+      chokidar: 3.6.0
+      didyoumean: 1.2.2
+      dlv: 1.1.3
+      fast-glob: 3.3.2
+      glob-parent: 6.0.2
+      is-glob: 4.0.3
+      jiti: 1.21.0
+      lilconfig: 2.1.0
+      micromatch: 4.0.5
+      normalize-path: 3.0.0
+      object-hash: 3.0.0
+      picocolors: 1.0.0
+      postcss: 8.4.35
+      postcss-import: 15.1.0(postcss@8.4.35)
+      postcss-js: 4.0.1(postcss@8.4.35)
+      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.35)
       postcss-selector-parser: 6.0.13
       resolve: 1.22.8

@@ -38,13 +38,18 @@ export const AddOrEditTechnicianModal = () => {
     },
   });
 
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('submit form', form.getValues());
+  };
+
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
         <ModalTitle>Add technician</ModalTitle>
       </ModalHeader>
       <Form {...form}>
-        <form onSubmit={() => console.log('submit form')}>
+        <form onSubmit={(e) => onSubmit(e)}>
           <div className="px-10 py-10">
             <div className="flex flex-row flex-wrap justify-between gap-8">
               <FormField
@@ -131,14 +136,14 @@ export const AddOrEditTechnicianModal = () => {
               {/* Add radio components here later */}
             </div>
           </div>
+          <ModalFooter className="ui-px-10 ui-py-6">
+            <Button type="submit" size="large" variant="primary">
+              <LucidePlus />
+              Add technician
+            </Button>
+          </ModalFooter>
         </form>
       </Form>
-      <ModalFooter className="ui-px-10 ui-py-6">
-        <Button type="submit" size="large" variant="primary">
-          <LucidePlus />
-          Add technician
-        </Button>
-      </ModalFooter>
     </ModalContent>
   );
 };

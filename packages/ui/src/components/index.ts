@@ -11,7 +11,7 @@ export * from './text';
 export * from './anchor';
 export * from './switch';
 export * from './textarea';
-
 export * from './menu-overlay';
 export * from './navigation-card';
 export * from './content-holder';
+export * from './popover';

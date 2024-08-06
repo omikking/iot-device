@@ -13,6 +13,7 @@ export * from './text';
 export * from './anchor';
 export * from './switch';
 export * from './textarea';
+export * from './tabs';
 export * from './popover';
 export * from './modal';
 export * from './menu-overlay';

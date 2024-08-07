@@ -24,6 +24,7 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -100,6 +101,17 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+
+      <hr className="w-full" />
+
+      <HazardCard
+      // datumTitle="fillDate"
+      // badge="insertBadge"
+      // diameter="insertDiameter"
+      // passCriteria="insertPassCriteria"
+      // location="insertLocation"
+      // textLabel="insertTextLabel"
+      ></HazardCard>
 
       <hr className="w-full" />
 

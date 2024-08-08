@@ -1,19 +1,17 @@
 'use client';
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import useOutsideClick from '../customHooks/use-outside-click';
+import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import { LucideChevronDown } from 'lucide-react';
-import { cva, type VariantProps } from 'class-variance-authority';
 import { Text } from './text';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 interface DropdownItem {
   id: string;
   name: string;
 }
 
-export interface DropdownProps
-  extends Required<Pick<VariantProps<typeof dropdownVariants>, 'position'>> {
+export interface DropdownProps {
   id: string;
   placeholder?: string;
   options: DropdownItem[];
@@ -29,27 +27,14 @@ export const buttonStyling =
 const dropdownItemStyling =
   'flex items-center cursor-pointer hover:ui-bg-neutral-1 ui-px-6 ui-py-3 ui-transform ui-duration-200 ease-in-out';
 
-const dropdownVariants = cva(
-  'absolute ui-mt-2 bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-border ui-border-neutral-3 ui-rounded ui-shadow-md ui-max-h-56 ui-z-10',
-  {
-    variants: {
-      position: {
-        bottom: 'ui-top-full ui-right-0 ui-mt-2',
-        top: 'ui-bottom-full ui-right-0 ui-mb-2',
-      },
-    },
-    defaultVariants: {
-      position: 'bottom',
-    },
-  },
-);
+const dropdownVariants =
+  'ui-bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-rounded ui-shadow-md ui-max-h-56 ui-z-10';
 
 const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
   ({
     id,
     placeholder = 'Select',
     options,
-    position,
     selectedId,
     disabled,
     className,
@@ -68,14 +53,6 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       setIsOpen(false);
     };
 
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    useOutsideClick({
-      ref: dropdownRef,
-      handler: () => {
-        setIsOpen(false);
-      },
-    });
-
     useEffect(() => {
       if (selectedId && options) {
         const newSelectedItem = options.find((item) => item.id === selectedId);
@@ -86,67 +63,67 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     }, [selectedId, options]);
 
     return (
-      <div ref={dropdownRef} className={cn('relative', className)} {...props}>
-        <button
-          id={id}
-          aria-label="Toggle dropdown"
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-          type="button"
-          disabled={disabled}
-          onClick={() => {
-            setIsOpen(!isOpen);
-          }}
-          className={buttonStyling}
-        >
-          <Text
-            variant="medium"
-            color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
-          >
-            {selectedItem?.name || placeholder}
-          </Text>
-          <LucideChevronDown
-            size="22"
-            className={cn(
-              'ui-transform ui-duration-200 ease-in-out ui-mt-0.5',
-              isOpen && 'ui-rotate-180',
-            )}
-          />
-        </button>
+      <div className={cn('relative', className)} {...props}>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <button
+              id={id}
+              aria-label="Toggle dropdown"
+              aria-haspopup="true"
+              aria-expanded={isOpen}
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                setIsOpen(!isOpen);
+              }}
+              className={buttonStyling}
+            >
+              <Text
+                variant="medium"
+                color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
+              >
+                {selectedItem?.name || placeholder}
+              </Text>
+              <LucideChevronDown
+                size="22"
+                className={cn(
+                  'ui-transform ui-duration-200 ease-in-out ui-mt-0.5',
+                  isOpen && 'ui-rotate-180',
+                )}
+              />
+            </button>
+          </PopoverTrigger>
 
-        {!!options && (
-          <div
-            aria-label="Dropdown menu"
-            className={cn(
-              dropdownVariants({ position }),
-              'ui-transition-full ui-duration-200',
-              isOpen
-                ? 'ui-opacity-1'
-                : 'ui-opacity-0 ui-pointer-events-none ui-scale-90',
-              className,
-            )}
+          <PopoverContent
+            className="ui-w-auto flex flex-col ui-items-end"
+            align="start"
           >
-            <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
-              {options?.map((item) => (
-                <li
-                  aria-hidden="true"
-                  key={item.id}
-                  onClick={() => {
-                    handleChange(item);
-                  }}
-                  className={cn(
-                    dropdownItemStyling,
-                    selectedItem?.id === item.id && 'ui-bg-neutral-1',
-                  )}
-                >
-                  <Text variant="medium" color="foreground">
-                    {item.name}
-                  </Text>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+            <div
+              aria-label="Dropdown menu"
+              className={cn(dropdownVariants, className)}
+            >
+              <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
+                {options?.map((item) => (
+                  <li
+                    aria-hidden="true"
+                    key={item.id}
+                    onClick={() => {
+                      handleChange(item);
+                    }}
+                    className={cn(
+                      dropdownItemStyling,
+                      selectedItem?.id === item.id && 'ui-bg-neutral-1',
+                    )}
+                  >
+                    <Text variant="medium" color="foreground">
+                      {item.name}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     );
   },

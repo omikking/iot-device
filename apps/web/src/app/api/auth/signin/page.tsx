@@ -94,7 +94,7 @@ export default function SignIn() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Type email..."
+                        placeholder="Enter email"
                         {...field}
                         className="w-full"
                       />
@@ -114,7 +114,7 @@ export default function SignIn() {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Type password..."
+                        placeholder="Enter password"
                         {...field}
                         className="w-full"
                       />

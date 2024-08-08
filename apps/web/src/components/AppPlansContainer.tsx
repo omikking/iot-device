@@ -1,16 +1,15 @@
-import { Badge, Calendar, FormLabel, Headline } from '@gsp/ui';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import {
   LucideCalendar,
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
 import { AppPlan } from './AppPlan';
-import { useState } from 'react';
 
 export const AppPlansContainer = ({ appData }) => {
   const { name, activePlan } = appData;
 
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  // const [date, setDate] = useState<Date | undefined>(new Date());
 
   const user = 'Superadmin';
   // const user = 'Client';
@@ -58,13 +57,9 @@ export const AppPlansContainer = ({ appData }) => {
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              <Calendar
-                // Do we want to have it as disabled or invisible when plan is not selected?
-                // disabled={activePlan}
-                selectedDate={date}
-                onSelect={setDate}
-                className="mt-2"
-              />
+              {/* Do we want to have it as disabled or invisible when plan is not selected? */}
+              {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
+              <SingleDateCalendar className="mt-2" />
             </>
           )}
         </div>

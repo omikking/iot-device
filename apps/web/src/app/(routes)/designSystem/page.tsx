@@ -16,6 +16,8 @@ import {
   Textarea,
   Checkbox,
   Switch,
+  RadioGroup,
+  RadioGroupItem,
   Tabs,
   TabsList,
   TabsTrigger,
@@ -290,6 +292,70 @@ export default function Page(): JSX.Element {
             </Anchor>
           </Link>
         </Text>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Radio 🦄
+      </Headline>
+      <div className="flex ui-flex-row ui-flex-wrap ui-gap-12 ui-justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={() => console.log('submit form')}
+            className="w-full flex flex-row justify-center flex-wrap gap-12"
+          >
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={() => {
+                return (
+                  <FormItem className="space-y-3">
+                    <FormLabel variant="medium">Choose option</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        defaultValue="opt1"
+                        onValueChange={console.log('change value')}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="opt1" />
+                          </FormControl>
+                          <FormLabel
+                            variant="medium"
+                            className="cursor-pointer"
+                          >
+                            Option 1
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="opt2" />
+                          </FormControl>
+                          <FormLabel
+                            variant="medium"
+                            className="cursor-pointer"
+                          >
+                            Option 2
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem disabled value="opt3" />
+                          </FormControl>
+                          <FormLabel disabled variant="medium">
+                            Disabled option 3
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+          </form>
+        </Form>
       </div>
 
       <hr className="w-full" />

@@ -62,7 +62,6 @@ export const AdminForm = ({ companyForm }) => {
                 id="person"
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
-                position="bottom"
                 options={options}
                 onSelect={(e) => setAdministrator(e)}
                 className="w-[400px]"

@@ -96,6 +96,15 @@ export default function Page(): JSX.Element {
   //   to: undefined,
   // });
 
+  const hazardItems = [
+    { titel: 'Diameter', text: '66.40 cm' },
+    { titel: 'Pass Criteria', text: 'N/A' },
+    {
+      titel: 'Location',
+      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+    },
+  ];
+
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
       <Headline variant="xl" as="h1" color="foreground">
@@ -105,12 +114,10 @@ export default function Page(): JSX.Element {
       <hr className="w-full" />
 
       <HazardCard
-      // datumTitle="fillDate"
-      // badge="insertBadge"
-      // diameter="insertDiameter"
-      // passCriteria="insertPassCriteria"
-      // location="insertLocation"
-      // textLabel="insertTextLabel"
+        datumTitle="2021-05-23"
+        badge={true}
+        hazardInfoItems={hazardItems}
+        textLabel="insertTextLabel"
       ></HazardCard>
 
       <hr className="w-full" />

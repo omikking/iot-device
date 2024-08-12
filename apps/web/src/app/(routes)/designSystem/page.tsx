@@ -24,6 +24,7 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -43,6 +44,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+
+const hazardItems = [
+  { titel: 'Diameter', text: '66.40 cm' },
+  { titel: 'Pass Criteria', text: 'N/A' },
+  {
+    titel: 'Location',
+    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+  },
+];
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -100,6 +110,15 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+
+      <hr className="w-full" />
+
+      <HazardCard
+        datumTitle="2021-05-23"
+        badge={true}
+        hazardInfoItems={hazardItems}
+        textLabel="insertTextLabel"
+      ></HazardCard>
 
       <hr className="w-full" />
 

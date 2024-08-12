@@ -21,3 +21,4 @@ export * from './modal';
 export * from './menu-overlay';
 export * from './navigation-card';
 export * from './content-holder';
+export * from './hazard-card';

@@ -17,7 +17,7 @@ const badgeVariants = cva(
       },
       size: {
         small:
-          'ui-h-[26px] ui-pt-[1px] ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text [&>svg]:ui-w-[16px] [&>svg]:ui-h-[16px] [&>svg]:ui-mb-[1px]',
+          'ui-h-[26px] ui-px-4 ui-text-xs ui-gap-1.5 ui-tracking-wide ui-font-sandvik-text [&>svg]:ui-w-[16px] [&>svg]:ui-h-[16px] [&>svg]:ui-mb-[1px]',
         large:
           'ui-pt-0.5 ui-h-10 ui-px-6 ui-text-xl ui-gap-3 ui-font-sandvik-headline [&>svg]:ui-w-[20px] [&>svg]:ui-h-[20px] [&>svg]:ui-mb-[3px]',
       },

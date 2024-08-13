@@ -6,47 +6,31 @@ import {
   LucideClipboardList,
   LucideOctagonAlert,
 } from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form';
+
 import { Textarea } from './textarea';
 import { Text } from './text';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { Button } from './button';
 
 interface HazardCardProps {
-  datumTitle: string;
-  badge: boolean;
-  textLabel: string;
-  hazardInfoItems: { titel: string; text: string }[];
+  dateTitle: string;
+  isHazard: boolean;
+  boltDescription: string;
+  boltInfoItems: { title: string; text: string }[];
 }
 
-export const HazardCard = (props: HazardCardProps) => {
-  const formSchema = z.object({
-    textarea: z.string(),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      textarea: '',
-    },
-  });
-
+export const HazardCard = ({
+  dateTitle,
+  isHazard,
+  boltDescription,
+  boltInfoItems,
+}: HazardCardProps) => {
   return (
     <div className="ui-w-[644px] ui-flex ui-flex-col ui-border-2 ui-border-neutral-2">
       <div className="ui-flex ui-flex-row ui-border-b ui-border-neutral-2 ui-p-4 ui-items-center ui-justify-between">
-        <Headline variant="medium" as="h3" color="foreground">
-          {props.datumTitle}
+        <Headline variant="smallBold" as="h3" color="foreground">
+          {dateTitle}
         </Headline>
-        {props.badge && (
+        {isHazard && (
           <Badge variant="destructive">
             <LucideOctagonAlert />
             Hazard
@@ -56,14 +40,14 @@ export const HazardCard = (props: HazardCardProps) => {
 
       <div className="ui-w-full ui-flex ui-flex-row ui-p-4 ui-px-2">
         <div className="ui-w-1/2 ui-p-2 ui-pt-6">
-          {props.hazardInfoItems.map((item) => (
+          {boltInfoItems.map((item) => (
             <div
-              key={`${item.titel}-${item.text}`}
+              key={`${item.title}-${item.text}`}
               className="ui-flex ui-flex-row ui-px-2 ui-border-b ui-py-2"
             >
               <div className="ui-w-32">
                 <Text variant="small" color="muted">
-                  {item.titel}
+                  {item.title}
                 </Text>
               </div>
               <div className="ui-max-w-36">
@@ -75,41 +59,25 @@ export const HazardCard = (props: HazardCardProps) => {
           ))}
         </div>
 
-        <div className="ui-w-1/2 ui-border-">
-          <Form {...form}>
-            <form
-              onSubmit={() => console.log('submit form')}
-              className="ui-w-full ui-flex ui-flex-row ui-justify-center"
-            >
-              <FormField
-                control={form.control}
-                name="textarea"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Label</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Bolt could not be tested..."
-                          className="ui-w-[293px] ui-h-[131px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </form>
-          </Form>
+        <div className="ui-w-1/2 ui-flex ui-flex-col ui-gap-2">
+          <Text variant="small" color="foreground">
+            Description
+          </Text>
+          <Textarea
+            value={boltDescription}
+            className="ui-w-[293px] ui-h-[131px]"
+            disabled
+          />
         </div>
       </div>
 
       <div className="ui-flex flex-row ui-justify-end ui-p-4 ui-gap-4">
-        <Button variant="primary" size="small">
-          <LucideCircleCheckBig />
-          Complete
-        </Button>
+        {isHazard && (
+          <Button variant="primary" size="small">
+            <LucideCircleCheckBig />
+            Complete
+          </Button>
+        )}
         <Button variant="outline" size="small">
           <LucideClipboardList />
           View more

@@ -45,11 +45,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
-const hazardItems = [
-  { titel: 'Diameter', text: '66.40 cm' },
-  { titel: 'Pass Criteria', text: 'N/A' },
+const boltInfoItems = [
+  { title: 'Diameter', text: '66.40 cm' },
+  { title: 'Pass Criteria', text: 'N/A' },
   {
-    titel: 'Location',
+    title: 'Location',
     text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
   },
 ];
@@ -114,10 +114,10 @@ export default function Page(): JSX.Element {
       <hr className="w-full" />
 
       <HazardCard
-        datumTitle="2021-05-23"
-        badge={true}
-        hazardInfoItems={hazardItems}
-        textLabel="insertTextLabel"
+        dateTitle="2021-05-23"
+        isHazard={true}
+        boltInfoItems={boltInfoItems}
+        boltDescription="Bolt could not be tested..."
       ></HazardCard>
 
       <hr className="w-full" />

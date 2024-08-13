@@ -26,7 +26,7 @@ export const HazardCard = ({
 }: HazardCardProps) => {
   return (
     <div className="ui-w-[644px] ui-flex ui-flex-col ui-border-2 ui-border-neutral-2">
-      <div className="ui-flex ui-flex-row ui-border-b ui-border-neutral-2 ui-p-4 ui-items-center ui-justify-between">
+      <div className="ui-flex ui-flex-row ui-border-b ui-border-neutral-2 ui-p-6 ui-items-center ui-justify-between">
         <Headline variant="smallBold" as="h3" color="foreground">
           {dateTitle}
         </Headline>
@@ -38,19 +38,19 @@ export const HazardCard = ({
         )}
       </div>
 
-      <div className="ui-w-full ui-flex ui-flex-row ui-p-4 ui-px-2">
-        <div className="ui-w-1/2 ui-p-2 ui-pt-6">
+      <div className="ui-w-full ui-flex ui-flex-row ui-gap-6 ui-py-4 ui-px-6">
+        <div className="ui-pt-6">
           {boltInfoItems.map((item) => (
             <div
               key={`${item.title}-${item.text}`}
-              className="ui-flex ui-flex-row ui-px-2 ui-border-b ui-py-2"
+              className="ui-flex ui-flex-row ui-px-2 ui-border-b ui-border-neutral-3  ui-py-2"
             >
               <div className="ui-w-32">
                 <Text variant="small" color="muted">
                   {item.title}
                 </Text>
               </div>
-              <div className="ui-max-w-36">
+              <div className="ui-max-w-32">
                 <Text variant="small" color="foreground">
                   {item.text}
                 </Text>
@@ -63,15 +63,11 @@ export const HazardCard = ({
           <Text variant="small" color="foreground">
             Description
           </Text>
-          <Textarea
-            value={boltDescription}
-            className="ui-w-[293px] ui-h-[131px]"
-            disabled
-          />
+          <Textarea value={boltDescription} className="ui-min-h-32" disabled />
         </div>
       </div>
 
-      <div className="ui-flex flex-row ui-justify-end ui-p-4 ui-gap-4">
+      <div className="ui-flex flex-row ui-justify-end ui-py-4 ui-px-6 ui-gap-4">
         {isHazard && (
           <Button variant="primary" size="small">
             <LucideCircleCheckBig />

@@ -24,6 +24,9 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  Modal,
+  ModalTrigger,
+  ContentHolder,
 } from '@gsp/ui';
 
 import {
@@ -36,6 +39,7 @@ import {
   LucideList,
   LucideMoveLeft,
   LucideMoveRight,
+  LucidePlus,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -43,6 +47,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { ViewBoltResultModal } from '@/components/ViewBoltResultModal';
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -100,6 +105,22 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+
+      <hr className="w-full" />
+
+      <div className="flex flex-col items-end">
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              View bolt result
+            </Button>
+          </ModalTrigger>
+          <ViewBoltResultModal />
+        </Modal>
+
+        {/* <ContentHolder variant="table"></ContentHolder> */}
+      </div>
 
       <hr className="w-full" />
 

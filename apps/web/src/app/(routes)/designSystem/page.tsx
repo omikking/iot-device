@@ -26,7 +26,7 @@ import {
   SingleDateCalendar,
   Modal,
   ModalTrigger,
-  ContentHolder,
+  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -48,6 +48,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { ViewBoltResultModal } from '@/components/ViewBoltResultModal';
+
+const boltInfoItems = [
+  { title: 'Diameter', text: '66.40 cm' },
+  { title: 'Pass Criteria', text: 'N/A' },
+  {
+    title: 'Location',
+    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+  },
+];
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -118,9 +127,13 @@ export default function Page(): JSX.Element {
           </ModalTrigger>
           <ViewBoltResultModal />
         </Modal>
-
-        {/* <ContentHolder variant="table"></ContentHolder> */}
       </div>
+      <HazardCard
+        dateTitle="2021-05-23"
+        isHazard={true}
+        boltInfoItems={boltInfoItems}
+        boltDescription="Bolt could not be tested..."
+      ></HazardCard>
 
       <hr className="w-full" />
 

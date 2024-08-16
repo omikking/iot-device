@@ -57,6 +57,7 @@ module.exports = {
     "jsx-a11y/heading-has-content": "off",
     "no-implicit-coercion": "off",
     "object-shorthand": "off",
+    "react/jsx-no-leaked-render": "off",
   },
   overrides: [
     {

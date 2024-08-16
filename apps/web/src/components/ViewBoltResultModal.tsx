@@ -41,8 +41,7 @@ export const ViewBoltResultModal = ({
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
       {/* ================== BODY ================== */}
-
-      <div className="p-10 flex gap-10 flex-grow min-h-[]">
+      <div className="p-10 flex gap-10 flex-grow ">
         {image && (
           <div className="flex flex-row min-h-52">
             <Image
@@ -54,10 +53,9 @@ export const ViewBoltResultModal = ({
             />
           </div>
         )}
-
-        <div className="flex flex-col w-1/2 min-h-[280px]">
-          {!boltDescription && (
-            <div className="flex flex-col flex-grow">
+        <div className="flex flex-col w-1/2">
+          {boltDescription && (
+            <div className="flex flex-col flex-grow min-h-[280px] pb-5">
               <Text variant="small" color="foreground">
                 Comment
               </Text>
@@ -69,8 +67,7 @@ export const ViewBoltResultModal = ({
               />
             </div>
           )}
-
-          <div className="flex pt-5 justify-between">
+          <div className="flex justify-between">
             <Badge variant={'warning'}>
               <LucideTriangleAlert />
               Reported hazard
@@ -82,8 +79,7 @@ export const ViewBoltResultModal = ({
         </div>
       </div>
       {/* ================== BOLT SPEC ================== */}
-      {/* <div className="flex flex-col px-10 gap-4"> */}
-      <div className=" px-10">
+      <div className="px-10">
         <div className="pb-4">
           <Headline variant="smallBold" as="h3" color="foreground">
             Bolt specifications
@@ -92,7 +88,6 @@ export const ViewBoltResultModal = ({
 
         {viewBoltSpecifications.map((item, index) => (
           <div
-            // className="flex border-b border-neutral-3 p-2"
             className="flex border-b border-neutral-3 py-2"
             key={`${item.title}-${index}`}
           >
@@ -125,6 +120,7 @@ export const ViewBoltResultModal = ({
           </div>
         ))}
       </div>
+      {/* ================== FOOTER ================== */}
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>
           <Button variant="outline" size="large" type="submit">
@@ -132,7 +128,6 @@ export const ViewBoltResultModal = ({
           </Button>
         </ModalClose>
       </ModalFooter>
-      {/* ================== FOOTER ================== */}
     </ModalContent>
   );
 };

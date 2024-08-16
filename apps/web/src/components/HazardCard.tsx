@@ -95,7 +95,7 @@ export const HazardCard = ({
           </ModalTrigger>
           <ViewBoltResultModal
             modalTitle="Bolt 424"
-            image=""
+            image="/boltTestImage.png"
             isHazard={isHazard}
             boltDescription={boltDescription}
             viewBoltSpecifications={boltInfoItems}

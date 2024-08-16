@@ -24,9 +24,6 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
-  Modal,
-  ModalTrigger,
-  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -39,24 +36,15 @@ import {
   LucideList,
   LucideMoveLeft,
   LucideMoveRight,
-  LucidePlus,
 } from 'lucide-react';
+
+import { HazardCard } from '@/components/HazardCard';
 
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { ViewBoltResultModal } from '@/components/ViewBoltResultModal';
-
-const boltInfoItems = [
-  { title: 'Diameter', text: '66.40 cm' },
-  { title: 'Pass Criteria', text: 'N/A' },
-  {
-    title: 'Location',
-    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-  },
-];
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -96,6 +84,36 @@ export default function Page(): JSX.Element {
     },
   ];
 
+  // const boltInfoItems = [
+  //   { title: 'Diameter', text: '66.40 cm' },
+  //   { title: 'Pass Criteria', text: 'N/A' },
+  //   {
+  //     title: 'Location',
+  //     text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+  //   },
+  // ];
+
+  const viewBoltSpecifications = [
+    {
+      title: 'Diameter',
+      text: '66.40 cm',
+      attribute: 'Material',
+      value: 'Stainless Steel',
+    },
+    {
+      title: 'Pass Criteria',
+      text: 'N/A',
+      attribute: 'Thread Type',
+      value: 'Metric Coarse',
+    },
+    {
+      title: 'Location',
+      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+      attribute: 'Weight',
+      value: '15.75 kg',
+    },
+  ];
+
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
@@ -117,21 +135,10 @@ export default function Page(): JSX.Element {
 
       <hr className="w-full" />
 
-      <div className="flex flex-col items-end">
-        <Modal>
-          <ModalTrigger asChild>
-            <Button variant="primary" size="large">
-              <LucidePlus />
-              View bolt result
-            </Button>
-          </ModalTrigger>
-          <ViewBoltResultModal />
-        </Modal>
-      </div>
       <HazardCard
         dateTitle="2021-05-23"
-        isHazard={true}
-        boltInfoItems={boltInfoItems}
+        isHazard={false}
+        boltInfoItems={viewBoltSpecifications}
         boltDescription="Bolt could not be tested..."
       ></HazardCard>
 

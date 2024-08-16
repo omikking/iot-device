@@ -8,58 +8,69 @@ import {
   Text,
   Badge,
   Headline,
+  ModalClose,
 } from '@gsp/ui';
 import { LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-const boltInfoItems = [
-  {
-    title: 'Diameter',
-    text: '66.40 cm',
-    attribute: 'Material',
-    value: 'Stainless Steel',
-  },
-  {
-    title: 'Pass Criteria',
-    text: 'N/A',
-    attribute: 'Thread Type',
-    value: 'Metric Coarse',
-  },
-  {
-    title: 'Location',
-    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-    attribute: 'Weight',
-    value: '15.75 kg',
-  },
-];
+interface ViewBoltResultModalProps {
+  modalTitle: string;
+  image: string;
+  isHazard: boolean;
+  boltDescription: string;
+  viewBoltSpecifications: {
+    title: string;
+    text: string;
+    attribute: string;
+    value: string;
+  }[];
+}
 
-export const ViewBoltResultModal = () => {
+export const ViewBoltResultModal = ({
+  modalTitle,
+  image,
+  isHazard,
+  boltDescription,
+  viewBoltSpecifications,
+}: ViewBoltResultModalProps) => {
   return (
     <ModalContent className="sm:max-w-[425px]">
       {/* ================== HEADER ================== */}
       <ModalHeader>
-        <ModalTitle>View bolt result</ModalTitle>
+        <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
       {/* ================== BODY ================== */}
-      <div></div>
-      <div className="p-10 w-full flex flex-row gap-10">
-        <div className="flex flex-row">
-          <Image
-            src="/boltTestImage.png"
-            alt="Large Image"
-            width={390}
-            height={280}
-            className="rounded-md"
-          />
-        </div>
 
-        <div className="w-1/2 h-full flex flex-col">
-          <Text variant="small" color="foreground">
-            Comment
-          </Text>
-          <Textarea placeholder="Add a comment" className="h-full"></Textarea>
-          <div className="flex flex-row pt-5 justify-between">
+      <div className="p-10 flex gap-10 flex-grow min-h-[]">
+        {image && (
+          <div className="flex flex-row min-h-52">
+            <Image
+              src={image}
+              alt="Large Image"
+              width={390}
+              height={280}
+              className="rounded-md"
+            />
+          </div>
+        )}
+
+        <div className="flex flex-col w-1/2 min-h-[280px]">
+          {!boltDescription && (
+            <div className="flex flex-col flex-grow">
+              <Text variant="small" color="foreground">
+                Comment
+              </Text>
+              <Textarea
+                value={boltDescription}
+                className="flex-grow"
+                disabled
+                readOnly
+              />
+            </div>
+          )}
+
+          <div className="flex pt-5 justify-between">
             <Badge variant={'warning'}>
               <LucideTriangleAlert />
               Reported hazard
@@ -71,34 +82,41 @@ export const ViewBoltResultModal = () => {
         </div>
       </div>
       {/* ================== BOLT SPEC ================== */}
-      <div className="flex flex-col px-10 gap-4 pb-3">
-        <Headline variant="medium" as="h3" color="foreground">
-          Bolt specifications
-        </Headline>
+      {/* <div className="flex flex-col px-10 gap-4"> */}
+      <div className=" px-10">
+        <div className="pb-4">
+          <Headline variant="smallBold" as="h3" color="foreground">
+            Bolt specifications
+          </Headline>
+        </div>
 
-        {boltInfoItems.map((item) => (
-          <div className="border-b border-neutral-3 flex px-2 py-3">
+        {viewBoltSpecifications.map((item, index) => (
+          <div
+            // className="flex border-b border-neutral-3 p-2"
+            className="flex border-b border-neutral-3 py-2"
+            key={`${item.title}-${index}`}
+          >
             {/* BOLT LEFT */}
-            <div className="flex w-full">
-              <div className="ui-w-32">
+            <div className="flex items-center w-full px-2">
+              <div className="w-32">
                 <Text variant="small" color="muted">
                   {item.title}
                 </Text>
               </div>
-              <div className="ui-max-w-32">
+              <div className="max-w-32">
                 <Text variant="small" color="foreground">
                   {item.text}
                 </Text>
               </div>
             </div>
             {/* BOLT RIGHT */}
-            <div className="flex w-full">
-              <div className="ui-w-32">
+            <div className="flex items-center w-full px-">
+              <div className="w-32">
                 <Text variant="small" color="muted">
                   {item.attribute}
                 </Text>
               </div>
-              <div className="ui-max-w-32">
+              <div className="max-w-32">
                 <Text variant="small" color="foreground">
                   {item.value}
                 </Text>
@@ -107,10 +125,12 @@ export const ViewBoltResultModal = () => {
           </div>
         ))}
       </div>
-      <ModalFooter className="px-10 py-5">
-        <Button variant="outline" size="large" type="submit">
-          Close
-        </Button>
+      <ModalFooter className="px-10 pb-5 pt-8">
+        <ModalClose asChild>
+          <Button variant="outline" size="large" type="submit">
+            Close
+          </Button>
+        </ModalClose>
       </ModalFooter>
       {/* ================== FOOTER ================== */}
     </ModalContent>

@@ -2,7 +2,7 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '@/components/Providers';
-import NavBar from '@/components/NavBar';
+import { NavBar } from '@/components/NavBar';
 
 export const metadata: Metadata = {
   title: 'Pull Test Web',

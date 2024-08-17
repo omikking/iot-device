@@ -48,7 +48,7 @@ export const Menu = () => {
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight />
-                      View users
+                      Pull-test overview
                     </Anchor>
                   </Link>
                 </Headline>
@@ -57,7 +57,7 @@ export const Menu = () => {
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight />
-                      View sites
+                      View bolt results
                     </Anchor>
                   </Link>
                 </Headline>
@@ -66,48 +66,7 @@ export const Menu = () => {
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight />
-                      View site locations
-                    </Anchor>
-                  </Link>
-                </Headline>
-
-                <Button
-                  className="mt-4"
-                  variant="secondary"
-                  size="large"
-                  tabIndex={-1}
-                >
-                  <LucideBuilding2 />
-                  Change company
-                </Button>
-              </div>
-
-              <hr className="ui-text-gold-3" />
-
-              <div className="flex ui-flex-col gap-1">
-                <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight />
-                      Overview
-                    </Anchor>
-                  </Link>
-                </Headline>
-
-                <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight />
-                      View global technicians
-                    </Anchor>
-                  </Link>
-                </Headline>
-
-                <Headline variant="medium" color="foreground" as="h3">
-                  <Link href="#" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucidePlus />
-                      Add new company
+                      View reported hazards
                     </Anchor>
                   </Link>
                 </Headline>

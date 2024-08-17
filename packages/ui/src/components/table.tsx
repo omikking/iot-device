@@ -23,7 +23,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      '[&_tr]:ui-border-b-[10px] [&_tr]:ui-border-neutral-1 [&_tr]:ui-bg-neutral-1 [&_tr]:hover:ui-bg-transparent ui-text-sm ui-font-sandvik-text',
+      '[&_tr]:ui-border-b [&_tr]:ui-border-neutral-1 [&_tr]:ui-bg-neutral-1 [&_tr]:hover:ui-bg-transparent ui-text-sm ui-font-sandvik-text',
       className,
     )}
     {...props}
@@ -38,7 +38,7 @@ const TableBody = React.forwardRef<
   <tbody
     ref={ref}
     className={cn(
-      '[&_tr:last-child]:ui-border-none [&_tr]:ui-border-b-[10px] [&_tr]:ui-border-neutral-1 ui-text-md ui-font-sandvik-text',
+      '[&_tr:last-child]:ui-border-none [&_tr]:ui-border-b-[6px] [&_tr]:ui-border-neutral-1 ui-text-md ui-font-sandvik-text',
       className,
     )}
     {...props}

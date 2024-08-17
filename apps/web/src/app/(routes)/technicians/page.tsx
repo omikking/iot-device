@@ -99,7 +99,7 @@ export default function Page(): JSX.Element {
         Technicians
       </Headline>
 
-      <div className="flex flex-col items-end">
+      <div className="flex flex-col items-end gap-5">
         <Modal>
           <ModalTrigger asChild>
             <Button variant="primary" size="large">

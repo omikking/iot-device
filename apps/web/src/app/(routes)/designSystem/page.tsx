@@ -13,7 +13,6 @@ import {
   Input,
   FormMessage,
   Dropdown,
-  Calendar,
   Textarea,
   Checkbox,
   Switch,
@@ -23,6 +22,15 @@ import {
   TableHead,
   TableBody,
   TableCell,
+  RadioGroup,
+  RadioGroupItem,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  RangeCalendar,
+  SingleDateCalendar,
+  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -32,6 +40,9 @@ import {
   LucideCloudUpload,
   LucideEllipsis,
   LucideKey,
+  LucideGitGraph,
+  LucideGrid3X3,
+  LucideList,
   LucideMoveLeft,
   LucideMoveRight,
   LucidePickaxe,
@@ -43,6 +54,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+
+const boltInfoItems = [
+  { title: 'Diameter', text: '66.40 cm' },
+  { title: 'Pass Criteria', text: 'N/A' },
+  {
+    title: 'Location',
+    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+  },
+];
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -86,7 +106,14 @@ export default function Page(): JSX.Element {
     undefined,
   );
 
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  // For SingleDateCalendar
+  // const [date, setDate] = useState<Date | undefined>(undefined);
+
+  // For RangeCalendar
+  // const [rangeDate, setRangeDate] = useState<DateRange | undefined>({
+  //   from: undefined,
+  //   to: undefined,
+  // });
 
   const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
     const badges = {
@@ -146,6 +173,15 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+
+      <hr className="w-full" />
+
+      <HazardCard
+        dateTitle="2021-05-23"
+        isHazard={true}
+        boltInfoItems={boltInfoItems}
+        boltDescription="Bolt could not be tested..."
+      ></HazardCard>
 
       <hr className="w-full" />
 
@@ -343,6 +379,70 @@ export default function Page(): JSX.Element {
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">
+        Radio 🦄
+      </Headline>
+      <div className="flex ui-flex-row ui-flex-wrap ui-gap-12 ui-justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={() => console.log('submit form')}
+            className="w-full flex flex-row justify-center flex-wrap gap-12"
+          >
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={() => {
+                return (
+                  <FormItem className="space-y-3">
+                    <FormLabel variant="medium">Choose option</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        defaultValue="opt1"
+                        // onValueChange={console.log('change value')}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="opt1" />
+                          </FormControl>
+                          <FormLabel
+                            variant="medium"
+                            className="cursor-pointer"
+                          >
+                            Option 1
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="opt2" />
+                          </FormControl>
+                          <FormLabel
+                            variant="medium"
+                            className="cursor-pointer"
+                          >
+                            Option 2
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem disabled value="opt3" />
+                          </FormControl>
+                          <FormLabel disabled variant="medium">
+                            Disabled option 3
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+          </form>
+        </Form>
+      </div>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
         Checkbox 🦄
       </Headline>
       <div className="flex flex-row flex-wrap gap-12 justify-center">
@@ -449,44 +549,17 @@ export default function Page(): JSX.Element {
         <Form {...form}>
           <form
             onSubmit={() => console.log('submit form')}
-            className="w-full flex flex-row justify-center flex-wrap gap-12"
+            className="w-full max-w-[1200px] flex flex-row justify-center flex-wrap gap-12"
           >
             <FormField
               control={form.control}
-              name="input"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Input</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Type input..."
-                        {...field}
-                        className="w-[400px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="dropdown"
+              name="calendar"
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Dropdown</FormLabel>
+                    <FormLabel>Single calendar</FormLabel>
                     <FormControl>
-                      <Dropdown
-                        id="person"
-                        placeholder="Select dropdown item"
-                        selectedId={dropdownValue}
-                        position="bottom"
-                        options={options}
-                        onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
-                      />
+                      <SingleDateCalendar className="w-[400px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -499,13 +572,40 @@ export default function Page(): JSX.Element {
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Calendar</FormLabel>
+                    <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <Calendar
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
-                      />
+                      <SingleDateCalendar disabled className="w-[400px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Range calendar</FormLabel>
+                    <FormControl>
+                      <RangeCalendar className="w-[400px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Disabled range calendar</FormLabel>
+                    <FormControl>
+                      <RangeCalendar disabled className="w-[400px]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -519,12 +619,54 @@ export default function Page(): JSX.Element {
               render={({ field }) => {
                 return (
                   <FormItem>
+                    <FormLabel>Input</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter input"
+                        {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem>
                     <FormLabel>Disabled input</FormLabel>
                     <FormControl>
                       <Input
                         disabled
-                        placeholder="Type input..."
+                        placeholder="Enter input"
                         {...field}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        id="person"
+                        placeholder="Select dropdown item"
+                        selectedId={dropdownValue}
+                        options={options}
+                        onSelect={(e) => setDropdownValue(e)}
                         className="w-[400px]"
                       />
                     </FormControl>
@@ -545,51 +687,9 @@ export default function Page(): JSX.Element {
                         disabled
                         id="person"
                         placeholder="Select dropdown item"
-                        position="bottom"
                         options={options}
                         onSelect={(e) => setDropdownValue(e)}
                         className="w-[400px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="calendar"
-              render={() => {
-                return (
-                  <FormItem>
-                    <FormLabel>Disabled calendar</FormLabel>
-                    <FormControl>
-                      <Calendar
-                        disabled
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="calendar"
-              render={() => {
-                return (
-                  <FormItem>
-                    <FormLabel>Range calendar WIP</FormLabel>
-                    <FormControl>
-                      <Calendar
-                        // mode="range"
-                        selectedDate={date}
-                        onSelect={setDate}
-                        className="mt-2 w-[380px]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -606,7 +706,6 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Switch toggle 🦄
       </Headline>
-
       <div className="flex flex-row flex-wrap gap-12">
         <Switch checked />
         <Switch />
@@ -657,6 +756,42 @@ export default function Page(): JSX.Element {
           {usersMock.length} total
         </Badge>
       </div>
+
+      <Headline variant="large" as="h1" color="foreground">
+        Tabs 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-12">
+        <Tabs defaultValue="tab1">
+          <TabsList>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">Tab 1 content here</TabsContent>
+          <TabsContent value="tab2">Tab 2 content here</TabsContent>
+        </Tabs>
+
+        <Tabs defaultValue="images">
+          <TabsList>
+            <TabsTrigger value="grid">
+              <LucideGrid3X3 size="18" className="mr-1.5" />
+              Grid
+            </TabsTrigger>
+            <TabsTrigger value="graphs">
+              <LucideGitGraph size="18" className="mr-1.5" />
+              Graphs
+            </TabsTrigger>
+            <TabsTrigger value="list">
+              <LucideList size="18" className="mr-1.5" />
+              List
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="grid">Grid layout</TabsContent>
+          <TabsContent value="graphs">Graphs layout</TabsContent>
+          <TabsContent value="list">List layout</TabsContent>
+        </Tabs>
+      </div>
+
+      <hr className="w-full" />
     </main>
   );
 }

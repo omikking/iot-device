@@ -88,14 +88,24 @@ const FormItem = React.forwardRef<
 });
 FormItem.displayName = 'FormItem';
 
+interface FormLabelProps {
+  disabled?: boolean;
+}
+
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & FormLabelProps
+>(({ className, disabled, ...props }, ref) => {
   const { formItemId } = useFormField();
 
   return (
-    <Label ref={ref} className={className} htmlFor={formItemId} {...props} />
+    <Label
+      ref={ref}
+      disabled={disabled}
+      className={className}
+      htmlFor={formItemId}
+      {...props}
+    />
   );
 });
 FormLabel.displayName = 'FormLabel';

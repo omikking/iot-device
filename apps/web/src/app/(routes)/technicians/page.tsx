@@ -11,7 +11,10 @@ import {
   TableBody,
   TableCell,
   Badge,
+  Modal,
+  ModalTrigger,
 } from '@gsp/ui';
+
 import {
   LucideEllipsis,
   LucideEyeOff,
@@ -19,6 +22,8 @@ import {
   LucidePlus,
   LucideView,
 } from 'lucide-react';
+
+import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import Link from 'next/link';
 
 export default function Page(): JSX.Element {
@@ -94,11 +99,16 @@ export default function Page(): JSX.Element {
         Technicians
       </Headline>
 
-      <div className="flex flex-col items-end gap-5">
-        <Button variant="primary" size="large">
-          <LucidePlus />
-          Add technician
-        </Button>
+      <div className="flex flex-col items-end">
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              Add technician
+            </Button>
+          </ModalTrigger>
+          <AddOrEditTechnicianModal />
+        </Modal>
 
         <Table>
           <TableHeader>

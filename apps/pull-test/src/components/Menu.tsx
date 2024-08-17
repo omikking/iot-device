@@ -11,13 +11,11 @@ import {
   MenuTitle,
 } from '@gsp/ui';
 import {
-  LucideBuilding2,
   LucideLayoutGrid,
   LucideLogIn,
   LucideLogOut,
   LucideMenu,
   LucideMoveRight,
-  LucidePlus,
   LucideSettings,
 } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';

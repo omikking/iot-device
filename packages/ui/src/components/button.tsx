@@ -25,7 +25,7 @@ const buttonVariants = cva(
           'ui-h-[46px] ui-px-7 ui-text-md ui-gap-3 ui-pt-[1px] [&>svg]:ui-mb-0.5 [&>svg]:ui-w-5 [&>svg]:ui-h-5',
       },
       isWide: {
-        true: 'ui-size-auto',
+        true: 'ui-w-full',
         false: 'ui-size-fit',
       },
     },

@@ -35,7 +35,7 @@ export const ViewBoltResultModal = ({
   viewBoltSpecifications,
 }: ViewBoltResultModalProps) => {
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
       {/* ================== HEADER ================== */}
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
@@ -43,19 +43,20 @@ export const ViewBoltResultModal = ({
       {/* ================== BODY ================== */}
       <div className="p-10 flex gap-10 flex-grow ">
         {image && (
-          <div className="flex flex-row min-h-52">
+          <div className="flex flex-row h-[306px]">
             <Image
               src={image}
               alt="Large Image"
               width={390}
               height={280}
-              className="rounded-md"
+              className="rounded-md h-full"
             />
           </div>
         )}
         <div className="flex flex-col w-1/2">
           {boltDescription && (
-            <div className="flex flex-col flex-grow min-h-[280px] pb-5">
+            // <div className="flex flex-col flex-grow min-h-[280px] pb-5">
+            <div className="flex flex-col flex-grow pb-5">
               <Text variant="small" color="foreground">
                 Comment
               </Text>

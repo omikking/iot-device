@@ -22,8 +22,6 @@ interface HazardCardProps {
   boltInfoItems: {
     title: string;
     text: string;
-    attribute: string;
-    value: string;
   }[];
 }
 
@@ -49,7 +47,7 @@ export const HazardCard = ({
 
       <div className="w-full flex flex-row gap-6 py-4 px-6">
         <div className="pt-6">
-          {boltInfoItems.map((item) => (
+          {boltInfoItems.slice(0, 3).map((item) => (
             <div
               key={`${item.title}-${item.text}`}
               className="flex flex-row px-2 border-b border-neutral-3  py-2"

@@ -22,8 +22,6 @@ interface ViewBoltResultModalProps {
   viewBoltSpecifications: {
     title: string;
     text: string;
-    attribute: string;
-    value: string;
   }[];
 }
 
@@ -43,20 +41,17 @@ export const ViewBoltResultModal = ({
       {/* ================== BODY ================== */}
       <div className="p-10 flex gap-10 flex-grow ">
         {image && (
-          <div className="flex flex-row h-[306px]">
-            <Image
-              src={image}
-              alt="Large Image"
-              width={390}
-              height={280}
-              className="rounded-md h-full"
-            />
-          </div>
+          <Image
+            src={image}
+            alt="Attached bolt result image"
+            width={390}
+            height={280}
+            className="rounded-md h-72"
+          />
         )}
         <div className="flex flex-col w-1/2">
           {boltDescription && (
-            // <div className="flex flex-col flex-grow min-h-[280px] pb-5">
-            <div className="flex flex-col flex-grow pb-5">
+            <div className="flex flex-col flex-grow ">
               <Text variant="small" color="foreground">
                 Comment
               </Text>
@@ -68,15 +63,17 @@ export const ViewBoltResultModal = ({
               />
             </div>
           )}
-          <div className="flex justify-between">
-            <Badge variant={'warning'}>
-              <LucideTriangleAlert />
-              Reported hazard
-            </Badge>
-            <Text variant="small" color="foreground">
-              Author: Tyrell Wellick
-            </Text>
-          </div>
+          {!isHazard && (
+            <div className="flex justify-between pt-5">
+              <Badge variant={'warning'}>
+                <LucideTriangleAlert />
+                Reported hazard
+              </Badge>
+              <Text variant="small" color="foreground">
+                Author: Tyrell Wellick
+              </Text>
+            </div>
+          )}
         </div>
       </div>
       {/* ================== BOLT SPEC ================== */}
@@ -109,12 +106,12 @@ export const ViewBoltResultModal = ({
             <div className="flex items-center w-full px-">
               <div className="w-32">
                 <Text variant="small" color="muted">
-                  {item.attribute}
+                  {item.title}
                 </Text>
               </div>
               <div className="max-w-32">
                 <Text variant="small" color="foreground">
-                  {item.value}
+                  {item.text}
                 </Text>
               </div>
             </div>

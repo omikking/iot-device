@@ -84,33 +84,26 @@ export default function Page(): JSX.Element {
     },
   ];
 
-  // const boltInfoItems = [
-  //   { title: 'Diameter', text: '66.40 cm' },
-  //   { title: 'Pass Criteria', text: 'N/A' },
-  //   {
-  //     title: 'Location',
-  //     text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-  //   },
-  // ];
-
   const viewBoltSpecifications = [
     {
       title: 'Diameter',
       text: '66.40 cm',
-      attribute: 'Material',
-      value: 'Stainless Steel',
     },
     {
       title: 'Pass Criteria',
       text: 'N/A',
-      attribute: 'Thread Type',
-      value: 'Metric Coarse',
     },
     {
       title: 'Location',
       text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-      attribute: 'Weight',
-      value: '15.75 kg',
+    },
+    {
+      title: 'Location',
+      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+    },
+    {
+      title: 'Location',
+      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
     },
   ];
 
@@ -137,7 +130,7 @@ export default function Page(): JSX.Element {
 
       <HazardCard
         dateTitle="2021-05-23"
-        isHazard={false}
+        isHazard={!false}
         boltInfoItems={viewBoltSpecifications}
         boltDescription="Bolt could not be tested..."
       ></HazardCard>

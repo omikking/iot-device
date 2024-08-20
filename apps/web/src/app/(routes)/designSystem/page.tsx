@@ -142,8 +142,8 @@ export default function Page(): JSX.Element {
   const usersMock = [
     {
       id: '1',
-      name: 'Elliot Anderson',
-      email: 'anderson@sandvik.com',
+      name: 'Elliot Alderson',
+      email: 'elliotalderson@sandvik.com',
       appAccess: 'Pull-test, Ultrabots, xCyclops',
       role: 'User',
       phoneNumber: '+4683729327',
@@ -166,8 +166,8 @@ export default function Page(): JSX.Element {
     },
     {
       id: '4',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
+      name: 'Darlene Alderson',
+      email: 'darlenealderson@sandvik.com',
       appAccess: 'Pull-test, Ultrabots, xCyclops',
       role: 'Admin',
       phoneNumber: '+4683729327',
@@ -469,7 +469,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <RadioGroup
                         defaultValue="opt1"
-                        // onValueChange={console.log('change value')}
+                        onValueChange={(e) => console.log('change value', e)}
                         className="flex flex-col space-y-1"
                       >
                         <FormItem className="flex items-center space-x-3 space-y-0">

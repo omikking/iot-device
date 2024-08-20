@@ -1,48 +1,44 @@
 'use client';
 import React from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { Button } from '@gsp/ui';
+import { useSession } from 'next-auth/react';
+import { Headline, Text } from '@gsp/ui';
 import { LucideUser } from 'lucide-react';
-import Sandviklogo from 'public/sandviklogo.svg';
+import { SandvikLogo } from 'public/SandvikLogo';
+import { Menu } from './Menu';
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
 
   return (
-    <header className=" mx-10 py-5 flex flex-row justify-between border-b-[1px] border-neutral-6">
+    <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <ul className="flex text-sm uppercase">
-          <li>
-            <Sandviklogo className="" />
-          </li>
-        </ul>
-        <div className="flex gap-10 ">
-          {status === 'authenticated' ? (
-            <div className="flex items-center gap-4">
-              {/* link will lead to your profile */}
+        <SandvikLogo />
 
-              <Button size="large" variant="secondary">
-                <LucideUser />
-                {session.userData.email}
-              </Button>
+        <div className="flex gap-10 items-center">
+          <Headline variant="smallBold" color="foreground" as="h3">
+            Pull-test Platform
+          </Headline>
 
-              <Button
-                variant="secondary"
-                size="large"
-                onClick={() => signOut()}
-              >
-                Sign out
-              </Button>
+          {status === 'authenticated' && (
+            <div className="flex items-center gap-2">
+              <div className="border border-gold-3 px-5 py-1.5">
+                <Text variant="medium" color="foreground">
+                  Ecorp
+                </Text>
+              </div>
+
+              <div className="flex items-center gap-1 border border-gold-3 px-5 py-1.5">
+                <LucideUser size="16" className="mr-2" />
+                <Text variant="medium" color="foreground">
+                  {session.userData.firstName} {session.userData.lastName}
+                </Text>
+              </div>
             </div>
-          ) : (
-            <Button variant="secondary" size="large" onClick={() => signIn()}>
-              Sign in
-            </Button>
           )}
+
+          <Menu />
         </div>
       </nav>
     </header>
   );
 };
-
-export default NavBar;

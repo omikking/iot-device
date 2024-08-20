@@ -3,9 +3,9 @@ import React from 'react';
 import { useSession } from 'next-auth/react';
 import { Headline, Text } from '@gsp/ui';
 import { LucideUser } from 'lucide-react';
-import Sandviklogo from 'public/sandviklogo.svg';
 import { Menu } from './Menu';
 import Link from 'next/link';
+import { SandvikLogo } from 'public/SandvikLogo';
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
@@ -14,7 +14,7 @@ export const NavBar = () => {
     <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
         <Link href="/">
-          <Sandviklogo />
+          <SandvikLogo />
         </Link>
 
         <div className="flex gap-10 items-center">

@@ -9,12 +9,7 @@ import {
   TabsTrigger,
   Text,
 } from '@gsp/ui';
-import {
-  LucideGitGraph,
-  LucideGrid3X3,
-  LucideList,
-  LucideMoveLeft,
-} from 'lucide-react';
+import { LucideMoveLeft } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 
@@ -77,7 +72,7 @@ const hazardCardsData = [
   },
   {
     dateTitle: '2021-03-01',
-    isHazard: true,
+    isHazard: false,
     boltInfoItems: boltInfoItems,
     boltDescription:
       '"The device has passed all required benchmarks and is ready for use.',
@@ -110,7 +105,7 @@ export default function Page(): JSX.Element {
 
       <Tabs
         defaultValue="active"
-        className="flex max-w-[1400px] flex-col mx-auto gap-4 px-10"
+        className="flex max-w-[1400px] flex-col mx-auto pb-10 gap-4 px-10"
       >
         <TabsList className="self-start">
           <TabsTrigger value="active">Active</TabsTrigger>
@@ -118,6 +113,34 @@ export default function Page(): JSX.Element {
           <TabsTrigger value="view all">View all</TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="flex flex-wrap gap-8">
+          {hazardCardsData.map(
+            (hazardCard, index) =>
+              hazardCard.isHazard && (
+                <HazardCard
+                  key={index}
+                  dateTitle={hazardCard.dateTitle}
+                  isHazard={hazardCard.isHazard}
+                  boltInfoItems={hazardCard.boltInfoItems}
+                  boltDescription={hazardCard.boltDescription}
+                />
+              ),
+          )}
+        </TabsContent>
+        <TabsContent value="completed" className="flex flex-wrap gap-8">
+          {hazardCardsData.map(
+            (hazardCard, index) =>
+              !hazardCard.isHazard && (
+                <HazardCard
+                  key={index}
+                  dateTitle={hazardCard.dateTitle}
+                  isHazard={hazardCard.isHazard}
+                  boltInfoItems={hazardCard.boltInfoItems}
+                  boltDescription={hazardCard.boltDescription}
+                />
+              ),
+          )}
+        </TabsContent>
+        <TabsContent value="view all" className="flex flex-wrap gap-8">
           {hazardCardsData.map((hazardCard, index) => (
             <HazardCard
               key={index}
@@ -127,76 +150,6 @@ export default function Page(): JSX.Element {
               boltDescription={hazardCard.boltDescription}
             />
           ))}
-        </TabsContent>
-        <TabsContent value="completed" className="flex flex-wrap gap-8">
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
-        </TabsContent>
-        <TabsContent value="view all" className="flex flex-wrap gap-8">
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could not be tested..."
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could not be tested..."
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could not be tested..."
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could not be tested..."
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could not be tested..."
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
-          <HazardCard
-            dateTitle="2021-05-23"
-            isHazard={false}
-            boltInfoItems={boltInfoItems}
-            boltDescription="Bolt could be tested!!!!"
-          />
         </TabsContent>
       </Tabs>
     </main>

@@ -41,7 +41,7 @@ export const ViewBoltResultModal = ({
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
       {/* ================== BODY ================== */}
-      <div className="p-10 flex gap-10 flex-grow ">
+      <div className="p-10 flex gap-10 flex-grow">
         {image && (
           <Image
             src={image}
@@ -87,11 +87,11 @@ export const ViewBoltResultModal = ({
             Bolt specifications
           </Headline>
         </div>
-        <div className="flex flex-row flex-wrap">
+        <div className="flex flex-wrap">
           {viewBoltSpecifications.map((boltSpec, index) => (
             <div
               key={index}
-              className="flex flex-row w-1/2 items-center px-2 py-2 border-b border-neutral-3"
+              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3"
             >
               {/* BOLT LEFT */}
               <div className="w-32">

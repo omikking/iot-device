@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { Headline, Text } from '@gsp/ui';
 import { LucideUser } from 'lucide-react';
 import { Menu } from './Menu';
+import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
 
 export const NavBar = () => {
@@ -12,7 +13,9 @@ export const NavBar = () => {
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <SandvikLogo />
+        <Link href="/">
+          <SandvikLogo />
+        </Link>
 
         <div className="flex gap-10 items-center">
           <Headline variant="smallBold" color="foreground" as="h3">

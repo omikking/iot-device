@@ -13,7 +13,7 @@ const contentHolderVariants = cva(
     variants: {
       variant: {
         general: 'ui-flex ui-flex-row ui-flex-wrap ui-gap-6 ui-justify-between',
-        table: 'ui-flex ui-flex-col ui-gap-1',
+        table: 'ui-flex ui-flex-col ui-gap-1.5',
       },
     },
   },

@@ -16,6 +16,12 @@ import {
   Textarea,
   Checkbox,
   Switch,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -36,11 +42,15 @@ import {
   LucideCircleCheckBig,
   LucideOctagonAlert,
   LucideCloudUpload,
+  LucideEllipsis,
+  LucideKey,
   LucideGitGraph,
   LucideGrid3X3,
   LucideList,
   LucideMoveLeft,
   LucideMoveRight,
+  LucidePickaxe,
+  LucideUser,
   LucideX,
   LucideSlidersHorizontal,
 } from 'lucide-react';
@@ -110,6 +120,59 @@ export default function Page(): JSX.Element {
   //   from: undefined,
   //   to: undefined,
   // });
+
+  const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
+    const badges = {
+      User: {
+        variant: 'neutral',
+        icon: <LucideUser />,
+      },
+      Technician: {
+        variant: 'neutral',
+        icon: <LucidePickaxe />,
+      },
+      Admin: {
+        variant: 'primary',
+        icon: <LucideKey />,
+      },
+    };
+    return badges[role];
+  };
+
+  const usersMock = [
+    {
+      id: '1',
+      name: 'Elliot Alderson',
+      email: 'elliotalderson@sandvik.com',
+      appAccess: 'Pull-test, Ultrabots, xCyclops',
+      role: 'User',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '2',
+      name: 'Jimmy Nwadinkpa',
+      email: 'jimmy@sandvik.com',
+      appAccess: 'Ultrabots, xCyclops',
+      role: 'Technician',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '3',
+      name: 'Felix Östergren',
+      email: 'felix@sandvik.com',
+      appAccess: 'Pull-test',
+      role: 'User',
+      phoneNumber: '+4683729327',
+    },
+    {
+      id: '4',
+      name: 'Darlene Alderson',
+      email: 'darlenealderson@sandvik.com',
+      appAccess: 'Pull-test, Ultrabots, xCyclops',
+      role: 'Admin',
+      phoneNumber: '+4683729327',
+    },
+  ];
 
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
@@ -406,7 +469,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <RadioGroup
                         defaultValue="opt1"
-                        onValueChange={console.log('change value')}
+                        onValueChange={(e) => console.log('change value', e)}
                         className="flex flex-col space-y-1"
                       >
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -722,6 +785,49 @@ export default function Page(): JSX.Element {
       </div>
 
       <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Table 🦄
+      </Headline>
+      <div className="flex flex-row flex-wrap gap-5 max-w-[1320px]">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[220px]">Full name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>App access</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Phone number</TableHead>
+              <TableHead className="text-right"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {usersMock.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.appAccess}</TableCell>
+                <TableCell>
+                  {/* Typing needs to be specified, do later */}
+                  <Badge variant={getRoleBadge(user.role).variant}>
+                    {getRoleBadge(user.role).icon}
+                    {user.role}
+                  </Badge>
+                </TableCell>
+                <TableCell>{user.phoneNumber}</TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="small">
+                    <LucideEllipsis />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Badge variant="neutral" className="self-start">
+          {usersMock.length} total
+        </Badge>
+      </div>
 
       <Headline variant="large" as="h1" color="foreground">
         Tabs 🦄

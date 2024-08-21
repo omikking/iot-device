@@ -119,7 +119,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucideUsers />
               <Button variant="secondary" size="small" asChild>
-                <Link href="/company">
+                <Link href="/users">
                   <LucideMoveRight />
                   View users
                 </Link>
@@ -205,8 +205,8 @@ export default function Page(): JSX.Element {
 
               {/* App plans */}
               <div className="w-full flex justify-between items-start bg-main-white mt-4">
-                {mockAppPlans.map((appData, i) => (
-                  <AppPlansContainer appData={appData} key={i} />
+                {mockAppPlans.map((appData) => (
+                  <AppPlansContainer appData={appData} key={appData.id} />
                 ))}
               </div>
             </div>

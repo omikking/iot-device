@@ -98,12 +98,12 @@ export default function Page(): JSX.Element {
       text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
     },
     {
-      title: 'Location',
-      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+      title: 'Material',
+      text: 'Stainless Steel',
     },
     {
-      title: 'Location',
-      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+      title: 'Manufacturer',
+      text: 'E-Corp.',
     },
   ];
 

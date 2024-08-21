@@ -96,19 +96,19 @@ export const ViewBoltResultModal = ({
                   {item.title}
                 </Text>
               </div>
-              <div className="max-w-32">
+              {/* <div className="max-w-32">
                 <Text variant="small" color="foreground">
                   {item.text}
                 </Text>
-              </div>
+              </div> */}
             </div>
             {/* BOLT RIGHT */}
             <div className="flex items-center w-full px-">
-              <div className="w-32">
+              {/* <div className="w-32">
                 <Text variant="small" color="muted">
                   {item.title}
                 </Text>
-              </div>
+              </div> */}
               <div className="max-w-32">
                 <Text variant="small" color="foreground">
                   {item.text}

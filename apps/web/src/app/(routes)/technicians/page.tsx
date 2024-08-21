@@ -85,11 +85,14 @@ export default function Page(): JSX.Element {
       <Text
         variant="medium"
         color="foreground"
-        className="absolute top-28 left-10"
+        className="absolute top-28 left-10 group"
       >
         <Link href="#" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft
+              size="20"
+              className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]"
+            />
             Go back
           </Anchor>
         </Link>

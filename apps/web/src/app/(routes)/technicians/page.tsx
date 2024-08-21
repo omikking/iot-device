@@ -122,8 +122,8 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user, i) => (
-              <TableRow key={i}>
+            {usersMock.map((user) => (
+              <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.company}</TableCell>

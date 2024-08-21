@@ -44,8 +44,6 @@ import {
   LucideSlidersHorizontal,
 } from 'lucide-react';
 
-import { HazardCard } from '@/components/HazardCard';
-
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -90,33 +88,6 @@ export default function Page(): JSX.Element {
     },
   ];
 
-  const viewBoltSpecifications = [
-    {
-      title: 'Diameter',
-      text: '66.40 cm',
-    },
-    {
-      title: 'Pass Criteria',
-      text: 'N/A',
-    },
-    {
-      title: 'Location',
-      text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-    },
-    {
-      title: 'Bit Size',
-      text: '22GAV',
-    },
-    {
-      title: 'Bore Depth',
-      text: '20mm',
-    },
-    {
-      title: 'Rotations',
-      text: '500',
-    },
-  ];
-
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
@@ -135,16 +106,6 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
-      <hr className="w-full" />
-
-      <HazardCard
-        dateTitle="2021-05-23"
-        isHazard={!false}
-        boltInfoItems={viewBoltSpecifications}
-        author="Tyrell Wellick"
-        boltDescription="Bolt could not be tested..."
-      ></HazardCard>
 
       <hr className="w-full" />
 

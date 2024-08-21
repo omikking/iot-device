@@ -72,7 +72,7 @@ export const HazardCard = ({
           <Text variant="small" color="foreground">
             Description
           </Text>
-          <Textarea value={boltDescription} className="min-h-32" disabled />
+          <Textarea value={boltDescription} className="flex-grow" disabled />
         </div>
       </div>
 

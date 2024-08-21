@@ -18,6 +18,7 @@ interface ViewBoltResultModalProps {
   modalTitle: string;
   image: string;
   isHazard: boolean;
+  author?: string;
   boltDescription: string;
   viewBoltSpecifications: {
     title: string;
@@ -29,6 +30,7 @@ export const ViewBoltResultModal = ({
   modalTitle,
   image,
   isHazard,
+  author,
   boltDescription,
   viewBoltSpecifications,
 }: ViewBoltResultModalProps) => {
@@ -63,15 +65,17 @@ export const ViewBoltResultModal = ({
               />
             </div>
           )}
-          {!isHazard && (
+          {isHazard && (
             <div className="flex justify-between pt-5">
-              <Badge variant={'warning'}>
+              <Badge variant={'destructive'}>
                 <LucideTriangleAlert />
                 Reported hazard
               </Badge>
-              <Text variant="small" color="foreground">
-                Author: Tyrell Wellick
-              </Text>
+              {author && (
+                <Text variant="small" color="foreground">
+                  Author: {author}
+                </Text>
+              )}
             </div>
           )}
         </div>
@@ -83,40 +87,27 @@ export const ViewBoltResultModal = ({
             Bolt specifications
           </Headline>
         </div>
-
-        {viewBoltSpecifications.map((item, index) => (
-          <div
-            className="flex border-b border-neutral-3 py-2"
-            key={`${item.title}-${index}`}
-          >
-            {/* BOLT LEFT */}
-            <div className="flex items-center w-full px-2">
+        <div className="flex flex-row flex-wrap">
+          {viewBoltSpecifications.map((boltSpec, index) => (
+            <div
+              key={index}
+              className="flex flex-row w-1/2 items-center px-2 py-2 border-b border-neutral-3"
+            >
+              {/* BOLT LEFT */}
               <div className="w-32">
                 <Text variant="small" color="muted">
-                  {item.title}
+                  {boltSpec.title}
                 </Text>
               </div>
-              {/* <div className="max-w-32">
+              {/* BOLT RIGHT */}
+              <div className="max-w-60">
                 <Text variant="small" color="foreground">
-                  {item.text}
-                </Text>
-              </div> */}
-            </div>
-            {/* BOLT RIGHT */}
-            <div className="flex items-center w-full px-">
-              {/* <div className="w-32">
-                <Text variant="small" color="muted">
-                  {item.title}
-                </Text>
-              </div> */}
-              <div className="max-w-32">
-                <Text variant="small" color="foreground">
-                  {item.text}
+                  {boltSpec.text}
                 </Text>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       {/* ================== FOOTER ================== */}
       <ModalFooter className="px-10 pb-5 pt-8">

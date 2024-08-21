@@ -18,6 +18,7 @@ import { ViewBoltResultModal } from './ViewBoltResultModal';
 interface HazardCardProps {
   dateTitle: string;
   isHazard: boolean;
+  author?: string;
   boltDescription: string;
   boltInfoItems: {
     title: string;
@@ -28,6 +29,7 @@ interface HazardCardProps {
 export const HazardCard = ({
   dateTitle,
   isHazard,
+  author,
   boltDescription,
   boltInfoItems,
 }: HazardCardProps) => {
@@ -95,6 +97,7 @@ export const HazardCard = ({
             modalTitle="Bolt 424"
             image="/boltTestImage.png"
             isHazard={isHazard}
+            author={author}
             boltDescription={boltDescription}
             viewBoltSpecifications={boltInfoItems}
           />

@@ -98,12 +98,16 @@ export default function Page(): JSX.Element {
       text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
     },
     {
-      title: 'Material',
-      text: 'Stainless Steel',
+      title: 'Bit Size',
+      text: '22GAV',
     },
     {
-      title: 'Manufacturer',
-      text: 'E-Corp.',
+      title: 'Bore Depth',
+      text: '20mm',
+    },
+    {
+      title: 'Rotations',
+      text: '500',
     },
   ];
 
@@ -132,6 +136,7 @@ export default function Page(): JSX.Element {
         dateTitle="2021-05-23"
         isHazard={!false}
         boltInfoItems={viewBoltSpecifications}
+        author="Tyrell Wellick"
         boltDescription="Bolt could not be tested..."
       ></HazardCard>
 

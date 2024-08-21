@@ -10,6 +10,7 @@ import {
 import { Textarea } from './textarea';
 import { Text } from './text';
 import { Button } from './button';
+import { Specification } from './specification';
 
 interface HazardCardProps {
   dateTitle: string;
@@ -41,21 +42,11 @@ export const HazardCard = ({
       <div className="ui-w-full ui-flex ui-flex-row ui-gap-6 ui-py-4 ui-px-6">
         <div className="ui-pt-6">
           {boltInfoItems.map((item) => (
-            <div
+            <Specification
               key={`${item.title}-${item.text}`}
-              className="ui-flex ui-flex-row ui-px-2 ui-border-b ui-border-neutral-3  ui-py-2"
-            >
-              <div className="ui-w-32">
-                <Text variant="small" color="muted">
-                  {item.title}
-                </Text>
-              </div>
-              <div className="ui-max-w-32">
-                <Text variant="small" color="foreground">
-                  {item.text}
-                </Text>
-              </div>
-            </div>
+              title={item.title}
+              text={item.text}
+            />
           ))}
         </div>
 
@@ -82,5 +73,3 @@ export const HazardCard = ({
     </div>
   );
 };
-
-export default HazardCard;

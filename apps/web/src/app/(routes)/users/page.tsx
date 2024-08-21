@@ -1,4 +1,5 @@
 'use client';
+import { AddUserModal } from '@/components/AddUserModal';
 import {
   Button,
   Headline,
@@ -11,6 +12,8 @@ import {
   TableBody,
   TableCell,
   Badge,
+  Modal,
+  ModalTrigger,
 } from '@gsp/ui';
 
 import {
@@ -103,10 +106,15 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5">
-        <Button variant="primary" size="large">
-          <LucidePlus />
-          Add user
-        </Button>
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              Add user
+            </Button>
+          </ModalTrigger>
+          <AddUserModal />
+        </Modal>
 
         <Table>
           <TableHeader>

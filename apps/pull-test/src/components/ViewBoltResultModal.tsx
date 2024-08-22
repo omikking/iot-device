@@ -91,7 +91,7 @@ export const ViewBoltResultModal = ({
           {viewBoltSpecifications.map((boltSpec, index) => (
             <div
               key={index}
-              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3"
+              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
             >
               {/* BOLT LEFT */}
               <div className="w-32">

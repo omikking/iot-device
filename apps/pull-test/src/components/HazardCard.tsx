@@ -52,7 +52,7 @@ export const HazardCard = ({
           {boltInfoItems.slice(0, 3).map((item) => (
             <div
               key={`${item.title}-${item.text}`}
-              className="flex flex-row px-2 border-b border-neutral-3  py-2"
+              className="flex flex-row items-center px-2 border-b border-neutral-3 py-2 break-words"
             >
               <div className="w-32">
                 <Text variant="small" color="muted">
@@ -68,7 +68,7 @@ export const HazardCard = ({
           ))}
         </div>
 
-        <div className="w-1/2 flex flex-col gap-2">
+        <div className="w-1/2 flex flex-col gap-2 flex-grow">
           <Text variant="small" color="foreground">
             Description
           </Text>

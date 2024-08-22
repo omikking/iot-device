@@ -10,7 +10,6 @@ import {
 } from '@gsp/ui';
 import { LucideMoveLeft } from 'lucide-react';
 import Link from 'next/link';
-// import { HazardCard } from '../../../components/HazardCard';
 import { HazardCard } from '@/components/HazardCard';
 import React from 'react';
 

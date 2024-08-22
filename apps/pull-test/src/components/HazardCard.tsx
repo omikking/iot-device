@@ -46,7 +46,6 @@ export const HazardCard = ({
           </Badge>
         )}
       </div>
-
       <div className="w-full flex flex-row gap-6 py-4 px-6">
         <div className="pt-6">
           {boltInfoItems.slice(0, 3).map((item) => (
@@ -54,20 +53,16 @@ export const HazardCard = ({
               key={`${item.title}-${item.text}`}
               className="flex flex-row items-center px-2 border-b border-neutral-3 py-2 break-words"
             >
-              <div className="w-32">
-                <Text variant="small" color="muted">
-                  {item.title}
-                </Text>
-              </div>
-              <div className="max-w-32">
-                <Text variant="small" color="foreground">
-                  {item.text}
-                </Text>
-              </div>
+              <Text className="w-32" variant="small" color="muted">
+                {item.title}
+              </Text>
+
+              <Text className="max-w-32" variant="small" color="foreground">
+                {item.text}
+              </Text>
             </div>
           ))}
         </div>
-
         <div className="w-1/2 flex flex-col gap-2 flex-grow">
           <Text variant="small" color="foreground">
             Description
@@ -75,7 +70,6 @@ export const HazardCard = ({
           <Textarea value={boltDescription} className="flex-grow" disabled />
         </div>
       </div>
-
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
         {isHazard && (
           <Button variant="primary" size="small">
@@ -83,15 +77,12 @@ export const HazardCard = ({
             Complete
           </Button>
         )}
-
         <Modal>
           <ModalTrigger asChild>
-            <div role="button" tabIndex={0}>
-              <Button variant="outline" size="small">
-                <LucideClipboardList />
-                View more
-              </Button>
-            </div>
+            <Button variant="outline" size="small">
+              <LucideClipboardList />
+              View more
+            </Button>
           </ModalTrigger>
           <ViewBoltResultModal
             modalTitle="Bolt 424"

@@ -22,11 +22,26 @@ import { z } from 'zod';
 
 export const AddOrEditTechnicianModal = () => {
   const formSchema = z.object({
-    fullName: z.string(),
-    company: z.string(),
-    email: z.string(),
-    phoneNumber: z.string(),
-    isGlobal: z.boolean(),
+    fullName: z
+      .string()
+      .min(3, { message: 'Full name must be at least 3 characters.' })
+      .max(50, { message: 'Full name must be at most 50 characters.' }),
+    company: z
+      .string()
+      .min(3, { message: 'Company must be at least 3 characters.' }),
+    email: z
+      .string()
+      .email({ message: 'Email must be a valid email address.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' }),
+    phoneNumber: z
+      .string()
+      .min(10, { message: 'Phone number must be at least 10 numbers' }),
+    isGlobal: z
+      .string({
+        message: 'Please select the visibility of the technician.',
+      })
+      .transform((val) => val === 'true'),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,8 +55,7 @@ export const AddOrEditTechnicianModal = () => {
     },
   });
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = () => {
     console.log('submit form', form.getValues());
   };
 
@@ -51,7 +65,7 @@ export const AddOrEditTechnicianModal = () => {
         <ModalTitle>Add technician</ModalTitle>
       </ModalHeader>
       <Form {...form}>
-        <form onSubmit={(e) => onSubmit(e)}>
+        <form onSubmit={form.handleSubmit(() => onSubmit())}>
           <div className="px-10 pt-10">
             <div className="flex flex-row flex-wrap justify-between gap-8">
               <FormField

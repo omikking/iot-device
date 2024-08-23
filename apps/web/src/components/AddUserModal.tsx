@@ -53,6 +53,8 @@ export const AddUserModal = () => {
     },
   });
 
+  // const handleSubmit = useForm()
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('submit form', form.getValues());
@@ -93,29 +95,37 @@ export const AddUserModal = () => {
     },
   ];
 
+  // console.log('FORM', form.getValues());
+  console.log(dropdownValue);
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
         <ModalTitle className="mb-10">Add user</ModalTitle>
       </ModalHeader>
       <Form {...form}>
+        {/* <form onSubmit={(e) => onSubmit(e)}> */}
         <form onSubmit={(e) => onSubmit(e)}>
           <div className="px-10 flex  gap-10">
             <div className="flex flex-row flex-wrap justify-between gap-10">
               <FormField
                 control={form.control}
                 name="role"
-                render={() => {
+                render={({ field }) => {
                   return (
                     <FormItem>
                       <FormLabel>* Role</FormLabel>
                       <FormControl>
                         <Dropdown
-                          id="person"
+                          id="role"
                           placeholder="Select role"
                           selectedId={dropdownValue}
+                          // selectedId={field.value}
                           options={roles}
-                          onSelect={(e) => setDropdownValue(e)}
+                          // onSelect={(e) => setDropdownValue(e)}
+                          onSelect={(e) => {
+                            field.onChange(e);
+                            setDropdownValue(e);
+                          }}
                           className="w-[400px]"
                         />
                       </FormControl>

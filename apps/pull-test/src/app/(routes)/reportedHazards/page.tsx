@@ -98,7 +98,7 @@ const hazardCardsData = [
 ];
 export default function Page(): JSX.Element {
   return (
-    <main className="">
+    <main>
       <Headline
         variant="xl"
         as="h1"

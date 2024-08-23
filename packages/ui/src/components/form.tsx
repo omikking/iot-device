@@ -162,9 +162,9 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <div className="flex ui-items-center gap-2">
-      <LucideCircleAlert size="12" className="ui-stroke-error" />
-      <Text variant="xs" color="destructive" id={formMessageId} ref={ref}>
+    <div className="ui-flex ui-items-center ui-gap-1.5">
+      <LucideCircleAlert size="14" className="ui-stroke-error" />
+      <Text variant="small" color="destructive" id={formMessageId} ref={ref}>
         {body}
       </Text>
     </div>

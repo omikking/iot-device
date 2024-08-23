@@ -22,6 +22,14 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const AddUserModal = () => {
+  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
+  const [hasPullTestAccess, setHasPullTestAccess] = useState(false);
+  const [hasXCyclopsAccess, setHasXCyclopsAccess] = useState(false);
+  const [hasUltrabotsAccess, setHasUltrabotsAccess] = useState(false);
+  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
+    undefined,
+  );
+
   const formSchema = z.object({
     role: z.enum(['admin', 'technician', 'user']),
     fullName: z.string(),
@@ -49,15 +57,6 @@ export const AddUserModal = () => {
     e.preventDefault();
     console.log('submit form', form.getValues());
   };
-
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    undefined,
-  );
-
-  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
-  const [hasPullTestAccess, setHasPullTestAccess] = useState(false);
-  const [hasXCyclopsAccess, setHasXCyclopsAccess] = useState(false);
-  const [hasUltrabotsAccess, setHasUltrabotsAccess] = useState(false);
 
   // Need to make the handleSwitches dynamic
   const handleCheckedChange = (state: boolean) => {

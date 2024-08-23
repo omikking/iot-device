@@ -82,11 +82,11 @@ export default function Page(): JSX.Element {
   const options = [
     {
       id: '1',
-      name: 'Elliot Anderson',
+      name: 'Elliot Alderson',
     },
     {
       id: '2',
-      name: 'Darlene Anderson',
+      name: 'Darlene Alderson',
     },
     {
       id: '3',

@@ -18,7 +18,7 @@ export const AssociateDetailsForm = ({ companyForm }) => {
             <FormItem>
               <FormLabel>Full name</FormLabel>
               <FormControl>
-                <Input value="Darlene Anderson" className="w-[400px]" />
+                <Input value="Darlene Alderson" className="w-[400px]" />
               </FormControl>
               <FormMessage />
             </FormItem>

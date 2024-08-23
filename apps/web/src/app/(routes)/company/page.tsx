@@ -98,7 +98,7 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">
             <LucideMoveLeft size="20" />
             Go back

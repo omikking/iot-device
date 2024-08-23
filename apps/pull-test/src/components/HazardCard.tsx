@@ -40,14 +40,14 @@ export const HazardCard = ({
           {dateTitle}
         </Headline>
         {isHazard && (
-          <Badge variant="destructive">
+          <Badge variant="warning">
             <LucideOctagonAlert />
             Hazard
           </Badge>
         )}
       </div>
       <div className="w-full flex flex-row gap-6 py-4 px-6">
-        <div className="pt-6">
+        <div className="pt-6 flex-grow">
           {boltInfoItems.slice(0, 3).map((item) => (
             <div
               key={`${item.title}-${item.text}`}
@@ -63,7 +63,7 @@ export const HazardCard = ({
             </div>
           ))}
         </div>
-        <div className="w-1/2 flex flex-col gap-2 flex-grow">
+        <div className="w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
             Description
           </Text>

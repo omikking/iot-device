@@ -65,7 +65,7 @@ export const ViewBoltResultModal = ({
           )}
           {isHazard && (
             <div className="flex justify-between pt-5">
-              <Badge variant={'destructive'}>
+              <Badge variant={'warning'}>
                 <LucideTriangleAlert />
                 Reported hazard
               </Badge>

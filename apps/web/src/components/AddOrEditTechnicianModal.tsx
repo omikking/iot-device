@@ -12,6 +12,8 @@ import {
   FormControl,
   Input,
   FormMessage,
+  RadioGroupItem,
+  RadioGroup,
 } from '@gsp/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucidePlus } from 'lucide-react';
@@ -50,7 +52,7 @@ export const AddOrEditTechnicianModal = () => {
       </ModalHeader>
       <Form {...form}>
         <form onSubmit={(e) => onSubmit(e)}>
-          <div className="px-10 py-10">
+          <div className="px-10 pt-10">
             <div className="flex flex-row flex-wrap justify-between gap-8">
               <FormField
                 control={form.control}
@@ -129,11 +131,36 @@ export const AddOrEditTechnicianModal = () => {
                 }}
               />
             </div>
-            <div className="py-10">
+            <div className="pt-10">
               <Headline as="h3" color="foreground" variant="smallBold">
                 Make this technician visible globally?
               </Headline>
-              {/* Add radio components here later */}
+
+              <FormField
+                control={form.control}
+                name="isGlobal"
+                render={({ field }) => (
+                  <FormItem className="pt-4">
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange}>
+                        <FormItem className="flex items-center space-x-3">
+                          <FormControl>
+                            <RadioGroupItem value="false" />
+                          </FormControl>
+                          <FormLabel>Private</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3">
+                          <FormControl>
+                            <RadioGroupItem value="true" />
+                          </FormControl>
+                          <FormLabel>Visible</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
           <ModalFooter className="ui-px-10 ui-py-6">

@@ -88,7 +88,7 @@ export default function Page(): JSX.Element {
       >
         <Link href="/company" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft size="24" />
             Go back
           </Anchor>
         </Link>

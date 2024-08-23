@@ -5,12 +5,13 @@ import { cn } from 'node_modules/@gsp/ui/src/lib/utils';
 interface AppPlanProps {
   plan: 'Gold' | 'Silver' | 'Bronze';
   activePlan: 'Gold' | 'Silver' | 'Bronze';
+  // @TODO: Remove temporary isAdmin prop
+  isAdmin: boolean;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
-export const AppPlan = ({ plan, activePlan }: AppPlanProps) => {
-  const user = 'Superadmin';
-  // const user = 'Client';
+export const AppPlan = ({ plan, activePlan, isAdmin }: AppPlanProps) => {
+  const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
     <div

@@ -15,28 +15,28 @@ import React from 'react';
 
 const viewBoltSpecifications = [
   {
-    title: 'Diameter',
-    text: '66.40 cm',
+    title: 'Bolt type',
+    text: 'MD47',
   },
   {
-    title: 'Pass Criteria',
-    text: 'N/A',
+    title: 'Peak load',
+    text: '15',
   },
   {
-    title: 'Location',
-    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
+    title: 'Displacement',
+    text: '19mm',
   },
   {
-    title: 'Bit Size',
-    text: '22GAV',
+    title: 'Level',
+    text: 'DOV 33 W',
   },
   {
-    title: 'Bore Depth',
-    text: '20mm',
+    title: 'Drive',
+    text: 'COS 1842',
   },
   {
-    title: 'Rotations',
-    text: '500',
+    title: 'Position in ring',
+    text: 'L/H Shoulder',
   },
 ];
 
@@ -113,9 +113,9 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft size="20" />
+            <LucideMoveLeft size="24" />
             Go back
           </Anchor>
         </Link>

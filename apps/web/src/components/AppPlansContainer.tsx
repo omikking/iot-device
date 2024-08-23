@@ -6,13 +6,13 @@ import {
 } from 'lucide-react';
 import { AppPlan } from './AppPlan';
 
-export const AppPlansContainer = ({ appData }) => {
+// @TODO: Remove temporary isAdmin prop
+export const AppPlansContainer = ({ appData, isAdmin }) => {
   const { name, activePlan } = appData;
 
   // const [date, setDate] = useState<Date | undefined>(new Date());
 
-  const user = 'Superadmin';
-  // const user = 'Client';
+  const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
     <div
@@ -40,9 +40,9 @@ export const AppPlansContainer = ({ appData }) => {
       </div>
 
       {/* Plans */}
-      <AppPlan plan="Gold" activePlan={activePlan} />
-      <AppPlan plan="Silver" activePlan={activePlan} />
-      <AppPlan plan="Bronze" activePlan={activePlan} />
+      <AppPlan plan="Gold" activePlan={activePlan} isAdmin={isAdmin} />
+      <AppPlan plan="Silver" activePlan={activePlan} isAdmin={isAdmin} />
+      <AppPlan plan="Bronze" activePlan={activePlan} isAdmin={isAdmin} />
 
       {/* Calendar */}
       {activePlan && (

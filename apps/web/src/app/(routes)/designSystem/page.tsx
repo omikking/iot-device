@@ -82,11 +82,11 @@ export default function Page(): JSX.Element {
   const options = [
     {
       id: '1',
-      name: 'Elliot Anderson',
+      name: 'Elliot Alderson',
     },
     {
       id: '2',
-      name: 'Darlene Anderson',
+      name: 'Darlene Alderson',
     },
     {
       id: '3',
@@ -422,7 +422,7 @@ export default function Page(): JSX.Element {
         <Text variant="medium" color="foreground">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveLeft size="20" />
+              <LucideMoveLeft size="24" />
               Go back
             </Anchor>
           </Link>

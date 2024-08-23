@@ -33,7 +33,6 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
-  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -60,15 +59,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-
-const boltInfoItems = [
-  { title: 'Diameter', text: '66.40 cm' },
-  { title: 'Pass Criteria', text: 'N/A' },
-  {
-    title: 'Location',
-    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-  },
-];
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -179,15 +169,6 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
-      <hr className="w-full" />
-
-      <HazardCard
-        dateTitle="2021-05-23"
-        isHazard={true}
-        boltInfoItems={boltInfoItems}
-        boltDescription="Bolt could not be tested..."
-      ></HazardCard>
 
       <hr className="w-full" />
 

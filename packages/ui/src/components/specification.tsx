@@ -1,24 +1,27 @@
 import * as React from 'react';
 import { Text } from './text';
+import { cn } from '../lib/utils';
 
 export interface SpecificationProps {
   title: string;
   text: string;
+  className?: string;
 }
 
-const Specification = ({ title, text }: SpecificationProps) => {
+const Specification = ({ title, text, className }: SpecificationProps) => {
   return (
-    <div className="ui-flex ui-flex-row ui-px-2 ui-border-b ui-border-neutral-3  ui-py-2">
-      <div className="ui-w-32">
-        <Text variant="small" color="muted">
-          {title}
-        </Text>
-      </div>
-      <div className="ui-max-w-32">
-        <Text variant="small" color="foreground">
-          {text}
-        </Text>
-      </div>
+    <div
+      className={cn(
+        'flex flex-row items-center px-2 border-b border-neutral-3 py-2 break-words',
+        className,
+      )}
+    >
+      <Text className="w-32" variant="small" color="muted">
+        {title}
+      </Text>
+      <Text className="max-w-32" variant="small" color="foreground">
+        {text}
+      </Text>
     </div>
   );
 };

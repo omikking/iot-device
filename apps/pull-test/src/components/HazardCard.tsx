@@ -12,6 +12,7 @@ import {
   Textarea,
   Modal,
   ModalTrigger,
+  Specification,
 } from '@gsp/ui';
 import { ViewBoltResultModal } from './ViewBoltResultModal';
 
@@ -49,18 +50,11 @@ export const HazardCard = ({
       <div className="w-full flex flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
           {boltInfoItems.slice(0, 3).map((item) => (
-            <div
+            <Specification
               key={`${item.title}-${item.text}`}
-              className="flex flex-row items-center px-2 border-b border-neutral-3 py-2 break-words"
-            >
-              <Text className="w-32" variant="small" color="muted">
-                {item.title}
-              </Text>
-
-              <Text className="max-w-32" variant="small" color="foreground">
-                {item.text}
-              </Text>
-            </div>
+              title={item.title}
+              text={item.text}
+            />
           ))}
         </div>
         <div className="w-1/2 flex flex-col gap-2 min-h-40">

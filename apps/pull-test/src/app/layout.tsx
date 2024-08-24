@@ -16,7 +16,7 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen">
         <Providers>
           <NavBar />
           {children}

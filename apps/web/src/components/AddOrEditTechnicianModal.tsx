@@ -12,6 +12,8 @@ import {
   FormControl,
   Input,
   FormMessage,
+  RadioGroupItem,
+  RadioGroup,
 } from '@gsp/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucidePlus } from 'lucide-react';
@@ -20,11 +22,26 @@ import { z } from 'zod';
 
 export const AddOrEditTechnicianModal = () => {
   const formSchema = z.object({
-    fullName: z.string(),
-    company: z.string(),
-    email: z.string(),
-    phoneNumber: z.string(),
-    isGlobal: z.boolean(),
+    fullName: z
+      .string()
+      .min(3, { message: 'Full name must be at least 3 characters.' })
+      .max(50, { message: 'Full name must be at most 50 characters.' }),
+    company: z
+      .string()
+      .min(3, { message: 'Company must be at least 3 characters.' }),
+    email: z
+      .string()
+      .email({ message: 'Email must be a valid email address.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' }),
+    phoneNumber: z
+      .string()
+      .min(10, { message: 'Phone number must be at least 10 numbers' }),
+    isGlobal: z
+      .string({
+        message: 'Please select the visibility of the technician.',
+      })
+      .transform((val) => val === 'true'),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,8 +55,7 @@ export const AddOrEditTechnicianModal = () => {
     },
   });
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = () => {
     console.log('submit form', form.getValues());
   };
 
@@ -49,8 +65,8 @@ export const AddOrEditTechnicianModal = () => {
         <ModalTitle>Add technician</ModalTitle>
       </ModalHeader>
       <Form {...form}>
-        <form onSubmit={(e) => onSubmit(e)}>
-          <div className="px-10 py-10">
+        <form onSubmit={form.handleSubmit(() => onSubmit())}>
+          <div className="px-10 pt-10">
             <div className="flex flex-row flex-wrap justify-between gap-8">
               <FormField
                 control={form.control}
@@ -129,11 +145,36 @@ export const AddOrEditTechnicianModal = () => {
                 }}
               />
             </div>
-            <div className="py-10">
+            <div className="pt-10">
               <Headline as="h3" color="foreground" variant="smallBold">
                 Make this technician visible globally?
               </Headline>
-              {/* Add radio components here later */}
+
+              <FormField
+                control={form.control}
+                name="isGlobal"
+                render={({ field }) => (
+                  <FormItem className="pt-4">
+                    <FormControl>
+                      <RadioGroup onValueChange={field.onChange}>
+                        <FormItem className="flex items-center space-x-3">
+                          <FormControl>
+                            <RadioGroupItem value="false" />
+                          </FormControl>
+                          <FormLabel>Private</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3">
+                          <FormControl>
+                            <RadioGroupItem value="true" />
+                          </FormControl>
+                          <FormLabel>Visible</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
           <ModalFooter className="ui-px-10 ui-py-6">

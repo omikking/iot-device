@@ -47,8 +47,8 @@ export default function Page(): JSX.Element {
   const usersMock = [
     {
       id: '1',
-      name: 'Elliot Anderson',
-      email: 'anderson@sandvik.com',
+      name: 'Elliot Alderson',
+      email: 'alderson@sandvik.com',
       appAccess: 'Pull-test, Ultrabots, xCyclops',
       role: 'User',
       phoneNumber: '+4683729327',
@@ -71,8 +71,8 @@ export default function Page(): JSX.Element {
     },
     {
       id: '4',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
+      name: 'Darlene Alderson',
+      email: 'darlenealderson@sandvik.com',
       appAccess: 'Pull-test, Ultrabots, xCyclops',
       role: 'Admin',
       phoneNumber: '+4683729327',
@@ -86,9 +86,9 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/company" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft size="24" />
             Go back
           </Anchor>
         </Link>

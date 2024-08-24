@@ -25,6 +25,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
+import { useState } from 'react';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({
@@ -46,16 +47,16 @@ export const companyFormSchema = z.object({
 });
 
 export default function Page(): JSX.Element {
-  // to validate the form
+  // @TODO: validate the form
   const companyForm = useForm<z.infer<typeof companyFormSchema>>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
-      companyName: '',
-      fullContactName: '',
-      organisationNumber: '',
-      country: '',
-      city: '',
-      address: '',
+      companyName: 'E-corp',
+      fullContactName: 'Phillip Price',
+      organisationNumber: '133742',
+      country: 'Sweden',
+      city: 'Gothenburg',
+      address: 'Vasa Gatan 32',
 
       pullTestPlan: '',
       xCyclopsPlan: '',
@@ -87,9 +88,9 @@ export default function Page(): JSX.Element {
   const companyToEditName = 'E-Corp';
   // const companyToEditName = false;
 
-  // Create a hook to always get the type of user?
-  const user = 'Superadmin';
-  // const user = 'Client';
+  // Just for testing user type, will be removed
+  const [isAdmin, setIsAdmin] = useState(true);
+  const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
@@ -98,16 +99,37 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10 group"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">
             <LucideMoveLeft
-              size="20"
+              size="24"
               className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]"
             />
             Go back
           </Anchor>
         </Link>
       </Text>
+
+      {/* TEMPORARY: will be removed */}
+      <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
+        <Headline as="h2" variant="medium" color="foreground">
+          Dev mode
+        </Headline>
+        <Text variant="medium" color="foreground">
+          Toggle user type
+        </Text>
+        <Text variant="medium" color="foreground">
+          Current user: {user}
+        </Text>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={() => setIsAdmin(!isAdmin)}
+          isWide
+        >
+          Set to {isAdmin ? 'Client' : 'Superadmin'}
+        </Button>
+      </div>
 
       <Headline as="h1" variant="xl" color="foreground">
         {companyToEditName || 'Add company'}
@@ -200,7 +222,7 @@ export default function Page(): JSX.Element {
                       variant="medium"
                       className="mt-1 ml-4 ui-underline ui-underline-offset-2"
                     >
-                      Call +46 76 040 22 44
+                      Call +46 70 174 06 21
                     </Text>
                   </div>
                 )}
@@ -209,7 +231,11 @@ export default function Page(): JSX.Element {
               {/* App plans */}
               <div className="w-full flex justify-between items-start bg-main-white mt-4">
                 {mockAppPlans.map((appData) => (
-                  <AppPlansContainer appData={appData} key={appData.id} />
+                  <AppPlansContainer
+                    appData={appData}
+                    key={appData.id}
+                    isAdmin={isAdmin}
+                  />
                 ))}
               </div>
             </div>

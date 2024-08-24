@@ -111,7 +111,7 @@ export default function Page(): JSX.Element {
       <Text
         variant="medium"
         color="foreground"
-        className="absolute top-28 left-10"
+        className="absolute top-28 left-10 group"
       >
         <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {
+  LucideAlertTriangle,
   LucideCircleCheckBig,
   LucideClipboardList,
-  LucideOctagonAlert,
 } from 'lucide-react';
 import {
   Headline,
@@ -42,7 +42,7 @@ export const HazardCard = ({
         </Headline>
         {isHazard && (
           <Badge variant="warning">
-            <LucideOctagonAlert />
+            <LucideAlertTriangle />
             Hazard
           </Badge>
         )}

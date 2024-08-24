@@ -32,9 +32,9 @@ export default function Page(): JSX.Element {
   const usersMock = [
     {
       id: '1',
-      name: 'Elliot Anderson',
-      email: 'anderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Elliot Alderson',
+      email: 'elliotalderson@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
@@ -50,31 +50,31 @@ export default function Page(): JSX.Element {
       id: '3',
       name: 'Felix Östergren',
       email: 'felix@sandvik.com',
-      company: 'E-corp',
+      company: 'Sandvik',
       isGlobal: false,
       phoneNumber: '+4683729327',
     },
     {
       id: '4',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Whiterose',
+      email: 'whiterose@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
     {
       id: '5',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Darlene Alderson',
+      email: 'darlenealderson@sandvik.com',
+      company: 'Sandvik',
       isGlobal: false,
       phoneNumber: '+4683729327',
     },
     {
       id: '6',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Tyrell Wellick',
+      email: 'tyrellwellick@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
@@ -87,9 +87,9 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft size="24" />
             Go back
           </Anchor>
         </Link>

@@ -36,7 +36,7 @@ export default function SignIn() {
       .max(50, { message: 'Email must be at most 50 characters.' }),
     password: z
       .string()
-      .min(3, { message: 'Password must be at least 3 characters.' }),
+      .min(8, { message: 'Password must be at least 8 characters.' }),
   });
 
   // to validate the form
@@ -67,10 +67,10 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-28 gap-16 bg-neutral-1">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-32 gap-16 bg-neutral-1">
       {/* @TODO is this page ground support platform login only or login for all apps? */}
       <Headline as="h1" variant="xl" color="foreground">
-        Ground Support Platform 🦄
+        Ground Support Platform
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
@@ -83,7 +83,7 @@ export default function SignIn() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-            className="w-full flex flex-col gap-6"
+            className="w-full flex flex-col gap-8"
           >
             <FormField
               control={form.control}
@@ -104,38 +104,40 @@ export default function SignIn() {
                 );
               }}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter password"
-                        {...field}
-                        className="w-full"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <div className="flex items-center gap-2 pb-2">
-              <Text variant="small" color="foreground">
-                Forgot your password? {/* Will lead to a reset page later */}
-              </Text>
+            <div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter password"
+                          {...field}
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="flex items-center gap-2 pt-4 pb-2">
+                <Text variant="small" color="foreground">
+                  Forgot your password? {/* Will lead to a reset page later */}
+                </Text>
 
-              <Text variant="small" color="foreground">
-                <Link href="https://www.google.se" passHref legacyBehavior>
-                  <Anchor isUnderline color="foreground">
-                    Click here to reset.
-                  </Anchor>
-                </Link>
-              </Text>
+                <Text variant="small" color="foreground">
+                  <Link href="https://www.google.se" passHref legacyBehavior>
+                    <Anchor isUnderline color="foreground">
+                      Click here to reset.
+                    </Anchor>
+                  </Link>
+                </Text>
+              </div>
             </div>
             <Button variant="primary" size="large" isWide type="submit">
               <LucideLogIn />

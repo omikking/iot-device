@@ -10,15 +10,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-  Text,
-  Link,
   Headline,
+  Input,
+  Anchor,
+  Text,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { LucideLogIn } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SignIn() {
   const [error, setError] = useState('');
@@ -29,12 +31,12 @@ export default function SignIn() {
   const formSchema = z.object({
     emailAddress: z
       .string()
-      .email({ message: 'email must be a valid email address.' })
-      .min(2, { message: 'email must be at least 2 characters.' })
-      .max(50, { message: 'email must be at most 50 characters.' }),
+      .email({ message: 'Email must be a valid email address.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' }),
     password: z
       .string()
-      .min(3, { message: 'password must be at least 3 characters.' }),
+      .min(8, { message: 'Password must be at least 8 characters.' }),
   });
 
   // to validate the form
@@ -60,25 +62,28 @@ export default function SignIn() {
     }
   };
   const { data: session, status } = useSession();
+
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
+
   return (
-    <div className="mx-10 flex flex-col items-center justify-evenly p-24 gap-20">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-32 gap-16 bg-neutral-1">
+      {/* @TODO will have to fix one login page for all apps. */}
       <Headline as="h1" variant="xl" color="foreground">
-        Welcome to Pull Test App! 🦄
+        Pull Test Portal
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
+        {/* @TODO fix better displaying of this error later */}
         {error && (
           <Text variant="xs" color="destructive">
             {error}
           </Text>
         )}
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-            className="w-full flex flex-col gap-4"
+            className="w-full flex flex-col gap-8"
           >
             <FormField
               control={form.control}
@@ -88,25 +93,10 @@ export default function SignIn() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Email address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
                       <Input
-                        type="password"
-                        placeholder="Password"
+                        placeholder="Enter email"
                         {...field}
+                        className="w-full"
                       />
                     </FormControl>
                     <FormMessage />
@@ -114,22 +104,43 @@ export default function SignIn() {
                 );
               }}
             />
-            <div className="flex items-center gap-2 pb-5 pt-1">
-              <Text variant="xs" color="foreground">
-                Forgot your password? {/* Will lead to a reset page later */}
-              </Text>
+            <div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter password"
+                          {...field}
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="flex items-center gap-2 pt-4 pb-2">
+                <Text variant="small" color="foreground">
+                  Forgot your password? {/* Will lead to a reset page later */}
+                </Text>
 
-              <Text variant="xs" color="foreground">
-                <Link
-                  isUnderline
-                  href="https://www.google.se"
-                  color="foreground"
-                >
-                  Click here to reset.
-                </Link>
-              </Text>
+                <Text variant="small" color="foreground">
+                  <Link href="https://www.google.se" passHref legacyBehavior>
+                    <Anchor isUnderline color="foreground">
+                      Click here to reset.
+                    </Anchor>
+                  </Link>
+                </Text>
+              </div>
             </div>
-            <Button size="large" variant="primary" type="submit">
+            <Button variant="primary" size="large" isWide type="submit">
+              <LucideLogIn />
               Login
             </Button>
           </form>

@@ -118,13 +118,13 @@ export default function Page(): JSX.Element {
               <TableHead className="w-[180px]">Company</TableHead>
               <TableHead>Visible globally</TableHead>
               <TableHead>Phone number</TableHead>
-              <TableHead className="text-right"></TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
             {usersMock.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.company}</TableCell>
                 <TableCell>

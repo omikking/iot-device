@@ -116,7 +116,7 @@ export default function Page(): JSX.Element {
               <TableHead>App access</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Phone number</TableHead>
-              <TableHead className="text-right"></TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -779,13 +779,13 @@ export default function Page(): JSX.Element {
               <TableHead>App access</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Phone number</TableHead>
-              <TableHead className="text-right"></TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
             {usersMock.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.appAccess}</TableCell>
                 <TableCell>
@@ -823,7 +823,7 @@ export default function Page(): JSX.Element {
           <TabsContent value="tab2">Tab 2 content here</TabsContent>
         </Tabs>
 
-        <Tabs defaultValue="images">
+        <Tabs defaultValue="grid">
           <TabsList>
             <TabsTrigger value="grid">
               <LucideGrid3X3 size="18" className="mr-1.5" />

@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Button,
   ContentHolder,
   Dropdown,
   Form,
@@ -12,10 +11,10 @@ import {
   FormMessage,
 } from '@gsp/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideSlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { BoltResultsFilter } from './BoltResultsFilter';
 
 export const BoltSelection = () => {
   // Might need to move form data to bolt results page.tsx?
@@ -58,10 +57,8 @@ export const BoltSelection = () => {
           onSubmit={() => console.log('submit form')}
           className="w-full flex flex-row items-center flex-wrap gap-8"
         >
-          <Button variant="primary" size="large" className="mt-8">
-            <LucideSlidersHorizontal />
-            Filter
-          </Button>
+          <BoltResultsFilter />
+
           <FormField
             control={form.control}
             name="site"

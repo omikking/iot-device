@@ -1,6 +1,6 @@
 'use client';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { BoltTestSelection } from '@/components/BoltTestSelection';
+import { BoltSelection } from '@/components/BoltSelection';
 import {
   Button,
   Headline,
@@ -74,7 +74,7 @@ export default function Page(): JSX.Element {
             </Modal>
           </div>
 
-          <BoltTestSelection />
+          <BoltSelection />
 
           <TabsContent value="table">
             <BoltResultsTable />

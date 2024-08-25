@@ -718,8 +718,10 @@ export default function Page(): JSX.Element {
                 <TableCell>{user.appAccess}</TableCell>
                 <TableCell>
                   {/* Typing needs to be specified, do later */}
-                  <Badge variant={getRoleBadge(user.role).variant}>
-                    {getRoleBadge(user.role).icon}
+                  <Badge
+                    variant={getRoleBadge(user.role as any).variant as any}
+                  >
+                    {getRoleBadge(user.role as any).icon}
                     {user.role}
                   </Badge>
                 </TableCell>

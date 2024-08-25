@@ -14,6 +14,7 @@ export * from './anchor';
 export * from './switch';
 export * from './textarea';
 export * from './table';
+export * from './data-table';
 export * from './radio-group';
 export * from './tabs';
 export * from './popover';

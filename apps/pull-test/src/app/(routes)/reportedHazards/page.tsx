@@ -98,12 +98,12 @@ const hazardCardsData = [
 ];
 export default function Page(): JSX.Element {
   return (
-    <main>
+    <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
       <Headline
         variant="xl"
         as="h1"
         color="foreground"
-        className="md:text-center mt-32 mb-20 px-10"
+        className="md:text-center px-10"
       >
         Reported hazards
       </Headline>

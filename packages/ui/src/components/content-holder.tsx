@@ -4,16 +4,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../lib/utils';
 import { Headline } from './headline';
 
-// This is the grey box that is used across the projects.
-// Use this to wrap either input/general content or table rows.
+// This is the grey box that is used as a wrapper across the projects.
 
 const contentHolderVariants = cva(
-  'ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-min-w-[1320px] ui-border-2 ui-border-neutral-2',
+  'ui-flex ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-min-w-[1320px] ui-border-2 ui-border-neutral-2',
   {
     variants: {
       variant: {
-        general: 'ui-flex ui-flex-row ui-flex-wrap ui-gap-6 ui-justify-between',
-        table: 'ui-flex ui-flex-col ui-gap-1.5',
+        general: 'ui-flex-row ui-flex-wrap ui-gap-6 ui-justify-between',
+        table: 'ui-flex-col ui-gap-1.5',
+        filter: 'ui-flex-row ui-flex-wrap ui-gap-6 ui-justify-between ui-py-6',
       },
     },
   },

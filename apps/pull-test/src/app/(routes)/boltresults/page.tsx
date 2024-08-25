@@ -31,11 +31,11 @@ export default function Page(): JSX.Element {
       <Text
         variant="medium"
         color="foreground"
-        className="absolute top-28 left-10"
+        className="absolute top-28 left-10 group"
       >
         <Link href="#" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
             Go back
           </Anchor>
         </Link>
@@ -51,7 +51,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-col gap-5">
         <Tabs defaultValue="table">
-          <div className="w-full flex flex-row justify-between items-center pb-3">
+          <div className="w-full flex flex-row justify-between items-center pb-2">
             <TabsList>
               <TabsTrigger value="table">
                 <LucideGrid3X3 size="18" className="mr-1.5" />

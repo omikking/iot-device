@@ -410,19 +410,19 @@ export default function Page(): JSX.Element {
           </Link>
         </Text>
 
-        <Headline variant="medium" color="foreground" as="h2">
+        <Headline variant="medium" color="foreground" as="h2" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveRight />
+              <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
               Link with icon and no underline
             </Anchor>
           </Link>
         </Headline>
 
-        <Text variant="medium" color="foreground">
+        <Text variant="medium" color="foreground" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveLeft size="24" />
+              <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
               Go back
             </Anchor>
           </Link>

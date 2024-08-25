@@ -42,28 +42,43 @@ export const Menu = () => {
               <MenuTitle>Garpenberg</MenuTitle>
 
               <div className="flex ui-flex-col gap-1">
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Pull-test overview
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View bolt results
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View reported hazards
                     </Anchor>
                   </Link>

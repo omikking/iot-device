@@ -52,7 +52,7 @@ export const BoltSelection = () => {
   ];
 
   return (
-    <ContentHolder variant="general">
+    <ContentHolder variant="filter">
       <Form {...form}>
         <form
           onSubmit={() => console.log('submit form')}

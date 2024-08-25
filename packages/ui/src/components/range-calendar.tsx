@@ -58,7 +58,9 @@ export const RangeCalendar = ({
           >
             <Text
               variant="medium"
-              color={disabled || !date ? 'muted' : 'foreground'}
+              color={
+                disabled || !date?.from || !date?.to ? 'muted' : 'foreground'
+              }
             >
               {getRangeFormat()}
             </Text>

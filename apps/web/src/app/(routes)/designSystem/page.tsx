@@ -22,9 +22,6 @@ import {
   TableHead,
   TableBody,
   TableCell,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
   RadioGroup,
   RadioGroupItem,
   Tabs,
@@ -39,7 +36,6 @@ import {
   LucideBot,
   LucideChevronDown,
   LucideCircleCheckBig,
-  LucideOctagonAlert,
   LucideCloudUpload,
   LucideEllipsis,
   LucideKey,
@@ -50,8 +46,6 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
-  LucideX,
-  LucideSlidersHorizontal,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -169,72 +163,6 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
-      <hr className="w-full" />
-
-      <Headline variant="large" as="h1" color="foreground">
-        Popover 🦄
-      </Headline>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="primary" size="small">
-            <LucideSlidersHorizontal />
-            Filter
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="space-y-2 bg-neutral-1 px-4 py-3">
-            <Text variant="small" color="foreground">
-              Results
-            </Text>
-          </div>
-          <div className="flex flex-row px-4 py-3 gap-3 items-center m">
-            <Checkbox className="" />
-            <Badge variant="success">
-              <LucideCircleCheckBig size="14" />
-              Pass
-            </Badge>
-          </div>
-          <div className="flex flex-row px-4 py-3 gap-3 items-center m">
-            <Checkbox />
-            <Badge variant="destructive">
-              <LucideOctagonAlert size="14" />
-              Fail
-            </Badge>
-          </div>
-          <div className="space-y-2 bg-neutral-1 px-4 py-3">
-            <Text variant="small" color="foreground">
-              Comment
-            </Text>
-          </div>
-          <div className="flex flex-col gap-6 p-4">
-            <div className="flex flex-row items-center gap-3">
-              <Checkbox className=""></Checkbox>
-              <Text variant="small" color="foreground">
-                With comment
-              </Text>
-            </div>
-            <div className="flex flex-row items-center gap-3">
-              <Checkbox />
-              <Text variant="small" color="foreground">
-                With image
-              </Text>
-            </div>
-            <div className="flex flex-row items-center gap-3">
-              <Checkbox />
-              <Text variant="small" color="foreground">
-                Reported hazard
-              </Text>
-            </div>
-          </div>
-          <div className="p-4 border-t border-t-1 border-neutral-1">
-            <Button variant="outline" size="small" isWide>
-              <LucideX />
-              Reset all filters
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
 
       <hr className="w-full" />
 

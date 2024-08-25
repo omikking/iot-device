@@ -1,7 +1,11 @@
 'use client';
 
 import { Badge, DataTable } from '@gsp/ui';
-import { LucideCheckCircle } from 'lucide-react';
+import {
+  LucideCheckCircle,
+  LucideOctagonAlert,
+  LucideSearchX,
+} from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface BoltResultSchema {
@@ -18,10 +22,28 @@ interface BoltResultSchema {
   position: string;
   ring: string;
   comment: string;
-  result: string;
+  result: 'Pass' | 'Fail' | 'Abort';
 }
 
 export const BoltResultsTable = () => {
+  const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
+    const badges = {
+      Pass: {
+        variant: 'success',
+        icon: <LucideCheckCircle />,
+      },
+      Fail: {
+        variant: 'destructive',
+        icon: <LucideOctagonAlert />,
+      },
+      Abort: {
+        variant: 'warning',
+        icon: <LucideSearchX />,
+      },
+    };
+    return badges[result];
+  };
+
   const boltResultsMock: BoltResultSchema[] = [
     {
       id: '1',
@@ -184,10 +206,12 @@ export const BoltResultsTable = () => {
       header: () => <div className="text-right w-10">Result</div>,
       cell: ({ row }) => {
         return (
-          // fix logic to get the three diff
           <div className="flex justify-end w-10">
-            <Badge variant="success">
-              <LucideCheckCircle />
+            {/* I really dont manage to get the types for this */}
+            <Badge
+              variant={getResultBadge(row.getValue('result')).variant as any}
+            >
+              {getResultBadge(row.getValue('result')).icon}
               {row.getValue('result')}
             </Badge>
           </div>

@@ -17,6 +17,7 @@ import {
   LucideX,
 } from 'lucide-react';
 
+// @TODO: Add filtering functionality, this is essentially a visual mockup currently.
 export const BoltResultsFilter = () => {
   return (
     <Popover>

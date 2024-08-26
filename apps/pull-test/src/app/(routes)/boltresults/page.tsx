@@ -49,42 +49,40 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <div className="flex flex-col gap-5">
-        <Tabs defaultValue="table">
-          <div className="w-full flex flex-row justify-between items-center pb-2">
-            <TabsList>
-              <TabsTrigger value="table">
-                <LucideGrid3X3 size="18" className="mr-1.5" />
-                Table
-              </TabsTrigger>
-              <TabsTrigger value="graphs">
-                <LucideLineChart size="18" className="mr-1.5" />
-                Graphs
-              </TabsTrigger>
-            </TabsList>
+      <Tabs defaultValue="table">
+        <div className="w-full flex flex-row justify-between items-center pb-2">
+          <TabsList>
+            <TabsTrigger value="table">
+              <LucideGrid3X3 size="18" className="mr-1.5" />
+              Table
+            </TabsTrigger>
+            <TabsTrigger value="graphs">
+              <LucideLineChart size="18" className="mr-1.5" />
+              Graphs
+            </TabsTrigger>
+          </TabsList>
 
-            <Modal>
-              <ModalTrigger asChild>
-                <Button variant="primary" size="large">
-                  <LucideFileDown />
-                  Export PDF
-                </Button>
-              </ModalTrigger>
-              {/* <Modal here /> */}
-            </Modal>
-          </div>
+          <Modal>
+            <ModalTrigger asChild>
+              <Button variant="primary" size="large">
+                <LucideFileDown />
+                Export PDF
+              </Button>
+            </ModalTrigger>
+            {/* <ModalContent goes here /> */}
+          </Modal>
+        </div>
 
-          <BoltSelection />
+        <BoltSelection />
 
-          <TabsContent value="table">
-            <BoltResultsTable />
-          </TabsContent>
+        <TabsContent value="table">
+          <BoltResultsTable />
+        </TabsContent>
 
-          <TabsContent value="graphs">
-            <Table className="ui-min-w-[1620px]" />
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="graphs">
+          <Table className="ui-min-w-[1620px]" />
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }

@@ -1,12 +1,12 @@
 'use client';
 
 import { Badge, DataTable } from '@gsp/ui';
+import type { ColumnDef } from '@gsp/ui';
 import {
   LucideCheckCircle,
   LucideOctagonAlert,
   LucideSearchX,
 } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
 
 interface BoltResultSchema {
   id: string;
@@ -24,24 +24,23 @@ interface BoltResultSchema {
   comment: string;
   result: 'Pass' | 'Fail' | 'Abort';
 }
-
 export const BoltResultsTable = () => {
-  const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
-    const badges = {
-      Pass: {
-        variant: 'success',
-        icon: <LucideCheckCircle />,
-      },
-      Fail: {
-        variant: 'destructive',
-        icon: <LucideOctagonAlert />,
-      },
-      Abort: {
-        variant: 'warning',
-        icon: <LucideSearchX />,
-      },
-    };
-    return badges[result];
+  const getResultBadge = (
+    result: 'Pass' | 'Fail' | 'Abort',
+  ): {
+    variant: 'success' | 'destructive' | 'warning';
+    icon: React.ReactNode;
+  } => {
+    switch (result) {
+      case 'Pass':
+        return { variant: 'success', icon: <LucideCheckCircle /> };
+      case 'Fail':
+        return { variant: 'destructive', icon: <LucideOctagonAlert /> };
+      case 'Abort':
+        return { variant: 'warning', icon: <LucideSearchX /> };
+      default:
+        return { variant: 'warning', icon: <LucideSearchX /> };
+    }
   };
 
   const boltResultsMock: BoltResultSchema[] = [
@@ -207,10 +206,7 @@ export const BoltResultsTable = () => {
       cell: ({ row }) => {
         return (
           <div className="flex justify-end w-10">
-            {/* I really dont manage to get the types for this */}
-            <Badge
-              variant={getResultBadge(row.getValue('result')).variant as any}
-            >
+            <Badge variant={getResultBadge(row.getValue('result')).variant}>
               {getResultBadge(row.getValue('result')).icon}
               {row.getValue('result')}
             </Badge>

@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { BoltResultsFilter } from './BoltResultsFilter';
 
+// @TODO: Add filtering functionality, this is essentially a visual mockup currently.
 export const BoltSelection = () => {
   // Might need to move form data to bolt results page.tsx?
   const formSchema = z.object({
@@ -39,14 +40,15 @@ export const BoltSelection = () => {
     undefined,
   );
 
+  // @TODO: Replace with site, level, drive, position hierarchy data.
   const sites = [
     {
       id: '1',
-      name: '20001',
+      name: 'Placeholder site',
     },
     {
       id: '2',
-      name: '20023',
+      name: 'Gollum site',
     },
   ];
 
@@ -73,7 +75,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-[320px]"
+                      className="w-80"
                     />
                   </FormControl>
                   <FormMessage />
@@ -95,7 +97,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-[320px]"
+                      className="w-80"
                     />
                   </FormControl>
                   <FormMessage />
@@ -117,7 +119,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-[320px]"
+                      className="w-80"
                     />
                   </FormControl>
                   <FormMessage />
@@ -139,7 +141,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-[320px]"
+                      className="w-80"
                     />
                   </FormControl>
                   <FormMessage />

@@ -26,39 +26,41 @@ export const AddUserModal = () => {
   const [hasPullTestAccess, setHasPullTestAccess] = useState(false);
   const [hasXCyclopsAccess, setHasXCyclopsAccess] = useState(false);
   const [hasUltrabotsAccess, setHasUltrabotsAccess] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    undefined,
-  );
+  const [dropdownValue, setDropdownValue] = useState<string | undefined>('');
 
   const formSchema = z.object({
     role: z.enum(['admin', 'technician', 'user']),
     fullName: z.string(),
-    email: z.string(),
+    email: z.string().email(),
     phoneNumber: z.string(),
+
+    globalAccess: z.string().transform((val) => val === 'true'),
     pullTestApp: z.boolean(),
     xCyclops: z.boolean(),
     ultrabots: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    // resolver: zodResolver(formSchema),
     defaultValues: {
+      // role: 'user',
       fullName: '',
       email: '',
       phoneNumber: '',
-      role: 'user',
+      globalAccess: false,
       pullTestApp: false,
       xCyclops: false,
       ultrabots: false,
     },
   });
 
-  // const handleSubmit = useForm()
-
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('submit form', form.getValues());
-  };
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    if (dropdownValue && dropdownValue.length > 0) {
+      form.setValue('role', dropdownValue as 'admin' | 'technician' | 'user');
+    }
+    console.log('11111');
+    console.log(values);
+  }
 
   // Need to make the handleSwitches dynamic
   const handleCheckedChange = (state: boolean) => {
@@ -95,17 +97,20 @@ export const AddUserModal = () => {
     },
   ];
 
-  // console.log('FORM', form.getValues());
-  console.log(dropdownValue);
+  const getRoleById = (id: string) => {
+    // setDropdownValue(roles.find((role) => role.id === id)?.name);
+    return roles.find((role) => role.id === id)?.name;
+  };
+
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
         <ModalTitle className="mb-10">Add user</ModalTitle>
       </ModalHeader>
       <Form {...form}>
-        {/* <form onSubmit={(e) => onSubmit(e)}> */}
-        <form onSubmit={(e) => onSubmit(e)}>
-          <div className="px-10 flex  gap-10">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          {/* <form onSubmit={form.handleSubmit((e) => handleToggleSwitch(e))}> */}
+          <div className="px-10 flex gap-10">
             <div className="flex flex-row flex-wrap justify-between gap-10">
               <FormField
                 control={form.control}
@@ -119,14 +124,15 @@ export const AddUserModal = () => {
                           id="role"
                           placeholder="Select role"
                           selectedId={dropdownValue}
-                          // selectedId={field.value}
+                          {...field}
                           options={roles}
-                          // onSelect={(e) => setDropdownValue(e)}
-                          onSelect={(e) => {
-                            field.onChange(e);
-                            setDropdownValue(e);
-                          }}
                           className="w-[400px]"
+                          onSelect={(e) => {
+                            field.onChange(getRoleById(e)?.toLowerCase());
+                            // logging values
+                            console.log('HELLOOOO', getRoleById(e));
+                            console.log('Dropdown value: ', dropdownValue);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -144,9 +150,31 @@ export const AddUserModal = () => {
                     All apps
                   </Headline>
                 </div>
-                <Switch
-                  checked={hasGlobalAccess}
-                  onCheckedChange={handleCheckedChange}
+                <FormField
+                  control={form.control}
+                  name="globalAccess"
+                  render={({ field }) => {
+                    console.log('FIELD, ', field);
+                    return (
+                      <FormItem>
+                        <FormLabel>* FOO</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={hasGlobalAccess}
+                            onCheckedChange={field.onChange}
+                            {...field}
+                            value={field.value.toString()}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {/* <Input
+                          placeholder="Full name"
+                          {...field}
+                          className="w-full"
+                        /> */}
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
               {/* Need to make the following dynamic */}

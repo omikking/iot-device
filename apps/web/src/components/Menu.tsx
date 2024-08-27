@@ -44,28 +44,57 @@ export const Menu = () => {
               <MenuTitle>Garpenberg</MenuTitle>
 
               <div className="flex ui-flex-col gap-1">
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="/users" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View users
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      Pull-test overview
+                    </Anchor>
+                  </Link>
+                </Headline>
+
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
+                  <Link href="#" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View sites
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View site locations
                     </Anchor>
                   </Link>
@@ -85,28 +114,43 @@ export const Menu = () => {
               <hr className="ui-text-gold-3" />
 
               <div className="flex ui-flex-col gap-1">
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Overview
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View global technicians
                     </Anchor>
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link href="#" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucidePlus />
+                      <LucidePlus className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:rotate-90" />
                       Add new company
                     </Anchor>
                   </Link>

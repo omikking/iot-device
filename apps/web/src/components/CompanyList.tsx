@@ -12,15 +12,15 @@ const mockCompanyList = [
     id: '2',
   },
   {
-    name: 'Valve Industries',
+    name: 'Valve Software',
     id: '3',
   },
   {
-    name: 'Garpenberg',
+    name: 'Subset Games',
     id: '4',
   },
   {
-    name: 'Sandvik',
+    name: 'Bohemia Interactive',
     id: '5',
   },
   {

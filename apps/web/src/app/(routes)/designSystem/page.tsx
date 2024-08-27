@@ -33,7 +33,6 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
-  HazardCard,
 } from '@gsp/ui';
 
 import {
@@ -61,15 +60,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
-const boltInfoItems = [
-  { title: 'Diameter', text: '66.40 cm' },
-  { title: 'Pass Criteria', text: 'N/A' },
-  {
-    title: 'Location',
-    text: 'Södra Larmgatan 4, 411 16 Göteborg, Sweden',
-  },
-];
-
 export default function Page(): JSX.Element {
   const formSchema = z.object({
     input: z.string(),
@@ -92,11 +82,11 @@ export default function Page(): JSX.Element {
   const options = [
     {
       id: '1',
-      name: 'Elliot Anderson',
+      name: 'Elliot Alderson',
     },
     {
       id: '2',
-      name: 'Darlene Anderson',
+      name: 'Darlene Alderson',
     },
     {
       id: '3',
@@ -179,15 +169,6 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
-      <hr className="w-full" />
-
-      <HazardCard
-        dateTitle="2021-05-23"
-        isHazard={true}
-        boltInfoItems={boltInfoItems}
-        boltDescription="Bolt could not be tested..."
-      ></HazardCard>
 
       <hr className="w-full" />
 
@@ -429,19 +410,19 @@ export default function Page(): JSX.Element {
           </Link>
         </Text>
 
-        <Headline variant="medium" color="foreground" as="h2">
+        <Headline variant="medium" color="foreground" as="h2" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveRight />
+              <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
               Link with icon and no underline
             </Anchor>
           </Link>
         </Headline>
 
-        <Text variant="medium" color="foreground">
+        <Text variant="medium" color="foreground" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveLeft size="20" />
+              <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
               Go back
             </Anchor>
           </Link>

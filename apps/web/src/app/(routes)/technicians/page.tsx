@@ -32,9 +32,9 @@ export default function Page(): JSX.Element {
   const usersMock = [
     {
       id: '1',
-      name: 'Elliot Anderson',
-      email: 'anderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Elliot Alderson',
+      email: 'elliotalderson@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
@@ -50,31 +50,31 @@ export default function Page(): JSX.Element {
       id: '3',
       name: 'Felix Östergren',
       email: 'felix@sandvik.com',
-      company: 'E-corp',
+      company: 'Sandvik',
       isGlobal: false,
       phoneNumber: '+4683729327',
     },
     {
       id: '4',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Whiterose',
+      email: 'whiterose@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
     {
       id: '5',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Darlene Alderson',
+      email: 'darlenealderson@sandvik.com',
+      company: 'Sandvik',
       isGlobal: false,
       phoneNumber: '+4683729327',
     },
     {
       id: '6',
-      name: 'Darlene Anderson',
-      email: 'darleneanderson@sandvik.com',
-      company: 'Edvirt',
+      name: 'Tyrell Wellick',
+      email: 'tyrellwellick@sandvik.com',
+      company: 'Sandvik',
       isGlobal: true,
       phoneNumber: '+4683729327',
     },
@@ -85,11 +85,11 @@ export default function Page(): JSX.Element {
       <Text
         variant="medium"
         color="foreground"
-        className="absolute top-28 left-10"
+        className="absolute top-28 left-10 group"
       >
-        <Link href="#" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <Anchor color="foreground">
-            <LucideMoveLeft />
+            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
             Go back
           </Anchor>
         </Link>

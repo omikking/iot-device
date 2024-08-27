@@ -16,7 +16,7 @@ export const NavBar = () => {
 
         <div className="flex gap-10 items-center">
           <Headline variant="smallBold" color="foreground" as="h3">
-            Pull-test Platform
+            Pull Test Portal
           </Headline>
 
           {status === 'authenticated' && (

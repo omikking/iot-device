@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Dropdown,
   Form,
@@ -8,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Headline,
+  Input,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -16,12 +18,33 @@ import {
   Text,
 } from '@gsp/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import React, { useState } from 'react';
+import {
+  LucideCheckCircle,
+  LucideLayoutGrid,
+  LucideOctagonAlert,
+  LucidePlus,
+  LucideSearchX,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const AddUserModal = () => {
+  const getResultBadge = (
+    result: 'Pass' | 'Fail' | 'Abort',
+  ): {
+    variant: 'success' | 'destructive' | 'warning';
+    icon: React.ReactNode;
+  } => {
+    switch (result) {
+      case 'Pass':
+        return { variant: 'success', icon: <LucideCheckCircle /> };
+      case 'Fail':
+        return { variant: 'destructive', icon: <LucideOctagonAlert /> };
+      case 'Abort':
+        return { variant: 'warning', icon: <LucideSearchX /> };
+    }
+  };
   const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
   const [hasPullTestAccess, setHasPullTestAccess] = useState(false);
   const [hasXCyclopsAccess, setHasXCyclopsAccess] = useState(false);
@@ -33,11 +56,10 @@ export const AddUserModal = () => {
     fullName: z.string(),
     email: z.string().email(),
     phoneNumber: z.string(),
-
     globalAccess: z.string().transform((val) => val === 'true'),
-    pullTestApp: z.boolean(),
-    xCyclops: z.boolean(),
-    ultrabots: z.boolean(),
+    pullTest: z.string().transform((val) => val === 'true'),
+    xCyclops: z.string().transform((val) => val === 'true'),
+    ultrabots: z.string().transform((val) => val === 'true'),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,7 +70,7 @@ export const AddUserModal = () => {
       email: '',
       phoneNumber: '',
       globalAccess: false,
-      pullTestApp: false,
+      pullTest: false,
       xCyclops: false,
       ultrabots: false,
     },
@@ -58,19 +80,21 @@ export const AddUserModal = () => {
     if (dropdownValue && dropdownValue.length > 0) {
       form.setValue('role', dropdownValue as 'admin' | 'technician' | 'user');
     }
-    console.log('11111');
     console.log(values);
   }
 
   // Need to make the handleSwitches dynamic
   const handleCheckedChange = (state: boolean) => {
+    console.log('HANDLE CHECKED CHANGE', state);
     setHasGlobalAccess(state);
+    handlePullTestCheckedChange(state);
     setHasPullTestAccess(state);
     setHasXCyclopsAccess(state);
     setHasUltrabotsAccess(state);
   };
 
   const handlePullTestCheckedChange = (state: boolean) => {
+    console.log('PULL TEST CHANGE', state);
     setHasPullTestAccess(state);
   };
 
@@ -98,9 +122,18 @@ export const AddUserModal = () => {
   ];
 
   const getRoleById = (id: string) => {
-    // setDropdownValue(roles.find((role) => role.id === id)?.name);
     return roles.find((role) => role.id === id)?.name;
   };
+
+  useEffect(() => {
+    console.log('GLOBAL', hasGlobalAccess);
+    handlePullTestCheckedChange(hasGlobalAccess);
+  }, [
+    hasGlobalAccess,
+    hasPullTestAccess,
+    hasXCyclopsAccess,
+    hasUltrabotsAccess,
+  ]);
 
   return (
     <ModalContent className="sm:max-w-[425px]">
@@ -108,10 +141,15 @@ export const AddUserModal = () => {
         <ModalTitle className="mb-10">Add user</ModalTitle>
       </ModalHeader>
       <Form {...form}>
+        <Badge variant={getResultBadge('Abort').variant}>
+          {getResultBadge('Abort').icon}
+          Pass or whatever you want!
+        </Badge>
+
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* <form onSubmit={form.handleSubmit((e) => handleToggleSwitch(e))}> */}
-          <div className="px-10 flex gap-10">
-            <div className="flex flex-row flex-wrap justify-between gap-10">
+          <div className="flex px-10 gap-10">
+            <div className="flex flex-col gap-8">
               <FormField
                 control={form.control}
                 name="role"
@@ -128,6 +166,7 @@ export const AddUserModal = () => {
                           options={roles}
                           className="w-[400px]"
                           onSelect={(e) => {
+                            setDropdownValue(e); // without this the dropdown value disappears when using switches
                             field.onChange(getRoleById(e)?.toLowerCase());
                             // logging values
                             console.log('HELLOOOO', getRoleById(e));
@@ -140,9 +179,67 @@ export const AddUserModal = () => {
                   );
                 }}
               />
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>* Full name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter full name..."
+                          {...field}
+                          className="w-[400px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>* Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter fill in email..."
+                          {...field}
+                          className="w-[400px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Phone number</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in phone number..."
+                          {...field}
+                          className="w-[400px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </div>
+
             {/* RIGHT */}
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col flex-grow w-full">
               <div className="flex items-center p-4 border bg-main-white border-neutral-3">
                 <div className="flex flex-grow items-center gap-2">
                   <LucideLayoutGrid size={20} />
@@ -154,31 +251,116 @@ export const AddUserModal = () => {
                   control={form.control}
                   name="globalAccess"
                   render={({ field }) => {
-                    console.log('FIELD, ', field);
                     return (
                       <FormItem>
-                        <FormLabel>* FOO</FormLabel>
                         <FormControl>
                           <Switch
-                            checked={hasGlobalAccess}
+                            checked={field.value}
+                            // onCheckedChange={field.onChange}
+                            onCheckedChange={(e) => {
+                              field.onChange(e);
+                              // handleCheckedChange(e);
+                            }}
+                            {...field}
+                            value={field.value.toString()}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+                <Text
+                  color={'foreground'}
+                  variant={'medium'}
+                  className="flex flex-grow"
+                >
+                  Pull Test
+                </Text>
+                <FormField
+                  control={form.control}
+                  name="pullTest"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            // onCheckedChange={field.onChange}
+                            onCheckedChange={(e) => {
+                              // handlePullTestCheckedChange(e);
+                              handleCheckedChange(e);
+                            }}
+                            {...field}
+                            value={field.value.toString()}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+                <Text
+                  color={'foreground'}
+                  variant={'medium'}
+                  className="flex flex-grow"
+                >
+                  xCyclops
+                </Text>
+                <FormField
+                  control={form.control}
+                  name="xCyclops"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
                             onCheckedChange={field.onChange}
                             {...field}
                             value={field.value.toString()}
                           />
                         </FormControl>
                         <FormMessage />
-                        {/* <Input
-                          placeholder="Full name"
-                          {...field}
-                          className="w-full"
-                        /> */}
                       </FormItem>
                     );
                   }}
                 />
               </div>
-              {/* Need to make the following dynamic */}
               <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+                <Text
+                  color={'foreground'}
+                  variant={'medium'}
+                  className="flex flex-grow"
+                >
+                  Ultrabots
+                </Text>
+                <FormField
+                  control={form.control}
+                  name="ultrabots"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            {...field}
+                            value={field.value.toString()}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+
+              {/* Need to make the following dynamic */}
+              {/* <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
                 <Text
                   variant="medium"
                   color="foreground"
@@ -216,7 +398,7 @@ export const AddUserModal = () => {
                   checked={hasUltrabotsAccess}
                   onCheckedChange={handleUltrabotsCheckedChange}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
 

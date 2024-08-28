@@ -38,8 +38,6 @@ export const BoltResultsTable = () => {
         return { variant: 'destructive', icon: <LucideOctagonAlert /> };
       case 'Abort':
         return { variant: 'warning', icon: <LucideSearchX /> };
-      default:
-        return { variant: 'warning', icon: <LucideSearchX /> };
     }
   };
 

@@ -2,14 +2,22 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
-import { LucideChevronDown } from 'lucide-react';
+import {
+  LucideChevronDown,
+  LucideKey,
+  LucidePickaxe,
+  LucideUser,
+} from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Badge } from './badge';
 
-interface DropdownItem {
+export type DropdownItem = {
   id: string;
   name: string;
-}
+  background?: 'primary' | 'neutral' | undefined;
+  // icon?: 'user' | 'technician' | 'admin';
+};
 
 export interface DropdownProps {
   id: string;
@@ -19,6 +27,9 @@ export interface DropdownProps {
   className?: string;
   disabled?: boolean;
   onSelect?: (id: string) => void;
+  isBadge?: boolean;
+  badgeIcon?: boolean;
+  badgeVariant?: 'primary' | 'neutral';
 }
 
 export const buttonStyling =
@@ -39,6 +50,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     disabled,
     className,
     onSelect,
+    isBadge,
+    badgeIcon,
+    badgeVariant = 'primary',
     ...props
   }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -62,6 +76,19 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       }
     }, [selectedId, options]);
 
+    const iconHandler = (icon: string) => {
+      switch (icon) {
+        case 'user':
+          return <LucideUser size="22" />;
+        case 'technician':
+          return <LucidePickaxe size="22" />;
+        case 'admin':
+          return <LucideKey size="22" />;
+        default:
+          return null;
+      }
+    };
+
     return (
       <div className={cn('relative', className)} {...props}>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -78,12 +105,26 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               }}
               className={buttonStyling}
             >
-              <Text
-                variant="medium"
-                color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
-              >
-                {selectedItem?.name || placeholder}
-              </Text>
+              {isBadge && selectedItem?.name ? (
+                <Badge
+                  variant={selectedItem?.background || badgeVariant}
+                  size="small"
+                  className="ui-mr-2"
+                >
+                  {/* {badgeIcon ? iconHandler(selectedItem?.name.toLowerCase()) : null} */}
+                  {iconHandler(selectedItem.name.toLowerCase())}
+                  {selectedItem?.name}
+                </Badge>
+              ) : (
+                <Text
+                  variant="medium"
+                  color={
+                    disabled || !selectedItem?.name ? 'muted' : 'foreground'
+                  }
+                >
+                  {selectedItem?.name || placeholder}
+                </Text>
+              )}
               <LucideChevronDown
                 size="22"
                 className={cn(
@@ -115,9 +156,22 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                       selectedItem?.id === item.id && 'ui-bg-neutral-1',
                     )}
                   >
-                    <Text variant="medium" color="foreground">
-                      {item.name}
-                    </Text>
+                    {isBadge ? (
+                      <Badge
+                        variant={item?.background || 'primary'}
+                        size="small"
+                        className="ui-mr-2"
+                      >
+                        {badgeIcon
+                          ? iconHandler(item.name.toLowerCase())
+                          : null}
+                        {item.name}
+                      </Badge>
+                    ) : (
+                      <Text variant="medium" color="foreground">
+                        {item.name}
+                      </Text>
+                    )}
                   </li>
                 ))}
               </ul>

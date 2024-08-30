@@ -111,7 +111,6 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                   size="small"
                   className="ui-mr-2"
                 >
-                  {/* {badgeIcon ? iconHandler(selectedItem?.name.toLowerCase()) : null} */}
                   {iconHandler(selectedItem.name.toLowerCase())}
                   {selectedItem?.name}
                 </Badge>

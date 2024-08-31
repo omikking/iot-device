@@ -32,6 +32,8 @@ export const AddUserModal = () => {
     string | undefined
   >('');
 
+  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
+
   const formSchema = z.object({
     role: z.enum(['admin', 'technician', 'user']),
     email: z.string().email(),
@@ -54,6 +56,10 @@ export const AddUserModal = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
+
+  const watchPullTest = form.watch('pullTest');
+  const watchxCyclops = form.watch('xCyclops');
+  const watchUltrabots = form.watch('ultrabots');
 
   const roles: DropdownItem[] = [
     {
@@ -122,13 +128,28 @@ export const AddUserModal = () => {
   const getEmailById = (id: string) => {
     return technicians.find((tech) => tech.id === id)?.email;
   };
+
+  const handleGlobalAccess = (checked: boolean) => {
+    setHasGlobalAccess(checked);
+    form.setValue('pullTest', checked);
+    form.setValue('xCyclops', checked);
+    form.setValue('ultrabots', checked);
+  };
+
   useEffect(() => {
-    // Clear the email field when the role changes
     form.setValue('email', '');
   }, [form.watch('role')]);
 
+  useEffect(() => {
+    if (watchPullTest && watchxCyclops && watchUltrabots) {
+      setHasGlobalAccess(true);
+    } else {
+      setHasGlobalAccess(false);
+    }
+  }, [hasGlobalAccess, watchPullTest, watchxCyclops, watchUltrabots]);
+
   return (
-    <ModalContent className="sm:max-w-[425px] overflow-scroll">
+    <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
         <ModalTitle className="mb-10">Add user</ModalTitle>
       </ModalHeader>
@@ -225,7 +246,12 @@ export const AddUserModal = () => {
                     All apps
                   </Headline>
                 </div>
-                <Switch checked={true} onCheckedChange={() => {}} />
+                <Switch
+                  checked={hasGlobalAccess}
+                  onCheckedChange={(e) => {
+                    handleGlobalAccess(e);
+                  }}
+                />
               </div>
               <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
                 <Text

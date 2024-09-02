@@ -5,7 +5,7 @@ import CoffeeCreate from '@/components/coffees/CoffeeCreate';
 
 export default function Page(): JSX.Element {
   return (
-    <main className="flex flex-col items-center justify-around min-h-screen p-24 ">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
       <h1 className="text-md">Coffee stuff ☕️</h1>
       <div className="flex flex-col gap-10">
         <CoffeeCreate />

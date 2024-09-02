@@ -30,7 +30,6 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
-  GoBack,
 } from '@gsp/ui';
 
 import {
@@ -159,7 +158,7 @@ export default function Page(): JSX.Element {
   ];
 
   return (
-    <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
@@ -321,10 +320,8 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Links 🦄
       </Headline>
-      <div className="flex flex-col items-center gap-12">
-        <GoBack />
-
-        <Text variant="xs" color="foreground" className="mt-16">
+      <div className="flex flex-col items-center gap-12 ui-relative">
+        <Text variant="xs" color="foreground">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="foreground">
               Link and black underline

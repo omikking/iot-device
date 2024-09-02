@@ -92,7 +92,7 @@ export default function Page(): JSX.Element {
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
       <GoBack />
 
       {/* TEMPORARY: will be removed */}
@@ -174,7 +174,7 @@ export default function Page(): JSX.Element {
           )}
           className="w-fit flex flex-row flex-wrap gap-6"
         >
-          <div className="mt-8 flex flex-col gap-20">
+          <div className="mt-4 flex flex-col gap-20">
             {/* Company details */}
             <ContentHolder variant="general" headlineText="Company details">
               <CompanyDetailsForm companyForm={companyForm} />

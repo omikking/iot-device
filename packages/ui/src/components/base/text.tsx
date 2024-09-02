@@ -32,12 +32,13 @@ export interface TextProps
 const Text = React.forwardRef<
   HTMLParagraphElement | HTMLSpanElement,
   TextProps
->(({ className, variant, color, children, as = 'p' }, ref) => {
+>(({ className, variant, color, children, as = 'p', ...props }, ref) => {
   const TextElement = as;
   return (
     <TextElement
       className={cn(textVariants({ variant, color }), className)}
       ref={ref as React.RefObject<HTMLParagraphElement>}
+      {...props}
     >
       {children}
     </TextElement>

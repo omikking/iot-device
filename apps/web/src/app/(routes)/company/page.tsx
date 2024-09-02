@@ -3,16 +3,15 @@ import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import {
   Headline,
   Text,
-  Anchor,
   ContentHolder,
   Button,
   NavigationCard,
   Form,
+  GoBack,
 } from '@gsp/ui';
 import {
   LucideCircleCheckBig,
   LucideMountain,
-  LucideMoveLeft,
   LucideMoveRight,
   LucidePyramid,
   LucideSparkles,
@@ -94,18 +93,7 @@ export default function Page(): JSX.Element {
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+      <GoBack />
 
       {/* TEMPORARY: will be removed */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">

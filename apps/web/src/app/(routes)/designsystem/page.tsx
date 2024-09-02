@@ -30,6 +30,7 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  GoBack,
 } from '@gsp/ui';
 
 import {
@@ -42,7 +43,6 @@ import {
   LucideGitGraph,
   LucideGrid3X3,
   LucideList,
-  LucideMoveLeft,
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
@@ -322,7 +322,9 @@ export default function Page(): JSX.Element {
         Links 🦄
       </Headline>
       <div className="flex flex-col items-center gap-12">
-        <Text variant="xs" color="foreground">
+        <GoBack />
+
+        <Text variant="xs" color="foreground" className="mt-16">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="foreground">
               Link and black underline
@@ -346,15 +348,6 @@ export default function Page(): JSX.Element {
             </Anchor>
           </Link>
         </Headline>
-
-        <Text variant="medium" color="foreground" className="group">
-          <Link href="#" passHref legacyBehavior>
-            <Anchor color="foreground">
-              <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-              Go back
-            </Anchor>
-          </Link>
-        </Text>
       </div>
 
       <hr className="w-full" />

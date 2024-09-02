@@ -26,9 +26,9 @@ export interface ContentHolderProps
 }
 
 const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
-  ({ className, variant, headlineText, children }) => {
+  ({ className, variant, headlineText, children }, ref) => {
     return (
-      <div>
+      <div ref={ref}>
         {!!headlineText && (
           <Headline
             variant="medium"

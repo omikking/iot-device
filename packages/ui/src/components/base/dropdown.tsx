@@ -31,16 +31,19 @@ const dropdownVariants =
   'ui-bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-rounded ui-shadow-md ui-max-h-56 ui-z-10';
 
 const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
-  ({
-    id,
-    placeholder = 'Select',
-    options,
-    selectedId,
-    disabled,
-    className,
-    onSelect,
-    ...props
-  }) => {
+  (
+    {
+      id,
+      placeholder = 'Select',
+      options,
+      selectedId,
+      disabled,
+      className,
+      onSelect,
+      ...props
+    },
+    ref,
+  ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
@@ -63,7 +66,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     }, [selectedId, options]);
 
     return (
-      <div className={cn('relative', className)} {...props}>
+      <div className={cn('relative', className)} {...props} ref={ref}>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <button

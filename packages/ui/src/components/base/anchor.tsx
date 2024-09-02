@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 
 // We need to use this component with Link from Next when we want text styling. Include props href, passHref, legacyBehavior on Link if used with Anchor.
 // https://nextjs.org/docs/pages/api-reference/components/link

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { LucideCalendar } from 'lucide-react';
 import { buttonStyling } from './dropdown';
 
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 import { Text } from './text';
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';

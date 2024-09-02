@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '../lib/utils';
-import { Headline } from './headline';
+import { cn } from '../../lib/utils';
+import { Headline } from '../base/headline';
 
 // This is the grey box that is used as a wrapper across the projects.
 

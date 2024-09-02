@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 import { LucideChevronDown } from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';

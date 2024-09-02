@@ -27,25 +27,22 @@ export const AddUserModal = () => {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     'user',
   );
-
   const [techDropDownValue, setTechDropDownValue] = useState<
     string | undefined
   >('');
-
   const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
 
   const formSchema = z.object({
     role: z.enum(['admin', 'technician', 'user']),
     email: z.string().email(),
-    pullTest: z.string().transform((val) => val === 'true'),
-    xCyclops: z.string().transform((val) => val === 'true'),
-    ultrabots: z.string().transform((val) => val === 'true'),
+    pullTest: z.boolean(),
+    xCyclops: z.boolean(),
+    ultrabots: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      // role: 'user',
       email: '',
       pullTest: false,
       xCyclops: false,
@@ -60,6 +57,7 @@ export const AddUserModal = () => {
   const watchPullTest = form.watch('pullTest');
   const watchxCyclops = form.watch('xCyclops');
   const watchUltrabots = form.watch('ultrabots');
+  const watchRole = form.watch('role');
 
   const roles: DropdownItem[] = [
     {
@@ -138,7 +136,7 @@ export const AddUserModal = () => {
 
   useEffect(() => {
     form.setValue('email', '');
-  }, [form.watch('role')]);
+  }, [watchRole]);
 
   useEffect(() => {
     if (watchPullTest && watchxCyclops && watchUltrabots) {
@@ -146,7 +144,7 @@ export const AddUserModal = () => {
     } else {
       setHasGlobalAccess(false);
     }
-  }, [hasGlobalAccess, watchPullTest, watchxCyclops, watchUltrabots]);
+  }, [watchPullTest, watchxCyclops, watchUltrabots]);
 
   return (
     <ModalContent className="sm:max-w-[425px]">
@@ -176,7 +174,7 @@ export const AddUserModal = () => {
                           options={roles}
                           className="w-[400px]"
                           onSelect={(e) => {
-                            setDropdownValue(e); // without this the dropdown value disappears when using switches
+                            setDropdownValue(e);
                             field.onChange(getRoleById(e)?.toLowerCase());
                           }}
                         />
@@ -186,8 +184,28 @@ export const AddUserModal = () => {
                   );
                 }}
               />
-
-              {form.watch('role') === 'technician' ? (
+              {(watchRole === 'admin' || watchRole === 'user') && (
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>* Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Fill in email..."
+                            {...field}
+                            className="w-[400px]"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              )}
+              {watchRole === 'technician' && (
                 <FormField
                   control={form.control}
                   name="email"
@@ -214,33 +232,11 @@ export const AddUserModal = () => {
                     );
                   }}
                 />
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>* Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Fill in email..."
-                            {...field}
-                            className="w-[400px]"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
               )}
-              {/* dont know if this causes perfomance issues, logs many times */}
             </div>
-
-            <div className="flex flex-col flex-grow w-full">
-              <div className="flex items-center p-4 border bg-main-white border-neutral-3">
-                <div className="flex flex-grow items-center gap-2">
+            <div className="flex flex-col flex-grow w-full border-2 border-neutral-2">
+              <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
+                <div className="flex flex-grow  items-center gap-2">
                   <LucideLayoutGrid size={20} className="text-orange-600" />
                   <Headline color={'foreground'} as="h3" variant={'smallBold'}>
                     All apps
@@ -253,7 +249,7 @@ export const AddUserModal = () => {
                   }}
                 />
               </div>
-              <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+              <div className="flex items-center px-6 py-3 border-b border-neutral-2">
                 <Text
                   color={'foreground'}
                   variant={'medium'}
@@ -280,7 +276,7 @@ export const AddUserModal = () => {
                   }}
                 />
               </div>
-              <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+              <div className="flex items-center px-6 py-3 border-b border-neutral-2">
                 <Text
                   color={'foreground'}
                   variant={'medium'}
@@ -308,7 +304,7 @@ export const AddUserModal = () => {
                   }}
                 />
               </div>
-              <div className="flex items-center px-4 py-4 border-x border-b border-neutral-3">
+              <div className="flex items-center px-6 py-3">
                 <Text
                   color={'foreground'}
                   variant={'medium'}

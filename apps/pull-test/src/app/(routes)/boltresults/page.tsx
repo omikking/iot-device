@@ -1,6 +1,7 @@
 'use client';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
+import { GoBack } from '@/components/GoBack';
 import {
   Button,
   Headline,
@@ -12,7 +13,6 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  GoBack,
 } from '@gsp/ui';
 
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';

@@ -1,6 +1,7 @@
 'use client';
+import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
-import { Button, Headline, Badge, GoBack } from '@gsp/ui';
+import { Button, Headline, Badge } from '@gsp/ui';
 
 import { LucidePlus } from 'lucide-react';
 

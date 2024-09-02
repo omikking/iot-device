@@ -1,15 +1,9 @@
 'use client';
-import {
-  GoBack,
-  Headline,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@gsp/ui';
+import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 
 import { HazardCard } from '@/components/HazardCard';
 import React from 'react';
+import { GoBack } from '@/components/GoBack';
 
 const viewBoltSpecifications = [
   {

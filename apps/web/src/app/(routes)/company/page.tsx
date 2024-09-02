@@ -7,7 +7,6 @@ import {
   Button,
   NavigationCard,
   Form,
-  GoBack,
 } from '@gsp/ui';
 import {
   LucideCircleCheckBig,
@@ -25,6 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useState } from 'react';
+import { GoBack } from '@/components/GoBack';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({

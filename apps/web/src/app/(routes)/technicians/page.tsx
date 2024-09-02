@@ -1,10 +1,11 @@
 'use client';
-import { Button, Headline, Modal, ModalTrigger, GoBack } from '@gsp/ui';
+import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 
 import { LucidePlus } from 'lucide-react';
 
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import { TechniciansTable } from '@/components/TechniciansTable';
+import { GoBack } from '@/components/GoBack';
 
 export default function Page(): JSX.Element {
   // Only superadmin should be able to see this page

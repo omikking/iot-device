@@ -15,42 +15,40 @@ export const AssociateDetailsForm = ({ companyForm }) => {
         name="assignSandvikAdministrator"
         render={() => {
           return (
-            <FormItem>
+            <FormItem className="min-w-[31%]">
               <FormLabel>Full name</FormLabel>
               <FormControl>
-                <Input value="Darlene Alderson" className="w-[400px]" />
+                <Input value="Darlene Alderson" className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>
           );
         }}
       />
-
       <FormField
         control={companyForm.control}
         name="assignSandvikAdministrator"
         render={() => {
           return (
-            <FormItem>
+            <FormItem className="min-w-[31%]">
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input value="darlene@gmail.com" className="w-[400px]" />
+                <Input value="darlene@gmail.com" className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>
           );
         }}
       />
-
       <FormField
         control={companyForm.control}
         name="assignSandvikAdministrator"
         render={() => {
           return (
-            <FormItem>
+            <FormItem className="min-w-[31%]">
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input value="+46701740621" className="w-[400px]" />
+                <Input value="+46701740621" className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>

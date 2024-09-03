@@ -172,13 +172,10 @@ export default function Page(): JSX.Element {
           onSubmit={companyForm.handleSubmit((e) =>
             console.log(e, 'company added'),
           )}
-          className="w-fit flex flex-row flex-wrap gap-6"
+          className="w-full flex flex-row flex-wrap gap-6"
         >
-          <div className="mt-4 flex flex-col gap-20">
-            {/* Company details */}
-            <ContentHolder variant="general" headlineText="Company details">
-              <CompanyDetailsForm companyForm={companyForm} />
-            </ContentHolder>
+          <div className="w-full mt-4 flex flex-col gap-20">
+            <CompanyDetailsForm companyForm={companyForm} />
 
             <div>
               <div className="flex justify-between">
@@ -214,7 +211,7 @@ export default function Page(): JSX.Element {
               </div>
 
               {/* App plans */}
-              <div className="w-full flex justify-between items-start bg-main-white mt-4">
+              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
                 {mockAppPlans.map((appData) => (
                   <AppPlansContainer
                     appData={appData}

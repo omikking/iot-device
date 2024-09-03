@@ -69,7 +69,12 @@ export default function SignIn() {
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
       {/* @TODO is this page ground support platform login only or login for all apps? */}
-      <Headline as="h1" variant="xl" color="foreground">
+      <Headline
+        as="h1"
+        variant="xl"
+        color="foreground"
+        className="ui-text-center"
+      >
         Ground Support Platform
       </Headline>
 

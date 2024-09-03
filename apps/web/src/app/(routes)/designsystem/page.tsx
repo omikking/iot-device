@@ -478,7 +478,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Textarea
                         placeholder="Text area placeholder..."
-                        className="w-[400px] h-[140px]"
+                        className="w-96 h-[140px]"
                         {...field}
                       />
                     </FormControl>
@@ -498,7 +498,7 @@ export default function Page(): JSX.Element {
                       <Textarea
                         disabled
                         placeholder="Text area placeholder..."
-                        className="w-[400px] h-[140px]"
+                        className="w-96 h-[140px]"
                         {...field}
                       />
                     </FormControl>
@@ -530,7 +530,7 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar className="w-[400px]" />
+                      <SingleDateCalendar className="w-96" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -545,7 +545,7 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar disabled className="w-[400px]" />
+                      <SingleDateCalendar disabled className="w-96" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -561,7 +561,7 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Range calendar</FormLabel>
                     <FormControl>
-                      <RangeCalendar className="w-[400px]" />
+                      <RangeCalendar className="w-96" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -576,7 +576,7 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Disabled range calendar</FormLabel>
                     <FormControl>
-                      <RangeCalendar disabled className="w-[400px]" />
+                      <RangeCalendar disabled className="w-96" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -595,7 +595,7 @@ export default function Page(): JSX.Element {
                       <Input
                         placeholder="Enter input"
                         {...field}
-                        className="w-[400px]"
+                        className="w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -615,7 +615,7 @@ export default function Page(): JSX.Element {
                         disabled
                         placeholder="Enter input"
                         {...field}
-                        className="w-[400px]"
+                        className="w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -629,7 +629,7 @@ export default function Page(): JSX.Element {
               name="dropdown"
               render={() => {
                 return (
-                  <FormItem>
+                  <FormItem className="w-96">
                     <FormLabel>Dropdown</FormLabel>
                     <FormControl>
                       <Dropdown
@@ -638,7 +638,6 @@ export default function Page(): JSX.Element {
                         selectedId={dropdownValue}
                         options={options}
                         onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -651,7 +650,7 @@ export default function Page(): JSX.Element {
               name="dropdown"
               render={() => {
                 return (
-                  <FormItem>
+                  <FormItem className="w-96">
                     <FormLabel>Disabled dropdown</FormLabel>
                     <FormControl>
                       <Dropdown
@@ -660,7 +659,6 @@ export default function Page(): JSX.Element {
                         placeholder="Select dropdown item"
                         options={options}
                         onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -729,6 +727,8 @@ export default function Page(): JSX.Element {
           {usersMock.length} total
         </Badge>
       </div>
+
+      <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">
         Tabs 🦄

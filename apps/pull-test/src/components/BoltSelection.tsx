@@ -75,7 +75,6 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -97,7 +96,6 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -119,7 +117,6 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -141,7 +138,6 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />

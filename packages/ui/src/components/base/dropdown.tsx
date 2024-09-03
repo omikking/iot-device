@@ -98,19 +98,14 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           </PopoverTrigger>
 
           <PopoverContent
-            className="ui-w-auto flex flex-col ui-items-end"
+            className="ui-w-[--radix-popover-trigger-width]"
             align="start"
           >
             <div
               aria-label="Dropdown menu"
               className={cn(dropdownVariants, className)}
             >
-              <ul
-                role="menu"
-                aria-labelledby={id}
-                aria-orientation="vertical"
-                className="ui-w-full"
-              >
+              <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
                 {options?.map((item) => (
                   <li
                     aria-hidden="true"

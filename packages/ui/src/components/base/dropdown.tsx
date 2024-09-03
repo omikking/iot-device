@@ -105,7 +105,12 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               aria-label="Dropdown menu"
               className={cn(dropdownVariants, className)}
             >
-              <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
+              <ul
+                role="menu"
+                aria-labelledby={id}
+                aria-orientation="vertical"
+                className="ui-w-full"
+              >
                 {options?.map((item) => (
                   <li
                     aria-hidden="true"

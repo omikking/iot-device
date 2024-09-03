@@ -7,7 +7,7 @@ import { Headline } from '../base/headline';
 // This is the grey box that is used as a wrapper across the projects.
 
 const contentHolderVariants = cva(
-  'ui-flex ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-min-w-[1320px] ui-border-2 ui-border-neutral-2',
+  'ui-flex ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-w-full ui-border-2 ui-border-neutral-2',
   {
     variants: {
       variant: {
@@ -28,7 +28,7 @@ export interface ContentHolderProps
 const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
   ({ className, variant, headlineText, children }, ref) => {
     return (
-      <div ref={ref}>
+      <div className="ui-w-full" ref={ref}>
         {!!headlineText && (
           <Headline
             variant="medium"

@@ -30,7 +30,7 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <Tabs defaultValue="table">
+      <Tabs defaultValue="table" className="w-full max-w-[1600px]">
         <div className="w-full flex flex-row justify-between items-center pb-2">
           <TabsList>
             <TabsTrigger value="table">
@@ -56,12 +56,12 @@ export default function Page(): JSX.Element {
 
         <BoltSelection />
 
-        <TabsContent value="table">
+        <TabsContent value="table" className="w-full">
           <BoltResultsTable />
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table className="ui-min-w-[1620px]" />
+          <Table />
         </TabsContent>
       </Tabs>
     </main>

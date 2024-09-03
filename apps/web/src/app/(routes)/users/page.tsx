@@ -20,7 +20,7 @@ export default function Page(): JSX.Element {
         Users
       </Headline>
 
-      <div className="flex flex-col items-end gap-5">
+      <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Button variant="primary" size="large">
           <LucidePlus />
           Add user

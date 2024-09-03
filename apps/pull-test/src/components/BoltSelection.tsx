@@ -57,7 +57,7 @@ export const BoltSelection = () => {
       <Form {...form}>
         <form
           onSubmit={() => console.log('submit form')}
-          className="w-full flex flex-row items-center flex-wrap gap-8"
+          className="w-full flex flex-row items-center gap-8"
         >
           <BoltResultsFilter />
 
@@ -66,7 +66,7 @@ export const BoltSelection = () => {
             name="site"
             render={() => {
               return (
-                <FormItem className="mt-0.5">
+                <FormItem className="mt-0.5 w-full">
                   <FormLabel>Site</FormLabel>
                   <FormControl>
                     <Dropdown
@@ -75,7 +75,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -88,7 +88,7 @@ export const BoltSelection = () => {
             name="level"
             render={() => {
               return (
-                <FormItem>
+                <FormItem className="mt-0.5 w-full">
                   <FormLabel>Level</FormLabel>
                   <FormControl>
                     <Dropdown
@@ -97,7 +97,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -110,7 +110,7 @@ export const BoltSelection = () => {
             name="drive"
             render={() => {
               return (
-                <FormItem>
+                <FormItem className="mt-0.5 w-full">
                   <FormLabel>Drive</FormLabel>
                   <FormControl>
                     <Dropdown
@@ -119,7 +119,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -132,7 +132,7 @@ export const BoltSelection = () => {
             name="position"
             render={() => {
               return (
-                <FormItem>
+                <FormItem className="mt-0.5 w-full">
                   <FormLabel>Position</FormLabel>
                   <FormControl>
                     <Dropdown
@@ -141,7 +141,7 @@ export const BoltSelection = () => {
                       selectedId={dropdownValue}
                       options={sites}
                       onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />

@@ -104,14 +104,17 @@ export default function Page(): JSX.Element {
 
       <Tabs
         defaultValue="active"
-        className="flex max-w-[1400px] flex-col mx-auto pb-10 gap-4 px-10"
+        className="flex w-full max-w-[1330px] flex-col mx-auto pb-10 gap-4"
       >
         <TabsList className="self-start">
           <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="view all">View all</TabsTrigger>
         </TabsList>
-        <TabsContent value="active" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="active"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map(
             (hazardCard, index) =>
               hazardCard.isHazard && (
@@ -125,7 +128,10 @@ export default function Page(): JSX.Element {
               ),
           )}
         </TabsContent>
-        <TabsContent value="completed" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="completed"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map(
             (hazardCard, index) =>
               !hazardCard.isHazard && (
@@ -139,7 +145,10 @@ export default function Page(): JSX.Element {
               ),
           )}
         </TabsContent>
-        <TabsContent value="view all" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="view all"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map((hazardCard, index) => (
             <HazardCard
               key={index}

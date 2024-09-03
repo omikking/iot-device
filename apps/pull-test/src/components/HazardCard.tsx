@@ -34,7 +34,7 @@ export const HazardCard = ({
   boltInfoItems,
 }: HazardCardProps) => {
   return (
-    <div className="w-[644px] flex flex-col border-2 border-neutral-2">
+    <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
       <div className="flex flex-row border-b border-neutral-2 p-6 items-center justify-between">
         <Headline variant="smallBold" as="h3" color="foreground">
           {dateTitle}
@@ -46,7 +46,7 @@ export const HazardCard = ({
           </Badge>
         )}
       </div>
-      <div className="w-full flex flex-row gap-6 py-4 px-6">
+      <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
           {boltInfoItems.slice(0, 3).map((item) => (
             <div
@@ -63,7 +63,7 @@ export const HazardCard = ({
             </div>
           ))}
         </div>
-        <div className="w-1/2 flex flex-col gap-2 min-h-40">
+        <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
             Description
           </Text>

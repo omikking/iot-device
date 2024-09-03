@@ -24,7 +24,14 @@ interface BoltResultSchema {
   comment: string;
   result: 'Pass' | 'Fail' | 'Abort';
 }
-export const BoltResultsTable = () => {
+
+interface BoltResultsTableProps {
+  isBoltResultsSelected: boolean;
+}
+
+export const BoltResultsTable = ({
+  isBoltResultsSelected,
+}: BoltResultsTableProps) => {
   const getResultBadge = (
     result: 'Pass' | 'Fail' | 'Abort',
   ): {
@@ -216,7 +223,11 @@ export const BoltResultsTable = () => {
 
   return (
     <>
-      <DataTable columns={columns} data={boltResultsMock} />
+      <DataTable
+        columns={columns}
+        data={isBoltResultsSelected ? boltResultsMock : []}
+        noResultMessage="Select site, level, drive and position to view the bolt results."
+      />
       <Badge variant="neutral" className="self-start mt-5">
         {boltResultsMock.length} total
       </Badge>

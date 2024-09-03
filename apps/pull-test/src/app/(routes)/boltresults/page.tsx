@@ -24,8 +24,14 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Page(): JSX.Element {
+  const [site, setSite] = useState<string | undefined>(undefined);
+  const [level, setLevel] = useState<string | undefined>(undefined);
+  const [drive, setDrive] = useState<string | undefined>(undefined);
+  const [position, setPosition] = useState<string | undefined>(undefined);
+
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
       <Text
@@ -73,10 +79,19 @@ export default function Page(): JSX.Element {
           </Modal>
         </div>
 
-        <BoltSelection />
+        <BoltSelection
+          site={site}
+          level={level}
+          drive={drive}
+          position={position}
+          onSetSite={setSite}
+          onSetLevel={setLevel}
+          onSetDrive={setDrive}
+          onSetPosition={setPosition}
+        />
 
         <TabsContent value="table">
-          <BoltResultsTable />
+          <BoltResultsTable isBoltResultsSelected={!!site} />
         </TabsContent>
 
         <TabsContent value="graphs">

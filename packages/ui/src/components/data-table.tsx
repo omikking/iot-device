@@ -16,16 +16,21 @@ import {
   TableRow,
 } from './table';
 
+import { Text } from './text';
+import { LucideSearch } from 'lucide-react';
+
 export type { ColumnDef };
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  noResultMessage?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  noResultMessage = 'Could not find any data.',
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -76,10 +81,18 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                {/* Fix this later to get a no result message props */}
-                No results.
+              <TableCell
+                colSpan={columns.length}
+                className="ui-h-80 ui-text-center !ui-pl-12"
+              >
+                <div className="ui-flex ui-flex-col ui-justify-center ui-items-center ui-gap-5">
+                  <Text color="foreground" variant="medium">
+                    {noResultMessage}
+                  </Text>
+                  <LucideSearch color="gray" />
+                </div>
               </TableCell>
+              <TableCell />
             </TableRow>
           )}
         </TableBody>

@@ -6,7 +6,7 @@ import { LucideChevronDown } from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-interface DropdownItem {
+export interface DropdownItem {
   id: string;
   name: string;
 }
@@ -49,7 +49,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
 
     const handleChange = (item: DropdownItem) => {
       setSelectedItem(item);
-      onSelect && onSelect(item.id);
+      onSelect && onSelect(item.name);
       setIsOpen(false);
     };
 
@@ -120,6 +120,16 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     </Text>
                   </li>
                 ))}
+                {options?.length === 0 && (
+                  <li
+                    aria-hidden="true"
+                    className={cn(dropdownItemStyling, 'ui-bg-neutral-1')}
+                  >
+                    <Text variant="medium" color="muted">
+                      No available options to select
+                    </Text>
+                  </li>
+                )}
               </ul>
             </div>
           </PopoverContent>

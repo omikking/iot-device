@@ -165,8 +165,55 @@ export default function Page(): JSX.Element {
           className="w-[400px]"
         />
 
-        <div className="flex flex-col justify-between w-[1320px] h-[740px] bg-neutral-1 border-2 border-neutral-2">
-          {/* top */}
+        <div className="flex w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
+          <div className="flex flex-col w-full h-full m- justify-between items-center bg-mai-white">
+            <div className="flex flex-row w-full p-6">
+              <Headline as="h2" variant="smallBold" color="foreground">
+                Levels
+              </Headline>
+            </div>
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+            </div>
+            <div className="flex justify-end w-full">Add level</div>
+          </div>
+          <div className="flex flex-col w-full h-full justify-between items-center border-x">
+            <div className="flex flex-row w-full p-6">
+              <Headline as="h2" variant="smallBold" color="foreground">
+                Drives
+              </Headline>
+            </div>
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+            </div>
+            <div className="flex justify-end w-full">Add level</div>
+          </div>
+          <div className="flex flex-col w-full h-full justify-between items-center">
+            <div className="flex flex-row w-full p-6">
+              <Headline as="h2" variant="smallBold" color="foreground">
+                Positions
+              </Headline>
+            </div>
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+            </div>
+            <div className="flex justify-end w-full">Add level</div>
+          </div>
+        </div>
+
+        {/* <div className="flex flex-col justify-between w-[1320px] h-[740px] bg-neutral-1 border-2 border-neutral-2">
           <div className="flex flex-row flex-0 ">
             <div className="flex flex-grow flex-1 p-6 justify-start">
               Levels
@@ -178,7 +225,7 @@ export default function Page(): JSX.Element {
               Positions
             </div>
           </div>
-          {/* middle */}
+
           <div className="flex flex-row flex-1 border-y border-neutral-2">
             <div className="flex flex-col gap-5 m-5 flex-grow flex-1 justify-center items-center ">
               {foo(getRoleById(dropdownValue))?.levels.map((level) => (
@@ -194,13 +241,12 @@ export default function Page(): JSX.Element {
               {foo(getRoleById(dropdownValue))?.levels[0].drives.map(
                 (drive) => <div key={drive.id}>{drive.name}</div>,
               )}
-              {/* Select site to view available levels */}
             </div>
             <div className="flex flex-grow flex-1 justify-center items-center">
               Select site to view available levels
             </div>
           </div>
-          {/* bottom */}
+
           <div className="flex flex-row flex-0">
             <div className="flex flex-row flex-1 justify-end p-3 ">
               Add level
@@ -213,7 +259,7 @@ export default function Page(): JSX.Element {
               Add level
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </main>
   );

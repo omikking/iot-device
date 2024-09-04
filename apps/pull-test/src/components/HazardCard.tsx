@@ -97,5 +97,3 @@ export const HazardCard = ({
     </div>
   );
 };
-
-export default HazardCard;

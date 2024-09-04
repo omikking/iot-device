@@ -1,4 +1,5 @@
 'use client';
+import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import {
@@ -24,13 +25,38 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [position, setPosition] = useState<string | undefined>(undefined);
+
+  const [boltResults, setBoltResults] = useState<
+    BoltResultSchema[] | undefined
+  >([]);
+
+  const filterBoltResults = (
+    level?: string,
+    drive?: string,
+    position?: string,
+  ): BoltResultSchema[] | undefined => {
+    return boltResults?.filter((bolt) => {
+      const matchLevel = level ? bolt.level === level : true;
+      const matchDrive = drive ? bolt.drive === drive : true;
+      const matchPosition = position ? bolt.position === position : true;
+
+      return matchPosition && matchDrive && matchLevel;
+    });
+  };
+
+  const filteredResults = filterBoltResults(level, drive, position);
+
+  useEffect(() => {
+    // Each time site gets updated, make a request to the BE to fetch and set them as below
+    site && setBoltResults(boltResultsMock);
+  }, [site]);
 
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -91,7 +117,7 @@ export default function Page(): JSX.Element {
         />
 
         <TabsContent value="table">
-          <BoltResultsTable isBoltResultsSelected={!!site} />
+          <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
 
         <TabsContent value="graphs">

@@ -11,6 +11,7 @@ import {
 
 interface BoltResultsTableProps {
   boltResults: BoltResultSchema[] | undefined;
+  site?: string;
 }
 
 const getResultBadge = (
@@ -103,13 +104,20 @@ const columns: ColumnDef<BoltResultSchema>[] = [
   },
 ];
 
-export const BoltResultsTable = ({ boltResults }: BoltResultsTableProps) => {
+export const BoltResultsTable = ({
+  boltResults,
+  site,
+}: BoltResultsTableProps) => {
   return (
     <>
       <DataTable
         columns={columns}
         data={boltResults || []}
-        noResultMessage="Select site, level, drive and position to view the bolt results."
+        noResultMessage={
+          !site
+            ? 'Select site, level, drive and position to view the bolt results.'
+            : 'No bolt results found for your search.'
+        }
       />
       <Badge variant="neutral" className="self-start mt-5">
         {boltResults?.length} total

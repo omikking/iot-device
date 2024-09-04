@@ -2,144 +2,7 @@
 
 import { ContentHolder, Dropdown, DropdownItem, Label } from '@gsp/ui';
 import { BoltResultsFilter } from './BoltResultsFilter';
-
-const sitesOptionsMock = [
-  {
-    id: '1',
-    name: 'Garpenberg site',
-    levels: [
-      {
-        id: '1',
-        name: '4002',
-        drives: [
-          {
-            id: '1',
-            name: '2001',
-            positions: [
-              {
-                id: '1',
-                name: '20, 42',
-              },
-              {
-                id: '2',
-                name: '22, 49',
-              },
-              {
-                id: '3',
-                name: '26, 55',
-              },
-              {
-                id: '4',
-                name: '29, 50',
-              },
-              {
-                id: '5',
-                name: '33, 65',
-              },
-              {
-                id: '6',
-                name: '34, 63',
-              },
-            ],
-          },
-          {
-            id: '2',
-            name: '2002',
-            positions: [
-              {
-                id: '1',
-                name: '1, 2',
-              },
-            ],
-          },
-          {
-            id: '3',
-            name: '2003',
-            positions: [
-              {
-                id: '1',
-                name: '2, 43',
-              },
-              {
-                id: '2',
-                name: '25, 55',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: '2',
-        name: '4003',
-        drives: [
-          {
-            id: '1',
-            name: '2007',
-            positions: [
-              {
-                id: '1',
-                name: '22, 433',
-              },
-              {
-                id: '2',
-                name: '525, 545',
-              },
-            ],
-          },
-          {
-            id: '2',
-            name: '2008',
-            positions: [
-              {
-                id: '1',
-                name: '2222, 433',
-              },
-              {
-                id: '2',
-                name: '251, 5225',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: '3',
-        name: '4004',
-        drives: [
-          {
-            id: '1',
-            name: '5007',
-            positions: [
-              {
-                id: '1',
-                name: '2222, 433',
-              },
-              {
-                id: '2',
-                name: '251, 5225',
-              },
-            ],
-          },
-          {
-            id: '2',
-            name: '5008',
-            positions: [],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Gollum site',
-    levels: [],
-  },
-  {
-    id: '3',
-    name: 'Kiruna site',
-    levels: [],
-  },
-];
+import { sitesMock } from '@/app/mock/mock';
 
 interface BoltSelectionProps {
   site?: string;
@@ -183,7 +46,7 @@ export const BoltSelection = ({
   };
 
   // Finds available levels on the selected site
-  const levelsOptionsMock = sitesOptionsMock.find(
+  const levelsOptionsMock = sitesMock.find(
     (boltSites) => boltSites.name === site,
   )?.levels;
 
@@ -206,7 +69,7 @@ export const BoltSelection = ({
           id="site"
           placeholder="Select site"
           selectedId={site}
-          options={sitesOptionsMock as DropdownItem[]}
+          options={sitesMock as DropdownItem[]}
           onSelect={handleSetSite}
           className="w-80"
         />

@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import {
   Anchor,
   Headline,
@@ -8,94 +9,11 @@ import {
   TabsTrigger,
   Text,
 } from '@gsp/ui';
-import { LucideMoveLeft } from 'lucide-react';
 import Link from 'next/link';
+import { LucideMoveLeft } from 'lucide-react';
 import { HazardCard } from '@/components/HazardCard';
-import React from 'react';
+import { hazardCardsMock } from '@/app/mock/mock';
 
-const viewBoltSpecifications = [
-  {
-    title: 'Bolt type',
-    text: 'MD47',
-  },
-  {
-    title: 'Peak load',
-    text: '15',
-  },
-  {
-    title: 'Displacement',
-    text: '19mm',
-  },
-  {
-    title: 'Level',
-    text: 'DOV 33 W',
-  },
-  {
-    title: 'Drive',
-    text: 'COS 1842',
-  },
-  {
-    title: 'Position in ring',
-    text: 'L/H Shoulder',
-  },
-];
-
-const hazardCardsData = [
-  {
-    dateTitle: '2021-05-23',
-    isHazard: true,
-    viewBoltSpecifications,
-    boltDescription: 'Bolt could not be tested...',
-  },
-  {
-    dateTitle: '2021-08-24',
-    isHazard: true,
-    viewBoltSpecifications,
-    boltDescription:
-      'The equipment showed signs of wear, indicating it may need replacement soon.',
-  },
-  {
-    dateTitle: '2021-03-15',
-    isHazard: true,
-    viewBoltSpecifications,
-    boltDescription:
-      'A routine inspection revealed significant issues, and the system is not functioning as expected.',
-  },
-  {
-    dateTitle: '2021-10-05',
-    isHazard: true,
-    viewBoltSpecifications,
-    boltDescription:
-      'Major scratches were found on the surface that affected the performance.',
-  },
-  {
-    dateTitle: '2021-01-10',
-    isHazard: true,
-    viewBoltSpecifications,
-    boltDescription: 'There was a delay in response time, exchange ASAP.',
-  },
-  {
-    dateTitle: '2021-11-10',
-    isHazard: false,
-    viewBoltSpecifications,
-    boltDescription:
-      'All tests were successfully completed, and the component is in optimal condition.',
-  },
-  {
-    dateTitle: '2021-11-20',
-    isHazard: false,
-    viewBoltSpecifications,
-    boltDescription:
-      '"Inspection results show no defects; the equipment meets all operational standards.',
-  },
-  {
-    dateTitle: '2021-03-01',
-    isHazard: false,
-    viewBoltSpecifications,
-    boltDescription:
-      '"The device has passed all required benchmarks and is ready for use.',
-  },
-];
 export default function Page(): JSX.Element {
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -131,40 +49,40 @@ export default function Page(): JSX.Element {
           <TabsTrigger value="view all">View all</TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="flex flex-wrap gap-8">
-          {hazardCardsData.map(
+          {hazardCardsMock.map(
             (hazardCard, index) =>
               hazardCard.isHazard && (
                 <HazardCard
                   key={index}
                   dateTitle={hazardCard.dateTitle}
                   isHazard={hazardCard.isHazard}
-                  boltInfoItems={hazardCard.viewBoltSpecifications}
+                  boltInfoItems={hazardCard.boltSpecifications}
                   boltDescription={hazardCard.boltDescription}
                 />
               ),
           )}
         </TabsContent>
         <TabsContent value="completed" className="flex flex-wrap gap-8">
-          {hazardCardsData.map(
+          {hazardCardsMock.map(
             (hazardCard, index) =>
               !hazardCard.isHazard && (
                 <HazardCard
                   key={index}
                   dateTitle={hazardCard.dateTitle}
                   isHazard={hazardCard.isHazard}
-                  boltInfoItems={hazardCard.viewBoltSpecifications}
+                  boltInfoItems={hazardCard.boltSpecifications}
                   boltDescription={hazardCard.boltDescription}
                 />
               ),
           )}
         </TabsContent>
         <TabsContent value="view all" className="flex flex-wrap gap-8">
-          {hazardCardsData.map((hazardCard, index) => (
+          {hazardCardsMock.map((hazardCard, index) => (
             <HazardCard
               key={index}
               dateTitle={hazardCard.dateTitle}
               isHazard={hazardCard.isHazard}
-              boltInfoItems={hazardCard.viewBoltSpecifications}
+              boltInfoItems={hazardCard.boltSpecifications}
               boltDescription={hazardCard.boltDescription}
             />
           ))}

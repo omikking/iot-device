@@ -7,8 +7,8 @@ import {
 import { AppPlan } from './AppPlan';
 
 // @TODO: Remove temporary isAdmin prop
-export const AppPlansContainer = ({ appData, isAdmin }) => {
-  const { name, activePlan } = appData;
+export const AppPlansContainer = ({ appPlan, isAdmin }) => {
+  const { name, activePlan } = appPlan;
 
   // const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -16,7 +16,7 @@ export const AppPlansContainer = ({ appData, isAdmin }) => {
 
   return (
     <div
-      key={appData.id}
+      key={appPlan.id}
       className="w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">

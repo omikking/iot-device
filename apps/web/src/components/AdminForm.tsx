@@ -1,3 +1,4 @@
+import { adminsMock } from '@/app/mock/mock';
 import {
   Dropdown,
   FormControl,
@@ -10,41 +11,6 @@ import {
 import { useState } from 'react';
 
 export const AdminForm = ({ companyForm }) => {
-  const options = [
-    {
-      id: '1',
-      name: 'Elliot Alderson',
-    },
-    {
-      id: '2',
-      name: 'Darlene Alderson',
-    },
-    {
-      id: '3',
-      name: 'Tyrell Wellick',
-    },
-    {
-      id: '4',
-      name: 'Joanna Wellick',
-    },
-    {
-      id: '5',
-      name: 'Angela Moss',
-    },
-    {
-      id: '6',
-      name: 'Whiterose',
-    },
-    {
-      id: '7',
-      name: 'Felix Östergren',
-    },
-    {
-      id: '8',
-      name: 'Jimmy Nwadinkpa',
-    },
-  ];
-
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
@@ -62,7 +28,7 @@ export const AdminForm = ({ companyForm }) => {
                 id="person"
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
-                options={options}
+                options={adminsMock}
                 onSelect={(e) => setAdministrator(e)}
                 className="w-[400px]"
               />

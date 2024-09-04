@@ -3,32 +3,9 @@
 import { BoltResultsFilter } from '@/components/BoltResultsFilter';
 import { Headline } from '@gsp/ui';
 import { HazardCard } from '@/components/HazardCard';
+import { hazardCardMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
-  const viewBoltSpecifications = [
-    {
-      title: 'Bolt type',
-      text: 'MD47',
-    },
-    {
-      title: 'Peak load',
-      text: '15',
-    },
-    {
-      title: 'Displacement',
-      text: '19mm',
-    },
-  ];
-
-  const hazardCardsData = [
-    {
-      dateTitle: '2021-05-23',
-      isHazard: true,
-      viewBoltSpecifications,
-      boltDescription: 'Bolt could not be tested...',
-    },
-  ];
-
   return (
     <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
       <Headline variant="xl" as="h1" color="foreground">
@@ -50,14 +27,14 @@ export default function Page(): JSX.Element {
         Hazard card 🦄
       </Headline>
       <div className="flex flex-row flex-wrap justify-center gap-12">
-        {hazardCardsData.map(
+        {hazardCardMock.map(
           (hazardCard, index) =>
             hazardCard.isHazard && (
               <HazardCard
                 key={index}
                 dateTitle={hazardCard.dateTitle}
                 isHazard={hazardCard.isHazard}
-                boltInfoItems={hazardCard.viewBoltSpecifications}
+                boltInfoItems={hazardCard.boltSpecifications}
                 boltDescription={hazardCard.boltDescription}
               />
             ),

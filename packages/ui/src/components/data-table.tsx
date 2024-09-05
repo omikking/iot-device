@@ -4,6 +4,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -18,6 +20,7 @@ import {
 
 import { Text } from './text';
 import { LucideSearch } from 'lucide-react';
+import { useState } from 'react';
 
 export type { ColumnDef };
 
@@ -32,10 +35,17 @@ export function DataTable<TData, TValue>({
   data,
   noResultMessage = 'Could not find any data.',
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   });
 
   return (
@@ -83,7 +93,7 @@ export function DataTable<TData, TValue>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="ui-h-80 ui-text-center !ui-pl-12"
+                className="ui-h-80 ui-text-center"
               >
                 <div className="ui-flex ui-flex-col ui-justify-center ui-items-center ui-gap-5">
                   <Text color="foreground" variant="medium">
@@ -92,7 +102,7 @@ export function DataTable<TData, TValue>({
                   <LucideSearch color="gray" />
                 </div>
               </TableCell>
-              <TableCell />
+              <TableCell className="!ui-p-0" />
             </TableRow>
           )}
         </TableBody>

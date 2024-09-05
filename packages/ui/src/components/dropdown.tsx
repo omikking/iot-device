@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
 import { LucideChevronDown, LucideX } from 'lucide-react';
 import { Text } from './text';
@@ -55,6 +55,16 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       onSelect && onSelect(item?.name);
       setIsOpen(false);
     };
+
+    // Required to reset
+    useEffect(() => {
+      if (selectedId && options) {
+        const newSelectedItem = options.find((item) => item.id === selectedId);
+        newSelectedItem && setSelectedItem(newSelectedItem);
+      } else {
+        setSelectedItem(undefined);
+      }
+    }, [selectedId, options]);
 
     return (
       <div className={cn('relative', className)} {...props}>

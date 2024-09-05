@@ -9,7 +9,7 @@ import { cn } from '../lib/utils';
 import { Text } from './text';
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './button';
 
 export type DateRange = DateRangeProps;
@@ -44,6 +44,16 @@ export const RangeCalendar = ({
     }
     return 'Select dates';
   };
+
+  // Required to reset
+  useEffect(() => {
+    selected
+      ? setDate(selected)
+      : setDate({
+          from: undefined,
+          to: undefined,
+        });
+  }, [selected]);
 
   return (
     <div className={cn('ui-grid ui-gap-2', className)}>

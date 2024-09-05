@@ -15,6 +15,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
+  DateRange,
 } from '@gsp/ui';
 
 import {
@@ -33,6 +34,11 @@ export default function Page(): JSX.Element {
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [position, setPosition] = useState<string | undefined>(undefined);
 
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
+
   const [boltResults, setBoltResults] = useState<
     BoltResultSchema[] | undefined
   >([]);
@@ -41,21 +47,29 @@ export default function Page(): JSX.Element {
     level?: string,
     drive?: string,
     position?: string,
+    dateRange?: DateRange,
   ): BoltResultSchema[] | undefined => {
     return boltResults?.filter((bolt) => {
       const matchLevel = level ? bolt.level === level : true;
       const matchDrive = drive ? bolt.drive === drive : true;
       const matchPosition = position ? bolt.position === position : true;
 
-      return matchPosition && matchDrive && matchLevel;
+      // Date range filtering
+      const matchDateRange =
+        dateRange?.from && dateRange?.to
+          ? bolt.createdDate >= dateRange.from &&
+            bolt.createdDate <= dateRange.to
+          : true;
+
+      return matchPosition && matchDrive && matchLevel && matchDateRange;
     });
   };
 
-  const filteredResults = filterBoltResults(level, drive, position);
+  const filteredResults = filterBoltResults(level, drive, position, dateRange);
 
   useEffect(() => {
     // Each time site gets updated, make a request to the BE to fetch and set them as below
-    site && setBoltResults(boltResultsMock);
+    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
   }, [site]);
 
   return (
@@ -110,10 +124,12 @@ export default function Page(): JSX.Element {
           level={level}
           drive={drive}
           position={position}
+          dateRange={dateRange}
           onSetSite={setSite}
           onSetLevel={setLevel}
           onSetDrive={setDrive}
           onSetPosition={setPosition}
+          onSetDateRange={setDateRange}
         />
 
         <TabsContent value="table">

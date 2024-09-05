@@ -24,17 +24,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export const AddUserModal = () => {
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    'user',
-  );
-  const [techDropDownValue, setTechDropDownValue] = useState<
-    string | undefined
-  >('');
-  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
+  type FormSchema = z.infer<typeof formSchema>;
 
   const formSchema = z.object({
     role: z.enum(['admin', 'technician', 'user']),
-    email: z.string().email(),
+    email: z
+      .string()
+      .email({ message: 'Email must be a valid email address.' }),
     pullTest: z.boolean(),
     xCyclops: z.boolean(),
     ultrabots: z.boolean(),
@@ -50,9 +46,16 @@ export const AddUserModal = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const [roleDropDownValue, setRoleDropDownValue] =
+    useState<FormSchema['role']>('user');
+  const [techDropDownValue, setTechDropDownValue] = useState<
+    string | undefined
+  >('');
+  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-  }
+  };
 
   const watchPullTest = form.watch('pullTest');
   const watchxCyclops = form.watch('xCyclops');
@@ -136,6 +139,7 @@ export const AddUserModal = () => {
 
   useEffect(() => {
     form.setValue('email', '');
+    setTechDropDownValue('');
   }, [watchRole]);
 
   useEffect(() => {
@@ -167,14 +171,14 @@ export const AddUserModal = () => {
                         <Dropdown
                           id="role"
                           placeholder="Select role"
-                          selectedId={dropdownValue}
+                          selectedId={roleDropDownValue}
                           isBadge
                           badgeIcon
                           {...field}
                           options={roles}
                           className="w-[400px]"
                           onSelect={(e) => {
-                            setDropdownValue(e);
+                            setRoleDropDownValue(e);
                             field.onChange(getRoleById(e)?.toLowerCase());
                           }}
                         />

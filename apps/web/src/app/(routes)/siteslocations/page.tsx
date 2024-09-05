@@ -166,7 +166,7 @@ export default function Page(): JSX.Element {
         />
 
         <div className="flex w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
-          <div className="flex flex-col w-full h-full m- justify-between items-center bg-mai-white">
+          <div className="flex flex-col w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
               <Headline as="h2" variant="smallBold" color="foreground">
                 Levels
@@ -182,7 +182,7 @@ export default function Page(): JSX.Element {
             <div className="flex justify-end w-full">Add level</div>
           </div>
           <div className="flex flex-col w-full h-full justify-between items-center border-x">
-            <div className="flex flex-row w-full p-6">
+            <div className="flex flex-row w-full p-6 ">
               <Headline as="h2" variant="smallBold" color="foreground">
                 Drives
               </Headline>

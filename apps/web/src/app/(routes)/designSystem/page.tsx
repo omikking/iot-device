@@ -609,6 +609,29 @@ export default function Page(): JSX.Element {
               render={() => {
                 return (
                   <FormItem>
+                    <FormLabel>Resettable dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        isResettable
+                        id="person"
+                        placeholder="Select dropdown item"
+                        selectedId={dropdownValue}
+                        options={optionsDesignSystemMock}
+                        onSelect={(e) => setDropdownValue(e)}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
                     <FormLabel>Disabled dropdown</FormLabel>
                     <FormControl>
                       <Dropdown

@@ -1,10 +1,11 @@
 'use client';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cn } from '../lib/utils';
-import { LucideChevronDown } from 'lucide-react';
+import { LucideChevronDown, LucideX } from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Button } from './button';
 
 export interface DropdownItem {
   id: string;
@@ -16,9 +17,10 @@ export interface DropdownProps {
   placeholder?: string;
   options: DropdownItem[];
   selectedId?: string;
+  isResettable?: boolean;
   className?: string;
   disabled?: boolean;
-  onSelect?: (id: string) => void;
+  onSelect?: (id?: string) => void;
 }
 
 export const buttonStyling =
@@ -37,6 +39,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     options,
     selectedId,
     disabled,
+    isResettable,
     className,
     onSelect,
     ...props
@@ -47,20 +50,11 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       selectedId ? options?.find((item) => item.id === selectedId) : undefined,
     );
 
-    const handleChange = (item: DropdownItem) => {
+    const handleChange = (item?: DropdownItem) => {
       setSelectedItem(item);
-      onSelect && onSelect(item.name);
+      onSelect && onSelect(item?.name);
       setIsOpen(false);
     };
-
-    useEffect(() => {
-      if (selectedId && options) {
-        const newSelectedItem = options.find((item) => item.id === selectedId);
-        newSelectedItem && setSelectedItem(newSelectedItem);
-      } else {
-        setSelectedItem(undefined);
-      }
-    }, [selectedId, options]);
 
     return (
       <div className={cn('relative', className)} {...props}>
@@ -103,6 +97,24 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               className={cn(dropdownVariants, className)}
             >
               <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
+                {isResettable && options?.length > 0 && (
+                  <div className="ui-px-5 ui-pb-3 ui-border-b ui-border-neutral-2">
+                    <Button
+                      isWide
+                      variant="outline"
+                      size="small"
+                      disabled={!selectedItem}
+                      tabIndex={-1}
+                      onClick={() => {
+                        handleChange(undefined);
+                      }}
+                    >
+                      <LucideX />
+                      Reset value
+                    </Button>
+                  </div>
+                )}
+
                 {options?.map((item) => (
                   <li
                     aria-hidden="true"
@@ -112,7 +124,8 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     }}
                     className={cn(
                       dropdownItemStyling,
-                      selectedItem?.id === item.id && 'ui-bg-neutral-1',
+                      selectedItem?.id === item.id &&
+                        'ui-bg-neutral-1 ui-cursor-default ui-pointer-events-none',
                     )}
                   >
                     <Text variant="medium" color="foreground">

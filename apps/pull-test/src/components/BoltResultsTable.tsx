@@ -1,7 +1,7 @@
 'use client';
 
 import { BoltResultSchema } from '@/app/mock/mock';
-import { Badge, DataTable } from '@gsp/ui';
+import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 import {
   LucideCheckCircle,
@@ -33,14 +33,18 @@ const getResultBadge = (
 const columns: ColumnDef<BoltResultSchema>[] = [
   {
     accessorKey: 'boltNumber',
-    header: 'Bolt number',
     meta: {
       headerClassName: 'w-36',
     },
+    header: ({ column }) => (
+      <TableHeadWithSorting column={column} header="Bolt number" />
+    ),
   },
   {
     accessorKey: 'boltType',
-    header: 'Bolt type',
+    header: ({ column }) => (
+      <TableHeadWithSorting column={column} header="Bolt type" />
+    ),
   },
   {
     accessorKey: 'peakLoad',
@@ -90,10 +94,14 @@ const columns: ColumnDef<BoltResultSchema>[] = [
   },
   {
     accessorKey: 'result',
-    header: () => <div className="text-right w-10">Result</div>,
+    header: ({ column }) => (
+      <div className="text-right w-16">
+        <TableHeadWithSorting column={column} header="Result" />
+      </div>
+    ),
     cell: ({ row }) => {
       return (
-        <div className="flex justify-end w-10">
+        <div className="flex justify-end w-16">
           <Badge variant={getResultBadge(row.getValue('result')).variant}>
             {getResultBadge(row.getValue('result')).icon}
             {row.getValue('result')}
@@ -115,7 +123,7 @@ export const BoltResultsTable = ({
         data={boltResults || []}
         noResultMessage={
           !site
-            ? 'Select site, level, drive and position to view the bolt results.'
+            ? 'Select site to view bolt results.'
             : 'No bolt results found for your search.'
         }
       />

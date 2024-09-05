@@ -13,6 +13,7 @@ export interface BoltResultSchema {
   ring: string;
   comment: string;
   result: 'Pass' | 'Fail' | 'Abort';
+  createdDate: Date;
 }
 
 export const boltResultsMock: BoltResultSchema[] = [
@@ -29,13 +30,14 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2001',
     position: '20, 42',
     ring: 'RH-BACK',
-    comment: 'N/A', // fix logic later
+    comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
     id: '2',
     boltNumber: '2',
-    boltType: 'D47 MDX',
+    boltType: 'F47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -47,11 +49,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Fail',
+    createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
     id: '3',
     boltNumber: '3',
-    boltType: 'D47 MDX',
+    boltType: 'A47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -63,6 +66,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
     id: '4',
@@ -79,6 +83,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
     id: '5',
@@ -95,11 +100,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Abort',
+    createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
     id: '6',
     boltNumber: '6',
-    boltType: 'D47 MDX',
+    boltType: 'A47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -111,11 +117,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
     id: '7',
     boltNumber: '7',
-    boltType: 'D47 MDX',
+    boltType: 'C47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -127,11 +134,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
     id: '8',
     boltNumber: '8',
-    boltType: 'D47 MDX',
+    boltType: 'C47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -143,11 +151,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-11T10:30:00'),
   },
   {
     id: '9',
     boltNumber: '9',
-    boltType: 'D47 MDX',
+    boltType: 'K47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -159,11 +168,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-09-16T10:30:00'),
   },
   {
     id: '10',
     boltNumber: '10',
-    boltType: 'D47 MDX',
+    boltType: 'K47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -175,11 +185,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-11T10:30:00'),
   },
   {
     id: '11',
     boltNumber: '11',
-    boltType: 'D47 MDX',
+    boltType: 'K47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -191,6 +202,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-16T10:30:00'),
   },
   {
     id: '12',
@@ -207,6 +219,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-18T10:30:00'),
   },
   {
     id: '13',
@@ -223,11 +236,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-18T10:30:00'),
   },
   {
     id: '14',
     boltNumber: '14',
-    boltType: 'D47 MDX',
+    boltType: 'G47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -239,11 +253,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-18T10:30:00'),
   },
   {
     id: '15',
     boltNumber: '15',
-    boltType: 'D47 MDX',
+    boltType: 'S47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -255,6 +270,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    createdDate: new Date('2024-10-18T10:30:00'),
   },
   {
     id: '16',
@@ -271,11 +287,12 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Fail',
+    createdDate: new Date('2024-10-25T10:30:00'),
   },
   {
     id: '17',
     boltNumber: '17',
-    boltType: 'D47 MDX',
+    boltType: 'S47 MDX',
     peakLoad: '15',
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
@@ -287,6 +304,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Abort',
+    createdDate: new Date('2024-11-05T10:30:00'),
   },
 ];
 

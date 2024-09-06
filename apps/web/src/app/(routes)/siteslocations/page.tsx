@@ -127,6 +127,8 @@ export default function Page(): JSX.Element {
     if (site) return siteLocations.find((location) => location.name === site);
   };
 
+  const selectLevel = (level: string) => {};
+
   // const selectedLevels =
 
   if (dropdownValue) {
@@ -155,7 +157,7 @@ export default function Page(): JSX.Element {
         Sites locations
       </Headline>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex w-full flex-col gap-5">
         <Dropdown
           id="site"
           placeholder="Select site"
@@ -165,38 +167,55 @@ export default function Page(): JSX.Element {
           className="w-[400px]"
         />
 
-        <div className="flex w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
-          <div className="flex flex-col w-full h-full justify-between items-center">
+        <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
+          <div className="flex flex-col min-w-56 w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
               <Headline as="h2" variant="smallBold" color="foreground">
                 Levels
               </Headline>
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              <Button
+                variant={'outline'}
+                size={'small'}
+                onClick={() => console.log('first')}
+                asChild
+                className="ui-w-full ui-bg-main-white ui-mx-6 ui-px-6 ui-py-5"
+              >
+                <p>dawd</p>
+                {/* <div className="bg-main-white mx-6 px-6 py-5">dawdaw</div> */}
+              </Button>
+              {foo(getRoleById(dropdownValue))?.levels.map((level) => (
+                <div
+                  onClick={() => console.log('first')}
+                  className="bg-main-white mx-6 px-6 py-5"
+                >
+                  <Text variant="medium" color="foreground">
+                    {level.name}
+                  </Text>
+                </div>
+              ))}
             </div>
             <div className="flex justify-end w-full">Add level</div>
           </div>
-          <div className="flex flex-col w-full h-full justify-between items-center border-x">
+          <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <div className="flex flex-row w-full p-6 ">
               <Headline as="h2" variant="smallBold" color="foreground">
                 Drives
               </Headline>
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+              {foo(getRoleById(dropdownValue))?.levels[1]?.drives.map(
+                (drive) => (
+                  <div className="bg-main-white mx-6 px-6 py-5" key={drive.id}>
+                    {drive.name}
+                  </div>
+                ),
+              )}
             </div>
             <div className="flex justify-end w-full">Add level</div>
           </div>
-          <div className="flex flex-col w-full h-full justify-between items-center">
+          <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
               <Headline as="h2" variant="smallBold" color="foreground">
                 Positions
@@ -212,54 +231,6 @@ export default function Page(): JSX.Element {
             <div className="flex justify-end w-full">Add level</div>
           </div>
         </div>
-
-        {/* <div className="flex flex-col justify-between w-[1320px] h-[740px] bg-neutral-1 border-2 border-neutral-2">
-          <div className="flex flex-row flex-0 ">
-            <div className="flex flex-grow flex-1 p-6 justify-start">
-              Levels
-            </div>
-            <div className="flex flex-grow flex-1 p-6 border-x border-neutral-2 justify-start">
-              Drives
-            </div>
-            <div className="flex flex-grow flex-1 p-6 justify-start">
-              Positions
-            </div>
-          </div>
-
-          <div className="flex flex-row flex-1 border-y border-neutral-2">
-            <div className="flex flex-col gap-5 m-5 flex-grow flex-1 justify-center items-center ">
-              {foo(getRoleById(dropdownValue))?.levels.map((level) => (
-                // <div key={level.id}>{level.name}</div>
-                <div className="w-full p-5 mx-5 bg-main-white">
-                  <Text variant="medium" color="foreground">
-                    {level.name}
-                  </Text>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-grow flex-1 justify-center items-center border-x border-neutral-2">
-              {foo(getRoleById(dropdownValue))?.levels[0].drives.map(
-                (drive) => <div key={drive.id}>{drive.name}</div>,
-              )}
-            </div>
-            <div className="flex flex-grow flex-1 justify-center items-center">
-              Select site to view available levels
-            </div>
-          </div>
-
-          <div className="flex flex-row flex-0">
-            <div className="flex flex-row flex-1 justify-end p-3 ">
-              Add level
-            </div>
-            <div className="flex flex-row flex-1 justify-end p-3 border-x border-neutral-2">
-              Add level
-            </div>
-            <div className="flex flex-row flex-1 justify-end p-3">
-              {' '}
-              Add level
-            </div>
-          </div>
-        </div> */}
       </div>
     </main>
   );

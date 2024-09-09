@@ -6,7 +6,7 @@ import { LucideChevronDown } from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-interface DropdownItem {
+export interface DropdownItem {
   id: string;
   name: string;
 }
@@ -18,7 +18,7 @@ export interface DropdownProps {
   selectedId?: string;
   className?: string;
   disabled?: boolean;
-  onSelect?: (id: string) => void;
+  onSelect?: (id?: string) => void;
 }
 
 export const buttonStyling =
@@ -49,7 +49,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
 
     const handleChange = (item: DropdownItem) => {
       setSelectedItem(item);
-      onSelect && onSelect(item.id);
+      onSelect && onSelect(item?.name);
       setIsOpen(false);
     };
 

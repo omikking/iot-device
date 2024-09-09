@@ -1,140 +1,70 @@
 'use client';
-import { Anchor, Badge, Button, Dropdown, Headline, Text } from '@gsp/ui';
-import { get } from 'http';
-import { LucideMoveLeft } from 'lucide-react';
+import {
+  Anchor,
+  Badge,
+  Button,
+  Dropdown,
+  Headline,
+  Text,
+  DropdownItem,
+} from '@gsp/ui';
+import { BoltResultSchema, boltResultsMock, sitesMock } from './mock.ts';
+import { LucideEllipsis, LucideMoveLeft } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Page(): JSX.Element {
-  const locationDropdownOptions = [
-    {
-      id: '1',
-      name: 'Garpenberg',
-    },
-    {
-      id: '2',
-      name: 'Scalperberg',
-    },
-  ];
-  const siteLocations = [
-    {
-      id: '1',
-      name: 'Garpenberg',
-      levels: [
-        {
-          id: '4100',
-          name: '4100',
-          drives: [
-            {
-              id: '2100',
-              name: '2100',
-              positions: [{ id: '3100', name: '3100' }],
-            },
-            {
-              id: '2101',
-              name: '2101',
-              positions: [{ id: '3101', name: '3101' }],
-            },
-          ],
-        },
-        {
-          id: '4101',
-          name: '4101',
-          drives: [
-            {
-              id: '2102',
-              name: '2102',
-              positions: [
-                { id: '3102', name: '3102' },
-                { id: '3103', name: '3103' },
-              ],
-            },
-          ],
-        },
-        {
-          id: '4102',
-          name: '4102',
-          drives: [
-            {
-              id: '2103',
-              name: '2103',
-              positions: [
-                { id: '3104', name: '3104' },
-                { id: '3105', name: '3105' },
-                { id: '3106', name: '3106' },
-                { id: '3107', name: '3107' },
-                { id: '3108', name: '3108' },
-              ],
-            },
-            {
-              id: '2104',
-              name: '2104',
-              positions: [{ id: '3109', name: '3109' }],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Scalperberg',
-      levels: [
-        {
-          id: '4200',
-          name: '4200',
-          drives: [
-            {
-              id: '2200',
-              name: '2200',
-              positions: [{ id: '3200', name: '3200' }],
-            },
-            {
-              id: '2201',
-              name: '2201',
-              positions: [{ id: '3201', name: '3201' }],
-            },
-          ],
-        },
-        {
-          id: '4201',
-          name: '4201',
-          drives: [
-            {
-              id: '2202',
-              name: '2202',
-              positions: [{ id: '3202', name: '3202' }],
-            },
-            {
-              id: '2203',
-              name: '2203',
-              positions: [{ id: '3202', name: '3202' }],
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  const [site, setSite] = useState<string | undefined>(undefined);
+  const [level, setLevel] = useState<string | undefined>(undefined);
+  const [drive, setDrive] = useState<string | undefined>(undefined);
+  const [position, setPosition] = useState<string | undefined>(undefined);
 
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
 
-  const getRoleById = (id: string) => {
-    return locationDropdownOptions.find((location) => location.id === id)?.name;
+  const [boltResults, setBoltResults] = useState<
+    BoltResultSchema[] | undefined
+  >([]);
+
+  const handleSite = () => {};
+
+  const handleSetSite = (site?: string) => {
+    setSite(site);
+    setLevel(undefined);
+    setDrive(undefined);
+    setPosition(undefined);
   };
 
-  const foo = (site: string) => {
-    if (site) return siteLocations.find((location) => location.name === site);
+  const handleSetLevel = (level?: string) => {
+    setLevel(level);
+    setDrive(undefined);
+    setPosition(undefined);
   };
 
-  const selectLevel = (level: string) => {};
+  const handleSetDrive = (drive?: string) => {
+    setDrive(drive);
+    setPosition(undefined);
+  };
 
-  // const selectedLevels =
+  const levelsOptionsMock = sitesMock.find(
+    (boltSites) => boltSites.name === site,
+  )?.levels;
 
-  if (dropdownValue) {
-    // console.log(getRoleById(dropdownValue));
-    console.log('WDadwa', foo(getRoleById(dropdownValue)));
-  }
+  // Finds available levels on the selected site
+  const drivesOptionsMock = levelsOptionsMock?.find(
+    (boltLevels) => boltLevels.name === level,
+  )?.drives;
+
+  const positionsOptionsMock = drivesOptionsMock?.find(
+    (boltDrives) => boltDrives.name === drive,
+  )?.positions;
+
+  useEffect(() => {
+    // Each time site gets updated, make a request to the BE to fetch and set them as below
+    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
+    console.log(levelsOptionsMock);
+  }, [site]);
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -161,9 +91,9 @@ export default function Page(): JSX.Element {
         <Dropdown
           id="site"
           placeholder="Select site"
-          selectedId={dropdownValue}
-          onSelect={(e) => setDropdownValue(e)}
-          options={locationDropdownOptions}
+          selectedId={site}
+          options={sitesMock as DropdownItem[]}
+          onSelect={handleSetSite}
           className="w-[400px]"
         />
 
@@ -174,25 +104,29 @@ export default function Page(): JSX.Element {
                 Levels
               </Headline>
             </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
-              <Button
-                variant={'outline'}
-                size={'small'}
-                onClick={() => console.log('first')}
-                asChild
-                className="ui-w-full ui-bg-main-white ui-mx-6 ui-px-6 ui-py-5"
-              >
-                <p>dawd</p>
-                {/* <div className="bg-main-white mx-6 px-6 py-5">dawdaw</div> */}
-              </Button>
-              {foo(getRoleById(dropdownValue))?.levels.map((level) => (
-                <div
-                  onClick={() => console.log('first')}
-                  className="bg-main-white mx-6 px-6 py-5"
-                >
-                  <Text variant="medium" color="foreground">
-                    {level.name}
-                  </Text>
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+              {levelsOptionsMock?.map((level) => (
+                // fix hover and click effect and active
+                <div className="bg-main-white px-6">
+                  <div
+                    className="flex flex-row justify-between items-center py-5"
+                    onClick={() => (
+                      console.log('first'), handleSetLevel(level.name)
+                    )}
+                  >
+                    <Text variant="small" color="foreground">
+                      {level.name}
+                    </Text>
+                    <Button
+                      onClick={(event) => (
+                        console.log('second'), event.stopPropagation()
+                      )}
+                      size={'small'}
+                      variant={'outline'}
+                    >
+                      <LucideEllipsis />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -204,14 +138,31 @@ export default function Page(): JSX.Element {
                 Drives
               </Headline>
             </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
-              {foo(getRoleById(dropdownValue))?.levels[1]?.drives.map(
-                (drive) => (
-                  <div className="bg-main-white mx-6 px-6 py-5" key={drive.id}>
-                    {drive.name}
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+              {drivesOptionsMock?.map((drive) => (
+                <div className="bg-main-white px-6">
+                  <div
+                    className="flex flex-row justify-between items-center py-5"
+                    onClick={() => (
+                      console.log('first'), handleSetDrive(drive.name)
+                    )} // fix hover and click effect
+                  >
+                    <Text variant="small" color="foreground">
+                      {drive.name}
+                    </Text>
+
+                    <Button
+                      onClick={(event) => (
+                        console.log('second'), event.stopPropagation()
+                      )}
+                      size={'small'}
+                      variant={'outline'}
+                    >
+                      <LucideEllipsis />
+                    </Button>
                   </div>
-                ),
-              )}
+                </div>
+              ))}
             </div>
             <div className="flex justify-end w-full">Add level</div>
           </div>
@@ -221,13 +172,22 @@ export default function Page(): JSX.Element {
                 Positions
               </Headline>
             </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 overflow-auto">
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
-              <div className="bg-main-white mx-6 px-6 py-5">4000</div>
+            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+              {/* <div className="bg-main-white px-6"> */}
+              {positionsOptionsMock?.map((position) => (
+                <div className="bg-main-white px-6">
+                  <div className="flex flex-row justify-between items-center py-5">
+                    <Text variant="small" color="foreground">
+                      {position.name}
+                    </Text>
+                    <Button size={'small'} variant={'outline'}>
+                      <LucideEllipsis />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
+            {/* </div> */}
             <div className="flex justify-end w-full">Add level</div>
           </div>
         </div>

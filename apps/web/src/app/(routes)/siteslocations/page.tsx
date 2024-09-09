@@ -18,16 +18,17 @@ export default function Page(): JSX.Element {
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [position, setPosition] = useState<string | undefined>(undefined);
-
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
+  const [selectedLevel, setSelectedLevel] = useState<string | undefined>(
     undefined,
   );
+  // const [boltResults, setBoltResults] = useState<
+  //   BoltResultSchema[] | undefined
+  // >([]);
 
-  const [boltResults, setBoltResults] = useState<
-    BoltResultSchema[] | undefined
-  >([]);
-
-  const handleSite = () => {};
+  const handleLevelClick = (level: string) => {
+    setSelectedLevel(level); // Update the selected div state
+    console.log('Level clicked', level);
+  };
 
   const handleSetSite = (site?: string) => {
     setSite(site);
@@ -60,11 +61,11 @@ export default function Page(): JSX.Element {
     (boltDrives) => boltDrives.name === drive,
   )?.positions;
 
-  useEffect(() => {
-    // Each time site gets updated, make a request to the BE to fetch and set them as below
-    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
-    console.log(levelsOptionsMock);
-  }, [site]);
+  // useEffect(() => {
+  //   // Each time site gets updated, make a request to the BE to fetch and set them as below
+  //   site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
+  //   console.log(levelsOptionsMock);
+  // }, [site]);
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -107,11 +108,17 @@ export default function Page(): JSX.Element {
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
               {levelsOptionsMock?.map((level) => (
                 // fix hover and click effect and active
-                <div className="bg-main-white px-6">
+                // <div className="bg-main-white px-6">
+                <div
+                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'bg-blue-500 text-white border-blue-700' : ''}`}
+                >
                   <div
+                    // className="flex flex-row justify-between items-center py-5"
                     className="flex flex-row justify-between items-center py-5"
                     onClick={() => (
-                      console.log('first'), handleSetLevel(level.name)
+                      console.log('first'),
+                      handleSetLevel(level.name),
+                      handleLevelClick(level.id)
                     )}
                   >
                     <Text variant="small" color="foreground">

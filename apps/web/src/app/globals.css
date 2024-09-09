@@ -30,7 +30,7 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-div {
+body {
   /* Scrollbar design */
   ::-webkit-scrollbar {
       width: 4px;

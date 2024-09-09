@@ -1,17 +1,9 @@
 'use client';
-import {
-  Anchor,
-  Headline,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Text,
-} from '@gsp/ui';
-import { LucideMoveLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
+
 import { HazardCard } from '@/components/HazardCard';
 import React from 'react';
+import { GoBack } from '@/components/GoBack';
 
 const viewBoltSpecifications = [
   {
@@ -98,7 +90,7 @@ const hazardCardsData = [
 ];
 export default function Page(): JSX.Element {
   return (
-    <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
       <Headline
         variant="xl"
         as="h1"
@@ -108,29 +100,21 @@ export default function Page(): JSX.Element {
         Reported hazards
       </Headline>
 
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+      <GoBack />
 
       <Tabs
         defaultValue="active"
-        className="flex max-w-[1400px] flex-col mx-auto pb-10 gap-4 px-10"
+        className="flex w-full max-w-[1330px] flex-col mx-auto pb-10 gap-4"
       >
         <TabsList className="self-start">
           <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="view all">View all</TabsTrigger>
         </TabsList>
-        <TabsContent value="active" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="active"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map(
             (hazardCard, index) =>
               hazardCard.isHazard && (
@@ -144,7 +128,10 @@ export default function Page(): JSX.Element {
               ),
           )}
         </TabsContent>
-        <TabsContent value="completed" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="completed"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map(
             (hazardCard, index) =>
               !hazardCard.isHazard && (
@@ -158,7 +145,10 @@ export default function Page(): JSX.Element {
               ),
           )}
         </TabsContent>
-        <TabsContent value="view all" className="flex flex-wrap gap-8">
+        <TabsContent
+          value="view all"
+          className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
+        >
           {hazardCardsData.map((hazardCard, index) => (
             <HazardCard
               key={index}

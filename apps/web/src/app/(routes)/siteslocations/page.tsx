@@ -7,11 +7,29 @@ import {
   Headline,
   Text,
   DropdownItem,
+  Input,
 } from '@gsp/ui';
 import { sitesMock } from './mock.ts';
 import { LucideEllipsis, LucideMoveLeft } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+interface ILevelMock {
+  id: string;
+  name: string;
+  drives: IDriveMock[];
+}
+
+interface IDriveMock {
+  id: string;
+  name: string;
+  positions: IPositionMock[];
+}
+
+interface IPositionMock {
+  id: string;
+  name: string;
+}
 
 export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
@@ -28,17 +46,16 @@ export default function Page(): JSX.Element {
     undefined,
   );
 
+  const [levelsOptionsMock, setLevelsOptionsMock] = useState<ILevelMock[]>([]);
+
   const handleLevelClick = (level: string) => {
     setSelectedLevel(level);
-    console.log('Level clicked', level);
   };
   const handleDriveClick = (drive: string) => {
     setSelectedDrive(drive);
-    console.log('drive clicked', drive);
   };
   const handlePositionClick = (position: string) => {
     setSelectedPosition(position);
-    console.log('position clicked', position);
   };
 
   const handleSetSite = (site?: string) => {
@@ -61,9 +78,21 @@ export default function Page(): JSX.Element {
     setSelectedPosition(undefined);
   };
 
-  const levelsOptionsMock = sitesMock.find(
-    (boltSites) => boltSites.name === site,
-  )?.levels;
+  const handleSetPoisiton = (position?: string) => {
+    setPosition(position);
+  };
+
+  const addLevelHandler = () => {
+    console.log('levelsOptionsMock', levelsOptionsMock);
+    setLevelsOptionsMock((prevLevel) => [
+      ...prevLevel,
+      {
+        id: '',
+        name: '',
+        drives: [],
+      },
+    ]);
+  };
 
   // Finds available levels on the selected site
   const drivesOptionsMock = levelsOptionsMock?.find(
@@ -73,6 +102,12 @@ export default function Page(): JSX.Element {
   const positionsOptionsMock = drivesOptionsMock?.find(
     (boltDrives) => boltDrives.name === drive,
   )?.positions;
+
+  useEffect(() => {
+    const levels =
+      sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
+    setLevelsOptionsMock(levels);
+  }, [site]);
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -120,14 +155,21 @@ export default function Page(): JSX.Element {
                   <div
                     className="flex flex-row justify-between items-center py-5"
                     onClick={() => (
-                      console.log('first'),
-                      handleSetLevel(level.name),
-                      handleLevelClick(level.id)
+                      handleSetLevel(level.name), handleLevelClick(level.id)
                     )}
                   >
-                    <Text variant="small" color="foreground">
+                    {/* <Text variant="small" color="foreground">
                       {level.name}
-                    </Text>
+                    </Text> */}
+                    {level.name === '' ? (
+                      // <Input placeholder="New level..." type="text" />
+                      // <p>dwada</p>
+                      <input type="text" placeholder="New level..." />
+                    ) : (
+                      <Text variant="small" color="foreground">
+                        {level.name}
+                      </Text>
+                    )}
                     <Button
                       onClick={(event) => (
                         console.log('second'), event.stopPropagation()
@@ -141,7 +183,25 @@ export default function Page(): JSX.Element {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end w-full">Add level</div>
+            <div className="flex justify-end w-full p-3">
+              {site !== undefined ? (
+                <Button
+                  size={'small'}
+                  variant={'primary'}
+                  onClick={() => addLevelHandler()}
+                >
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <div className="flex flex-row w-full p-6 ">
@@ -179,7 +239,21 @@ export default function Page(): JSX.Element {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end w-full">Add level</div>
+            <div className="flex justify-end w-full p-3">
+              {level !== undefined ? (
+                <Button size={'small'} variant={'primary'}>
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
@@ -194,7 +268,10 @@ export default function Page(): JSX.Element {
                 >
                   <div
                     className="flex flex-row justify-between items-center py-5"
-                    onClick={() => handlePositionClick(position.id)}
+                    onClick={() => {
+                      handlePositionClick(position.id),
+                        handleSetPoisiton(position.name);
+                    }}
                   >
                     <Text variant="small" color="foreground">
                       {position.name}
@@ -206,7 +283,21 @@ export default function Page(): JSX.Element {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end w-full"></div>
+            <div className="flex justify-end w-full p-3">
+              {drive !== undefined ? (
+                <Button size={'small'} variant={'primary'}>
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <Text variant={'small'} color={'background'}>
+                    + Add level
+                  </Text>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

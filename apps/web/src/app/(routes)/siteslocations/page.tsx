@@ -7,7 +7,6 @@ import {
   Headline,
   Text,
   DropdownItem,
-  Input,
 } from '@gsp/ui';
 import { sitesMock } from './mock.ts';
 import { LucideEllipsis, LucideMoveLeft } from 'lucide-react';
@@ -49,6 +48,7 @@ export default function Page(): JSX.Element {
   const [levelsOptionsMock, setLevelsOptionsMock] = useState<ILevelMock[]>([]);
 
   const handleLevelClick = (level: string) => {
+    console.log('level', level);
     setSelectedLevel(level);
   };
   const handleDriveClick = (drive: string) => {
@@ -83,7 +83,6 @@ export default function Page(): JSX.Element {
   };
 
   const addLevelHandler = () => {
-    console.log('levelsOptionsMock', levelsOptionsMock);
     setLevelsOptionsMock((prevLevel) => [
       ...prevLevel,
       {
@@ -103,11 +102,43 @@ export default function Page(): JSX.Element {
     (boltDrives) => boltDrives.name === drive,
   )?.positions;
 
+  const handleSubmitLevel = (
+    e: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const newLevel = {
+      id: formData.get('level') as string,
+      name: formData.get('level') as string,
+      drives: [],
+    };
+    const newLevels = [...levelsOptionsMock];
+    newLevels[index] = newLevel;
+    setLevelsOptionsMock(newLevels);
+    console.log('newLevels', newLevels);
+
+    // setLevelsOptionsMock((prevLevel) => [
+    //   ...prevLevel,
+    //   {
+    //     id: formData.get('level') as string,
+    //     name: formData.get('level') as string,
+    //     drives: [],
+    //   },
+    // ]);
+  };
+
   useEffect(() => {
     const levels =
       sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
+
     setLevelsOptionsMock(levels);
   }, [site]);
+
+  useEffect(() => {
+    // console.log('levelsOptionsMock', levelsOptionsMock);
+  }, [levelsOptionsMock]);
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
@@ -148,37 +179,45 @@ export default function Page(): JSX.Element {
               </Headline>
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-              {levelsOptionsMock?.map((level) => (
+              {levelsOptionsMock?.map((level, index) => (
                 <div
                   className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border border-blue-primary ' : ''}`}
                 >
                   <div
-                    className="flex flex-row justify-between items-center py-5"
+                    className=" py-5"
                     onClick={() => (
                       handleSetLevel(level.name), handleLevelClick(level.id)
                     )}
                   >
-                    {/* <Text variant="small" color="foreground">
-                      {level.name}
-                    </Text> */}
                     {level.name === '' ? (
-                      // <Input placeholder="New level..." type="text" />
-                      // <p>dwada</p>
-                      <input type="text" placeholder="New level..." />
+                      <div className="flex flex-row w-full justify-between items-center">
+                        <form onSubmit={(e) => handleSubmitLevel(e, index)}>
+                          <input name="level" placeholder="New level..." />
+                          <Button
+                            size={'small'}
+                            variant={'primary'}
+                            type="submit"
+                          >
+                            Save
+                          </Button>
+                        </form>
+                      </div>
                     ) : (
-                      <Text variant="small" color="foreground">
-                        {level.name}
-                      </Text>
+                      <div className="flex flex-row w-full justify-between items-center">
+                        <Text variant="small" color="foreground">
+                          {level.name}
+                        </Text>
+                        <Button
+                          onClick={(event) => (
+                            console.log('second'), event.stopPropagation()
+                          )}
+                          size={'small'}
+                          variant={'outline'}
+                        >
+                          <LucideEllipsis />
+                        </Button>
+                      </div>
                     )}
-                    <Button
-                      onClick={(event) => (
-                        console.log('second'), event.stopPropagation()
-                      )}
-                      size={'small'}
-                      variant={'outline'}
-                    >
-                      <LucideEllipsis />
-                    </Button>
                   </div>
                 </div>
               ))}

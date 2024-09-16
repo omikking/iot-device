@@ -4,7 +4,7 @@ import * as React from 'react';
 import { LucideChevronLeft, LucideChevronRight } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 import { buttonVariants } from './button';
 import { format } from 'date-fns';
 

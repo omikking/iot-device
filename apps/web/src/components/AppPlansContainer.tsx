@@ -17,7 +17,7 @@ export const AppPlansContainer = ({ appPlan, isAdmin }) => {
   return (
     <div
       key={appPlan.id}
-      className="w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
+      className="w-1/3 max-w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="smallBold" color="foreground" as="h3">

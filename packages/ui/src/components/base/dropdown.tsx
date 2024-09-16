@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { cn } from '../lib/utils';
 import { LucideChevronDown, LucideX } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Button } from './button';
@@ -30,20 +30,23 @@ const dropdownItemStyling =
   'flex items-center cursor-pointer hover:ui-bg-neutral-1 ui-px-6 ui-py-3 ui-transform ui-duration-200 ease-in-out';
 
 const dropdownVariants =
-  'ui-bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-rounded ui-shadow-md ui-max-h-56 ui-z-10';
+  'ui-w-full ui-bg-main-white w-max ui-py-3 ui-overflow-y-auto ui-rounded ui-shadow-md ui-max-h-56 ui-z-10';
 
 const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
-  ({
-    id,
-    placeholder = 'Select',
-    options,
-    selectedId,
-    disabled,
-    isResettable,
-    className,
-    onSelect,
-    ...props
-  }) => {
+  (
+    {
+      id,
+      placeholder = 'Select',
+      options,
+      selectedId,
+      disabled,
+      isResettable,
+      className,
+      onSelect,
+      ...props
+    },
+    ref,
+  ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
@@ -67,7 +70,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     }, [selectedId, options]);
 
     return (
-      <div className={cn('relative', className)} {...props}>
+      <div className={cn('relative', className)} {...props} ref={ref}>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <button
@@ -99,13 +102,10 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           </PopoverTrigger>
 
           <PopoverContent
-            className="ui-w-auto flex flex-col ui-items-end"
             align="start"
+            className="ui-w-[--radix-popover-trigger-width]"
           >
-            <div
-              aria-label="Dropdown menu"
-              className={cn(dropdownVariants, className)}
-            >
+            <div aria-label="Dropdown menu" className={dropdownVariants}>
               <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
                 {isResettable && options?.length > 0 && (
                   <div className="ui-px-5 ui-pb-3 ui-border-b ui-border-neutral-2">

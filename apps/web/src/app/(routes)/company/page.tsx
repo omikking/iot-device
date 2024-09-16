@@ -3,7 +3,6 @@ import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import {
   Headline,
   Text,
-  Anchor,
   ContentHolder,
   Button,
   NavigationCard,
@@ -12,7 +11,6 @@ import {
 import {
   LucideCircleCheckBig,
   LucideMountain,
-  LucideMoveLeft,
   LucideMoveRight,
   LucidePyramid,
   LucideSparkles,
@@ -27,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useState } from 'react';
 import { appPlansMock } from '@/app/mock/mock';
+import { GoBack } from '@/components/GoBack';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({
@@ -76,19 +75,8 @@ export default function Page(): JSX.Element {
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+      <GoBack />
 
       {/* TEMPORARY: will be removed */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
@@ -167,13 +155,10 @@ export default function Page(): JSX.Element {
           onSubmit={companyForm.handleSubmit((e) =>
             console.log(e, 'company added'),
           )}
-          className="w-fit flex flex-row flex-wrap gap-6"
+          className="w-full flex flex-row flex-wrap gap-6"
         >
-          <div className="mt-8 flex flex-col gap-20">
-            {/* Company details */}
-            <ContentHolder variant="general" headlineText="Company details">
-              <CompanyDetailsForm companyForm={companyForm} />
-            </ContentHolder>
+          <div className="w-full mt-4 flex flex-col gap-20">
+            <CompanyDetailsForm companyForm={companyForm} />
 
             <div>
               <div className="flex justify-between">
@@ -209,7 +194,7 @@ export default function Page(): JSX.Element {
               </div>
 
               {/* App plans */}
-              <div className="w-full flex justify-between items-start bg-main-white mt-4">
+              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
                 {appPlansMock.map((appPlan) => (
                   <AppPlansContainer
                     appPlan={appPlan}

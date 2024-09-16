@@ -21,7 +21,7 @@ export const AdminForm = ({ companyForm }) => {
       name="assignSandvikAdministrator"
       render={() => {
         return (
-          <FormItem>
+          <FormItem className="w-96">
             <FormLabel>Assigned Sandvik administrator</FormLabel>
             <FormControl>
               <Dropdown
@@ -30,7 +30,6 @@ export const AdminForm = ({ companyForm }) => {
                 selectedId={administrator}
                 options={adminsMock}
                 onSelect={(e) => setAdministrator(e)}
-                className="w-[400px]"
               />
             </FormControl>
             <FormMessage />

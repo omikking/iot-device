@@ -7,7 +7,7 @@ import { hazardCardMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   return (
-    <main className="flex flex-col items-center justify-start gap-12 min-h-screen p-24 ">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Design system - Pull Test Portal 🦄
       </Headline>

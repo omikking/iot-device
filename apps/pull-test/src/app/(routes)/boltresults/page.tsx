@@ -1,12 +1,13 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
+import { GoBack } from '@/components/GoBack';
 import {
   Button,
   Headline,
-  Text,
-  Anchor,
   Table,
   Badge,
   Modal,
@@ -17,16 +18,6 @@ import {
   TabsContent,
   DateRange,
 } from '@gsp/ui';
-
-import {
-  LucideFileDown,
-  LucideGrid3X3,
-  LucideLineChart,
-  LucideMoveLeft,
-} from 'lucide-react';
-
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
@@ -73,19 +64,8 @@ export default function Page(): JSX.Element {
   }, [site]);
 
   return (
-    <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="#" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
+      <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
         Garpenberg
@@ -95,7 +75,7 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <Tabs defaultValue="table">
+      <Tabs defaultValue="table" className="w-full max-w-[1600px]">
         <div className="w-full flex flex-row justify-between items-center pb-2">
           <TabsList>
             <TabsTrigger value="table">
@@ -132,12 +112,12 @@ export default function Page(): JSX.Element {
           onSetDateRange={setDateRange}
         />
 
-        <TabsContent value="table">
+        <TabsContent value="table" className="w-full">
           <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table className="ui-min-w-[1620px]" />
+          <Table />
         </TabsContent>
       </Tabs>
     </main>

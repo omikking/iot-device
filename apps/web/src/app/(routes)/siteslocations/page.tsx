@@ -7,11 +7,25 @@ import {
   Headline,
   Text,
   DropdownItem,
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  Input,
+  FormMessage,
 } from '@gsp/ui';
 import { sitesMock } from './mock.ts';
-import { LucideEllipsis, LucideMoveLeft } from 'lucide-react';
+import {
+  LucideEllipsis,
+  LucideMoveLeft,
+  LucideCircleCheckBig,
+  LucideX,
+} from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 interface ILevelMock {
   id: string;
@@ -50,8 +64,9 @@ export default function Page(): JSX.Element {
   const [positionsOptionsMock, setPositionsOptionsMock] = useState<
     IPositionMock[]
   >([]);
-  const handleLevelClick = (level: string) => {
+  const handleLevelClick = (level: string, index: number) => {
     console.log('level', level);
+    console.log('Levels index', index);
     setSelectedLevel(level);
   };
   const handleDriveClick = (drive: string) => {
@@ -89,11 +104,15 @@ export default function Page(): JSX.Element {
     setLevelsOptionsMock((prevLevel) => [
       ...prevLevel,
       {
-        id: '',
+        id:
+          prevLevel.length > 0
+            ? (parseInt(prevLevel[prevLevel.length - 1].id, 10) + 1).toString()
+            : '1',
         name: '',
         drives: [],
       },
     ]);
+    console.log('levelsOptionsMock', levelsOptionsMock);
   };
 
   const addDriveHandler = () => {
@@ -117,15 +136,6 @@ export default function Page(): JSX.Element {
     ]);
   };
 
-  // Finds available levels on the selected site
-  // const drivesOptionsMock = levelsOptionsMock?.find(
-  //   (boltLevels) => boltLevels.name === level,
-  // )?.drives;
-
-  // const positionsOptionsMock = drivesOptionsMock?.find(
-  //   (boltDrives) => boltDrives.name === drive,
-  // )?.positions;
-
   const handleSubmitLevel = (
     e: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -137,7 +147,7 @@ export default function Page(): JSX.Element {
 
     // Check for duplicate levels
     const isDuplicate = levelsOptionsMock.some(
-      (level) => level.name === newLevelName,
+      (level) => level.name.toLowerCase() === newLevelName.toLowerCase(),
     );
 
     if (isDuplicate) {
@@ -208,6 +218,20 @@ export default function Page(): JSX.Element {
     console.log('newPositions', newPositions);
   };
 
+  const handleCancel = (
+    event: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    event.preventDefault();
+    console.log('HANDLE REMOVE INDEX', index);
+
+    const newLevels = [...levelsOptionsMock];
+    newLevels.splice(index, 1);
+    setLevelsOptionsMock(newLevels);
+
+    console.log('newLevels', newLevels);
+  };
+
   useEffect(() => {
     const levels =
       sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
@@ -271,14 +295,23 @@ export default function Page(): JSX.Element {
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
               {/* LEVELS */}
+              {levelsOptionsMock?.length === 0 && (
+                <div className="flex h-full  justify-center items-center">
+                  <Text variant="small" color="foreground">
+                    Select site to view available levels
+                  </Text>
+                </div>
+              )}
               {levelsOptionsMock?.map((level, index) => (
                 <div
-                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border-2 border-blue-primary ' : ''}`}
+                  key={index}
                 >
                   <div
                     className="py-5"
                     onClick={() => (
-                      handleSetLevel(level.name), handleLevelClick(level.id)
+                      handleSetLevel(level.name),
+                      handleLevelClick(level.id, index)
                     )}
                   >
                     {level.name === '' ? (
@@ -287,13 +320,32 @@ export default function Page(): JSX.Element {
                           onSubmit={(e) => handleSubmitLevel(e, index)}
                           className="flex flex-row w-full justify-between items-center"
                         >
-                          <input name="level" placeholder="New level..." />
+                          <input
+                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                            name="level"
+                            placeholder="New level..."
+                            // we want to update the value inside of newLevels array, so we need to use onChange to update name value
+                            onChange={(e) => {
+                              console.log('e.target.value', e.target.value);
+                              const newLevels = [...levelsOptionsMock];
+                              newLevels[index].name = e.target.value;
+                              // setLevelsOptionsMock(newLevels);
+                            }}
+                          />
+                          <Button
+                            size={'small'}
+                            variant={'outline'}
+                            type="button"
+                            onClick={(event) => handleCancel(event, index)}
+                          >
+                            <LucideX />
+                          </Button>
                           <Button
                             size={'small'}
                             variant={'primary'}
                             type="submit"
                           >
-                            {/* Save Badge */}
+                            <LucideCircleCheckBig />
                             Save
                           </Button>
                         </form>
@@ -303,6 +355,14 @@ export default function Page(): JSX.Element {
                         <Text variant="small" color="foreground">
                           {level.name}
                         </Text>
+                        <Button
+                          size={'small'}
+                          variant={'outline'}
+                          type="button"
+                          onClick={(event) => handleCancel(event, index)}
+                        >
+                          <LucideX />
+                        </Button>
                         <Button
                           onClick={(event) => (
                             console.log('second'), event.stopPropagation()
@@ -346,6 +406,13 @@ export default function Page(): JSX.Element {
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
               {/* DRIVES */}
+              {drivesOptionsMock?.length === 0 && (
+                <div className="flex h-full  justify-center items-center">
+                  <Text variant="small" color="foreground">
+                    Select level to view available drives
+                  </Text>
+                </div>
+              )}
               {drivesOptionsMock?.map((drive, index) => (
                 <div
                   className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border border-blue-primary ' : ''}`}
@@ -368,7 +435,7 @@ export default function Page(): JSX.Element {
                             variant={'primary'}
                             type="submit"
                           >
-                            {/* Save Badge */}
+                            <LucideCircleCheckBig />
                             Save
                           </Button>
                         </form>
@@ -421,6 +488,13 @@ export default function Page(): JSX.Element {
             </div>
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
               {/* POSITIONS */}
+              {positionsOptionsMock?.length === 0 && (
+                <div className="flex h-full  justify-center items-center">
+                  <Text variant="small" color="foreground">
+                    Select drive to view available positions
+                  </Text>
+                </div>
+              )}
               {positionsOptionsMock?.map((position, index) => (
                 <div
                   className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border border-blue-primary ' : ''}`}
@@ -447,7 +521,7 @@ export default function Page(): JSX.Element {
                             variant={'primary'}
                             type="submit"
                           >
-                            {/* Save Badge */}
+                            <LucideCircleCheckBig />
                             Save
                           </Button>
                         </form>

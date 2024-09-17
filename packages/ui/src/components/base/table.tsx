@@ -2,11 +2,14 @@ import * as React from 'react';
 
 import { cn } from '../../lib/utils';
 
+import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
+import { Column } from '@tanstack/react-table';
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="ui-relative ui-w-full ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
+  <div className="ui-relative ui-w-full ui-min-w-[1320px] ui-min-h-[472px] ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
     <table
       ref={ref}
       className={cn('ui-w-full ui-caption-bottom', className)}
@@ -117,6 +120,46 @@ const TableCaption = React.forwardRef<
   />
 ));
 TableCaption.displayName = 'TableCaption';
+
+interface TableHeadWithSortingProps<TData> {
+  column: Column<TData>;
+  header: string;
+  className?: string;
+}
+
+const TableHeadWithSorting = <TData,>({
+  header,
+  column,
+  className,
+}: TableHeadWithSortingProps<TData>) => {
+  const isSorted = column.getIsSorted();
+  const handleClick = () => {
+    column.toggleSorting(isSorted === 'asc');
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={cn('ui-cursor-pointer ui-flex ui-justify-center', className)}
+    >
+      {header}
+      {!isSorted && (
+        <LucideArrowUpDown
+          size="16"
+          color="silver"
+          className="ui-ml-1 ui-mt-0.5"
+        />
+      )}
+      {isSorted === 'asc' && (
+        <LucideArrowUpDown size="16" className="ui-ml-1 ui-mt-0.5" />
+      )}
+      {isSorted === 'desc' && (
+        <LucideArrowDownUp size="16" className="ui-ml-1 ui-mt-0.5" />
+      )}
+    </button>
+  );
+};
 
 export {
   Table,

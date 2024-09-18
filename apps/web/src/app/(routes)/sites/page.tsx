@@ -1,9 +1,10 @@
 'use client';
 import { GoBack } from '@/components/GoBack';
-import { Badge, Button, Headline } from '@gsp/ui';
+import { Badge, Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 import { SiteResultsTable } from '@/components/SitesTable';
 import React from 'react';
 import { LucidePlus } from 'lucide-react';
+import { AddSiteModal } from '@/components/AddSiteModal';
 
 export default function Page(): JSX.Element {
   return (
@@ -17,10 +18,16 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Button variant="primary" size="large">
-          <LucidePlus />
-          Add site
-        </Button>
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              Add site
+            </Button>
+          </ModalTrigger>
+          <AddSiteModal />
+        </Modal>
+
         <SiteResultsTable />
       </div>
     </main>

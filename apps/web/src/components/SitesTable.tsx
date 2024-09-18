@@ -1,6 +1,7 @@
 'use client';
-import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef, HeaderContext } from '@gsp/ui';
+import { LucideEllipsis, LucideMoveRight } from 'lucide-react';
 
 interface SiteResultSchema {
   id: string;
@@ -82,7 +83,7 @@ export const SiteResultsTable = () => {
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Site name" />
+        <TableHeadWithSorting column={column} header="Name" />
       ),
     },
     {
@@ -92,6 +93,17 @@ export const SiteResultsTable = () => {
     {
       accessorKey: 'totalSiteLocations',
       header: 'Total site locations',
+      cell: () => {
+        // TODO: send user to siteLocations with the siteName
+        return (
+          <Button variant="outline" size="large">
+            <LucideMoveRight />
+            <Text variant={'medium'} color={'foreground'}>
+              44 site locations
+            </Text>
+          </Button>
+        );
+      },
     },
     {
       accessorKey: 'passCriteria',
@@ -103,7 +115,15 @@ export const SiteResultsTable = () => {
     },
     {
       accessorKey: 'fooBar',
-      header: 'Foo bar',
+      header: '',
+      cell: () => {
+        // TODO: a popover with edit and delete options??
+        return (
+          <Button variant="outline" size="small">
+            <LucideEllipsis />
+          </Button>
+        );
+      },
     },
   ];
 

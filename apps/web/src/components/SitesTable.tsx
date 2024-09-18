@@ -1,6 +1,6 @@
 'use client';
 import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import type { ColumnDef, HeaderContext } from '@gsp/ui';
+import type { ColumnDef } from '@gsp/ui';
 import { LucideEllipsis, LucideMoveRight } from 'lucide-react';
 
 interface SiteResultSchema {
@@ -131,6 +131,7 @@ export const SiteResultsTable = () => {
     <>
       {/* 
             next feature link total site locations with sitelocations page and give it the props of the site
+            and also add a popover with edit and delete options
     */}
       <DataTable columns={columns} data={siteResultsMock} />
       <Badge variant="neutral" className="self-start mt-5">

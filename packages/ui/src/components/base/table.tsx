@@ -12,6 +12,7 @@ const Table = React.forwardRef<
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
   <div className="ui-relative ui-w-full ui-min-w-[1320px] ui-min-h-[472px] ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
+    {' '}
     <table
       ref={ref}
       className={cn('ui-w-full ui-caption-bottom', className)}
@@ -162,7 +163,6 @@ const TableHeadWithSorting = <TData,>({
     </button>
   );
 };
-
 export {
   Table,
   TableHeader,

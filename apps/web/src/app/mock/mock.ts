@@ -1,5 +1,6 @@
 import type { DropdownItem } from '@gsp/ui';
-export interface SiteResultScehma {
+
+export interface SiteResultSchema {
   id: string;
   name: string;
   adress: string;
@@ -9,7 +10,7 @@ export interface SiteResultScehma {
   fooBar?: string;
 }
 
-export const siteResultMock: SiteResultScehma[] = [
+export const siteResultsMock: SiteResultSchema[] = [
   {
     id: '1',
     name: 'Garpenberg',

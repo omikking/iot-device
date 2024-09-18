@@ -15,9 +15,7 @@ export default function Page(): JSX.Element {
       <Headline as="h1" variant="xl" color="foreground">
         Sites
       </Headline>
-      {/* 
-            next feature link total site locations with sitelocations page and give it the props of the site
-        */}
+
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Button variant="primary" size="large">
           <LucidePlus />

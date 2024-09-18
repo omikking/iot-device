@@ -19,7 +19,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Button variant="primary" size="large">
           <LucidePlus />
-          Add user
+          Add site
         </Button>
         <SiteResultsTable />
       </div>

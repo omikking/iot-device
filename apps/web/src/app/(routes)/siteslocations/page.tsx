@@ -7,12 +7,6 @@ import {
   Headline,
   Text,
   DropdownItem,
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  Input,
-  FormMessage,
 } from '@gsp/ui';
 import { sitesMock } from './mock.ts';
 import {
@@ -23,10 +17,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
 interface ILevelMock {
   id: string;
   name: string;
@@ -64,9 +54,7 @@ export default function Page(): JSX.Element {
   const [positionsOptionsMock, setPositionsOptionsMock] = useState<
     IPositionMock[]
   >([]);
-  const handleLevelClick = (level: string, index: number) => {
-    console.log('level', level);
-    console.log('Levels index', index);
+  const handleLevelClick = (level: string) => {
     setSelectedLevel(level);
   };
   const handleDriveClick = (drive: string) => {
@@ -119,7 +107,10 @@ export default function Page(): JSX.Element {
     setDrivesOptionsMock((prevDrive) => [
       ...prevDrive,
       {
-        id: '',
+        id:
+          prevDrive.length > 0
+            ? (parseInt(prevDrive[prevDrive.length - 1].id, 10) + 1).toString()
+            : '1',
         name: '',
         positions: [],
       },
@@ -130,10 +121,16 @@ export default function Page(): JSX.Element {
     setPositionsOptionsMock((prevPosition) => [
       ...prevPosition,
       {
-        id: '',
+        id:
+          prevPosition.length > 0
+            ? (
+                parseInt(prevPosition[prevPosition.length - 1].id, 10) + 1
+              ).toString()
+            : '1',
         name: '',
       },
     ]);
+    console.log('drivesOptionsMock', drivesOptionsMock);
   };
 
   const handleSubmitLevel = (
@@ -164,7 +161,6 @@ export default function Page(): JSX.Element {
     const newLevelsList = [...levelsOptionsMock];
     newLevelsList[index] = newLevel;
     setLevelsOptionsMock(newLevelsList);
-    console.log('newLevelsList', newLevelsList);
   };
 
   const handleSubmitDrive = (
@@ -190,7 +186,6 @@ export default function Page(): JSX.Element {
     const newDrives = [...drivesOptionsMock];
     newDrives[index] = newDrive;
     setDrivesOptionsMock(newDrives);
-    console.log('newDrives', newDrives);
   };
 
   const handleSubmitPosition = (
@@ -215,21 +210,40 @@ export default function Page(): JSX.Element {
     const newPositions = [...positionsOptionsMock];
     newPositions[index] = newPosition;
     setPositionsOptionsMock(newPositions);
-    console.log('newPositions', newPositions);
   };
 
-  const handleCancel = (
+  // make handle cancel functions resuable
+  const handleCancelLevel = (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
     event.preventDefault();
-    console.log('HANDLE REMOVE INDEX', index);
 
     const newLevels = [...levelsOptionsMock];
     newLevels.splice(index, 1);
     setLevelsOptionsMock(newLevels);
+  };
 
-    console.log('newLevels', newLevels);
+  const handleCancelDrive = (
+    event: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    event.preventDefault();
+
+    const newDrives = [...drivesOptionsMock];
+    newDrives.splice(index, 1);
+    setDrivesOptionsMock(newDrives);
+  };
+
+  const handleCancelPosition = (
+    event: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    event.preventDefault();
+
+    const newPositions = [...positionsOptionsMock];
+    newPositions.splice(index, 1);
+    setPositionsOptionsMock(newPositions);
   };
 
   useEffect(() => {
@@ -310,33 +324,25 @@ export default function Page(): JSX.Element {
                   <div
                     className="py-5"
                     onClick={() => (
-                      handleSetLevel(level.name),
-                      handleLevelClick(level.id, index)
+                      handleSetLevel(level.name), handleLevelClick(level.id)
                     )}
                   >
                     {level.name === '' ? (
                       <div>
                         <form
                           onSubmit={(e) => handleSubmitLevel(e, index)}
-                          className="flex flex-row w-full justify-between items-center"
+                          className="flex flex-row w-full justify-end items-center"
                         >
                           <input
-                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                            className="flex justify-self-start max-w-20 focus:border-blue-primary focus:outline focus:outline-none"
                             name="level"
                             placeholder="New level..."
-                            // we want to update the value inside of newLevels array, so we need to use onChange to update name value
-                            onChange={(e) => {
-                              console.log('e.target.value', e.target.value);
-                              const newLevels = [...levelsOptionsMock];
-                              newLevels[index].name = e.target.value;
-                              // setLevelsOptionsMock(newLevels);
-                            }}
                           />
                           <Button
                             size={'small'}
                             variant={'outline'}
                             type="button"
-                            onClick={(event) => handleCancel(event, index)}
+                            onClick={(event) => handleCancelLevel(event, index)}
                           >
                             <LucideX />
                           </Button>
@@ -355,14 +361,14 @@ export default function Page(): JSX.Element {
                         <Text variant="small" color="foreground">
                           {level.name}
                         </Text>
-                        <Button
+                        {/* <Button
                           size={'small'}
                           variant={'outline'}
                           type="button"
                           onClick={(event) => handleCancel(event, index)}
                         >
                           <LucideX />
-                        </Button>
+                        </Button> */}
                         <Button
                           onClick={(event) => (
                             console.log('second'), event.stopPropagation()
@@ -384,6 +390,9 @@ export default function Page(): JSX.Element {
                   size={'small'}
                   variant={'primary'}
                   onClick={() => addLevelHandler()}
+                  disabled={levelsOptionsMock.some(
+                    (level) => level.name === '',
+                  )}
                 >
                   <Text variant={'small'} color={'background'}>
                     + Add level
@@ -429,7 +438,19 @@ export default function Page(): JSX.Element {
                           onSubmit={(e) => handleSubmitDrive(e, index)}
                           className="flex flex-row w-full justify-between items-center"
                         >
-                          <input name="drive" placeholder="New drive..." />
+                          <input
+                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                            name="drive"
+                            placeholder="New drive..."
+                          />
+                          <Button
+                            size={'small'}
+                            variant={'outline'}
+                            type="button"
+                            onClick={(event) => handleCancelDrive(event, index)}
+                          >
+                            <LucideX />
+                          </Button>
                           <Button
                             size={'small'}
                             variant={'primary'}
@@ -466,6 +487,9 @@ export default function Page(): JSX.Element {
                   size={'small'}
                   variant={'primary'}
                   onClick={() => addDriveHandler()}
+                  disabled={drivesOptionsMock.some(
+                    (drive) => drive.name === '',
+                  )}
                 >
                   <Text variant={'small'} color={'background'}>
                     + Add drive
@@ -498,12 +522,13 @@ export default function Page(): JSX.Element {
               {positionsOptionsMock?.map((position, index) => (
                 <div
                   className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border border-blue-primary ' : ''}`}
+                  key={index}
                 >
                   <div
                     className="py-5"
                     onClick={() => {
-                      handlePositionClick(position.id),
-                        handleSetPoisiton(position.name);
+                      handleSetPoisiton(position.name);
+                      handlePositionClick(position.id), aa;
                     }}
                   >
                     {position.name === '' ? (
@@ -513,9 +538,18 @@ export default function Page(): JSX.Element {
                           className="flex flex-row w-full justify-between items-center"
                         >
                           <input
+                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
                             name="position"
                             placeholder="New position..."
                           />
+                          <Button
+                            size={'small'}
+                            variant={'outline'}
+                            type="button"
+                            onClick={(event) => handleCancelDrive(event, index)}
+                          >
+                            <LucideX />
+                          </Button>
                           <Button
                             size={'small'}
                             variant={'primary'}
@@ -552,6 +586,9 @@ export default function Page(): JSX.Element {
                   size={'small'}
                   variant={'primary'}
                   onClick={() => addPositionHandler()}
+                  disabled={positionsOptionsMock.some(
+                    (position) => position.name === '',
+                  )}
                 >
                   <Text variant={'small'} color={'background'}>
                     + Add position

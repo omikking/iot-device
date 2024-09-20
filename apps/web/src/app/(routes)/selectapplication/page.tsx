@@ -2,7 +2,9 @@
 import { Badge, Headline, NavigationCard } from '@gsp/ui';
 import { GoBack } from '@/components/GoBack';
 import { SandvikLogo } from 'public/SandvikLogo';
+
 import Link from 'next/link';
+import { LucideCircuitBoard } from 'lucide-react';
 
 export default function Page(): JSX.Element {
   return (
@@ -10,7 +12,7 @@ export default function Page(): JSX.Element {
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        (props.companyName)
+        Ecorp AB
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -19,71 +21,51 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-row justify-around gap-10 max-w-[1000px] w-full pt-20 border-t border-t-gold-3">
         <div className="flex flex-row flex-wrap gap-12 w-full justify-center ">
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                Pull-Test
-              </Headline>
-              <Link href="/">
+          <Link href="/">
+            <NavigationCard>
+              <div className="flex flex-col items-center h-full gap-6">
+                <Headline as="h3" variant="medium" color="foreground">
+                  Pull-Test
+                </Headline>
                 <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                Ultrabots
-              </Headline>
-              <Link href="/">
+              </div>
+            </NavigationCard>
+          </Link>
+          <Link href="/">
+            <NavigationCard>
+              <div className="flex flex-col items-center h-full gap-6">
+                <Headline as="h3" variant="medium" color="foreground">
+                  Ultrabots
+                </Headline>
                 <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                xCyclops
-              </Headline>
-              <Link href="/">
+              </div>
+            </NavigationCard>
+          </Link>
+          <Link href="/">
+            <NavigationCard>
+              <div className="flex flex-col items-center h-full gap-6">
+                <Headline as="h3" variant="medium" color="foreground">
+                  xCyclops
+                </Headline>
                 <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                xCyclops
-              </Headline>
-              <Link href="/">
-                <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
+              </div>
+            </NavigationCard>
+          </Link>
         </div>
       </div>
 
       <div className="flex flex-row justify-around gap-10 max-w-[1000px] w-full pt-20 border-t border-t-gold-3">
         <div className="flex flex-row flex-wrap gap-12 w-full justify-center ">
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                Management
-              </Headline>
-              <Link href="/">
-                <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
-          <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6">
-              <Headline as="h3" variant="medium" color="foreground">
-                Lorem Ipsum
-              </Headline>
-              <Link href="/">
-                <SandvikLogo />
-              </Link>
-            </div>
-          </NavigationCard>
+          <Link href="/">
+            <NavigationCard>
+              <div className="flex flex-col items-center h-full gap-6">
+                <Headline as="h3" variant="medium" color="foreground">
+                  Management
+                </Headline>
+                <LucideCircuitBoard size={56} />
+              </div>
+            </NavigationCard>
+          </Link>
         </div>
       </div>
     </main>

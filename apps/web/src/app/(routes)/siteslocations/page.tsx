@@ -164,7 +164,6 @@ export default function Page(): JSX.Element {
       };
       const newSites = [...sitesMock];
       newSites[newSiteIndex] = newSite;
-      console.log('newSites', newSites);
     }
   };
 
@@ -199,19 +198,6 @@ export default function Page(): JSX.Element {
     const newDrives = [...drivesOptionsMock];
     newDrives[index] = newDrive;
     setDrivesOptionsMock(newDrives);
-
-    // const newLevelIndex = levelsOptionsMock.findIndex(
-    //   (level) => level.id === selectedLevel,
-    // );
-    // if (newLevelIndex !== -1) {
-    //   const newLevel = {
-    //     ...levelsOptionsMock[newLevelIndex],
-    //     drives: [...levelsOptionsMock[newLevelIndex].drives, newDrive],
-    //   };
-    //   const newLevels = [...levelsOptionsMock];
-    //   newLevels[newLevelIndex] = newLevel;
-    //   setLevelsOptionsMock(newLevels);
-    // }
   };
 
   const handleSubmitPosition = (
@@ -243,24 +229,6 @@ export default function Page(): JSX.Element {
     const newPositions = [...positionsOptionsMock];
     newPositions[index] = newPosition;
     setPositionsOptionsMock(newPositions);
-
-    // when a new position is added, it should be added to the drive
-    // find index of the selected drive
-    // const newDriveIndex = drivesOptionsMock.findIndex(
-    //   (d) => d.id === selectedDrive,
-    // );
-    // // if the drive is found, add the new position to the drive
-    // if (newDriveIndex !== -1) {
-    //   const newDrive = {
-    //     ...drivesOptionsMock[newDriveIndex],
-    //     positions: [...drivesOptionsMock[newDriveIndex].positions, newPosition],
-    //   };
-    //   const newDrives = [...drivesOptionsMock];
-    //   newDrives[newDriveIndex] = newDrive;
-    //   setDrivesOptionsMock(newDrives);
-    // }
-
-    console.log('drivesOptionsMock', drivesOptionsMock);
   };
 
   const handleCancelLevel = (
@@ -270,6 +238,7 @@ export default function Page(): JSX.Element {
     event.preventDefault();
 
     const newLevels = [...levelsOptionsMock];
+    newLevels[index].drives = [];
     newLevels.splice(index, 1);
     setLevelsOptionsMock(newLevels);
   };
@@ -281,6 +250,7 @@ export default function Page(): JSX.Element {
     event.preventDefault();
 
     const newDrives = [...drivesOptionsMock];
+    newDrives[index].positions = [];
     newDrives.splice(index, 1);
     setDrivesOptionsMock(newDrives);
   };
@@ -309,8 +279,6 @@ export default function Page(): JSX.Element {
         ?.drives || [];
 
     setDrivesOptionsMock(drives);
-
-    console.log('drives from userEffect', drives);
   }, [level]);
 
   useEffect(() => {
@@ -482,6 +450,7 @@ export default function Page(): JSX.Element {
               )}
               {drivesOptionsMock?.map((drive, index) => (
                 <div
+                  key={index}
                   className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border border-blue-primary ' : ''}`}
                 >
                   <div

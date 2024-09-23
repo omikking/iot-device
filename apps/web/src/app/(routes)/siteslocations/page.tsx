@@ -92,7 +92,6 @@ export default function Page(): JSX.Element {
         drives: [],
       },
     ]);
-    console.log('levelsOptionsMock', levelsOptionsMock);
   };
 
   const addDriveHandler = () => {
@@ -122,7 +121,6 @@ export default function Page(): JSX.Element {
         name: '',
       },
     ]);
-    console.log('positionsOptionsMock', positionsOptionsMock);
   };
 
   const handleSubmitLevel = (
@@ -157,6 +155,17 @@ export default function Page(): JSX.Element {
     const newLevelsList = [...levelsOptionsMock];
     newLevelsList[index] = newLevel;
     setLevelsOptionsMock(newLevelsList);
+
+    const newSiteIndex = sitesMock.findIndex((s) => s.name === site);
+    if (newSiteIndex !== -1) {
+      const newSite = {
+        ...sitesMock[newSiteIndex],
+        levels: [...sitesMock[newSiteIndex].levels, newLevel],
+      };
+      const newSites = [...sitesMock];
+      newSites[newSiteIndex] = newSite;
+      console.log('newSites', newSites);
+    }
   };
 
   const handleSubmitDrive = (
@@ -190,6 +199,19 @@ export default function Page(): JSX.Element {
     const newDrives = [...drivesOptionsMock];
     newDrives[index] = newDrive;
     setDrivesOptionsMock(newDrives);
+
+    // const newLevelIndex = levelsOptionsMock.findIndex(
+    //   (level) => level.id === selectedLevel,
+    // );
+    // if (newLevelIndex !== -1) {
+    //   const newLevel = {
+    //     ...levelsOptionsMock[newLevelIndex],
+    //     drives: [...levelsOptionsMock[newLevelIndex].drives, newDrive],
+    //   };
+    //   const newLevels = [...levelsOptionsMock];
+    //   newLevels[newLevelIndex] = newLevel;
+    //   setLevelsOptionsMock(newLevels);
+    // }
   };
 
   const handleSubmitPosition = (
@@ -221,6 +243,24 @@ export default function Page(): JSX.Element {
     const newPositions = [...positionsOptionsMock];
     newPositions[index] = newPosition;
     setPositionsOptionsMock(newPositions);
+
+    // when a new position is added, it should be added to the drive
+    // find index of the selected drive
+    // const newDriveIndex = drivesOptionsMock.findIndex(
+    //   (d) => d.id === selectedDrive,
+    // );
+    // // if the drive is found, add the new position to the drive
+    // if (newDriveIndex !== -1) {
+    //   const newDrive = {
+    //     ...drivesOptionsMock[newDriveIndex],
+    //     positions: [...drivesOptionsMock[newDriveIndex].positions, newPosition],
+    //   };
+    //   const newDrives = [...drivesOptionsMock];
+    //   newDrives[newDriveIndex] = newDrive;
+    //   setDrivesOptionsMock(newDrives);
+    // }
+
+    console.log('drivesOptionsMock', drivesOptionsMock);
   };
 
   const handleCancelLevel = (
@@ -269,6 +309,8 @@ export default function Page(): JSX.Element {
         ?.drives || [];
 
     setDrivesOptionsMock(drives);
+
+    console.log('drives from userEffect', drives);
   }, [level]);
 
   useEffect(() => {
@@ -388,9 +430,7 @@ export default function Page(): JSX.Element {
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => (
-                            console.log('second'), event.stopPropagation()
-                          )}
+                          onClick={(event) => event.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >
@@ -500,9 +540,7 @@ export default function Page(): JSX.Element {
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => (
-                            console.log('second'), event.stopPropagation()
-                          )}
+                          onClick={(event) => event.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >
@@ -521,7 +559,6 @@ export default function Page(): JSX.Element {
                   variant={'primary'}
                   onClick={() => {
                     addDriveHandler();
-                    console.log('level', level);
                   }}
                   disabled={
                     drivesOptionsMock.some((drive) => drive.name === '') ||
@@ -622,9 +659,7 @@ export default function Page(): JSX.Element {
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => (
-                            console.log('second'), event.stopPropagation()
-                          )}
+                          onClick={(event) => event.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >

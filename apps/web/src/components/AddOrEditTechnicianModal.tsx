@@ -1,3 +1,7 @@
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { LucidePlus } from 'lucide-react';
 import {
   Button,
   ModalContent,
@@ -15,10 +19,6 @@ import {
   RadioGroupItem,
   RadioGroup,
 } from '@gsp/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucidePlus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 export const AddOrEditTechnicianModal = () => {
   const formSchema = z.object({

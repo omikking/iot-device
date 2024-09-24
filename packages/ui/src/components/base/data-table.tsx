@@ -1,5 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+import { LucideSearch } from 'lucide-react';
+
 import {
   ColumnDef,
   flexRender,
@@ -19,8 +22,6 @@ import {
 } from './table';
 
 import { Text } from './text';
-import { LucideSearch } from 'lucide-react';
-import { useState } from 'react';
 
 export type { ColumnDef };
 

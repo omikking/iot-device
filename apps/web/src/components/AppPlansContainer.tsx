@@ -1,10 +1,10 @@
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import {
   LucideCalendar,
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { AppPlan } from './AppPlan';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { AppPlan } from '@/components/AppPlan';
 
 // @TODO: Remove temporary isAdmin prop
 export const AppPlansContainer = ({ appPlan, isAdmin }) => {

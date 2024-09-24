@@ -1,16 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { LucideCalendar } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { DateRange as DateRangeProps } from 'react-day-picker';
-import { buttonStyling } from './dropdown';
+import { LucideCalendar } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
-import { Text } from './text';
-import { Calendar } from './calendar';
+import { buttonStyling } from './dropdown';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useEffect, useState } from 'react';
+import { Calendar } from './calendar';
 import { Button } from './button';
+import { Text } from './text';
 
 export type DateRange = DateRangeProps;
 

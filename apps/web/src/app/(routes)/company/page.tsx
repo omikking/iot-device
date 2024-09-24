@@ -1,13 +1,9 @@
 'use client';
-import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-import {
-  Headline,
-  Text,
-  ContentHolder,
-  Button,
-  NavigationCard,
-  Form,
-} from '@gsp/ui';
+import Link from 'next/link';
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   LucideCircleCheckBig,
   LucideMountain,
@@ -16,16 +12,20 @@ import {
   LucideSparkles,
   LucideUsers,
 } from 'lucide-react';
-import Link from 'next/link';
-import { AdminForm } from '@/components/AdminForm';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
-import { useState } from 'react';
+import {
+  Headline,
+  Text,
+  ContentHolder,
+  Button,
+  NavigationCard,
+  Form,
+} from '@gsp/ui';
 import { appPlansMock } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
+import { AdminForm } from '@/components/AdminForm';
+import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
+import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({

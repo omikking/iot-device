@@ -46,7 +46,7 @@ export const AppPlansContainer = ({ appPlan, isAdmin }) => {
 
       {/* Calendar */}
       {activePlan && (
-        <div className="py-5 px-6 ui-border-b ui-border-neutral-2">
+        <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && (
             <Badge variant="primary">
               <LucideCalendar size="14" />

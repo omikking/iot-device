@@ -146,7 +146,7 @@ export default function Page(): JSX.Element {
             </NavigationCard>
           </div>
 
-          <hr className="w-full ui-color-gold-3" />
+          <hr className="w-full border-gold-3" />
         </>
       )}
 
@@ -185,7 +185,7 @@ export default function Page(): JSX.Element {
                     <Text
                       color="accent"
                       variant="medium"
-                      className="mt-1 ml-4 ui-underline ui-underline-offset-2"
+                      className="mt-1 ml-4 underline underline-offset-2"
                     >
                       Call +46 70 174 06 21
                     </Text>

@@ -38,12 +38,12 @@ export const Menu = () => {
       </MenuTrigger>
 
       <MenuContent>
-        <div className="flex ui-flex-col gap-8">
+        <div className="flex flex-col gap-8">
           {status === 'authenticated' && (
             <>
               <MenuTitle>Garpenberg</MenuTitle>
 
-              <div className="flex ui-flex-col gap-1">
+              <div className="flex flex-col gap-1">
                 <Headline
                   variant="medium"
                   color="foreground"
@@ -111,9 +111,9 @@ export const Menu = () => {
                 </Button>
               </div>
 
-              <hr className="ui-text-gold-3" />
+              <hr className="border-gold-3" />
 
-              <div className="flex ui-flex-col gap-1">
+              <div className="flex flex-col gap-1">
                 <Headline
                   variant="medium"
                   color="foreground"
@@ -157,11 +157,11 @@ export const Menu = () => {
                 </Headline>
               </div>
 
-              <hr className="ui-text-gold-3" />
+              <hr className="border-gold-3" />
             </>
           )}
 
-          <div className="flex ui-flex-col gap-1">
+          <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
               <Link href="#" passHref legacyBehavior>
                 <Anchor color="foreground">

@@ -182,8 +182,7 @@ export default function Page(): JSX.Element {
         </ModalTrigger>
         <DeleteModalConfirmation
           modalTitel="Delete Site"
-          deleteIcon="PROPS"
-          confirmIcon="PROPS"
+          deleteIcon="User"
           deleteButtonText="Delete site"
         >
           You are about to delete <b> Elliot Alderson </b> from the list. Are

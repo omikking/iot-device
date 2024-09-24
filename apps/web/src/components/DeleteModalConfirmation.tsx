@@ -1,5 +1,4 @@
 import {
-  Text,
   Button,
   Headline,
   ModalContent,
@@ -7,15 +6,13 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@gsp/ui';
-import { LucideTrash2, LucideUserMinus } from 'lucide-react';
+import { LucideTrash2, LucideMountain, LucideUserMinus } from 'lucide-react';
 import React from 'react';
 
 interface DeleteModalProps {
   modalTitel: string;
   confirmDelete?: string;
-  deleteIcon?: string;
-  confirmIcon?: string;
-
+  deleteIcon?: 'User' | 'Site';
   deleteButtonText?: string;
   children: React.ReactNode;
 }
@@ -23,22 +20,28 @@ interface DeleteModalProps {
 export const DeleteModalConfirmation = ({
   modalTitel,
   confirmDelete = 'Confirm deletion',
-  deleteIcon = 'PROPS',
-  confirmIcon,
-
+  deleteIcon = 'User',
   deleteButtonText,
   children,
 }: DeleteModalProps) => {
+  const getDeleteIcon = (role: 'User' | 'Site') => {
+    switch (role) {
+      case 'User':
+        return <LucideUserMinus className="text-error" size="32" />;
+      case 'Site':
+        return <LucideMountain className="text-error" size="32" />;
+      default:
+        return null; // throw null if invalid role
+    }
+  };
+
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
-        {/* props drill titel */}
         <ModalTitle>{modalTitel}</ModalTitle>
       </ModalHeader>
       <div className="flex flex-row justify-center items-center pt-16 gap-4">
-        {/* delete icon */}
-        <LucideUserMinus className="text-error" size="32" />
-
+        {getDeleteIcon(deleteIcon)}
         <Headline variant="medium" as="h3" color="foreground">
           {confirmDelete}
         </Headline>

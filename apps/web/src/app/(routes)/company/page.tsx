@@ -24,6 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useState } from 'react';
+import { appPlansMock } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
 
 // @TODO finish this later
@@ -64,24 +65,6 @@ export default function Page(): JSX.Element {
       assignSandvikAdministrator: '',
     },
   });
-
-  const mockAppPlans = [
-    {
-      name: 'Pull-test',
-      activePlan: 'Gold',
-      id: '1',
-    },
-    {
-      name: 'xCyclops',
-      activePlan: undefined,
-      id: '2',
-    },
-    {
-      name: 'Ultrabots',
-      activePlan: 'Bronze',
-      id: '3',
-    },
-  ];
 
   // Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';
@@ -212,10 +195,10 @@ export default function Page(): JSX.Element {
 
               {/* App plans */}
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {mockAppPlans.map((appData) => (
+                {appPlansMock.map((appPlan) => (
                   <AppPlansContainer
-                    appData={appData}
-                    key={appData.id}
+                    appPlan={appPlan}
+                    key={appPlan.id}
                     isAdmin={isAdmin}
                   />
                 ))}

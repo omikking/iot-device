@@ -9,40 +9,51 @@ import { cn } from '../../lib/utils';
 import { Text } from './text';
 import { Calendar } from './calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './button';
 
 export type DateRange = DateRangeProps;
 
 interface RangeCalendarProps {
   disabled?: boolean;
+  selected?: DateRange;
+  onSelect?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
 
 export const RangeCalendar = ({
+  selected,
+  onSelect,
   disabled,
   className,
 }: React.HTMLAttributes<HTMLDivElement> & RangeCalendarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined,
+    from: selected?.from,
+    to: selected?.to,
   });
 
   const getRangeFormat = () => {
-    if (date?.from) {
-      if (date?.to) {
-        return (
-          <>
-            {date.from.getFullYear()}-{date.from.getMonth() + 1}-
-            {date.from.getDate()} to {date.to.getFullYear()}-
-            {date.to.getMonth() + 1}-{date.to.getDate()}
-          </>
-        );
-      }
+    const { from, to } = date || {};
+
+    if (from && to) {
+      const formatDate = (date: Date) =>
+        `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+      return `${formatDate(from)} to ${formatDate(to)}`;
     }
     return 'Select dates';
   };
+
+  // Required to reset
+  useEffect(() => {
+    selected
+      ? setDate(selected)
+      : setDate({
+          from: undefined,
+          to: undefined,
+        });
+  }, [selected]);
 
   return (
     <div className={cn('ui-grid ui-gap-2', className)}>
@@ -81,11 +92,13 @@ export const RangeCalendar = ({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={(e) => {
+              setDate(e);
+              onSelect?.(e);
+            }}
             numberOfMonths={2}
           />
           <Button
-            disabled={!date?.from || !date?.to}
             size="small"
             variant="primary"
             onClick={() => {
@@ -93,7 +106,7 @@ export const RangeCalendar = ({
             }}
             className="ui-mb-5 ui-mr-5 ui-mt-[-8px]"
           >
-            Update
+            Close
           </Button>
         </PopoverContent>
       </Popover>

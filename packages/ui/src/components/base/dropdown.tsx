@@ -1,12 +1,13 @@
 'use client';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { LucideChevronDown, LucideX } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { LucideChevronDown } from 'lucide-react';
 import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { Button } from './button';
 
-interface DropdownItem {
+export interface DropdownItem {
   id: string;
   name: string;
 }
@@ -16,13 +17,14 @@ export interface DropdownProps {
   placeholder?: string;
   options: DropdownItem[];
   selectedId?: string;
+  isResettable?: boolean;
   className?: string;
   disabled?: boolean;
-  onSelect?: (id: string) => void;
+  onSelect?: (id?: string) => void;
 }
 
 export const buttonStyling =
-  'flex justify-between items-center ui-h-12 ui-border ui-border-neutral-3 ui-rounded ui-w-full ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-none disabled:ui-pointer-events-none';
+  'flex justify-between items-center ui-h-12 ui-border ui-border-neutral-3 ui-rounded ui-w-full ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-transparent disabled:ui-pointer-events-none';
 
 const dropdownItemStyling =
   'flex items-center cursor-pointer hover:ui-bg-neutral-1 ui-px-6 ui-py-3 ui-transform ui-duration-200 ease-in-out';
@@ -38,6 +40,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       options,
       selectedId,
       disabled,
+      isResettable,
       className,
       onSelect,
       ...props
@@ -50,12 +53,13 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       selectedId ? options?.find((item) => item.id === selectedId) : undefined,
     );
 
-    const handleChange = (item: DropdownItem) => {
+    const handleChange = (item?: DropdownItem) => {
       setSelectedItem(item);
-      onSelect && onSelect(item.id);
+      onSelect && onSelect(item?.name);
       setIsOpen(false);
     };
 
+    // Required to reset
     useEffect(() => {
       if (selectedId && options) {
         const newSelectedItem = options.find((item) => item.id === selectedId);
@@ -103,6 +107,24 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           >
             <div aria-label="Dropdown menu" className={dropdownVariants}>
               <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
+                {isResettable && options?.length > 0 && (
+                  <div className="ui-px-5 ui-pb-3 ui-border-b ui-border-neutral-2">
+                    <Button
+                      isWide
+                      variant="outline"
+                      size="small"
+                      disabled={!selectedItem}
+                      tabIndex={-1}
+                      onClick={() => {
+                        handleChange(undefined);
+                      }}
+                    >
+                      <LucideX />
+                      Reset value
+                    </Button>
+                  </div>
+                )}
+
                 {options?.map((item) => (
                   <li
                     aria-hidden="true"
@@ -112,7 +134,8 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     }}
                     className={cn(
                       dropdownItemStyling,
-                      selectedItem?.id === item.id && 'ui-bg-neutral-1',
+                      selectedItem?.id === item.id &&
+                        'ui-bg-neutral-1 ui-cursor-default ui-pointer-events-none',
                     )}
                   >
                     <Text variant="medium" color="foreground">
@@ -120,6 +143,16 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     </Text>
                   </li>
                 ))}
+                {options?.length === 0 && (
+                  <li
+                    aria-hidden="true"
+                    className={cn(dropdownItemStyling, 'ui-bg-neutral-1')}
+                  >
+                    <Text variant="medium" color="muted">
+                      No available options to select
+                    </Text>
+                  </li>
+                )}
               </ul>
             </div>
           </PopoverContent>

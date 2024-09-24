@@ -4,6 +4,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -16,21 +18,34 @@ import {
   TableRow,
 } from './table';
 
+import { Text } from './text';
+import { LucideSearch } from 'lucide-react';
+import { useState } from 'react';
+
 export type { ColumnDef };
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  noResultMessage?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  noResultMessage = 'Could not find any data.',
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   });
 
   return (
@@ -75,10 +90,15 @@ export function DataTable<TData, TValue>({
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
-              {/* Fix this later to get a no result message props */}
-              No results.
+            <TableCell colSpan={columns.length}>
+              <div className="ui-flex ui-h-80 ui-flex-col ui-justify-center ui-items-center ui-gap-5">
+                <Text color="foreground" variant="medium">
+                  {noResultMessage}
+                </Text>
+                <LucideSearch color="gray" />
+              </div>
             </TableCell>
+            <TableCell className="!ui-p-0" />
           </TableRow>
         )}
       </TableBody>

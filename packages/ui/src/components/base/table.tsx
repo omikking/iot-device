@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { Column } from '@tanstack/react-table';
+import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 
@@ -118,6 +120,46 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = 'TableCaption';
 
+interface TableHeadWithSortingProps<TData> {
+  column: Column<TData>;
+  header: string;
+  className?: string;
+}
+
+const TableHeadWithSorting = <TData,>({
+  header,
+  column,
+  className,
+}: TableHeadWithSortingProps<TData>) => {
+  const isSorted = column.getIsSorted();
+  const handleClick = () => {
+    column.toggleSorting(isSorted === 'asc');
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={cn('ui-cursor-pointer ui-flex ui-justify-center', className)}
+    >
+      {header}
+      {!isSorted && (
+        <LucideArrowUpDown
+          size="16"
+          color="silver"
+          className="ui-ml-1 ui-mt-0.5"
+        />
+      )}
+      {isSorted === 'asc' && (
+        <LucideArrowUpDown size="16" className="ui-ml-1 ui-mt-0.5" />
+      )}
+      {isSorted === 'desc' && (
+        <LucideArrowDownUp size="16" className="ui-ml-1 ui-mt-0.5" />
+      )}
+    </button>
+  );
+};
+
 export {
   Table,
   TableHeader,
@@ -127,4 +169,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableHeadWithSorting,
 };

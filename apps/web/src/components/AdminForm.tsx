@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Dropdown,
   FormControl,
@@ -6,45 +7,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
-
-import { useState } from 'react';
+import { adminsMock } from '@/app/mock/mock';
 
 export const AdminForm = ({ companyForm }) => {
-  const options = [
-    {
-      id: '1',
-      name: 'Elliot Alderson',
-    },
-    {
-      id: '2',
-      name: 'Darlene Alderson',
-    },
-    {
-      id: '3',
-      name: 'Tyrell Wellick',
-    },
-    {
-      id: '4',
-      name: 'Joanna Wellick',
-    },
-    {
-      id: '5',
-      name: 'Angela Moss',
-    },
-    {
-      id: '6',
-      name: 'Whiterose',
-    },
-    {
-      id: '7',
-      name: 'Felix Östergren',
-    },
-    {
-      id: '8',
-      name: 'Jimmy Nwadinkpa',
-    },
-  ];
-
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
@@ -55,16 +20,15 @@ export const AdminForm = ({ companyForm }) => {
       name="assignSandvikAdministrator"
       render={() => {
         return (
-          <FormItem>
+          <FormItem className="w-96">
             <FormLabel>Assigned Sandvik administrator</FormLabel>
             <FormControl>
               <Dropdown
                 id="person"
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
-                options={options}
+                options={adminsMock}
                 onSelect={(e) => setAdministrator(e)}
-                className="w-[400px]"
               />
             </FormControl>
             <FormMessage />

@@ -1,14 +1,14 @@
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import {
   LucideCalendar,
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { AppPlan } from './AppPlan';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { AppPlan } from '@/components/AppPlan';
 
 // @TODO: Remove temporary isAdmin prop
-export const AppPlansContainer = ({ appData, isAdmin }) => {
-  const { name, activePlan } = appData;
+export const AppPlansContainer = ({ appPlan, isAdmin }) => {
+  const { name, activePlan } = appPlan;
 
   // const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -16,8 +16,8 @@ export const AppPlansContainer = ({ appData, isAdmin }) => {
 
   return (
     <div
-      key={appData.id}
-      className="w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
+      key={appPlan.id}
+      className="w-1/3 max-w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="smallBold" color="foreground" as="h3">
@@ -46,7 +46,7 @@ export const AppPlansContainer = ({ appData, isAdmin }) => {
 
       {/* Calendar */}
       {activePlan && (
-        <div className="py-5 px-6 ui-border-b ui-border-neutral-2">
+        <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && (
             <Badge variant="primary">
               <LucideCalendar size="14" />

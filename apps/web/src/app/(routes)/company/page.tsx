@@ -1,31 +1,31 @@
 'use client';
-import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-import {
-  Headline,
-  Text,
-  Anchor,
-  ContentHolder,
-  Button,
-  NavigationCard,
-  Form,
-} from '@gsp/ui';
+import Link from 'next/link';
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   LucideCircleCheckBig,
   LucideMountain,
-  LucideMoveLeft,
   LucideMoveRight,
   LucidePyramid,
   LucideSparkles,
   LucideUsers,
 } from 'lucide-react';
-import Link from 'next/link';
+import {
+  Headline,
+  Text,
+  ContentHolder,
+  Button,
+  NavigationCard,
+  Form,
+} from '@gsp/ui';
+import { appPlansMock } from '@/app/mock/mock';
+import { GoBack } from '@/components/GoBack';
 import { AdminForm } from '@/components/AdminForm';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
-import { useState } from 'react';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({
@@ -66,24 +66,6 @@ export default function Page(): JSX.Element {
     },
   });
 
-  const mockAppPlans = [
-    {
-      name: 'Pull-test',
-      activePlan: 'Gold',
-      id: '1',
-    },
-    {
-      name: 'xCyclops',
-      activePlan: undefined,
-      id: '2',
-    },
-    {
-      name: 'Ultrabots',
-      activePlan: 'Bronze',
-      id: '3',
-    },
-  ];
-
   // Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';
   // const companyToEditName = false;
@@ -93,19 +75,8 @@ export default function Page(): JSX.Element {
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center pt-28 pb-48 gap-16 bg-neutral-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+      <GoBack />
 
       {/* TEMPORARY: will be removed */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
@@ -175,7 +146,7 @@ export default function Page(): JSX.Element {
             </NavigationCard>
           </div>
 
-          <hr className="w-full ui-color-gold-3" />
+          <hr className="w-full border-gold-3" />
         </>
       )}
 
@@ -184,13 +155,10 @@ export default function Page(): JSX.Element {
           onSubmit={companyForm.handleSubmit((e) =>
             console.log(e, 'company added'),
           )}
-          className="w-fit flex flex-row flex-wrap gap-6"
+          className="w-full flex flex-row flex-wrap gap-6"
         >
-          <div className="mt-8 flex flex-col gap-20">
-            {/* Company details */}
-            <ContentHolder variant="general" headlineText="Company details">
-              <CompanyDetailsForm companyForm={companyForm} />
-            </ContentHolder>
+          <div className="w-full mt-4 flex flex-col gap-20">
+            <CompanyDetailsForm companyForm={companyForm} />
 
             <div>
               <div className="flex justify-between">
@@ -217,7 +185,7 @@ export default function Page(): JSX.Element {
                     <Text
                       color="accent"
                       variant="medium"
-                      className="mt-1 ml-4 ui-underline ui-underline-offset-2"
+                      className="mt-1 ml-4 underline underline-offset-2"
                     >
                       Call +46 70 174 06 21
                     </Text>
@@ -226,11 +194,11 @@ export default function Page(): JSX.Element {
               </div>
 
               {/* App plans */}
-              <div className="w-full flex justify-between items-start bg-main-white mt-4">
-                {mockAppPlans.map((appData) => (
+              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
+                {appPlansMock.map((appPlan) => (
                   <AppPlansContainer
-                    appData={appData}
-                    key={appData.id}
+                    appPlan={appPlan}
+                    key={appPlan.id}
                     isAdmin={isAdmin}
                   />
                 ))}

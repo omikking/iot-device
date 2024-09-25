@@ -1,9 +1,7 @@
 import * as React from 'react';
-
-import { cn } from '../../lib/utils';
-
-import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
 import { Column } from '@tanstack/react-table';
+import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 const Table = React.forwardRef<
   HTMLTableElement,

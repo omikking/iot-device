@@ -1,5 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+import { LucideSearch } from 'lucide-react';
+
 import {
   ColumnDef,
   flexRender,
@@ -17,10 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from './table';
-
 import { Text } from './text';
-import { LucideSearch } from 'lucide-react';
-import { useState } from 'react';
 
 export type { ColumnDef };
 
@@ -90,11 +90,8 @@ export function DataTable<TData, TValue>({
           ))
         ) : (
           <TableRow>
-            <TableCell
-              colSpan={columns.length}
-              className="ui-h-80 ui-text-center"
-            >
-              <div className="ui-flex ui-flex-col ui-justify-center ui-items-center ui-gap-5">
+            <TableCell colSpan={columns.length}>
+              <div className="ui-flex ui-h-80 ui-flex-col ui-justify-center ui-items-center ui-gap-5">
                 <Text color="foreground" variant="medium">
                   {noResultMessage}
                 </Text>

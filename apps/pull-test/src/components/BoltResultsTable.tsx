@@ -1,6 +1,7 @@
 'use client';
 
-import { Badge, DataTable } from '@gsp/ui';
+import { BoltResultSchema } from '@/app/mock/mock';
+import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 import {
   LucideCheckCircle,
@@ -8,217 +9,126 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 
-interface BoltResultSchema {
-  id: string;
-  boltNumber: string;
-  boltType: string;
-  peakLoad: string;
-  peakDisplacement: string;
-  bitSize: string;
-  rotations: string;
-  displacementPerTonnage: string;
-  level: string;
-  drive: string;
-  position: string;
-  ring: string;
-  comment: string;
-  result: 'Pass' | 'Fail' | 'Abort';
+interface BoltResultsTableProps {
+  boltResults: BoltResultSchema[] | undefined;
+  site?: string;
 }
-export const BoltResultsTable = () => {
-  const getResultBadge = (
-    result: 'Pass' | 'Fail' | 'Abort',
-  ): {
-    variant: 'success' | 'destructive' | 'warning';
-    icon: React.ReactNode;
-  } => {
-    switch (result) {
-      case 'Pass':
-        return { variant: 'success', icon: <LucideCheckCircle /> };
-      case 'Fail':
-        return { variant: 'destructive', icon: <LucideOctagonAlert /> };
-      case 'Abort':
-        return { variant: 'warning', icon: <LucideSearchX /> };
-    }
-  };
 
-  const boltResultsMock: BoltResultSchema[] = [
-    {
-      id: '1',
-      boltNumber: '1',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A', // fix logic later
-      result: 'Pass',
-    },
-    {
-      id: '2',
-      boltNumber: '2',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A',
-      result: 'Fail',
-    },
-    {
-      id: '3',
-      boltNumber: '3',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A',
-      result: 'Pass',
-    },
-    {
-      id: '4',
-      boltNumber: '4',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A',
-      result: 'Pass',
-    },
-    {
-      id: '5',
-      boltNumber: '5',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A',
-      result: 'Abort',
-    },
-    {
-      id: '6',
-      boltNumber: '6',
-      boltType: 'D47 MDX',
-      peakLoad: '15',
-      peakDisplacement: 'KSFG-5555',
-      bitSize: 'VOG-252',
-      rotations: '504',
-      displacementPerTonnage: '48',
-      level: '4002',
-      drive: '2001',
-      position: '20, 42',
-      ring: 'RH-BACK',
-      comment: 'N/A',
-      result: 'Pass',
-    },
-  ];
+const getResultBadge = (
+  result: 'Pass' | 'Fail' | 'Abort',
+): {
+  variant: 'success' | 'destructive' | 'warning';
+  icon: React.ReactNode;
+} => {
+  switch (result) {
+    case 'Pass':
+      return { variant: 'success', icon: <LucideCheckCircle /> };
+    case 'Fail':
+      return { variant: 'destructive', icon: <LucideOctagonAlert /> };
+    case 'Abort':
+      return { variant: 'warning', icon: <LucideSearchX /> };
+  }
+};
 
-  const columns: ColumnDef<BoltResultSchema>[] = [
-    {
-      accessorKey: 'boltNumber',
-      header: 'Bolt number',
-      meta: {
-        headerClassName: 'w-36',
-      },
+const columns: ColumnDef<BoltResultSchema>[] = [
+  {
+    accessorKey: 'boltNumber',
+    meta: {
+      headerClassName: 'w-36',
     },
-    {
-      accessorKey: 'boltType',
-      header: 'Bolt type',
+    header: ({ column }) => (
+      <TableHeadWithSorting column={column} header="Bolt number" />
+    ),
+  },
+  {
+    accessorKey: 'boltType',
+    header: ({ column }) => (
+      <TableHeadWithSorting column={column} header="Bolt type" />
+    ),
+  },
+  {
+    accessorKey: 'peakLoad',
+    header: 'Peak load',
+  },
+  {
+    accessorKey: 'peakDisplacement',
+    header: 'Peak displacement',
+    meta: {
+      headerClassName: 'w-32',
     },
-    {
-      accessorKey: 'peakLoad',
-      header: 'Peak load',
+  },
+  {
+    accessorKey: 'bitSize',
+    header: 'Bit size',
+  },
+  {
+    accessorKey: 'rotations',
+    header: 'Rotations',
+  },
+  {
+    accessorKey: 'displacementPerTonnage',
+    header: 'Displacement per tonnage',
+    meta: {
+      headerClassName: 'w-32',
     },
-    {
-      accessorKey: 'peakDisplacement',
-      header: 'Peak displacement',
-      meta: {
-        headerClassName: 'w-32',
-      },
+  },
+  {
+    accessorKey: 'level',
+    header: 'Level',
+  },
+  {
+    accessorKey: 'drive',
+    header: 'Drive',
+  },
+  {
+    accessorKey: 'position',
+    header: 'Position',
+  },
+  {
+    accessorKey: 'ring',
+    header: 'Ring',
+  },
+  {
+    accessorKey: 'comment',
+    header: 'Comment',
+  },
+  {
+    accessorKey: 'result',
+    header: ({ column }) => (
+      <div className="text-right w-16">
+        <TableHeadWithSorting column={column} header="Result" />
+      </div>
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex justify-end w-16">
+          <Badge variant={getResultBadge(row.getValue('result')).variant}>
+            {getResultBadge(row.getValue('result')).icon}
+            {row.getValue('result')}
+          </Badge>
+        </div>
+      );
     },
-    {
-      accessorKey: 'bitSize',
-      header: 'Bit size',
-    },
-    {
-      accessorKey: 'rotations',
-      header: 'Rotations',
-    },
-    {
-      accessorKey: 'displacementPerTonnage',
-      header: 'Displacement per tonnage',
-      meta: {
-        headerClassName: 'w-32',
-      },
-    },
-    {
-      accessorKey: 'level',
-      header: 'Level',
-    },
-    {
-      accessorKey: 'drive',
-      header: 'Drive',
-    },
-    {
-      accessorKey: 'position',
-      header: 'Position',
-    },
-    {
-      accessorKey: 'ring',
-      header: 'Ring',
-    },
-    {
-      accessorKey: 'comment',
-      header: 'Comment',
-    },
-    {
-      accessorKey: 'result',
-      header: () => <div className="text-right w-10">Result</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="flex justify-end w-10">
-            <Badge variant={getResultBadge(row.getValue('result')).variant}>
-              {getResultBadge(row.getValue('result')).icon}
-              {row.getValue('result')}
-            </Badge>
-          </div>
-        );
-      },
-    },
-  ];
+  },
+];
 
+export const BoltResultsTable = ({
+  boltResults,
+  site,
+}: BoltResultsTableProps) => {
   return (
     <>
-      <DataTable columns={columns} data={boltResultsMock} />
+      <DataTable
+        columns={columns}
+        data={boltResults || []}
+        noResultMessage={
+          !site
+            ? 'Select site to view bolt results.'
+            : 'No bolt results found for your search.'
+        }
+      />
       <Badge variant="neutral" className="self-start mt-5">
-        {boltResultsMock.length} total
+        {boltResults?.length} total
       </Badge>
     </>
   );

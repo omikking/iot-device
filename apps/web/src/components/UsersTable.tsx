@@ -8,15 +8,7 @@ import {
   LucideUser,
 } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-
-interface UserSchema {
-  id: string;
-  fullName: string;
-  email: string;
-  appAccess: string;
-  role: 'User' | 'Technician' | 'Admin';
-  phoneNumber: string;
-}
+import { UserSchema, usersMock } from '@/app/mock/mock';
 
 export const UsersTable = () => {
   const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
@@ -36,41 +28,6 @@ export const UsersTable = () => {
     };
     return badges[role];
   };
-
-  const usersMock: UserSchema[] = [
-    {
-      id: '1',
-      fullName: 'Elliot Alderson',
-      email: 'alderson@sandvik.com',
-      appAccess: 'Pull-test, Ultrabots, xCyclops',
-      role: 'User',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '2',
-      fullName: 'Jimmy Nwadinkpa',
-      email: 'jimmy@sandvik.com',
-      appAccess: 'Ultrabots, xCyclops',
-      role: 'Technician',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '3',
-      fullName: 'Felix Östergren',
-      email: 'felix@sandvik.com',
-      appAccess: 'Pull-test',
-      role: 'User',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '4',
-      fullName: 'Darlene Alderson',
-      email: 'darlenealderson@sandvik.com',
-      appAccess: 'Pull-test, Ultrabots, xCyclops',
-      role: 'Admin',
-      phoneNumber: '+4683729327',
-    },
-  ];
 
   const columns: ColumnDef<UserSchema>[] = [
     {

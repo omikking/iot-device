@@ -1,35 +1,24 @@
 'use client';
-import { Button, Headline, Text, Anchor, Modal, ModalTrigger } from '@gsp/ui';
+import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 
-import { LucideMoveLeft, LucidePlus } from 'lucide-react';
+import { LucidePlus } from 'lucide-react';
 
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
-import Link from 'next/link';
 import { TechniciansTable } from '@/components/TechniciansTable';
+import { GoBack } from '@/components/GoBack';
 
 export default function Page(): JSX.Element {
   // Only superadmin should be able to see this page
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
+      <GoBack />
 
       <Headline as="h1" variant="xl" color="foreground">
         Technicians
       </Headline>
 
-      <div className="flex flex-col items-end gap-5">
+      <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Modal>
           <ModalTrigger asChild>
             <Button variant="primary" size="large">

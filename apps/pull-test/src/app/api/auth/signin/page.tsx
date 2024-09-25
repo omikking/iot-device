@@ -67,55 +67,35 @@ export default function SignIn() {
   console.log('Status from sign in page: ', status);
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center pt-32 gap-16 bg-neutral-1">
-      {/* @TODO will have to fix one login page for all apps. */}
-      <Headline as="h1" variant="xl" color="foreground">
-        Pull Test Portal
-      </Headline>
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
+      <div className="flex flex-col items-center gap-16">
+        {/* @TODO will have to fix one login page for all apps. */}
+        <Headline as="h1" variant="xl" color="foreground">
+          Pull Test Portal
+        </Headline>
 
-      <div className="min-w-96 h-96 flex flex-col items-center">
-        {/* @TODO fix better displaying of this error later */}
-        {error && (
-          <Text variant="xs" color="destructive">
-            {error}
-          </Text>
-        )}
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-            className="w-full flex flex-col gap-8"
-          >
-            <FormField
-              control={form.control}
-              name="emailAddress"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter email"
-                        {...field}
-                        className="w-full"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <div>
+        <div className="min-w-96 h-96 flex flex-col items-center">
+          {/* @TODO fix better displaying of this error later */}
+          {error && (
+            <Text variant="xs" color="destructive">
+              {error}
+            </Text>
+          )}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit((e) => handleSignIn(e))}
+              className="w-full flex flex-col gap-8"
+            >
               <FormField
                 control={form.control}
-                name="password"
+                name="emailAddress"
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          type="password"
-                          placeholder="Enter password"
+                          placeholder="Enter email"
                           {...field}
                           className="w-full"
                         />
@@ -125,27 +105,50 @@ export default function SignIn() {
                   );
                 }}
               />
-              <div className="flex items-center gap-2 pt-4 pb-2">
-                <Text variant="small" color="foreground">
-                  Forgot your password? {/* Will lead to a reset page later */}
-                </Text>
+              <div>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter password"
+                            {...field}
+                            className="w-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <div className="flex items-center gap-2 pt-4 pb-2">
+                  <Text variant="small" color="foreground">
+                    Forgot your password?{' '}
+                    {/* Will lead to a reset page later */}
+                  </Text>
 
-                <Text variant="small" color="foreground">
-                  <Link href="https://www.google.se" passHref legacyBehavior>
-                    <Anchor isUnderline color="foreground">
-                      Click here to reset.
-                    </Anchor>
-                  </Link>
-                </Text>
+                  <Text variant="small" color="foreground">
+                    <Link href="https://www.google.se" passHref legacyBehavior>
+                      <Anchor isUnderline color="foreground">
+                        Click here to reset.
+                      </Anchor>
+                    </Link>
+                  </Text>
+                </div>
               </div>
-            </div>
-            <Button variant="primary" size="large" isWide type="submit">
-              <LucideLogIn />
-              Login
-            </Button>
-          </form>
-        </Form>
+              <Button variant="primary" size="large" isWide type="submit">
+                <LucideLogIn />
+                Login
+              </Button>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

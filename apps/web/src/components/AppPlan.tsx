@@ -16,8 +16,8 @@ export const AppPlan = ({ plan, activePlan, isAdmin }: AppPlanProps) => {
   return (
     <div
       className={cn(
-        'flex justify-between items-center ui-border-b ui-border-neutral-3 py-3 px-6',
-        plan === activePlan && 'ui-bg-neutral-1',
+        'flex justify-between items-center border-b border-neutral-3 py-3 px-6',
+        plan === activePlan && 'bg-neutral-1',
       )}
     >
       <Text color="foreground" variant="medium">

@@ -2,155 +2,149 @@
 
 import {
   ContentHolder,
+  DateRange,
   Dropdown,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  DropdownItem,
+  Label,
+  RangeCalendar,
 } from '@gsp/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { BoltResultsFilter } from './BoltResultsFilter';
+import { sitesMock } from '@/app/mock/mock';
 
-// @TODO: Add filtering functionality, this is essentially a visual mockup currently.
-export const BoltSelection = () => {
-  // Might need to move form data to bolt results page.tsx?
-  const formSchema = z.object({
-    site: z.string(),
-    level: z.string(),
-    drive: z.string(),
-    position: z.string(),
-  });
+// Is this typing really correct?
+type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
+  React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      site: '',
-      level: '',
-      drive: '',
-      position: '',
-    },
-  });
+interface BoltSelectionProps {
+  site?: string;
+  level?: string;
+  drive?: string;
+  position?: string;
+  dateRange?: DateRange;
+  // Is this typing correct? or should it be (id: string) => void;
+  onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetPosition: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+}
 
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    undefined,
-  );
+export const BoltSelection = ({
+  site,
+  level,
+  drive,
+  position,
+  dateRange,
+  onSetSite,
+  onSetLevel,
+  onSetDrive,
+  onSetPosition,
+  onSetDateRange,
+}: BoltSelectionProps) => {
+  const handleSetSite = (site?: string) => {
+    onSetSite(site);
+    onSetDateRange({
+      from: undefined,
+      to: undefined,
+    });
+    onSetLevel(undefined);
+    onSetDrive(undefined);
+    onSetPosition(undefined);
+  };
 
-  // @TODO: Replace with site, level, drive, position hierarchy data.
-  const sites = [
-    {
-      id: '1',
-      name: 'Placeholder site',
-    },
-    {
-      id: '2',
-      name: 'Gollum site',
-    },
-  ];
+  const handleSetLevel = (level?: string) => {
+    onSetLevel(level);
+    onSetDrive(undefined);
+    onSetPosition(undefined);
+  };
+
+  const handleSetDrive = (drive?: string) => {
+    onSetDrive(drive);
+    onSetPosition(undefined);
+  };
+
+  // Finds available levels on the selected site
+  const levelsOptionsMock = sitesMock.find(
+    (boltSites) => boltSites.name === site,
+  )?.levels;
+
+  // Finds available levels on the selected site
+  const drivesOptionsMock = levelsOptionsMock?.find(
+    (boltLevels) => boltLevels.name === level,
+  )?.drives;
+
+  const positionsOptionsMock = drivesOptionsMock?.find(
+    (boltDrives) => boltDrives.name === drive,
+  )?.positions;
 
   return (
     <ContentHolder variant="filter">
-      <Form {...form}>
-        <form
-          onSubmit={() => console.log('submit form')}
-          className="w-full flex flex-row items-center flex-wrap gap-8"
-        >
-          <BoltResultsFilter />
+      <BoltResultsFilter />
 
-          <FormField
-            control={form.control}
-            name="site"
-            render={() => {
-              return (
-                <FormItem className="mt-0.5">
-                  <FormLabel>Site</FormLabel>
-                  <FormControl>
-                    <Dropdown
-                      id="person"
-                      placeholder="Select site"
-                      selectedId={dropdownValue}
-                      options={sites}
-                      onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="level"
-            render={() => {
-              return (
-                <FormItem>
-                  <FormLabel>Level</FormLabel>
-                  <FormControl>
-                    <Dropdown
-                      id="person"
-                      placeholder="Select level"
-                      selectedId={dropdownValue}
-                      options={sites}
-                      onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="drive"
-            render={() => {
-              return (
-                <FormItem>
-                  <FormLabel>Drive</FormLabel>
-                  <FormControl>
-                    <Dropdown
-                      id="person"
-                      placeholder="Select drive"
-                      selectedId={dropdownValue}
-                      options={sites}
-                      onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="position"
-            render={() => {
-              return (
-                <FormItem>
-                  <FormLabel>Position</FormLabel>
-                  <FormControl>
-                    <Dropdown
-                      id="person"
-                      placeholder="Select position"
-                      selectedId={dropdownValue}
-                      options={sites}
-                      onSelect={(e) => setDropdownValue(e)}
-                      className="w-80"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-        </form>
-      </Form>
+      <div className="space-y-1.5 mt-0.5">
+        <Label>Site</Label>
+        <Dropdown
+          id="site"
+          isResettable
+          placeholder="Select site"
+          selectedId={site}
+          options={sitesMock as DropdownItem[]}
+          onSelect={handleSetSite}
+          className="w-56"
+        />
+      </div>
+
+      <div className="space-y-1.5 mt-0.5">
+        <Label>Date range</Label>
+        <RangeCalendar
+          selected={dateRange}
+          onSelect={onSetDateRange as SetRangeDateType}
+          disabled={!site}
+          className="w-72"
+        />
+      </div>
+
+      <div className="space-y-1.5 mt-0.5">
+        <Label>Level</Label>
+        <Dropdown
+          id="level"
+          isResettable
+          disabled={!levelsOptionsMock}
+          placeholder="Select level"
+          selectedId={level}
+          options={levelsOptionsMock as DropdownItem[]}
+          onSelect={handleSetLevel}
+          className="w-56"
+        />
+      </div>
+
+      <div className="space-y-1.5 mt-0.5">
+        <Label>Drive</Label>
+        <Dropdown
+          id="drive"
+          isResettable
+          disabled={!drivesOptionsMock}
+          placeholder="Select drive"
+          selectedId={drive}
+          options={drivesOptionsMock as DropdownItem[]}
+          onSelect={handleSetDrive}
+          className="w-56"
+        />
+      </div>
+
+      <div className="space-y-1.5 mt-0.5">
+        <Label>Position</Label>
+        <Dropdown
+          id="position"
+          isResettable
+          disabled={!positionsOptionsMock}
+          placeholder="Select position"
+          selectedId={position}
+          options={positionsOptionsMock as DropdownItem[]}
+          onSelect={onSetPosition}
+          className="w-56"
+        />
+      </div>
     </ContentHolder>
   );
 };

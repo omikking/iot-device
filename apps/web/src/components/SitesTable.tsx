@@ -10,7 +10,7 @@ interface SiteResultSchema {
   totalSiteLocations: number;
   passCriteria?: string;
   notification?: string;
-  fooBar?: string;
+  siteNumber?: string;
 }
 
 export const SiteResultsTable = () => {
@@ -22,7 +22,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D47 MDX, D34 MD',
       notification: '20% per submission',
-      fooBar: '38744',
+      siteNumber: '38744',
     },
     {
       id: '2',
@@ -31,7 +31,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D47 MDX, D34 MD',
       notification: '20% per submission',
-      fooBar: '2438744',
+      siteNumber: '2438744',
     },
     {
       id: '3',
@@ -40,7 +40,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'N/A',
       notification: '10% per submission',
-      fooBar: '456',
+      siteNumber: '456',
     },
     {
       id: '4',
@@ -49,7 +49,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D47 MDX',
       notification: '20% per submission',
-      fooBar: '23424',
+      siteNumber: '23424',
     },
     {
       id: '5',
@@ -58,7 +58,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D34 MD',
       notification: '30% per submission',
-      fooBar: '456',
+      siteNumber: '456',
     },
     {
       id: '6',
@@ -67,7 +67,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D34 MD',
       notification: '30% per submission',
-      fooBar: '23',
+      siteNumber: '23',
     },
     {
       id: '7',
@@ -76,7 +76,7 @@ export const SiteResultsTable = () => {
       totalSiteLocations: 44,
       passCriteria: 'D34 MD',
       notification: '30% per submission',
-      fooBar: '4645645',
+      siteNumber: '4645645',
     },
   ];
   const columns: ColumnDef<SiteResultSchema>[] = [
@@ -114,7 +114,7 @@ export const SiteResultsTable = () => {
       header: 'Notification',
     },
     {
-      accessorKey: 'fooBar',
+      accessorKey: 'siteNumber',
       header: '',
       cell: () => {
         // TODO: a popover with edit and delete options??

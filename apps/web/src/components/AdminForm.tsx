@@ -1,4 +1,4 @@
-import { adminsMock } from '@/app/mock/mock';
+import { useState } from 'react';
 import {
   Dropdown,
   FormControl,
@@ -7,8 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
-
-import { useState } from 'react';
+import { adminsMock } from '@/app/mock/mock';
 
 export const AdminForm = ({ companyForm }) => {
   const [administrator, setAdministrator] = useState<string | undefined>(

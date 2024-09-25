@@ -1,11 +1,13 @@
 'use client';
+
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { LucideChevronDown, LucideX } from 'lucide-react';
+
 import { cn } from '../../lib/utils';
-import { Text } from './text';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Button } from './button';
+import { Text } from './text';
 
 export interface DropdownItem {
   id: string;

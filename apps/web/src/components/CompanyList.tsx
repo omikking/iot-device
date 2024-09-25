@@ -1,7 +1,7 @@
+import Link from 'next/link';
+import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { companiesMock } from '@/app/mock/mock';
 import { Button, Text } from '@gsp/ui';
-import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
-import Link from 'next/link';
 
 export const CompanyList = () => {
   return (

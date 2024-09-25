@@ -81,7 +81,7 @@ export const BoltSelection = ({
     <ContentHolder variant="filter">
       <BoltResultsFilter />
 
-      <div className="ui-space-y-1.5 mt-0.5">
+      <div className="space-y-1.5 mt-0.5">
         <Label>Site</Label>
         <Dropdown
           id="site"
@@ -94,7 +94,7 @@ export const BoltSelection = ({
         />
       </div>
 
-      <div className="ui-space-y-1.5 mt-0.5">
+      <div className="space-y-1.5 mt-0.5">
         <Label>Date range</Label>
         <RangeCalendar
           selected={dateRange}
@@ -104,7 +104,7 @@ export const BoltSelection = ({
         />
       </div>
 
-      <div className="ui-space-y-1.5 mt-0.5">
+      <div className="space-y-1.5 mt-0.5">
         <Label>Level</Label>
         <Dropdown
           id="level"
@@ -118,7 +118,7 @@ export const BoltSelection = ({
         />
       </div>
 
-      <div className="ui-space-y-1.5 mt-0.5">
+      <div className="space-y-1.5 mt-0.5">
         <Label>Drive</Label>
         <Dropdown
           id="drive"
@@ -132,7 +132,7 @@ export const BoltSelection = ({
         />
       </div>
 
-      <div className="ui-space-y-1.5 mt-0.5">
+      <div className="space-y-1.5 mt-0.5">
         <Label>Position</Label>
         <Dropdown
           id="position"

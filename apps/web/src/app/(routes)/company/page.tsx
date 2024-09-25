@@ -1,13 +1,9 @@
 'use client';
-import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-import {
-  Headline,
-  Text,
-  ContentHolder,
-  Button,
-  NavigationCard,
-  Form,
-} from '@gsp/ui';
+import Link from 'next/link';
+import { useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   LucideCircleCheckBig,
   LucideMountain,
@@ -16,16 +12,20 @@ import {
   LucideSparkles,
   LucideUsers,
 } from 'lucide-react';
-import Link from 'next/link';
-import { AdminForm } from '@/components/AdminForm';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
-import { useState } from 'react';
+import {
+  Headline,
+  Text,
+  ContentHolder,
+  Button,
+  NavigationCard,
+  Form,
+} from '@gsp/ui';
 import { appPlansMock } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
+import { AdminForm } from '@/components/AdminForm';
+import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
+import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
 
 // @TODO finish this later
 export const companyFormSchema = z.object({
@@ -146,7 +146,7 @@ export default function Page(): JSX.Element {
             </NavigationCard>
           </div>
 
-          <hr className="w-full ui-color-gold-3" />
+          <hr className="w-full border-gold-3" />
         </>
       )}
 
@@ -185,7 +185,7 @@ export default function Page(): JSX.Element {
                     <Text
                       color="accent"
                       variant="medium"
-                      className="mt-1 ml-4 ui-underline ui-underline-offset-2"
+                      className="mt-1 ml-4 underline underline-offset-2"
                     >
                       Call +46 70 174 06 21
                     </Text>

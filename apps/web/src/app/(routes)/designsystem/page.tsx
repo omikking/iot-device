@@ -267,7 +267,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Links 🦄
       </Headline>
-      <div className="flex flex-col items-center gap-12 ui-relative">
+      <div className="flex flex-col items-center gap-12 relative">
         <Text variant="xs" color="foreground">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="foreground">
@@ -299,7 +299,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Radio 🦄
       </Headline>
-      <div className="flex ui-flex-row ui-flex-wrap ui-gap-12 ui-justify-center">
+      <div className="flex flex-row flex-wrap gap-12 justify-center">
         <Form {...form}>
           <form
             onSubmit={() => console.log('submit form')}

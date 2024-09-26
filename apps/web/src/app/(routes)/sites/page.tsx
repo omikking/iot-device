@@ -1,7 +1,7 @@
 'use client';
 import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
-import { SiteResultsTable } from '@/components/SitesTable';
+import { SiteResultsTable } from '@/components/SitesResultsTable';
 import React from 'react';
 import { LucidePlus } from 'lucide-react';
 import { AddSiteModal } from '@/components/AddSiteModal';

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderIcon, LucideCircleCheckBig, LucidePlus } from 'lucide-react';
+import { LucideCircleCheckBig, LucidePlus } from 'lucide-react';
 import {
   Button,
   ModalContent,
@@ -79,14 +79,26 @@ export const AddOrEditTechnicianModal = () => {
       <ModalHeader>
         <ModalTitle>Add technician</ModalTitle>
       </ModalHeader>
-      {isSuccessFull ? (
+
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          isSuccessFull
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-32 pointer-events-none'
+        }`}
+      >
         <div className="flex items-center justify-center h-96 gap-4">
           <LucideCircleCheckBig size={30} className="text-success" />
           <Headline as="h3" color="foreground" variant="smallBold">
             Successfully saved
           </Headline>
         </div>
-      ) : (
+      </div>
+      <div
+        className={`transition-all duration-500 ${
+          isSuccessFull ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(() => onSubmit())}>
             <div className="px-10 pt-10">
@@ -94,6 +106,7 @@ export const AddOrEditTechnicianModal = () => {
                 <FormField
                   control={form.control}
                   name="fullName"
+                  disabled={isSuccessFull}
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -113,6 +126,7 @@ export const AddOrEditTechnicianModal = () => {
                 <FormField
                   control={form.control}
                   name="company"
+                  disabled={isSuccessFull}
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -132,6 +146,7 @@ export const AddOrEditTechnicianModal = () => {
                 <FormField
                   control={form.control}
                   name="email"
+                  disabled={isSuccessFull}
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -151,6 +166,7 @@ export const AddOrEditTechnicianModal = () => {
                 <FormField
                   control={form.control}
                   name="phoneNumber"
+                  disabled={isSuccessFull}
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -223,7 +239,7 @@ export const AddOrEditTechnicianModal = () => {
             </ModalFooter>
           </form>
         </Form>
-      )}
+      </div>
     </ModalContent>
   );
 };

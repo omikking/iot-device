@@ -123,11 +123,11 @@ export const AddUserModal = () => {
   ];
 
   const getRoleById = (id: string) => {
-    return roles.find((role) => role.id === id)?.name;
+    return roles.find((role) => role.name === id)?.name;
   };
 
   const getEmailById = (id: string) => {
-    return technicians.find((tech) => tech.id === id)?.email;
+    return technicians.find((tech) => tech.name === id)?.email;
   };
 
   const handleGlobalAccess = (checked: boolean) => {

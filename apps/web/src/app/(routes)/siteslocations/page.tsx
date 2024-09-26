@@ -451,7 +451,7 @@ export default function Page(): JSX.Element {
               {drivesOptionsMock?.map((drive, index) => (
                 <div
                   key={index}
-                  className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border-2 border-blue-primary ' : ''}`}
                 >
                   <div
                     className="py-5"
@@ -564,7 +564,7 @@ export default function Page(): JSX.Element {
               )}
               {positionsOptionsMock?.map((position, index) => (
                 <div
-                  className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border-2 border-blue-primary ' : ''}`}
                   key={index}
                 >
                   <div

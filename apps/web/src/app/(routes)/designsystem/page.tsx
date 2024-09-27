@@ -30,6 +30,10 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@gsp/ui';
 
 import {
@@ -109,6 +113,23 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Tooltips 🦄
+      </Headline>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>Hover</TooltipTrigger>
+          <TooltipContent>
+            <Text variant="small" color="foreground">
+              Lorem Ipsuuuum
+            </Text>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <hr className="w-full" />
 

@@ -1,5 +1,6 @@
 'use client';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { BoltSelection } from '@/components/BoltSelection';
 import {
   Button,
@@ -24,8 +25,10 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Page(): JSX.Element {
+  const [selectedTab, setSelectedTab] = useState('table');
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
       <Text
@@ -49,7 +52,7 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <Tabs defaultValue="table">
+      <Tabs defaultValue="table" onValueChange={setSelectedTab}>
         <div className="w-full flex flex-row justify-between items-center pb-2">
           <TabsList>
             <TabsTrigger value="table">
@@ -73,14 +76,14 @@ export default function Page(): JSX.Element {
           </Modal>
         </div>
 
-        <BoltSelection />
+        <BoltSelection selectedTab={selectedTab} />
 
         <TabsContent value="table">
           <BoltResultsTable />
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table className="ui-min-w-[1620px]" />
+          <BoltResultsGraphView />
         </TabsContent>
       </Tabs>
     </main>

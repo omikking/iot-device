@@ -16,8 +16,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { BoltResultsFilter } from './BoltResultsFilter';
 
+interface BoltSelectionProps {
+  selectedTab?: string;
+}
 // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
-export const BoltSelection = () => {
+export const BoltSelection = ({ selectedTab }: BoltSelectionProps) => {
   // Might need to move form data to bolt results page.tsx?
   const formSchema = z.object({
     site: z.string(),
@@ -59,7 +62,7 @@ export const BoltSelection = () => {
           onSubmit={() => console.log('submit form')}
           className="w-full flex flex-row items-center flex-wrap gap-8"
         >
-          <BoltResultsFilter />
+          <BoltResultsFilter selectedTab={selectedTab} />
 
           <FormField
             control={form.control}

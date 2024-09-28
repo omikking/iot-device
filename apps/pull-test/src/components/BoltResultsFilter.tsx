@@ -18,15 +18,20 @@ import {
 } from 'lucide-react';
 
 // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
-export const BoltResultsFilter = () => {
+interface BoltResultsFilterProps {
+  selectedTab?: string;
+}
+export const BoltResultsFilter = ({ selectedTab }: BoltResultsFilterProps) => {
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="primary" size="large" className="mt-8">
-          <LucideSlidersHorizontal />
-          Filter
-        </Button>
-      </PopoverTrigger>
+      {selectedTab !== 'graphs' && (
+        <PopoverTrigger asChild>
+          <Button variant="primary" size="large" className="mt-8">
+            <LucideSlidersHorizontal />
+            Filter
+          </Button>
+        </PopoverTrigger>
+      )}
       <PopoverContent align="start" className="mt-1.5">
         <div className="space-y-2 bg-neutral-1 px-4 py-3">
           <Text variant="small" color="foreground">

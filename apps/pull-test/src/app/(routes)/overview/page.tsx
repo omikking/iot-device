@@ -1,9 +1,6 @@
 import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, NavigationCard, Text } from '@gsp/ui';
 import {
-  LucideArrowRight,
-  LucideCheckCircle,
-  LucideCircuitBoard,
   LucideClipboardCheck,
   LucideMoveRight,
   LucideTriangleAlert,
@@ -23,11 +20,10 @@ export default function Page(): JSX.Element {
         Pull-test overview
       </Headline>
 
-      {/* <div className="flex flex-row max-w-[1000px] w-full pt-20 "> */}
-      <div className="flex flex-row flex-wrap gap-12 w-full justify-center">
+      <div className="flex flex-row flex-wrap gap-12 w-full justify-center pb-20 border-b border-neutral-3">
         <Link href="/">
           <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6 relative">
+            <div className="flex flex-col items-center h-full w-40 gap-6 relative">
               <Headline as="h3" variant="medium" color="foreground">
                 Bolt results
               </Headline>
@@ -35,18 +31,15 @@ export default function Page(): JSX.Element {
               <Button variant="secondary" size={'large'}>
                 <LucideMoveRight />
                 View bolt results
-                <Text color={'foreground'} variant={'small'}></Text>
               </Button>
             </div>
           </NavigationCard>
         </Link>
-      </div>
-      <div className="flex flex-row flex-wrap gap-12 w-full justify-center">
         <Link href="/">
           <NavigationCard>
-            <div className="flex flex-col items-center h-full gap-6 relative">
+            <div className="flex flex-col items-center h-full w-40 gap-6 relative">
               <Badge
-                className="absolute top-[-25px] right-[-55px] flex border-neutral-3 border"
+                className="absolute top-[-22px] right-[-60px] flex border-neutral-3 border"
                 variant="neutral"
                 size="small"
               >
@@ -59,13 +52,11 @@ export default function Page(): JSX.Element {
               <Button variant="secondary" size={'large'}>
                 <LucideMoveRight />
                 View hazards
-                <Text color={'foreground'} variant={'small'}></Text>
               </Button>
             </div>
           </NavigationCard>
         </Link>
       </div>
-      {/* </div> */}
     </main>
   );
 }

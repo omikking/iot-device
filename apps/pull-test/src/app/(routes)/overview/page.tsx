@@ -20,10 +20,10 @@ export default function Page(): JSX.Element {
         Pull-test overview
       </Headline>
 
-      <div className="flex flex-row flex-wrap gap-12 w-full justify-center pb-20 border-b border-neutral-3">
+      <div className="flex flex-wrap gap-12 w-full justify-center pb-20 border-b border-neutral-3">
         <Link href="/">
           <NavigationCard>
-            <div className="flex flex-col items-center h-full w-40 gap-6 relative">
+            <div className="flex flex-col items-center w-40 gap-6 relative">
               <Headline as="h3" variant="medium" color="foreground">
                 Bolt results
               </Headline>
@@ -37,7 +37,7 @@ export default function Page(): JSX.Element {
         </Link>
         <Link href="/">
           <NavigationCard>
-            <div className="flex flex-col items-center h-full w-40 gap-6 relative">
+            <div className="flex flex-col items-center w-40 gap-6 relative">
               <Badge
                 className="absolute top-[-22px] right-[-60px] flex border-neutral-3 border"
                 variant="neutral"

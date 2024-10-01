@@ -13,7 +13,7 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ViewBoltResultModalProps {
   modalTitle: string;
@@ -36,34 +36,90 @@ export const ViewBoltResultModal = ({
   viewBoltSpecifications,
 }: ViewBoltResultModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  // const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSuccessFull, setIsSuccessFull] = useState(false);
+  const [isThirdView, setIsThirdView] = useState(false);
 
-  const activateSpinner = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('completeHazard');
     event?.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
+      setIsLoading(true);
+      setIsCompleted(true);
       setIsLoading(false);
-      setIsSuccessFull(true);
+      // setIsSuccessFull(false);
     }, 1000);
   };
 
+  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('hazardConfirmed');
+    event?.preventDefault();
+    // setIsSuccessFull(true);
+    !isThirdView ? setIsThirdView(true) : setIsSuccessFull(true);
+  };
+
+  const resetConfirmation = () => {
+    console.log('resetConfirmation');
+    setIsCompleted(false);
+    setIsSuccessFull(false);
+    setIsThirdView(false);
+  };
+
+  useEffect(() => {
+    console.log('useEffect');
+    console.log('isCompleted', isCompleted);
+    console.log('isSuccessFull', isSuccessFull);
+    console.log('isThirdView', isThirdView);
+  }, [isCompleted, isSuccessFull, isThirdView]);
+
   return (
-    <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
+    <ModalContent
+      open={false}
+      className="sm:max-w-[425px] max-h-full overflow-y-auto"
+    >
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
+
+      {/* Third View */}
       <div
         className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          isSuccessFull
-            ? 'opacity-100 translate-y-0'
+          isThirdView && !isSuccessFull
+            ? 'opacity-100 translate-y-[-10px] pointer-events-none'
             : 'opacity-0 translate-y-0 pointer-events-none'
         }`}
       >
-        <div className="flex flex-col items-center justify-center h-96 gap-10 text-center">
+        <div className="flex flex-col items-center justify-center h-96 gap-10">
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
             <Headline as="h3" color="foreground" variant="smallBold">
-              Successfully saved
+              Hazard Confirmed
+            </Headline>
+          </div>
+          {/* <Text
+            className="text-center w-2/3"
+            color={'foreground'}
+            variant={'medium'}
+          >
+            Hejsan Cooompleteruuu.
+          </Text> */}
+        </div>
+      </div>
+      {/* Second View */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          isCompleted && !isThirdView
+            ? 'opacity-100 translate-y-0 pointer-events-none'
+            : 'opacity-0 translate-y-0 pointer-events-none'
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center h-96 gap-10">
+          <div className="flex gap-4">
+            <LucideCircleCheckBig size={30} className="text-success" />
+            <Headline as="h3" color="foreground" variant="smallBold">
+              Confirm hazard completion
             </Headline>
           </div>
           <Text
@@ -76,9 +132,13 @@ export const ViewBoltResultModal = ({
           </Text>
         </div>
       </div>
+
+      {/* First View */}
       <div
         className={`transition-all duration-500 ${
-          isSuccessFull ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          isCompleted || isThirdView
+            ? 'opacity-0 pointer-events-none'
+            : 'opacity-100 pointer-events-none'
         }`}
       >
         <div className="p-10 flex gap-10 flex-grow">
@@ -145,39 +205,46 @@ export const ViewBoltResultModal = ({
             ))}
           </div>
         </div>
-
+      </div>
+      <div>
         <ModalFooter className="px-10 pb-5 pt-8">
           <ModalClose asChild>
             <div className="flex gap-5">
               {isHazard && (
                 <div>
                   {isLoading ? (
-                    <Button
-                      type="submit"
-                      size="large"
-                      variant="primary"
-                      disabled
-                    >
+                    <Button size="large" variant="primary">
                       <LoadingSpinner className="animate-spin" size={24} />
                       Complete
                     </Button>
                   ) : (
-                    <Button
-                      type="submit"
-                      size="large"
-                      variant="primary"
-                      onClick={activateSpinner}
-                    >
-                      <LucideCircleCheckBig />
-                      Complete
-                    </Button>
+                    !isThirdView && (
+                      <Button
+                        size="large"
+                        variant="primary"
+                        onClick={isCompleted ? hazardConfirmed : completeHazard}
+                      >
+                        <LucideCircleCheckBig />
+                        {isCompleted ? 'Confirm' : 'Complete'}
+                      </Button>
+                    )
                   )}
                 </div>
               )}
 
-              <Button variant="outline" size="large">
-                Close
-              </Button>
+              {isCompleted ? (
+                <Button
+                  variant="outline"
+                  size="large"
+                  onClick={resetConfirmation}
+                >
+                  Cancel
+                </Button>
+              ) : (
+                <Button variant="outline" size="large">
+                  Close
+                </Button>
+              )}
             </div>
           </ModalClose>
         </ModalFooter>

@@ -13,7 +13,7 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 interface ViewBoltResultModalProps {
   modalTitle: string;
@@ -37,56 +37,43 @@ export const ViewBoltResultModal = ({
 }: ViewBoltResultModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  // const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSuccessFull, setIsSuccessFull] = useState(false);
-  const [isThirdView, setIsThirdView] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('completeHazard');
     event?.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(true);
-      setIsCompleted(true);
-      setIsLoading(false);
-      // setIsSuccessFull(false);
-    }, 1000);
+    setIsCompleted(true);
   };
 
   const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('hazardConfirmed');
     event?.preventDefault();
-    // setIsSuccessFull(true);
-    !isThirdView ? setIsThirdView(true) : setIsSuccessFull(true);
+    setIsLoading(true);
+    setTimeout(() => {
+      !isConfirmed ? setIsConfirmed(true) : setIsSuccessFull(true);
+      setIsLoading(false);
+    }, 1000);
   };
 
   const resetConfirmation = () => {
-    console.log('resetConfirmation');
     setIsCompleted(false);
     setIsSuccessFull(false);
-    setIsThirdView(false);
+    setIsConfirmed(false);
   };
 
-  useEffect(() => {
-    console.log('useEffect');
-    console.log('isCompleted', isCompleted);
-    console.log('isSuccessFull', isSuccessFull);
-    console.log('isThirdView', isThirdView);
-  }, [isCompleted, isSuccessFull, isThirdView]);
-
   return (
-    <ModalContent
-      open={false}
-      className="sm:max-w-[425px] max-h-full overflow-y-auto"
-    >
+    <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
       <ModalHeader>
-        <ModalTitle>{modalTitle}</ModalTitle>
+        {isCompleted ? (
+          <ModalTitle>Complete hazard</ModalTitle>
+        ) : (
+          <ModalTitle>{modalTitle}</ModalTitle>
+        )}
       </ModalHeader>
 
       {/* Third View */}
       <div
         className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          isThirdView && !isSuccessFull
+          isConfirmed && !isSuccessFull
             ? 'opacity-100 translate-y-[-10px] pointer-events-none'
             : 'opacity-0 translate-y-0 pointer-events-none'
         }`}
@@ -98,19 +85,12 @@ export const ViewBoltResultModal = ({
               Hazard Confirmed
             </Headline>
           </div>
-          {/* <Text
-            className="text-center w-2/3"
-            color={'foreground'}
-            variant={'medium'}
-          >
-            Hejsan Cooompleteruuu.
-          </Text> */}
         </div>
       </div>
       {/* Second View */}
       <div
         className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          isCompleted && !isThirdView
+          isCompleted && !isConfirmed
             ? 'opacity-100 translate-y-0 pointer-events-none'
             : 'opacity-0 translate-y-0 pointer-events-none'
         }`}
@@ -136,7 +116,7 @@ export const ViewBoltResultModal = ({
       {/* First View */}
       <div
         className={`transition-all duration-500 ${
-          isCompleted || isThirdView
+          isCompleted || isConfirmed
             ? 'opacity-0 pointer-events-none'
             : 'opacity-100 pointer-events-none'
         }`}
@@ -218,14 +198,14 @@ export const ViewBoltResultModal = ({
                       Complete
                     </Button>
                   ) : (
-                    !isThirdView && (
+                    !isConfirmed && (
                       <Button
                         size="large"
                         variant="primary"
                         onClick={isCompleted ? hazardConfirmed : completeHazard}
                       >
                         <LucideCircleCheckBig />
-                        {isCompleted ? 'Confirm' : 'Complete'}
+                        Complete
                       </Button>
                     )
                   )}

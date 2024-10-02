@@ -57,6 +57,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -76,25 +77,6 @@ export default function Page(): JSX.Element {
       textarea: '',
     },
   });
-
-  const options = [
-    {
-      id: '1',
-      name: 'Elliot Alderson',
-    },
-    {
-      id: '2',
-      name: 'Darlene Alderson',
-    },
-    {
-      id: '3',
-      name: 'Tyrell Wellick',
-    },
-    {
-      id: '4',
-      name: 'Joanna Wellick',
-    },
-  ];
 
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
@@ -126,41 +108,6 @@ export default function Page(): JSX.Element {
     };
     return badges[role];
   };
-
-  const usersMock = [
-    {
-      id: '1',
-      name: 'Elliot Alderson',
-      email: 'elliotalderson@sandvik.com',
-      appAccess: 'Pull-test, Ultrabots, xCyclops',
-      role: 'User',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '2',
-      name: 'Jimmy Nwadinkpa',
-      email: 'jimmy@sandvik.com',
-      appAccess: 'Ultrabots, xCyclops',
-      role: 'Technician',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '3',
-      name: 'Felix Östergren',
-      email: 'felix@sandvik.com',
-      appAccess: 'Pull-test',
-      role: 'User',
-      phoneNumber: '+4683729327',
-    },
-    {
-      id: '4',
-      name: 'Darlene Alderson',
-      email: 'darlenealderson@sandvik.com',
-      appAccess: 'Pull-test, Ultrabots, xCyclops',
-      role: 'Admin',
-      phoneNumber: '+4683729327',
-    },
-  ];
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
@@ -337,7 +284,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Links 🦄
       </Headline>
-      <div className="flex flex-col items-center gap-12 ui-relative">
+      <div className="flex flex-col items-center gap-12 relative">
         <Text variant="xs" color="foreground">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="foreground">
@@ -367,7 +314,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Radio 🦄
       </Headline>
-      <div className="flex ui-flex-row ui-flex-wrap ui-gap-12 ui-justify-center">
+      <div className="flex flex-row flex-wrap gap-12 justify-center">
         <Form {...form}>
           <form
             onSubmit={() => console.log('submit form')}
@@ -645,7 +592,30 @@ export default function Page(): JSX.Element {
                         id="person"
                         placeholder="Select dropdown item"
                         selectedId={dropdownValue}
-                        options={options}
+                        options={optionsDesignSystemMock}
+                        onSelect={(e) => setDropdownValue(e)}
+                        className="w-[400px]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Resettable dropdown</FormLabel>
+                    <FormControl>
+                      <Dropdown
+                        isResettable
+                        id="person"
+                        placeholder="Select dropdown item"
+                        selectedId={dropdownValue}
+                        options={optionsDesignSystemMock}
                         onSelect={(e) => setDropdownValue(e)}
                       />
                     </FormControl>
@@ -666,7 +636,7 @@ export default function Page(): JSX.Element {
                         disabled
                         id="person"
                         placeholder="Select dropdown item"
-                        options={options}
+                        options={optionsDesignSystemMock}
                         onSelect={(e) => setDropdownValue(e)}
                       />
                     </FormControl>
@@ -706,7 +676,7 @@ export default function Page(): JSX.Element {
           <TableBody>
             {usersMock.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.appAccess}</TableCell>
                 <TableCell>

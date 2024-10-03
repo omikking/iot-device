@@ -1,4 +1,4 @@
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltMultiReadingSchema } from '@/app/mock/mock';
 import {
   Button,
   ModalContent,
@@ -26,7 +26,7 @@ interface ViewExtendedBoltResultModalProps {
     title: string;
     text: string;
   }[];
-  boltResults: BoltResultSchema[] | undefined;
+  boltResults: BoltMultiReadingSchema[] | undefined;
 }
 
 export const ViewExtendedBoltResultModal = ({
@@ -116,7 +116,6 @@ export const ViewExtendedBoltResultModal = ({
           >
             Bolt results
           </Headline>
-          {/* data for the dataTable here */}
           <ExtendedBoltResultsTable boltResults={boltResults} />
         </div>
       </div>

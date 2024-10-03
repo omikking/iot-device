@@ -1,22 +1,22 @@
 'use client';
 
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltMultiReadingSchema } from '@/app/mock/mock';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
-import { useState } from 'react';
 
 interface ExtendedBoltResultsTableProps {
-  boltResults: BoltResultSchema[] | undefined;
+  boltResults: BoltMultiReadingSchema[] | undefined;
   site?: string;
 }
 
-const columns: ColumnDef<BoltResultSchema>[] = [
+// const foo: ColumnDef<BoltResultSchema> = {}
+const columns: ColumnDef<BoltMultiReadingSchema>[] = [
   {
     accessorKey: 'reading',
     header: ({ column }) => (
+      // TODO: REMOVE SORTING
       <TableHeadWithSorting column={column} header="Reading" />
     ),
-    cell: ({ row }) => row.index + 1,
   },
 
   {
@@ -25,6 +25,7 @@ const columns: ColumnDef<BoltResultSchema>[] = [
       <TableHeadWithSorting column={column} header="Peak load" />
     ),
   },
+  // Add sort
   {
     accessorKey: 'peakDisplacement',
     header: 'Peak displacement',
@@ -34,33 +35,17 @@ const columns: ColumnDef<BoltResultSchema>[] = [
 export const ExtendedBoltResultsTable = ({
   boltResults,
 }: ExtendedBoltResultsTableProps) => {
-  const [selectedRow, setSelectedRow] = useState<BoltResultSchema | null>(null);
-  // Filter the boltResults to include only those with peakLoad and peakDisplacement as arrays
-  const filteredBoltResults = boltResults?.filter(
-    (result) =>
-      Array.isArray(result.peakLoad) || Array.isArray(result.peakDisplacement),
-  );
-
-  const handleRowClick = (row: BoltResultSchema) => {
-    setSelectedRow(row);
-  };
-
-  const dataToDisplay = selectedRow ? [selectedRow] : filteredBoltResults || [];
-
-  console.log(filteredBoltResults);
-  console.log(boltResults);
   return (
-    <div className="">
+    <div>
       <DataTable
         columns={columns}
-        data={dataToDisplay}
+        data={boltResults || []}
         variant="noBorder"
         className="!p-0 !pt-5"
-        onRowClick={handleRowClick}
       />
 
       <Badge variant="neutral" className="self-start mt-5">
-        {dataToDisplay?.length} totales
+        {boltResults?.length} totales
       </Badge>
     </div>
   );

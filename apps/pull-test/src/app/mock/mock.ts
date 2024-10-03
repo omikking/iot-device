@@ -16,6 +16,12 @@ export interface BoltResultSchema {
   createdDate: Date;
 }
 
+export interface BoltMultiReadingSchema {
+  reading: string;
+  peakLoad: string;
+  peakDisplacement: string;
+}
+
 export const boltResultsMock: BoltResultSchema[] = [
   {
     id: '1',

@@ -31,7 +31,6 @@ interface DataTableProps<TData, TValue> {
   noResultMessage?: string;
   variant?: 'default' | 'noBorder' | undefined;
   className?: string;
-  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({

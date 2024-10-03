@@ -44,6 +44,19 @@ export const BoltResultsTable = ({
   boltResults,
   site,
 }: BoltResultsTableProps) => {
+  const coolData = [
+    {
+      reading: '1',
+      peakLoad: '5',
+      peakDisplacement: '15',
+    },
+    {
+      reading: '2',
+      peakLoad: '7',
+      peakDisplacement: '35',
+    },
+  ];
+
   const columns: ColumnDef<BoltResultSchema>[] = [
     {
       accessorKey: 'boltNumber',
@@ -64,8 +77,6 @@ export const BoltResultsTable = ({
       accessorKey: 'peakLoad',
       header: 'Peak load',
       cell: ({ row }) => {
-        console.log('row', row.original);
-
         if (Array.isArray(row.getValue('peakLoad'))) {
           return (
             <div className="">
@@ -91,7 +102,7 @@ export const BoltResultsTable = ({
                     { title: 'Specification 1', text: 'daw' },
                     { title: 'Specification 2', text: 'dwaa' },
                   ]}
-                  boltResults={[row.original]}
+                  boltResults={coolData}
                 />
               </Modal>
             </div>
@@ -177,7 +188,6 @@ export const BoltResultsTable = ({
       },
     },
   ];
-
   return (
     <>
       <DataTable

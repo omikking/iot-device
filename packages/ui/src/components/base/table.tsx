@@ -1,21 +1,41 @@
 import * as React from 'react';
 import { Column } from '@tanstack/react-table';
 import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../../lib/utils';
 
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="ui-relative ui-w-full ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
-    <table
-      ref={ref}
-      className={cn('ui-w-full ui-caption-bottom', className)}
-      {...props}
-    />
-  </div>
-));
+const tableVariants = cva(
+  'ui-relative ui-w-full ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto',
+  {
+    variants: {
+      variant: {
+        default: 'ui-border-2 ui-border-neutral-2',
+        noBorder: 'ui-border-none',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  },
+);
+
+export interface TableProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    Required<Pick<VariantProps<typeof tableVariants>, 'variant'>> {}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, variant, ...props }, ref) => (
+    // <div className="ui-relative ui-w-full ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
+    <div className={cn(tableVariants({ variant }), className)} ref={ref}>
+      <table
+        ref={ref}
+        className={cn('ui-w-full ui-caption-bottom', className)}
+        {...props}
+      />
+    </div>
+  ),
+);
 Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<
@@ -170,4 +190,5 @@ export {
   TableCell,
   TableCaption,
   TableHeadWithSorting,
+  tableVariants,
 };

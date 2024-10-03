@@ -2,8 +2,8 @@ export interface BoltResultSchema {
   id: string;
   boltNumber: string;
   boltType: string;
-  peakLoad: string;
-  peakDisplacement: string;
+  peakLoad: string | string[];
+  peakDisplacement: string | string[];
   bitSize: string;
   rotations: string;
   displacementPerTonnage: string;
@@ -38,7 +38,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     id: '2',
     boltNumber: '2',
     boltType: 'F47 MDX',
-    peakLoad: '15',
+    peakLoad: ['15', '16'],
     peakDisplacement: 'KSFG-5555',
     bitSize: 'VOG-252',
     rotations: '504',
@@ -56,7 +56,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     boltNumber: '3',
     boltType: 'A47 MDX',
     peakLoad: '15',
-    peakDisplacement: 'KSFG-5555',
+    peakDisplacement: ['KSFG-5555', 'KSFG-5555'],
     bitSize: 'VOG-252',
     rotations: '504',
     displacementPerTonnage: '48',
@@ -72,8 +72,8 @@ export const boltResultsMock: BoltResultSchema[] = [
     id: '4',
     boltNumber: '4',
     boltType: 'D47 MDX',
-    peakLoad: '15',
-    peakDisplacement: 'KSFG-5555',
+    peakLoad: ['15', '16'],
+    peakDisplacement: ['KSFG-5555', 'KSFG-5555'],
     bitSize: 'VOG-252',
     rotations: '504',
     displacementPerTonnage: '48',

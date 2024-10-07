@@ -1,4 +1,4 @@
-import { BoltMultiReadingSchema } from '@/app/mock/mock';
+import { MultiBoltReadingSchema } from '@/app/mock/mock';
 import {
   Button,
   ModalContent,
@@ -14,9 +14,9 @@ import {
 import { LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
-import { ExtendedBoltResultsTable } from './ExtendedBoltResultsTable';
+import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 
-interface ViewExtendedBoltResultModalProps {
+interface MultiBoltReadingModalProps {
   modalTitle: string;
   image: string;
   isHazard: boolean;
@@ -26,10 +26,10 @@ interface ViewExtendedBoltResultModalProps {
     title: string;
     text: string;
   }[];
-  boltResults: BoltMultiReadingSchema[] | undefined;
+  boltResults: MultiBoltReadingSchema[] | undefined;
 }
 
-export const ViewExtendedBoltResultModal = ({
+export const MultiBoltReadingModal = ({
   modalTitle,
   image,
   isHazard,
@@ -37,7 +37,7 @@ export const ViewExtendedBoltResultModal = ({
   boltDescription,
   viewBoltSpecifications,
   boltResults,
-}: ViewExtendedBoltResultModalProps) => {
+}: MultiBoltReadingModalProps) => {
   return (
     <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
       <ModalHeader>
@@ -116,8 +116,19 @@ export const ViewExtendedBoltResultModal = ({
           >
             Bolt results
           </Headline>
-          <ExtendedBoltResultsTable boltResults={boltResults} />
+          <MultiBoltReadingTable boltResults={boltResults} />
         </div>
+      </div>
+      {/* Bolt plot */}
+      <div className="px-10">
+        <Headline
+          className="pb-4"
+          variant="smallBold"
+          as="h3"
+          color="foreground"
+        >
+          Bolt plot
+        </Headline>
       </div>
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>

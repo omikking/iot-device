@@ -1,6 +1,6 @@
 'use client';
 
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResultSchema, MultiBoltReadingSchema } from '@/app/mock/mock';
 import {
   Badge,
   Button,
@@ -12,12 +12,15 @@ import {
 import type { ColumnDef } from '@gsp/ui';
 import {
   LucideCheckCircle,
+  LucideImage,
+  LucideMessageSquareText,
+  LucideMessageSquareWarning,
   LucideOctagonAlert,
   LucideSearchX,
   LucideSquareStack,
 } from 'lucide-react';
-import Link from 'next/link';
-import { ViewExtendedBoltResultModal } from './ViewExtendedBoltResultModal';
+import { MultiBoltReadingModal } from './MultiBoltReadingModal';
+import { hazardCardMock } from '@/app/mock/mock';
 
 interface BoltResultsTableProps {
   boltResults: BoltResultSchema[] | undefined;
@@ -39,24 +42,11 @@ const getResultBadge = (
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
 };
-
+// console.log('hazardMock', hazardCardMock);
 export const BoltResultsTable = ({
   boltResults,
   site,
 }: BoltResultsTableProps) => {
-  const coolData = [
-    {
-      reading: '1',
-      peakLoad: '5',
-      peakDisplacement: '15',
-    },
-    {
-      reading: '2',
-      peakLoad: '7',
-      peakDisplacement: '35',
-    },
-  ];
-
   const columns: ColumnDef<BoltResultSchema>[] = [
     {
       accessorKey: 'boltNumber',
@@ -77,32 +67,45 @@ export const BoltResultsTable = ({
       accessorKey: 'peakLoad',
       header: 'Peak load',
       cell: ({ row }) => {
-        if (Array.isArray(row.getValue('peakLoad'))) {
+        console.log('rowOG', row.original);
+        const peakLoad = row.original.peakLoad;
+        const peakDisplacement = row.original.peakDisplacement;
+        if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
+          // Map the arrays to the structure you want (like foo)
+          const foo = peakLoad.map((load, index) => ({
+            reading: (index + 1).toString(),
+            peakLoad: load.toString(),
+            peakDisplacement: peakDisplacement[index]?.toString(),
+          }));
           return (
-            <div className="">
+            <div>
               <Modal>
                 <ModalTrigger asChild>
                   <Button
                     variant="outline"
                     size="small"
-                    className="border-none"
+                    className="border-none !p-0"
                   >
                     <Badge variant="neutral">
                       <LucideSquareStack />
                     </Badge>
                   </Button>
                 </ModalTrigger>
-                <ViewExtendedBoltResultModal
-                  modalTitle="Bolt 424"
-                  image="/boltTestImage.png"
+                <MultiBoltReadingModal
+                  modalTitle={`Bolt ${row.original.boltNumber}`}
+                  image="/boltTestImage.png" // If image is available, then
                   isHazard={true}
                   author={'author'}
                   boltDescription={'boltDescription'}
                   viewBoltSpecifications={[
-                    { title: 'Specification 1', text: 'daw' },
-                    { title: 'Specification 2', text: 'dwaa' },
+                    { title: 'Specification 1', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
+                    { title: 'Specification 3', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
+                    { title: 'Specification 1', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
                   ]}
-                  boltResults={coolData}
+                  boltResults={foo} // Pass formatted data here
                 />
               </Modal>
             </div>
@@ -116,14 +119,45 @@ export const BoltResultsTable = ({
       accessorKey: 'peakDisplacement',
       header: 'Peak displacement',
       cell: ({ row }) => {
-        if (Array.isArray(row.getValue('peakDisplacement'))) {
+        const peakLoad = row.original.peakLoad;
+        const peakDisplacement = row.original.peakDisplacement;
+        if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
+          const foo = peakLoad.map((load, index) => ({
+            reading: (index + 1).toString(),
+            peakLoad: load.toString(),
+            peakDisplacement: peakDisplacement[index]?.toString(),
+          }));
           return (
-            <div className="">
-              <Link href="/">
-                <Badge variant="neutral">
-                  <LucideSquareStack />
-                </Badge>
-              </Link>
+            <div>
+              <Modal>
+                <ModalTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="small"
+                    className="!p-0 border-none"
+                  >
+                    <Badge variant="neutral">
+                      <LucideSquareStack />
+                    </Badge>
+                  </Button>
+                </ModalTrigger>
+                <MultiBoltReadingModal
+                  modalTitle={`Bolt ${row.original.boltNumber}`}
+                  image="/boltTestImage.png"
+                  isHazard={true}
+                  author={'author'}
+                  boltDescription={'boltDescription'}
+                  viewBoltSpecifications={[
+                    { title: 'Specification 1', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
+                    { title: 'Specification 1', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
+                    { title: 'Specification 1', text: row.original.boltType },
+                    { title: 'Specification 2', text: row.original.bitSize },
+                  ]}
+                  boltResults={foo} // Pass formatted data here
+                />
+              </Modal>
             </div>
           );
         } else {
@@ -168,6 +202,114 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'comment',
       header: 'Comment',
+      cell: ({ row }) => {
+        const isHazard = row.original.isHazard ?? false; // Ensure isHazard is always a boolean
+        const peakLoad = row.original.peakLoad;
+        const peakDisplacement = row.original.peakDisplacement;
+        if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
+          const foo = peakLoad.map((load, index) => ({
+            reading: (index + 1).toString(),
+            peakLoad: load.toString(),
+            peakDisplacement: peakDisplacement[index]?.toString(),
+          }));
+          return (
+            <Modal>
+              {/* fix the important(!) exclamationmark "!p-0"  */}
+              <ModalTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="small"
+                  className="!p-0 border-none"
+                >
+                  <Badge variant="neutral">
+                    <div className="flex flex-row gap-2 items-center">
+                      {row.original.image && <LucideImage size={14} />}
+                      {row.original.comment && (
+                        <LucideMessageSquareText size={14} />
+                      )}
+                      {row.original.isHazard && (
+                        <LucideMessageSquareWarning
+                          size={14}
+                          className="text-error"
+                        />
+                      )}
+                      View
+                    </div>
+                  </Badge>
+                </Button>
+              </ModalTrigger>
+              <MultiBoltReadingModal
+                modalTitle="Bolt comment"
+                image="/boltTestImage.png"
+                isHazard={isHazard}
+                author={'Asap Rocky'}
+                boltDescription={'Bolt Description'}
+                viewBoltSpecifications={[
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                ]}
+                boltResults={foo}
+              />
+            </Modal>
+          );
+        } else {
+          return (
+            <Modal>
+              <ModalTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="small"
+                  className="!p-0 border-none"
+                >
+                  <Badge variant="neutral">
+                    {row.original.image && <LucideImage size={14} />}
+                    {row.original.comment && (
+                      <LucideMessageSquareText size={14} />
+                    )}
+                    {row.original.isHazard && (
+                      <LucideMessageSquareWarning
+                        size={14}
+                        className="text-error"
+                      />
+                    )}
+                    {row.original.image ||
+                    row.original.comment ||
+                    row.original.isHazard
+                      ? 'View'
+                      : 'N/A'}
+                  </Badge>
+                </Button>
+              </ModalTrigger>
+              <MultiBoltReadingModal
+                modalTitle="Bolt comment"
+                image="/boltTestImage.png"
+                isHazard={isHazard}
+                author={'Asap Rocky'}
+                boltDescription={'Bolt Description'}
+                viewBoltSpecifications={[
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                  { title: 'Specification 1', text: row.original.boltType },
+                  { title: 'Specification 2', text: row.original.bitSize },
+                ]}
+                boltResults={[
+                  {
+                    reading: '1',
+                    peakLoad: row.original.peakLoad.toString(),
+                    peakDisplacement: row.original.peakDisplacement.toString(),
+                  },
+                ]}
+              />
+            </Modal>
+          );
+        }
+      },
     },
     {
       accessorKey: 'result',

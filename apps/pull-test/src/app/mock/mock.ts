@@ -11,12 +11,14 @@ export interface BoltResultSchema {
   drive: string;
   position: string;
   ring: string;
-  comment: string;
+  comment?: string;
   result: 'Pass' | 'Fail' | 'Abort';
+  image?: boolean;
+  isHazard?: boolean;
   createdDate: Date;
 }
 
-export interface BoltMultiReadingSchema {
+export interface MultiBoltReadingSchema {
   reading: string;
   peakLoad: string;
   peakDisplacement: string;
@@ -36,16 +38,18 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2001',
     position: '20, 42',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'Smooth Operator',
     result: 'Pass',
+    image: true,
+    isHazard: true,
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
     id: '2',
     boltNumber: '2',
     boltType: 'F47 MDX',
-    peakLoad: ['15', '16'],
-    peakDisplacement: 'KSFG-5555',
+    peakLoad: ['15', '16', '17'],
+    peakDisplacement: ['KSFG-5555', 'ABC-123', 'GYAT.123'],
     bitSize: 'VOG-252',
     rotations: '504',
     displacementPerTonnage: '48',
@@ -53,7 +57,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2008',
     position: '2222, 433',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Fail',
     createdDate: new Date('2024-09-01T10:30:00'),
   },
@@ -61,8 +65,8 @@ export const boltResultsMock: BoltResultSchema[] = [
     id: '3',
     boltNumber: '3',
     boltType: 'A47 MDX',
-    peakLoad: '15',
-    peakDisplacement: ['KSFG-5555', 'KSFG-5555'],
+    peakLoad: ['40', '50'],
+    peakDisplacement: ['FOOB123', 'BAR123'],
     bitSize: 'VOG-252',
     rotations: '504',
     displacementPerTonnage: '48',
@@ -70,8 +74,9 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5007',
     position: '251, 5225',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    //comment: 'N/A',
     result: 'Pass',
+    isHazard: true,
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
@@ -87,7 +92,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2001',
     position: '22, 49',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
@@ -104,8 +109,9 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2002',
     position: '1, 2',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Abort',
+    isHazard: true,
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
@@ -121,7 +127,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2003',
     position: '2, 43',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    //comment: 'N/A',
     result: 'Pass',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
@@ -155,8 +161,9 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2003',
     position: '2, 43',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    //comment: 'N/A',
     result: 'Pass',
+    isHazard: true,
     createdDate: new Date('2024-09-11T10:30:00'),
   },
   {
@@ -172,7 +179,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2003',
     position: '2, 43',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
     createdDate: new Date('2024-09-16T10:30:00'),
   },
@@ -189,7 +196,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '2008',
     position: '251, 5225',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
     createdDate: new Date('2024-10-11T10:30:00'),
   },
@@ -206,8 +213,9 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '12, 33',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
+    isHazard: true,
     createdDate: new Date('2024-10-16T10:30:00'),
   },
   {
@@ -223,8 +231,9 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '12, 33',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    //comment: 'N/A',
     result: 'Pass',
+    isHazard: true,
     createdDate: new Date('2024-10-18T10:30:00'),
   },
   {
@@ -240,7 +249,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '12, 33',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
     createdDate: new Date('2024-10-18T10:30:00'),
   },
@@ -274,7 +283,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '12, 33',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Pass',
     createdDate: new Date('2024-10-18T10:30:00'),
   },
@@ -291,7 +300,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '44, 34',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    comment: 'A truly deceptive comment',
     result: 'Fail',
     createdDate: new Date('2024-10-25T10:30:00'),
   },
@@ -308,7 +317,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     drive: '5555',
     position: '44, 34',
     ring: 'RH-BACK',
-    comment: 'N/A',
+    //comment: 'N/A',
     result: 'Abort',
     createdDate: new Date('2024-11-05T10:30:00'),
   },

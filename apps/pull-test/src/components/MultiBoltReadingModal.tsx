@@ -18,7 +18,7 @@ import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 
 interface MultiBoltReadingModalProps {
   modalTitle: string;
-  image: string;
+  image?: string;
   isHazard: boolean;
   author?: string;
   boltDescription: string;
@@ -43,7 +43,7 @@ export const MultiBoltReadingModal = ({
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
-      <div className="p-10 flex gap-10 flex-grow">
+      <div className="p-10 flex gap-10 flex-grow h-full">
         {image && (
           <Image
             src={image}
@@ -82,7 +82,7 @@ export const MultiBoltReadingModal = ({
           )}
         </div>
       </div>
-      <div className="px-10">
+      <div className="px-10 pb-10">
         <Headline
           className="pb-4"
           variant="smallBold"
@@ -128,6 +128,7 @@ export const MultiBoltReadingModal = ({
           color="foreground"
         >
           Bolt plot
+          <div className="bg-main-white h-96 mt-10">Graph</div>
         </Headline>
       </div>
       <ModalFooter className="px-10 pb-5 pt-8">

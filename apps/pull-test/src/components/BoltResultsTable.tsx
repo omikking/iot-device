@@ -71,8 +71,8 @@ export const BoltResultsTable = ({
         const peakLoad = row.original.peakLoad;
         const peakDisplacement = row.original.peakDisplacement;
         if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
-          // Map the arrays to the structure you want (like foo)
-          const foo = peakLoad.map((load, index) => ({
+          // Map the arrays to the structure you want (like multiReadings)
+          const multiReadings = peakLoad.map((load, index) => ({
             reading: (index + 1).toString(),
             peakLoad: load.toString(),
             peakDisplacement: peakDisplacement[index]?.toString(),
@@ -98,14 +98,20 @@ export const BoltResultsTable = ({
                   author={'author'}
                   boltDescription={'boltDescription'}
                   viewBoltSpecifications={[
-                    { title: 'Specification 1', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
-                    { title: 'Specification 3', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
-                    { title: 'Specification 1', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
+                    {
+                      title: 'Displacement',
+                      text: row.original.peakDisplacement.toString(),
+                    },
+                    { title: 'Bit size', text: row.original.bitSize },
+                    { title: 'Pass criteria', text: row.original.boltType },
+                    { title: 'Rotations', text: row.original.rotations },
+                    { title: 'Level', text: row.original.level },
+                    {
+                      title: 'Peak load',
+                      text: row.original.peakLoad.toString(),
+                    },
                   ]}
-                  boltResults={foo} // Pass formatted data here
+                  boltResults={multiReadings} // Pass formatted data here
                 />
               </Modal>
             </div>
@@ -122,7 +128,7 @@ export const BoltResultsTable = ({
         const peakLoad = row.original.peakLoad;
         const peakDisplacement = row.original.peakDisplacement;
         if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
-          const foo = peakLoad.map((load, index) => ({
+          const multiReadings = peakLoad.map((load, index) => ({
             reading: (index + 1).toString(),
             peakLoad: load.toString(),
             peakDisplacement: peakDisplacement[index]?.toString(),
@@ -148,14 +154,20 @@ export const BoltResultsTable = ({
                   author={'author'}
                   boltDescription={'boltDescription'}
                   viewBoltSpecifications={[
-                    { title: 'Specification 1', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
-                    { title: 'Specification 1', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
-                    { title: 'Specification 1', text: row.original.boltType },
-                    { title: 'Specification 2', text: row.original.bitSize },
+                    {
+                      title: 'Displacement',
+                      text: row.original.peakDisplacement.toString(),
+                    },
+                    { title: 'Bit size', text: row.original.bitSize },
+                    { title: 'Pass criteria', text: row.original.boltType },
+                    { title: 'Rotations', text: row.original.rotations },
+                    { title: 'Level', text: row.original.level },
+                    {
+                      title: 'Peak load',
+                      text: row.original.peakLoad.toString(),
+                    },
                   ]}
-                  boltResults={foo} // Pass formatted data here
+                  boltResults={multiReadings} // Pass formatted data here
                 />
               </Modal>
             </div>
@@ -207,7 +219,7 @@ export const BoltResultsTable = ({
         const peakLoad = row.original.peakLoad;
         const peakDisplacement = row.original.peakDisplacement;
         if (Array.isArray(peakLoad) && Array.isArray(peakDisplacement)) {
-          const foo = peakLoad.map((load, index) => ({
+          const multiReadings = peakLoad.map((load, index) => ({
             reading: (index + 1).toString(),
             peakLoad: load.toString(),
             peakDisplacement: peakDisplacement[index]?.toString(),
@@ -245,14 +257,20 @@ export const BoltResultsTable = ({
                 author={'Asap Rocky'}
                 boltDescription={'Bolt Description'}
                 viewBoltSpecifications={[
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
+                  {
+                    title: 'Displacement',
+                    text: row.original.peakDisplacement.toString(),
+                  },
+                  { title: 'Bit size', text: row.original.bitSize },
+                  { title: 'Pass criteria', text: row.original.boltType },
+                  { title: 'Rotations', text: row.original.rotations },
+                  { title: 'Level', text: row.original.level },
+                  {
+                    title: 'Peak load',
+                    text: row.original.peakLoad.toString(),
+                  },
                 ]}
-                boltResults={foo}
+                boltResults={multiReadings}
               />
             </Modal>
           );
@@ -291,12 +309,18 @@ export const BoltResultsTable = ({
                 author={'Asap Rocky'}
                 boltDescription={'Bolt Description'}
                 viewBoltSpecifications={[
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
-                  { title: 'Specification 1', text: row.original.boltType },
-                  { title: 'Specification 2', text: row.original.bitSize },
+                  {
+                    title: 'Displacement',
+                    text: row.original.peakDisplacement.toString(),
+                  },
+                  { title: 'Bit size', text: row.original.bitSize },
+                  { title: 'Pass criteria', text: row.original.boltType },
+                  { title: 'Rotations', text: row.original.rotations },
+                  { title: 'Level', text: row.original.level },
+                  {
+                    title: 'Peak load',
+                    text: row.original.peakLoad.toString(),
+                  },
                 ]}
                 boltResults={[
                   {

@@ -1,3 +1,8 @@
+import React from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { LucidePlus } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
   Form,
@@ -13,11 +18,6 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@gsp/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucidePlus } from 'lucide-react';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 export const AddSiteModal = () => {
   const formSchema = z.object({
@@ -43,7 +43,7 @@ export const AddSiteModal = () => {
   };
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent>
       <ModalHeader>
         <ModalTitle>Add Site</ModalTitle>
       </ModalHeader>

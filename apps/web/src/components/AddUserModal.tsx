@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
+import { technicians, roles } from '@/app/mock/mock';
 import {
   Button,
   Dropdown,
@@ -16,17 +22,14 @@ import {
   Switch,
   Text,
 } from '@gsp/ui';
-import type { DropdownItem } from '@gsp/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 export const AddUserModal = () => {
   type FormSchema = z.infer<typeof formSchema>;
-
+  {
+    /* @TODO dynamic validation messages */
+  }
   const formSchema = z.object({
+    // @TODO error message
     role: z.enum(['admin', 'technician', 'user']),
     email: z
       .string()
@@ -46,12 +49,9 @@ export const AddUserModal = () => {
     },
   });
 
-  const [roleDropDownValue, setRoleDropDownValue] =
-    useState<FormSchema['role']>('user');
-  const [techDropDownValue, setTechDropDownValue] = useState<
-    string | undefined
-  >('');
-  const [hasGlobalAccess, setHasGlobalAccess] = useState(false);
+  const [role, setRole] = useState<FormSchema['role']>('user');
+  const [technician, setTechnician] = useState<string | undefined>('');
+  const [isGlobalAccess, setGlobalAccess] = useState(false);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
@@ -62,66 +62,6 @@ export const AddUserModal = () => {
   const watchUltrabots = form.watch('ultrabots');
   const watchRole = form.watch('role');
 
-  const roles: DropdownItem[] = [
-    {
-      id: '1',
-      name: 'User',
-      background: 'neutral',
-    },
-    {
-      id: '2',
-      name: 'Technician',
-    },
-    {
-      id: '3',
-      name: 'Admin',
-      background: 'primary',
-    },
-  ];
-
-  const technicians = [
-    {
-      id: '1',
-      name: 'Elliot Alderson',
-      email: 'elliot@ecorp.com',
-    },
-    {
-      id: '2',
-      name: 'Darlene Alderson',
-      email: 'dolores@haze.com',
-    },
-    {
-      id: '3',
-      name: 'Tyrell Wellick',
-      email: 'tyrell@ecorp.com',
-    },
-    {
-      id: '4',
-      name: 'Joanna Wellick',
-      email: 'joanna@ecorp.com',
-    },
-    {
-      id: '5',
-      name: 'Angela Moss',
-      email: 'angela@ecorp.com',
-    },
-    {
-      id: '6',
-      name: 'Whiterose',
-      email: 'dark@army.com',
-    },
-    {
-      id: '7',
-      name: 'Felix Östergren',
-      email: 'felix@ecorp.com',
-    },
-    {
-      id: '8',
-      name: 'Jimmy Nwadinkpa',
-      email: 'jimmy@ecorp.com',
-    },
-  ];
-
   const getRoleById = (id: string) => {
     return roles.find((role) => role.name === id)?.name;
   };
@@ -131,7 +71,7 @@ export const AddUserModal = () => {
   };
 
   const handleGlobalAccess = (checked: boolean) => {
-    setHasGlobalAccess(checked);
+    setGlobalAccess(checked);
     form.setValue('pullTest', checked);
     form.setValue('xCyclops', checked);
     form.setValue('ultrabots', checked);
@@ -139,19 +79,19 @@ export const AddUserModal = () => {
 
   useEffect(() => {
     form.setValue('email', '');
-    setTechDropDownValue('');
+    setTechnician('');
   }, [watchRole]);
 
   useEffect(() => {
     if (watchPullTest && watchxCyclops && watchUltrabots) {
-      setHasGlobalAccess(true);
+      setGlobalAccess(true);
     } else {
-      setHasGlobalAccess(false);
+      setGlobalAccess(false);
     }
   }, [watchPullTest, watchxCyclops, watchUltrabots]);
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent>
       <ModalHeader>
         <ModalTitle className="mb-10">Add user</ModalTitle>
       </ModalHeader>
@@ -170,17 +110,21 @@ export const AddUserModal = () => {
                       <FormControl>
                         <Dropdown
                           id="role"
+                          className="w-[400px]"
                           placeholder="Select role"
-                          selectedId={roleDropDownValue}
+                          selectedId={role}
                           isBadge
                           badgeIcon
-                          {...field}
                           options={roles}
-                          className="w-[400px]"
                           onSelect={(e) => {
-                            setRoleDropDownValue(e);
-                            field.onChange(getRoleById(e)?.toLowerCase());
+                            setRole(e as FormSchema['role']);
+                            field.onChange(
+                              getRoleById(
+                                e as FormSchema['role'],
+                              )?.toLowerCase(),
+                            );
                           }}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -199,8 +143,8 @@ export const AddUserModal = () => {
                         <FormControl>
                           <Input
                             placeholder="Fill in email..."
-                            {...field}
                             className="w-[400px]"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -220,15 +164,17 @@ export const AddUserModal = () => {
                         <FormControl>
                           <Dropdown
                             id="email"
+                            className="w-[400px]"
                             placeholder="Select technician"
-                            selectedId={techDropDownValue}
-                            {...field}
+                            selectedId={technician}
                             options={technicians}
                             onSelect={(e) => {
-                              setTechDropDownValue(e);
-                              field.onChange(getEmailById(e));
+                              setTechnician(e as FormSchema['role']);
+                              field.onChange(
+                                getEmailById(e as FormSchema['role']),
+                              );
                             }}
-                            className="w-[400px]"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -247,10 +193,8 @@ export const AddUserModal = () => {
                   </Headline>
                 </div>
                 <Switch
-                  checked={hasGlobalAccess}
-                  onCheckedChange={(e) => {
-                    handleGlobalAccess(e);
-                  }}
+                  checked={isGlobalAccess}
+                  onCheckedChange={handleGlobalAccess}
                 />
               </div>
               <div className="flex items-center px-6 py-3 border-b border-neutral-2">
@@ -271,7 +215,6 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            {...field}
                             value={field.value.toString()}
                           />
                         </FormControl>
@@ -298,7 +241,6 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            {...field}
                             value={field.value.toString()}
                           />
                         </FormControl>
@@ -326,7 +268,6 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            {...field}
                             value={field.value.toString()}
                           />
                         </FormControl>

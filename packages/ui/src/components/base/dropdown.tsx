@@ -19,7 +19,6 @@ export interface DropdownItem {
   id: string;
   name: string;
   background?: 'primary' | 'neutral' | undefined;
-  // icon?: 'user' | 'technician' | 'admin';
 }
 
 export interface DropdownProps {
@@ -88,11 +87,11 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     const iconHandler = (icon: string) => {
       switch (icon) {
         case 'user':
-          return <LucideUser size="22" />;
+          return <LucideUser />;
         case 'technician':
-          return <LucidePickaxe size="22" />;
+          return <LucidePickaxe />;
         case 'admin':
-          return <LucideKey size="22" />;
+          return <LucideKey />;
         default:
           return null;
       }

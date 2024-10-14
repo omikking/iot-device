@@ -1,4 +1,17 @@
 'use client';
+import React, { useEffect, useState } from 'react';
+import { z } from 'zod';
+import Link from 'next/link';
+import { sitesMock } from '@/app/mock/mock';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  LucideEllipsis,
+  LucideMoveLeft,
+  LucideCircleCheckBig,
+  LucideX,
+  LucidePlus,
+} from 'lucide-react';
 import {
   Anchor,
   Badge,
@@ -7,16 +20,10 @@ import {
   Headline,
   Text,
   DropdownItem,
+  Form,
+  Input,
 } from '@gsp/ui';
-import { sitesMock } from './mock.ts';
-import {
-  LucideEllipsis,
-  LucideMoveLeft,
-  LucideCircleCheckBig,
-  LucideX,
-} from 'lucide-react';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+
 interface ILevelMock {
   id: string;
   name: string;
@@ -34,7 +41,46 @@ interface IPositionMock {
   name: string;
 }
 
+export const levelFormSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export const driveFormSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export const positionFormSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
 export default function Page(): JSX.Element {
+  const levelForm = useForm<z.infer<typeof levelFormSchema>>({
+    resolver: zodResolver(levelFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
+
+  const driveForm = useForm<z.infer<typeof driveFormSchema>>({
+    resolver: zodResolver(driveFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
+
+  const positionForm = useForm<z.infer<typeof positionFormSchema>>({
+    resolver: zodResolver(positionFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
+
   const [site, setSite] = useState<string | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
@@ -53,15 +99,6 @@ export default function Page(): JSX.Element {
   const [positionsOptionsMock, setPositionsOptionsMock] = useState<
     IPositionMock[]
   >([]);
-  const handleLevelClick = (level: string) => {
-    setSelectedLevel(level);
-  };
-  const handleDriveClick = (drive: string) => {
-    setSelectedDrive(drive);
-  };
-  const handlePositionClick = (position: string) => {
-    setSelectedPosition(position);
-  };
 
   const handleSetSite = (site?: string) => {
     setSite(site);
@@ -80,48 +117,35 @@ export default function Page(): JSX.Element {
     setSelectedPosition(undefined);
   };
 
-  const addLevelHandler = () => {
-    setLevelsOptionsMock((prevLevel) => [
-      ...prevLevel,
+  // Utility function to generate the next ID
+  const generateNextId = (items: { id: string }[]): string => {
+    return items.length > 0
+      ? (parseInt(items[items.length - 1].id, 10) + 1).toString()
+      : '1';
+  };
+
+  // Generic handler for adding an item
+  const addItemHandler = <T extends { id: string; name: string }>(
+    setter: React.Dispatch<React.SetStateAction<T[]>>,
+    key: 'levels' | 'drives' | 'positions',
+  ): void => {
+    setter((prevItems) => [
+      ...prevItems,
       {
-        id:
-          prevLevel.length > 0
-            ? (parseInt(prevLevel[prevLevel.length - 1].id, 10) + 1).toString()
-            : '1',
+        id: generateNextId(prevItems),
         name: '',
-        drives: [],
-      },
+        ...(key === 'drives' && { drives: [] }),
+        ...(key === 'positions' && { positions: [] }),
+      } as T,
     ]);
   };
 
-  const addDriveHandler = () => {
-    setDrivesOptionsMock((prevDrive) => [
-      ...prevDrive,
-      {
-        id:
-          prevDrive.length > 0
-            ? (parseInt(prevDrive[prevDrive.length - 1].id, 10) + 1).toString()
-            : '1',
-        name: '',
-        positions: [],
-      },
-    ]);
-  };
-
-  const addPositionHandler = () => {
-    setPositionsOptionsMock((prevPosition) => [
-      ...prevPosition,
-      {
-        id:
-          prevPosition.length > 0
-            ? (
-                parseInt(prevPosition[prevPosition.length - 1].id, 10) + 1
-              ).toString()
-            : '1',
-        name: '',
-      },
-    ]);
-  };
+  const addLevel = () =>
+    addItemHandler<ILevelMock>(setLevelsOptionsMock, 'levels');
+  const addDrive = () =>
+    addItemHandler<IDriveMock>(setDrivesOptionsMock, 'drives');
+  const addPosition = () =>
+    addItemHandler<IPositionMock>(setPositionsOptionsMock, 'positions');
 
   const handleSubmitLevel = (
     e: React.FormEvent<HTMLFormElement>,
@@ -232,10 +256,10 @@ export default function Page(): JSX.Element {
   };
 
   const handleCancelLevel = (
-    event: React.FormEvent<HTMLFormElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    event.preventDefault();
+    e.preventDefault();
 
     const newLevels = [...levelsOptionsMock];
     newLevels[index].drives = [];
@@ -244,10 +268,10 @@ export default function Page(): JSX.Element {
   };
 
   const handleCancelDrive = (
-    event: React.FormEvent<HTMLFormElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    event.preventDefault();
+    e.preventDefault();
 
     const newDrives = [...drivesOptionsMock];
     newDrives[index].positions = [];
@@ -256,10 +280,10 @@ export default function Page(): JSX.Element {
   };
 
   const handleCancelPosition = (
-    event: React.FormEvent<HTMLFormElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    event.preventDefault();
+    e.preventDefault();
 
     const newPositions = [...positionsOptionsMock];
     newPositions.splice(index, 1);
@@ -303,11 +327,17 @@ export default function Page(): JSX.Element {
           </Anchor>
         </Link>
       </Text>
-      <Badge variant="primary" size="large" className="absolute top-24">
-        Select site
-      </Badge>
+      {site === undefined ? (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          Select site
+        </Badge>
+      ) : (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {site}
+        </Badge>
+      )}
       <Headline as="h1" variant="xl" color="foreground">
-        Sites locations
+        Site locations
       </Headline>
 
       <div className="flex w-full flex-col gap-5">
@@ -321,6 +351,7 @@ export default function Page(): JSX.Element {
         />
 
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
+          {/* @TODO Make a levelComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
               <Headline as="h2" variant="smallBold" color="foreground">
@@ -330,7 +361,7 @@ export default function Page(): JSX.Element {
             <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
               {/* LEVELS */}
               {levelsOptionsMock?.length === 0 && (
-                <div className="flex h-full  justify-center items-center">
+                <div className="flex h-full justify-center items-center">
                   <Text variant="small" color="foreground">
                     Select site to view available levels
                   </Text>
@@ -338,44 +369,48 @@ export default function Page(): JSX.Element {
               )}
               {levelsOptionsMock?.map((level, index) => (
                 <div
-                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border-2 border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
                   key={index}
                 >
                   <div
-                    className="py-5"
+                    className="py-3"
                     onClick={() => (
-                      handleSetLevel(level.name), handleLevelClick(level.id)
+                      handleSetLevel(level.name), setSelectedLevel(level.id)
                     )}
                   >
+                    {/* @TODO Make a levelFormComponent */}
                     {level.name === '' ? (
                       <div>
-                        <form
-                          onSubmit={(e) => handleSubmitLevel(e, index)}
-                          className="flex flex-row w-full justify-end items-center gap-2"
-                        >
-                          <input
-                            className="flex w-full justify-self-start focus:border-blue-primary focus:outline focus:outline-none"
-                            name="level"
-                            placeholder="New level..."
-                          />
+                        <Form {...levelForm}>
+                          <form
+                            onSubmit={(e) => handleSubmitLevel(e, index)}
+                            className="flex flex-row w-full justify-end items-center gap-2"
+                          >
+                            {/* @TODO fix the !modifier */}
+                            <Input
+                              className="flex w-full justify-self-start !h-full border-none"
+                              name="level"
+                              placeholder="New level..."
+                            />
 
-                          <Button
-                            size={'small'}
-                            variant={'outline'}
-                            type="button"
-                            onClick={(event) => handleCancelLevel(event, index)}
-                          >
-                            <LucideX />
-                          </Button>
-                          <Button
-                            size={'small'}
-                            variant={'primary'}
-                            type="submit"
-                          >
-                            <LucideCircleCheckBig />
-                            Save
-                          </Button>
-                        </form>
+                            <Button
+                              size={'small'}
+                              variant={'outline'}
+                              type="button"
+                              onClick={(e) => handleCancelLevel(e, index)}
+                            >
+                              <LucideX />
+                            </Button>
+                            <Button
+                              size={'small'}
+                              variant={'primary'}
+                              type="submit"
+                            >
+                              <LucideCircleCheckBig />
+                              Save
+                            </Button>
+                          </form>
+                        </Form>
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">
@@ -393,12 +428,12 @@ export default function Page(): JSX.Element {
                           size={'small'}
                           variant={'outline'}
                           type="button"
-                          onClick={(event) => handleCancelLevel(event, index)}
+                          onClick={(e) => handleCancelLevel(e, index)}
                         >
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => event.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >
@@ -411,28 +446,25 @@ export default function Page(): JSX.Element {
               ))}
             </div>
             <div className="flex justify-end w-full p-3">
-              {site !== undefined ? (
+              {site ? (
                 <Button
                   size={'small'}
                   variant={'primary'}
-                  onClick={() => addLevelHandler()}
+                  onClick={() => addLevel()}
                   disabled={levelsOptionsMock.some(
                     (level) => level.name === '',
                   )}
                 >
-                  <Text variant={'small'} color={'background'}>
-                    + Add level
-                  </Text>
+                  <LucidePlus /> Add level
                 </Button>
               ) : (
                 <Button size={'small'} variant={'primary'} disabled>
-                  <Text variant={'small'} color={'background'}>
-                    + Add level
-                  </Text>
+                  <LucidePlus /> Add level
                 </Button>
               )}
             </div>
           </div>
+          {/* @TODO Make a driveComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <div className="flex flex-row w-full p-6 ">
               <Headline as="h2" variant="smallBold" color="foreground">
@@ -451,42 +483,45 @@ export default function Page(): JSX.Element {
               {drivesOptionsMock?.map((drive, index) => (
                 <div
                   key={index}
-                  className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border-2 border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
                 >
                   <div
-                    className="py-5"
+                    className="py-3"
                     onClick={() => (
-                      handleSetDrive(drive.name), handleDriveClick(drive.id)
+                      handleSetDrive(drive.name), setSelectedDrive(drive.id)
                     )}
                   >
                     {drive.name === '' ? (
                       <div>
-                        <form
-                          onSubmit={(e) => handleSubmitDrive(e, index)}
-                          className="flex flex-row w-full justify-between items-center gap-2"
-                        >
-                          <input
-                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
-                            name="drive"
-                            placeholder="New drive..."
-                          />
-                          <Button
-                            size={'small'}
-                            variant={'outline'}
-                            type="button"
-                            onClick={(event) => handleCancelDrive(event, index)}
+                        {/* @TODO Make a driveFormComponent */}
+                        <Form {...driveForm}>
+                          <form
+                            onSubmit={(e) => handleSubmitDrive(e, index)}
+                            className="flex flex-row w-full justify-between items-center gap-2"
                           >
-                            <LucideX />
-                          </Button>
-                          <Button
-                            size={'small'}
-                            variant={'primary'}
-                            type="submit"
-                          >
-                            <LucideCircleCheckBig />
-                            Save
-                          </Button>
-                        </form>
+                            <input
+                              className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                              name="drive"
+                              placeholder="New drive..."
+                            />
+                            <Button
+                              size={'small'}
+                              variant={'outline'}
+                              type="button"
+                              onClick={(e) => handleCancelDrive(e, index)}
+                            >
+                              <LucideX />
+                            </Button>
+                            <Button
+                              size={'small'}
+                              variant={'primary'}
+                              type="submit"
+                            >
+                              <LucideCircleCheckBig />
+                              Save
+                            </Button>
+                          </form>
+                        </Form>
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">
@@ -504,12 +539,12 @@ export default function Page(): JSX.Element {
                           size={'small'}
                           variant={'outline'}
                           type="button"
-                          onClick={(event) => handleCancelDrive(event, index)}
+                          onClick={(e) => handleCancelDrive(e, index)}
                         >
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => event.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >
@@ -527,26 +562,23 @@ export default function Page(): JSX.Element {
                   size={'small'}
                   variant={'primary'}
                   onClick={() => {
-                    addDriveHandler();
+                    addDrive();
                   }}
                   disabled={
                     drivesOptionsMock.some((drive) => drive.name === '') ||
                     level === ''
                   }
                 >
-                  <Text variant={'small'} color={'background'}>
-                    + Add drive
-                  </Text>
+                  <LucidePlus /> Add drive
                 </Button>
               ) : (
                 <Button size={'small'} variant={'primary'} disabled>
-                  <Text variant={'small'} color={'background'}>
-                    + Add drive
-                  </Text>
+                  <LucidePlus /> Add drive
                 </Button>
               )}
             </div>
           </div>
+          {/* @TODO Make a positionComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <div className="flex flex-row w-full p-6">
               <Headline as="h2" variant="smallBold" color="foreground">
@@ -564,46 +596,47 @@ export default function Page(): JSX.Element {
               )}
               {positionsOptionsMock?.map((position, index) => (
                 <div
-                  className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border-2 border-blue-primary ' : ''}`}
+                  className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
                   key={index}
                 >
                   <div
-                    className="py-5"
+                    className="py-3"
                     onClick={() => {
-                      handlePositionClick(position.id);
+                      setSelectedPosition(position.id);
                     }}
                   >
                     {position.name === '' ? (
                       <div>
-                        <form
-                          onSubmit={(e) => handleSubmitPosition(e, index)}
-                          className="flex flex-row w-full justify-between items-center gap-2"
-                        >
-                          <input
-                            className="w-full focus:border-blue-primary focus:outline focus:outline-none"
-                            name="position"
-                            placeholder="New position..."
-                          />
+                        {/* @TODO Make a positionFormComponent */}
+                        <Form {...positionForm}>
+                          <form
+                            onSubmit={(e) => handleSubmitPosition(e, index)}
+                            className="flex flex-row w-full justify-between items-center gap-2"
+                          >
+                            <input
+                              className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                              name="position"
+                              placeholder="New position..."
+                            />
 
-                          <Button
-                            size={'small'}
-                            variant={'outline'}
-                            type="button"
-                            onClick={(event) =>
-                              handleCancelPosition(event, index)
-                            }
-                          >
-                            <LucideX />
-                          </Button>
-                          <Button
-                            size={'small'}
-                            variant={'primary'}
-                            type="submit"
-                          >
-                            <LucideCircleCheckBig />
-                            Save
-                          </Button>
-                        </form>
+                            <Button
+                              size={'small'}
+                              variant={'outline'}
+                              type="button"
+                              onClick={(e) => handleCancelPosition(e, index)}
+                            >
+                              <LucideX />
+                            </Button>
+                            <Button
+                              size={'small'}
+                              variant={'primary'}
+                              type="submit"
+                            >
+                              <LucideCircleCheckBig />
+                              Save
+                            </Button>
+                          </form>
+                        </Form>
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">
@@ -621,14 +654,12 @@ export default function Page(): JSX.Element {
                           size={'small'}
                           variant={'outline'}
                           type="button"
-                          onClick={(event) =>
-                            handleCancelPosition(event, index)
-                          }
+                          onClick={(e) => handleCancelPosition(e, index)}
                         >
                           <LucideX />
                         </Button>
                         <Button
-                          onClick={(event) => event.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
                           size={'small'}
                           variant={'outline'}
                         >
@@ -645,22 +676,18 @@ export default function Page(): JSX.Element {
                 <Button
                   size={'small'}
                   variant={'primary'}
-                  onClick={() => addPositionHandler()}
+                  onClick={() => addPosition()}
                   disabled={
                     positionsOptionsMock.some(
                       (position) => position.name === '',
                     ) || drive === ''
                   }
                 >
-                  <Text variant={'small'} color={'background'}>
-                    + Add position
-                  </Text>
+                  <LucidePlus /> Add position
                 </Button>
               ) : (
                 <Button size={'small'} variant={'primary'} disabled>
-                  <Text variant={'small'} color={'background'}>
-                    + Add position
-                  </Text>
+                  <LucidePlus /> Add position
                 </Button>
               )}
             </div>

@@ -9,21 +9,19 @@ import {
 import { LucideTrash2, LucideMountain, LucideUserMinus } from 'lucide-react';
 import React from 'react';
 
-interface DeleteModalProps {
-  modalTitel: string;
-  confirmDelete?: string;
+interface DeleteModalConfirmationProps {
+  modalTitle: string;
   deleteIcon?: 'User' | 'Site';
   deleteButtonText?: string;
   children: React.ReactNode;
 }
 
 export const DeleteModalConfirmation = ({
-  modalTitel,
-  confirmDelete = 'Confirm deletion',
+  modalTitle,
   deleteIcon = 'User',
-  deleteButtonText,
+
   children,
-}: DeleteModalProps) => {
+}: DeleteModalConfirmationProps) => {
   const getDeleteIcon = (role: 'User' | 'Site') => {
     switch (role) {
       case 'User':
@@ -36,27 +34,23 @@ export const DeleteModalConfirmation = ({
   };
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent>
       <ModalHeader>
-        <ModalTitle>{modalTitel}</ModalTitle>
+        <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>
       <div className="flex flex-row justify-center items-center pt-16 gap-4">
         {getDeleteIcon(deleteIcon)}
         <Headline variant="medium" as="h3" color="foreground">
-          {confirmDelete}
+          Confirm deletion
         </Headline>
       </div>
-      <div className="flex flex-col justify-center items-center text-center pt-10 max-w-[350px] mx-auto">
+      <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
         {children}
       </div>
       <ModalFooter className="ui-px-10 ui-py-6">
-        <Button
-          variant="destructive"
-          size={'large'}
-          className="hover:!text-main-white"
-        >
+        <Button variant="destructive" size={'large'}>
           <LucideTrash2 />
-          {deleteButtonText}
+          Confirm deletion
         </Button>
       </ModalFooter>
     </ModalContent>

@@ -180,7 +180,7 @@ export const ViewBoltResultModal = ({
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
             <Headline as="h3" color="foreground" variant="smallBold">
-              Hazard Confirmed
+              Hazard completed / Hazard Resolved
             </Headline>
           </div>
         </div>

@@ -21,6 +21,7 @@ interface BoltSelectionProps {
   drive?: string;
   position?: string;
   dateRange?: DateRange;
+  selectedTab?: string;
   // Is this typing correct? or should it be (id: string) => void;
   onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -35,6 +36,7 @@ export const BoltSelection = ({
   drive,
   position,
   dateRange,
+  selectedTab,
   onSetSite,
   onSetLevel,
   onSetDrive,
@@ -79,7 +81,7 @@ export const BoltSelection = ({
 
   return (
     <ContentHolder variant="filter">
-      <BoltResultsFilter />
+      <BoltResultsFilter selectedTab={selectedTab} />
 
       <div className="space-y-1.5 mt-0.5">
         <Label>Site</Label>

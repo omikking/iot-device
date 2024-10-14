@@ -61,7 +61,7 @@ export const ViewBoltResultModal = ({
   };
 
   return (
-    <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
+    <ModalContent className="max-h-full overflow-y-auto">
       <ModalHeader>
         {isCompleted ? (
           <ModalTitle>Complete hazard</ModalTitle>
@@ -69,49 +69,6 @@ export const ViewBoltResultModal = ({
           <ModalTitle>{modalTitle}</ModalTitle>
         )}
       </ModalHeader>
-
-      {/* Third View */}
-      <div
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          isConfirmed && !isSuccessFull
-            ? 'opacity-100 translate-y-[-10px] pointer-events-none'
-            : 'opacity-0 translate-y-0 pointer-events-none'
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center h-96 gap-10">
-          <div className="flex gap-4">
-            <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
-              Hazard Confirmed
-            </Headline>
-          </div>
-        </div>
-      </div>
-      {/* Second View */}
-      <div
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-          isCompleted && !isConfirmed
-            ? 'opacity-100 translate-y-0 pointer-events-none'
-            : 'opacity-0 translate-y-0 pointer-events-none'
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center h-96 gap-10">
-          <div className="flex gap-4">
-            <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
-              Confirm hazard completion
-            </Headline>
-          </div>
-          <Text
-            className="text-center w-2/3"
-            color={'foreground'}
-            variant={'medium'}
-          >
-            You are about to complete the selected hazard. Are you sure you want
-            to complete it?
-          </Text>
-        </div>
-      </div>
 
       {/* First View */}
       <div
@@ -183,6 +140,48 @@ export const ViewBoltResultModal = ({
                 </Text>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+      {/* SECOND view */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          isCompleted && !isConfirmed
+            ? 'opacity-100 translate-y-0 pointer-events-none'
+            : 'opacity-0 translate-y-0 pointer-events-none'
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center h-96 gap-10">
+          <div className="flex gap-4">
+            <LucideCircleCheckBig size={30} className="text-success" />
+            <Headline as="h3" color="foreground" variant="smallBold">
+              Confirm hazard completion
+            </Headline>
+          </div>
+          <Text
+            className="text-center w-2/3"
+            color={'foreground'}
+            variant={'medium'}
+          >
+            You are about to complete the selected hazard. Are you sure you want
+            to complete it?
+          </Text>
+        </div>
+      </div>
+      {/* THIRD view */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          isConfirmed && !isSuccessFull
+            ? 'opacity-100 translate-y-[-10px] pointer-events-none'
+            : 'opacity-0 translate-y-0 pointer-events-none'
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center h-96 gap-10">
+          <div className="flex gap-4">
+            <LucideCircleCheckBig size={30} className="text-success" />
+            <Headline as="h3" color="foreground" variant="smallBold">
+              Hazard Confirmed
+            </Headline>
           </div>
         </div>
       </div>

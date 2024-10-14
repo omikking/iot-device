@@ -95,7 +95,7 @@ export const AddOrEditTechnicianModal = () => {
         </div>
       </div>
       <div
-        className={`transition-all duration-500 ${
+        className={`transition-all duration-100 ${
           isSuccessFull ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       >
@@ -218,11 +218,8 @@ export const AddOrEditTechnicianModal = () => {
             </div>
             <ModalFooter className="ui-px-10 ui-py-6">
               {isLoading ? (
-                <Button type="submit" size="large" variant="primary" disabled>
-                  {/* This Loading spinner is slimmer and more elegant. We have more control over it. */}
+                <Button type="submit" size="large" variant="primary">
                   <LoadingSpinner className="animate-spin" size={24} />
-                  {/* this one requieres no setup
-                <LoaderIcon className="animate-spin" /> */}
                   Add technician
                 </Button>
               ) : (

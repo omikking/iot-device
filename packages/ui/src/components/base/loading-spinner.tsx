@@ -1,8 +1,6 @@
 'use client';
 import React, { SVGProps } from 'react';
 import { cn } from '../../lib/utils';
-// import { VariantProps, cva } from 'class-variance-authority';
-// import { Loader2 } from 'lucide-react';
 
 export interface SpinnerProps extends SVGProps<SVGSVGElement> {
   size?: number;

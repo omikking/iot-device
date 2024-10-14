@@ -1,4 +1,81 @@
+export interface SiteResultSchema {
+  id: string;
+  name: string;
+  adress: string;
+  totalSiteLocations: number;
+  passCriteria?: string;
+  notification?: string;
+  fooBar?: string;
+}
+
+export const siteResultMock: SiteResultSchema[] = [
+  {
+    id: '1',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D47 MDX, D34 MD',
+    notification: '20% per submission',
+    fooBar: '38744',
+  },
+  {
+    id: '2',
+    name: 'Garpenberg',
+    adress: 'Gaspersbo 20, 55849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D47 MDX, D34 MD',
+    notification: '20% per submission',
+    fooBar: '2438744',
+  },
+  {
+    id: '3',
+    name: 'Berggarpen',
+    adress: 'Aaspersbo 20, 77049, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'N/A',
+    notification: '10% per submission',
+    fooBar: '456',
+  },
+  {
+    id: '4',
+    name: 'Berggarpen',
+    adress: 'Baspersbogatan 20, 12345, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D47 MDX',
+    notification: '20% per submission',
+    fooBar: '23424',
+  },
+  {
+    id: '5',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '456',
+  },
+  {
+    id: '6',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '23',
+  },
+  {
+    id: '7',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '4645645',
+  },
+];
+
 import type { DropdownItem } from '@gsp/ui';
+
 export const optionsDesignSystemMock = [
   {
     id: '1',

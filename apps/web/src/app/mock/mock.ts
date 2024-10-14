@@ -1,3 +1,4 @@
+import type { DropdownItem } from '@gsp/ui';
 export const optionsDesignSystemMock = [
   {
     id: '1',
@@ -198,5 +199,65 @@ export const techniciansMock: TechniciansSchema[] = [
     company: 'Sandvik',
     isGlobal: true,
     phoneNumber: '+4683729327',
+  },
+];
+
+export const roles: DropdownItem[] = [
+  {
+    id: '1',
+    name: 'User',
+    background: 'neutral',
+  },
+  {
+    id: '2',
+    name: 'Technician',
+  },
+  {
+    id: '3',
+    name: 'Admin',
+    background: 'primary',
+  },
+];
+
+export const technicians = [
+  {
+    id: '1',
+    name: 'Elliot Alderson',
+    email: 'elliot@ecorp.com',
+  },
+  {
+    id: '2',
+    name: 'Darlene Alderson',
+    email: 'dolores@haze.com',
+  },
+  {
+    id: '3',
+    name: 'Tyrell Wellick',
+    email: 'tyrell@ecorp.com',
+  },
+  {
+    id: '4',
+    name: 'Joanna Wellick',
+    email: 'joanna@ecorp.com',
+  },
+  {
+    id: '5',
+    name: 'Angela Moss',
+    email: 'angela@ecorp.com',
+  },
+  {
+    id: '6',
+    name: 'Whiterose',
+    email: 'dark@army.com',
+  },
+  {
+    id: '7',
+    name: 'Felix Östergren',
+    email: 'felix@ecorp.com',
+  },
+  {
+    id: '8',
+    name: 'Jimmy Nwadinkpa',
+    email: 'jimmy@ecorp.com',
   },
 ];

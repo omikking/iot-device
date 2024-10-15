@@ -1,8 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
+import { boltResultsMock } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { Headline, Table, Tabs, TabsContent, DateRange } from '@gsp/ui';
+import { Headline, Table, Tabs, TabsContent } from '@gsp/ui';
 
 export default function Page({
   children,
@@ -13,16 +12,17 @@ export default function Page({
     <html lang="en">
       <body className="min-h-screen">
         <main className="bg-neutral-1 w-full flex flex-col m-auto items-center py-20 gap-16">
-          {children}
           <Headline
             className="w-full flex flex-row items-center justify-start px-10"
             as="h1"
             color={'foreground'}
             variant={'xl'}
           >
-            Pull Test Report
+            {/* should be bold */}
+            PULL TEST REPORT
           </Headline>
           <div className="gap-10 w-full py-10 bg-main-white ">
+            {/* Placeholders until cards comp is in main */}
             <div className="flex justify-center items-center gap-10">
               <div className="w-40 h-40 border border-gold-2">1</div>
               <div className="w-40 h-40 border border-gold-2">1</div>

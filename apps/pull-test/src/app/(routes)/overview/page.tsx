@@ -1,5 +1,5 @@
 import { GoBack } from '@/components/GoBack';
-import { Badge, Button, Headline, NavigationCard, Text } from '@gsp/ui';
+import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,
   LucideMoveRight,
@@ -20,40 +20,36 @@ export default function Page(): JSX.Element {
         Pull-test overview
       </Headline>
 
-      <div className="flex flex-wrap gap-12 w-full justify-center pb-20 border-b border-neutral-3">
+      <div className="flex flex-wrap gap-12 w-full justify-center pb-20 border-b border-gold-3">
         <Link href="/">
-          <NavigationCard>
-            <div className="flex flex-col items-center w-40 gap-6 relative">
-              <Headline as="h3" variant="medium" color="foreground">
-                Bolt results
-              </Headline>
-              <LucideClipboardCheck />
-              <Button variant="secondary" size={'large'}>
-                <LucideMoveRight />
-                View bolt results
-              </Button>
-            </div>
+          <NavigationCard variant={'centered'}>
+            <Headline as="h3" variant="medium" color="foreground">
+              Bolt results
+            </Headline>
+            <LucideClipboardCheck size={28} />
+            <Button variant="secondary" size={'small'}>
+              <LucideMoveRight />
+              View bolt results
+            </Button>
           </NavigationCard>
         </Link>
         <Link href="/">
-          <NavigationCard>
-            <div className="flex flex-col items-center w-40 gap-6 relative">
-              <Badge
-                className="absolute top-[-22px] right-[-60px] flex border-neutral-3 border"
-                variant="neutral"
-                size="small"
-              >
-                5 active
-              </Badge>
-              <Headline as="h3" variant="medium" color="foreground">
-                Hazards
-              </Headline>
-              <LucideTriangleAlert />
-              <Button variant="secondary" size={'large'}>
-                <LucideMoveRight />
-                View hazards
-              </Button>
-            </div>
+          <NavigationCard variant={'centered'}>
+            <Badge
+              className="absolute top-2 right-2 flex border-neutral-3 border"
+              variant="neutral"
+              size="small"
+            >
+              5 active
+            </Badge>
+            <Headline as="h3" variant="medium" color="foreground">
+              Hazards
+            </Headline>
+            <LucideTriangleAlert size={28} />
+            <Button variant="secondary" size={'small'}>
+              <LucideMoveRight />
+              View hazards
+            </Button>
           </NavigationCard>
         </Link>
       </div>

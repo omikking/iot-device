@@ -28,7 +28,6 @@ const columns: ColumnDef<MultiBoltReadingSchema>[] = [
         <TableHeadWithSorting column={column} header="Peak displacement" />
       </div>
     ),
-    // cell: ({ column }) => <div className="bg-black">{column}</div>,
   },
   {
     accessorKey: ' ',
@@ -41,6 +40,7 @@ export const MultiBoltReadingTable = ({
 }: MultiBoltReadingTableProps) => {
   return (
     <div>
+      {/* @TODO fick the important ! modifier */}
       <DataTable
         columns={columns}
         data={boltResults || []}

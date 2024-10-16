@@ -39,7 +39,7 @@ export const MultiBoltReadingModal = ({
   boltResults,
 }: MultiBoltReadingModalProps) => {
   return (
-    <ModalContent className="sm:max-w-[425px] max-h-full overflow-y-auto">
+    <ModalContent className="max-h-full overflow-y-auto">
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>

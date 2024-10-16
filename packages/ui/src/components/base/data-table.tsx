@@ -20,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from './table';
-
 import { Text } from './text';
 
 export type { ColumnDef };

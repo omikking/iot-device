@@ -386,9 +386,8 @@ export default function Page(): JSX.Element {
                             onSubmit={(e) => handleSubmitLevel(e, index)}
                             className="flex flex-row w-full justify-end items-center gap-2"
                           >
-                            {/* @TODO fix the !modifier */}
-                            <Input
-                              className="flex w-full justify-self-start !h-full border-none"
+                            <input
+                              className="flex w-full justify-self-start h-full border-none"
                               name="level"
                               placeholder="New level..."
                             />
@@ -500,7 +499,7 @@ export default function Page(): JSX.Element {
                             className="flex flex-row w-full justify-between items-center gap-2"
                           >
                             <input
-                              className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                              className="flex w-full justify-self-start h-full border-none"
                               name="drive"
                               placeholder="New drive..."
                             />
@@ -614,7 +613,7 @@ export default function Page(): JSX.Element {
                             className="flex flex-row w-full justify-between items-center gap-2"
                           >
                             <input
-                              className="w-full focus:border-blue-primary focus:outline focus:outline-none"
+                              className="flex w-full justify-self-start h-full border-none"
                               name="position"
                               placeholder="New position..."
                             />

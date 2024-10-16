@@ -26,6 +26,10 @@ interface BoltResultsTableProps {
   site?: string;
 }
 
+interface RowData {
+  original: BoltResultSchema;
+}
+
 interface MultiReading {
   reading: string;
   peakLoad: string;
@@ -47,7 +51,7 @@ const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
 
 const renderModalButton = (
   // @TODO find a solution for any, it's a fast fix and not a good practice
-  row: any,
+  row: RowData,
   multiReadings: MultiReading[],
   isHazard: boolean,
 ) => (
@@ -157,7 +161,7 @@ export const BoltResultsTable = ({
                 peakDisplacement: peakDisplacement[index]?.toString(),
               }))
             : null;
-
+        // @TODO make every comment clickable
         return (
           <Modal>
             {row.original.image ||

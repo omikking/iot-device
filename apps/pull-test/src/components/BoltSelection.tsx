@@ -11,7 +11,7 @@ import {
 import { BoltResultsFilter } from './BoltResultsFilter';
 import { sitesMock } from '@/app/mock/mock';
 
-// Is this typing really correct?
+// @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
   React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 
@@ -21,7 +21,7 @@ interface BoltSelectionProps {
   drive?: string;
   position?: string;
   dateRange?: DateRange;
-  // Is this typing correct? or should it be (id: string) => void;
+  // @TODO Is this typing correct? or should it be (id: string) => void;
   onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;

@@ -59,7 +59,7 @@ export default function Page(): JSX.Element {
   const filteredResults = filterBoltResults(level, drive, position, dateRange);
 
   useEffect(() => {
-    // Each time site gets updated, make a request to the BE to fetch and set them as below
+    // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
     site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
   }, [site]);
 
@@ -95,7 +95,7 @@ export default function Page(): JSX.Element {
                 Export PDF
               </Button>
             </ModalTrigger>
-            {/* <ModalContent goes here /> */}
+            {/* @TODO Modal goes here /> */}
           </Modal>
         </div>
 

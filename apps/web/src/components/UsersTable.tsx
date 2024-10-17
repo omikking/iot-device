@@ -60,7 +60,7 @@ export const UsersTable = () => {
       accessorKey: 'settings',
       header: '',
       cell: () => {
-        // send row getValue id data to open delete/edit modals
+        // @TODO send row getValue id data to open delete/edit modals
         return (
           <Button variant="outline" size="small">
             <LucideEllipsis />

@@ -20,7 +20,7 @@ export const SitesTable = () => {
       accessorKey: 'totalSiteLocations',
       header: 'Total site locations',
       cell: ({ row }) => {
-        // TODO: send user to siteLocations with the siteName
+        // @TODO: send user to siteLocations with the siteName
         return (
           <Button variant="outline" size="small">
             <LucideMoveRight />

@@ -7,7 +7,7 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="ui-relative ui-w-full ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
+  <div className="ui-relative ui-w-full ui-min-w-[1320px] ui-min-h-[472px] ui-border-2 ui-border-neutral-2 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-overflow-auto">
     <table
       ref={ref}
       className={cn('ui-w-full ui-caption-bottom', className)}
@@ -84,7 +84,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'ui-h-16 ui-px-2 [&:first-child]:ui-pl-6 [&:last-child]:ui-flex [&:last-child]:ui-justify-end [&:last-child]:ui-items-center [&:last-child]:ui-pr-6 ui-text-left ui-align-middle ui-font-regular ui-tracking-wide ui-text-neutral-5 [&:has([role=checkbox])]:ui-pr-0',
+      'ui-h-12 ui-px-2 [&:first-child]:ui-pl-6 [&:last-child]:ui-flex [&:last-child]:ui-justify-end [&:last-child]:ui-items-center [&:last-child]:ui-pr-6 ui-text-left ui-align-middle ui-font-regular ui-tracking-wide ui-text-neutral-5 [&:has([role=checkbox])]:ui-pr-0',
       className,
     )}
     {...props}

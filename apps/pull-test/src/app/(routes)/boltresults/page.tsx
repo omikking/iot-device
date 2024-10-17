@@ -112,12 +112,12 @@ export default function Page(): JSX.Element {
           onSetDateRange={setDateRange}
         />
 
-        <TabsContent value="table" className="w-full">
+        <TabsContent value="table">
           <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table />
+          <Table className="ui-min-w-[1620px]" />
         </TabsContent>
       </Tabs>
     </main>

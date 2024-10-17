@@ -64,21 +64,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      Pull-test overview
-                    </Anchor>
-                  </Link>
-                </Headline>
-
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/sites" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View sites
@@ -92,7 +78,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/sitelocations" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View site locations
@@ -120,7 +106,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Overview
@@ -134,10 +120,10 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/technicians" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View global technicians
+                      View technicians
                     </Anchor>
                   </Link>
                 </Headline>
@@ -148,7 +134,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/company" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucidePlus className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:rotate-90" />
                       Add new company
@@ -163,7 +149,7 @@ export const Menu = () => {
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" passHref legacyBehavior>
+              <Link href="/selectapp" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideLayoutGrid className="text-orange-600" />
                   Browse apps

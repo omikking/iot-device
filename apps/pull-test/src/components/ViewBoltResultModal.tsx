@@ -9,6 +9,7 @@ import {
   Badge,
   Headline,
   ModalClose,
+  Specification,
 } from '@gsp/ui';
 import { LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
@@ -57,7 +58,7 @@ export const ViewBoltResultModal = ({
               </Text>
               <Textarea
                 value={boltDescription}
-                className="flex-grow"
+                className="flex-grow mt-2"
                 disabled
                 readOnly
               />
@@ -88,18 +89,13 @@ export const ViewBoltResultModal = ({
           Bolt specifications
         </Headline>
         <div className="flex flex-wrap">
-          {viewBoltSpecifications.map((boltSpec, index) => (
-            <div
-              key={index}
-              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-            >
-              <Text className="w-32" variant="small" color="muted">
-                {boltSpec.title}
-              </Text>
-              <Text className="max-w-60" variant="small" color="foreground">
-                {boltSpec.text}
-              </Text>
-            </div>
+          {viewBoltSpecifications.map((boltSpec, i) => (
+            <Specification
+              key={i}
+              title={boltSpec.title}
+              text={boltSpec.text}
+              className="w-1/2"
+            />
           ))}
         </div>
       </div>

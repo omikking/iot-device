@@ -79,7 +79,7 @@ export const AddOrEditTechnicianModal = () => {
                         <Input
                           placeholder="Enter full name"
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -98,7 +98,7 @@ export const AddOrEditTechnicianModal = () => {
                         <Input
                           placeholder="Enter company"
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -117,7 +117,7 @@ export const AddOrEditTechnicianModal = () => {
                         <Input
                           placeholder="Enter email"
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -136,7 +136,7 @@ export const AddOrEditTechnicianModal = () => {
                         <Input
                           placeholder="Enter phone number"
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />

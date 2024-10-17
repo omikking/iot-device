@@ -51,7 +51,7 @@ export const AddUserModal = () => {
 
   const [role, setRole] = useState<FormSchema['role']>('user');
   const [technician, setTechnician] = useState<string | undefined>('');
-  const [isGlobalAccess, setGlobalAccess] = useState(false);
+  const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
@@ -110,7 +110,7 @@ export const AddUserModal = () => {
                       <FormControl>
                         <Dropdown
                           id="role"
-                          className="w-[400px]"
+                          className="w-96"
                           placeholder="Select role"
                           selectedId={role}
                           isBadge

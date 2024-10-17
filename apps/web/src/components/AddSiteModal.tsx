@@ -66,7 +66,7 @@ export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
                         <Input
                           placeholder="Fill in name..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -85,7 +85,7 @@ export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
                         <Input
                           placeholder="Fill in adress..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -109,7 +109,7 @@ export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
                         <Input
                           placeholder="Fill in pass criteria..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />

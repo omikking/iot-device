@@ -143,7 +143,7 @@ export const AddUserModal = () => {
                         <FormControl>
                           <Input
                             placeholder="Fill in email..."
-                            className="w-[400px]"
+                            className="w-96"
                             {...field}
                           />
                         </FormControl>
@@ -164,7 +164,7 @@ export const AddUserModal = () => {
                         <FormControl>
                           <Dropdown
                             id="email"
-                            className="w-[400px]"
+                            className="w-96"
                             placeholder="Select technician"
                             selectedId={technician}
                             options={technicians}

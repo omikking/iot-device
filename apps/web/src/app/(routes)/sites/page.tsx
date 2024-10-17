@@ -12,11 +12,15 @@ import {
   TabsTrigger,
 } from '@gsp/ui';
 import { SitesTable } from '@/components/SitesTable';
-import React from 'react';
+import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { AddSiteModal } from '@/components/AddSiteModal';
 
 export default function Page(): JSX.Element {
+  const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabots'>(
+    'Pull Test',
+  );
+
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
       <GoBack />
@@ -31,9 +35,18 @@ export default function Page(): JSX.Element {
         <Tabs defaultValue="pullTest" className="w-full">
           <div className="w-full flex flex-row justify-between items-center pb-4">
             <TabsList>
-              <TabsTrigger value="pullTest">Pull Test</TabsTrigger>
-              <TabsTrigger value="xCyclops">xCyclops</TabsTrigger>
-              <TabsTrigger value="ultrabots">Ultrabots</TabsTrigger>
+              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
+                Pull Test
+              </TabsTrigger>
+              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
+                xCyclops
+              </TabsTrigger>
+              <TabsTrigger
+                value="ultrabots"
+                onClick={() => setApp('Ultrabots')}
+              >
+                Ultrabots
+              </TabsTrigger>
             </TabsList>
 
             <Modal>
@@ -43,7 +56,7 @@ export default function Page(): JSX.Element {
                   Add site
                 </Button>
               </ModalTrigger>
-              <AddSiteModal />
+              <AddSiteModal appSelected={app} />
             </Modal>
           </div>
 

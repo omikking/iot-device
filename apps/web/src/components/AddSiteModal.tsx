@@ -19,7 +19,11 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 
-export const AddSiteModal = () => {
+interface AddSiteModalProps {
+  appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabots';
+}
+
+export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
   const formSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
     adress: z
@@ -91,7 +95,7 @@ export const AddSiteModal = () => {
               />
             </div>
             <Headline as="h3" color="foreground" variant="smallBold">
-              Props.appName Settings
+              {appSelected} settings
             </Headline>
             <div className="flex flex-row justify-between pt-5">
               <FormField

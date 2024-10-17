@@ -125,7 +125,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucideMountain />
               <Button variant="secondary" size="small" asChild>
-                <Link href="#">
+                <Link href="/sites">
                   <LucideMoveRight />
                   View sites
                 </Link>
@@ -138,7 +138,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucidePyramid />
               <Button variant="secondary" size="small" asChild>
-                <Link href="#">
+                <Link href="/sitelocations">
                   <LucideMoveRight />
                   View site locations
                 </Link>

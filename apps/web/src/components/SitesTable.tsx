@@ -67,7 +67,7 @@ export const SitesTable = () => {
         noResultMessage="There are no sites added yet."
       />
       {siteResultMock.length && (
-        <Badge variant="neutral" className="self-start">
+        <Badge variant="neutral" className="self-start mt-5">
           {siteResultMock.length} total
         </Badge>
       )}

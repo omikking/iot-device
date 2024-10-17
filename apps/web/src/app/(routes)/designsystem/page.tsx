@@ -573,7 +573,7 @@ export default function Page(): JSX.Element {
                         selectedId={dropdownValue}
                         options={optionsDesignSystemMock}
                         onSelect={setDropdownValue}
-                        className="w-[400px]"
+                        className="w-96"
                       />
                     </FormControl>
                     <FormMessage />

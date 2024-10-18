@@ -1,14 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { z } from 'zod';
+import SiteLocationsForm from '@/components/SiteLocationsForm';
 import Link from 'next/link';
+import { z } from 'zod';
 import { sitesMock } from '@/app/mock/mock';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   LucideEllipsis,
   LucideMoveLeft,
-  LucideCircleCheckBig,
   LucideX,
   LucidePlus,
 } from 'lucide-react';
@@ -20,8 +20,6 @@ import {
   Headline,
   Text,
   DropdownItem,
-  Form,
-  Input,
 } from '@gsp/ui';
 
 interface ILevelMock {
@@ -381,35 +379,14 @@ export default function Page(): JSX.Element {
                     {/* @TODO Make a levelFormComponent */}
                     {level.name === '' ? (
                       <div>
-                        <Form {...levelForm}>
-                          <form
-                            onSubmit={(e) => handleSubmitLevel(e, index)}
-                            className="flex flex-row w-full justify-end items-center gap-2"
-                          >
-                            <input
-                              className="flex w-full justify-self-start h-full border-none"
-                              name="level"
-                              placeholder="New level..."
-                            />
-
-                            <Button
-                              size={'small'}
-                              variant={'outline'}
-                              type="button"
-                              onClick={(e) => handleCancelLevel(e, index)}
-                            >
-                              <LucideX />
-                            </Button>
-                            <Button
-                              size={'small'}
-                              variant={'primary'}
-                              type="submit"
-                            >
-                              <LucideCircleCheckBig />
-                              Save
-                            </Button>
-                          </form>
-                        </Form>
+                        <SiteLocationsForm
+                          form={levelForm}
+                          onSubmit={handleSubmitLevel}
+                          onCancel={handleCancelLevel}
+                          placeholder="New level..."
+                          name="level"
+                          index={index}
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">
@@ -493,34 +470,14 @@ export default function Page(): JSX.Element {
                     {drive.name === '' ? (
                       <div>
                         {/* @TODO Make a driveFormComponent */}
-                        <Form {...driveForm}>
-                          <form
-                            onSubmit={(e) => handleSubmitDrive(e, index)}
-                            className="flex flex-row w-full justify-between items-center gap-2"
-                          >
-                            <input
-                              className="flex w-full justify-self-start h-full border-none"
-                              name="drive"
-                              placeholder="New drive..."
-                            />
-                            <Button
-                              size={'small'}
-                              variant={'outline'}
-                              type="button"
-                              onClick={(e) => handleCancelDrive(e, index)}
-                            >
-                              <LucideX />
-                            </Button>
-                            <Button
-                              size={'small'}
-                              variant={'primary'}
-                              type="submit"
-                            >
-                              <LucideCircleCheckBig />
-                              Save
-                            </Button>
-                          </form>
-                        </Form>
+                        <SiteLocationsForm
+                          form={driveForm}
+                          onSubmit={handleSubmitDrive}
+                          onCancel={handleCancelDrive}
+                          placeholder="New drive..."
+                          name="drive"
+                          index={index}
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">
@@ -607,35 +564,14 @@ export default function Page(): JSX.Element {
                     {position.name === '' ? (
                       <div>
                         {/* @TODO Make a positionFormComponent */}
-                        <Form {...positionForm}>
-                          <form
-                            onSubmit={(e) => handleSubmitPosition(e, index)}
-                            className="flex flex-row w-full justify-between items-center gap-2"
-                          >
-                            <input
-                              className="flex w-full justify-self-start h-full border-none"
-                              name="position"
-                              placeholder="New position..."
-                            />
-
-                            <Button
-                              size={'small'}
-                              variant={'outline'}
-                              type="button"
-                              onClick={(e) => handleCancelPosition(e, index)}
-                            >
-                              <LucideX />
-                            </Button>
-                            <Button
-                              size={'small'}
-                              variant={'primary'}
-                              type="submit"
-                            >
-                              <LucideCircleCheckBig />
-                              Save
-                            </Button>
-                          </form>
-                        </Form>
+                        <SiteLocationsForm
+                          form={positionForm}
+                          onSubmit={handleSubmitPosition}
+                          onCancel={handleCancelPosition}
+                          placeholder="New position..."
+                          name="position"
+                          index={index}
+                        />
                       </div>
                     ) : (
                       <div className="flex flex-row w-full justify-between items-center gap-2">

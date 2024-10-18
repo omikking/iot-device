@@ -1,17 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import SiteLocationsForm from '@/components/SiteLocationsForm';
 import Link from 'next/link';
 import { z } from 'zod';
 import { sitesMock } from '@/app/mock/mock';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  LucideEllipsis,
-  LucideMoveLeft,
-  LucideX,
-  LucidePlus,
-} from 'lucide-react';
+import { LevelsListComponent } from '@/components/sitelocationcomponents/LevelsListComponent';
+import { DrivesListComponent } from '@/components/sitelocationcomponents/DrivesListComponent';
+import { PositionsListComponent } from '@/components/sitelocationcomponents/PositionsListComponent';
+import { LucideMoveLeft, LucidePlus } from 'lucide-react';
 import {
   Anchor,
   Badge,
@@ -351,76 +348,15 @@ export default function Page(): JSX.Element {
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           {/* @TODO Make a levelComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
-            <div className="flex flex-row w-full p-6">
-              <Headline as="h2" variant="smallBold" color="foreground">
-                Levels
-              </Headline>
-            </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-              {/* LEVELS */}
-              {levelsOptionsMock?.length === 0 && (
-                <div className="flex h-full justify-center items-center">
-                  <Text variant="small" color="foreground">
-                    Select site to view available levels
-                  </Text>
-                </div>
-              )}
-              {levelsOptionsMock?.map((level, index) => (
-                <div
-                  className={`bg-main-white px-6  ${selectedLevel === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
-                  key={index}
-                >
-                  <div
-                    className="py-3"
-                    onClick={() => (
-                      handleSetLevel(level.name), setSelectedLevel(level.id)
-                    )}
-                  >
-                    {/* @TODO Make a levelFormComponent */}
-                    {level.name === '' ? (
-                      <div>
-                        <SiteLocationsForm
-                          form={levelForm}
-                          onSubmit={handleSubmitLevel}
-                          onCancel={handleCancelLevel}
-                          placeholder="New level..."
-                          name="level"
-                          index={index}
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex flex-row w-full justify-between items-center gap-2">
-                        <Text
-                          className="w-full"
-                          variant="small"
-                          color="foreground"
-                        >
-                          {level.name}
-                        </Text>
-                        {/* TODO: will remove this button later. Just here for testing purposes
-                                    remove button will be inside the ellipsis button
-                          */}
-                        <Button
-                          size={'small'}
-                          variant={'outline'}
-                          type="button"
-                          onClick={(e) => handleCancelLevel(e, index)}
-                        >
-                          <LucideX />
-                        </Button>
-                        <Button
-                          onClick={(e) => e.stopPropagation()}
-                          size={'small'}
-                          variant={'outline'}
-                        >
-                          <LucideEllipsis />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <LevelsListComponent
+              levelsOptionsMock={levelsOptionsMock}
+              selectedLevel={selectedLevel}
+              handleSetLevel={handleSetLevel}
+              setSelectedLevel={setSelectedLevel}
+              levelForm={levelForm}
+              handleSubmitLevel={handleSubmitLevel}
+              handleCancelLevel={handleCancelLevel}
+            />
             <div className="flex justify-end w-full p-3">
               {site ? (
                 <Button
@@ -442,76 +378,15 @@ export default function Page(): JSX.Element {
           </div>
           {/* @TODO Make a driveComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
-            <div className="flex flex-row w-full p-6 ">
-              <Headline as="h2" variant="smallBold" color="foreground">
-                Drives
-              </Headline>
-            </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-              {/* DRIVES */}
-              {drivesOptionsMock?.length === 0 && (
-                <div className="flex h-full  justify-center items-center">
-                  <Text variant="small" color="foreground">
-                    Select level to view available drives
-                  </Text>
-                </div>
-              )}
-              {drivesOptionsMock?.map((drive, index) => (
-                <div
-                  key={index}
-                  className={`bg-main-white px-6  ${selectedDrive === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
-                >
-                  <div
-                    className="py-3"
-                    onClick={() => (
-                      handleSetDrive(drive.name), setSelectedDrive(drive.id)
-                    )}
-                  >
-                    {drive.name === '' ? (
-                      <div>
-                        {/* @TODO Make a driveFormComponent */}
-                        <SiteLocationsForm
-                          form={driveForm}
-                          onSubmit={handleSubmitDrive}
-                          onCancel={handleCancelDrive}
-                          placeholder="New drive..."
-                          name="drive"
-                          index={index}
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex flex-row w-full justify-between items-center gap-2">
-                        <Text
-                          className="w-full"
-                          variant="small"
-                          color="foreground"
-                        >
-                          {drive.name}
-                        </Text>
-                        {/* TODO: will remove this button later. Just here for testing purposes
-                                    remove button will be inside the ellipsis button
-                          */}
-                        <Button
-                          size={'small'}
-                          variant={'outline'}
-                          type="button"
-                          onClick={(e) => handleCancelDrive(e, index)}
-                        >
-                          <LucideX />
-                        </Button>
-                        <Button
-                          onClick={(e) => e.stopPropagation()}
-                          size={'small'}
-                          variant={'outline'}
-                        >
-                          <LucideEllipsis />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <DrivesListComponent
+              drivesOptionsMock={drivesOptionsMock}
+              selectedDrive={selectedDrive}
+              handleSetDrive={handleSetDrive}
+              setSelectedDrive={setSelectedDrive}
+              driveForm={driveForm}
+              handleSubmitDrive={handleSubmitDrive}
+              handleCancelDrive={handleCancelDrive}
+            />
             <div className="flex justify-end w-full p-3">
               {level !== undefined ? (
                 <Button
@@ -536,76 +411,15 @@ export default function Page(): JSX.Element {
           </div>
           {/* @TODO Make a positionComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
-            <div className="flex flex-row w-full p-6">
-              <Headline as="h2" variant="smallBold" color="foreground">
-                Positions
-              </Headline>
-            </div>
-            <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-              {/* POSITIONS */}
-              {positionsOptionsMock?.length === 0 && (
-                <div className="flex h-full  justify-center items-center">
-                  <Text variant="small" color="foreground">
-                    Select drive to view available positions
-                  </Text>
-                </div>
-              )}
-              {positionsOptionsMock?.map((position, index) => (
-                <div
-                  className={`bg-main-white px-6  ${selectedPosition === position.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
-                  key={index}
-                >
-                  <div
-                    className="py-3"
-                    onClick={() => {
-                      setSelectedPosition(position.id);
-                    }}
-                  >
-                    {position.name === '' ? (
-                      <div>
-                        {/* @TODO Make a positionFormComponent */}
-                        <SiteLocationsForm
-                          form={positionForm}
-                          onSubmit={handleSubmitPosition}
-                          onCancel={handleCancelPosition}
-                          placeholder="New position..."
-                          name="position"
-                          index={index}
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex flex-row w-full justify-between items-center gap-2">
-                        <Text
-                          className="w-full"
-                          variant="small"
-                          color="foreground"
-                        >
-                          {position.name}
-                        </Text>
-                        {/* TODO: will remove this button later. Just here for testing purposes
-                                    remove button will be inside the ellipsis button
-                          */}
-                        <Button
-                          size={'small'}
-                          variant={'outline'}
-                          type="button"
-                          onClick={(e) => handleCancelPosition(e, index)}
-                        >
-                          <LucideX />
-                        </Button>
-                        <Button
-                          onClick={(e) => e.stopPropagation()}
-                          size={'small'}
-                          variant={'outline'}
-                        >
-                          <LucideEllipsis />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <PositionsListComponent
+              positionsOptionsMock={positionsOptionsMock}
+              selectedPosition={selectedPosition}
+              handleSetPosition={setSelectedPosition}
+              setSelectedPosition={setSelectedPosition}
+              positionForm={positionForm}
+              handleSubmitPosition={handleSubmitPosition}
+              handleCancelPosition={handleCancelPosition}
+            />
             <div className="flex justify-end w-full p-3">
               {drive !== undefined ? (
                 <Button

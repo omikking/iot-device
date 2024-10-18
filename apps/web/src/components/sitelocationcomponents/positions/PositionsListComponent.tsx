@@ -1,13 +1,24 @@
 import React from 'react';
 import { PositionComponent } from './PositionComponent';
 import { Headline, Text } from '@gsp/ui';
+import { AddPositionButton } from './AddPositionButton';
+
+interface PositionsOptionsMock {
+  id: string;
+  name: string;
+}
+
+interface PositionFormData {
+  id: string;
+  name: string;
+}
 
 interface PositionsListComponentProps {
-  positionsOptionsMock: any[];
+  positionsOptionsMock: PositionsOptionsMock[];
   selectedPosition: string;
   handleSetPosition: (name: string) => void;
   setSelectedPosition: (id: string) => void;
-  positionForm: any;
+  positionForm: PositionFormData;
   handleSubmitPosition: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -16,6 +27,8 @@ interface PositionsListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  site: string | undefined;
+  addPosition: any;
 }
 
 export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
@@ -26,6 +39,8 @@ export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
   positionForm,
   handleSubmitPosition,
   handleCancelPosition,
+  site,
+  addPosition,
 }) => {
   return (
     <>
@@ -56,6 +71,11 @@ export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
           />
         ))}
       </div>
+      <AddPositionButton
+        site={site}
+        positionsOptionsMock={positionsOptionsMock}
+        addPosition={addPosition}
+      />
     </>
   );
 };

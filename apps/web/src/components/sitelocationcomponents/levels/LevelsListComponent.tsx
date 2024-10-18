@@ -1,13 +1,23 @@
 import React from 'react';
 import { LevelComponent } from './LevelComponent';
+import { AddLevelButton } from './AddLevelButton';
 import { Headline, Text } from '@gsp/ui';
 
+interface LevelsOptionsMock {
+  id: string;
+  name: string;
+}
+interface LevelFormData {
+  id: string;
+  name: string;
+}
+// @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
-  levelsOptionsMock: any[];
+  levelsOptionsMock: LevelsOptionsMock[];
   selectedLevel: string;
   handleSetLevel: (name: string) => void;
   setSelectedLevel: (id: string) => void;
-  levelForm: any;
+  levelForm: LevelFormData;
   handleSubmitLevel: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -16,6 +26,8 @@ interface LevelsListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  site: string | undefined;
+  addLevel: any;
 }
 
 export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
@@ -26,6 +38,8 @@ export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
   levelForm,
   handleSubmitLevel,
   handleCancelLevel,
+  site,
+  addLevel,
 }) => {
   return (
     <>
@@ -56,8 +70,11 @@ export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
           />
         ))}
       </div>
+      <AddLevelButton
+        site={site}
+        levelsOptionsMock={levelsOptionsMock}
+        addLevel={addLevel}
+      />
     </>
   );
 };
-
-// export default LevelsListComponent;

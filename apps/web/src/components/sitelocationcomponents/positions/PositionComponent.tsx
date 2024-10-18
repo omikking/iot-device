@@ -3,8 +3,13 @@ import SiteLocationsForm from '../SiteLocationsForm';
 import { Button, Text } from '@gsp/ui';
 import { LucideEllipsis, LucideX } from 'lucide-react';
 
+interface PositionsOptionsMock {
+  id: string;
+  name: string;
+}
+
 interface PositionComponentProps {
-  position: any;
+  position: PositionsOptionsMock;
   index: number;
   selectedPosition: string;
   handleSetPosition: (name: string) => void;
@@ -57,9 +62,6 @@ export const PositionComponent: React.FC<PositionComponentProps> = ({
             <Text className="w-full" variant="small" color="foreground">
               {position.name}
             </Text>
-            {/* TODO: will remove this button later. Just here for testing purposes
-                          remove button will be inside the ellipsis button
-                */}
             <Button
               size={'small'}
               variant={'outline'}

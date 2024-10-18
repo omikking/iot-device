@@ -5,19 +5,14 @@ import { z } from 'zod';
 import { sitesMock } from '@/app/mock/mock';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LevelsListComponent } from '@/components/sitelocationcomponents/LevelsListComponent';
-import { DrivesListComponent } from '@/components/sitelocationcomponents/DrivesListComponent';
-import { PositionsListComponent } from '@/components/sitelocationcomponents/PositionsListComponent';
-import { LucideMoveLeft, LucidePlus } from 'lucide-react';
 import {
-  Anchor,
-  Badge,
-  Button,
-  Dropdown,
-  Headline,
-  Text,
-  DropdownItem,
-} from '@gsp/ui';
+  LevelsListComponent,
+  LevelFormData,
+} from '@/components/sitelocationcomponents/levels/LevelsListComponent';
+import { DrivesListComponent } from '@/components/sitelocationcomponents/drive/DrivesListComponent';
+import { PositionsListComponent } from '@/components/sitelocationcomponents/positions/PositionsListComponent';
+import { LucideMoveLeft } from 'lucide-react';
+import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
 
 interface ILevelMock {
   id: string;
@@ -346,100 +341,45 @@ export default function Page(): JSX.Element {
         />
 
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
-          {/* @TODO Make a levelComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsListComponent
               levelsOptionsMock={levelsOptionsMock}
-              selectedLevel={selectedLevel}
+              selectedLevel={selectedLevel ?? ''}
               handleSetLevel={handleSetLevel}
               setSelectedLevel={setSelectedLevel}
-              levelForm={levelForm}
+              levelForm={levelForm as LevelFormData}
               handleSubmitLevel={handleSubmitLevel}
               handleCancelLevel={handleCancelLevel}
+              site={site}
+              addLevel={addLevel}
             />
-            <div className="flex justify-end w-full p-3">
-              {site ? (
-                <Button
-                  size={'small'}
-                  variant={'primary'}
-                  onClick={() => addLevel()}
-                  disabled={levelsOptionsMock.some(
-                    (level) => level.name === '',
-                  )}
-                >
-                  <LucidePlus /> Add level
-                </Button>
-              ) : (
-                <Button size={'small'} variant={'primary'} disabled>
-                  <LucidePlus /> Add level
-                </Button>
-              )}
-            </div>
           </div>
-          {/* @TODO Make a driveComponent */}
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesListComponent
               drivesOptionsMock={drivesOptionsMock}
-              selectedDrive={selectedDrive}
+              selectedDrive={selectedDrive ?? ''}
               handleSetDrive={handleSetDrive}
               setSelectedDrive={setSelectedDrive}
               driveForm={driveForm}
               handleSubmitDrive={handleSubmitDrive}
               handleCancelDrive={handleCancelDrive}
+              site={site}
+              addDrive={addDrive}
             />
-            <div className="flex justify-end w-full p-3">
-              {level !== undefined ? (
-                <Button
-                  size={'small'}
-                  variant={'primary'}
-                  onClick={() => {
-                    addDrive();
-                  }}
-                  disabled={
-                    drivesOptionsMock.some((drive) => drive.name === '') ||
-                    level === ''
-                  }
-                >
-                  <LucidePlus /> Add drive
-                </Button>
-              ) : (
-                <Button size={'small'} variant={'primary'} disabled>
-                  <LucidePlus /> Add drive
-                </Button>
-              )}
-            </div>
           </div>
-          {/* @TODO Make a positionComponent */}
+
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <PositionsListComponent
               positionsOptionsMock={positionsOptionsMock}
-              selectedPosition={selectedPosition}
+              selectedPosition={selectedPosition ?? ''}
               handleSetPosition={setSelectedPosition}
               setSelectedPosition={setSelectedPosition}
               positionForm={positionForm}
               handleSubmitPosition={handleSubmitPosition}
               handleCancelPosition={handleCancelPosition}
+              site={site}
+              addPosition={addPosition}
             />
-            <div className="flex justify-end w-full p-3">
-              {drive !== undefined ? (
-                <Button
-                  size={'small'}
-                  variant={'primary'}
-                  onClick={() => addPosition()}
-                  disabled={
-                    positionsOptionsMock.some(
-                      (position) => position.name === '',
-                    ) || drive === ''
-                  }
-                >
-                  <LucidePlus /> Add position
-                </Button>
-              ) : (
-                <Button size={'small'} variant={'primary'} disabled>
-                  <LucidePlus /> Add position
-                </Button>
-              )}
-            </div>
           </div>
         </div>
       </div>

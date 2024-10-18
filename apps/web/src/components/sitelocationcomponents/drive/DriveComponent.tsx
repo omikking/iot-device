@@ -1,65 +1,70 @@
 import React from 'react';
 import SiteLocationsForm from '../SiteLocationsForm';
 import { Button, Text } from '@gsp/ui';
-import { LucideX, LucideEllipsis } from 'lucide-react';
+import { LucideEllipsis, LucideX } from 'lucide-react';
 
-interface LevelComponentProps {
-  level: any;
+interface DriveOptionsMock {
+  id: string;
+  name: string;
+}
+
+interface DriveComponentProps {
+  drive: DriveOptionsMock;
   index: number;
-  selectedLevel: string;
-  handleSetLevel: (name: string) => void;
-  setSelectedLevel: (id: string) => void;
-  levelForm: any;
-  handleSubmitLevel: (
+  selectedDrive: string;
+  handleSetDrive: (name: string) => void;
+  setSelectedDrive: (id: string) => void;
+  driveForm: any;
+  handleSubmitDrive: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => void;
-  handleCancelLevel: (
+  handleCancelDrive: (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
 }
 
-export const LevelComponent: React.FC<LevelComponentProps> = ({
-  level,
+export const DriveComponent: React.FC<DriveComponentProps> = ({
+  drive,
   index,
-  selectedLevel,
-  handleSetLevel,
-  setSelectedLevel,
-  levelForm,
-  handleSubmitLevel,
-  handleCancelLevel,
+  selectedDrive,
+  handleSetDrive,
+  setSelectedDrive,
+  driveForm,
+  handleSubmitDrive,
+  handleCancelDrive,
 }) => {
   return (
     <div
-      className={`bg-main-white px-6 ${selectedLevel === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 ${selectedDrive === drive.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
       <div
         className="py-3"
-        onClick={() => (handleSetLevel(level.name), setSelectedLevel(level.id))}
+        onClick={() => (handleSetDrive(drive.name), setSelectedDrive(drive.id))}
       >
-        {level.name === '' ? (
+        {drive.name === '' ? (
           <div>
             <SiteLocationsForm
-              form={levelForm}
-              onSubmit={handleSubmitLevel}
-              onCancel={handleCancelLevel}
-              placeholder="New level..."
-              name="level"
+              form={driveForm}
+              onSubmit={handleSubmitDrive}
+              onCancel={handleCancelDrive}
+              placeholder="New drive..."
+              name="drive"
               index={index}
             />
           </div>
         ) : (
           <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text className="w-full" variant="small" color="foreground">
-              {level.name}
+              {drive.name}
             </Text>
             <Button
               size={'small'}
               variant={'outline'}
               type="button"
-              onClick={(e) => handleCancelLevel(e, index)}
+              onClick={(e) => handleCancelDrive(e, index)}
             >
               <LucideX />
             </Button>
@@ -76,5 +81,3 @@ export const LevelComponent: React.FC<LevelComponentProps> = ({
     </div>
   );
 };
-
-// export default LevelComponent;

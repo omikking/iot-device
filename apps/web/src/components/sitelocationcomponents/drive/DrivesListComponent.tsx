@@ -1,13 +1,24 @@
 import React from 'react';
 import { DriveComponent } from './DriveComponent';
+import { AddDriveButton } from './AddDriveButton';
 import { Headline, Text } from '@gsp/ui';
 
+interface DriveOptionsMock {
+  id: string;
+  name: string;
+}
+
+interface DriveFormData {
+  id: string;
+  name: string;
+}
+
 interface DrivesListComponentProps {
-  drivesOptionsMock: any[];
+  drivesOptionsMock: DriveOptionsMock[];
   selectedDrive: string;
   handleSetDrive: (name: string) => void;
   setSelectedDrive: (id: string) => void;
-  driveForm: any;
+  driveForm: DriveFormData;
   handleSubmitDrive: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -16,6 +27,8 @@ interface DrivesListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  site: string | undefined;
+  addDrive: any;
 }
 
 export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
@@ -26,6 +39,8 @@ export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
   driveForm,
   handleSubmitDrive,
   handleCancelDrive,
+  site,
+  addDrive,
 }) => {
   return (
     <>
@@ -56,6 +71,11 @@ export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
           />
         ))}
       </div>
+      <AddDriveButton
+        site={site}
+        drivesOptionsMock={drivesOptionsMock}
+        addDrive={addDrive}
+      />
     </>
   );
 };

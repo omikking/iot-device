@@ -8,7 +8,7 @@ import { LucideCircuitBoard } from 'lucide-react';
 
 export default function Page(): JSX.Element {
   return (
-    // what do we think of this solution? min-h-[calc(100vh-65px)] is a bit of a hack
+    //@TODO  Fix this min-h-[calc(100vh-65px)] add that value in tailwind-config as minPageHeight or something like that
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-1 overflow-y-auto">
       <GoBack />
 

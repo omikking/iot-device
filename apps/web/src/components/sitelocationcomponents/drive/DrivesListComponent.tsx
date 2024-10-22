@@ -1,24 +1,15 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DriveComponent } from './DriveComponent';
-import { AddDriveButton } from './AddDriveButton';
 import { Headline, Text } from '@gsp/ui';
-
-interface DriveOptionsMock {
-  id: string;
-  name: string;
-}
-
-interface DriveFormData {
-  id: string;
-  name: string;
-}
+import { UseFormReturn } from 'react-hook-form';
+import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
 
 interface DrivesListComponentProps {
-  drivesOptionsMock: DriveOptionsMock[];
+  drivesOptionsMock: SitesLocationFormData[];
   selectedDrive: string;
   handleSetDrive: (name: string) => void;
   setSelectedDrive: (id: string) => void;
-  driveForm: DriveFormData;
+  driveForm: UseFormReturn<SitesLocationFormData>;
   handleSubmitDrive: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -27,8 +18,6 @@ interface DrivesListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
-  site: string | undefined;
-  addDrive: any;
 }
 
 export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
@@ -39,9 +28,14 @@ export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
   driveForm,
   handleSubmitDrive,
   handleCancelDrive,
-  site,
-  addDrive,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [drivesOptionsMock]);
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -68,14 +62,10 @@ export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
             driveForm={driveForm}
             handleSubmitDrive={handleSubmitDrive}
             handleCancelDrive={handleCancelDrive}
+            inputRef={inputRef}
           />
         ))}
       </div>
-      <AddDriveButton
-        site={site}
-        drivesOptionsMock={drivesOptionsMock}
-        addDrive={addDrive}
-      />
     </>
   );
 };

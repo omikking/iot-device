@@ -1,14 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PositionComponent } from './PositionComponent';
 import { Headline, Text } from '@gsp/ui';
-import { AddPositionButton } from './AddPositionButton';
+import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
+import { UseFormReturn } from 'react-hook-form';
 
 interface PositionsOptionsMock {
-  id: string;
-  name: string;
-}
-
-interface PositionFormData {
   id: string;
   name: string;
 }
@@ -16,9 +12,9 @@ interface PositionFormData {
 interface PositionsListComponentProps {
   positionsOptionsMock: PositionsOptionsMock[];
   selectedPosition: string;
-  handleSetPosition: (name: string) => void;
+
   setSelectedPosition: (id: string) => void;
-  positionForm: PositionFormData;
+  positionForm: UseFormReturn<SitesLocationFormData>;
   handleSubmitPosition: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -27,21 +23,24 @@ interface PositionsListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
-  site: string | undefined;
-  addPosition: any;
 }
 
 export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
   positionsOptionsMock,
   selectedPosition,
-  handleSetPosition,
+
   setSelectedPosition,
   positionForm,
   handleSubmitPosition,
   handleCancelPosition,
-  site,
-  addPosition,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [positionsOptionsMock]);
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -63,19 +62,14 @@ export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
             position={position}
             index={index}
             selectedPosition={selectedPosition}
-            handleSetPosition={handleSetPosition}
             setSelectedPosition={setSelectedPosition}
             positionForm={positionForm}
             handleSubmitPosition={handleSubmitPosition}
             handleCancelPosition={handleCancelPosition}
+            inputRef={inputRef}
           />
         ))}
       </div>
-      <AddPositionButton
-        site={site}
-        positionsOptionsMock={positionsOptionsMock}
-        addPosition={addPosition}
-      />
     </>
   );
 };

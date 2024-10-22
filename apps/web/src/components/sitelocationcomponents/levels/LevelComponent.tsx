@@ -22,6 +22,7 @@ interface LevelComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const LevelComponent: React.FC<LevelComponentProps> = ({
@@ -33,6 +34,7 @@ export const LevelComponent: React.FC<LevelComponentProps> = ({
   levelForm,
   handleSubmitLevel,
   handleCancelLevel,
+  inputRef,
 }) => {
   return (
     <div
@@ -52,6 +54,7 @@ export const LevelComponent: React.FC<LevelComponentProps> = ({
               placeholder="New level..."
               name="level"
               index={index}
+              inputRef={inputRef}
             />
           </div>
         ) : (
@@ -80,5 +83,3 @@ export const LevelComponent: React.FC<LevelComponentProps> = ({
     </div>
   );
 };
-
-// export default LevelComponent;

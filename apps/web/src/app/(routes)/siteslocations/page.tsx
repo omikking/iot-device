@@ -3,16 +3,22 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { z } from 'zod';
 import { sitesMock } from '@/app/mock/mock';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  LevelsListComponent,
-  LevelFormData,
-} from '@/components/sitelocationcomponents/levels/LevelsListComponent';
+import { LevelsListComponent } from '@/components/sitelocationcomponents/levels/LevelsListComponent';
+import { UseFormReturn, useForm } from 'react-hook-form';
+
 import { DrivesListComponent } from '@/components/sitelocationcomponents/drive/DrivesListComponent';
 import { PositionsListComponent } from '@/components/sitelocationcomponents/positions/PositionsListComponent';
-import { LucideMoveLeft } from 'lucide-react';
-import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
+import { LucideMoveLeft, LucidePlus } from 'lucide-react';
+import {
+  Anchor,
+  Badge,
+  Dropdown,
+  Headline,
+  Text,
+  DropdownItem,
+  Button,
+} from '@gsp/ui';
 
 interface ILevelMock {
   id: string;
@@ -27,6 +33,11 @@ interface IDriveMock {
 }
 
 interface IPositionMock {
+  id: string;
+  name: string;
+}
+
+export interface SitesLocationFormData {
   id: string;
   name: string;
 }
@@ -96,14 +107,14 @@ export default function Page(): JSX.Element {
     setDrive(undefined);
   };
 
-  const handleSetLevel = (level?: string) => {
-    setLevel(level);
+  const handleSetLevel = (_level?: string) => {
+    setLevel(_level);
     setDrive(undefined);
     setSelectedDrive(undefined);
   };
 
-  const handleSetDrive = (drive?: string) => {
-    setDrive(drive);
+  const handleSetDrive = (_drive?: string) => {
+    setDrive(_drive);
     setSelectedPosition(undefined);
   };
 
@@ -347,12 +358,28 @@ export default function Page(): JSX.Element {
               selectedLevel={selectedLevel ?? ''}
               handleSetLevel={handleSetLevel}
               setSelectedLevel={setSelectedLevel}
-              levelForm={levelForm as LevelFormData}
+              levelForm={levelForm as UseFormReturn<SitesLocationFormData>}
               handleSubmitLevel={handleSubmitLevel}
               handleCancelLevel={handleCancelLevel}
-              site={site}
-              addLevel={addLevel}
             />
+            <div className="flex justify-end w-full p-3">
+              {site ? (
+                <Button
+                  size={'small'}
+                  variant={'primary'}
+                  onClick={() => addLevel()}
+                  disabled={levelsOptionsMock.some(
+                    (level) => level.name === '',
+                  )}
+                >
+                  <LucidePlus /> Add level
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <LucidePlus /> Add level
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesListComponent
@@ -360,26 +387,63 @@ export default function Page(): JSX.Element {
               selectedDrive={selectedDrive ?? ''}
               handleSetDrive={handleSetDrive}
               setSelectedDrive={setSelectedDrive}
-              driveForm={driveForm}
+              driveForm={driveForm as UseFormReturn<SitesLocationFormData>}
               handleSubmitDrive={handleSubmitDrive}
               handleCancelDrive={handleCancelDrive}
-              site={site}
-              addDrive={addDrive}
             />
+            <div className="flex justify-end w-full p-3">
+              {selectedLevel ? (
+                <Button
+                  size={'small'}
+                  variant={'primary'}
+                  onClick={() => addDrive()}
+                  disabled={
+                    levelsOptionsMock.length === 0 ||
+                    drivesOptionsMock.some((drive) => drive.name === '')
+                  }
+                >
+                  <LucidePlus /> Add drive
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <LucidePlus /> Add drive
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <PositionsListComponent
               positionsOptionsMock={positionsOptionsMock}
               selectedPosition={selectedPosition ?? ''}
-              handleSetPosition={setSelectedPosition}
               setSelectedPosition={setSelectedPosition}
-              positionForm={positionForm}
+              positionForm={
+                positionForm as UseFormReturn<SitesLocationFormData>
+              }
               handleSubmitPosition={handleSubmitPosition}
               handleCancelPosition={handleCancelPosition}
-              site={site}
-              addPosition={addPosition}
             />
+            <div className="flex justify-end w-full p-3">
+              {selectedDrive ? (
+                <Button
+                  size={'small'}
+                  variant={'primary'}
+                  onClick={() => addPosition()}
+                  disabled={
+                    drivesOptionsMock.length === 0 ||
+                    positionsOptionsMock.some(
+                      (position) => position.name === '',
+                    )
+                  }
+                >
+                  <LucidePlus /> Add position
+                </Button>
+              ) : (
+                <Button size={'small'} variant={'primary'} disabled>
+                  <LucidePlus /> Add position
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -23,6 +23,7 @@ interface DriveComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const DriveComponent: React.FC<DriveComponentProps> = ({
@@ -34,6 +35,7 @@ export const DriveComponent: React.FC<DriveComponentProps> = ({
   driveForm,
   handleSubmitDrive,
   handleCancelDrive,
+  inputRef,
 }) => {
   return (
     <div
@@ -53,6 +55,7 @@ export const DriveComponent: React.FC<DriveComponentProps> = ({
               placeholder="New drive..."
               name="drive"
               index={index}
+              inputRef={inputRef}
             />
           </div>
         ) : (

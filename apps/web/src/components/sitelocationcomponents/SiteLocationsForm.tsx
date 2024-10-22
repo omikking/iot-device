@@ -11,6 +11,7 @@ interface SiteLocationsFormProps {
   placeholder: string;
   name: string;
   index: number;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
@@ -20,6 +21,7 @@ const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
   placeholder,
   name,
   index,
+  inputRef,
 }) => {
   return (
     <FormProvider {...form}>
@@ -31,6 +33,7 @@ const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
           className="w-full  focus:outline focus:outline-none"
           name={name}
           placeholder={placeholder}
+          ref={inputRef}
         />
         <Button
           size="small"

@@ -1,23 +1,16 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { LevelComponent } from './LevelComponent';
-import { AddLevelButton } from './AddLevelButton';
 import { Headline, Text } from '@gsp/ui';
+import { UseFormReturn } from 'react-hook-form';
+import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
 
-interface LevelsOptionsMock {
-  id: string;
-  name: string;
-}
-interface LevelFormData {
-  id: string;
-  name: string;
-}
 // @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
-  levelsOptionsMock: LevelsOptionsMock[];
+  levelsOptionsMock: SitesLocationFormData[];
   selectedLevel: string;
   handleSetLevel: (name: string) => void;
   setSelectedLevel: (id: string) => void;
-  levelForm: LevelFormData;
+  levelForm: UseFormReturn<SitesLocationFormData>;
   handleSubmitLevel: (
     event: React.FormEvent<HTMLFormElement>,
     index: number,
@@ -26,8 +19,6 @@ interface LevelsListComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
-  site: string | undefined;
-  addLevel: any;
 }
 
 export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
@@ -38,9 +29,14 @@ export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
   levelForm,
   handleSubmitLevel,
   handleCancelLevel,
-  site,
-  addLevel,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [levelsOptionsMock]);
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -67,14 +63,10 @@ export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
             levelForm={levelForm}
             handleSubmitLevel={handleSubmitLevel}
             handleCancelLevel={handleCancelLevel}
+            inputRef={inputRef}
           />
         ))}
       </div>
-      <AddLevelButton
-        site={site}
-        levelsOptionsMock={levelsOptionsMock}
-        addLevel={addLevel}
-      />
     </>
   );
 };

@@ -12,7 +12,6 @@ interface PositionComponentProps {
   position: PositionsOptionsMock;
   index: number;
   selectedPosition: string;
-  handleSetPosition: (name: string) => void;
   setSelectedPosition: (id: string) => void;
   positionForm: any;
   handleSubmitPosition: (
@@ -23,29 +22,26 @@ interface PositionComponentProps {
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const PositionComponent: React.FC<PositionComponentProps> = ({
   position,
   index,
   selectedPosition,
-  handleSetPosition,
+
   setSelectedPosition,
   positionForm,
   handleSubmitPosition,
   handleCancelPosition,
+  inputRef,
 }) => {
   return (
     <div
       className={`bg-main-white px-6 ${selectedPosition === position.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
-      <div
-        className="py-3"
-        onClick={() => (
-          handleSetPosition(position.name), setSelectedPosition(position.id)
-        )}
-      >
+      <div className="py-3" onClick={() => setSelectedPosition(position.id)}>
         {position.name === '' ? (
           <div>
             <SiteLocationsForm
@@ -55,6 +51,7 @@ export const PositionComponent: React.FC<PositionComponentProps> = ({
               placeholder="New position..."
               name="position"
               index={index}
+              inputRef={inputRef}
             />
           </div>
         ) : (

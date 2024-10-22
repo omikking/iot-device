@@ -4,11 +4,11 @@ import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
 import {
   Button,
   Headline,
-  Table,
   Badge,
   Modal,
   ModalTrigger,
@@ -24,7 +24,7 @@ export default function Page(): JSX.Element {
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [position, setPosition] = useState<string | undefined>(undefined);
-
+  const [selectedTab, setSelectedTab] = useState('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -75,7 +75,11 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <Tabs defaultValue="table" className="w-full max-w-[1600px]">
+      <Tabs
+        defaultValue="table"
+        onValueChange={setSelectedTab}
+        className="w-full max-w-[1600px]"
+      >
         <div className="w-full flex flex-row justify-between items-center pb-2">
           <TabsList>
             <TabsTrigger value="table">
@@ -110,6 +114,7 @@ export default function Page(): JSX.Element {
           onSetDrive={setDrive}
           onSetPosition={setPosition}
           onSetDateRange={setDateRange}
+          selectedTab={selectedTab}
         />
 
         <TabsContent value="table" className="w-full">
@@ -117,7 +122,7 @@ export default function Page(): JSX.Element {
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table />
+          <BoltResultsGraphView />
         </TabsContent>
       </Tabs>
     </main>

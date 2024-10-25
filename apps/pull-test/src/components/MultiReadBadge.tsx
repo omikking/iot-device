@@ -19,7 +19,6 @@ interface BoltSpecification {
   text: string;
 }
 
-//
 const transformRowToSpecifications = (row: RowData): BoltSpecification[] => {
   return [
     { title: 'Displacement', text: row.original.peakDisplacement.toString() },

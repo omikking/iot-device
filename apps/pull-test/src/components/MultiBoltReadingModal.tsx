@@ -39,7 +39,8 @@ export const MultiBoltReadingModal = ({
   boltResults,
 }: MultiBoltReadingModalProps) => {
   return (
-    <ModalContent className="max-h-full overflow-y-auto">
+    // setting width otherwise its too wide when on large screens
+    <ModalContent className="max-h-full w-96 overflow-y-auto">
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>

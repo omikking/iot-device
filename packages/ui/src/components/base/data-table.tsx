@@ -54,7 +54,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <Table variant={variant ?? null} className={className}>
+    <Table variant={variant} className={className}>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>

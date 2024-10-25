@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, ModalTrigger } from '@gsp/ui';
+import { Modal, ModalTrigger } from '@gsp/ui';
 import { Badge } from '@gsp/ui';
 import {
   LucideImage,
@@ -31,6 +31,7 @@ interface BoltDetailsModalProps {
   multiReadings?: MultiReading[];
 }
 
+// rename this component? its not a modal, but it triggers a modal
 export const MultiBoltDetailsModal: React.FC<BoltDetailsModalProps> = ({
   row,
   isHazard,
@@ -40,7 +41,6 @@ export const MultiBoltDetailsModal: React.FC<BoltDetailsModalProps> = ({
   return (
     <Modal>
       {row.original.image || row.original.comment || row.original.isHazard ? (
-        // <ModalTrigger asChild>
         <ModalTrigger>
           <Badge variant="neutral">
             <div className="flex flex-row gap-2 items-center">

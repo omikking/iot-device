@@ -46,7 +46,7 @@ const transformRowToSpecifications = (row: RowData): BoltSpecification[] => {
   ];
 };
 
-const renderMultiReadBadge = (row: RowData, accessor: string) => {
+const renderMultiReadBadge = (row: RowData, accessorKey: string) => {
   const { peakLoad, peakDisplacement } = row.original;
   if (peakLoad.length > 1 && peakDisplacement.length > 1) {
     const multiReadings = peakLoad.map((value, index) => ({
@@ -58,7 +58,7 @@ const renderMultiReadBadge = (row: RowData, accessor: string) => {
   }
 
   // AI generated code may need to adjust it
-  return row.original[accessor as keyof BoltResultSchema];
+  return row.original[accessorKey as keyof BoltResultSchema];
 };
 
 export const BoltResultsTable = ({
@@ -126,7 +126,6 @@ export const BoltResultsTable = ({
       accessorKey: 'comment',
       header: 'Comment',
       cell: ({ row }) => {
-        // const isHazard = row.original.isHazard ?? false;
         const { peakLoad, peakDisplacement } = row.original;
         const multiReadings = peakLoad.map((load, index) => ({
           reading: (index + 1).toString(),
@@ -167,7 +166,6 @@ export const BoltResultsTable = ({
       <DataTable
         columns={columns}
         data={boltResults || []}
-        variant="border"
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'

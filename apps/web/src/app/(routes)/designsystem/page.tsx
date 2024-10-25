@@ -173,9 +173,7 @@ export default function Page(): JSX.Element {
           </Link>
         </Button>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Badges 🦄
       </Headline>
@@ -219,9 +217,7 @@ export default function Page(): JSX.Element {
           <LucideBot />
         </Badge>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Headlines 🦄
       </Headline>
@@ -242,9 +238,7 @@ export default function Page(): JSX.Element {
           Small bold Headline
         </Headline>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Texts 🦄
       </Headline>
@@ -261,9 +255,7 @@ export default function Page(): JSX.Element {
           XS text with muted color
         </Text>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Links 🦄
       </Headline>
@@ -293,9 +285,7 @@ export default function Page(): JSX.Element {
           </Link>
         </Headline>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Radio 🦄
       </Headline>
@@ -357,9 +347,7 @@ export default function Page(): JSX.Element {
           </form>
         </Form>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Checkbox 🦄
       </Headline>
@@ -403,9 +391,7 @@ export default function Page(): JSX.Element {
           </form>
         </Form>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         TextArea 🦄
       </Headline>
@@ -457,9 +443,7 @@ export default function Page(): JSX.Element {
           </form>
         </Form>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Input field, dropdown & calendar 🦄
       </Headline>
@@ -639,9 +623,7 @@ export default function Page(): JSX.Element {
           </form>
         </Form>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Switch toggle 🦄
       </Headline>
@@ -650,9 +632,7 @@ export default function Page(): JSX.Element {
         <Switch />
         <Switch disabled />
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Table 🦄
       </Headline>
@@ -697,9 +677,7 @@ export default function Page(): JSX.Element {
           {usersMock.length} total
         </Badge>
       </div>
-
       <hr className="w-full" />
-
       <Headline variant="large" as="h1" color="foreground">
         Tabs 🦄
       </Headline>
@@ -733,7 +711,6 @@ export default function Page(): JSX.Element {
           <TabsContent value="list">List layout</TabsContent>
         </Tabs>
       </div>
-
       <hr className="w-full" />
     </main>
   );

@@ -1,5 +1,5 @@
 import { Badge, BoltResultCard, Text } from '@gsp/ui';
-import { LucideBolt } from 'lucide-react';
+import { LucideBolt, LucideGoal, LucideWeight } from 'lucide-react';
 import React from 'react';
 
 export const BoltResultsGraphView = () => {
@@ -9,7 +9,6 @@ export const BoltResultsGraphView = () => {
         <Badge variant={'primary'} size={'large'}>
           182 tests
         </Badge>
-
         <Text variant="medium" color="foreground">
           Total numbers of tests
         </Text>
@@ -17,23 +16,21 @@ export const BoltResultsGraphView = () => {
       </BoltResultCard>
       <BoltResultCard>
         <Badge variant={'primary'} size={'large'}>
-          182 tests
+          19.5 tons
         </Badge>
-
         <Text variant="medium" color="foreground">
-          Total numbers of tests
+          Average tons
         </Text>
-        <LucideBolt size={28} absoluteStrokeWidth />
+        <LucideWeight size={28} absoluteStrokeWidth />
       </BoltResultCard>
       <BoltResultCard>
         <Badge variant={'primary'} size={'large'}>
-          182 tests
+          94.4%
         </Badge>
-
         <Text variant="medium" color="foreground">
-          Total numbers of tests
+          Success rate
         </Text>
-        <LucideBolt size={28} absoluteStrokeWidth />
+        <LucideGoal size={28} absoluteStrokeWidth />
       </BoltResultCard>
     </div>
   );

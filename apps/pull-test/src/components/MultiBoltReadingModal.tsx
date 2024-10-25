@@ -26,7 +26,7 @@ interface MultiBoltReadingModalProps {
     title: string;
     text: string;
   }[];
-  boltResults: MultiBoltReadingSchema[] | undefined;
+  boltResults?: MultiBoltReadingSchema[];
 }
 
 export const MultiBoltReadingModal = ({
@@ -116,7 +116,7 @@ export const MultiBoltReadingModal = ({
           >
             Bolt results
           </Headline>
-          <MultiBoltReadingTable boltResults={boltResults} />
+          <MultiBoltReadingTable multiReadingResults={boltResults} />
         </div>
       </div>
       {/* Bolt plot */}
@@ -127,8 +127,7 @@ export const MultiBoltReadingModal = ({
           as="h3"
           color="foreground"
         >
-          Bolt plot
-          <div className="bg-main-white h-96 mt-10">Graph</div>
+          Bolt plot Graph
         </Headline>
       </div>
       <ModalFooter className="px-10 pb-5 pt-8">

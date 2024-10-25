@@ -1,11 +1,11 @@
 'use client';
 
-import { MultiBoltReadingSchema as MultiBoltReadingSchema } from '@/app/mock/mock';
+import { MultiBoltReadingSchema } from '@/app/mock/mock';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 
 interface MultiBoltReadingTableProps {
-  boltResults: MultiBoltReadingSchema[] | undefined;
+  multiReadingResults?: MultiBoltReadingSchema[];
   site?: string;
 }
 
@@ -24,7 +24,7 @@ const columns: ColumnDef<MultiBoltReadingSchema>[] = [
   {
     accessorKey: 'peakDisplacement',
     header: ({ column }) => (
-      <div style={{ fontWeight: 'bold' }}>
+      <div>
         <TableHeadWithSorting column={column} header="Peak displacement" />
       </div>
     ),
@@ -36,21 +36,22 @@ const columns: ColumnDef<MultiBoltReadingSchema>[] = [
 ];
 
 export const MultiBoltReadingTable = ({
-  boltResults,
+  multiReadingResults,
 }: MultiBoltReadingTableProps) => {
   return (
     <div>
-      {/* @TODO fick the important ! modifier */}
+      {/* @TODO fix the important "!" modifier */}
       <DataTable
         columns={columns}
-        data={boltResults || []}
+        data={multiReadingResults || []}
         variant="noBorder"
         className="!p-0 !pt-5"
       />
-
-      <Badge variant="neutral" className="self-start mt-5">
-        {boltResults?.length} total
-      </Badge>
+      {multiReadingResults?.length && (
+        <Badge variant="neutral" className="self-start mt-5">
+          {multiReadingResults?.length} total
+        </Badge>
+      )}
     </div>
   );
 };

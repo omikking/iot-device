@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   noResultMessage?: string;
-  variant?: 'default' | 'noBorder' | undefined;
+  variant?: 'border' | 'noBorder';
   className?: string;
 }
 

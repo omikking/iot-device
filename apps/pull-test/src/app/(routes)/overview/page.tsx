@@ -22,7 +22,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-wrap gap-12 w-full justify-center pb-20 border-b border-gold-3">
         <Link href="/">
-          <NavigationCard variant={'centered'}>
+          <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Bolt results
             </Headline>
@@ -34,7 +34,7 @@ export default function Page(): JSX.Element {
           </NavigationCard>
         </Link>
         <Link href="/">
-          <NavigationCard variant={'centered'}>
+          <NavigationCard>
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"
               variant="neutral"

@@ -128,13 +128,13 @@ export default function Page(): JSX.Element {
           </Button>
         </ModalTrigger>
         <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
-          <p>
+          <Text variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'}>
-              Elliot Alderson
-            </Text>{' '}
+            <Text variant="medium" color={'foreground'} as="span">
+              {` Elliot Alderson `}
+            </Text>
             from the list. Are you sure you want to delete?
-          </p>
+          </Text>
         </DeleteModalConfirmation>
       </Modal>
       <hr className="w-full" />

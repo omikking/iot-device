@@ -1,7 +1,8 @@
 'use client';
 import { GoBack } from '@/components/GoBack';
+import { AddUserModal } from '@/components/AddUserModal';
 import { UsersTable } from '@/components/UsersTable';
-import { Button, Headline, Badge } from '@gsp/ui';
+import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 
 import { LucidePlus } from 'lucide-react';
 
@@ -21,10 +22,15 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Button variant="primary" size="large">
-          <LucidePlus />
-          Add user
-        </Button>
+        <Modal>
+          <ModalTrigger asChild>
+            <Button variant="primary" size="large">
+              <LucidePlus />
+              Add user
+            </Button>
+          </ModalTrigger>
+          <AddUserModal />
+        </Modal>
 
         <UsersTable />
       </div>

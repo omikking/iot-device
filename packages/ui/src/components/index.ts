@@ -24,6 +24,7 @@ export * from './base/data-table';
 export * from './base/popover';
 export * from './base/modal';
 export * from './base/menu-overlay';
+export * from './base/loading-spinner';
 
 export * from './shared-custom/navigation-card';
 export * from './shared-custom/content-holder';

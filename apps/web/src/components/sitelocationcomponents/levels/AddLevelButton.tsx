@@ -13,11 +13,11 @@ interface AddLevelButtonProps {
   addLevel: () => void;
 }
 
-export const AddLevelButton: React.FC<AddLevelButtonProps> = ({
+export const AddLevelButton = ({
   site,
   levelsOptionsMock,
   addLevel,
-}) => {
+}: AddLevelButtonProps) => {
   return (
     <div className="flex justify-end w-full p-3">
       {site ? (

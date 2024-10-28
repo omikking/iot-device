@@ -1,47 +1,83 @@
 import React from 'react';
-import SiteLocationsForm from '../SiteLocationsForm';
+import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Button, Text } from '@gsp/ui';
 import { LucideEllipsis, LucideX } from 'lucide-react';
-
-interface PositionsOptionsMock {
-  id: string;
-  name: string;
-}
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IPositionMock } from '@/app/(routes)/siteslocations/page';
 
 interface PositionComponentProps {
-  position: PositionsOptionsMock;
+  position: IPositionMock;
   index: number;
-  selectedPosition: string;
-  setSelectedPosition: (id: string) => void;
-  positionForm: any;
-  handleSubmitPosition: (
-    event: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => void;
-  handleCancelPosition: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => void;
+  positionsOptionsMock: IPositionMock[];
   inputRef: React.RefObject<HTMLInputElement>;
+  setPositionsOptionsMock: React.Dispatch<
+    React.SetStateAction<IPositionMock[]>
+  >;
 }
 
-export const PositionComponent: React.FC<PositionComponentProps> = ({
+export const PositionComponent = ({
   position,
+  positionsOptionsMock,
   index,
-  selectedPosition,
-
-  setSelectedPosition,
-  positionForm,
-  handleSubmitPosition,
-  handleCancelPosition,
+  setPositionsOptionsMock,
   inputRef,
-}) => {
+}: PositionComponentProps) => {
+  const positionFormSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+
+  const positionForm = useForm<z.infer<typeof positionFormSchema>>({
+    resolver: zodResolver(positionFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
+
+  const handleCancelPosition = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    e.preventDefault();
+
+    const newPositions = [...positionsOptionsMock];
+    newPositions.splice(index, 1);
+    setPositionsOptionsMock(newPositions);
+  };
+
+  const handleSubmitPosition = (
+    e: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const newPositionName = formData.get('position') as string;
+
+    const isDuplicate = positionsOptionsMock.some(
+      (position) => position.name === newPositionName,
+    );
+
+    if (isDuplicate) {
+      alert('This position already exists. Please enter a different position.');
+      return;
+    }
+
+    const newPosition = {
+      ...positionsOptionsMock[index],
+      name: formData.get('position') as string,
+    };
+    const newPositions = [...positionsOptionsMock];
+    newPositions[index] = newPosition;
+    setPositionsOptionsMock(newPositions);
+  };
+
   return (
-    <div
-      className={`bg-main-white px-6 ${selectedPosition === position.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
-      key={index}
-    >
-      <div className="py-3" onClick={() => setSelectedPosition(position.id)}>
+    <div className="bg-main-white px-6" key={index}>
+      <div className="py-3">
         {position.name === '' ? (
           <div>
             <SiteLocationsForm

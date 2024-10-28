@@ -1,35 +1,45 @@
 import React, { useEffect, useRef } from 'react';
 import { DriveComponent } from './DriveComponent';
-import { Headline, Text } from '@gsp/ui';
-import { UseFormReturn } from 'react-hook-form';
-import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
+import { Button, Headline, Text } from '@gsp/ui';
+import {
+  IDriveMock,
+  ILevelMock,
+  IPositionMock,
+} from '@/app/(routes)/siteslocations/page';
+import { LucidePlus } from 'lucide-react';
 
 interface DrivesListComponentProps {
-  drivesOptionsMock: SitesLocationFormData[];
+  drivesOptionsMock: IDriveMock[];
   selectedDrive: string;
-  handleSetDrive: (name: string) => void;
-  setSelectedDrive: (id: string) => void;
-  driveForm: UseFormReturn<SitesLocationFormData>;
-  handleSubmitDrive: (
-    event: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => void;
-  handleCancelDrive: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => void;
+  selectedLevel?: string;
+  levelsOptionsMock: ILevelMock[];
+  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
+  setPositionsOptionsMock: React.Dispatch<
+    React.SetStateAction<IPositionMock[]>
+  >;
+  handleSetDrive: () => void;
 }
 
-export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
+export const DrivesListComponent = ({
   drivesOptionsMock,
   selectedDrive,
+  selectedLevel,
+  levelsOptionsMock,
+  setDrivesOptionsMock,
+  setPositionsOptionsMock,
   handleSetDrive,
-  setSelectedDrive,
-  driveForm,
-  handleSubmitDrive,
-  handleCancelDrive,
-}) => {
+}: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Creates a new empty drive to fill in
+  const addDrive = () => {
+    drivesOptionsMock.push({
+      id: `${drivesOptionsMock.length + 1}`,
+      name: '',
+      positions: [],
+    });
+    setDrivesOptionsMock([...drivesOptionsMock] as IDriveMock[]);
+  };
 
   useEffect(() => {
     if (inputRef.current) {
@@ -53,18 +63,35 @@ export const DrivesListComponent: React.FC<DrivesListComponentProps> = ({
         )}
         {drivesOptionsMock?.map((drive, index) => (
           <DriveComponent
-            key={index}
             drive={drive}
-            index={index}
+            drivesOptionsMock={drivesOptionsMock}
             selectedDrive={selectedDrive}
-            handleSetDrive={handleSetDrive}
-            setSelectedDrive={setSelectedDrive}
-            driveForm={driveForm}
-            handleSubmitDrive={handleSubmitDrive}
-            handleCancelDrive={handleCancelDrive}
             inputRef={inputRef}
+            index={index}
+            setDrivesOptionsMock={setDrivesOptionsMock}
+            setPositionsOptionsMock={setPositionsOptionsMock}
+            handleSetDrive={handleSetDrive}
           />
         ))}
+      </div>
+      <div className="flex justify-end w-full p-3">
+        {selectedLevel ? (
+          <Button
+            size={'small'}
+            variant={'primary'}
+            onClick={() => addDrive()}
+            disabled={
+              levelsOptionsMock.length === 0 ||
+              drivesOptionsMock.some((drive) => drive.name === '')
+            }
+          >
+            <LucidePlus /> Add drive
+          </Button>
+        ) : (
+          <Button size={'small'} variant={'primary'} disabled>
+            <LucidePlus /> Add drive
+          </Button>
+        )}
       </div>
     </>
   );

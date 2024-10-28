@@ -1,40 +1,34 @@
 import React, { useEffect, useRef } from 'react';
 import { PositionComponent } from './PositionComponent';
-import { Headline, Text } from '@gsp/ui';
-import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
-import { UseFormReturn } from 'react-hook-form';
-
-interface PositionsOptionsMock {
-  id: string;
-  name: string;
-}
+import { Button, Headline, Text } from '@gsp/ui';
+import { LucidePlus } from 'lucide-react';
+import { IDriveMock, IPositionMock } from '@/app/(routes)/siteslocations/page';
 
 interface PositionsListComponentProps {
-  positionsOptionsMock: PositionsOptionsMock[];
-  selectedPosition: string;
-
-  setSelectedPosition: (id: string) => void;
-  positionForm: UseFormReturn<SitesLocationFormData>;
-  handleSubmitPosition: (
-    event: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => void;
-  handleCancelPosition: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => void;
+  selectedDrive?: string;
+  positionsOptionsMock: IPositionMock[];
+  drivesOptionsMock: IDriveMock[];
+  setPositionsOptionsMock: React.Dispatch<
+    React.SetStateAction<IPositionMock[]>
+  >;
 }
 
-export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
+export const PositionsListComponent = ({
+  selectedDrive,
+  drivesOptionsMock,
   positionsOptionsMock,
-  selectedPosition,
-
-  setSelectedPosition,
-  positionForm,
-  handleSubmitPosition,
-  handleCancelPosition,
-}) => {
+  setPositionsOptionsMock,
+}: PositionsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Creates a new position to fill in
+  const addPosition = () => {
+    positionsOptionsMock.push({
+      id: `${positionsOptionsMock.length + 1}`,
+      name: '',
+    });
+    setPositionsOptionsMock([...positionsOptionsMock] as IPositionMock[]);
+  };
 
   useEffect(() => {
     if (inputRef.current) {
@@ -60,15 +54,31 @@ export const PositionsListComponent: React.FC<PositionsListComponentProps> = ({
           <PositionComponent
             key={index}
             position={position}
+            positionsOptionsMock={positionsOptionsMock}
             index={index}
-            selectedPosition={selectedPosition}
-            setSelectedPosition={setSelectedPosition}
-            positionForm={positionForm}
-            handleSubmitPosition={handleSubmitPosition}
-            handleCancelPosition={handleCancelPosition}
+            setPositionsOptionsMock={setPositionsOptionsMock}
             inputRef={inputRef}
           />
         ))}
+      </div>
+      <div className="flex justify-end w-full p-3">
+        {selectedDrive ? (
+          <Button
+            size={'small'}
+            variant={'primary'}
+            onClick={() => addPosition()}
+            disabled={
+              drivesOptionsMock.length === 0 ||
+              positionsOptionsMock.some((position) => position.name === '')
+            }
+          >
+            <LucidePlus /> Add position
+          </Button>
+        ) : (
+          <Button size={'small'} variant={'primary'} disabled>
+            <LucidePlus /> Add position
+          </Button>
+        )}
       </div>
     </>
   );

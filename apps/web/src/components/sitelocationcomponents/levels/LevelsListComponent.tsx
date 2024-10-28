@@ -1,36 +1,45 @@
 import React, { useEffect, useRef } from 'react';
 import { LevelComponent } from './LevelComponent';
-import { Headline, Text } from '@gsp/ui';
-import { UseFormReturn } from 'react-hook-form';
-import { SitesLocationFormData } from '@/app/(routes)/siteslocations/page';
+import { Button, Headline, Text } from '@gsp/ui';
+import {
+  IDriveMock,
+  ILevelMock,
+  IPositionMock,
+} from '@/app/(routes)/siteslocations/page';
+import { LucidePlus } from 'lucide-react';
 
-// @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
-  levelsOptionsMock: SitesLocationFormData[];
+  levelsOptionsMock: ILevelMock[];
   selectedLevel: string;
-  handleSetLevel: (name: string) => void;
-  setSelectedLevel: (id: string) => void;
-  levelForm: UseFormReturn<SitesLocationFormData>;
-  handleSubmitLevel: (
-    event: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => void;
-  handleCancelLevel: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => void;
+  selectedSite?: string;
+  handleSetLevel: () => void;
+  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
+  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
+  setPositionsOptionsMock: React.Dispatch<
+    React.SetStateAction<IPositionMock[]>
+  >;
 }
 
-export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
+export const LevelsListComponent = ({
   levelsOptionsMock,
   selectedLevel,
+  selectedSite,
   handleSetLevel,
-  setSelectedLevel,
-  levelForm,
-  handleSubmitLevel,
-  handleCancelLevel,
-}) => {
+  setLevelsOptionsMock,
+  setDrivesOptionsMock,
+  setPositionsOptionsMock,
+}: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Creates a new empty level to fill in
+  const addLevel = () => {
+    levelsOptionsMock.push({
+      id: `${levelsOptionsMock.length + 1}`,
+      name: '',
+      drives: [],
+    });
+    setLevelsOptionsMock([...levelsOptionsMock] as ILevelMock[]);
+  };
 
   useEffect(() => {
     if (inputRef.current) {
@@ -54,18 +63,33 @@ export const LevelsListComponent: React.FC<LevelsListComponentProps> = ({
         )}
         {levelsOptionsMock?.map((level, index) => (
           <LevelComponent
-            key={index}
-            level={level}
-            index={index}
             selectedLevel={selectedLevel}
-            handleSetLevel={handleSetLevel}
-            setSelectedLevel={setSelectedLevel}
-            levelForm={levelForm}
-            handleSubmitLevel={handleSubmitLevel}
-            handleCancelLevel={handleCancelLevel}
+            level={level}
+            levelsOptionsMock={levelsOptionsMock}
+            index={index}
             inputRef={inputRef}
+            handleSetLevel={handleSetLevel}
+            setLevelsOptionsMock={setLevelsOptionsMock}
+            setDrivesOptionsMock={setDrivesOptionsMock}
+            setPositionsOptionsMock={setPositionsOptionsMock}
           />
         ))}
+      </div>
+      <div className="flex justify-end w-full p-3">
+        {selectedSite ? (
+          <Button
+            size={'small'}
+            variant={'primary'}
+            onClick={() => addLevel()}
+            disabled={levelsOptionsMock.some((level) => level.name === '')}
+          >
+            <LucidePlus /> Add level
+          </Button>
+        ) : (
+          <Button size={'small'} variant={'primary'} disabled>
+            <LucidePlus /> Add level
+          </Button>
+        )}
       </div>
     </>
   );

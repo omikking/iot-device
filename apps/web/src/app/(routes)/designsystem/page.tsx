@@ -30,6 +30,8 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  Modal,
+  ModalTrigger,
 } from '@gsp/ui';
 
 import {
@@ -45,6 +47,8 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
+  LucidePlus,
+  LucideTrash2,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -52,6 +56,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
@@ -109,9 +114,30 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
       <hr className="w-full" />
 
+      <Headline variant="large" as="h1" color="foreground">
+        Delete Modal Confirmation 🦄
+      </Headline>
+
+      <Modal>
+        <ModalTrigger asChild>
+          <Button variant="destructive" size="large">
+            <LucideTrash2 />
+            Delete item
+          </Button>
+        </ModalTrigger>
+        <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} as="span">
+              {` Elliot Alderson `}
+            </Text>
+            from the list. Are you sure you want to delete?
+          </Text>
+        </DeleteModalConfirmation>
+      </Modal>
+      <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄
       </Headline>

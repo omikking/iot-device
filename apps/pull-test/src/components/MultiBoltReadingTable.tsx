@@ -5,8 +5,8 @@ import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 
 interface MultiBoltReadingTableProps {
-  multiReadingResults?: MultiBoltReadingSchema[];
-  site?: string;
+  peakLoad: string[];
+  peakDisplacement: string[];
 }
 
 const columns: ColumnDef<MultiBoltReadingSchema>[] = [
@@ -24,9 +24,7 @@ const columns: ColumnDef<MultiBoltReadingSchema>[] = [
   {
     accessorKey: 'peakDisplacement',
     header: ({ column }) => (
-      <div>
-        <TableHeadWithSorting column={column} header="Peak displacement" />
-      </div>
+      <TableHeadWithSorting column={column} header="Peak displacement" />
     ),
   },
   {
@@ -36,8 +34,14 @@ const columns: ColumnDef<MultiBoltReadingSchema>[] = [
 ];
 
 export const MultiBoltReadingTable = ({
-  multiReadingResults,
+  peakLoad,
+  peakDisplacement,
 }: MultiBoltReadingTableProps) => {
+  const multiReadingResults = peakLoad.map((value, i) => ({
+    reading: (i + 1).toString(),
+    peakLoad: peakLoad[i]?.toString(),
+    peakDisplacement: peakDisplacement[i]?.toString(),
+  }));
   return (
     <div>
       {/* @TODO fix the important "!" modifier */}

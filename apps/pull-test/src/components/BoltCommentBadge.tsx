@@ -6,46 +6,23 @@ import {
   LucideMessageSquareText,
   LucideMessageSquareWarning,
 } from 'lucide-react';
-import { MultiBoltReadingModal } from './MultiBoltReadingModal';
+import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { BoltResultSchema } from '@/app/mock/mock';
-
-interface RowData {
-  original: BoltResultSchema;
+interface BoltCommentBadgeProps {
+  fullBoltData: BoltResultSchema;
 }
 
-interface BoltSpecification {
-  title: string;
-  text: string;
-}
-
-interface MultiReading {
-  reading: string;
-  peakLoad: string;
-  peakDisplacement: string;
-}
-
-interface BoltDetailsModalProps {
-  row: RowData;
-  isHazard: boolean;
-  boltSpec: BoltSpecification[];
-  multiReadings?: MultiReading[];
-}
-
-export const BoltCommentBadge = ({
-  row,
-  isHazard,
-  boltSpec,
-  multiReadings,
-}: BoltDetailsModalProps) => {
+export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
+  const { image, comment, isHazard } = fullBoltData;
   return (
     <Modal>
-      {row.original.image || row.original.comment || row.original.isHazard ? (
+      {image || comment || isHazard ? (
         <ModalTrigger>
           <Badge variant="neutral">
             <div className="flex flex-row gap-2 items-center">
-              {row.original.image && <LucideImage size={14} />}
-              {row.original.comment && <LucideMessageSquareText size={14} />}
-              {row.original.isHazard && (
+              {image && <LucideImage size={14} />}
+              {comment && <LucideMessageSquareText size={14} />}
+              {isHazard && (
                 <LucideMessageSquareWarning size={14} className="text-error" />
               )}
               View
@@ -58,22 +35,9 @@ export const BoltCommentBadge = ({
         </ModalTrigger>
       )}
 
-      <MultiBoltReadingModal
-        modalTitle={`Bolt ${row.original.boltNumber}`}
-        image="/boltTestImage.png"
-        isHazard={isHazard}
-        author="Angela Moss"
-        boltDescription="Bolt Description"
-        viewBoltSpecifications={boltSpec}
-        boltResults={
-          multiReadings || [
-            {
-              reading: '1',
-              peakLoad: row.original.peakLoad.toString(),
-              peakDisplacement: row.original.peakDisplacement.toString(),
-            },
-          ]
-        }
+      <BoltResultDetailsModal
+        modalTitle={`Bolt ${fullBoltData.boltNumber}`}
+        fullBoltData={fullBoltData}
       />
     </Modal>
   );

@@ -1,4 +1,4 @@
-import { MultiBoltReadingSchema } from '@/app/mock/mock';
+// import { MultiBoltReadingSchema } from '@/app/mock/mock';
 import {
   Button,
   ModalContent,
@@ -15,29 +15,48 @@ import { LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
+import { BoltResultSchema } from '@/app/mock/mock';
 
-interface MultiBoltReadingModalProps {
+interface BoltResultDetailsModalProps {
   modalTitle: string;
-  image?: string;
-  isHazard: boolean;
-  author?: string;
-  boltDescription: string;
-  viewBoltSpecifications: {
-    title: string;
-    text: string;
-  }[];
-  boltResults?: MultiBoltReadingSchema[];
+  fullBoltData?: BoltResultSchema;
 }
 
-export const MultiBoltReadingModal = ({
+interface BoltSpecification {
+  title: string;
+  text: string;
+}
+
+export const BoltResultDetailsModal = ({
   modalTitle,
-  image,
-  isHazard,
-  author,
-  boltDescription,
-  viewBoltSpecifications,
-  boltResults,
-}: MultiBoltReadingModalProps) => {
+  fullBoltData,
+}: BoltResultDetailsModalProps) => {
+  const {
+    image,
+    isHazard,
+    peakLoad,
+    peakDisplacement,
+    position,
+    drive,
+    bitSize,
+    boltType,
+    boltNumber,
+    rotations,
+    level,
+  } = (fullBoltData as BoltResultSchema) || {};
+  // @TODO Just hardcoded for now, update later. Image should be here as well most likely
+  const boltDescription = 'just test description';
+  const author = 'Angela Moss';
+  const specifications: BoltSpecification[] = [
+    { title: 'Bolt', text: boltNumber },
+    { title: 'Bit size', text: bitSize },
+    { title: 'Level', text: level },
+    { title: 'Drive', text: drive },
+    { title: 'Position in ring', text: position },
+    { title: 'Rotations', text: rotations }, // should this be in?
+    { title: 'Pass criteria', text: boltType },
+    { title: 'Pass criteria', text: boltType },
+  ];
   return (
     // setting width otherwise its too wide when on large screens
     <ModalContent className="max-h-full w-96 overflow-y-auto">
@@ -47,7 +66,8 @@ export const MultiBoltReadingModal = ({
       <div className="p-10 flex gap-10 flex-grow h-full">
         {image && (
           <Image
-            src={image}
+            // src={image} // passing image but hardcoded for now
+            src="/boltTestImage.png"
             alt="Attached bolt result image"
             width={390}
             height={280}
@@ -93,7 +113,7 @@ export const MultiBoltReadingModal = ({
           Bolt specifications
         </Headline>
         <div className="flex flex-wrap">
-          {viewBoltSpecifications.map((boltSpec, index) => (
+          {specifications.map((boltSpec, index) => (
             <div
               key={index}
               className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
@@ -117,7 +137,10 @@ export const MultiBoltReadingModal = ({
           >
             Bolt results
           </Headline>
-          <MultiBoltReadingTable multiReadingResults={boltResults} />
+          <MultiBoltReadingTable
+            peakLoad={peakLoad}
+            peakDisplacement={peakDisplacement}
+          />
         </div>
       </div>
       {/* Bolt plot */}

@@ -7,8 +7,9 @@ import {
   LucideOctagonAlert,
   LucideSearchX,
 } from 'lucide-react';
-import { MultiReadBadge } from './MultiReadBadge';
+
 import { BoltCommentBadge } from './BoltCommentBadge';
+import { MultiReadBadge } from './MultiReadBadge';
 
 interface BoltResultsTableProps {
   boltResults: BoltResultSchema[];
@@ -24,32 +25,6 @@ const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
     case 'Abort':
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
-};
-
-const transformRowToSpecifications = (row: RowData): BoltSpecification[] => {
-  return [
-    { title: 'Displacement', text: row.original.peakDisplacement.toString() },
-    { title: 'Bit size', text: row.original.bitSize },
-    { title: 'Pass criteria', text: row.original.boltType },
-    { title: 'Rotations', text: row.original.rotations },
-    { title: 'Level', text: row.original.level },
-    { title: 'Peak load', text: row.original.peakLoad.toString() },
-  ];
-};
-
-const renderMultiReadBadge = (row: RowData, accessorKey: string) => {
-  const { peakLoad, peakDisplacement } = row.original;
-  if (peakLoad.length > 1 && peakDisplacement.length > 1) {
-    const multiReadings = peakLoad.map((value, index) => ({
-      reading: (index + 1).toString(),
-      peakLoad: peakLoad[index]?.toString(),
-      peakDisplacement: peakDisplacement[index]?.toString(),
-    }));
-    return MultiReadBadge(row, multiReadings, row.original.isHazard ?? false);
-  }
-
-  // AI generated code may need to adjust it
-  return row.original[accessorKey as keyof BoltResultSchema];
 };
 
 export const BoltResultsTable = ({
@@ -73,12 +48,28 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakLoad',
       header: 'Peak load',
-      cell: ({ row }) => renderMultiReadBadge(row, 'peakLoad'),
+      cell: ({ row }) => {
+        const { peakLoad } = row.original;
+        if (peakLoad.length > 1) {
+          return <MultiReadBadge fullBoltData={row.original} />;
+        }
+        if (peakLoad.length === 1) {
+          return peakLoad[0];
+        }
+      },
     },
     {
       accessorKey: 'peakDisplacement',
       header: 'Peak displacement',
-      cell: ({ row }) => renderMultiReadBadge(row, 'peakDisplacement'),
+      cell: ({ row }) => {
+        const { peakDisplacement } = row.original;
+        if (peakDisplacement.length > 1) {
+          return <MultiReadBadge fullBoltData={row.original} />;
+        }
+        if (peakDisplacement.length === 1) {
+          return peakDisplacement[0];
+        }
+      },
 
       meta: { headerClassName: 'w-32' },
     },
@@ -117,21 +108,7 @@ export const BoltResultsTable = ({
       accessorKey: 'comment',
       header: 'Comment',
       cell: ({ row }) => {
-        const { peakLoad, peakDisplacement } = row.original;
-        const multiReadings = peakLoad.map((load, index) => ({
-          reading: (index + 1).toString(),
-          peakLoad: load.toString(),
-          peakDisplacement: peakDisplacement[index]?.toString(),
-        }));
-        const boltSpec = transformRowToSpecifications(row);
-        return (
-          <BoltCommentBadge
-            row={row}
-            // isHazard={row.original.isHazard ?? false}
-            boltSpec={boltSpec}
-            multiReadings={multiReadings || []}
-          />
-        );
+        return <BoltCommentBadge fullBoltData={row.original} />;
       },
     },
     {

@@ -13,7 +13,7 @@ export interface BoltResultSchema {
   ring: string;
   comment?: string;
   result: 'Pass' | 'Fail' | 'Abort';
-  image?: boolean;
+  image?: string;
   isHazard?: boolean;
   createdDate: Date;
 }
@@ -40,7 +40,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'Smooth Operator',
     result: 'Pass',
-    image: true,
+    image: '/boltTestImage.png',
     isHazard: true,
     createdDate: new Date('2024-09-01T10:30:00'),
   },
@@ -59,6 +59,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Fail',
+    image: '/boltTestImage.png',
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
@@ -75,6 +76,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     position: '251, 5225',
     ring: 'RH-BACK',
     result: 'Pass',
+    image: '/boltTestImage.png',
     isHazard: true,
     createdDate: new Date('2024-09-01T10:30:00'),
   },
@@ -110,6 +112,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Abort',
+    image: '/boltTestImage.png',
     isHazard: true,
     createdDate: new Date('2024-09-05T10:30:00'),
   },
@@ -144,6 +147,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'N/A',
     result: 'Pass',
+    image: '/boltTestImage.png',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
@@ -178,6 +182,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Pass',
+    image: '/boltTestImage.png',
     createdDate: new Date('2024-09-16T10:30:00'),
   },
   {
@@ -195,6 +200,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Pass',
+    image: '/boltTestImage.png',
     createdDate: new Date('2024-10-11T10:30:00'),
   },
   {
@@ -247,6 +253,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Pass',
+    image: '/boltTestImage.png',
     createdDate: new Date('2024-10-18T10:30:00'),
   },
   {

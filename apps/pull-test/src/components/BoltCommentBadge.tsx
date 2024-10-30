@@ -31,13 +31,12 @@ interface BoltDetailsModalProps {
   multiReadings?: MultiReading[];
 }
 
-// rename this component? its not a modal, but it triggers a modal
-export const MultiBoltDetailsModal: React.FC<BoltDetailsModalProps> = ({
+export const BoltCommentBadge = ({
   row,
   isHazard,
   boltSpec,
   multiReadings,
-}) => {
+}: BoltDetailsModalProps) => {
   return (
     <Modal>
       {row.original.image || row.original.comment || row.original.isHazard ? (

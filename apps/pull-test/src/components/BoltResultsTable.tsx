@@ -8,20 +8,11 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { MultiReadBadge } from './MultiReadBadge';
-import { MultiBoltDetailsModal } from './MultiBoltDetailsModal';
+import { BoltCommentBadge } from './BoltCommentBadge';
 
 interface BoltResultsTableProps {
-  boltResults: BoltResultSchema[] | undefined;
+  boltResults: BoltResultSchema[];
   site?: string;
-}
-
-interface RowData {
-  original: BoltResultSchema;
-}
-
-interface BoltSpecification {
-  title: string;
-  text: string;
 }
 
 const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
@@ -134,9 +125,9 @@ export const BoltResultsTable = ({
         }));
         const boltSpec = transformRowToSpecifications(row);
         return (
-          <MultiBoltDetailsModal
+          <BoltCommentBadge
             row={row}
-            isHazard={row.original.isHazard ?? false}
+            // isHazard={row.original.isHazard ?? false}
             boltSpec={boltSpec}
             multiReadings={multiReadings || []}
           />

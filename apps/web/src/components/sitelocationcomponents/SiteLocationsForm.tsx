@@ -1,12 +1,13 @@
 import React from 'react';
-import { FormProvider, UseFormReturn } from 'react-hook-form';
-import { Button } from '@gsp/ui';
+import { UseFormReturn } from 'react-hook-form';
+import { Button, Form } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideX } from 'lucide-react';
-
 interface SiteLocationsFormProps {
   form: UseFormReturn<any>;
-  // Gives error but it works. investigate why.
+  // @TODO Gives error but it works. investigate why.
+  // eslint-disable-next-line no-unused-vars
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;
+  // eslint-disable-next-line no-unused-vars
   onCancel: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
   placeholder: string;
   name: string;
@@ -14,7 +15,7 @@ interface SiteLocationsFormProps {
   inputRef: React.RefObject<HTMLInputElement>;
 }
 
-const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
+export const SiteLocationsForm = ({
   form,
   onSubmit,
   onCancel,
@@ -22,9 +23,9 @@ const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
   name,
   index,
   inputRef,
-}) => {
+}: SiteLocationsFormProps) => {
   return (
-    <FormProvider {...form}>
+    <Form {...form}>
       <form
         onSubmit={(event) => onSubmit(event, index)}
         className="flex flex-row w-full justify-end items-center gap-2"
@@ -48,8 +49,6 @@ const SiteLocationsForm: React.FC<SiteLocationsFormProps> = ({
           Save
         </Button>
       </form>
-    </FormProvider>
+    </Form>
   );
 };
-
-export default SiteLocationsForm;

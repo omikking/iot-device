@@ -1,23 +1,19 @@
 import React from 'react';
 import { Button } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-
-interface LevelsOptionsMock {
-  id: string;
-  name: string;
-}
+import { ILevelMock } from '@/app/(routes)/siteslocations/page';
 
 interface AddLevelButtonProps {
   site: string | undefined;
-  levelsOptionsMock: LevelsOptionsMock[];
+  levelsOptionsMock: ILevelMock[];
   addLevel: () => void;
 }
 
-export const AddLevelButton: React.FC<AddLevelButtonProps> = ({
+export const AddLevelButton = ({
   site,
   levelsOptionsMock,
   addLevel,
-}) => {
+}: AddLevelButtonProps) => {
   return (
     <div className="flex justify-end w-full p-3">
       {site ? (

@@ -41,10 +41,13 @@ export default function Page(): JSX.Element {
     IPositionMock[]
   >([]);
 
+  // Doesnt reset drives or positions when site, levels or drives is changed
   const handleSetSite = (site?: string) => {
     setSelectedSite(site);
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
+    setDrivesOptionsMock([]);
+    setPositionsOptionsMock([]);
 
     const levels =
       sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
@@ -54,6 +57,7 @@ export default function Page(): JSX.Element {
   const handleSetLevel = (level?: string) => {
     setSelectedLevel(level);
     setSelectedDrive(undefined);
+    setPositionsOptionsMock([]);
 
     const drives =
       levelsOptionsMock?.find((boltLevels) => boltLevels.name === level)
@@ -69,6 +73,7 @@ export default function Page(): JSX.Element {
         ?.positions || [];
     setPositionsOptionsMock(positions);
   };
+
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-main-white">
       <Text

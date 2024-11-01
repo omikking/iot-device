@@ -10,56 +10,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SANDVIK_ADMIN
+  COMPANY_ADMIN
+  SANDVIK_TECHNICIAN
+  TECHNICIAN
+  USER
+}
+
+enum Result {
+  PASS
+  FAIL
+  ABORT
+  // add or modify more here
+}
+
+enum Application {
+  PULLTEST
+  PULLTEST_OPERATOR
+  XCYCLOPS
+  ULTRABOLTS
+}
+
+enum PlanLevel {
+  GOLD
+  SILVER
+  BRONZE
+}
+
 model Company {
-  id        Int      @id @default(autoincrement())
+  // should use uuid instead of Int id, for security. Install a uuid generator
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name        String
-  companyCode Int    @unique
-  country     String
-  city        String
-  address     String
+  // do we need so much adress data? can we simplify?
+  name       String
+  orgNumber  Int    @unique
+  address    String
+  postalCode String
+  city       String
+  country    String
 
-  users User[]
+  companyContactEmail String
+
+  User User[]
+  Plan Plan[]
+  Site Site[]
 
   @@map("companies")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email String @unique
-  hash  String
-
-  firstName String?
-  lastName  String?
-
-  companies Company[]
-  bolts     Bolt[]
-
-  @@map("users")
-}
-
-model Bolt {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  title       String
-  description String?
-  pass        Boolean @default(false)
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  @@map("bolts")
-}
-
 model RefreshTokenId {
-  userId    String   @id
+  userId    String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -67,6 +70,154 @@ model RefreshTokenId {
 
   @@map("refresh_token_ids")
 }
+
+model Plan {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applicationName Application
+  planLevel       PlanLevel
+  expiringDate    DateTime? // null means unlimited
+
+  // A plan should always be connected to a company, and if it's for a user it should be specified. CompanyAdmin should have the same plan.
+  // If a plan is given to a user, check that the user has the plan to an app for the company, and check that the company has a plan.
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@map("plans")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash  String
+
+  role             Role
+  fullname         String
+  company          String
+  phoneNumber      String? // should it be optional?
+  globalVisibility Boolean? @default(true) // only relevant for role sandvikTechnician
+
+  Company    Company[]
+  Plan       Plan[]
+  BoltResult BoltResult[]
+
+  @@map("users")
+}
+
+model Site {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  siteName   String
+  address    String
+  postalCode String
+  city       String
+  country    String
+
+  // passCriteria String
+  // notification String
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  Level      Level[]
+  BoltResult BoltResult[]
+
+  @@map("sites")
+}
+
+model Level {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  levelName String
+
+  Site   Site   @relation(fields: [siteId], references: [id])
+  siteId String
+
+  Drive      Drive[]
+  BoltResult BoltResult[]
+
+  @@map("levels")
+}
+
+model Drive {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  driveName String
+
+  Level   Level  @relation(fields: [levelId], references: [id])
+  levelId String
+
+  Position   Position[]
+  BoltResult BoltResult[]
+
+  @@map("drives")
+}
+
+model Position {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  positionName String // There might be specific names for positions. Might be worth making an enum.
+
+  Drive   Drive  @relation(fields: [driveId], references: [id])
+  driveId String
+
+  BoltResult BoltResult[]
+
+  @@map("positions")
+}
+
+model BoltResult {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  boltNumber       Int    @unique
+  boltType         String
+  peakLoad         Int[]
+  peakDisplacement Int[]
+
+  result              Result
+  isHazard            Boolean    @default(false)
+  hazardCompletedDate DateTime[] // only if isHazard ever existed and was completed, needs to be array in case it gets completed and marked as hazard again
+  comment             String?
+  image               String? // Should not be string since it will be on cloud. Stored and just show Id.
+
+  // The bolt result needs all the information from the site, level, drive and position to avoid having to do multiple queries
+  Site   Site   @relation(fields: [siteId], references: [id])
+  siteId String
+
+  Level   Level  @relation(fields: [levelId], references: [id])
+  levelId String
+
+  Drive   Drive  @relation(fields: [driveId], references: [id])
+  driveId String
+
+  Position   Position @relation(fields: [positionId], references: [id])
+  positionId String
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("bolt_results")
+}
+
+////////////////////////////////////////
 
 model Coffee {
   id        Int            @id @default(autoincrement())

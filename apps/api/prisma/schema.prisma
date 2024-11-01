@@ -14,7 +14,7 @@ enum Role {
   SANDVIK_ADMIN
   COMPANY_ADMIN
   SANDVIK_TECHNICIAN
-  TECHNICIAN
+  COMPANY_TECHNICIAN // @TODO Will this even exist? most likely not, but check
   USER
 }
 
@@ -22,12 +22,17 @@ enum Result {
   PASS
   FAIL
   ABORT
-  // add or modify more here
+}
+
+// @TODO Check if there are any more types of abort reasons
+enum AbortReason {
+  NOT_TESTED_VOID_CAVITY
+  TEST_STOPPED_INSTALL_ANGLE
 }
 
 enum Application {
-  PULLTEST
-  PULLTEST_OPERATOR
+  PULL_TEST
+  PULL_TEST_OPERATOR
   XCYCLOPS
   ULTRABOLTS
 }
@@ -38,15 +43,23 @@ enum PlanLevel {
   BRONZE
 }
 
+enum Positions {
+  RH_BACKS
+  RH_SHOULDER
+  RH_WALL_UPPER
+  LH_BACKS
+  LH_SHOULDER
+  LH_WALL_UPPER
+  CENTER_BACKS
+}
+
 model Company {
-  // should use uuid instead of Int id, for security. Install a uuid generator
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // do we need so much adress data? can we simplify?
   name       String
-  orgNumber  Int    @unique
+  orgNumber  Int    @unique // Has 10 exact digits
   address    String
   postalCode String
   city       String
@@ -78,10 +91,8 @@ model Plan {
 
   applicationName Application
   planLevel       PlanLevel
-  expiringDate    DateTime? // null means unlimited
+  expiringDate    DateTime?
 
-  // A plan should always be connected to a company, and if it's for a user it should be specified. CompanyAdmin should have the same plan.
-  // If a plan is given to a user, check that the user has the plan to an app for the company, and check that the company has a plan.
   Company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
@@ -101,9 +112,9 @@ model User {
 
   role             Role
   fullname         String
-  company          String
-  phoneNumber      String? // should it be optional?
-  globalVisibility Boolean? @default(true) // only relevant for role sandvikTechnician
+  workPlace        String
+  phoneNumber      String?
+  globalVisibility Boolean? // Only relevant for role SANDVIK_TECHNICIAN
 
   Company    Company[]
   Plan       Plan[]
@@ -172,7 +183,7 @@ model Position {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  positionName String // There might be specific names for positions. Might be worth making an enum.
+  positionName Positions
 
   Drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
@@ -187,18 +198,19 @@ model BoltResult {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  boltNumber       Int    @unique
+  boltNumber       Int    @unique // @TODO Is this needed? If so, should they enter it, or should it be generated incrementally by us?
   boltType         String
   peakLoad         Int[]
   peakDisplacement Int[]
+  positionInRing   String
 
   result              Result
-  isHazard            Boolean    @default(false)
-  hazardCompletedDate DateTime[] // only if isHazard ever existed and was completed, needs to be array in case it gets completed and marked as hazard again
+  isHazard            Boolean      @default(false)
+  hazardCompletedDate DateTime[]
+  abortReason         AbortReason?
   comment             String?
-  image               String? // Should not be string since it will be on cloud. Stored and just show Id.
+  image               String? // Is the type correct? It might not be a String since it will be on cloud.
 
-  // The bolt result needs all the information from the site, level, drive and position to avoid having to do multiple queries
   Site   Site   @relation(fields: [siteId], references: [id])
   siteId String
 

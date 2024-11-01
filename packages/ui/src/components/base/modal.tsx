@@ -34,21 +34,22 @@ const ModalContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <ModalPortal>
-    <ModalOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'ui-fixed ui-left-[50%] ui-top-[50%] ui-z-50 ui-grid ui-min-w-[900px] ui-translate-x-[-50%] ui-translate-y-[-50%] ui-bg-neutral-1 ui-shadow-sm ui-duration-200 data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-fade-out-0 data-[state=open]:ui-fade-in-0 data-[state=closed]:ui-zoom-out-90 data-[state=open]:ui-zoom-in-90 data-[state=closed]:ui-slide-out-to-left-1/2 data-[state=closed]:ui-slide-out-to-top-[48%] data-[state=open]:ui-slide-in-from-left-1/2 data-[state=open]:ui-slide-in-from-top-[48%] sm:ui-rounded',
-        className,
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close className="ui-absolute ui-right-8 ui-top-[24px] ui-rounded-sm ui-opacity-70 ui-transition-opacity hover:ui-opacity-100 focus:ui-outline-none disabled:ui-pointer-events-none data-[state=open]:ui-bg-accent data-[state=open]:ui-text-neutral-5">
-        <LucideX size="28" />
-        <span className="ui-sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
+    <ModalOverlay>
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          'ui-fixed ui-left-[50%] ui-top-[50%] ui-z-50 ui-grid ui-min-w-[900px] ui-translate-x-[-50%] ui-translate-y-[-50%] ui-bg-neutral-1 ui-shadow-sm ui-duration-200 data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-fade-out-0 data-[state=open]:ui-fade-in-0 data-[state=closed]:ui-zoom-out-90 data-[state=open]:ui-zoom-in-90 data-[state=closed]:ui-slide-out-to-left-1/2 data-[state=closed]:ui-slide-out-to-top-[48%] data-[state=open]:ui-slide-in-from-left-1/2 data-[state=open]:ui-slide-in-from-top-[48%] sm:ui-rounded',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+        <DialogPrimitive.Close className="ui-absolute ui-right-8 ui-top-[24px] ui-rounded-sm ui-opacity-70 ui-transition-opacity hover:ui-opacity-100 focus:ui-outline-none disabled:ui-pointer-events-none data-[state=open]:ui-bg-accent data-[state=open]:ui-text-neutral-5">
+          <LucideX size="28" />
+          <span className="ui-sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </ModalOverlay>
   </ModalPortal>
 ));
 ModalContent.displayName = DialogPrimitive.Content.displayName;

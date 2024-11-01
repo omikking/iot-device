@@ -9,10 +9,10 @@ import {
   IDriveMock,
   ILevelMock,
   IPositionMock,
-} from '@/app/(routes)/siteslocations/page';
+} from '@/app/(routes)/sitelocations/page';
 
 interface LevelComponentProps {
-  selectedLevel: string;
+  selectedLevel?: string;
   level: ILevelMock;
   levelsOptionsMock: ILevelMock[];
   index: number;
@@ -98,18 +98,16 @@ export const LevelItem = ({
       key={index}
     >
       <div className="py-3" onClick={() => handleSetLevel(level.name)}>
-        {level.name === '' ? (
-          <div>
-            <SiteLocationsForm
-              form={levelForm}
-              onSubmit={handleSubmitLevel}
-              onCancel={handleCancelLevel}
-              placeholder="New level..."
-              name="level"
-              index={index}
-              inputRef={inputRef}
-            />
-          </div>
+        {!level.name ? (
+          <SiteLocationsForm
+            form={levelForm}
+            onSubmit={handleSubmitLevel}
+            onCancel={handleCancelLevel}
+            placeholder="New level..."
+            name="level"
+            index={index}
+            inputRef={inputRef}
+          />
         ) : (
           <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text className="w-full" variant="small" color="foreground">

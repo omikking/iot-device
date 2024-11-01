@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { PositionItem } from './PositionItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { IDriveMock, IPositionMock } from '@/app/(routes)/siteslocations/page';
+import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
 interface PositionsListComponentProps {
@@ -20,6 +20,7 @@ export const PositionsList = ({
   setPositionsOptionsMock,
 }: PositionsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
   const addPosition = () => {
     positionsOptionsMock.push({
       id: `${positionsOptionsMock.length + 1}`,
@@ -27,11 +28,13 @@ export const PositionsList = ({
     });
     setPositionsOptionsMock([...positionsOptionsMock] as IPositionMock[]);
   };
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, [positionsOptionsMock]);
+
   return (
     <>
       <div className="flex flex-row w-full p-6">

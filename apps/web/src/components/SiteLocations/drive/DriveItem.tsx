@@ -2,7 +2,7 @@ import React from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Button, Text } from '@gsp/ui';
 import { LucideEllipsis, LucideX } from 'lucide-react';
-import { IDriveMock, IPositionMock } from '@/app/(routes)/siteslocations/page';
+import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +11,7 @@ interface DriveComponentProps {
   drive: IDriveMock;
   drivesOptionsMock: IDriveMock[];
   index: number;
-  selectedDrive: string;
+  selectedDrive?: string;
   inputRef: React.RefObject<HTMLInputElement>;
   // @TODO Gives error but it works. investigate why.
   // eslint-disable-next-line no-unused-vars
@@ -93,18 +93,16 @@ export const DriveItem = ({
       key={index}
     >
       <div className="py-3" onClick={() => handleSetDrive(drive.name)}>
-        {drive.name === '' ? (
-          <div>
-            <SiteLocationsForm
-              form={driveForm}
-              onSubmit={handleSubmitDrive}
-              onCancel={handleCancelDrive}
-              placeholder="New drive..."
-              name="drive"
-              index={index}
-              inputRef={inputRef}
-            />
-          </div>
+        {!drive.name ? (
+          <SiteLocationsForm
+            form={driveForm}
+            onSubmit={handleSubmitDrive}
+            onCancel={handleCancelDrive}
+            placeholder="New drive..."
+            name="drive"
+            index={index}
+            inputRef={inputRef}
+          />
         ) : (
           <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text className="w-full" variant="small" color="foreground">

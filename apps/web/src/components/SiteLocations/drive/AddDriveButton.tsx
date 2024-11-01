@@ -1,4 +1,4 @@
-import { IDriveMock } from '@/app/(routes)/siteslocations/page';
+import { IDriveMock } from '@/app/(routes)/sitelocations/page';
 import { Button } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import React from 'react';

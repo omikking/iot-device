@@ -5,12 +5,12 @@ import {
   IDriveMock,
   ILevelMock,
   IPositionMock,
-} from '@/app/(routes)/siteslocations/page';
+} from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
 interface DrivesListComponentProps {
   drivesOptionsMock: IDriveMock[];
-  selectedDrive: string;
+  selectedDrive?: string;
   selectedLevel?: string;
   levelsOptionsMock: ILevelMock[];
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;

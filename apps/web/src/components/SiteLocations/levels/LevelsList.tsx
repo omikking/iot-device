@@ -5,13 +5,13 @@ import {
   IDriveMock,
   ILevelMock,
   IPositionMock,
-} from '@/app/(routes)/siteslocations/page';
+} from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
 // @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
   levelsOptionsMock: ILevelMock[];
-  selectedLevel: string;
+  selectedLevel?: string;
   selectedSite?: string;
   handleSetLevel: () => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;

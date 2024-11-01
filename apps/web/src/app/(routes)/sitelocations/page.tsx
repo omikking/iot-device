@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { sitesMock } from '@/app/mock/mock';
 import { LucideMoveLeft } from 'lucide-react';
 import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
-import { LevelsList } from '@/components/sitelocationcomponents/levels/LevelsList';
-import { DrivesList } from '@/components/sitelocationcomponents/drive/DrivesList';
-import { PositionsList } from '@/components/sitelocationcomponents/positions/PositionsList';
+import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
+import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
+import { PositionsList } from '@/components/SiteLocations/positions/PositionsList';
 
 export interface ISiteMock {
   id: string;
@@ -41,7 +41,6 @@ export default function Page(): JSX.Element {
     IPositionMock[]
   >([]);
 
-  // Doesnt reset drives or positions when site, levels or drives is changed
   const handleSetSite = (site?: string) => {
     setSelectedSite(site);
     setSelectedLevel(undefined);
@@ -109,7 +108,7 @@ export default function Page(): JSX.Element {
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
               levelsOptionsMock={levelsOptionsMock}
-              selectedLevel={selectedLevel ?? ''}
+              selectedLevel={selectedLevel}
               selectedSite={selectedSite}
               handleSetLevel={handleSetLevel}
               setLevelsOptionsMock={setLevelsOptionsMock}
@@ -120,7 +119,7 @@ export default function Page(): JSX.Element {
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
               drivesOptionsMock={drivesOptionsMock}
-              selectedDrive={selectedDrive ?? ''}
+              selectedDrive={selectedDrive}
               selectedLevel={selectedLevel}
               levelsOptionsMock={levelsOptionsMock}
               setDrivesOptionsMock={setDrivesOptionsMock}

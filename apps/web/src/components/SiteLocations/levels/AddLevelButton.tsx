@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { ILevelMock } from '@/app/(routes)/siteslocations/page';
+import { ILevelMock } from '@/app/(routes)/sitelocations/page';
 
 interface AddLevelButtonProps {
-  site: string | undefined;
+  site?: string;
   levelsOptionsMock: ILevelMock[];
   addLevel: () => void;
 }

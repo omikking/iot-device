@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideEllipsis, LucideX } from 'lucide-react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { IPositionMock } from '@/app/(routes)/siteslocations/page';
+import { IPositionMock } from '@/app/(routes)/sitelocations/page';
 
 interface PositionComponentProps {
   position: IPositionMock;
@@ -79,18 +79,16 @@ export const PositionItem = ({
       key={index}
     >
       <div className="py-3">
-        {position.name === '' ? (
-          <div>
-            <SiteLocationsForm
-              form={positionForm}
-              onSubmit={handleSubmitPosition}
-              onCancel={handleCancelPosition}
-              placeholder="New position..."
-              name="position"
-              index={index}
-              inputRef={inputRef}
-            />
-          </div>
+        {!position.name ? (
+          <SiteLocationsForm
+            form={positionForm}
+            onSubmit={handleSubmitPosition}
+            onCancel={handleCancelPosition}
+            placeholder="New position..."
+            name="position"
+            index={index}
+            inputRef={inputRef}
+          />
         ) : (
           <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text className="w-full" variant="small" color="foreground">

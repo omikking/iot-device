@@ -12,7 +12,7 @@ import { BoltCommentBadge } from './BoltCommentBadge';
 import { MultiReadBadge } from './MultiReadBadge';
 
 interface BoltResultsTableProps {
-  boltResults: BoltResultSchema[];
+  boltResults?: BoltResultSchema[];
   site?: string;
 }
 

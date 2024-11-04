@@ -67,7 +67,6 @@ export default function Page(): JSX.Element {
     textarea: z.string(),
   });
 
-  // to validate the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -82,31 +81,20 @@ export default function Page(): JSX.Element {
     undefined,
   );
 
-  // For SingleDateCalendar
-  // const [date, setDate] = useState<Date | undefined>(undefined);
-
-  // For RangeCalendar
-  // const [rangeDate, setRangeDate] = useState<DateRange | undefined>({
-  //   from: undefined,
-  //   to: undefined,
-  // });
-
-  const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
-    const badges = {
-      User: {
-        variant: 'neutral',
-        icon: <LucideUser />,
-      },
-      Technician: {
-        variant: 'neutral',
-        icon: <LucidePickaxe />,
-      },
-      Admin: {
-        variant: 'primary',
-        icon: <LucideKey />,
-      },
-    };
-    return badges[role];
+  const getBadge = (
+    role: 'User' | 'Technician' | 'Admin',
+  ): {
+    variant: 'neutral' | 'primary';
+    icon: React.ReactNode;
+  } => {
+    switch (role) {
+      case 'User':
+        return { variant: 'neutral', icon: <LucideUser /> };
+      case 'Technician':
+        return { variant: 'neutral', icon: <LucidePickaxe /> };
+      case 'Admin':
+        return { variant: 'primary', icon: <LucideKey /> };
+    }
   };
 
   return (
@@ -594,8 +582,8 @@ export default function Page(): JSX.Element {
                         placeholder="Select dropdown item"
                         selectedId={dropdownValue}
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
+                        onSelect={setDropdownValue}
+                        className="w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -617,7 +605,7 @@ export default function Page(): JSX.Element {
                         placeholder="Select dropdown item"
                         selectedId={dropdownValue}
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
+                        onSelect={setDropdownValue}
                       />
                     </FormControl>
                     <FormMessage />
@@ -638,7 +626,7 @@ export default function Page(): JSX.Element {
                         id="person"
                         placeholder="Select dropdown item"
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
+                        onSelect={setDropdownValue}
                       />
                     </FormControl>
                     <FormMessage />
@@ -681,11 +669,8 @@ export default function Page(): JSX.Element {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.appAccess}</TableCell>
                 <TableCell>
-                  {/* Typing needs to be specified, do later */}
-                  <Badge
-                    variant={getRoleBadge(user.role as any).variant as any}
-                  >
-                    {getRoleBadge(user.role as any).icon}
+                  <Badge variant={getBadge(user.role).variant}>
+                    {getBadge(user.role).icon}
                     {user.role}
                   </Badge>
                 </TableCell>

@@ -11,7 +11,7 @@ import {
 import { BoltResultsFilter } from './BoltResultsFilter';
 import { sitesMock } from '@/app/mock/mock';
 
-// Is this typing really correct?
+// @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
   React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 

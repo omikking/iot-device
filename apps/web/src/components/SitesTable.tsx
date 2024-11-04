@@ -20,12 +20,12 @@ export const SitesTable = () => {
       accessorKey: 'totalSiteLocations',
       header: 'Total site locations',
       cell: ({ row }) => {
-        // TODO: send user to siteLocations with the siteName
+        // @TODO: send user to siteLocations with the siteName
         return (
           <Button variant="outline" size="small">
             <LucideMoveRight />
             <Text variant={'medium'} color={'foreground'}>
-              {row.getValue('totalSiteLocations')}
+              {row.getValue('totalSiteLocations')} site locations
             </Text>
           </Button>
         );
@@ -61,10 +61,16 @@ export const SitesTable = () => {
           next feature link total site locations with sitelocations page and give it the props of the site
           and also add a popover with edit and delete options
     */}
-      <DataTable columns={columns} data={siteResultMock} />
-      <Badge variant="neutral" className="self-start mt-5">
-        {siteResultMock.length} total
-      </Badge>
+      <DataTable
+        columns={columns}
+        data={siteResultMock}
+        noResultMessage="There are no sites added yet."
+      />
+      {siteResultMock.length && (
+        <Badge variant="neutral" className="self-start mt-5">
+          {siteResultMock.length} total
+        </Badge>
+      )}
     </>
   );
 };

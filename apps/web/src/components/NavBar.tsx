@@ -6,10 +6,6 @@ import { LucideUser } from 'lucide-react';
 import { Menu } from './Menu';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
-import { useRouter } from 'next/navigation';
-
-// Export to ui component
-export { useRouter };
 
 export const NavBar = () => {
   const { data: session, status } = useSession();

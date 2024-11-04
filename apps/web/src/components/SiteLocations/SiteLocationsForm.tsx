@@ -8,7 +8,7 @@ interface SiteLocationsFormProps {
   // eslint-disable-next-line no-unused-vars
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;
   // eslint-disable-next-line no-unused-vars
-  onCancel: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
+  onCancel: (index: number) => void;
   placeholder: string;
   name: string;
   index: number;
@@ -24,6 +24,7 @@ export const SiteLocationsForm = ({
   index,
   inputRef,
 }: SiteLocationsFormProps) => {
+  console.log(index);
   return (
     <Form {...form}>
       <form
@@ -40,7 +41,7 @@ export const SiteLocationsForm = ({
           size="small"
           variant="outline"
           type="button"
-          onClick={(event) => onCancel(event, index)}
+          onClick={() => onCancel(index)}
         >
           <LucideX />
         </Button>

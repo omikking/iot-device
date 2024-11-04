@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { Button, Text } from '@gsp/ui';
-import { LucideX, LucideEllipsis } from 'lucide-react';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Text,
+} from '@gsp/ui';
+import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +17,7 @@ import {
   ILevelMock,
   IPositionMock,
 } from '@/app/(routes)/sitelocations/page';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 interface LevelComponentProps {
   selectedLevel?: string;
@@ -38,6 +46,45 @@ export const LevelItem = ({
   setDrivesOptionsMock,
   setPositionsOptionsMock,
 }: LevelComponentProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditLevel = () => {
+    setIsEditing(true);
+    levelForm.setValue('name', level.name);
+  };
+
+  const handleEditSubmit = (
+    e: React.FormEvent<HTMLFormElement>,
+    index: number,
+  ) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const newLevelName = formData.get('level') as string;
+
+    const isDuplicate = levelsOptionsMock.some(
+      (level) => level.name === newLevelName,
+    );
+
+    if (isDuplicate) {
+      alert('This level already exists. Please enter a different level.');
+      return;
+    }
+
+    const newLevels = [...levelsOptionsMock];
+    newLevels[index] = {
+      ...newLevels[index],
+      name: newLevelName,
+    };
+    setLevelsOptionsMock(newLevels);
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    levelForm.reset();
+  };
+
   const levelFormSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -51,83 +98,74 @@ export const LevelItem = ({
     },
   });
 
-  const handleCancelLevel = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
+  const handleCancelLevel = (index: number) => {
     const newLevels = [...levelsOptionsMock];
     newLevels[index].drives = [];
     newLevels.splice(index, 1);
-    setLevelsOptionsMock(newLevels);
 
+    setLevelsOptionsMock(newLevels);
     setDrivesOptionsMock([]);
     setPositionsOptionsMock([]);
   };
 
-  const handleSubmitLevel = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
+  // ueeffect
+  useEffect(() => {
+    console.log('isEditing', isEditing);
+  }, [isEditing]);
 
-    const formData = new FormData(e.currentTarget);
-    const newLevelName = formData.get('level') as string;
-    const isDuplicate = levelsOptionsMock.some(
-      (level) => level.name.toLowerCase() === newLevelName.toLowerCase(),
-    );
-
-    if (isDuplicate) {
-      alert('This level already exists. Please enter a different level.');
-      return;
-    }
-
-    const newLevel = {
-      ...levelsOptionsMock[index],
-      name: formData.get('level') as string,
-      drives: [],
-    };
-    const newLevelsList = [...levelsOptionsMock];
-    newLevelsList[index] = newLevel;
-    setLevelsOptionsMock(newLevelsList);
-  };
   return (
     <div
       className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
-      <div className="py-3" onClick={() => handleSetLevel(level.name)}>
-        {!level.name ? (
+      <div
+        className="py-3"
+        onClick={() => !isEditing && handleSetLevel(level.name)}
+      >
+        {!level.name || isEditing ? (
           <SiteLocationsForm
             form={levelForm}
-            onSubmit={handleSubmitLevel}
-            onCancel={handleCancelLevel}
+            onSubmit={handleEditSubmit}
+            onCancel={handleCancelEdit}
             placeholder="New level..."
             name="level"
             index={index}
             inputRef={inputRef}
           />
         ) : (
-          <div className="flex flex-row w-full justify-between items-center gap-2">
+          <div
+            className="flex flex-row w-full justify-between items-center gap-2"
+            key={index}
+          >
             <Text className="w-full" variant="small" color="foreground">
               {level.name}
             </Text>
-            <Button
-              size={'small'}
-              variant={'outline'}
-              type="button"
-              onClick={(e) => handleCancelLevel(e, index)}
-            >
-              <LucideX />
-            </Button>
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              size={'small'}
-              variant={'outline'}
-            >
-              <LucideEllipsis />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size={'small'} variant="outline">
+                  <LucideEllipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-4">
+                <DropdownMenuItem onSelect={() => handleEditLevel()}>
+                  <LucideSquarePen />
+                  <Text color={'foreground'} variant={'medium'}>
+                    Edit
+                  </Text>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleCancelLevel(index)}>
+                  <LucideTrash2 className="text-error" />
+                  <Text color={'destructive'} variant={'medium'}>
+                    Delete
+                  </Text>
+                </DropdownMenuItem>
+                <DeleteModalConfirmation
+                  modalTitle="Delete level"
+                  deleteIcon="Site"
+                  deleteButtonText="Confirm deletion"
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

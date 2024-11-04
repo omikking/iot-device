@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { Button, Text } from '@gsp/ui';
-import { LucideEllipsis, LucideX } from 'lucide-react';
+import {
+  Button,
+  Text,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@gsp/ui';
+import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -32,34 +39,15 @@ export const DriveItem = ({
   setPositionsOptionsMock,
   handleSetDrive,
 }: DriveComponentProps) => {
-  const driveFormSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
+  const [isEditing, setIsEditing] = useState(false);
 
-  const driveForm = useForm<z.infer<typeof driveFormSchema>>({
-    resolver: zodResolver(driveFormSchema),
-    defaultValues: {
-      id: '',
-      name: '',
-    },
-  });
-
-  const handleCancelDrive = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
-    const newDrives = [...drivesOptionsMock];
-    newDrives[index].positions = [];
-    newDrives.splice(index, 1);
-    setDrivesOptionsMock(newDrives);
-
-    setPositionsOptionsMock([]);
+  const handleEditDrive = () => {
+    setIsEditing(true);
+    // Pre-fill the form with current drive name
+    driveForm.setValue('name', drive.name);
   };
 
-  const handleSubmitDrive = (
+  const handleEditSubmit = (
     e: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
@@ -77,52 +65,92 @@ export const DriveItem = ({
       return;
     }
 
-    const newDrive = {
-      ...drivesOptionsMock[index],
-      name: formData.get('drive') as string,
-      positions: [],
+    const newDrive = [...drivesOptionsMock];
+    newDrive[index] = {
+      ...newDrive[index],
+      name: newDriveName,
     };
-    const newDrives = [...drivesOptionsMock];
-    newDrives[index] = newDrive;
-    setDrivesOptionsMock(newDrives);
+    setDrivesOptionsMock(newDrive);
+    setIsEditing(false);
   };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    driveForm.reset();
+  };
+
+  const driveFormSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+
+  const driveForm = useForm<z.infer<typeof driveFormSchema>>({
+    resolver: zodResolver(driveFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
+
+  const handleCancelDrive = (index: number) => {
+    const newDrives = [...drivesOptionsMock];
+    newDrives[index].positions = [];
+    newDrives.splice(index, 1);
+
+    setDrivesOptionsMock(newDrives);
+    setPositionsOptionsMock([]);
+  };
+
+  //useeffect checking for isEditing changes
 
   return (
     <div
       className={`bg-main-white px-6 ${selectedDrive === drive.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
-      <div className="py-3" onClick={() => handleSetDrive(drive.name)}>
-        {!drive.name ? (
+      <div
+        className="py-3"
+        onClick={() => !isEditing && handleSetDrive(drive.name)}
+      >
+        {!drive.name || isEditing ? (
           <SiteLocationsForm
             form={driveForm}
-            onSubmit={handleSubmitDrive}
-            onCancel={handleCancelDrive}
+            onSubmit={handleEditSubmit}
+            onCancel={handleCancelEdit}
             placeholder="New drive..."
             name="drive"
             index={index}
             inputRef={inputRef}
           />
         ) : (
-          <div className="flex flex-row w-full justify-between items-center gap-2">
+          <div
+            className="flex flex-row w-full justify-between items-center gap-2"
+            key={index}
+          >
             <Text className="w-full" variant="small" color="foreground">
               {drive.name}
             </Text>
-            <Button
-              size={'small'}
-              variant={'outline'}
-              type="button"
-              onClick={(e) => handleCancelDrive(e, index)}
-            >
-              <LucideX />
-            </Button>
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              size={'small'}
-              variant={'outline'}
-            >
-              <LucideEllipsis />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size={'small'} variant="outline">
+                  <LucideEllipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-4">
+                <DropdownMenuItem onSelect={() => handleEditDrive()}>
+                  <LucideSquarePen />
+                  <Text color={'foreground'} variant={'medium'}>
+                    Edit
+                  </Text>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleCancelDrive(index)}>
+                  <LucideTrash2 className="text-error" />
+                  <Text color={'destructive'} variant={'medium'}>
+                    Delete
+                  </Text>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

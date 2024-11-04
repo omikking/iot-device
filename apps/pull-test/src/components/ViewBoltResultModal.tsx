@@ -9,6 +9,7 @@ import {
   Badge,
   Headline,
   ModalClose,
+  Specification,
   LoadingSpinner,
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
@@ -90,13 +91,13 @@ export const ViewBoltResultModal = ({
           )}
           <div className="flex flex-col w-1/2">
             {boltDescription && (
-              <div className="flex flex-col flex-grow ">
+              <div className="flex flex-col flex-grow">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
                   value={boltDescription}
-                  className="flex-grow"
+                  className="flex-grow mt-2"
                   disabled
                   readOnly
                 />
@@ -128,17 +129,12 @@ export const ViewBoltResultModal = ({
           </Headline>
           <div className="flex flex-wrap">
             {viewBoltSpecifications.map((boltSpec, index) => (
-              <div
+              <Specification
                 key={index}
-                className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-              >
-                <Text className="w-32" variant="small" color="muted">
-                  {boltSpec.title}
-                </Text>
-                <Text className="max-w-60" variant="small" color="foreground">
-                  {boltSpec.text}
-                </Text>
-              </div>
+                title={boltSpec.title}
+                text={boltSpec.text}
+                className="w-1/2"
+              />
             ))}
           </div>
         </div>
@@ -180,7 +176,7 @@ export const ViewBoltResultModal = ({
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
             <Headline as="h3" color="foreground" variant="smallBold">
-              Hazard completed / Hazard Resolved
+              Hazard completed
             </Headline>
           </div>
         </div>

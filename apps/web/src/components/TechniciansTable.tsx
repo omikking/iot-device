@@ -65,7 +65,11 @@ export const TechniciansTable = () => {
 
   return (
     <>
-      <DataTable columns={columns} data={techniciansMock} />
+      <DataTable
+        columns={columns}
+        data={techniciansMock}
+        noResultMessage="There are no technicians added yet."
+      />
       <Badge variant="neutral" className="self-start">
         {techniciansMock.length} total
       </Badge>

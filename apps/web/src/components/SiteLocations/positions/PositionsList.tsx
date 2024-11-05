@@ -38,7 +38,7 @@ export const PositionsList = ({
   return (
     <>
       <div className="flex flex-row w-full p-6">
-        <Headline as="h2" variant="smallBold" color="foreground">
+        <Headline as="h2" variant="small" color="foreground" isBold>
           Positions
         </Headline>
       </div>

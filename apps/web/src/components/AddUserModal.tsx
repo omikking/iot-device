@@ -188,7 +188,12 @@ export const AddUserModal = () => {
               <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
                 <div className="flex flex-grow  items-center gap-2">
                   <LucideLayoutGrid size={20} className="text-orange-600" />
-                  <Headline color={'foreground'} as="h3" variant={'smallBold'}>
+                  <Headline
+                    color={'foreground'}
+                    as="h3"
+                    variant={'small'}
+                    isBold
+                  >
                     All apps
                   </Headline>
                 </div>

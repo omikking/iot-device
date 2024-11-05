@@ -18,7 +18,7 @@ export const NavBar = () => {
         </Link>
 
         <div className="flex gap-10 items-center">
-          <Headline variant="smallBold" color="foreground" as="h3">
+          <Headline variant="small" color="foreground" as="h3" isBold>
             Pull Test Portal
           </Headline>
 

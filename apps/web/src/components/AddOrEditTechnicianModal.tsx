@@ -88,7 +88,7 @@ export const AddOrEditTechnicianModal = () => {
       >
         <div className="flex items-center justify-center h-96 gap-4">
           <LucideCircleCheckBig size={30} className="text-success" />
-          <Headline as="h3" color="foreground" variant="smallBold">
+          <Headline as="h3" color="foreground" variant="small" isBold>
             Successfully saved
           </Headline>
         </div>
@@ -184,7 +184,7 @@ export const AddOrEditTechnicianModal = () => {
                 />
               </div>
               <div className="pt-10">
-                <Headline as="h3" color="foreground" variant="smallBold">
+                <Headline as="h3" color="foreground" variant="small" isBold>
                   Make this technician visible globally?
                 </Headline>
 

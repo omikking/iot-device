@@ -94,7 +94,7 @@ export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
                 }}
               />
             </div>
-            <Headline as="h3" color="foreground" variant="smallBold">
+            <Headline as="h3" color="foreground" variant="small" isBold>
               {appSelected} settings
             </Headline>
             <div className="flex flex-row justify-between pt-5">

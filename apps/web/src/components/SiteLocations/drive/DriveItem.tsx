@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import {
   Button,
@@ -13,6 +13,7 @@ import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 interface DriveComponentProps {
   drive: IDriveMock;
@@ -40,10 +41,11 @@ export const DriveItem = ({
   handleSetDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleEditDrive = () => {
     setIsEditing(true);
-    // Pre-fill the form with current drive name
+
     driveForm.setValue('name', drive.name);
   };
 
@@ -101,7 +103,13 @@ export const DriveItem = ({
     setPositionsOptionsMock([]);
   };
 
-  //useeffect checking for isEditing changes
+  //@TODO fixed problem with site not responding to click when modal has been closed
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, []);
 
   return (
     <div
@@ -143,7 +151,7 @@ export const DriveItem = ({
                     Edit
                   </Text>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleCancelDrive(index)}>
+                <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
                   <LucideTrash2 className="text-error" />
                   <Text color={'destructive'} variant={'medium'}>
                     Delete
@@ -151,6 +159,25 @@ export const DriveItem = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <DeleteModalConfirmation
+              modalTitle="Delete drive"
+              deleteButtonText="Confirm deletion"
+              deleteIcon="Site"
+              index={index}
+              isOpen={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+              onDelete={() => {
+                handleCancelDrive(index), setIsDeleteModalOpen(false);
+              }}
+            >
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} as="span">
+                  {` ${drive.name} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
           </div>
         )}
       </div>

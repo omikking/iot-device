@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   DropdownMenu,
@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { IPositionMock } from '@/app/(routes)/sitelocations/page';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 interface PositionComponentProps {
   position: IPositionMock;
@@ -32,6 +33,7 @@ export const PositionItem = ({
   inputRef,
 }: PositionComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleEditPosition = () => {
     setIsEditing(true);
@@ -89,32 +91,13 @@ export const PositionItem = ({
     setPositionsOptionsMock(newPositions);
   };
 
-  // const handleSubmitPosition = (
-  //   e: React.FormEvent<HTMLFormElement>,
-  //   index: number,
-  // ) => {
-  //   e.preventDefault();
-
-  //   const formData = new FormData(e.currentTarget);
-  //   const newPositionName = formData.get('position') as string;
-
-  //   const isDuplicate = positionsOptionsMock.some(
-  //     (position) => position.name === newPositionName,
-  //   );
-
-  //   if (isDuplicate) {
-  //     alert('This position already exists. Please enter a different position.');
-  //     return;
-  //   }
-
-  //   const newPosition = {
-  //     ...positionsOptionsMock[index],
-  //     name: formData.get('position') as string,
-  //   };
-  //   const newPositions = [...positionsOptionsMock];
-  //   newPositions[index] = newPosition;
-  //   setPositionsOptionsMock(newPositions);
-  // };
+  //@TODO fixed problem with site not responding to click when modal has been closed
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, []);
 
   return (
     <div
@@ -150,7 +133,7 @@ export const PositionItem = ({
                     Edit
                   </Text>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleCancelPosition(index)}>
+                <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
                   <LucideTrash2 className="text-error" />
                   <Text color={'destructive'} variant={'medium'}>
                     Delete
@@ -158,6 +141,25 @@ export const PositionItem = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <DeleteModalConfirmation
+              modalTitle="Delete drive"
+              deleteButtonText="Confirm deletion"
+              deleteIcon="Site"
+              index={index}
+              isOpen={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+              onDelete={() => {
+                handleCancelPosition(index), setIsDeleteModalOpen(false);
+              }}
+            >
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} as="span">
+                  {` ${position.name} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
           </div>
         )}
       </div>

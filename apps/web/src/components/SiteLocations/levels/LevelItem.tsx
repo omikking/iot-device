@@ -47,6 +47,7 @@ export const LevelItem = ({
   setPositionsOptionsMock,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleEditLevel = () => {
     setIsEditing(true);
@@ -57,8 +58,6 @@ export const LevelItem = ({
     e: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
-    e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
     const newLevelName = formData.get('level') as string;
 
@@ -98,7 +97,10 @@ export const LevelItem = ({
     },
   });
 
-  const handleCancelLevel = (index: number) => {
+  const handleCancelLevel = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
     const newLevels = [...levelsOptionsMock];
     newLevels[index].drives = [];
     newLevels.splice(index, 1);
@@ -108,10 +110,13 @@ export const LevelItem = ({
     setPositionsOptionsMock([]);
   };
 
-  // ueeffect
+  //@TODO fixed problem with site not responding to click when modal has been closed
   useEffect(() => {
-    console.log('isEditing', isEditing);
-  }, [isEditing]);
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, []);
 
   return (
     <div
@@ -153,19 +158,33 @@ export const LevelItem = ({
                     Edit
                   </Text>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleCancelLevel(index)}>
+                <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
                   <LucideTrash2 className="text-error" />
                   <Text color={'destructive'} variant={'medium'}>
                     Delete
                   </Text>
                 </DropdownMenuItem>
-                <DeleteModalConfirmation
-                  modalTitle="Delete level"
-                  deleteIcon="Site"
-                  deleteButtonText="Confirm deletion"
-                />
               </DropdownMenuContent>
             </DropdownMenu>
+            <DeleteModalConfirmation
+              modalTitle="Delete level"
+              deleteButtonText="Confirm deletion"
+              deleteIcon="Site"
+              index={index}
+              isOpen={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+              onDelete={(e) => {
+                handleCancelLevel(e, index), setIsDeleteModalOpen(false);
+              }}
+            >
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} as="span">
+                  {` ${level.name} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
           </div>
         )}
       </div>

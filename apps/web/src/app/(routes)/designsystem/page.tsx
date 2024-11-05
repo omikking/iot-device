@@ -47,7 +47,6 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
-  LucidePlus,
   LucideTrash2,
 } from 'lucide-react';
 
@@ -80,6 +79,7 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const getBadge = (
     role: 'User' | 'Technician' | 'Admin',
@@ -108,23 +108,29 @@ export default function Page(): JSX.Element {
         Delete Modal Confirmation 🦄
       </Headline>
 
-      <Modal>
+      {/* discuss with Felix if this is a right approach */}
+      <Modal open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <ModalTrigger asChild>
           <Button variant="destructive" size="large">
             <LucideTrash2 />
             Delete item
           </Button>
         </ModalTrigger>
-        <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} as="span">
-              {` Elliot Alderson `}
-            </Text>
-            from the list. Are you sure you want to delete?
-          </Text>
-        </DeleteModalConfirmation>
       </Modal>
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        modalTitle="Delete Site"
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} as="span">
+            {` Elliot Alderson `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
       <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄

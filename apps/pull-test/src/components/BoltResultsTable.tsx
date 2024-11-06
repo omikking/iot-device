@@ -41,18 +41,18 @@ export const BoltResultsTable = ({
       accessorKey: 'boltNumber',
       meta: { headerClassName: 'w-36' },
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Bolt number" />
+        <TableHeadWithSorting column={column} header="Bolt" />
       ),
     },
     {
       accessorKey: 'boltType',
-      header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Bolt type" />
-      ),
+      header: 'Bolt type',
     },
     {
       accessorKey: 'peakLoad',
-      header: 'Peak load',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Peak load(tons)" />
+      ),
       cell: ({ row }) => {
         const { peakLoad } = row.original;
         if (peakLoad.length > 1) {
@@ -78,21 +78,22 @@ export const BoltResultsTable = ({
 
       meta: { headerClassName: 'w-32' },
     },
-    {
-      accessorKey: 'bitSize',
-      header: 'Bit size',
-    },
-    {
-      accessorKey: 'rotations',
-      header: 'Rotations',
-    },
-    {
-      accessorKey: 'displacementPerTonnage',
-      header: 'Displacement per tonnage',
-      meta: {
-        headerClassName: 'w-32',
-      },
-    },
+    // ask if we should delete these
+    // {
+    //   accessorKey: 'bitSize',
+    //   header: 'Bit size',
+    // },
+    // {
+    //   accessorKey: 'rotations',
+    //   header: 'Rotations',
+    // },
+    // {
+    //   accessorKey: 'displacementPerTonnage',
+    //   header: 'Displacement per tonnage',
+    //   meta: {
+    //     headerClassName: 'w-32',
+    //   },
+    // },
     {
       accessorKey: 'level',
       header: 'Level',
@@ -107,7 +108,7 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'ring',
-      header: 'Ring',
+      header: 'Position in the ring',
     },
     {
       accessorKey: 'comment',

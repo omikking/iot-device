@@ -129,7 +129,8 @@ export default function SignIn() {
                 </Text>
 
                 <Text variant="small" color="foreground">
-                  <Link href="https://www.google.se" passHref legacyBehavior>
+                  {/* @TODO update link */}
+                  <Link href="/overview" passHref legacyBehavior>
                     <Anchor isUnderline color="foreground">
                       Click here to reset.
                     </Anchor>

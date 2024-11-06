@@ -106,7 +106,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/" passHref legacyBehavior>
+                  <Link href="/overview" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Overview
@@ -158,7 +158,8 @@ export const Menu = () => {
             </Headline>
 
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" passHref legacyBehavior>
+              {/* @TODO update link */}
+              <Link href="/overview" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideSettings />
                   Settings

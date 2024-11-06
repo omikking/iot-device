@@ -21,7 +21,7 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center pb-20 border-b border-gold-3">
-        <Link href="/">
+        <Link href="/boltresults">
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Bolt results
@@ -33,8 +33,8 @@ export default function Page(): JSX.Element {
             </Button>
           </NavigationCard>
         </Link>
-        <Link href="/">
-          <NavigationCard>
+        <Link href="/reportedhazards">
+          <NavigationCard className="relative">
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"
               variant="neutral"

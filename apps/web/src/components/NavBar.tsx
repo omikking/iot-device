@@ -13,7 +13,7 @@ export const NavBar = () => {
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <Link href="/">
+        <Link href="/overview">
           <SandvikLogo />
         </Link>
 

@@ -80,7 +80,7 @@ export default function Page(): JSX.Element {
         color="foreground"
         className="absolute top-28 left-10 group"
       >
-        <Link href="/" passHref legacyBehavior>
+        <Link href="/overview" passHref legacyBehavior>
           <Anchor color="foreground">
             <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
             Go back

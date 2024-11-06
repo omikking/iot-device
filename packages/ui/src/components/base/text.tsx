@@ -22,9 +22,7 @@ const textVariants = cva('ui-font-sandvik-text', {
       true: 'ui-font-bold',
     },
     defaultVariants: {
-      variant: 'small',
-      color: 'foreground',
-      isBold: 'default',
+      isBold: 'false',
     },
   },
 });

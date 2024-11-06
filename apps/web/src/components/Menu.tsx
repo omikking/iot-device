@@ -149,7 +149,7 @@ export const Menu = () => {
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="/selectapp" passHref legacyBehavior>
+              <Link href="/selectapplication" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideLayoutGrid className="text-orange-600" />
                   Browse apps

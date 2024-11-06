@@ -64,7 +64,7 @@ export default function Page(): JSX.Element {
   }, [site]);
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">

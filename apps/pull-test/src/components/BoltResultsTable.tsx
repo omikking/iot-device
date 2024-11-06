@@ -16,7 +16,12 @@ interface BoltResultsTableProps {
   site?: string;
 }
 
-const getResultBadge = (result: 'Pass' | 'Fail' | 'Abort') => {
+const getBadge = (
+  result: 'Pass' | 'Fail' | 'Abort',
+): {
+  variant: 'success' | 'destructive' | 'warning';
+  icon: React.ReactNode;
+} => {
   switch (result) {
     case 'Pass':
       return { variant: 'success', icon: <LucideCheckCircle /> };
@@ -120,8 +125,8 @@ export const BoltResultsTable = ({
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
-          <Badge variant={getResultBadge(row.getValue('result')).variant}>
-            {getResultBadge(row.getValue('result')).icon}
+          <Badge variant={getBadge(row.getValue('result')).variant}>
+            {getBadge(row.getValue('result')).icon}
             {row.getValue('result')}
           </Badge>
         </div>
@@ -137,7 +142,7 @@ export const BoltResultsTable = ({
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'
-            : 'No bolt results found for your search.'
+            : 'There are no bolt results found for your search.'
         }
       />
       {boltResults?.length && (

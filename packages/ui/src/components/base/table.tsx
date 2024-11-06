@@ -179,7 +179,6 @@ const TableHeadWithSorting = <TData,>({
     </button>
   );
 };
-
 export {
   Table,
   TableHeader,

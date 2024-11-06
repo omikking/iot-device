@@ -1,3 +1,81 @@
+export interface SiteResultSchema {
+  id: string;
+  name: string;
+  adress: string;
+  totalSiteLocations: number;
+  passCriteria?: string;
+  notification?: string;
+  fooBar?: string;
+}
+
+export const siteResultMock: SiteResultSchema[] = [
+  {
+    id: '1',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D47 MDX, D34 MD',
+    notification: '20% per submission',
+    fooBar: '38744',
+  },
+  {
+    id: '2',
+    name: 'Garpenberg',
+    adress: 'Gaspersbo 20, 55849, Sverige',
+    totalSiteLocations: 34,
+    passCriteria: 'D47 MDX, D34 MD',
+    notification: '20% per submission',
+    fooBar: '2438744',
+  },
+  {
+    id: '3',
+    name: 'Berggarpen',
+    adress: 'Aaspersbo 20, 77049, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'N/A',
+    notification: '10% per submission',
+    fooBar: '456',
+  },
+  {
+    id: '4',
+    name: 'Berggarpen',
+    adress: 'Baspersbogatan 20, 12345, Sverige',
+    totalSiteLocations: 24,
+    passCriteria: 'D47 MDX',
+    notification: '20% per submission',
+    fooBar: '23424',
+  },
+  {
+    id: '5',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 44,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '456',
+  },
+  {
+    id: '6',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 8,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '23',
+  },
+  {
+    id: '7',
+    name: 'Garpenberg',
+    adress: 'Kaspersbo 20, 77849, Sverige',
+    totalSiteLocations: 4,
+    passCriteria: 'D34 MD',
+    notification: '30% per submission',
+    fooBar: '4645645',
+  },
+];
+
+import type { DropdownItem } from '@gsp/ui';
+
 export const optionsDesignSystemMock = [
   {
     id: '1',
@@ -198,5 +276,333 @@ export const techniciansMock: TechniciansSchema[] = [
     company: 'Sandvik',
     isGlobal: true,
     phoneNumber: '+4683729327',
+  },
+];
+
+export const sitesMock = [
+  {
+    id: '1',
+    name: 'Garpenberg site',
+    levels: [
+      {
+        id: '1',
+        name: '4002',
+        drives: [
+          {
+            id: '1',
+            name: '2001',
+            positions: [
+              {
+                id: '1',
+                name: '20, 42',
+              },
+              {
+                id: '2',
+                name: '22, 49',
+              },
+              {
+                id: '3',
+                name: '26, 55',
+              },
+              {
+                id: '4',
+                name: '29, 50',
+              },
+              {
+                id: '5',
+                name: '33, 65',
+              },
+              {
+                id: '6',
+                name: '34, 63',
+              },
+            ],
+          },
+          {
+            id: '2',
+            name: '2002',
+            positions: [
+              {
+                id: '1',
+                name: '1, 2',
+              },
+            ],
+          },
+          {
+            id: '3',
+            name: '2003',
+            positions: [
+              {
+                id: '1',
+                name: '2, 43',
+              },
+              {
+                id: '2',
+                name: '25, 55',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: '2',
+        name: '4003',
+        drives: [
+          {
+            id: '1',
+            name: '2007',
+            positions: [
+              {
+                id: '1',
+                name: '22, 433',
+              },
+              {
+                id: '2',
+                name: '525, 545',
+              },
+            ],
+          },
+          {
+            id: '2',
+            name: '2008',
+            positions: [
+              {
+                id: '1',
+                name: '2222, 433',
+              },
+              {
+                id: '2',
+                name: '251, 5225',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: '3',
+        name: '4004',
+        drives: [
+          {
+            id: '1',
+            name: '5007',
+            positions: [
+              {
+                id: '1',
+                name: '2222, 433',
+              },
+              {
+                id: '2',
+                name: '251, 5225',
+              },
+            ],
+          },
+          {
+            id: '2',
+            name: '5008',
+            positions: [],
+          },
+        ],
+      },
+      {
+        id: '4',
+        name: '4005',
+        drives: [
+          {
+            id: '1',
+            name: '2010',
+            positions: [
+              { id: '1', name: '15, 30' },
+              { id: '2', name: '32, 45' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2011',
+            positions: [
+              { id: '1', name: '40, 50' },
+              { id: '2', name: '52, 61' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '5',
+        name: '4006',
+        drives: [
+          {
+            id: '1',
+            name: '2015',
+            positions: [
+              { id: '1', name: '22, 34' },
+              { id: '2', name: '30, 45' },
+              { id: '3', name: '35, 47' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '6',
+        name: '4007',
+        drives: [
+          {
+            id: '1',
+            name: '2020',
+            positions: [
+              { id: '1', name: '12, 22' },
+              { id: '2', name: '32, 42' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2021',
+            positions: [],
+          },
+        ],
+      },
+      {
+        id: '7',
+        name: '4008',
+        drives: [
+          {
+            id: '1',
+            name: '2025',
+            positions: [
+              { id: '1', name: '45, 55' },
+              { id: '2', name: '50, 60' },
+              { id: '3', name: '55, 65' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '8',
+        name: '4009',
+        drives: [
+          {
+            id: '1',
+            name: '2030',
+            positions: [
+              { id: '1', name: '10, 20' },
+              { id: '2', name: '25, 35' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2031',
+            positions: [{ id: '1', name: '35, 45' }],
+          },
+        ],
+      },
+      {
+        id: '9',
+        name: '4010',
+        drives: [
+          {
+            id: '1',
+            name: '2040',
+            positions: [
+              { id: '1', name: '5, 15' },
+              { id: '2', name: '20, 30' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Gollum site',
+    levels: [
+      {
+        id: '1',
+        name: '1055',
+        drives: [
+          {
+            id: '1',
+            name: '5555',
+            positions: [
+              {
+                id: '1',
+                name: '12, 33',
+              },
+              {
+                id: '2',
+                name: '44, 34',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: '2',
+        name: '3006',
+        drives: [],
+      },
+    ],
+  },
+  {
+    id: '3',
+    name: 'Kiruna site',
+    levels: [],
+  },
+];
+
+export const roles: DropdownItem[] = [
+  {
+    id: '1',
+    name: 'User',
+    background: 'neutral',
+  },
+  {
+    id: '2',
+    name: 'Technician',
+  },
+  {
+    id: '3',
+    name: 'Admin',
+    background: 'primary',
+  },
+];
+
+export const technicians = [
+  {
+    id: '1',
+    name: 'Elliot Alderson',
+    email: 'elliot@ecorp.com',
+  },
+  {
+    id: '2',
+    name: 'Darlene Alderson',
+    email: 'dolores@haze.com',
+  },
+  {
+    id: '3',
+    name: 'Tyrell Wellick',
+    email: 'tyrell@ecorp.com',
+  },
+  {
+    id: '4',
+    name: 'Joanna Wellick',
+    email: 'joanna@ecorp.com',
+  },
+  {
+    id: '5',
+    name: 'Angela Moss',
+    email: 'angela@ecorp.com',
+  },
+  {
+    id: '6',
+    name: 'Whiterose',
+    email: 'dark@army.com',
+  },
+  {
+    id: '7',
+    name: 'Felix Östergren',
+    email: 'felix@ecorp.com',
+  },
+  {
+    id: '8',
+    name: 'Jimmy Nwadinkpa',
+    email: 'jimmy@ecorp.com',
   },
 ];

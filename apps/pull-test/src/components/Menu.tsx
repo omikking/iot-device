@@ -22,7 +22,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export const Menu = () => {
-  //   @TODO fix colors on icons
+  // @TODO fix colors on icons
   const { data: session, status } = useSession();
   console.log(session);
 
@@ -48,10 +48,10 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      Pull-test overview
+                      Overview
                     </Anchor>
                   </Link>
                 </Headline>
@@ -62,7 +62,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/boltresults" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View bolt results
@@ -76,7 +76,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="#" passHref legacyBehavior>
+                  <Link href="/reportedhazards" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       View reported hazards
@@ -91,7 +91,7 @@ export const Menu = () => {
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" passHref legacyBehavior>
+              <Link href="/selectapp" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideLayoutGrid className="text-orange-600" />
                   Browse apps

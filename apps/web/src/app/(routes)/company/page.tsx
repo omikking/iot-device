@@ -27,7 +27,6 @@ import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 
-// @TODO finish this later
 export const companyFormSchema = z.object({
   companyName: z.string(),
   fullContactName: z.string(),
@@ -66,19 +65,19 @@ export default function Page(): JSX.Element {
     },
   });
 
-  // Just for testing Add company / Edit company state
+  // @TODO Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';
   // const companyToEditName = false;
 
-  // Just for testing user type, will be removed
+  // @TODO Just for testing user type, will be removed
   const [isAdmin, setIsAdmin] = useState(true);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      {/* TEMPORARY: will be removed */}
+      {/* @TODO TEMPORARY: will be removed */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
           Dev mode
@@ -125,7 +124,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucideMountain />
               <Button variant="secondary" size="small" asChild>
-                <Link href="#">
+                <Link href="/sites">
                   <LucideMoveRight />
                   View sites
                 </Link>
@@ -138,7 +137,7 @@ export default function Page(): JSX.Element {
               </Headline>
               <LucidePyramid />
               <Button variant="secondary" size="small" asChild>
-                <Link href="#">
+                <Link href="/sitelocations">
                   <LucideMoveRight />
                   View site locations
                 </Link>

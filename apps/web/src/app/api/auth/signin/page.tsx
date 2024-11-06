@@ -27,7 +27,6 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  // constraint for email & password fields
   const formSchema = z.object({
     emailAddress: z
       .string()
@@ -39,7 +38,6 @@ export default function SignIn() {
       .min(8, { message: 'Password must be at least 8 characters.' }),
   });
 
-  // to validate the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

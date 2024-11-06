@@ -4,11 +4,11 @@ import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
 import {
   Button,
   Headline,
-  Table,
   Badge,
   Modal,
   ModalTrigger,
@@ -24,7 +24,7 @@ export default function Page(): JSX.Element {
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [position, setPosition] = useState<string | undefined>(undefined);
-
+  const [selectedTab, setSelectedTab] = useState('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -59,12 +59,12 @@ export default function Page(): JSX.Element {
   const filteredResults = filterBoltResults(level, drive, position, dateRange);
 
   useEffect(() => {
-    // Each time site gets updated, make a request to the BE to fetch and set them as below
+    // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
     site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
   }, [site]);
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
@@ -75,7 +75,11 @@ export default function Page(): JSX.Element {
         Bolt results
       </Headline>
 
-      <Tabs defaultValue="table" className="w-full max-w-[1600px]">
+      <Tabs
+        defaultValue="table"
+        onValueChange={setSelectedTab}
+        className="w-full max-w-[1600px]"
+      >
         <div className="w-full flex flex-row justify-between items-center pb-2">
           <TabsList>
             <TabsTrigger value="table">
@@ -95,7 +99,7 @@ export default function Page(): JSX.Element {
                 Export PDF
               </Button>
             </ModalTrigger>
-            {/* <ModalContent goes here /> */}
+            {/* @TODO Modal goes here /> */}
           </Modal>
         </div>
 
@@ -110,14 +114,15 @@ export default function Page(): JSX.Element {
           onSetDrive={setDrive}
           onSetPosition={setPosition}
           onSetDateRange={setDateRange}
+          selectedTab={selectedTab}
         />
 
-        <TabsContent value="table" className="w-full">
+        <TabsContent value="table">
           <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
 
         <TabsContent value="graphs">
-          <Table />
+          <BoltResultsGraphView />
         </TabsContent>
       </Tabs>
     </main>

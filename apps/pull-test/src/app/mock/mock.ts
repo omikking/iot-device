@@ -555,6 +555,110 @@ export const sitesMock = [
           },
         ],
       },
+      {
+        id: '4',
+        name: '4005',
+        drives: [
+          {
+            id: '1',
+            name: '2010',
+            positions: [
+              { id: '1', name: '15, 30' },
+              { id: '2', name: '32, 45' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2011',
+            positions: [
+              { id: '1', name: '40, 50' },
+              { id: '2', name: '52, 61' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '5',
+        name: '4006',
+        drives: [
+          {
+            id: '1',
+            name: '2015',
+            positions: [
+              { id: '1', name: '22, 34' },
+              { id: '2', name: '30, 45' },
+              { id: '3', name: '35, 47' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '6',
+        name: '4007',
+        drives: [
+          {
+            id: '1',
+            name: '2020',
+            positions: [
+              { id: '1', name: '12, 22' },
+              { id: '2', name: '32, 42' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2021',
+            positions: [],
+          },
+        ],
+      },
+      {
+        id: '7',
+        name: '4008',
+        drives: [
+          {
+            id: '1',
+            name: '2025',
+            positions: [
+              { id: '1', name: '45, 55' },
+              { id: '2', name: '50, 60' },
+              { id: '3', name: '55, 65' },
+            ],
+          },
+        ],
+      },
+      {
+        id: '8',
+        name: '4009',
+        drives: [
+          {
+            id: '1',
+            name: '2030',
+            positions: [
+              { id: '1', name: '10, 20' },
+              { id: '2', name: '25, 35' },
+            ],
+          },
+          {
+            id: '2',
+            name: '2031',
+            positions: [{ id: '1', name: '35, 45' }],
+          },
+        ],
+      },
+      {
+        id: '9',
+        name: '4010',
+        drives: [
+          {
+            id: '1',
+            name: '2040',
+            positions: [
+              { id: '1', name: '5, 15' },
+              { id: '2', name: '20, 30' },
+            ],
+          },
+        ],
+      },
     ],
   },
   {

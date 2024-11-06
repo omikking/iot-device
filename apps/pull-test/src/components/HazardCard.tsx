@@ -37,7 +37,7 @@ export const HazardCard = ({
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
       <div className="flex flex-row border-b border-neutral-2 p-6 items-center justify-between">
-        <Headline variant="smallBold" as="h3" color="foreground">
+        <Headline variant="small" as="h3" color="foreground" isBold>
           {dateTitle}
         </Headline>
         {isHazard && (

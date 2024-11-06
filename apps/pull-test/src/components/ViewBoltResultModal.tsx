@@ -121,9 +121,10 @@ export const ViewBoltResultModal = ({
         <div className="px-10">
           <Headline
             className="pb-4"
-            variant="smallBold"
+            variant="small"
             as="h3"
             color="foreground"
+            isBold
           >
             Bolt specifications
           </Headline>
@@ -150,7 +151,7 @@ export const ViewBoltResultModal = ({
         <div className="flex flex-col items-center justify-center h-96 gap-10">
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
+            <Headline as="h3" color="foreground" variant="small" isBold>
               Confirm hazard completion
             </Headline>
           </div>
@@ -175,7 +176,7 @@ export const ViewBoltResultModal = ({
         <div className="flex flex-col items-center justify-center h-96 gap-10">
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
+            <Headline as="h3" color="foreground" variant="small" isBold>
               Hazard completed
             </Headline>
           </div>

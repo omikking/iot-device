@@ -1,4 +1,3 @@
-// import { MultiBoltReadingSchema } from '@/app/mock/mock';
 import {
   Button,
   ModalContent,

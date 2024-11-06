@@ -57,8 +57,7 @@ export const BoltResultDetailsModal = ({
     { title: 'Pass criteria', text: boltType },
   ];
   return (
-    // setting width otherwise its too wide when on large screens
-    <ModalContent className="max-h-full w-96 overflow-y-auto">
+    <ModalContent className="w-96 max-h-[calc(100vh-14rem)] overflow-y-auto">
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>

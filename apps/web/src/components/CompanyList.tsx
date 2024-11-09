@@ -22,7 +22,7 @@ export const CompanyList = () => {
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href="#">
+              <Link href="/selectapplication">
                 <LucideLayoutGrid />
                 View Apps
               </Link>

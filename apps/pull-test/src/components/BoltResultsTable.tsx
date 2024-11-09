@@ -78,22 +78,21 @@ export const BoltResultsTable = ({
 
       meta: { headerClassName: 'w-32' },
     },
-    // ask if we should delete these
-    // {
-    //   accessorKey: 'bitSize',
-    //   header: 'Bit size',
-    // },
-    // {
-    //   accessorKey: 'rotations',
-    //   header: 'Rotations',
-    // },
-    // {
-    //   accessorKey: 'displacementPerTonnage',
-    //   header: 'Displacement per tonnage',
-    //   meta: {
-    //     headerClassName: 'w-32',
-    //   },
-    // },
+    {
+      accessorKey: 'bitSize',
+      header: 'Bit size',
+    },
+    {
+      accessorKey: 'rotations',
+      header: 'Rotations',
+    },
+    {
+      accessorKey: 'displacementPerTonnage',
+      header: 'Displacement per tonnage',
+      meta: {
+        headerClassName: 'w-32',
+      },
+    },
     {
       accessorKey: 'level',
       header: 'Level',

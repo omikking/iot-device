@@ -74,7 +74,7 @@ export default function Page(): JSX.Element {
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
       {/* @TODO TEMPORARY: will be removed */}

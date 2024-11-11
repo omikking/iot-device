@@ -133,7 +133,7 @@ export default function Page(): JSX.Element {
   };
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
@@ -343,12 +343,16 @@ export default function Page(): JSX.Element {
           Large Headline destructive color
         </Headline>
 
+        <Headline as="h4" variant="medium" color="foreground" isBold>
+          Medium Headline bold
+        </Headline>
+
         <Headline as="h3" variant="medium" color="muted">
           Medium Headline muted color
         </Headline>
 
-        <Headline as="h4" variant="smallBold" color="foreground">
-          Small bold Headline
+        <Headline as="h4" variant="small" color="foreground" isBold>
+          Small Headline
         </Headline>
       </div>
       <hr className="w-full" />
@@ -358,6 +362,10 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-center gap-12">
         <Text variant="medium" color="foreground">
           Medium text
+        </Text>
+
+        <Text variant="medium" color="foreground" isBold>
+          Medium bold text
         </Text>
 
         <Text variant="small" color="destructive">

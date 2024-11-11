@@ -90,7 +90,6 @@ export default function Page(): JSX.Element {
     // Array of the same length as sites with all values set to false, AI generated this
     Array(sites.length).fill(false),
   );
-  // const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
 
   const getBadge = (
     role: Role,

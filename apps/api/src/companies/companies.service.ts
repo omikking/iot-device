@@ -26,13 +26,25 @@ export class CompaniesService {
     return this.prisma.company.create({
       data: {
         name: createCompanyInput.name,
-        companyCode: createCompanyInput.companyCode,
-        country: createCompanyInput.country,
-        city: createCompanyInput.city,
+        orgNumber: createCompanyInput.orgNumber,
         address: createCompanyInput.address,
+        postalCode: createCompanyInput.postalCode,
+        city: createCompanyInput.city,
+        country: createCompanyInput.country,
+        companyContactEmail: createCompanyInput.companyContactEmail,
         users: {
           connect: createCompanyInput.users?.map((userId) => ({
             id: userId,
+          })),
+        },
+        plans: {
+          connect: createCompanyInput.plans?.map((planId) => ({
+            id: planId,
+          })),
+        },
+        sites: {
+          connect: createCompanyInput.sites?.map((siteId) => ({
+            id: siteId,
           })),
         },
       },
@@ -47,13 +59,24 @@ export class CompaniesService {
       where: { id },
       data: {
         name: updateCompanyInput?.name || undefined,
-        companyCode: updateCompanyInput?.companyCode || undefined,
-        country: updateCompanyInput?.country || undefined,
-        city: updateCompanyInput?.city || undefined,
+        orgNumber: updateCompanyInput?.orgNumber || undefined,
         address: updateCompanyInput?.address || undefined,
+        postalCode: updateCompanyInput?.postalCode || undefined,
+        city: updateCompanyInput?.city || undefined,
+        country: updateCompanyInput?.country || undefined,
         users: {
           connect: updateCompanyInput.users?.map((userId) => ({
             id: userId,
+          })),
+        },
+        plans: {
+          connect: updateCompanyInput.plans?.map((planId) => ({
+            id: planId,
+          })),
+        },
+        sites: {
+          connect: updateCompanyInput.sites?.map((siteId) => ({
+            id: siteId,
           })),
         },
       },

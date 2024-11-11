@@ -4,7 +4,7 @@ import { JwtGuard } from '../auth/guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Controller('users')
-export class UserController {
+export class UsersController {
   @UseGuards(JwtGuard)
   @Get()
   getMe(@ActiveUser() user: ActiveUserData) {

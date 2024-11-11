@@ -32,10 +32,6 @@ import {
   SingleDateCalendar,
   Modal,
   ModalTrigger,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
 } from '@gsp/ui';
 
 import {
@@ -51,8 +47,8 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
+  LucidePlus,
   LucideTrash2,
-  LucideSquarePen,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -61,9 +57,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
-
-type Role = 'User' | 'Technician' | 'Admin';
+import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -86,17 +80,9 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites, setSites] = useState(sitesMock);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(
-    // Array of the same length as sites with all values set to false, AI generated this
-    Array(sites.length).fill(false),
-  );
-  // const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
 
   const getBadge = (
-    // role: 'User' | 'Technician' | 'Admin',
-    role: Role,
+    role: 'User' | 'Technician' | 'Admin',
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -111,119 +97,34 @@ export default function Page(): JSX.Element {
     }
   };
 
-  const openModal = (index: number) => {
-    const newState = [...isDeleteSiteModalOpen];
-    newState[index] = true;
-    setIsDeleteSiteModalOpen(newState);
-  };
-
-  const closeModal = (index: number) => {
-    const newState = [...isDeleteSiteModalOpen];
-    newState[index] = false;
-    setIsDeleteSiteModalOpen(newState);
-  };
-
-  const handleDelete = async (index: number) => {
-    console.log('index', index);
-    setSites((prevSites) => {
-      const newSites = [...prevSites];
-      newSites.splice(index, 1);
-      return newSites;
-    });
-  };
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">
         Delete Modal Confirmation 🦄
       </Headline>
 
-      <Button
-        variant="destructive"
-        size="large"
-        onClick={() => setIsDeleteModalOpen(true)}
-      >
-        <LucideTrash2 />
-        Delete item
-      </Button>
-
-      <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        modalTitle="Delete Site"
-        isOpen={isDeleteModalOpen}
-        onOpenChange={setIsDeleteModalOpen}
-      >
-        <Text variant="medium" color={'foreground'}>
-          You are about to delete
-          <Text variant="medium" color={'foreground'} as="span">
-            {` Elliot Alderson `}
-          </Text>
-          from the list. Are you sure you want to delete?
-        </Text>
-      </DeleteModalConfirmation>
-
-      <Headline variant="medium" as="h3" color="foreground">
-        Dropdown Delete
-        {sites.map((site, index) => (
-          <div className="flex items-center justify-between py-2" key={index}>
-            <Text color={'foreground'} variant={'small'}>
-              {site.name}
+      <Modal>
+        <ModalTrigger asChild>
+          <Button variant="destructive" size="large">
+            <LucideTrash2 />
+            Delete item
+          </Button>
+        </ModalTrigger>
+        <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} as="span">
+              {` Elliot Alderson `}
             </Text>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size={'small'} variant="outline">
-                  <LucideEllipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-4">
-                <DropdownMenuItem
-                  onSelect={() => console.log('Clicked on Edit')}
-                >
-                  <LucideSquarePen />
-                  <Text color={'foreground'} variant={'medium'}>
-                    Edit
-                  </Text>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => openModal(index)}>
-                  <LucideTrash2 className="text-error" />
-                  <Text color={'destructive'} variant={'medium'}>
-                    Delete
-                  </Text>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DeleteModalConfirmation
-              deleteButtonText="Confirm deletion"
-              deleteIcon="Site"
-              modalTitle="Delete Site"
-              isOpen={isDeleteSiteModalOpen[index]}
-              index={index}
-              onOpenChange={() => closeModal(index)}
-              onDelete={() => {
-                handleDelete(index),
-                  closeModal(index),
-                  console.log('site number', site.id);
-              }}
-            >
-              <Text variant="medium" color={'foreground'}>
-                You are about to delete
-                <Text variant="medium" color={'foreground'} as="span">
-                  {/* @TODO add isBold when merged with main */}
-                  {` ${site.name} `}
-                </Text>
-                from the list. Are you sure you want to delete?
-              </Text>
-            </DeleteModalConfirmation>
-          </div>
-        ))}
-      </Headline>
-
+            from the list. Are you sure you want to delete?
+          </Text>
+        </DeleteModalConfirmation>
+      </Modal>
       <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄

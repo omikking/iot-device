@@ -12,9 +12,8 @@ datasource db {
 
 enum Role {
   SANDVIK_ADMIN
-  COMPANY_ADMIN
   SANDVIK_TECHNICIAN
-  COMPANY_TECHNICIAN // @TODO Will this even exist? most likely not, but check
+  COMPANY_ADMIN
   USER
 }
 
@@ -25,6 +24,7 @@ enum Result {
 }
 
 // @TODO Check if there are any more types of abort reasons
+// @TODO Add app specific naming for apps
 enum AbortReason {
   NOT_TESTED_VOID_CAVITY
   TEST_STOPPED_INSTALL_ANGLE
@@ -41,9 +41,11 @@ enum PlanLevel {
   GOLD
   SILVER
   BRONZE
+  INACTIVE
 }
 
-enum Positions {
+// @TODO Check which positions are needed
+enum RingPositions {
   RH_BACKS
   RH_SHOULDER
   RH_WALL_UPPER
@@ -59,7 +61,7 @@ model Company {
   updatedAt DateTime @updatedAt
 
   name       String
-  orgNumber  Int    @unique // Has 10 exact digits
+  orgNumber  Int    @unique // Has 10 exact digits in Sweden, does this apply for rest of world (maybe string?)
   address    String
   postalCode String
   city       String
@@ -84,6 +86,8 @@ model RefreshTokenId {
   @@map("refresh_token_ids")
 }
 
+// Plan access table pair between user and plan
+// Split this out to separate concern between company access and user access inside company?
 model Plan {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -96,7 +100,7 @@ model Plan {
   Company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  User   User?   @relation(fields: [userId], references: [id])
+  User   User?   @relation(fields: [userId], references: [id]) // TODO: Turn into array as multiple users can have the same plan
   userId String?
 
   @@map("plans")
@@ -110,15 +114,15 @@ model User {
   email String @unique
   hash  String
 
-  role             Role
+  role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared)
   fullname         String
   workPlace        String
   phoneNumber      String?
   globalVisibility Boolean? // Only relevant for role SANDVIK_TECHNICIAN
 
   Company    Company[]
-  Plan       Plan[]
-  BoltResult BoltResult[]
+  Plan       Plan[] // @TODO Check if possible to set relations to be unique
+  BoltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("users")
 }
@@ -141,7 +145,7 @@ model Site {
   companyId String
 
   Level      Level[]
-  BoltResult BoltResult[]
+  BoltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("sites")
 }
@@ -157,7 +161,7 @@ model Level {
   siteId String
 
   Drive      Drive[]
-  BoltResult BoltResult[]
+  BoltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("levels")
 }
@@ -173,11 +177,12 @@ model Drive {
   levelId String
 
   Position   Position[]
-  BoltResult BoltResult[]
+  BoltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("drives")
 }
 
+// @TODO Add ring position
 model Position {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -188,7 +193,7 @@ model Position {
   Drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  BoltResult BoltResult[]
+  BoltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("positions")
 }
@@ -198,18 +203,18 @@ model BoltResult {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  boltNumber       Int    @unique // @TODO Is this needed? If so, should they enter it, or should it be generated incrementally by us?
-  boltType         String
+  boltNumber       Int
+  boltType         String // @TODO enum
   peakLoad         Int[]
   peakDisplacement Int[]
-  positionInRing   String
+  positionInRing   String // @TODO remove
 
   result              Result
   isHazard            Boolean      @default(false)
   hazardCompletedDate DateTime[]
   abortReason         AbortReason?
   comment             String?
-  image               String? // Is the type correct? It might not be a String since it will be on cloud.
+  image               String? // This assumes base64
 
   Site   Site   @relation(fields: [siteId], references: [id])
   siteId String
@@ -220,7 +225,9 @@ model BoltResult {
   Drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  Position   Position @relation(fields: [positionId], references: [id])
+  // TODO: Add location!
+
+  Position   Position @relation(fields: [positionId], references: [id]) // @TODO Rename ring position
   positionId String
 
   User   User   @relation(fields: [userId], references: [id])

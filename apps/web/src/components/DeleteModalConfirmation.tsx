@@ -8,7 +8,7 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 import { LucideTrash2, LucideMountain, LucideUserMinus } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface DeleteModalConfirmationProps {
   modalTitle: string;
@@ -58,18 +58,6 @@ export const DeleteModalConfirmation = ({
       onOpenChange(false);
     }
   };
-
-  //@TODO fixed problem with site not responding to click when modal has been closed
-  useEffect(() => {
-    if (!isOpen) {
-      document.body.style.overflow = 'unset';
-      document.body.style.pointerEvents = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.pointerEvents = 'auto';
-    };
-  }, [isOpen]);
 
   return (
     <Modal open={isOpen} onOpenChange={onOpenChange}>

@@ -110,14 +110,6 @@ export const LevelItem = ({
     setPositionsOptionsMock([]);
   };
 
-  //@TODO fixed problem with site not responding to click when modal has been closed
-  useEffect(() => {
-    return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.pointerEvents = 'auto';
-    };
-  }, []);
-
   return (
     <div
       className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
@@ -145,7 +137,7 @@ export const LevelItem = ({
             <Text className="w-full" variant="small" color="foreground">
               {level.name}
             </Text>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button size={'small'} variant="outline">
                   <LucideEllipsis />

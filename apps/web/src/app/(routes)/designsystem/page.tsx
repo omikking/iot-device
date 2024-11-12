@@ -30,10 +30,6 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
 } from '@gsp/ui';
 
 import {
@@ -50,7 +46,6 @@ import {
   LucidePickaxe,
   LucideUser,
   LucideTrash2,
-  LucideSquarePen,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -60,6 +55,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -108,24 +104,27 @@ export default function Page(): JSX.Element {
   };
 
   const openModal = (index: number) => {
-    const newState = [...isDeleteSiteModalOpen];
-    newState[index] = true;
-    setIsDeleteSiteModalOpen(newState);
+    const updatedModalState = [...isDeleteSiteModalOpen];
+    updatedModalState[index] = true;
+    setIsDeleteSiteModalOpen(updatedModalState);
   };
 
   const closeModal = (index: number) => {
-    const newState = [...isDeleteSiteModalOpen];
-    newState[index] = false;
-    setIsDeleteSiteModalOpen(newState);
+    const updatedModalState = [...isDeleteSiteModalOpen];
+    updatedModalState[index] = false;
+    setIsDeleteSiteModalOpen(updatedModalState);
   };
 
-  const handleDelete = async (index: number) => {
-    console.log('index', index);
-    setSites((prevSites) => {
-      const newSites = [...prevSites];
-      newSites.splice(index, 1);
-      return newSites;
-    });
+  // const handleDelete = async (index: number) => {
+  //   setSites((prevSites) => {
+  //     const newSites = [...prevSites];
+  //     newSites.splice(index, 1);
+  //     return newSites;
+  //   });
+  // };
+
+  const handleDelete = (index: number) => {
+    setSites((sites) => sites.filter((item, i) => i !== index));
   };
 
   return (
@@ -170,32 +169,7 @@ export default function Page(): JSX.Element {
             <Text color={'foreground'} variant={'small'}>
               {site.name}
             </Text>
-            {/* break this down into new component
-              ex: DropdownDeleteEdit component
-            */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size={'small'} variant="outline">
-                  <LucideEllipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-4">
-                <DropdownMenuItem
-                  onSelect={() => console.log('Clicked on Edit')}
-                >
-                  <LucideSquarePen />
-                  <Text color={'foreground'} variant={'medium'}>
-                    Edit
-                  </Text>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => openModal(index)}>
-                  <LucideTrash2 className="text-error" />
-                  <Text color={'destructive'} variant={'medium'}>
-                    Delete
-                  </Text>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <DeleteEditDropdown index={index} openModal={openModal} />
             <DeleteModalConfirmation
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
@@ -204,9 +178,7 @@ export default function Page(): JSX.Element {
               index={index}
               onOpenChange={() => closeModal(index)}
               onDelete={() => {
-                handleDelete(index),
-                  closeModal(index),
-                  console.log('site number', site.id);
+                handleDelete(index), closeModal(index);
               }}
             >
               <Text variant="medium" color={'foreground'}>

@@ -170,6 +170,9 @@ export default function Page(): JSX.Element {
             <Text color={'foreground'} variant={'small'}>
               {site.name}
             </Text>
+            {/* break this down into new component
+              ex: DropdownDeleteEdit component
+            */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size={'small'} variant="outline">

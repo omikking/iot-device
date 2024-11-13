@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import {
   Button,
@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
   Text,
 } from '@gsp/ui';
-import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +17,7 @@ import {
   IPositionMock,
 } from '@/app/(routes)/sitelocations/page';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 interface LevelComponentProps {
   selectedLevel?: string;
@@ -110,6 +110,11 @@ export const LevelItem = ({
     setPositionsOptionsMock([]);
   };
 
+  // for future feature
+  // const openModal = () => {
+  //   setIsDeleteModalOpen(true);
+  // };
+
   return (
     <div
       className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
@@ -158,6 +163,11 @@ export const LevelItem = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {/* <DeleteEditDropdown
+              index={index}
+              openModal={openModal}
+              handleEdit={handleEditLevel}
+            /> */}
             <DeleteModalConfirmation
               modalTitle="Delete level"
               deleteButtonText="Confirm deletion"

@@ -82,10 +82,10 @@ export default function Page(): JSX.Element {
   );
   const [sites, setSites] = useState(sitesMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(
-    // Array of the same length as sites with all values set to false, AI generated this
-    Array(sites.length).fill(false),
+  const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
+    undefined,
   );
+  const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
 
   const getBadge = (
     role: Role,
@@ -104,24 +104,14 @@ export default function Page(): JSX.Element {
   };
 
   const openModal = (index: number) => {
-    const updatedModalState = [...isDeleteSiteModalOpen];
-    updatedModalState[index] = true;
-    setIsDeleteSiteModalOpen(updatedModalState);
+    setSiteToDelete(index);
+    setIsDeleteSiteModalOpen(true);
   };
 
-  const closeModal = (index: number) => {
-    const updatedModalState = [...isDeleteSiteModalOpen];
-    updatedModalState[index] = false;
-    setIsDeleteSiteModalOpen(updatedModalState);
+  const closeModal = () => {
+    setIsDeleteSiteModalOpen(false);
+    setSiteToDelete(undefined);
   };
-
-  // const handleDelete = async (index: number) => {
-  //   setSites((prevSites) => {
-  //     const newSites = [...prevSites];
-  //     newSites.splice(index, 1);
-  //     return newSites;
-  //   });
-  // };
 
   const handleDelete = (index: number) => {
     setSites((sites) => sites.filter((item, i) => i !== index));
@@ -170,28 +160,29 @@ export default function Page(): JSX.Element {
               {site.name}
             </Text>
             <DeleteEditDropdown index={index} openModal={openModal} />
-            <DeleteModalConfirmation
-              deleteButtonText="Confirm deletion"
-              deleteIcon="Site"
-              modalTitle="Delete Site"
-              isOpen={isDeleteSiteModalOpen[index]}
-              index={index}
-              onOpenChange={() => closeModal(index)}
-              onDelete={() => {
-                handleDelete(index), closeModal(index);
-              }}
-            >
-              <Text variant="medium" color={'foreground'}>
-                You are about to delete
-                <Text variant="medium" color={'foreground'} as="span">
-                  {/* @TODO add isBold when merged with main */}
-                  {` ${site.name} `}
-                </Text>
-                from the list. Are you sure you want to delete?
-              </Text>
-            </DeleteModalConfirmation>
           </div>
         ))}
+        <DeleteModalConfirmation
+          deleteButtonText="Confirm deletion"
+          deleteIcon="Site"
+          modalTitle="Delete Site"
+          isOpen={isDeleteSiteModalOpen}
+          index={siteToDelete}
+          onOpenChange={closeModal}
+          onDelete={(_, index) => {
+            console.log('Deleting site at index:', index);
+            handleDelete(index);
+            closeModal();
+          }}
+        >
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} isBold as="span">
+              {siteToDelete !== undefined ? sites[siteToDelete].name : ''}
+            </Text>
+            from the list. Are you sure you want to delete?
+          </Text>
+        </DeleteModalConfirmation>
       </Headline>
 
       <hr className="w-full" />

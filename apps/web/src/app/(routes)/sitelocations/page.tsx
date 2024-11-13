@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { sitesMock } from '@/app/mock/mock';
 import { LucideMoveLeft } from 'lucide-react';
 import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
@@ -33,32 +33,31 @@ export interface IPositionMock {
 }
 
 export default function Page(): JSX.Element {
-  const [selectedSite, setSelectedSite] = useState<string | undefined>();
-  const [selectedSiteName, setSelectedSiteName] = useState<
-    string | undefined
-  >();
+  const searchParams = useSearchParams();
+  const siteTableValue = searchParams.get('data');
+  const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
+
+  const levelsFromUrlSite =
+    sitesMock.find((boltSites) => boltSites.name === siteFromUrl?.name)
+      ?.levels || [];
+
+  const [selectedSite, setSelectedSite] = useState<string | undefined>(
+    siteFromUrl?.id,
+  );
+
+  const [selectedSiteName, setSelectedSiteName] = useState<string | undefined>(
+    siteFromUrl?.name,
+  );
+
   const [selectedLevel, setSelectedLevel] = useState<string | undefined>();
   const [selectedDrive, setSelectedDrive] = useState<string | undefined>();
-  const [levelsOptionsMock, setLevelsOptionsMock] = useState<ILevelMock[]>([]);
+
+  const [levelsOptionsMock, setLevelsOptionsMock] =
+    useState<ILevelMock[]>(levelsFromUrlSite);
   const [drivesOptionsMock, setDrivesOptionsMock] = useState<IDriveMock[]>([]);
   const [positionsOptionsMock, setPositionsOptionsMock] = useState<
     IPositionMock[]
   >([]);
-
-  const searchParams = useSearchParams();
-  const siteTableValue = searchParams.get('data');
-
-  useEffect(() => {
-    if (siteTableValue) {
-      // site by name ex. "Garpenberg site"
-      const site = sitesMock.find((site) => site.name === siteTableValue);
-      if (site) {
-        handleSetSite(siteTableValue); // the id to match with selectedId prop
-        setSelectedSite(site.id); // this sets 1, 2, or 3 as the selectedId
-        setSelectedSiteName(site.name); // new state to store it for the badge
-      }
-    }
-  }, [siteTableValue]);
 
   const handleSetSite = (site?: string) => {
     setSelectedSite(site);

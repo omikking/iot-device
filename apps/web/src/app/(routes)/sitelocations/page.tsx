@@ -7,6 +7,7 @@ import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { PositionsList } from '@/components/SiteLocations/positions/PositionsList';
+import { useSearchParams } from 'next/navigation';
 
 export interface ISiteMock {
   id: string;
@@ -32,10 +33,27 @@ export interface IPositionMock {
 }
 
 export default function Page(): JSX.Element {
-  const [selectedSite, setSelectedSite] = useState<string | undefined>();
+  const searchParams = useSearchParams();
+  const siteTableValue = searchParams.get('data');
+  const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
+
+  const levelsFromUrlSite =
+    sitesMock.find((boltSites) => boltSites.name === siteFromUrl?.name)
+      ?.levels || [];
+
+  const [selectedSite, setSelectedSite] = useState<string | undefined>(
+    siteFromUrl?.id,
+  );
+
+  const [selectedSiteName, setSelectedSiteName] = useState<string | undefined>(
+    siteFromUrl?.name,
+  );
+
   const [selectedLevel, setSelectedLevel] = useState<string | undefined>();
   const [selectedDrive, setSelectedDrive] = useState<string | undefined>();
-  const [levelsOptionsMock, setLevelsOptionsMock] = useState<ILevelMock[]>([]);
+
+  const [levelsOptionsMock, setLevelsOptionsMock] =
+    useState<ILevelMock[]>(levelsFromUrlSite);
   const [drivesOptionsMock, setDrivesOptionsMock] = useState<IDriveMock[]>([]);
   const [positionsOptionsMock, setPositionsOptionsMock] = useState<
     IPositionMock[]
@@ -43,6 +61,7 @@ export default function Page(): JSX.Element {
 
   const handleSetSite = (site?: string) => {
     setSelectedSite(site);
+    setSelectedSiteName(site);
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
     setDrivesOptionsMock([]);
@@ -88,7 +107,7 @@ export default function Page(): JSX.Element {
         </Link>
       </Text>
       <Badge variant="primary" size="large" className="absolute top-24">
-        {selectedSite || 'Select site'}
+        {selectedSiteName || 'Select site'}
       </Badge>
       <Headline as="h1" variant="xl" color="foreground">
         Site locations
@@ -103,7 +122,6 @@ export default function Page(): JSX.Element {
           onSelect={handleSetSite}
           className="w-96"
         />
-
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
@@ -127,7 +145,6 @@ export default function Page(): JSX.Element {
               handleSetDrive={handleSetDrive}
             />
           </div>
-
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <PositionsList
               selectedDrive={selectedDrive}

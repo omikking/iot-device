@@ -62,6 +62,7 @@ export const LevelsList = ({
         )}
         {levelsOptionsMock?.map((level, index) => (
           <LevelItem
+            key={index}
             selectedLevel={selectedLevel}
             level={level}
             levelsOptionsMock={levelsOptionsMock}

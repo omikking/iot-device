@@ -9,7 +9,7 @@ export interface BoltResultSchema {
   displacementPerTonnage: string;
   level: string;
   drive: string;
-  position: string;
+  location: string;
   ring: string;
   comment?: string;
   result: 'Pass' | 'Fail' | 'Abort';
@@ -36,7 +36,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '251, 5225',
+    location: '251, 5225',
     ring: 'RH-BACK',
     // comment: 'Smooth Operator',
     result: 'Pass',
@@ -55,7 +55,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '251, 5225',
+    location: '251, 5225',
     ring: 'LH-BACK',
     // comment: 'A truly deceptive comment',
     result: 'Fail',
@@ -74,7 +74,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '251, 5225',
+    location: '251, 5225',
     ring: 'LH-BACK',
     result: 'Pass',
     image: '/boltTestImage.png',
@@ -92,7 +92,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '22, 49',
+    location: '22, 49',
     ring: 'LH SHOULDER',
     // comment: 'A truly deceptive comment',
     result: 'Pass',
@@ -110,7 +110,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '1, 2',
+    location: '1, 2',
     ring: 'LH SHOULDER',
     comment: 'A truly deceptive comment',
     result: 'Abort',
@@ -129,7 +129,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '2, 43',
+    location: '2, 43',
     ring: 'LH-BACK',
     result: 'Pass',
     isHazard: true,
@@ -146,7 +146,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '2222, 433',
+    location: '2222, 433',
     ring: 'LH-WALL UPPER',
     // comment: 'N/A',
     result: 'Fail',
@@ -165,7 +165,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '2, 43',
+    location: '2, 43',
     ring: 'RH-SHOULDER',
     result: 'Pass',
     isHazard: false,
@@ -182,7 +182,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '2, 43',
+    location: '2, 43',
     ring: 'RH-WALL UPPER',
     comment: 'A truly deceptive comment',
     result: 'Pass',
@@ -200,7 +200,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '251, 5225',
+    location: '251, 5225',
     ring: 'RH-WALL UPPER',
     comment: 'A truly deceptive comment',
     result: 'Pass',
@@ -218,7 +218,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '12, 33',
+    location: '12, 33',
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Fail',
@@ -236,7 +236,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '12, 33',
+    location: '12, 33',
     ring: 'RH-WALL UPPER',
     result: 'Abort',
     isHazard: true,
@@ -253,7 +253,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '12, 33',
+    location: '12, 33',
     ring: 'RH-WALL UPPER',
     comment: 'A truly deceptive comment',
     result: 'Pass',
@@ -271,7 +271,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '12, 33',
+    location: '12, 33',
     ring: 'RH-SHOULDER',
     comment: 'N/A',
     result: 'Pass',
@@ -288,7 +288,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '12, 33',
+    location: '12, 33',
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Pass',
@@ -305,7 +305,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '44, 34',
+    location: '44, 34',
     ring: 'RH-BACK',
     comment: 'A truly deceptive comment',
     result: 'Fail',
@@ -322,7 +322,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     displacementPerTonnage: '48',
     level: 'FW W 564 SLT',
     drive: '1660 Upper',
-    position: '44, 34',
+    location: '44, 34',
     ring: 'LH-BACK',
     result: 'Abort',
     createdDate: new Date('2024-11-05T10:30:00'),
@@ -447,7 +447,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2001',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '20, 42',
@@ -477,7 +477,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2002',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '1, 2',
@@ -487,7 +487,7 @@ export const sitesMock = [
           {
             id: '3',
             name: '2003',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2, 43',
@@ -507,7 +507,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2007',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '22, 433',
@@ -521,7 +521,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2008',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2222, 433',
@@ -541,7 +541,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '5007',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2222, 433',
@@ -555,7 +555,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '5008',
-            positions: [],
+            locations: [],
           },
         ],
       },
@@ -566,7 +566,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2010',
-            positions: [
+            locations: [
               { id: '1', name: '15, 30' },
               { id: '2', name: '32, 45' },
             ],
@@ -574,7 +574,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2011',
-            positions: [
+            locations: [
               { id: '1', name: '40, 50' },
               { id: '2', name: '52, 61' },
             ],
@@ -588,7 +588,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2015',
-            positions: [
+            locations: [
               { id: '1', name: '22, 34' },
               { id: '2', name: '30, 45' },
               { id: '3', name: '35, 47' },
@@ -603,7 +603,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2020',
-            positions: [
+            locations: [
               { id: '1', name: '12, 22' },
               { id: '2', name: '32, 42' },
             ],
@@ -611,7 +611,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2021',
-            positions: [],
+            locations: [],
           },
         ],
       },
@@ -622,7 +622,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2025',
-            positions: [
+            locations: [
               { id: '1', name: '45, 55' },
               { id: '2', name: '50, 60' },
               { id: '3', name: '55, 65' },
@@ -637,7 +637,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2030',
-            positions: [
+            locations: [
               { id: '1', name: '10, 20' },
               { id: '2', name: '25, 35' },
             ],
@@ -645,7 +645,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2031',
-            positions: [{ id: '1', name: '35, 45' }],
+            locations: [{ id: '1', name: '35, 45' }],
           },
         ],
       },
@@ -656,7 +656,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2040',
-            positions: [
+            locations: [
               { id: '1', name: '5, 15' },
               { id: '2', name: '20, 30' },
             ],
@@ -676,7 +676,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '5555',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '12, 33',

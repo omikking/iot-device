@@ -23,7 +23,7 @@ export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
-  const [position, setPosition] = useState<string | undefined>(undefined);
+  const [location, setLocation] = useState<string | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
@@ -37,13 +37,13 @@ export default function Page(): JSX.Element {
   const filterBoltResults = (
     level?: string,
     drive?: string,
-    position?: string,
+    location?: string,
     dateRange?: DateRange,
   ): BoltResultSchema[] | undefined => {
     return boltResults?.filter((bolt) => {
       const matchLevel = level ? bolt.level === level : true;
       const matchDrive = drive ? bolt.drive === drive : true;
-      const matchPosition = position ? bolt.position === position : true;
+      const matchLocation = location ? bolt.location === location : true;
 
       // Date range filtering
       const matchDateRange =
@@ -52,11 +52,11 @@ export default function Page(): JSX.Element {
             bolt.createdDate <= dateRange.to
           : true;
 
-      return matchPosition && matchDrive && matchLevel && matchDateRange;
+      return matchLocation && matchDrive && matchLevel && matchDateRange;
     });
   };
 
-  const filteredResults = filterBoltResults(level, drive, position, dateRange);
+  const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
     // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
@@ -107,12 +107,12 @@ export default function Page(): JSX.Element {
           site={site}
           level={level}
           drive={drive}
-          position={position}
+          location={location}
           dateRange={dateRange}
           onSetSite={setSite}
           onSetLevel={setLevel}
           onSetDrive={setDrive}
-          onSetPosition={setPosition}
+          onSetLocation={setLocation}
           onSetDateRange={setDateRange}
           selectedTab={selectedTab}
         />

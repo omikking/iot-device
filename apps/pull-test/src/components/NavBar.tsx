@@ -15,7 +15,6 @@ export const NavBar = () => {
   // Sry for the name this the best I could come up with
   const excludeMenyList = [
     '/api/auth/signin',
-    '/login',
     '/overview', // This one is just to test it works on other pages
     '/forgot-password',
   ];

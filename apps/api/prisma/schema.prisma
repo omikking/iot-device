@@ -23,9 +23,7 @@ enum Result {
   ABORT
 }
 
-// @TODO Check if there are any more types of abort reasons
-// @TODO Add app specific naming for apps
-enum AbortReason {
+enum PullTestAbortReason {
   NOT_TESTED_VOID_CAVITY
   TEST_STOPPED_INSTALL_ANGLE
 }
@@ -44,7 +42,6 @@ enum PlanLevel {
   INACTIVE
 }
 
-// @TODO Check which positions are needed
 enum RingPositions {
   RH_BACKS
   RH_SHOULDER
@@ -61,7 +58,7 @@ model Company {
   updatedAt DateTime @updatedAt
 
   name       String
-  orgNumber  Int    @unique // Has 10 exact digits in Sweden, does this apply for rest of world (maybe string?)
+  orgNumber  String @unique
   address    String
   postalCode String
   city       String
@@ -69,9 +66,9 @@ model Company {
 
   companyContactEmail String
 
-  User User[]
-  Plan Plan[]
-  Site Site[]
+  user User[]
+  plan Plan[]
+  site Site[]
 
   @@map("companies")
 }
@@ -86,8 +83,6 @@ model RefreshTokenId {
   @@map("refresh_token_ids")
 }
 
-// Plan access table pair between user and plan
-// Split this out to separate concern between company access and user access inside company?
 model Plan {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -97,11 +92,10 @@ model Plan {
   planLevel       PlanLevel
   expiringDate    DateTime?
 
-  Company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  User   User?   @relation(fields: [userId], references: [id]) // TODO: Turn into array as multiple users can have the same plan
-  userId String?
+  user User[]
 
   @@map("plans")
 }
@@ -114,15 +108,15 @@ model User {
   email String @unique
   hash  String
 
-  role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared)
+  role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared across all companies)
   fullname         String
   workPlace        String
   phoneNumber      String?
   globalVisibility Boolean? // Only relevant for role SANDVIK_TECHNICIAN
 
-  Company    Company[]
-  Plan       Plan[] // @TODO Check if possible to set relations to be unique
-  BoltResult BoltResult[] // @TODO Check if this can be removed
+  company    Company[]
+  plan       Plan[] // @TODO Check if possible to set relations to be unique
+  boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("users")
 }
@@ -141,11 +135,11 @@ model Site {
   // passCriteria String
   // notification String
 
-  Company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  Level      Level[]
-  BoltResult BoltResult[] // @TODO Check if this can be removed
+  level      Level[]
+  boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("sites")
 }
@@ -157,11 +151,11 @@ model Level {
 
   levelName String
 
-  Site   Site   @relation(fields: [siteId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id])
   siteId String
 
-  Drive      Drive[]
-  BoltResult BoltResult[] // @TODO Check if this can be removed
+  drive      Drive[]
+  boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("levels")
 }
@@ -173,11 +167,11 @@ model Drive {
 
   driveName String
 
-  Level   Level  @relation(fields: [levelId], references: [id])
+  level   Level  @relation(fields: [levelId], references: [id])
   levelId String
 
-  Position   Position[]
-  BoltResult BoltResult[] // @TODO Check if this can be removed
+  position   Position[]
+  boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("drives")
 }
@@ -190,10 +184,10 @@ model Position {
 
   positionName Positions
 
-  Drive   Drive  @relation(fields: [driveId], references: [id])
+  drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  BoltResult BoltResult[] // @TODO Check if this can be removed
+  boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("positions")
 }
@@ -210,27 +204,27 @@ model BoltResult {
   positionInRing   String // @TODO remove
 
   result              Result
-  isHazard            Boolean      @default(false)
+  isHazard            Boolean              @default(false)
   hazardCompletedDate DateTime[]
-  abortReason         AbortReason?
+  abortReason         PullTestAbortReason?
   comment             String?
   image               String? // This assumes base64
 
-  Site   Site   @relation(fields: [siteId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id])
   siteId String
 
-  Level   Level  @relation(fields: [levelId], references: [id])
+  level   Level  @relation(fields: [levelId], references: [id])
   levelId String
 
-  Drive   Drive  @relation(fields: [driveId], references: [id])
+  drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
   // TODO: Add location!
 
-  Position   Position @relation(fields: [positionId], references: [id]) // @TODO Rename ring position
+  position   Position @relation(fields: [positionId], references: [id]) // @TODO Rename ring position
   positionId String
 
-  User   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 
   @@map("bolt_results")

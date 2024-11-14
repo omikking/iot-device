@@ -6,9 +6,20 @@ import { LucideUser } from 'lucide-react';
 import { Menu } from './Menu';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
+import { usePathname } from 'next/navigation';
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
+
+  // Sry for the name this the best I could come up with
+  const excludeMenyList = [
+    '/api/auth/signin',
+    '/login',
+    '/overview', // This one is just to test it works on other pages
+    '/forgot-password',
+  ];
+  const excludeMenyOnNavbar = excludeMenyList.includes(pathname);
 
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
@@ -38,8 +49,7 @@ export const NavBar = () => {
               </div>
             </div>
           )}
-
-          <Menu />
+          {!excludeMenyOnNavbar && <Menu />}
         </div>
       </nav>
     </header>

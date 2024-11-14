@@ -6,10 +6,6 @@ import { LucideUser } from 'lucide-react';
 import { Menu } from './Menu';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
-import { useRouter } from 'next/navigation';
-
-// Export to ui component
-export { useRouter };
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
@@ -17,12 +13,12 @@ export const NavBar = () => {
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <Link href="/">
+        <Link href="/overview">
           <SandvikLogo />
         </Link>
 
         <div className="flex gap-10 items-center">
-          <Headline variant="smallBold" color="foreground" as="h3">
+          <Headline variant="small" color="foreground" as="h3" isBold>
             Ground Support Platform
           </Headline>
 

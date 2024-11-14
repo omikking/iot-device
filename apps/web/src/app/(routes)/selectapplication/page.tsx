@@ -22,7 +22,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-row justify-around gap-10 max-w-[1000px] pt-20 border-t border-t-gold-3">
         <div className="flex flex-row gap-12 justify-center">
-          <Link href="/">
+          <Link href="http://localhost:3001/overview">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
                 Pull-Test
@@ -30,7 +30,7 @@ export default function Page(): JSX.Element {
               <SandvikLogo />
             </NavigationCard>
           </Link>
-          <Link href="/">
+          <Link href="http://localhost:3000/designsystem">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
                 Ultrabots
@@ -38,7 +38,7 @@ export default function Page(): JSX.Element {
               <SandvikLogo />
             </NavigationCard>
           </Link>
-          <Link href="/">
+          <Link href="http://localhost:3000/designsystem">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
                 xCyclops
@@ -51,7 +51,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-row justify-around gap-10 max-w-[1000px] w-full pt-20 border-t border-t-gold-3">
         <div className="flex flex-row gap-12 w-full justify-center ">
-          <Link href="/">
+          <Link href="/overview">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
                 Management

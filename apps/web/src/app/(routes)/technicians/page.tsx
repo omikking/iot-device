@@ -8,10 +8,10 @@ import { TechniciansTable } from '@/components/TechniciansTable';
 import { GoBack } from '@/components/GoBack';
 
 export default function Page(): JSX.Element {
-  // Only superadmin should be able to see this page
+  // @TODO Only superadmin should be able to see this page
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
       <Headline as="h1" variant="xl" color="foreground">

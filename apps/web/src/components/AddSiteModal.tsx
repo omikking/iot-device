@@ -19,7 +19,11 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 
-export const AddSiteModal = () => {
+interface AddSiteModalProps {
+  appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabots';
+}
+
+export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {
   const formSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
     adress: z
@@ -62,7 +66,7 @@ export const AddSiteModal = () => {
                         <Input
                           placeholder="Fill in name..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -81,7 +85,7 @@ export const AddSiteModal = () => {
                         <Input
                           placeholder="Fill in adress..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />
@@ -90,8 +94,8 @@ export const AddSiteModal = () => {
                 }}
               />
             </div>
-            <Headline as="h3" color="foreground" variant="smallBold">
-              Props.appName Settings
+            <Headline as="h3" color="foreground" variant="small" isBold>
+              {appSelected} settings
             </Headline>
             <div className="flex flex-row justify-between pt-5">
               <FormField
@@ -105,7 +109,7 @@ export const AddSiteModal = () => {
                         <Input
                           placeholder="Fill in pass criteria..."
                           {...field}
-                          className="w-[390px]"
+                          className="w-96"
                         />
                       </FormControl>
                       <FormMessage />

@@ -17,6 +17,13 @@ const textVariants = cva('ui-font-sandvik-text', {
       destructive: 'ui-text-error',
       accent: 'ui-text-orange-primary',
     },
+    isBold: {
+      false: 'ui-font-normal',
+      true: 'ui-font-bold',
+    },
+    defaultVariants: {
+      isBold: 'false',
+    },
   },
 });
 
@@ -27,23 +34,29 @@ export interface TextProps
     >,
     Required<Pick<VariantProps<typeof textVariants>, 'variant' | 'color'>> {
   as?: 'p' | 'span';
+  isBold?: boolean;
 }
 
 const Text = React.forwardRef<
   HTMLParagraphElement | HTMLSpanElement,
   TextProps
->(({ className, variant, color, children, as = 'p', ...props }, ref) => {
-  const TextElement = as;
-  return (
-    <TextElement
-      className={cn(textVariants({ variant, color }), className)}
-      ref={ref as React.RefObject<HTMLParagraphElement>}
-      {...props}
-    >
-      {children}
-    </TextElement>
-  );
-});
+>(
+  (
+    { className, variant, color, isBold, children, as = 'p', ...props },
+    ref,
+  ) => {
+    const TextElement = as;
+    return (
+      <TextElement
+        className={cn(textVariants({ variant, color, isBold }), className)}
+        ref={ref as React.RefObject<HTMLParagraphElement>}
+        {...props}
+      >
+        {children}
+      </TextElement>
+    );
+  },
+);
 Text.displayName = 'Text';
 
 export { Text, textVariants };

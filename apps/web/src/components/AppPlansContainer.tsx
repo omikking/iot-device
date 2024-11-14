@@ -10,7 +10,7 @@ import { AppPlan } from '@/components/AppPlan';
 export const AppPlansContainer = ({ appPlan, isAdmin }) => {
   const { name, activePlan } = appPlan;
 
-  // const [date, setDate] = useState<Date | undefined>(new Date());
+  // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
 
   const user = isAdmin ? 'Superadmin' : 'Client';
 
@@ -20,7 +20,7 @@ export const AppPlansContainer = ({ appPlan, isAdmin }) => {
       className="w-1/3 max-w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
-        <Headline variant="smallBold" color="foreground" as="h3">
+        <Headline variant="small" color="foreground" as="h3" isBold>
           {name}
         </Headline>
 
@@ -57,7 +57,7 @@ export const AppPlansContainer = ({ appPlan, isAdmin }) => {
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              {/* Do we want to have it as disabled or invisible when plan is not selected? */}
+              {/* @TODO Do we want to have it as disabled or invisible when plan is not selected? */}
               {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
               <SingleDateCalendar className="mt-2" />
             </>

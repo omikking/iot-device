@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {
+  LucideAlertTriangle,
   LucideCircleCheckBig,
   LucideClipboardList,
-  LucideOctagonAlert,
 } from 'lucide-react';
 import {
   Headline,
@@ -12,6 +12,7 @@ import {
   Textarea,
   Modal,
   ModalTrigger,
+  Specification,
 } from '@gsp/ui';
 import { ViewBoltResultModal } from './ViewBoltResultModal';
 
@@ -36,31 +37,24 @@ export const HazardCard = ({
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
       <div className="flex flex-row border-b border-neutral-2 p-6 items-center justify-between">
-        <Headline variant="smallBold" as="h3" color="foreground">
+        <Headline variant="small" as="h3" color="foreground" isBold>
           {dateTitle}
         </Headline>
         {isHazard && (
           <Badge variant="warning">
-            <LucideOctagonAlert />
+            <LucideAlertTriangle />
             Hazard
           </Badge>
         )}
       </div>
       <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
-          {boltInfoItems.slice(0, 3).map((item) => (
-            <div
-              key={`${item.title}-${item.text}`}
-              className="flex flex-row items-center px-2 border-b border-neutral-3 py-2 break-words"
-            >
-              <Text className="w-32" variant="small" color="muted">
-                {item.title}
-              </Text>
-
-              <Text className="max-w-32" variant="small" color="foreground">
-                {item.text}
-              </Text>
-            </div>
+          {boltInfoItems.slice(0, 3).map((boltSpec, i) => (
+            <Specification
+              key={i}
+              title={boltSpec.title}
+              text={boltSpec.text}
+            />
           ))}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">

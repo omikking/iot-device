@@ -27,7 +27,6 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  // constraint for email & password fields
   const formSchema = z.object({
     emailAddress: z
       .string()
@@ -39,7 +38,6 @@ export default function SignIn() {
       .min(8, { message: 'Password must be at least 8 characters.' }),
   });
 
-  // to validate the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -131,7 +129,8 @@ export default function SignIn() {
                 </Text>
 
                 <Text variant="small" color="foreground">
-                  <Link href="https://www.google.se" passHref legacyBehavior>
+                  {/* @TODO update link */}
+                  <Link href="/overview" passHref legacyBehavior>
                     <Anchor isUnderline color="foreground">
                       Click here to reset.
                     </Anchor>

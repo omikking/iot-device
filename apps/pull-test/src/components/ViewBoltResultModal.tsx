@@ -9,6 +9,7 @@ import {
   Badge,
   Headline,
   ModalClose,
+  Specification,
   LoadingSpinner,
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
@@ -90,13 +91,13 @@ export const ViewBoltResultModal = ({
           )}
           <div className="flex flex-col w-1/2">
             {boltDescription && (
-              <div className="flex flex-col flex-grow ">
+              <div className="flex flex-col flex-grow">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
                   value={boltDescription}
-                  className="flex-grow"
+                  className="flex-grow mt-2"
                   disabled
                   readOnly
                 />
@@ -120,25 +121,21 @@ export const ViewBoltResultModal = ({
         <div className="px-10">
           <Headline
             className="pb-4"
-            variant="smallBold"
+            variant="small"
             as="h3"
             color="foreground"
+            isBold
           >
             Bolt specifications
           </Headline>
           <div className="flex flex-wrap">
             {viewBoltSpecifications.map((boltSpec, index) => (
-              <div
+              <Specification
                 key={index}
-                className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-              >
-                <Text className="w-32" variant="small" color="muted">
-                  {boltSpec.title}
-                </Text>
-                <Text className="max-w-60" variant="small" color="foreground">
-                  {boltSpec.text}
-                </Text>
-              </div>
+                title={boltSpec.title}
+                text={boltSpec.text}
+                className="w-1/2"
+              />
             ))}
           </div>
         </div>
@@ -154,7 +151,7 @@ export const ViewBoltResultModal = ({
         <div className="flex flex-col items-center justify-center h-96 gap-10">
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
+            <Headline as="h3" color="foreground" variant="small" isBold>
               Confirm hazard completion
             </Headline>
           </div>
@@ -179,8 +176,8 @@ export const ViewBoltResultModal = ({
         <div className="flex flex-col items-center justify-center h-96 gap-10">
           <div className="flex gap-4">
             <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="smallBold">
-              Hazard completed / Hazard Resolved
+            <Headline as="h3" color="foreground" variant="small" isBold>
+              Hazard completed
             </Headline>
           </div>
         </div>

@@ -30,6 +30,8 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  Modal,
+  ModalTrigger,
 } from '@gsp/ui';
 
 import {
@@ -45,6 +47,8 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
+  LucidePlus,
+  LucideTrash2,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -52,6 +56,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
@@ -62,7 +67,6 @@ export default function Page(): JSX.Element {
     textarea: z.string(),
   });
 
-  // to validate the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -77,41 +81,51 @@ export default function Page(): JSX.Element {
     undefined,
   );
 
-  // For SingleDateCalendar
-  // const [date, setDate] = useState<Date | undefined>(undefined);
-
-  // For RangeCalendar
-  // const [rangeDate, setRangeDate] = useState<DateRange | undefined>({
-  //   from: undefined,
-  //   to: undefined,
-  // });
-
-  const getRoleBadge = (role: 'User' | 'Technician' | 'Admin') => {
-    const badges = {
-      User: {
-        variant: 'neutral',
-        icon: <LucideUser />,
-      },
-      Technician: {
-        variant: 'neutral',
-        icon: <LucidePickaxe />,
-      },
-      Admin: {
-        variant: 'primary',
-        icon: <LucideKey />,
-      },
-    };
-    return badges[role];
+  const getBadge = (
+    role: 'User' | 'Technician' | 'Admin',
+  ): {
+    variant: 'neutral' | 'primary';
+    icon: React.ReactNode;
+  } => {
+    switch (role) {
+      case 'User':
+        return { variant: 'neutral', icon: <LucideUser /> };
+      case 'Technician':
+        return { variant: 'neutral', icon: <LucidePickaxe /> };
+      case 'Admin':
+        return { variant: 'primary', icon: <LucideKey /> };
+    }
   };
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-main-white max-w-[1400px]">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
-
       <hr className="w-full" />
 
+      <Headline variant="large" as="h1" color="foreground">
+        Delete Modal Confirmation 🦄
+      </Headline>
+
+      <Modal>
+        <ModalTrigger asChild>
+          <Button variant="destructive" size="large">
+            <LucideTrash2 />
+            Delete item
+          </Button>
+        </ModalTrigger>
+        <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} as="span">
+              {` Elliot Alderson `}
+            </Text>
+            from the list. Are you sure you want to delete?
+          </Text>
+        </DeleteModalConfirmation>
+      </Modal>
+      <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄
       </Headline>
@@ -230,12 +244,16 @@ export default function Page(): JSX.Element {
           Large Headline destructive color
         </Headline>
 
+        <Headline as="h4" variant="medium" color="foreground" isBold>
+          Medium Headline bold
+        </Headline>
+
         <Headline as="h3" variant="medium" color="muted">
           Medium Headline muted color
         </Headline>
 
-        <Headline as="h4" variant="smallBold" color="foreground">
-          Small bold Headline
+        <Headline as="h4" variant="small" color="foreground" isBold>
+          Small Headline
         </Headline>
       </div>
       <hr className="w-full" />
@@ -245,6 +263,10 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-center gap-12">
         <Text variant="medium" color="foreground">
           Medium text
+        </Text>
+
+        <Text variant="medium" color="foreground" isBold>
+          Medium bold text
         </Text>
 
         <Text variant="small" color="destructive">
@@ -568,8 +590,8 @@ export default function Page(): JSX.Element {
                         placeholder="Select dropdown item"
                         selectedId={dropdownValue}
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
-                        className="w-[400px]"
+                        onSelect={setDropdownValue}
+                        className="w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -591,7 +613,7 @@ export default function Page(): JSX.Element {
                         placeholder="Select dropdown item"
                         selectedId={dropdownValue}
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
+                        onSelect={setDropdownValue}
                       />
                     </FormControl>
                     <FormMessage />
@@ -612,7 +634,7 @@ export default function Page(): JSX.Element {
                         id="person"
                         placeholder="Select dropdown item"
                         options={optionsDesignSystemMock}
-                        onSelect={(e) => setDropdownValue(e)}
+                        onSelect={setDropdownValue}
                       />
                     </FormControl>
                     <FormMessage />
@@ -655,11 +677,8 @@ export default function Page(): JSX.Element {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.appAccess}</TableCell>
                 <TableCell>
-                  {/* Typing needs to be specified, do later */}
-                  <Badge
-                    variant={getRoleBadge(user.role as any).variant as any}
-                  >
-                    {getRoleBadge(user.role as any).icon}
+                  <Badge variant={getBadge(user.role).variant}>
+                    {getBadge(user.role).icon}
                     {user.role}
                   </Badge>
                 </TableCell>

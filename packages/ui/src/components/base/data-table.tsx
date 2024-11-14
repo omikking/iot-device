@@ -28,12 +28,16 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   noResultMessage?: string;
+  variant?: 'border' | 'noBorder';
+  className?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   noResultMessage = 'Could not find any data.',
+  variant,
+  className,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -49,7 +53,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <Table>
+    <Table variant={variant} className={className}>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>

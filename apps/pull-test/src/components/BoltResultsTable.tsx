@@ -102,8 +102,8 @@ export const BoltResultsTable = ({
       header: 'Drive',
     },
     {
-      accessorKey: 'position',
-      header: 'Position',
+      accessorKey: 'location',
+      header: 'Location',
     },
     {
       accessorKey: 'ring',

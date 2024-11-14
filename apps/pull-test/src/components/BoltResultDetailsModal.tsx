@@ -35,13 +35,14 @@ export const BoltResultDetailsModal = ({
     isHazard,
     peakLoad,
     peakDisplacement,
-    position,
+    // location,
     drive,
     bitSize,
     boltType,
     boltNumber,
     rotations,
     level,
+    ring,
   } = (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'just test description';
@@ -51,7 +52,7 @@ export const BoltResultDetailsModal = ({
     { title: 'Bit size', text: bitSize },
     { title: 'Level', text: level },
     { title: 'Drive', text: drive },
-    { title: 'Position in ring', text: position },
+    { title: 'Position in ring', text: ring }, // TODO fix this one, should be position in ring
     { title: 'Rotations', text: rotations }, // should this be in?
     { title: 'Pass criteria', text: boltType },
     { title: 'Pass criteria', text: boltType },
@@ -104,9 +105,10 @@ export const BoltResultDetailsModal = ({
       <div className="px-10 pb-10">
         <Headline
           className="pb-4"
-          variant="smallBold"
+          variant="small"
           as="h3"
           color="foreground"
+          isBold
         >
           Bolt specifications
         </Headline>
@@ -129,9 +131,10 @@ export const BoltResultDetailsModal = ({
         <div>
           <Headline
             className="pt-10"
-            variant="smallBold"
+            variant="small"
             as="h3"
             color="foreground"
+            isBold
           >
             Bolt results
           </Headline>
@@ -145,9 +148,10 @@ export const BoltResultDetailsModal = ({
       <div className="px-10">
         <Headline
           className="pb-4"
-          variant="smallBold"
+          variant="small"
           as="h3"
           color="foreground"
+          isBold
         >
           Bolt plot Graph
         </Headline>

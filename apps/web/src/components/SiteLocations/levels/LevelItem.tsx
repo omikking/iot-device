@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IDriveMock,
   ILevelMock,
-  IPositionMock,
+  ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
 
 interface LevelComponentProps {
@@ -22,8 +22,8 @@ interface LevelComponentProps {
   handleSetLevel: (name: string) => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
 }
 
@@ -36,7 +36,7 @@ export const LevelItem = ({
   handleSetLevel,
   setLevelsOptionsMock,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
 }: LevelComponentProps) => {
   const levelFormSchema = z.object({
     id: z.string(),
@@ -63,7 +63,7 @@ export const LevelItem = ({
     setLevelsOptionsMock(newLevels);
 
     setDrivesOptionsMock([]);
-    setPositionsOptionsMock([]);
+    setLocationsOptionsMock([]);
   };
 
   const handleSubmitLevel = (

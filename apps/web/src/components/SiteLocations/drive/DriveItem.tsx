@@ -2,7 +2,7 @@ import React from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Button, Text } from '@gsp/ui';
 import { LucideEllipsis, LucideX } from 'lucide-react';
-import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
+import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,8 +16,8 @@ interface DriveComponentProps {
   // @TODO Gives error but it works. investigate why.
   // eslint-disable-next-line no-unused-vars
   handleSetDrive: (name: string) => void;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
 }
@@ -29,7 +29,7 @@ export const DriveItem = ({
   inputRef,
   index,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
   handleSetDrive,
 }: DriveComponentProps) => {
   const driveFormSchema = z.object({
@@ -52,11 +52,11 @@ export const DriveItem = ({
     e.preventDefault();
 
     const newDrives = [...drivesOptionsMock];
-    newDrives[index].positions = [];
+    newDrives[index].locations = [];
     newDrives.splice(index, 1);
     setDrivesOptionsMock(newDrives);
 
-    setPositionsOptionsMock([]);
+    setLocationsOptionsMock([]);
   };
 
   const handleSubmitDrive = (
@@ -80,7 +80,7 @@ export const DriveItem = ({
     const newDrive = {
       ...drivesOptionsMock[index],
       name: formData.get('drive') as string,
-      positions: [],
+      locations: [],
     };
     const newDrives = [...drivesOptionsMock];
     newDrives[index] = newDrive;

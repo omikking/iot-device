@@ -5,73 +5,73 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideEllipsis, LucideX } from 'lucide-react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { IPositionMock } from '@/app/(routes)/sitelocations/page';
+import { ILocationMock } from '@/app/(routes)/sitelocations/page';
 
-interface PositionComponentProps {
-  position: IPositionMock;
+interface LocationComponentProps {
+  location: ILocationMock;
   index: number;
-  positionsOptionsMock: IPositionMock[];
+  locationsOptionsMock: ILocationMock[];
   inputRef: React.RefObject<HTMLInputElement>;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
 }
 
-export const PositionItem = ({
-  position,
+export const LocationItem = ({
+  location,
   index,
-  positionsOptionsMock,
-  setPositionsOptionsMock,
+  locationsOptionsMock,
+  setLocationsOptionsMock,
   inputRef,
-}: PositionComponentProps) => {
-  const positionFormSchema = z.object({
+}: LocationComponentProps) => {
+  const locationFormSchema = z.object({
     id: z.string(),
     name: z.string(),
   });
 
-  const positionForm = useForm<z.infer<typeof positionFormSchema>>({
-    resolver: zodResolver(positionFormSchema),
+  const locationForm = useForm<z.infer<typeof locationFormSchema>>({
+    resolver: zodResolver(locationFormSchema),
     defaultValues: {
       id: '',
       name: '',
     },
   });
 
-  const handleCancelPosition = (
+  const handleCancelLocation = (
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
     e.preventDefault();
 
-    const newPositions = [...positionsOptionsMock];
-    newPositions.splice(index, 1);
-    setPositionsOptionsMock(newPositions);
+    const newLocations = [...locationsOptionsMock];
+    newLocations.splice(index, 1);
+    setLocationsOptionsMock(newLocations);
   };
-  const handleSubmitPosition = (
+  const handleSubmitLocation = (
     e: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const newPositionName = formData.get('position') as string;
+    const newLocationName = formData.get('location') as string;
 
-    const isDuplicate = positionsOptionsMock.some(
-      (position) => position.name === newPositionName,
+    const isDuplicate = locationsOptionsMock.some(
+      (location) => location.name === newLocationName,
     );
 
     if (isDuplicate) {
-      alert('This position already exists. Please enter a different position.');
+      alert('This location already exists. Please enter a different location.');
       return;
     }
 
-    const newPosition = {
-      ...positionsOptionsMock[index],
-      name: formData.get('position') as string,
+    const newLocation = {
+      ...locationsOptionsMock[index],
+      name: formData.get('location') as string,
     };
-    const newPositions = [...positionsOptionsMock];
-    newPositions[index] = newPosition;
-    setPositionsOptionsMock(newPositions);
+    const newLocations = [...locationsOptionsMock];
+    newLocations[index] = newLocation;
+    setLocationsOptionsMock(newLocations);
   };
   return (
     <div
@@ -79,26 +79,26 @@ export const PositionItem = ({
       key={index}
     >
       <div className="py-3">
-        {!position.name ? (
+        {!location.name ? (
           <SiteLocationsForm
-            form={positionForm}
-            onSubmit={handleSubmitPosition}
-            onCancel={handleCancelPosition}
-            placeholder="New position..."
-            name="position"
+            form={locationForm}
+            onSubmit={handleSubmitLocation}
+            onCancel={handleCancelLocation}
+            placeholder="New location..."
+            name="location"
             index={index}
             inputRef={inputRef}
           />
         ) : (
           <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text className="w-full" variant="small" color="foreground">
-              {position.name}
+              {location.name}
             </Text>
             <Button
               size={'small'}
               variant={'outline'}
               type="button"
-              onClick={(e) => handleCancelPosition(e, index)}
+              onClick={(e) => handleCancelLocation(e, index)}
             >
               <LucideX />
             </Button>

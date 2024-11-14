@@ -291,7 +291,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2001',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '20, 42',
@@ -321,7 +321,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2002',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '1, 2',
@@ -331,7 +331,7 @@ export const sitesMock = [
           {
             id: '3',
             name: '2003',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2, 43',
@@ -351,7 +351,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2007',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '22, 433',
@@ -365,7 +365,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2008',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2222, 433',
@@ -385,7 +385,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '5007',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '2222, 433',
@@ -399,7 +399,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '5008',
-            positions: [],
+            locations: [],
           },
         ],
       },
@@ -410,7 +410,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2010',
-            positions: [
+            locations: [
               { id: '1', name: '15, 30' },
               { id: '2', name: '32, 45' },
             ],
@@ -418,7 +418,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2011',
-            positions: [
+            locations: [
               { id: '1', name: '40, 50' },
               { id: '2', name: '52, 61' },
             ],
@@ -432,7 +432,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2015',
-            positions: [
+            locations: [
               { id: '1', name: '22, 34' },
               { id: '2', name: '30, 45' },
               { id: '3', name: '35, 47' },
@@ -447,7 +447,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2020',
-            positions: [
+            locations: [
               { id: '1', name: '12, 22' },
               { id: '2', name: '32, 42' },
             ],
@@ -455,7 +455,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2021',
-            positions: [],
+            locations: [],
           },
         ],
       },
@@ -466,7 +466,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2025',
-            positions: [
+            locations: [
               { id: '1', name: '45, 55' },
               { id: '2', name: '50, 60' },
               { id: '3', name: '55, 65' },
@@ -481,7 +481,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2030',
-            positions: [
+            locations: [
               { id: '1', name: '10, 20' },
               { id: '2', name: '25, 35' },
             ],
@@ -489,7 +489,7 @@ export const sitesMock = [
           {
             id: '2',
             name: '2031',
-            positions: [{ id: '1', name: '35, 45' }],
+            locations: [{ id: '1', name: '35, 45' }],
           },
         ],
       },
@@ -500,7 +500,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '2040',
-            positions: [
+            locations: [
               { id: '1', name: '5, 15' },
               { id: '2', name: '20, 30' },
             ],
@@ -520,7 +520,7 @@ export const sitesMock = [
           {
             id: '1',
             name: '5555',
-            positions: [
+            locations: [
               {
                 id: '1',
                 name: '12, 33',

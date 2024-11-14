@@ -42,7 +42,7 @@ enum PlanLevel {
   INACTIVE
 }
 
-enum RingPositions {
+enum RingPosition {
   RH_BACKS
   RH_SHOULDER
   RH_WALL_UPPER
@@ -57,18 +57,17 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name       String
-  orgNumber  String @unique
-  address    String
-  postalCode String
-  city       String
-  country    String
-
+  name                String
+  orgNumber           String @unique
+  address             String
+  postalCode          String
+  city                String
+  country             String
   companyContactEmail String
 
-  user User[]
-  plan Plan[]
-  site Site[]
+  plan           Plan[]
+  site           Site[]
+  userPermission UserPermission[]
 
   @@map("companies")
 }
@@ -82,6 +81,14 @@ model RefreshTokenId {
 
   @@map("refresh_token_ids")
 }
+
+// The data the request has when a company adds a user and give permissions:
+// companyId
+// userId
+// role
+// applicationsAccess: ['XCYCLOPS', 'PULL_TEST']
+
+// how do we give permission to a user for the applications?
 
 model Plan {
   id        String   @id @default(uuid())
@@ -108,17 +115,35 @@ model User {
   email String @unique
   hash  String
 
-  role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared across all companies)
+  // role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared across all companies)
   fullname         String
   workPlace        String
   phoneNumber      String?
   globalVisibility Boolean? // Only relevant for role SANDVIK_TECHNICIAN
 
-  company    Company[]
-  plan       Plan[] // @TODO Check if possible to set relations to be unique
+  plan       Plan[] // @TODO Check if possible to set relations to be unique. Is this needed?? Remove?
   boltResult BoltResult[] // @TODO Check if this can be removed
+  userRole   UserPermission[]
 
   @@map("users")
+}
+
+// TODO this needs a lot more work, not sure if this is correct
+model UserPermission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role Role
+  user User @relation(fields: [userId], references: [id])
+
+  userId    String
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  // applicationAccess Application[] // this array could contain all the application that they get access to?
+
+  @@map("user_permissions")
 }
 
 model Site {
@@ -132,8 +157,8 @@ model Site {
   city       String
   country    String
 
-  // passCriteria String
-  // notification String
+  // passCriteria String TODO should we remove for now?
+  // notification String TODO should we remove for now?
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
@@ -170,22 +195,37 @@ model Drive {
   level   Level  @relation(fields: [levelId], references: [id])
   levelId String
 
-  position   Position[]
+  location   Location[]
   boltResult BoltResult[] // @TODO Check if this can be removed
 
   @@map("drives")
 }
 
-// @TODO Add ring position
-model Position {
+model Location {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  positionName Positions
+  locationName String
 
   drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
+
+  boltResult     BoltResult[] // @TODO Check if this can be removed
+  PositionInRing PositionInRing[]
+
+  @@map("locations")
+}
+
+model PositionInRing {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  positionInRingName RingPosition
+
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String
 
   boltResult BoltResult[] // @TODO Check if this can be removed
 
@@ -201,7 +241,7 @@ model BoltResult {
   boltType         String // @TODO enum
   peakLoad         Int[]
   peakDisplacement Int[]
-  positionInRing   String // @TODO remove
+  // positionInRing   String // @TODO remove - done
 
   result              Result
   isHazard            Boolean              @default(false)
@@ -219,10 +259,13 @@ model BoltResult {
   drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  // TODO: Add location!
+  // TODO: Add location! - done
 
-  position   Position @relation(fields: [positionId], references: [id]) // @TODO Rename ring position
-  positionId String
+  location   Location @relation(fields: [locationId], references: [id]) // @TODO Rename ring position - done
+  locationId String
+
+  positionInRing   PositionInRing @relation(fields: [positionInRingId], references: [id])
+  positionInRingId String
 
   user   User   @relation(fields: [userId], references: [id])
   userId String

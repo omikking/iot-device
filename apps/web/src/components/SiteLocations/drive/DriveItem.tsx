@@ -1,19 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import {
-  Button,
-  Text,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@gsp/ui';
-import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
+import { Text } from '@gsp/ui';
 import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 
 interface DriveComponentProps {
   drive: IDriveMock;
@@ -130,32 +123,17 @@ export const DriveItem = ({
             <Text className="w-full" variant="small" color="foreground">
               {drive.name}
             </Text>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button size={'small'} variant="outline">
-                  <LucideEllipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-4">
-                <DropdownMenuItem onSelect={() => handleEditDrive()}>
-                  <LucideSquarePen />
-                  <Text color={'foreground'} variant={'medium'}>
-                    Edit
-                  </Text>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
-                  <LucideTrash2 className="text-error" />
-                  <Text color={'destructive'} variant={'medium'}>
-                    Delete
-                  </Text>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+            <DeleteEditDropdown
+              itemToDelete={index}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              handleEdit={handleEditDrive}
+            />
             <DeleteModalConfirmation
               modalTitle="Delete drive"
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
-              index={index}
+              itemToDelete={index}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {
@@ -164,7 +142,7 @@ export const DriveItem = ({
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
-                <Text variant="medium" color={'foreground'} as="span">
+                <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${drive.name} `}
                 </Text>
                 from the list. Are you sure you want to delete?

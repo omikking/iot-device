@@ -103,12 +103,12 @@ export default function Page(): JSX.Element {
     }
   };
 
-  const openModal = (index: number) => {
+  const openDeleteModal = (index: number) => {
     setSiteToDelete(index);
     setIsDeleteSiteModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeDeleteModal = () => {
     setIsDeleteSiteModalOpen(false);
     setSiteToDelete(undefined);
   };
@@ -142,10 +142,13 @@ export default function Page(): JSX.Element {
         modalTitle="Delete Site"
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
+        onDelete={() => {
+          console.log('Deleting item...');
+        }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
-          <Text variant="medium" color={'foreground'} as="span">
+          <Text variant="medium" color={'foreground'} as="span" isBold>
             {` Elliot Alderson `}
           </Text>
           from the list. Are you sure you want to delete?
@@ -159,7 +162,11 @@ export default function Page(): JSX.Element {
             <Text color={'foreground'} variant={'small'}>
               {site.name}
             </Text>
-            <DeleteEditDropdown index={index} openModal={openModal} />
+            <DeleteEditDropdown
+              itemToDelete={index}
+              openDeleteModal={openDeleteModal}
+              handleEdit={() => console.log('edit')}
+            />
           </div>
         ))}
         <DeleteModalConfirmation
@@ -167,18 +174,20 @@ export default function Page(): JSX.Element {
           deleteIcon="Site"
           modalTitle="Delete Site"
           isOpen={isDeleteSiteModalOpen}
-          index={siteToDelete}
-          onOpenChange={closeModal}
+          itemToDelete={siteToDelete}
+          onOpenChange={closeDeleteModal}
           onDelete={(_, index) => {
             console.log('Deleting site at index:', index);
             handleDelete(index);
-            closeModal();
+            closeDeleteModal();
           }}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete
             <Text variant="medium" color={'foreground'} isBold as="span">
-              {siteToDelete !== undefined ? sites[siteToDelete].name : ''}
+              {siteToDelete !== undefined
+                ? ` ${sites[siteToDelete].name} `
+                : ''}
             </Text>
             from the list. Are you sure you want to delete?
           </Text>

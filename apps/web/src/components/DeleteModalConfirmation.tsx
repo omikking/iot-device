@@ -15,24 +15,24 @@ interface DeleteModalConfirmationProps {
   deleteIcon?: 'User' | 'Site';
   deleteButtonText?: string;
   children: React.ReactNode;
-  index?: number;
+  itemToDelete?: number;
   // eslint-disable-next-line no-unused-vars
-  onDelete?: (
+  onDelete: (
     // eslint-disable-next-line no-unused-vars
     event: React.MouseEvent<HTMLButtonElement>,
     // eslint-disable-next-line no-unused-vars
-    index: number,
+    itemToDelete: number,
   ) => void;
   isOpen?: boolean;
   // eslint-disable-next-line no-unused-vars
-  onOpenChange?: React.Dispatch<React.SetStateAction<boolean>>;
+  onOpenChange: (open: boolean) => void;
 }
 
 export const DeleteModalConfirmation = ({
   modalTitle,
   deleteIcon = 'User',
   children,
-  index = -1,
+  itemToDelete = -1,
   onDelete,
   isOpen,
   onOpenChange,
@@ -45,17 +45,6 @@ export const DeleteModalConfirmation = ({
         return <LucideMountain className="text-error" size="32" />;
       default:
         return null;
-    }
-  };
-
-  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // unsure about the check for index !== -1 here
-    if (onDelete && index !== -1) {
-      onDelete(e, index);
-    }
-    // close the modal after deletion
-    if (onOpenChange) {
-      onOpenChange(false);
     }
   };
 
@@ -75,7 +64,13 @@ export const DeleteModalConfirmation = ({
           {children}
         </div>
         <ModalFooter className="ui-px-10 ui-py-6">
-          <Button variant="destructive" size={'large'} onClick={handleDelete}>
+          <Button
+            variant="destructive"
+            size={'large'}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              onDelete(e, itemToDelete), onOpenChange(false);
+            }}
+          >
             <LucideTrash2 />
             Confirm deletion
           </Button>

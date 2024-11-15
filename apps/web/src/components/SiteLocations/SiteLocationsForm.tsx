@@ -24,7 +24,6 @@ export const SiteLocationsForm = ({
   index,
   inputRef,
 }: SiteLocationsFormProps) => {
-  console.log(index);
   return (
     <Form {...form}>
       <form

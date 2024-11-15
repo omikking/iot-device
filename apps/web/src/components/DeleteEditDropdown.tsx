@@ -10,15 +10,15 @@ import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import React from 'react';
 
 interface DeleteEditDropdownProps {
-  index: number;
+  itemToDelete: number;
   // eslint-disable-next-line no-unused-vars
-  openModal?: ((index: number) => void) | (() => void);
-  handleEdit?: () => void;
+  openDeleteModal: ((itemToDelete: number) => void) | (() => void);
+  handleEdit: () => void;
 }
 
 export const DeleteEditDropdown = ({
-  index,
-  openModal,
+  itemToDelete,
+  openDeleteModal,
   handleEdit,
 }: DeleteEditDropdownProps) => {
   return (
@@ -29,13 +29,13 @@ export const DeleteEditDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-4">
-        <DropdownMenuItem onSelect={() => handleEdit?.()}>
+        <DropdownMenuItem onSelect={() => handleEdit()}>
           <LucideSquarePen />
           <Text color={'foreground'} variant={'medium'}>
             Edit
           </Text>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openModal?.(index)}>
+        <DropdownMenuItem onClick={() => openDeleteModal(itemToDelete)}>
           <LucideTrash2 className="text-error" />
           <Text color={'destructive'} variant={'medium'}>
             Delete

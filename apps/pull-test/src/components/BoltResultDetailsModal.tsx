@@ -58,7 +58,7 @@ export const BoltResultDetailsModal = ({
     { title: 'Pass criteria', text: boltType },
   ];
   return (
-    <ModalContent className="w-96 max-h-[calc(100vh-14rem)] overflow-y-auto">
+    <ModalContent className="w-96 overflow-y-auto">
       <ModalHeader>
         <ModalTitle>{modalTitle}</ModalTitle>
       </ModalHeader>

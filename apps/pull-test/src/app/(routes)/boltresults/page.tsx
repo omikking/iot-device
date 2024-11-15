@@ -99,14 +99,18 @@ export default function Page(): JSX.Element {
           <div className="flex-1 flex justify-start ">
             <Breadcrumb>
               <BreadcrumbList>
-                {level && (
+                {site && (
                   <>
+                    <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
                         {site}
                       </Text>
                     </BreadcrumbItem>
-
+                  </>
+                )}
+                {level && (
+                  <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">

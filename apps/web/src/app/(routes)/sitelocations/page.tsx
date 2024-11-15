@@ -136,14 +136,18 @@ export default function Page(): JSX.Element {
           />
           <Breadcrumb>
             <BreadcrumbList>
-              {selectedLevel && (
+              {selectedSite && (
                 <>
+                  <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">
                       {selectedSite}
                     </Text>
                   </BreadcrumbItem>
-
+                </>
+              )}
+              {selectedLevel && (
+                <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">

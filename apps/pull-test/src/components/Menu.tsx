@@ -12,18 +12,17 @@ import {
 } from '@gsp/ui';
 import {
   LucideLayoutGrid,
-  LucideLogIn,
   LucideLogOut,
   LucideMenu,
   LucideMoveRight,
   LucideSettings,
 } from 'lucide-react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export const Menu = () => {
   // @TODO fix colors on icons
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   console.log(session);
 
   return (
@@ -37,57 +36,53 @@ export const Menu = () => {
 
       <MenuContent>
         <div className="flex flex-col gap-8">
-          {status === 'authenticated' && (
-            <>
-              <MenuTitle>Garpenberg</MenuTitle>
+          <MenuTitle>Garpenberg</MenuTitle>
 
-              <div className="flex flex-col gap-1">
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/overview" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      Overview
-                    </Anchor>
-                  </Link>
-                </Headline>
+          <div className="flex flex-col gap-1">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/overview" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  Overview
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/boltresults" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View bolt results
-                    </Anchor>
-                  </Link>
-                </Headline>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/boltresults" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View bolt results
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/reportedhazards" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View reported hazards
-                    </Anchor>
-                  </Link>
-                </Headline>
-              </div>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/reportedhazards" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View reported hazards
+                </Anchor>
+              </Link>
+            </Headline>
+          </div>
 
-              <hr className="text-gold-3" />
-            </>
-          )}
+          <hr className="text-gold-3" />
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
@@ -109,29 +104,16 @@ export const Menu = () => {
               </Link>
             </Headline>
 
-            {status === 'authenticated' ? (
-              <Button
-                className="mt-4"
-                variant="outline"
-                size="large"
-                tabIndex={-1}
-                onClick={() => signOut()}
-              >
-                <LucideLogOut />
-                Logout
-              </Button>
-            ) : (
-              <Button
-                className="mt-4"
-                variant="primary"
-                size="large"
-                tabIndex={-1}
-                onClick={() => signIn()}
-              >
-                <LucideLogIn />
-                Login
-              </Button>
-            )}
+            <Button
+              className="mt-4"
+              variant="outline"
+              size="large"
+              tabIndex={-1}
+              onClick={() => signOut()}
+            >
+              <LucideLogOut />
+              Logout
+            </Button>
           </div>
         </div>
       </MenuContent>

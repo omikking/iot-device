@@ -12,19 +12,18 @@ import {
 import {
   LucideBuilding2,
   LucideLayoutGrid,
-  LucideLogIn,
   LucideLogOut,
   LucideMenu,
   LucideMoveRight,
   LucidePlus,
   LucideSettings,
 } from 'lucide-react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export const Menu = () => {
   // @TODO fix colors on icons
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   console.log(session);
 
   return (
@@ -38,113 +37,109 @@ export const Menu = () => {
 
       <MenuContent>
         <div className="flex flex-col gap-8">
-          {status === 'authenticated' && (
-            <>
-              <MenuTitle>Garpenberg</MenuTitle>
+          <MenuTitle>Garpenberg</MenuTitle>
 
-              <div className="flex flex-col gap-1">
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/users" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View users
-                    </Anchor>
-                  </Link>
-                </Headline>
+          <div className="flex flex-col gap-1">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/users" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View users
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/sites" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View sites
-                    </Anchor>
-                  </Link>
-                </Headline>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/sites" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View sites
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/sitelocations" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View site locations
-                    </Anchor>
-                  </Link>
-                </Headline>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/sitelocations" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View site locations
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Button
-                  className="mt-4"
-                  variant="secondary"
-                  size="large"
-                  tabIndex={-1}
-                >
-                  <LucideBuilding2 />
-                  Change company
-                </Button>
-              </div>
+            <Button
+              className="mt-4"
+              variant="secondary"
+              size="large"
+              tabIndex={-1}
+            >
+              <LucideBuilding2 />
+              Change company
+            </Button>
+          </div>
 
-              <hr className="border-gold-3" />
+          <hr className="border-gold-3" />
 
-              <div className="flex flex-col gap-1">
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/overview" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      Overview
-                    </Anchor>
-                  </Link>
-                </Headline>
+          <div className="flex flex-col gap-1">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/overview" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  Overview
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/technicians" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View technicians
-                    </Anchor>
-                  </Link>
-                </Headline>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/technicians" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  View technicians
+                </Anchor>
+              </Link>
+            </Headline>
 
-                <Headline
-                  variant="medium"
-                  color="foreground"
-                  as="h3"
-                  className="group"
-                >
-                  <Link href="/company" passHref legacyBehavior>
-                    <Anchor color="foreground">
-                      <LucidePlus className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:rotate-90" />
-                      Add new company
-                    </Anchor>
-                  </Link>
-                </Headline>
-              </div>
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
+              <Link href="/company" passHref legacyBehavior>
+                <Anchor color="foreground">
+                  <LucidePlus className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:rotate-90" />
+                  Add new company
+                </Anchor>
+              </Link>
+            </Headline>
+          </div>
 
-              <hr className="border-gold-3" />
-            </>
-          )}
+          <hr className="border-gold-3" />
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">
@@ -166,29 +161,16 @@ export const Menu = () => {
               </Link>
             </Headline>
 
-            {status === 'authenticated' ? (
-              <Button
-                className="mt-4"
-                variant="outline"
-                size="large"
-                tabIndex={-1}
-                onClick={() => signOut()}
-              >
-                <LucideLogOut />
-                Logout
-              </Button>
-            ) : (
-              <Button
-                className="mt-4"
-                variant="primary"
-                size="large"
-                tabIndex={-1}
-                onClick={() => signIn()}
-              >
-                <LucideLogIn />
-                Login
-              </Button>
-            )}
+            <Button
+              className="mt-4"
+              variant="outline"
+              size="large"
+              tabIndex={-1}
+              onClick={() => signOut()}
+            >
+              <LucideLogOut />
+              Logout
+            </Button>
           </div>
         </div>
       </MenuContent>

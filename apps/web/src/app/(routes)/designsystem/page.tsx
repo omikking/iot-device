@@ -58,6 +58,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
+import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -102,6 +103,22 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Success Modal Confirmation 🦄
+      </Headline>
+
+      <Modal>
+        <ModalTrigger asChild>
+          <Button variant="primary" size="large">
+            <LucidePlus />
+            Add technician
+          </Button>
+        </ModalTrigger>
+        <AddOrEditTechnicianModal />
+      </Modal>
+
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">

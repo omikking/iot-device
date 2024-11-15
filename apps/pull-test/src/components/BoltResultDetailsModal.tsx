@@ -1,0 +1,168 @@
+import {
+  Button,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  Textarea,
+  Text,
+  Badge,
+  Headline,
+  ModalClose,
+} from '@gsp/ui';
+import { LucideTriangleAlert } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
+import { MultiBoltReadingTable } from './MultiBoltReadingTable';
+import { BoltResultSchema } from '@/app/mock/mock';
+
+interface BoltResultDetailsModalProps {
+  modalTitle: string;
+  fullBoltData?: BoltResultSchema;
+}
+
+interface BoltSpecification {
+  title: string;
+  text: string;
+}
+
+export const BoltResultDetailsModal = ({
+  modalTitle,
+  fullBoltData,
+}: BoltResultDetailsModalProps) => {
+  const {
+    image,
+    isHazard,
+    peakLoad,
+    peakDisplacement,
+    // location,
+    drive,
+    bitSize,
+    boltType,
+    boltNumber,
+    rotations,
+    level,
+    ring,
+  } = (fullBoltData as BoltResultSchema) || {};
+  // @TODO Just hardcoded for now, update later. Image should be here as well most likely
+  const boltDescription = 'just test description';
+  const author = 'Angela Moss';
+  const specifications: BoltSpecification[] = [
+    { title: 'Bolt', text: boltNumber },
+    { title: 'Bit size', text: bitSize },
+    { title: 'Level', text: level },
+    { title: 'Drive', text: drive },
+    { title: 'Position in ring', text: ring }, // TODO fix this one, should be position in ring
+    { title: 'Rotations', text: rotations }, // should this be in?
+    { title: 'Pass criteria', text: boltType },
+    { title: 'Pass criteria', text: boltType },
+  ];
+  return (
+    <ModalContent className="w-96 max-h-[calc(100vh-14rem)] overflow-y-auto">
+      <ModalHeader>
+        <ModalTitle>{modalTitle}</ModalTitle>
+      </ModalHeader>
+      <div className="p-10 flex gap-10 flex-grow h-full">
+        {image && (
+          <Image
+            // src={image} // passing image but hardcoded for now
+            src="/boltTestImage.png"
+            alt="Attached bolt result image"
+            width={390}
+            height={280}
+            className="rounded-md h-72"
+          />
+        )}
+        <div className="flex flex-col w-1/2">
+          {boltDescription && (
+            <div className="flex flex-col flex-grow ">
+              <Text variant="small" color="foreground">
+                Comment
+              </Text>
+              <Textarea
+                value={boltDescription}
+                className="flex-grow"
+                disabled
+                readOnly
+              />
+            </div>
+          )}
+          {isHazard && (
+            <div className="flex justify-between pt-5">
+              <Badge variant={'warning'}>
+                <LucideTriangleAlert />
+                Reported hazard
+              </Badge>
+              {author && (
+                <Text variant="small" color="foreground">
+                  Author: {author}
+                </Text>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="px-10 pb-10">
+        <Headline
+          className="pb-4"
+          variant="small"
+          as="h3"
+          color="foreground"
+          isBold
+        >
+          Bolt specifications
+        </Headline>
+        <div className="flex flex-wrap">
+          {specifications.map((boltSpec, index) => (
+            <div
+              key={index}
+              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
+            >
+              <Text className="w-32" variant="small" color="muted">
+                {boltSpec.title}
+              </Text>
+              <Text className="max-w-60" variant="small" color="foreground">
+                {boltSpec.text}
+              </Text>
+            </div>
+          ))}
+        </div>
+        {/* BOLT RESULTS */}
+        <div>
+          <Headline
+            className="pt-10"
+            variant="small"
+            as="h3"
+            color="foreground"
+            isBold
+          >
+            Bolt results
+          </Headline>
+          <MultiBoltReadingTable
+            peakLoad={peakLoad}
+            peakDisplacement={peakDisplacement}
+          />
+        </div>
+      </div>
+      {/* Bolt plot */}
+      <div className="px-10">
+        <Headline
+          className="pb-4"
+          variant="small"
+          as="h3"
+          color="foreground"
+          isBold
+        >
+          Bolt plot Graph
+        </Headline>
+      </div>
+      <ModalFooter className="px-10 pb-5 pt-8">
+        <ModalClose asChild>
+          <Button variant="outline" size="large" type="submit">
+            Close
+          </Button>
+        </ModalClose>
+      </ModalFooter>
+    </ModalContent>
+  );
+};

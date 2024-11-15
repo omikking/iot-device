@@ -4,7 +4,7 @@ import { Button, Headline, Text } from '@gsp/ui';
 import {
   IDriveMock,
   ILevelMock,
-  IPositionMock,
+  ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
@@ -14,8 +14,8 @@ interface DrivesListComponentProps {
   selectedLevel?: string;
   levelsOptionsMock: ILevelMock[];
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
   handleSetDrive: () => void;
 }
@@ -25,7 +25,7 @@ export const DrivesList = ({
   selectedLevel,
   levelsOptionsMock,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
   handleSetDrive,
 }: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -33,7 +33,7 @@ export const DrivesList = ({
     drivesOptionsMock.push({
       id: `${drivesOptionsMock.length + 1}`,
       name: '',
-      positions: [],
+      locations: [],
     });
     setDrivesOptionsMock([...drivesOptionsMock] as IDriveMock[]);
   };
@@ -66,7 +66,7 @@ export const DrivesList = ({
             index={index}
             key={index}
             setDrivesOptionsMock={setDrivesOptionsMock}
-            setPositionsOptionsMock={setPositionsOptionsMock}
+            setLocationsOptionsMock={setLocationsOptionsMock}
             handleSetDrive={handleSetDrive}
           />
         ))}

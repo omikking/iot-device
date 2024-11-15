@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IDriveMock,
   ILevelMock,
-  IPositionMock,
+  ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
@@ -23,8 +23,8 @@ interface LevelComponentProps {
   handleSetLevel: (name: string) => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
 }
 
@@ -37,10 +37,23 @@ export const LevelItem = ({
   handleSetLevel,
   setLevelsOptionsMock,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const levelFormSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+
+  const levelForm = useForm<z.infer<typeof levelFormSchema>>({
+    resolver: zodResolver(levelFormSchema),
+    defaultValues: {
+      id: '',
+      name: '',
+    },
+  });
 
   const handleEditLevel = () => {
     setIsEditing(true);
@@ -77,19 +90,6 @@ export const LevelItem = ({
     levelForm.reset();
   };
 
-  const levelFormSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
-
-  const levelForm = useForm<z.infer<typeof levelFormSchema>>({
-    resolver: zodResolver(levelFormSchema),
-    defaultValues: {
-      id: '',
-      name: '',
-    },
-  });
-
   const handleCancelLevel = (
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
@@ -100,7 +100,7 @@ export const LevelItem = ({
 
     setLevelsOptionsMock(newLevels);
     setDrivesOptionsMock([]);
-    setPositionsOptionsMock([]);
+    setLocationsOptionsMock([]);
   };
 
   return (

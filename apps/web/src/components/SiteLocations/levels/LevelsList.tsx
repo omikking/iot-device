@@ -4,7 +4,7 @@ import { Button, Headline, Text } from '@gsp/ui';
 import {
   IDriveMock,
   ILevelMock,
-  IPositionMock,
+  ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
@@ -16,8 +16,8 @@ interface LevelsListComponentProps {
   handleSetLevel: () => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
 }
 
@@ -28,7 +28,7 @@ export const LevelsList = ({
   handleSetLevel,
   setLevelsOptionsMock,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const addLevel = () => {
@@ -71,7 +71,7 @@ export const LevelsList = ({
             handleSetLevel={handleSetLevel}
             setLevelsOptionsMock={setLevelsOptionsMock}
             setDrivesOptionsMock={setDrivesOptionsMock}
-            setPositionsOptionsMock={setPositionsOptionsMock}
+            setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>

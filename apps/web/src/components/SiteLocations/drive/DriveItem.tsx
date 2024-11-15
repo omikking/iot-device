@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
+import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,8 +17,8 @@ interface DriveComponentProps {
   // @TODO Gives error but it works. investigate why.
   // eslint-disable-next-line no-unused-vars
   handleSetDrive: (name: string) => void;
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
 }
@@ -30,7 +30,7 @@ export const DriveItem = ({
   inputRef,
   index,
   setDrivesOptionsMock,
-  setPositionsOptionsMock,
+  setLocationsOptionsMock,
   handleSetDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -40,6 +40,15 @@ export const DriveItem = ({
     setIsEditing(true);
 
     driveForm.setValue('name', drive.name);
+  };
+
+  const handleCancelDrive = (index: number) => {
+    const newDrives = [...drivesOptionsMock];
+    newDrives[index].locations = [];
+    newDrives.splice(index, 1);
+    setDrivesOptionsMock(newDrives);
+
+    setLocationsOptionsMock([]);
   };
 
   const handleEditSubmit = (
@@ -60,12 +69,13 @@ export const DriveItem = ({
       return;
     }
 
-    const newDrive = [...drivesOptionsMock];
-    newDrive[index] = {
-      ...newDrive[index],
-      name: newDriveName,
+    const newDrives = [...drivesOptionsMock];
+    newDrives[index] = {
+      ...newDrives[index],
+      name: formData.get('drive') as string,
+      locations: [],
     };
-    setDrivesOptionsMock(newDrive);
+    setDrivesOptionsMock(newDrives);
     setIsEditing(false);
   };
 
@@ -86,15 +96,6 @@ export const DriveItem = ({
       name: '',
     },
   });
-
-  const handleCancelDrive = (index: number) => {
-    const newDrives = [...drivesOptionsMock];
-    newDrives[index].positions = [];
-    newDrives.splice(index, 1);
-
-    setDrivesOptionsMock(newDrives);
-    setPositionsOptionsMock([]);
-  };
 
   return (
     <div

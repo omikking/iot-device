@@ -30,6 +30,8 @@ import {
   TabsContent,
   RangeCalendar,
   SingleDateCalendar,
+  Modal,
+  ModalTrigger,
 } from '@gsp/ui';
 
 import {
@@ -46,6 +48,7 @@ import {
   LucidePickaxe,
   LucideUser,
   LucideTrash2,
+  LucidePlus,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -56,6 +59,7 @@ import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -122,6 +126,22 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+      <hr className="w-full" />
+
+      <Headline variant="large" as="h1" color="foreground">
+        Success Modal Confirmation 🦄
+      </Headline>
+
+      <Modal>
+        <ModalTrigger asChild>
+          <Button variant="primary" size="large">
+            <LucidePlus />
+            Add technician
+          </Button>
+        </ModalTrigger>
+        <AddOrEditTechnicianModal />
+      </Modal>
+
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">

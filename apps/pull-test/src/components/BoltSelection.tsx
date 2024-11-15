@@ -19,14 +19,14 @@ interface BoltSelectionProps {
   site?: string;
   level?: string;
   drive?: string;
-  position?: string;
+  location?: string;
   dateRange?: DateRange;
   selectedTab?: string;
   // Is this typing correct? or should it be (id: string) => void;
   onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onSetPosition: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }
 
@@ -34,13 +34,13 @@ export const BoltSelection = ({
   site,
   level,
   drive,
-  position,
+  location,
   dateRange,
   selectedTab,
   onSetSite,
   onSetLevel,
   onSetDrive,
-  onSetPosition,
+  onSetLocation,
   onSetDateRange,
 }: BoltSelectionProps) => {
   const handleSetSite = (site?: string) => {
@@ -51,18 +51,18 @@ export const BoltSelection = ({
     });
     onSetLevel(undefined);
     onSetDrive(undefined);
-    onSetPosition(undefined);
+    onSetLocation(undefined);
   };
 
   const handleSetLevel = (level?: string) => {
     onSetLevel(level);
     onSetDrive(undefined);
-    onSetPosition(undefined);
+    onSetLocation(undefined);
   };
 
   const handleSetDrive = (drive?: string) => {
     onSetDrive(drive);
-    onSetPosition(undefined);
+    onSetLocation(undefined);
   };
 
   // Finds available levels on the selected site
@@ -75,9 +75,9 @@ export const BoltSelection = ({
     (boltLevels) => boltLevels.name === level,
   )?.drives;
 
-  const positionsOptionsMock = drivesOptionsMock?.find(
+  const locationsOptionsMock = drivesOptionsMock?.find(
     (boltDrives) => boltDrives.name === drive,
-  )?.positions;
+  )?.locations;
 
   return (
     <ContentHolder variant="filter">
@@ -135,15 +135,15 @@ export const BoltSelection = ({
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label>Position</Label>
+        <Label>Location</Label>
         <Dropdown
-          id="position"
+          id="location"
           isResettable
-          disabled={!positionsOptionsMock}
-          placeholder="Select position"
-          selectedId={position}
-          options={positionsOptionsMock as DropdownItem[]}
-          onSelect={onSetPosition}
+          disabled={!locationsOptionsMock}
+          placeholder="Select location"
+          selectedId={location}
+          options={locationsOptionsMock as DropdownItem[]}
+          onSelect={onSetLocation}
           className="w-56"
         />
       </div>

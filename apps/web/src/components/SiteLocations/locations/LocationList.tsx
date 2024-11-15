@@ -1,63 +1,66 @@
 import React, { useEffect, useRef } from 'react';
-import { PositionItem } from './PositionItem';
+import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { IDriveMock, IPositionMock } from '@/app/(routes)/sitelocations/page';
+import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
 
-interface PositionsListComponentProps {
+interface LocationsListComponentProps {
   selectedDrive?: string;
-  positionsOptionsMock: IPositionMock[];
+  locationsOptionsMock: ILocationMock[];
   drivesOptionsMock: IDriveMock[];
-  setPositionsOptionsMock: React.Dispatch<
-    React.SetStateAction<IPositionMock[]>
+  handleSetLocation: () => void;
+  setLocationsOptionsMock: React.Dispatch<
+    React.SetStateAction<ILocationMock[]>
   >;
 }
 
-export const PositionsList = ({
+export const LocationsList = ({
   selectedDrive,
-  positionsOptionsMock,
+  locationsOptionsMock,
   drivesOptionsMock,
-  setPositionsOptionsMock,
-}: PositionsListComponentProps) => {
+  handleSetLocation,
+  setLocationsOptionsMock,
+}: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const addPosition = () => {
-    positionsOptionsMock.push({
-      id: `${positionsOptionsMock.length + 1}`,
+  const addLocation = () => {
+    locationsOptionsMock.push({
+      id: `${locationsOptionsMock.length + 1}`,
       name: '',
     });
-    setPositionsOptionsMock([...positionsOptionsMock] as IPositionMock[]);
+    setLocationsOptionsMock([...locationsOptionsMock] as ILocationMock[]);
   };
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [positionsOptionsMock]);
+  }, [locationsOptionsMock]);
 
   return (
     <>
       <div className="flex flex-row w-full p-6">
         <Headline as="h2" variant="small" color="foreground" isBold>
-          Positions
+          Locations
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {positionsOptionsMock?.length === 0 && (
+        {locationsOptionsMock?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available positions
+              Select site to view available locations
             </Text>
           </div>
         )}
-        {positionsOptionsMock?.map((position, index) => (
-          <PositionItem
+        {locationsOptionsMock?.map((location, index) => (
+          <LocationItem
             key={index}
-            position={position}
-            positionsOptionsMock={positionsOptionsMock}
+            location={location}
+            locationsOptionsMock={locationsOptionsMock}
             index={index}
-            setPositionsOptionsMock={setPositionsOptionsMock}
             inputRef={inputRef}
+            handleSetLocation={handleSetLocation}
+            setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>
@@ -66,17 +69,17 @@ export const PositionsList = ({
           <Button
             size={'small'}
             variant={'primary'}
-            onClick={() => addPosition()}
+            onClick={() => addLocation()}
             disabled={
               drivesOptionsMock.length === 0 ||
-              positionsOptionsMock.some((position) => position.name === '')
+              locationsOptionsMock.some((location) => location.name === '')
             }
           >
-            <LucidePlus /> Add position
+            <LucidePlus /> Add location
           </Button>
         ) : (
           <Button size={'small'} variant={'primary'} disabled>
-            <LucidePlus /> Add position
+            <LucidePlus /> Add location
           </Button>
         )}
       </div>

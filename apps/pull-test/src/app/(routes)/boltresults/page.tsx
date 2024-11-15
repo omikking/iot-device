@@ -99,23 +99,42 @@ export default function Page(): JSX.Element {
           <div className="flex-1 flex justify-start ">
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem>
-                  <Text variant="small" color="foreground">
-                    {site || 'Select site'}
-                  </Text>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <Text variant="small" color="foreground">
-                    {level || 'Select level'}
-                  </Text>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <Text variant="small" color="foreground">
-                    {drive || 'Select drive'}
-                  </Text>
-                </BreadcrumbItem>
+                {level && (
+                  <>
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {site}
+                      </Text>
+                    </BreadcrumbItem>
+
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {level}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {drive && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {drive}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {position && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {position}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

@@ -136,23 +136,32 @@ export default function Page(): JSX.Element {
           />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <Text variant="small" color="foreground">
-                  {selectedSiteName || 'Select site'}
-                </Text>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <Text variant="small" color="foreground">
-                  {selectedLevel || 'Select level'}
-                </Text>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <Text variant="small" color="foreground">
-                  {selectedDrive || 'Select drive'}
-                </Text>
-              </BreadcrumbItem>
+              {selectedLevel && (
+                <>
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedSite}
+                    </Text>
+                  </BreadcrumbItem>
+
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedLevel}
+                    </Text>
+                  </BreadcrumbItem>
+                </>
+              )}
+              {selectedDrive && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedDrive}
+                    </Text>
+                  </BreadcrumbItem>
+                </>
+              )}
             </BreadcrumbList>
           </Breadcrumb>
         </div>

@@ -59,6 +59,7 @@ export const DrivesList = ({
         )}
         {drivesOptionsMock?.map((drive, index) => (
           <DriveItem
+            key={index}
             drive={drive}
             drivesOptionsMock={drivesOptionsMock}
             selectedDrive={selectedDrive}

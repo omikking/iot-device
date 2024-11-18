@@ -32,6 +32,11 @@ import {
   SingleDateCalendar,
   Modal,
   ModalTrigger,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbLink,
 } from '@gsp/ui';
 
 import {
@@ -126,6 +131,35 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+      <hr className="w-full" />
+
+      <Headline variant="xl" as="h1" color="foreground">
+        Breadcrumb 🦄
+      </Headline>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <Text variant="small" color="foreground">
+              Example
+            </Text>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <Text variant="small" color="foreground">
+              Without link
+            </Text>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbLink asChild>
+            <BreadcrumbItem>
+              <Text variant="small" color="foreground">
+                <Link href="/overview">With Link</Link>
+              </Text>
+            </BreadcrumbItem>
+          </BreadcrumbLink>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <hr className="w-full" />
 
       <Headline variant="large" as="h1" color="foreground">

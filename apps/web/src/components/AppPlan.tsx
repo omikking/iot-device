@@ -1,35 +1,56 @@
-import { Badge, Switch, Text } from '@gsp/ui';
+import { Badge, FormControl, FormField, FormItem, Switch, Text } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
-import { cn } from 'node_modules/@gsp/ui/src/lib/utils';
 
 interface AppPlanProps {
   plan: 'Gold' | 'Silver' | 'Bronze';
-  activePlan: 'Gold' | 'Silver' | 'Bronze';
-  // @TODO: Remove temporary isAdmin prop
+  activePlan: 'Gold' | 'Silver' | 'Bronze' | undefined;
   isAdmin: boolean;
+  formField: string;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
-export const AppPlan = ({ plan, activePlan, isAdmin }: AppPlanProps) => {
+export const AppPlan = ({
+  plan,
+  activePlan,
+  isAdmin,
+  formField,
+}: AppPlanProps) => {
   const user = isAdmin ? 'Superadmin' : 'Client';
+  const isActive = plan === activePlan;
 
   return (
     <div
-      className={cn(
-        'flex justify-between items-center border-b border-neutral-3 py-3 px-6',
-        plan === activePlan && 'bg-neutral-1',
-      )}
+      className={`flex justify-between items-center border-b border-gray-200 py-3 px-6 ${
+        isActive ? 'bg-gray-50' : ''
+      }`}
     >
       <Text color="foreground" variant="medium">
         {plan}
       </Text>
 
-      {user === 'Superadmin' && <Switch checked={plan === activePlan} />}
+      <FormField
+        name={formField}
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Switch
+                checked={field.value === plan}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked ? plan : undefined);
+                }}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
 
-      {user === 'Client' && plan === activePlan && (
-        <Badge variant="attention">
-          <LucideCircleCheckBig size="14" />
-          Your selected plan
+      {user === 'Client' && isActive && (
+        <Badge
+          variant={'primary'}
+          className="bg-blue-100 text-blue-800 hover:bg-blue-100 flex items-center gap-1"
+        >
+          <LucideCircleCheckBig className="h-4 w-4" />
+          <span>Your selected plan</span>
         </Badge>
       )}
     </div>

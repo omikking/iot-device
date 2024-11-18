@@ -6,13 +6,37 @@ import {
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import { AppPlan } from '@/components/AppPlan';
 
+const getFormFieldName = (name: string) => {
+  switch (name) {
+    case 'Pull-test':
+      return 'pullTestPlan';
+    case 'xCyclops':
+      return 'xCyclopsPlan';
+    case 'Ultrabots':
+      return 'ultrabotsPlan';
+    default:
+      return '';
+  }
+};
+
+interface AppPlansContainerProps {
+  appPlan: {
+    id: string;
+    name: string;
+    activePlan: 'Gold' | 'Silver' | 'Bronze' | undefined;
+  };
+  isAdmin: boolean;
+}
+
 // @TODO: Remove temporary isAdmin prop
-export const AppPlansContainer = ({ appPlan, isAdmin }) => {
-  const { name, activePlan } = appPlan;
-
+export const AppPlansContainer = ({
+  appPlan,
+  isAdmin,
+}: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-
+  const { name, activePlan } = appPlan;
   const user = isAdmin ? 'Superadmin' : 'Client';
+  const formField = getFormFieldName(name);
 
   return (
     <div
@@ -40,9 +64,24 @@ export const AppPlansContainer = ({ appPlan, isAdmin }) => {
       </div>
 
       {/* Plans */}
-      <AppPlan plan="Gold" activePlan={activePlan} isAdmin={isAdmin} />
-      <AppPlan plan="Silver" activePlan={activePlan} isAdmin={isAdmin} />
-      <AppPlan plan="Bronze" activePlan={activePlan} isAdmin={isAdmin} />
+      <AppPlan
+        plan="Gold"
+        activePlan={activePlan}
+        isAdmin={isAdmin}
+        formField={formField}
+      />
+      <AppPlan
+        plan="Silver"
+        activePlan={activePlan}
+        isAdmin={isAdmin}
+        formField={formField}
+      />
+      <AppPlan
+        plan="Bronze"
+        activePlan={activePlan}
+        isAdmin={isAdmin}
+        formField={formField}
+      />
 
       {/* Calendar */}
       {activePlan && (

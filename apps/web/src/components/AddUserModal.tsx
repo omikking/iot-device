@@ -36,7 +36,7 @@ export const AddUserModal = () => {
       .email({ message: 'Email must be a valid email address.' }),
     pullTest: z.boolean(),
     xCyclops: z.boolean(),
-    ultrabots: z.boolean(),
+    ultrabolts: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,7 +45,7 @@ export const AddUserModal = () => {
       email: '',
       pullTest: false,
       xCyclops: false,
-      ultrabots: false,
+      ultrabolts: false,
     },
   });
 
@@ -59,7 +59,7 @@ export const AddUserModal = () => {
 
   const watchPullTest = form.watch('pullTest');
   const watchxCyclops = form.watch('xCyclops');
-  const watchUltrabots = form.watch('ultrabots');
+  const watchUltrabolts = form.watch('ultrabolts');
   const watchRole = form.watch('role');
 
   const getRoleById = (id: string) => {
@@ -74,7 +74,7 @@ export const AddUserModal = () => {
     setGlobalAccess(checked);
     form.setValue('pullTest', checked);
     form.setValue('xCyclops', checked);
-    form.setValue('ultrabots', checked);
+    form.setValue('ultrabolts', checked);
   };
 
   useEffect(() => {
@@ -83,12 +83,12 @@ export const AddUserModal = () => {
   }, [watchRole]);
 
   useEffect(() => {
-    if (watchPullTest && watchxCyclops && watchUltrabots) {
+    if (watchPullTest && watchxCyclops && watchUltrabolts) {
       setGlobalAccess(true);
     } else {
       setGlobalAccess(false);
     }
-  }, [watchPullTest, watchxCyclops, watchUltrabots]);
+  }, [watchPullTest, watchxCyclops, watchUltrabolts]);
 
   return (
     <ModalContent>
@@ -261,11 +261,11 @@ export const AddUserModal = () => {
                   variant={'medium'}
                   className="flex flex-grow"
                 >
-                  Ultrabots
+                  Ultrabolts
                 </Text>
                 <FormField
                   control={form.control}
-                  name="ultrabots"
+                  name="ultrabolts"
                   render={({ field }) => {
                     return (
                       <FormItem>

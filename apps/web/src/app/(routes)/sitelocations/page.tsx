@@ -1,9 +1,20 @@
 'use client';
+import {
+  Anchor,
+  Badge,
+  Dropdown,
+  Headline,
+  Text,
+  DropdownItem,
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbSeparator,
+} from '@gsp/ui';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { sitesMock } from '@/app/mock/mock';
 import { LucideMoveLeft } from 'lucide-react';
-import { Anchor, Badge, Dropdown, Headline, Text, DropdownItem } from '@gsp/ui';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
@@ -114,14 +125,50 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex w-full flex-col gap-5">
-        <Dropdown
-          id="site"
-          placeholder="Select site"
-          selectedId={selectedSite}
-          options={sitesMock as DropdownItem[]}
-          onSelect={handleSetSite}
-          className="w-96"
-        />
+        <div className="flex items-center gap-10">
+          <Dropdown
+            id="site"
+            placeholder="Select site"
+            selectedId={selectedSite}
+            options={sitesMock as DropdownItem[]}
+            onSelect={handleSetSite}
+            className="w-96"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              {selectedSite && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedSite}
+                    </Text>
+                  </BreadcrumbItem>
+                </>
+              )}
+              {selectedLevel && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedLevel}
+                    </Text>
+                  </BreadcrumbItem>
+                </>
+              )}
+              {selectedDrive && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Text variant="medium" color="foreground">
+                      {selectedDrive}
+                    </Text>
+                  </BreadcrumbItem>
+                </>
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList

@@ -17,6 +17,11 @@ import {
   TabsTrigger,
   TabsContent,
   DateRange,
+  Text,
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbSeparator,
 } from '@gsp/ui';
 
 export default function Page(): JSX.Element {
@@ -68,7 +73,7 @@ export default function Page(): JSX.Element {
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        Garpenberg
+        {site || 'Select site'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -80,7 +85,7 @@ export default function Page(): JSX.Element {
         onValueChange={setSelectedTab}
         className="w-full max-w-[1600px]"
       >
-        <div className="w-full flex flex-row justify-between items-center pb-2">
+        <div className="w-full flex flex-row justify-between items-center pb-2 gap-10">
           <TabsList>
             <TabsTrigger value="table">
               <LucideGrid3X3 size="18" className="mr-1.5" />
@@ -91,7 +96,52 @@ export default function Page(): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
-
+          <div className="flex-1 flex justify-start ">
+            <Breadcrumb>
+              <BreadcrumbList>
+                {site && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {site}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {level && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {level}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {drive && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {drive}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {position && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {position}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
           <Modal>
             <ModalTrigger asChild>
               <Button variant="primary" size="large">
@@ -116,11 +166,9 @@ export default function Page(): JSX.Element {
           onSetDateRange={setDateRange}
           selectedTab={selectedTab}
         />
-
         <TabsContent value="table">
           <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
-
         <TabsContent value="graphs">
           <BoltResultsGraphView />
         </TabsContent>

@@ -182,7 +182,7 @@ importers:
         version: 14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next-auth:
         specifier: ^4.24.7
-        version: 4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -264,7 +264,7 @@ importers:
         version: 14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next-auth:
         specifier: ^4.24.7
-        version: 4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -307,7 +307,7 @@ importers:
         version: 8.4.35
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3))
+        version: 3.4.1(ts-node@10.9.2)
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -328,7 +328,7 @@ importers:
         version: link:../typescript-config
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3))
+        version: 3.4.1(ts-node@10.9.2)
 
   packages/typescript-config: {}
 
@@ -11595,7 +11595,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next-auth@4.24.7(next@14.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  next-auth@4.24.7(next@14.1.1(@babel/core@7.24.5)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.24.7
       '@panva/hkdf': 1.1.1
@@ -11889,14 +11889,6 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.35
 
-  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3)):
-    dependencies:
-      lilconfig: 3.0.0
-      yaml: 2.3.4
-    optionalDependencies:
-      postcss: 8.4.35
-      ts-node: 10.9.2(@types/node@20.11.24)(typescript@5.3.3)
-
   postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3)):
     dependencies:
       lilconfig: 3.0.0
@@ -11904,6 +11896,14 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.35
       ts-node: 10.9.2(@types/node@20.14.2)(typescript@5.3.3)
+
+  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2):
+    dependencies:
+      lilconfig: 3.0.0
+      yaml: 2.3.4
+    optionalDependencies:
+      postcss: 8.4.35
+      ts-node: 10.9.2(@types/node@20.11.24)(typescript@5.3.3)
 
   postcss-nested@6.0.1(postcss@8.4.35):
     dependencies:
@@ -12592,33 +12592,6 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3))
 
-  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3)):
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.0
-      lilconfig: 2.1.0
-      micromatch: 4.0.5
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.0.0
-      postcss: 8.4.35
-      postcss-import: 15.1.0(postcss@8.4.35)
-      postcss-js: 4.0.1(postcss@8.4.35)
-      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.11.24)(typescript@5.3.3))
-      postcss-nested: 6.0.1(postcss@8.4.35)
-      postcss-selector-parser: 6.0.13
-      resolve: 1.22.8
-      sucrase: 3.34.0
-    transitivePeerDependencies:
-      - ts-node
-
   tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
@@ -12639,6 +12612,33 @@ snapshots:
       postcss-import: 15.1.0(postcss@8.4.35)
       postcss-js: 4.0.1(postcss@8.4.35)
       postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.14.2)(typescript@5.3.3))
+      postcss-nested: 6.0.1(postcss@8.4.35)
+      postcss-selector-parser: 6.0.13
+      resolve: 1.22.8
+      sucrase: 3.34.0
+    transitivePeerDependencies:
+      - ts-node
+
+  tailwindcss@3.4.1(ts-node@10.9.2):
+    dependencies:
+      '@alloc/quick-lru': 5.2.0
+      arg: 5.0.2
+      chokidar: 3.6.0
+      didyoumean: 1.2.2
+      dlv: 1.1.3
+      fast-glob: 3.3.2
+      glob-parent: 6.0.2
+      is-glob: 4.0.3
+      jiti: 1.21.0
+      lilconfig: 2.1.0
+      micromatch: 4.0.5
+      normalize-path: 3.0.0
+      object-hash: 3.0.0
+      picocolors: 1.0.0
+      postcss: 8.4.35
+      postcss-import: 15.1.0(postcss@8.4.35)
+      postcss-js: 4.0.1(postcss@8.4.35)
+      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.35)
       postcss-selector-parser: 6.0.13
       resolve: 1.22.8

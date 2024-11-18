@@ -78,6 +78,7 @@ export default function Page(): JSX.Element {
     },
   });
 
+  const [openTechModal, setOpenTechModal] = useState<boolean>(false);
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
@@ -109,14 +110,14 @@ export default function Page(): JSX.Element {
         Success Modal Confirmation 🦄
       </Headline>
 
-      <Modal>
+      <Modal open={openTechModal} onOpenChange={setOpenTechModal}>
         <ModalTrigger asChild>
           <Button variant="primary" size="large">
             <LucidePlus />
             Add technician
           </Button>
         </ModalTrigger>
-        <AddOrEditTechnicianModal />
+        <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
       </Modal>
 
       <hr className="w-full" />

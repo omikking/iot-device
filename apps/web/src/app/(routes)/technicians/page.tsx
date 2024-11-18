@@ -1,15 +1,14 @@
 'use client';
 import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
-
 import { LucidePlus } from 'lucide-react';
-
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import { TechniciansTable } from '@/components/TechniciansTable';
 import { GoBack } from '@/components/GoBack';
+import { useState } from 'react';
 
 export default function Page(): JSX.Element {
+  const [openTechModal, setOpenTechModal] = useState<boolean>(false);
   // @TODO Only superadmin should be able to see this page
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -19,14 +18,14 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Modal>
+        <Modal open={openTechModal} onOpenChange={setOpenTechModal}>
           <ModalTrigger asChild>
             <Button variant="primary" size="large">
               <LucidePlus />
               Add technician
             </Button>
           </ModalTrigger>
-          <AddOrEditTechnicianModal />
+          <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
         </Modal>
 
         <TechniciansTable />

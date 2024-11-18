@@ -40,7 +40,7 @@ export const companyFormSchema = z.object({
 
   pullTestPlan: z.string(),
   xCyclopsPlan: z.string(),
-  ultrabotsPlan: z.string(),
+  ultraboltsPlan: z.string(),
 
   assignSandvikAdministrator: z.string(),
 });
@@ -59,7 +59,7 @@ export default function Page(): JSX.Element {
 
       pullTestPlan: '',
       xCyclopsPlan: '',
-      ultrabotsPlan: '',
+      ultraboltsPlan: '',
 
       assignSandvikAdministrator: '',
     },

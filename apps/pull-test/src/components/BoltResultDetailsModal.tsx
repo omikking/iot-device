@@ -45,7 +45,7 @@ export const BoltResultDetailsModal = ({
     ring,
   } = (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
-  const boltDescription = 'just test description';
+  const boltDescription = 'Test description';
   const author = 'Angela Moss';
   const specifications: BoltSpecification[] = [
     { title: 'Bolt', text: boltNumber },

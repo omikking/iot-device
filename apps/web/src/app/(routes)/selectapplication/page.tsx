@@ -33,7 +33,7 @@ export default function Page(): JSX.Element {
           <Link href="http://localhost:3000/designsystem">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
-                Ultrabots
+                Ultrabolts
               </Headline>
               <SandvikLogo />
             </NavigationCard>

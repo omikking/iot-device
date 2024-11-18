@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'ui-bg-blue-primary ui-text-main-white hover:ui-bg-blue-1 focus:ui-bg-blue-1',
+          'ui-bg-blue-primary ui-text-main-white hover:ui-bg-blue-1 active:ui-bg-blue-primary',
         secondary:
-          'ui-bg-gold-primary ui-text-main-white hover:ui-bg-gold-1 focus:ui-bg-gold-1',
+          'ui-bg-gold-primary ui-text-main-white hover:ui-bg-gold-1 focus:ui-bg-gold-primary',
         outline:
-          'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-1 focus:ui-border-blue-1',
+          'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-1 focus:ui-bg-main-white',
         destructive:
           'ui-bg-main-white ui-text-error ui-border ui-border-error hover:ui-bg-error hover:ui-text-main-white',
       },

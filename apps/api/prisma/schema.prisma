@@ -10,11 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  SANDVIK_ADMIN
-  SANDVIK_TECHNICIAN
+enum CompanyRole {
   COMPANY_ADMIN
   USER
+}
+
+enum GlobalRole {
+  SANDVIK_ADMIN
+  SANDVIK_TECHNICIAN
 }
 
 enum Result {
@@ -42,6 +45,11 @@ enum PlanLevel {
   INACTIVE
 }
 
+enum BoltType {
+  MD47
+  MDX47
+}
+
 enum RingPosition {
   RH_BACKS
   RH_SHOULDER
@@ -50,6 +58,16 @@ enum RingPosition {
   LH_SHOULDER
   LH_WALL_UPPER
   CENTER_BACKS
+}
+
+model RefreshTokenId {
+  userId    String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokenId String @unique
+
+  @@map("refresh_token_ids")
 }
 
 model Company {
@@ -72,24 +90,6 @@ model Company {
   @@map("companies")
 }
 
-model RefreshTokenId {
-  userId    String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  refreshTokenId String @unique
-
-  @@map("refresh_token_ids")
-}
-
-// The data the request has when a company adds a user and give permissions:
-// companyId
-// userId
-// role
-// applicationsAccess: ['XCYCLOPS', 'PULL_TEST']
-
-// how do we give permission to a user for the applications?
-
 model Plan {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -102,8 +102,6 @@ model Plan {
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  user User[]
-
   @@map("plans")
 }
 
@@ -115,33 +113,33 @@ model User {
   email String @unique
   hash  String
 
-  // role             Role // @TODO This needs to be set per company (COMPANY_ADMIN would be shared across all companies)
-  fullname         String
-  workPlace        String
-  phoneNumber      String?
-  globalVisibility Boolean? // Only relevant for role SANDVIK_TECHNICIAN
+  fullname           String
+  workPlace          String
+  phoneNumber        String?
+  globalRole         GlobalRole?
+  isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
 
-  plan       Plan[] // @TODO Check if possible to set relations to be unique. Is this needed?? Remove?
-  boltResult BoltResult[] // @TODO Check if this can be removed
   userRole   UserPermission[]
+  boltResult BoltResult[] // @TODO Check if this can be removed. - We just need to give every BoltResult a userId, is this the correct way?
 
   @@map("users")
 }
 
-// TODO this needs a lot more work, not sure if this is correct
 model UserPermission {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role Role
-  user User @relation(fields: [userId], references: [id])
+  companyRole CompanyRole // Permission to user type COMPANY_ADMIN or USER
+  globalRole  GlobalRole // Permission to user type SANDVIK_TECHNICIAN. Just query from User table to avoid repeated?
 
-  userId    String
+  appsAccess Application[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
-
-  // applicationAccess Application[] // this array could contain all the application that they get access to?
 
   @@map("user_permissions")
 }
@@ -157,14 +155,11 @@ model Site {
   city       String
   country    String
 
-  // passCriteria String TODO should we remove for now?
-  // notification String TODO should we remove for now?
-
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
   level      Level[]
-  boltResult BoltResult[] // @TODO Check if this can be removed
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give siteId to BoltResult, is this relation correct?
 
   @@map("sites")
 }
@@ -180,7 +175,7 @@ model Level {
   siteId String
 
   drive      Drive[]
-  boltResult BoltResult[] // @TODO Check if this can be removed
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give levelId to BoltResult, is this relation correct?
 
   @@map("levels")
 }
@@ -196,7 +191,7 @@ model Drive {
   levelId String
 
   location   Location[]
-  boltResult BoltResult[] // @TODO Check if this can be removed
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give driveId to BoltResult, is this relation correct?
 
   @@map("drives")
 }
@@ -211,8 +206,8 @@ model Location {
   drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  boltResult     BoltResult[] // @TODO Check if this can be removed
-  PositionInRing PositionInRing[]
+  boltResult     BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
+  positionInRing PositionInRing[]
 
   @@map("locations")
 }
@@ -227,7 +222,7 @@ model PositionInRing {
   location   Location @relation(fields: [locationId], references: [id])
   locationId String
 
-  boltResult BoltResult[] // @TODO Check if this can be removed
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give positionInRingId to BoltResult, is this relation correct?
 
   @@map("positions")
 }
@@ -238,17 +233,16 @@ model BoltResult {
   updatedAt DateTime @updatedAt
 
   boltNumber       Int
-  boltType         String // @TODO enum
+  boltType         BoltType
   peakLoad         Int[]
   peakDisplacement Int[]
-  // positionInRing   String // @TODO remove - done
 
   result              Result
   isHazard            Boolean              @default(false)
   hazardCompletedDate DateTime[]
   abortReason         PullTestAbortReason?
   comment             String?
-  image               String? // This assumes base64
+  image               String? // base64
 
   site   Site   @relation(fields: [siteId], references: [id])
   siteId String
@@ -259,9 +253,7 @@ model BoltResult {
   drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  // TODO: Add location! - done
-
-  location   Location @relation(fields: [locationId], references: [id]) // @TODO Rename ring position - done
+  location   Location @relation(fields: [locationId], references: [id])
   locationId String
 
   positionInRing   PositionInRing @relation(fields: [positionInRingId], references: [id])

@@ -17,7 +17,7 @@ import { LucidePlus } from 'lucide-react';
 import { AddSiteModal } from '@/components/AddSiteModal';
 
 export default function Page(): JSX.Element {
-  const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabots'>(
+  const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
     'Pull Test',
   );
 
@@ -42,10 +42,10 @@ export default function Page(): JSX.Element {
                 xCyclops
               </TabsTrigger>
               <TabsTrigger
-                value="ultrabots"
-                onClick={() => setApp('Ultrabots')}
+                value="ultrabolts"
+                onClick={() => setApp('Ultrabolts')}
               >
-                Ultrabots
+                Ultrabolts
               </TabsTrigger>
             </TabsList>
 
@@ -68,7 +68,7 @@ export default function Page(): JSX.Element {
             <SitesTable />
           </TabsContent>
 
-          <TabsContent value="ultrabots">
+          <TabsContent value="ultrabolts">
             <SitesTable />
           </TabsContent>
         </Tabs>

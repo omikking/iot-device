@@ -20,7 +20,7 @@ import {
 } from '@gsp/ui';
 
 interface AddSiteModalProps {
-  appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabots';
+  appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabolts';
 }
 
 export const AddSiteModal = ({ appSelected }: AddSiteModalProps) => {

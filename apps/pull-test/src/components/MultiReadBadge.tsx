@@ -1,7 +1,7 @@
 import React from 'react';
 import { BoltResultSchema } from '@/app/mock/mock';
 import { Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { LucideSquareStack } from 'lucide-react';
+import { LucideScanSearch, LucideSquareStack } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
 interface MultiReadBadgeProps {
@@ -14,6 +14,9 @@ export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
       <ModalTrigger>
         <Badge variant="neutral">
           <LucideSquareStack />
+          {/* @TODO be able to use from the tailwind config */}
+          {/* <LucideScanSearch color="text-orange-primary" /> */}
+          <LucideScanSearch className="text-orange-primary" />
         </Badge>
       </ModalTrigger>
       <BoltResultDetailsModal

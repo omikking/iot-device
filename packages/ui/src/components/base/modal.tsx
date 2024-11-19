@@ -38,7 +38,7 @@ const ModalContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'ui-fixed ui-left-[50%] ui-top-[50%] ui-z-50 ui-grid ui-min-w-[900px] ui-translate-x-[-50%] ui-translate-y-[-50%] ui-bg-neutral-1 ui-shadow-sm ui-duration-200 data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-fade-out-0 data-[state=open]:ui-fade-in-0 data-[state=closed]:ui-zoom-out-90 data-[state=open]:ui-zoom-in-90 data-[state=closed]:ui-slide-out-to-left-1/2 data-[state=closed]:ui-slide-out-to-top-[48%] data-[state=open]:ui-slide-in-from-left-1/2 data-[state=open]:ui-slide-in-from-top-[48%] sm:ui-rounded',
+          'ui-max-h-[86vh] ui-fixed ui-left-[50%] ui-top-[50%] ui-z-50 ui-grid ui-min-w-[900px] ui-translate-x-[-50%] ui-translate-y-[-50%] ui-bg-neutral-1 ui-shadow-sm ui-duration-200 data-[state=open]:ui-animate-in data-[state=closed]:ui-animate-out data-[state=closed]:ui-fade-out-0 data-[state=open]:ui-fade-in-0 data-[state=closed]:ui-zoom-out-90 data-[state=open]:ui-zoom-in-90 data-[state=closed]:ui-slide-out-to-left-1/2 data-[state=closed]:ui-slide-out-to-top-[48%] data-[state=open]:ui-slide-in-from-left-1/2 data-[state=open]:ui-slide-in-from-top-[48%] sm:ui-rounded',
           className,
         )}
         {...props}

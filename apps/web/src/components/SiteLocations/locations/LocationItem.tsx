@@ -1,10 +1,12 @@
 import { z } from 'zod';
-import React from 'react';
-import { Button, Text } from '@gsp/ui';
+import React, { useState } from 'react';
+import { Text } from '@gsp/ui';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideEllipsis, LucideX } from 'lucide-react';
+
 import { SiteLocationsForm } from '../SiteLocationsForm';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { ILocationMock } from '@/app/(routes)/sitelocations/page';
 
 interface LocationComponentProps {
@@ -12,6 +14,8 @@ interface LocationComponentProps {
   index: number;
   locationsOptionsMock: ILocationMock[];
   inputRef: React.RefObject<HTMLInputElement>;
+  // eslint-disable-next-line no-unused-vars
+  handleSetLocation: (name: string) => void;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>
   >;
@@ -21,9 +25,13 @@ export const LocationItem = ({
   location,
   index,
   locationsOptionsMock,
-  setLocationsOptionsMock,
   inputRef,
+  setLocationsOptionsMock,
+  handleSetLocation,
 }: LocationComponentProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const locationFormSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -37,17 +45,23 @@ export const LocationItem = ({
     },
   });
 
-  const handleCancelLocation = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
+  const handleEditLocation = () => {
+    setIsEditing(true);
+    locationForm.setValue('name', location.name);
+  };
 
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    locationForm.reset();
+  };
+
+  const handleCancelLocation = (index: number) => {
     const newLocations = [...locationsOptionsMock];
     newLocations.splice(index, 1);
     setLocationsOptionsMock(newLocations);
   };
-  const handleSubmitLocation = (
+
+  const handleEditSubmit = (
     e: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
@@ -65,50 +79,66 @@ export const LocationItem = ({
       return;
     }
 
-    const newLocation = {
-      ...locationsOptionsMock[index],
-      name: formData.get('location') as string,
-    };
     const newLocations = [...locationsOptionsMock];
-    newLocations[index] = newLocation;
+    newLocations[index] = {
+      ...newLocations[index],
+      name: newLocationName,
+    };
     setLocationsOptionsMock(newLocations);
+    setIsEditing(false);
   };
+
   return (
     <div
       className={`bg-main-white px-6  'border-2 border-transparent`}
       key={index}
     >
-      <div className="py-3">
-        {!location.name ? (
+      <div
+        className="py-3"
+        onClick={() => !isEditing && handleSetLocation(location.name)}
+      >
+        {!location.name || isEditing ? (
           <SiteLocationsForm
             form={locationForm}
-            onSubmit={handleSubmitLocation}
-            onCancel={handleCancelLocation}
+            onSubmit={handleEditSubmit}
+            onCancel={handleCancelEdit}
             placeholder="New location..."
             name="location"
             index={index}
             inputRef={inputRef}
           />
         ) : (
-          <div className="flex flex-row w-full justify-between items-center gap-2">
+          <div
+            className="flex flex-row w-full justify-between items-center gap-2"
+            key={index}
+          >
             <Text className="w-full" variant="small" color="foreground">
               {location.name}
             </Text>
-            <Button
-              size={'small'}
-              variant={'outline'}
-              type="button"
-              onClick={(e) => handleCancelLocation(e, index)}
+            <DeleteEditDropdown
+              itemToDelete={index}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              handleEdit={handleEditLocation}
+            />
+            <DeleteModalConfirmation
+              modalTitle="Delete drive"
+              deleteButtonText="Confirm deletion"
+              deleteIcon="Site"
+              itemToDelete={index}
+              isOpen={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+              onDelete={() => {
+                handleCancelLocation(index), setIsDeleteModalOpen(false);
+              }}
             >
-              <LucideX />
-            </Button>
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              size={'small'}
-              variant={'outline'}
-            >
-              <LucideEllipsis />
-            </Button>
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  {` ${location.name} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
           </div>
         )}
       </div>

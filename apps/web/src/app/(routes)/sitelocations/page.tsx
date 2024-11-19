@@ -103,6 +103,10 @@ export default function Page(): JSX.Element {
     setLocationsOptionsMock(locations);
   };
 
+  const handleSetLocation = (location?: string) => {
+    console.log('location', location);
+  };
+
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
       <Text
@@ -197,6 +201,7 @@ export default function Page(): JSX.Element {
               selectedDrive={selectedDrive}
               drivesOptionsMock={drivesOptionsMock}
               locationsOptionsMock={locationsOptionsMock}
+              handleSetLocation={handleSetLocation}
               setLocationsOptionsMock={setLocationsOptionsMock}
             />
           </div>

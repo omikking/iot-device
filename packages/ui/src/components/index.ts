@@ -31,3 +31,4 @@ export * from './shared-custom/navigation-card';
 export * from './shared-custom/content-holder';
 export * from './shared-custom/specification';
 export * from './shared-custom/bolt-result-card';
+export * from './shared-custom/dropdown-menu';

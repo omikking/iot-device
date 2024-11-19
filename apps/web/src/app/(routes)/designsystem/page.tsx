@@ -52,9 +52,8 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucideUser,
-  LucidePlus,
   LucideTrash2,
-  ChevronRight,
+  LucidePlus,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -63,8 +62,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { optionsDesignSystemMock, usersMock } from '@/app/mock/mock';
+import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
+
+type Role = 'User' | 'Technician' | 'Admin';
 
 export default function Page(): JSX.Element {
   const formSchema = z.object({
@@ -87,9 +89,15 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
+  const [sites, setSites] = useState(sitesMock);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
+    undefined,
+  );
+  const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
 
   const getBadge = (
-    role: 'User' | 'Technician' | 'Admin',
+    role: Role,
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -102,6 +110,20 @@ export default function Page(): JSX.Element {
       case 'Admin':
         return { variant: 'primary', icon: <LucideKey /> };
     }
+  };
+
+  const openDeleteModal = (index: number) => {
+    setSiteToDelete(index);
+    setIsDeleteSiteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteSiteModalOpen(false);
+    setSiteToDelete(undefined);
+  };
+
+  const handleDelete = (index: number) => {
+    setSites((sites) => sites.filter((item, i) => i !== index));
   };
 
   return (
@@ -160,23 +182,72 @@ export default function Page(): JSX.Element {
         Delete Modal Confirmation 🦄
       </Headline>
 
-      <Modal>
-        <ModalTrigger asChild>
-          <Button variant="destructive" size="large">
-            <LucideTrash2 />
-            Delete item
-          </Button>
-        </ModalTrigger>
-        <DeleteModalConfirmation modalTitle="Delete Site" deleteIcon="User">
+      <Button
+        variant="destructive"
+        size="large"
+        onClick={() => setIsDeleteModalOpen(true)}
+      >
+        <LucideTrash2 />
+        Delete item
+      </Button>
+
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        modalTitle="Delete Site"
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        onDelete={() => {
+          console.log('Deleting item...');
+        }}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} as="span" isBold>
+            {` Elliot Alderson `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
+      <Headline variant="medium" as="h3" color="foreground">
+        Dropdown Delete
+        {sites.map((site, index) => (
+          <div className="flex items-center justify-between py-2" key={index}>
+            <Text color={'foreground'} variant={'small'}>
+              {site.name}
+            </Text>
+            <DeleteEditDropdown
+              itemToDelete={index}
+              openDeleteModal={openDeleteModal}
+              handleEdit={() => console.log('edit')}
+            />
+          </div>
+        ))}
+        <DeleteModalConfirmation
+          deleteButtonText="Confirm deletion"
+          deleteIcon="Site"
+          modalTitle="Delete Site"
+          isOpen={isDeleteSiteModalOpen}
+          itemToDelete={siteToDelete}
+          onOpenChange={closeDeleteModal}
+          onDelete={(_, index) => {
+            console.log('Deleting site at index:', index);
+            handleDelete(index);
+            closeDeleteModal();
+          }}
+        >
           <Text variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'} as="span">
-              {` Elliot Alderson `}
+            <Text variant="medium" color={'foreground'} isBold as="span">
+              {siteToDelete !== undefined
+                ? ` ${sites[siteToDelete].name} `
+                : ''}
             </Text>
             from the list. Are you sure you want to delete?
           </Text>
         </DeleteModalConfirmation>
-      </Modal>
+      </Headline>
+
       <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄

@@ -8,6 +8,7 @@ interface LocationsListComponentProps {
   selectedDrive?: string;
   locationsOptionsMock: ILocationMock[];
   drivesOptionsMock: IDriveMock[];
+  handleSetLocation: () => void;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>
   >;
@@ -17,6 +18,7 @@ export const LocationsList = ({
   selectedDrive,
   locationsOptionsMock,
   drivesOptionsMock,
+  handleSetLocation,
   setLocationsOptionsMock,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -56,8 +58,9 @@ export const LocationsList = ({
             location={location}
             locationsOptionsMock={locationsOptionsMock}
             index={index}
-            setLocationsOptionsMock={setLocationsOptionsMock}
             inputRef={inputRef}
+            handleSetLocation={handleSetLocation}
+            setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>

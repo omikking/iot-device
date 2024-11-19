@@ -1,6 +1,7 @@
 import {
   Button,
   Headline,
+  Modal,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -14,13 +15,27 @@ interface DeleteModalConfirmationProps {
   deleteIcon?: 'User' | 'Site';
   deleteButtonText?: string;
   children: React.ReactNode;
+  itemToDelete?: number;
+  // eslint-disable-next-line no-unused-vars
+  onDelete: (
+    // eslint-disable-next-line no-unused-vars
+    event: React.MouseEvent<HTMLButtonElement>,
+    // eslint-disable-next-line no-unused-vars
+    itemToDelete: number,
+  ) => void;
+  isOpen?: boolean;
+  // eslint-disable-next-line no-unused-vars
+  onOpenChange: (open: boolean) => void;
 }
 
 export const DeleteModalConfirmation = ({
   modalTitle,
   deleteIcon = 'User',
-
   children,
+  itemToDelete = -1,
+  onDelete,
+  isOpen,
+  onOpenChange,
 }: DeleteModalConfirmationProps) => {
   const getDeleteIcon = (role: 'User' | 'Site') => {
     switch (role) {
@@ -29,30 +44,38 @@ export const DeleteModalConfirmation = ({
       case 'Site':
         return <LucideMountain className="text-error" size="32" />;
       default:
-        return null; // throw null if invalid role
+        return null;
     }
   };
 
   return (
-    <ModalContent>
-      <ModalHeader>
-        <ModalTitle>{modalTitle}</ModalTitle>
-      </ModalHeader>
-      <div className="flex flex-row justify-center items-center pt-16 gap-4">
-        {getDeleteIcon(deleteIcon)}
-        <Headline variant="medium" as="h3" color="foreground">
-          Confirm deletion
-        </Headline>
-      </div>
-      <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
-        {children}
-      </div>
-      <ModalFooter className="ui-px-10 ui-py-6">
-        <Button variant="destructive" size={'large'}>
-          <LucideTrash2 />
-          Confirm deletion
-        </Button>
-      </ModalFooter>
-    </ModalContent>
+    <Modal open={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        <ModalHeader>
+          <ModalTitle>{modalTitle}</ModalTitle>
+        </ModalHeader>
+        <div className="flex flex-row justify-center items-center pt-16 gap-4">
+          {getDeleteIcon(deleteIcon)}
+          <Headline variant="medium" as="h3" color="foreground">
+            Confirm deletion
+          </Headline>
+        </div>
+        <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
+          {children}
+        </div>
+        <ModalFooter className="ui-px-10 ui-py-6">
+          <Button
+            variant="destructive"
+            size={'large'}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              onDelete(e, itemToDelete), onOpenChange(false);
+            }}
+          >
+            <LucideTrash2 />
+            Confirm deletion
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };

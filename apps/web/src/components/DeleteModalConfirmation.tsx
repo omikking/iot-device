@@ -16,15 +16,11 @@ interface DeleteModalConfirmationProps {
   deleteButtonText?: string;
   children: React.ReactNode;
   itemToDelete?: number;
-  // eslint-disable-next-line no-unused-vars
   onDelete: (
-    // eslint-disable-next-line no-unused-vars
     event: React.MouseEvent<HTMLButtonElement>,
-    // eslint-disable-next-line no-unused-vars
     itemToDelete: number,
   ) => void;
   isOpen?: boolean;
-  // eslint-disable-next-line no-unused-vars
   onOpenChange: (open: boolean) => void;
 }
 

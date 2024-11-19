@@ -11,7 +11,7 @@ type PlanType = 'Gold' | 'Silver' | 'Bronze';
 
 interface AppPlan {
   name: string;
-  activePlan: PlanType | undefined;
+  activePlan?: PlanType;
   id: string;
 }
 

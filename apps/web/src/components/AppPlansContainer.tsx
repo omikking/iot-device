@@ -14,8 +14,6 @@ const getFormFieldName = (name: string) => {
       return 'xCyclopsPlan';
     case 'Ultrabots':
       return 'ultrabotsPlan';
-    default:
-      return '';
   }
 };
 
@@ -23,7 +21,7 @@ interface AppPlansContainerProps {
   appPlan: {
     id: string;
     name: string;
-    activePlan: 'Gold' | 'Silver' | 'Bronze' | undefined;
+    activePlan?: 'Gold' | 'Silver' | 'Bronze';
   };
   isAdmin: boolean;
 }
@@ -36,7 +34,7 @@ export const AppPlansContainer = ({
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
   const { name, activePlan } = appPlan;
   const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(name);
+  const formField = getFormFieldName(name) || '';
 
   return (
     <div

@@ -1,11 +1,41 @@
 'use client';
 
-import { Badge, Button, DataTable } from '@gsp/ui';
-import { LucideEllipsis, LucideEyeOff, LucideView } from 'lucide-react';
+import { useState } from 'react';
+import { Badge, DataTable, Text } from '@gsp/ui';
+import { LucideEyeOff, LucideView } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 export const TechniciansTable = () => {
+  const [technicians, setTechnicians] = useState(techniciansMock);
+  const [isDeleteTechnicianModalOpen, setIsDeleteTechnicianModalOpen] =
+    useState(false);
+  const [technicianToDelete, setTechnicianToDelete] = useState<
+    number | undefined
+  >(undefined);
+
+  const openDeleteModal = (index: number) => {
+    setTechnicianToDelete(index);
+    setIsDeleteTechnicianModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteTechnicianModalOpen(false);
+    setTechnicianToDelete(undefined);
+  };
+
+  // const handleDelete = (index: number) => {
+  //   setTechnicians((technician) => technician.filter((item, i) => i !== index));
+  // };
+
+  const handleDelete = (index: number) => {
+    setTechnicians((currentTechnicians) =>
+      currentTechnicians.filter((_, i) => i !== index),
+    );
+  };
+
   const columns: ColumnDef<TechniciansSchema>[] = [
     {
       accessorKey: 'fullName',
@@ -52,12 +82,44 @@ export const TechniciansTable = () => {
     {
       accessorKey: 'settings',
       header: '',
-      cell: () => {
+      cell: ({ row }) => {
         // @TODO get row in cell, send row getValue id data to open delete/edit modals
+        const rowIndex = technicians.findIndex(
+          (tech) => tech.id === row.original.id,
+        );
+
         return (
-          <Button variant="outline" size="small">
-            <LucideEllipsis />
-          </Button>
+          <>
+            <DeleteEditDropdown
+              itemToDelete={rowIndex} // convert to number using unary plus operator
+              openDeleteModal={openDeleteModal}
+              handleEdit={() => console.log('Edit')}
+            />
+
+            <DeleteModalConfirmation
+              deleteButtonText="Confirm deletion"
+              deleteIcon="User"
+              modalTitle="Delete technician"
+              isOpen={isDeleteTechnicianModalOpen}
+              itemToDelete={technicianToDelete}
+              onOpenChange={closeDeleteModal}
+              onDelete={(event, index) => {
+                if (typeof index === 'number') {
+                  handleDelete(index);
+                  closeDeleteModal();
+                }
+              }}
+            >
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} isBold as="span">
+                  {technicianToDelete !== undefined &&
+                    ` ${technicians[technicianToDelete].fullName} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
+          </>
         );
       },
     },
@@ -67,11 +129,11 @@ export const TechniciansTable = () => {
     <>
       <DataTable
         columns={columns}
-        data={techniciansMock}
+        data={technicians}
         noResultMessage="There are no technicians added yet."
       />
       <Badge variant="neutral" className="self-start">
-        {techniciansMock.length} total
+        {technicians.length} total
       </Badge>
     </>
   );

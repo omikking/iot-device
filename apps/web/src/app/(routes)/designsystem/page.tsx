@@ -37,6 +37,10 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
   BreadcrumbLink,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@gsp/ui';
 
 import {
@@ -54,6 +58,7 @@ import {
   LucideUser,
   LucideTrash2,
   LucidePlus,
+  LucideCircleHelp,
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -131,6 +136,30 @@ export default function Page(): JSX.Element {
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>
+      <hr className="w-full" />
+      <Headline variant="xl" as="h1" color="foreground">
+        Breadcrumb 🦄
+      </Headline>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Badge variant={'neutral'}>
+              <LucideCircleHelp size="14" />
+              <Text color={'foreground'} variant={'small'}>
+                Hover
+              </Text>
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            {/* @TODO design arrow for tooltip */}
+            {/* <TooltipArrow /> */}
+            <Text color={'foreground'} variant={'small'}>
+              Hey! You're awesome! 🚀
+            </Text>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <hr className="w-full" />
 
       <Headline variant="xl" as="h1" color="foreground">

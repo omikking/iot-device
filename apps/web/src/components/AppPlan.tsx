@@ -58,10 +58,7 @@ export const AppPlan = ({
       )}
 
       {user === 'Client' && isActive && (
-        <Badge
-          variant={'attention'}
-          className="bg-blue-100 text-blue-800 hover:bg-blue-100 flex items-center gap-1"
-        >
+        <Badge variant={'attention'}>
           <LucideCircleCheckBig />
           Your selected plan
         </Badge>

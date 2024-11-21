@@ -1,17 +1,12 @@
 'use client';
 
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
   ContentHolder,
   DateRange,
   Dropdown,
   DropdownItem,
   Label,
   RangeCalendar,
-  Text,
 } from '@gsp/ui';
 import { BoltResultsFilter } from './BoltResultsFilter';
 import { sitesMock } from '@/app/mock/mock';

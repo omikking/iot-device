@@ -10,56 +10,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Company {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name        String
-  companyCode Int    @unique
-  country     String
-  city        String
-  address     String
-
-  users User[]
-
-  @@map("companies")
+enum CompanyRole {
+  COMPANY_ADMIN
+  USER
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email String @unique
-  hash  String
-
-  firstName String?
-  lastName  String?
-
-  companies Company[]
-  bolts     Bolt[]
-
-  @@map("users")
+enum GlobalRole {
+  SANDVIK_ADMIN
+  SANDVIK_TECHNICIAN
 }
 
-model Bolt {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Result {
+  PASS
+  FAIL
+  ABORT
+}
 
-  title       String
-  description String?
-  pass        Boolean @default(false)
+enum PullTestAbortReason {
+  NOT_TESTED_VOID_CAVITY
+  TEST_STOPPED_INSTALL_ANGLE
+}
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+enum Application {
+  PULL_TEST
+  PULL_TEST_OPERATOR
+  XCYCLOPS
+  ULTRABOLTS
+}
 
-  @@map("bolts")
+enum PlanLevel {
+  GOLD
+  SILVER
+  BRONZE
+  INACTIVE
+}
+
+enum BoltType {
+  MD47
+  MDX47
+}
+
+enum RingPosition {
+  RH_BACKS
+  RH_SHOULDER
+  RH_WALL_UPPER
+  LH_BACKS
+  LH_SHOULDER
+  LH_WALL_UPPER
+  CENTER_BACKS
 }
 
 model RefreshTokenId {
-  userId    String   @id
+  userId    String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -67,6 +69,203 @@ model RefreshTokenId {
 
   @@map("refresh_token_ids")
 }
+
+model Company {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name                String
+  orgNumber           String @unique
+  address             String
+  postalCode          String
+  city                String
+  country             String
+  companyContactEmail String
+
+  plan           Plan[]
+  site           Site[]
+  userPermission UserPermission[]
+
+  @@map("companies")
+}
+
+model Plan {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applicationName Application
+  planLevel       PlanLevel
+  expiringDate    DateTime?
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  @@map("plans")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash  String
+
+  fullName           String
+  workPlace          String
+  phoneNumber        String?
+  globalRole         GlobalRole?
+  isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
+
+  userRole   UserPermission[]
+  boltResult BoltResult[] // @TODO Check if this can be removed. - We just need to give every BoltResult a userId, is this the correct way?
+
+  @@map("users")
+}
+
+model UserPermission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyRole CompanyRole // Permission to user type COMPANY_ADMIN or USER
+  globalRole  GlobalRole // Permission to user type SANDVIK_TECHNICIAN. Just query from User table to avoid repeated?
+
+  appsAccess Application[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  @@map("user_permissions")
+}
+
+model Site {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  siteName   String
+  address    String
+  postalCode String
+  city       String
+  country    String
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  level      Level[]
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give siteId to BoltResult, is this relation correct?
+
+  @@map("sites")
+}
+
+model Level {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  levelName String
+
+  site   Site   @relation(fields: [siteId], references: [id])
+  siteId String
+
+  drive      Drive[]
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give levelId to BoltResult, is this relation correct?
+
+  @@map("levels")
+}
+
+model Drive {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  driveName String
+
+  level   Level  @relation(fields: [levelId], references: [id])
+  levelId String
+
+  location   Location[]
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give driveId to BoltResult, is this relation correct?
+
+  @@map("drives")
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  locationName String
+
+  drive   Drive  @relation(fields: [driveId], references: [id])
+  driveId String
+
+  boltResult     BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
+  positionInRing PositionInRing[]
+
+  @@map("locations")
+}
+
+model PositionInRing {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  positionInRingName RingPosition
+
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String
+
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give positionInRingId to BoltResult, is this relation correct?
+
+  @@map("positions")
+}
+
+model BoltResult {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  boltNumber       Int
+  boltType         BoltType
+  peakLoad         Int[]
+  peakDisplacement Int[]
+
+  result              Result
+  isHazard            Boolean              @default(false)
+  hazardCompletedDate DateTime[]
+  abortReason         PullTestAbortReason?
+  comment             String?
+  image               String? // base64
+
+  site   Site   @relation(fields: [siteId], references: [id])
+  siteId String
+
+  level   Level  @relation(fields: [levelId], references: [id])
+  levelId String
+
+  drive   Drive  @relation(fields: [driveId], references: [id])
+  driveId String
+
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String
+
+  positionInRing   PositionInRing @relation(fields: [positionInRingId], references: [id])
+  positionInRingId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@map("bolt_results")
+}
+
+////////////////////////////////////////
 
 model Coffee {
   id        Int            @id @default(autoincrement())

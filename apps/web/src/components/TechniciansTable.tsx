@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import { LucideEyeOff, LucideView } from 'lucide-react';
@@ -25,10 +24,6 @@ export const TechniciansTable = () => {
     setIsDeleteTechnicianModalOpen(false);
     setTechnicianToDelete(undefined);
   };
-
-  // const handleDelete = (index: number) => {
-  //   setTechnicians((technician) => technician.filter((item, i) => i !== index));
-  // };
 
   const handleDelete = (index: number) => {
     setTechnicians((currentTechnicians) =>
@@ -83,7 +78,6 @@ export const TechniciansTable = () => {
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        // @TODO get row in cell, send row getValue id data to open delete/edit modals
         const rowIndex = technicians.findIndex(
           (tech) => tech.id === row.original.id,
         );
@@ -91,7 +85,7 @@ export const TechniciansTable = () => {
         return (
           <>
             <DeleteEditDropdown
-              itemToDelete={rowIndex} // convert to number using unary plus operator
+              itemToDelete={rowIndex}
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('Edit')}
             />
@@ -104,10 +98,8 @@ export const TechniciansTable = () => {
               itemToDelete={technicianToDelete}
               onOpenChange={closeDeleteModal}
               onDelete={(event, index) => {
-                if (typeof index === 'number') {
-                  handleDelete(index);
-                  closeDeleteModal();
-                }
+                handleDelete(index);
+                closeDeleteModal();
               }}
             >
               <Text variant="medium" color={'foreground'}>
@@ -127,6 +119,28 @@ export const TechniciansTable = () => {
 
   return (
     <>
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        deleteIcon="User"
+        modalTitle="Delete technician"
+        isOpen={isDeleteTechnicianModalOpen}
+        itemToDelete={technicianToDelete}
+        onOpenChange={closeDeleteModal}
+        onDelete={(event, index) => {
+          handleDelete(index);
+          closeDeleteModal();
+        }}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {technicianToDelete !== undefined &&
+              ` ${technicians[technicianToDelete].fullName} `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
       <DataTable
         columns={columns}
         data={technicians}

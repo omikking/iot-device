@@ -1,5 +1,4 @@
 'use client';
-
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -41,10 +40,6 @@ export const UsersTable = () => {
     setUserToDelete(undefined);
   };
 
-  // const handleDelete = (index: number) => {
-  //   setTechnicians((technician) => technician.filter((item, i) => i !== index));
-  // };
-
   const handleDelete = (index: number) => {
     setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
   };
@@ -82,7 +77,6 @@ export const UsersTable = () => {
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        // @TODO send row getValue id data to open delete/edit modals
         const rowIndex = users.findIndex((user) => user.id === row.original.id);
 
         return (
@@ -92,30 +86,6 @@ export const UsersTable = () => {
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('Edit')}
             />
-
-            <DeleteModalConfirmation
-              deleteButtonText="Confirm deletion"
-              deleteIcon="User"
-              modalTitle="Delete user"
-              isOpen={isDeleteUserModalOpen}
-              itemToDelete={userToDelete}
-              onOpenChange={closeDeleteModal}
-              onDelete={(event, index) => {
-                if (typeof index === 'number') {
-                  handleDelete(index);
-                  closeDeleteModal();
-                }
-              }}
-            >
-              <Text variant="medium" color={'foreground'}>
-                You are about to delete
-                <Text variant="medium" color={'foreground'} isBold as="span">
-                  {userToDelete !== undefined &&
-                    ` ${users[userToDelete].fullName} `}
-                </Text>
-                from the list. Are you sure you want to delete?
-              </Text>
-            </DeleteModalConfirmation>
           </>
         );
       },
@@ -124,6 +94,27 @@ export const UsersTable = () => {
 
   return (
     <>
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        isOpen={isDeleteUserModalOpen}
+        itemToDelete={userToDelete}
+        onOpenChange={closeDeleteModal}
+        onDelete={(event, index) => {
+          handleDelete(index);
+          closeDeleteModal();
+        }}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {userToDelete !== undefined && ` ${users[userToDelete].fullName} `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
       <DataTable
         columns={columns}
         data={users}

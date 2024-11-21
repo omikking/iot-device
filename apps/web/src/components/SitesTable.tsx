@@ -37,8 +37,8 @@ export const SitesTable = () => {
       ),
     },
     {
-      accessorKey: 'adress',
-      header: 'Adress',
+      accessorKey: 'address',
+      header: 'Address',
     },
     {
       accessorKey: 'totalSiteLocations',
@@ -70,9 +70,8 @@ export const SitesTable = () => {
       header: 'Notification',
     },
     {
-      // accessorKey: 'siteNumber',
       accessorKey: 'settings',
-      header: 'Settings',
+      header: '',
       cell: ({ row }) => {
         const rowIndex = sites.findIndex((site) => site.id === row.original.id);
         return (
@@ -82,30 +81,6 @@ export const SitesTable = () => {
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('Edit')}
             />
-
-            <DeleteModalConfirmation
-              deleteButtonText="Confirm deletion"
-              deleteIcon="User"
-              modalTitle="Delete user"
-              isOpen={isDeleteSiteModalOpen}
-              itemToDelete={siteToDelete}
-              onOpenChange={closeDeleteModal}
-              onDelete={(event, index) => {
-                if (typeof index === 'number') {
-                  handleDelete(index);
-                  closeDeleteModal();
-                }
-              }}
-            >
-              <Text variant="medium" color={'foreground'}>
-                You are about to delete
-                <Text variant="medium" color={'foreground'} isBold as="span">
-                  {siteToDelete !== undefined &&
-                    ` ${sites[siteToDelete].name} `}
-                </Text>
-                from the list. Are you sure you want to delete?
-              </Text>
-            </DeleteModalConfirmation>
           </>
         );
       },
@@ -114,10 +89,27 @@ export const SitesTable = () => {
 
   return (
     <>
-      {/* @TODO  
-          next feature link total site locations with sitelocations page and give it the props of the site
-          and also add a popover with edit and delete options
-    */}
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        isOpen={isDeleteSiteModalOpen}
+        itemToDelete={siteToDelete}
+        onOpenChange={closeDeleteModal}
+        onDelete={(event, index) => {
+          handleDelete(index);
+          closeDeleteModal();
+        }}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {siteToDelete !== undefined && ` ${sites[siteToDelete].name} `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
       <DataTable
         columns={columns}
         data={sites}

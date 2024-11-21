@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { Button, Text } from '@gsp/ui';
-import { LucideX, LucideEllipsis } from 'lucide-react';
+import { Text } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +9,8 @@ import {
   ILevelMock,
   ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 
 interface LevelComponentProps {
   selectedLevel?: string;
@@ -38,6 +39,9 @@ export const LevelItem = ({
   setDrivesOptionsMock,
   setLocationsOptionsMock,
 }: LevelComponentProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const levelFormSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -51,31 +55,20 @@ export const LevelItem = ({
     },
   });
 
-  const handleCancelLevel = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
-    const newLevels = [...levelsOptionsMock];
-    newLevels[index].drives = [];
-    newLevels.splice(index, 1);
-    setLevelsOptionsMock(newLevels);
-
-    setDrivesOptionsMock([]);
-    setLocationsOptionsMock([]);
+  const handleEditLevel = () => {
+    setIsEditing(true);
+    levelForm.setValue('name', level.name);
   };
 
-  const handleSubmitLevel = (
+  const handleEditSubmit = (
     e: React.FormEvent<HTMLFormElement>,
     index: number,
   ) => {
-    e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
     const newLevelName = formData.get('level') as string;
+
     const isDuplicate = levelsOptionsMock.some(
-      (level) => level.name.toLowerCase() === newLevelName.toLowerCase(),
+      (level) => level.name === newLevelName,
     );
 
     if (isDuplicate) {
@@ -83,51 +76,85 @@ export const LevelItem = ({
       return;
     }
 
-    const newLevel = {
-      ...levelsOptionsMock[index],
-      name: formData.get('level') as string,
-      drives: [],
+    const newLevels = [...levelsOptionsMock];
+    newLevels[index] = {
+      ...newLevels[index],
+      name: newLevelName,
     };
-    const newLevelsList = [...levelsOptionsMock];
-    newLevelsList[index] = newLevel;
-    setLevelsOptionsMock(newLevelsList);
+    setLevelsOptionsMock(newLevels);
+    setIsEditing(false);
   };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    levelForm.reset();
+  };
+
+  const handleCancelLevel = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const newLevels = [...levelsOptionsMock];
+    newLevels[index].drives = [];
+    newLevels.splice(index, 1);
+
+    setLevelsOptionsMock(newLevels);
+    setDrivesOptionsMock([]);
+    setLocationsOptionsMock([]);
+  };
+
   return (
     <div
       className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
-      <div className="py-3" onClick={() => handleSetLevel(level.name)}>
-        {!level.name ? (
+      <div
+        className="py-3"
+        onClick={() => !isEditing && handleSetLevel(level.name)}
+      >
+        {!level.name || isEditing ? (
           <SiteLocationsForm
             form={levelForm}
-            onSubmit={handleSubmitLevel}
-            onCancel={handleCancelLevel}
+            onSubmit={handleEditSubmit}
+            onCancel={handleCancelEdit}
             placeholder="New level..."
             name="level"
             index={index}
             inputRef={inputRef}
           />
         ) : (
-          <div className="flex flex-row w-full justify-between items-center gap-2">
+          <div
+            className="flex flex-row w-full justify-between items-center gap-2"
+            key={index}
+          >
             <Text className="w-full" variant="small" color="foreground">
               {level.name}
             </Text>
-            <Button
-              size={'small'}
-              variant={'outline'}
-              type="button"
-              onClick={(e) => handleCancelLevel(e, index)}
+
+            <DeleteEditDropdown
+              itemToDelete={index}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              handleEdit={handleEditLevel}
+            />
+            <DeleteModalConfirmation
+              modalTitle="Delete level"
+              deleteButtonText="Confirm deletion"
+              deleteIcon="Site"
+              itemToDelete={index}
+              isOpen={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+              onDelete={(e) => {
+                handleCancelLevel(e, index), setIsDeleteModalOpen(false);
+              }}
             >
-              <LucideX />
-            </Button>
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              size={'small'}
-              variant={'outline'}
-            >
-              <LucideEllipsis />
-            </Button>
+              <Text variant="medium" color={'foreground'}>
+                You are about to delete
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  {` ${level.name} `}
+                </Text>
+                from the list. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
           </div>
         )}
       </div>

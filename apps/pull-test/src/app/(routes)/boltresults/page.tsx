@@ -129,12 +129,12 @@ export default function Page(): JSX.Element {
                     </BreadcrumbItem>
                   </>
                 )}
-                {position && (
+                {location && (
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
-                        {position}
+                        {location}
                       </Text>
                     </BreadcrumbItem>
                   </>

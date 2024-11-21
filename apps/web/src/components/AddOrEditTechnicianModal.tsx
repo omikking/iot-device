@@ -16,17 +16,24 @@ import {
   RadioGroup,
   LoadingSpinner,
 } from '@gsp/ui';
+import {
+  TechnicianFormValues,
+  technicianFormSchema,
+} from './schemas/TechnicianFormSchema';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucidePlus } from 'lucide-react';
 import { SuccessMessage } from './SuccessMessage';
-import {
-  TechnicianFormValues,
-  technicianFormSchema,
-} from './schemas/TechnicianFormSchema';
 
-export const AddOrEditTechnicianModal = () => {
+interface AddOrEditTechnicianModalProps {
+  // eslint-disable-next-line no-unused-vars
+  onOpenChange: (open: boolean) => void;
+}
+
+export const AddOrEditTechnicianModal = ({
+  onOpenChange,
+}: AddOrEditTechnicianModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -41,6 +48,16 @@ export const AddOrEditTechnicianModal = () => {
     },
   });
 
+  const resetFormValues = () => {
+    form.reset({
+      fullName: '',
+      company: '',
+      email: '',
+      phoneNumber: '',
+      isGlobal: false,
+    });
+  };
+
   const onSubmit = async (data: TechnicianFormValues) => {
     setIsLoading(true);
     // Simulate API call
@@ -48,6 +65,14 @@ export const AddOrEditTechnicianModal = () => {
     console.log('Technician added:', data);
     setIsSuccessful(true);
     setIsLoading(false);
+
+    setTimeout(() => {
+      onOpenChange(false);
+    }, 1500);
+    setTimeout(() => {
+      setIsSuccessful(false);
+      resetFormValues();
+    }, 1700);
   };
 
   return (

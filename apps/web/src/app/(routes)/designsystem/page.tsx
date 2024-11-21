@@ -141,18 +141,16 @@ export default function Page(): JSX.Element {
         Breadcrumb 🦄
       </Headline>
       <TooltipProvider>
-        <Tooltip>
+        <Tooltip delayDuration={100}>
           <TooltipTrigger>
             <Badge variant={'neutral'}>
-              <LucideCircleHelp size="14" />
+              <LucideCircleHelp />
               <Text color={'foreground'} variant={'small'}>
                 Hover
               </Text>
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
-            {/* @TODO design arrow for tooltip */}
-            {/* <TooltipArrow /> */}
             <Text color={'foreground'} variant={'small'}>
               Hey! You're awesome! 🚀
             </Text>

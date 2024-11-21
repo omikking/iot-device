@@ -31,19 +31,18 @@ export const AppPlan = ({
         isActive ? 'bg-gray-50' : ''
       }`}
     >
-      <FormLabel
-        className="flex items-center h-6"
-        variant="medium"
-        color="foreground"
-      >
-        {plan}
-      </FormLabel>
-
       {user === 'Superadmin' && (
         <FormField
           name={formField}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex w-full justify-between items-center">
+              <FormLabel
+                className="flex items-center"
+                variant="medium"
+                color="foreground"
+              >
+                {plan}
+              </FormLabel>
               <FormControl>
                 <Switch
                   checked={field.value === plan}

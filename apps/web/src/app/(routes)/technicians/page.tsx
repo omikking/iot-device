@@ -8,7 +8,6 @@ import { useState } from 'react';
 
 export default function Page(): JSX.Element {
   const [openTechModal, setOpenTechModal] = useState<boolean>(false);
-  //  const [isSuccessful, setIsSuccessful] = useState(false);
   // @TODO Only superadmin should be able to see this page
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -26,10 +25,7 @@ export default function Page(): JSX.Element {
               Add technician
             </Button>
           </ModalTrigger>
-          <AddOrEditTechnicianModal
-            onOpenChange={setOpenTechModal}
-            // isSuccessFul
-          />
+          <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
         </Modal>
 
         <TechniciansTable />

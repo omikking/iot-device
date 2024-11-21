@@ -113,7 +113,7 @@ model User {
   email String @unique
   hash  String
 
-  fullname           String
+  fullName           String
   workPlace          String
   phoneNumber        String?
   globalRole         GlobalRole?

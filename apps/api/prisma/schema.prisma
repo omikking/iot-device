@@ -77,7 +77,7 @@ model Company {
 
   name                String
   orgNumber           String @unique
-  address             String
+  address             String // Typo, should be adress
   postalCode          String
   city                String
   country             String

@@ -7,14 +7,26 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   name: string;
 
   @IsOptional()
-  @Length(2, 35)
-  country: string;
+  @Length(10)
+  orgNumber: string;
+
+  @IsOptional()
+  @Length(2, 95)
+  address: string;
+
+  @IsOptional()
+  @Length(5)
+  postalCode: string;
 
   @IsOptional()
   @Length(2, 35)
   city: string;
 
   @IsOptional()
-  @Length(2, 95)
-  address: string;
+  @Length(2, 35)
+  country: string;
+
+  @IsOptional()
+  @Length(2, 35)
+  companyContactEmail: string;
 }

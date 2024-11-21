@@ -16,7 +16,7 @@ export class CompaniesResolver {
 
   @Query('company')
   async findOne(
-    @Args('id', ParseIntPipe) id: number,
+    @Args('id', ParseIntPipe) id: string,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
@@ -31,7 +31,7 @@ export class CompaniesResolver {
 
   @Mutation('updateCompany')
   async update(
-    @Args('id', ParseIntPipe) id: number,
+    @Args('id', ParseIntPipe) id: string,
     @Args('updateCompanyInput')
     updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
@@ -40,7 +40,7 @@ export class CompaniesResolver {
 
   @Mutation('removeCompany')
   async remove(
-    @Args('id', ParseIntPipe) id: number,
+    @Args('id', ParseIntPipe) id: string,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.remove(id);
   }

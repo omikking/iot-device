@@ -22,20 +22,24 @@ export class UpdateCoffeeInput {
 
 export class CreateCompanyInput {
     name: string;
-    companyCode: number;
-    country: string;
-    city: string;
+    orgNumber: string;
     address: string;
-    users?: Nullable<number[]>;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+    users?: Nullable<string[]>;
 }
 
 export class UpdateCompanyInput {
     name?: Nullable<string>;
-    companyCode?: Nullable<number>;
-    country?: Nullable<string>;
-    city?: Nullable<string>;
+    orgNumber?: Nullable<string>;
     address?: Nullable<string>;
-    users?: Nullable<number[]>;
+    postalCode?: Nullable<string>;
+    city?: Nullable<string>;
+    country?: Nullable<string>;
+    companyContactEmail?: Nullable<string>;
+    users?: Nullable<string[]>;
 }
 
 export class Coffee {
@@ -69,25 +73,30 @@ export abstract class IMutation {
 }
 
 export class Company {
-    id: number;
+    id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
     name: string;
-    companyCode: number;
-    country: string;
-    city: string;
+    orgNumber: string;
     address: string;
-    users?: Nullable<Nullable<User>[]>;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+    users?: Nullable<Nullable<UserPermission>[]>;
 }
 
-export class User {
-    id: number;
+export class UserPermission {
+    id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
     email: string;
-    firstName?: Nullable<string>;
-    lastName?: Nullable<string>;
-    companies?: Nullable<Nullable<Company>[]>;
+    fullName: string;
+    workPlace: string;
+    appsAccess: string[];
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    companyRole?: Nullable<string>;
 }
 
 export type DateTime = any;

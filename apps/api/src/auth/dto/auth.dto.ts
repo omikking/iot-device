@@ -10,10 +10,13 @@ export class SignupDto {
   password: string;
 
   @IsString()
-  firstName: string;
+  fullName: string;
 
   @IsString()
-  lastName: string;
+  workPlace: string;
+
+  @IsString()
+  phoneNumber?: string;
 }
 
 export class SigninDto {

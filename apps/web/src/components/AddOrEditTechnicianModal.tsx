@@ -72,7 +72,7 @@ export const AddOrEditTechnicianModal = ({
     setTimeout(() => {
       setIsSuccessful(false);
       resetFormValues();
-    }, 1500);
+    }, 1700);
   };
 
   return (
@@ -80,7 +80,6 @@ export const AddOrEditTechnicianModal = ({
       <ModalHeader>
         <ModalTitle>Add technician</ModalTitle>
       </ModalHeader>
-      {/* right way to do this? */}
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

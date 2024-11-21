@@ -43,16 +43,16 @@ export const BoltResultDetailsModal = ({
     rotations,
     level,
     ring,
+    author,
   } = (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
-  const author = 'Angela Moss';
   const specifications: BoltSpecification[] = [
     { title: 'Bolt', text: boltNumber },
     { title: 'Bit size', text: bitSize },
     { title: 'Level', text: level },
     { title: 'Drive', text: drive },
-    { title: 'Position in ring', text: ring }, // TODO fix this one, should be position in ring
+    { title: 'Position in ring', text: ring },
     { title: 'Rotations', text: rotations }, // should this be in?
     { title: 'Pass criteria', text: boltType },
     { title: 'Pass criteria', text: boltType },

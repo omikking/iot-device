@@ -3,7 +3,7 @@ import React from 'react';
 import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
-import { hazardCardsMock } from '@/app/mock/mock';
+import { boltResultsMock, boltSpecifications } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   return (
@@ -32,15 +32,16 @@ export default function Page(): JSX.Element {
           value="active"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazardCardsMock.map(
-            (hazardCard, index) =>
-              hazardCard.isHazard && (
+          {boltResultsMock.map(
+            (boltResult, index) =>
+              boltResult.isHazard && (
                 <HazardCard
                   key={index}
-                  dateTitle={hazardCard.dateTitle}
-                  isHazard={hazardCard.isHazard}
-                  boltInfoItems={hazardCard.boltSpecifications}
-                  boltDescription={hazardCard.boltDescription}
+                  isHazard={boltResult.isHazard}
+                  fullBoltData={boltResult}
+                  dateTitle={boltResult.createdDate}
+                  boltInfoItems={boltSpecifications}
+                  boltDescription={boltResult.comment}
                 />
               ),
           )}
@@ -49,15 +50,16 @@ export default function Page(): JSX.Element {
           value="completed"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazardCardsMock.map(
-            (hazardCard, index) =>
-              !hazardCard.isHazard && (
+          {boltResultsMock.map(
+            (boltResult, index) =>
+              !boltResult.isHazard && (
                 <HazardCard
                   key={index}
-                  dateTitle={hazardCard.dateTitle}
-                  isHazard={hazardCard.isHazard}
-                  boltInfoItems={hazardCard.boltSpecifications}
-                  boltDescription={hazardCard.boltDescription}
+                  isHazard={boltResult.isHazard}
+                  fullBoltData={boltResult}
+                  dateTitle={boltResult.createdDate}
+                  boltInfoItems={boltSpecifications}
+                  boltDescription={boltResult.comment}
                 />
               ),
           )}
@@ -66,13 +68,14 @@ export default function Page(): JSX.Element {
           value="view all"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazardCardsMock.map((hazardCard, index) => (
+          {boltResultsMock.map((boltResult, index) => (
             <HazardCard
               key={index}
-              dateTitle={hazardCard.dateTitle}
-              isHazard={hazardCard.isHazard}
-              boltInfoItems={hazardCard.boltSpecifications}
-              boltDescription={hazardCard.boltDescription}
+              isHazard={boltResult.isHazard}
+              fullBoltData={boltResult}
+              dateTitle={boltResult.createdDate}
+              boltInfoItems={boltSpecifications}
+              boltDescription={boltResult.comment}
             />
           ))}
         </TabsContent>

@@ -16,6 +16,7 @@ export interface BoltResultSchema {
   image?: string;
   isHazard?: boolean;
   createdDate: Date;
+  author?: string;
 }
 
 export interface MultiBoltReadingSchema {
@@ -42,6 +43,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     result: 'Pass',
     // image: '/boltTestImage.png',
     isHazard: false,
+    author: 'Angela Moss',
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
@@ -61,6 +63,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     result: 'Fail',
     image: '/boltTestImage.png',
     isHazard: true,
+    author: 'Elliot Alderson',
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
@@ -79,6 +82,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     result: 'Pass',
     image: '/boltTestImage.png',
     isHazard: false,
+    author: 'Jimmy Nwadinkpa',
     createdDate: new Date('2024-09-01T10:30:00'),
   },
   {
@@ -97,6 +101,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     // comment: 'A truly deceptive comment',
     result: 'Pass',
     isHazard: false,
+    author: 'Whiterose',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
@@ -116,6 +121,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     result: 'Abort',
     image: '/boltTestImage.png',
     isHazard: false,
+    author: 'Felix Östergren',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
@@ -133,6 +139,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'LH-BACK',
     result: 'Pass',
     isHazard: true,
+    author: 'Tyrell Wellick',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {
@@ -152,6 +159,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     result: 'Fail',
     image: '/boltTestImage.png',
     isHazard: false,
+    author: 'Darlene Alderson',
     createdDate: new Date('2024-09-05T10:30:00'),
   },
   {

@@ -7,27 +7,37 @@ Company model
 Define the Company model and its fields
 """
 type Company {
-  id: ID!
+  id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  companyCode: Int!
-  country: String!
-  city: String!
+  orgNumber: String!
   address: String!
-
+  postalCode: String!
+  city: String!
+  country: String!
+  companyContactEmail: String!
   users: [User]
 }
 
 type User {
-  id: ID!
+  id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   email: String!
-  firstName: String
-  lastName: String
+  fullName: String!
+  workPlace: String!
+  appsAccess: [String!]!
+  phoneNumber: String
+  globalRole: String
+  companyRole: String
+}
 
-  companies: [Company]
+input UserPermission {
+  userId: String!
+  appsAccess: [String!]!
+  companyRole: String!
+  globalRole: String!
 }
 
 """
@@ -36,12 +46,13 @@ Define the input fields to create a new company
 """
 input CreateCompanyInput {
   name: String!
-  companyCode: Int!
-  country: String!
-  city: String!
+  orgNumber: String!
   address: String!
-
-  users: [Int!]
+  postalCode: String!
+  city: String!
+  country: String!
+  companyContactEmail: String!
+  users: [UserPermission!]
 }
 
 """
@@ -51,12 +62,13 @@ Optional are marked without the exclamation mark
 """
 input UpdateCompanyInput {
   name: String
-  companyCode: Int
-  country: String
-  city: String
+  orgNumber: String
   address: String
-
-  users: [Int!]
+  postalCode: String
+  city: String
+  country: String
+  companyContactEmail: String
+  users: [UserPermission!]
 }
 
 """
@@ -65,7 +77,7 @@ Define the queries that can be made to the Company model
 """
 type Query {
   companies: [Company!]!
-  company(id: ID!): Company!
+  company(id: String!): Company!
 }
 
 """
@@ -74,6 +86,6 @@ Define the mutations that can be made to the Company model
 """
 type Mutation {
   createCompany(createCompanyInput: CreateCompanyInput!): Company!
-  updateCompany(id: ID!, updateCompanyInput: UpdateCompanyInput!): Company!
-  removeCompany(id: ID!): Company!
+  updateCompany(id: String!, updateCompanyInput: UpdateCompanyInput!): Company!
+  removeCompany(id: String!): Company!
 }

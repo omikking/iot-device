@@ -33,13 +33,21 @@ export class CompaniesService {
         country: createCompanyInput.country,
         companyContactEmail: createCompanyInput.companyContactEmail,
 
-        // not sure about this. want to be able to assign a sandvik admin when a company is created
         userPermission: {
-          connect: createCompanyInput.users?.map((userId) => ({
-            id: userId,
-            userId: userId,
-            globalRole: GlobalRole.SANDVIK_ADMIN,
-          })),
+          // should it be connect? why not create
+          connect: createCompanyInput.userPermissions?.map(
+            (userPermissionId) => ({
+              id: userPermissionId, // ?
+              userId: userPermissionId,
+              globalRole: GlobalRole.SANDVIK_ADMIN,
+              // appsAccess: [
+              //   Application.PULL_TEST,
+              //   Application.PULL_TEST_OPERATOR,
+              //   Application.ULTRABOLTS,
+              //   Application.XCYCLOPS,
+              // ],
+            }),
+          ),
         },
       },
     });
@@ -61,13 +69,14 @@ export class CompaniesService {
         companyContactEmail:
           updateCompanyInput?.companyContactEmail || undefined,
 
-        // not sure about this
         userPermission: {
-          connect: updateCompanyInput.users?.map((userId) => ({
-            id: userId,
-            userId: userId,
-            // want to be able to update userId here, if want to reassign sandvik admin to another
-          })),
+          connect: updateCompanyInput.userPermissions?.map(
+            (userPermissionId) => ({
+              id: userPermissionId, // ?
+              userId: userPermissionId,
+              // want to be able to update userId here, if want to reassign sandvik admin to another
+            }),
+          ),
         },
       },
     });

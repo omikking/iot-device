@@ -28,7 +28,7 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    users?: Nullable<string[]>;
+    userPermissions: string[];
 }
 
 export class UpdateCompanyInput {
@@ -39,7 +39,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    users?: Nullable<string[]>;
+    userPermissions?: Nullable<string[]>;
 }
 
 export class Coffee {
@@ -83,20 +83,16 @@ export class Company {
     city: string;
     country: string;
     companyContactEmail: string;
-    users?: Nullable<Nullable<UserPermission>[]>;
+    userPermissions?: Nullable<Nullable<UserPermission>[]>;
 }
 
 export class UserPermission {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-    email: string;
-    fullName: string;
-    workPlace: string;
+    userId: string;
     appsAccess: string[];
-    phoneNumber?: Nullable<string>;
-    globalRole?: Nullable<string>;
-    companyRole?: Nullable<string>;
+    globalRole: string;
 }
 
 export type DateTime = any;

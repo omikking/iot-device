@@ -17,26 +17,19 @@ type Company {
   city: String!
   country: String!
   companyContactEmail: String!
-  users: [User]
+  userPermissions: [UserPermission]
 }
 
-type User {
+"""
+UserPermission model
+Define the UserPermission model and its fields
+"""
+type UserPermission {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  email: String!
-  fullName: String!
-  workPlace: String!
-  appsAccess: [String!]!
-  phoneNumber: String
-  globalRole: String
-  companyRole: String
-}
-
-input UserPermission {
   userId: String!
   appsAccess: [String!]!
-  companyRole: String!
   globalRole: String!
 }
 
@@ -52,7 +45,7 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  users: [UserPermission!]
+  userPermissions: [String!]!
 }
 
 """
@@ -68,7 +61,7 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  users: [UserPermission!]
+  userPermissions: [String!]
 }
 
 """

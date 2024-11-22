@@ -109,7 +109,7 @@ export const UsersTable = () => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete !== undefined && ` ${users[userToDelete].fullName} `}
+            {userToDelete && ` ${users[userToDelete].fullName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

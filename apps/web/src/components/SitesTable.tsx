@@ -104,7 +104,7 @@ export const SitesTable = () => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {siteToDelete !== undefined && ` ${sites[siteToDelete].name} `}
+            {siteToDelete && ` ${sites[siteToDelete].name} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

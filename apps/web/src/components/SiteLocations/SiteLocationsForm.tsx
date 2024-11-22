@@ -3,11 +3,9 @@ import { UseFormReturn } from 'react-hook-form';
 import { Button, Form } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideX } from 'lucide-react';
 interface SiteLocationsFormProps {
+  // @TODO fick this type
   form: UseFormReturn<any>;
-  // @TODO Gives error but it works. investigate why.
-  // eslint-disable-next-line no-unused-vars
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;
-  // eslint-disable-next-line no-unused-vars
   onCancel: (index: number) => void;
   placeholder: string;
   name: string;

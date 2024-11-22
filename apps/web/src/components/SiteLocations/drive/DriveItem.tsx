@@ -14,8 +14,6 @@ interface DriveComponentProps {
   index: number;
   selectedDrive?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  // @TODO Gives error but it works. investigate why.
-  // eslint-disable-next-line no-unused-vars
   handleSetDrive: (name: string) => void;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>

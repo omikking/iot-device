@@ -376,6 +376,10 @@ export const boltSpecifications = [
     title: 'Position in ring',
     text: 'L/H Shoulder',
   },
+  {
+    title: 'Result',
+    text: 'Pass',
+  },
 ];
 
 export const hazardCardsMock = [

@@ -41,7 +41,7 @@ export const HazardCard = ({
           {dateTitle}
         </Headline>
         {isHazard && (
-          <Badge variant="warning">
+          <Badge variant="attention" color="">
             <LucideAlertTriangle />
             Hazard
           </Badge>
@@ -56,12 +56,21 @@ export const HazardCard = ({
               text={boltSpec.text}
             />
           ))}
+          {/* {[...boltInfoItems.slice(0, 2), ...boltInfoItems.slice(-1)].map(
+            (boltSpec, i) => (
+              <Specification
+                key={i}
+                title={boltSpec.title}
+                text={boltSpec.text}
+              />
+            ),
+          )} */}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
             Description
           </Text>
-          <Textarea value={boltDescription} className="flex-grow" disabled />
+          <Textarea value={boltDescription} className="flex-grow" />
         </div>
       </div>
       <div className="flex flex-row justify-end py-4 px-6 gap-4">

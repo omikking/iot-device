@@ -20,11 +20,16 @@ export class UpdateCoffeeInput {
     flavors?: Nullable<string[]>;
 }
 
-export class UserPermissionInput {
+export class CreateUserPermissionInput {
     userId: string;
     globalRole: string;
     companyRole: string;
     appsAccess: string[];
+}
+
+export class UpdateUserPermissionInput {
+    oldAdminId: string;
+    newAdminId: string;
 }
 
 export class CreateCompanyInput {
@@ -35,7 +40,7 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: UserPermissionInput[];
+    userPermissions: CreateUserPermissionInput[];
 }
 
 export class UpdateCompanyInput {
@@ -46,7 +51,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<string[]>;
+    userPermissions?: Nullable<UpdateUserPermissionInput[]>;
 }
 
 export class Coffee {
@@ -90,7 +95,7 @@ export class Company {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions?: Nullable<Nullable<UserPermission>[]>;
+    userPermissions?: Nullable<UserPermission[]>;
 }
 
 export class UserPermission {

@@ -71,13 +71,16 @@ export class CompaniesService {
         companyContactEmail:
           updateCompanyInput?.companyContactEmail || undefined,
 
-        // WIP
         userPermission: {
-          connect: updateCompanyInput.userPermissions?.map(
-            (userPermissionId) => ({
-              id: userPermissionId, // ?
-              userId: userPermissionId,
-              // want to be able to update userId here, if want to reassign sandvik admin to another
+          updateMany: updateCompanyInput.userPermissions?.map(
+            (userPermissionInput) => ({
+              where: {
+                companyId: id,
+                userId: userPermissionInput?.oldAdminId,
+              },
+              data: {
+                userId: userPermissionInput?.newAdminId || undefined,
+              },
             }),
           ),
         },

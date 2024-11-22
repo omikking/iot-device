@@ -17,7 +17,7 @@ type Company {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [UserPermission]
+  userPermissions: [UserPermission!]
 }
 
 """
@@ -28,17 +28,6 @@ type UserPermission {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  userId: String!
-  globalRole: String!
-  companyRole: String!
-  appsAccess: [String!]!
-}
-
-"""
-UserPermissionInput
-Define the input fields to create a new userPermission
-"""
-input UserPermissionInput {
   userId: String!
   globalRole: String!
   companyRole: String!
@@ -57,7 +46,19 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [UserPermissionInput!]!
+  userPermissions: [CreateUserPermissionInput!]!
+  # userPermissions: [String!]!
+}
+
+"""
+CreateUserPermissionInput
+Define the input fields to create a new userPermission
+"""
+input CreateUserPermissionInput {
+  userId: String!
+  globalRole: String!
+  companyRole: String!
+  appsAccess: [String!]!
 }
 
 """
@@ -73,7 +74,17 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [String!]
+  userPermissions: [UpdateUserPermissionInput!]
+  # userPermissions: [String!]
+}
+
+"""
+UpdateUserPermissionInput
+Define the input fields to update the sandvik admin to new admin
+"""
+input UpdateUserPermissionInput {
+  oldAdminId: String!
+  newAdminId: String!
 }
 
 """

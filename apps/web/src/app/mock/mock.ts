@@ -7,6 +7,13 @@ export interface SiteResultSchema {
   notification?: string;
   fooBar?: string;
 }
+type PlanType = 'Gold' | 'Silver' | 'Bronze';
+
+interface AppPlan {
+  name: string;
+  activePlan?: PlanType;
+  id: string;
+}
 
 export const siteResultMock: SiteResultSchema[] = [
   {
@@ -95,7 +102,7 @@ export const optionsDesignSystemMock = [
   },
 ];
 
-export const appPlansMock = [
+export const appPlansMock: AppPlan[] = [
   {
     name: 'Pull-test',
     activePlan: 'Gold',

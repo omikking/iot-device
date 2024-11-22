@@ -130,6 +130,9 @@ model UserPermission {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // UPDATE TO: companyRole should be the role you have on the company, could be User, Company_Admin, Sandvik_Technician, Sandvik_Admin.
+  // The globalRole (only if the user is Sandvik_Admin or Sandvik_Technician, otherwise null)
+
   companyRole CompanyRole // Permission to user type COMPANY_ADMIN or USER
   globalRole  GlobalRole // Permission to user type SANDVIK_TECHNICIAN. Just query from User table to avoid repeated?
 

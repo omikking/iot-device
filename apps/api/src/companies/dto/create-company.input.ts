@@ -1,10 +1,4 @@
-import {
-  ArrayMinSize,
-  ArrayNotEmpty,
-  IsArray,
-  IsString,
-  Length,
-} from 'class-validator';
+import { Length } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
@@ -29,9 +23,9 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @Length(2, 35)
   companyContactEmail: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  userPermissions: string[];
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // @ArrayMinSize(1)
+  // @IsString({ each: true })
+  // userPermissions: string[];
 }

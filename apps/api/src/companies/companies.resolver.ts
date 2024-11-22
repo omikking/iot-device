@@ -1,4 +1,3 @@
-import { ParseIntPipe } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CompaniesService } from './companies.service';
 import * as GraphQLTypes from 'src/graphql-types';
@@ -15,9 +14,9 @@ export class CompaniesResolver {
   }
 
   @Query('company')
-  async findOne(
-    @Args('id', ParseIntPipe) id: string,
-  ): Promise<GraphQLTypes.Company> {
+  // @TODO if we decide to go back using number instead of string for id - ParseIntPipe
+  // async findOne(@Args('id', ParseIntPipe) id: string):
+  async findOne(@Args('id') id: string): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
 
@@ -31,7 +30,7 @@ export class CompaniesResolver {
 
   @Mutation('updateCompany')
   async update(
-    @Args('id', ParseIntPipe) id: string,
+    @Args('id') id: string,
     @Args('updateCompanyInput')
     updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
@@ -39,9 +38,7 @@ export class CompaniesResolver {
   }
 
   @Mutation('removeCompany')
-  async remove(
-    @Args('id', ParseIntPipe) id: string,
-  ): Promise<GraphQLTypes.Company> {
+  async remove(@Args('id') id: string): Promise<GraphQLTypes.Company> {
     return this.companiesService.remove(id);
   }
 }

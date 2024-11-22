@@ -29,4 +29,11 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @IsOptional()
   @Length(2, 35)
   companyContactEmail: string;
+
+  // @IsOptional()
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // @ArrayMinSize(1)
+  // @IsString({ each: true })
+  // userPermissions: string[];
 }

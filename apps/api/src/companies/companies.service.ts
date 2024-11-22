@@ -1,6 +1,6 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { Company, GlobalRole } from '@prisma/client';
+import { Application, Company, CompanyRole, GlobalRole } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 
@@ -34,20 +34,22 @@ export class CompaniesService {
         companyContactEmail: createCompanyInput.companyContactEmail,
 
         userPermission: {
-          // should it be connect? why not create
-          connect: createCompanyInput.userPermissions?.map(
-            (userPermissionId) => ({
-              id: userPermissionId, // ?
-              userId: userPermissionId,
-              globalRole: GlobalRole.SANDVIK_ADMIN,
-              // appsAccess: [
-              //   Application.PULL_TEST,
-              //   Application.PULL_TEST_OPERATOR,
-              //   Application.ULTRABOLTS,
-              //   Application.XCYCLOPS,
-              // ],
-            }),
-          ),
+          create: createCompanyInput.userPermissions?.map((userPermission) => ({
+            user: {
+              connect: {
+                id: userPermission.userId,
+              },
+            },
+            // userId: userPermission.userId, // no need?
+            globalRole: GlobalRole.SANDVIK_ADMIN, // Update to be optional
+            companyRole: CompanyRole.COMPANY_ADMIN, // Update to be optional
+            appsAccess: [
+              Application.PULL_TEST,
+              Application.PULL_TEST_OPERATOR,
+              Application.ULTRABOLTS,
+              Application.XCYCLOPS,
+            ],
+          })),
         },
       },
     });
@@ -69,6 +71,7 @@ export class CompaniesService {
         companyContactEmail:
           updateCompanyInput?.companyContactEmail || undefined,
 
+        // WIP
         userPermission: {
           connect: updateCompanyInput.userPermissions?.map(
             (userPermissionId) => ({

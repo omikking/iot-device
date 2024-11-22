@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IDriveMock,
@@ -18,8 +18,6 @@ interface LevelComponentProps {
   levelsOptionsMock: ILevelMock[];
   index: number;
   inputRef: React.RefObject<HTMLInputElement>;
-  // @TODO Gives error but it works. investigate why.
-  // eslint-disable-next-line no-unused-vars
   handleSetLevel: (name: string) => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
@@ -47,7 +45,9 @@ export const LevelItem = ({
     name: z.string(),
   });
 
-  const levelForm = useForm<z.infer<typeof levelFormSchema>>({
+  type LevelFormValues = z.infer<typeof levelFormSchema>;
+
+  const levelForm: UseFormReturn<LevelFormValues> = useForm<LevelFormValues>({
     resolver: zodResolver(levelFormSchema),
     defaultValues: {
       id: '',

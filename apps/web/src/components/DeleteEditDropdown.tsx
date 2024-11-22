@@ -11,7 +11,6 @@ import React from 'react';
 
 interface DeleteEditDropdownProps {
   itemToDelete: number;
-  // eslint-disable-next-line no-unused-vars
   openDeleteModal: ((itemToDelete: number) => void) | (() => void);
   handleEdit: () => void;
 }

@@ -5,14 +5,14 @@ import { LucideCircleCheckBig, LucideX } from 'lucide-react';
 import { z } from 'zod';
 
 // unsure if this is the correct way to do this?
-const siteLocationSchema = z.object({
+const siteLocationsSchema = z.object({
   id: z.string(),
   name: z.string(),
 });
 
-type LevelFormValues = z.infer<typeof siteLocationSchema>;
+type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
 interface SiteLocationsFormProps {
-  form: UseFormReturn<LevelFormValues>;
+  form: UseFormReturn<SiteLocationsValue>;
   // @TODO Gives error but it works. investigate why.
   // eslint-disable-next-line no-unused-vars
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;

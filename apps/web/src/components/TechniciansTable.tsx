@@ -83,35 +83,11 @@ export const TechniciansTable = () => {
         );
 
         return (
-          <>
-            <DeleteEditDropdown
-              itemToDelete={rowIndex}
-              openDeleteModal={openDeleteModal}
-              handleEdit={() => console.log('Edit')}
-            />
-
-            <DeleteModalConfirmation
-              deleteButtonText="Confirm deletion"
-              deleteIcon="User"
-              modalTitle="Delete technician"
-              isOpen={isDeleteTechnicianModalOpen}
-              itemToDelete={technicianToDelete}
-              onOpenChange={closeDeleteModal}
-              onDelete={(event, index) => {
-                handleDelete(index);
-                closeDeleteModal();
-              }}
-            >
-              <Text variant="medium" color={'foreground'}>
-                You are about to delete
-                <Text variant="medium" color={'foreground'} isBold as="span">
-                  {technicianToDelete &&
-                    ` ${technicians[technicianToDelete].fullName} `}
-                </Text>
-                from the list. Are you sure you want to delete?
-              </Text>
-            </DeleteModalConfirmation>
-          </>
+          <DeleteEditDropdown
+            itemToDelete={rowIndex}
+            openDeleteModal={openDeleteModal}
+            handleEdit={() => console.log('Edit')}
+          />
         );
       },
     },

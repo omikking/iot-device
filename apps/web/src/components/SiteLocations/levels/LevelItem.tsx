@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IDriveMock,
@@ -47,7 +47,9 @@ export const LevelItem = ({
     name: z.string(),
   });
 
-  const levelForm = useForm<z.infer<typeof levelFormSchema>>({
+  type LevelFormValues = z.infer<typeof levelFormSchema>;
+
+  const levelForm: UseFormReturn<LevelFormValues> = useForm<LevelFormValues>({
     resolver: zodResolver(levelFormSchema),
     defaultValues: {
       id: '',

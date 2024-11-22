@@ -18,7 +18,7 @@ import {
 import Link from 'next/link';
 import { useState } from 'react';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { appPlansMock } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
@@ -45,25 +45,28 @@ export const companyFormSchema = z.object({
   assignSandvikAdministrator: z.string(),
 });
 
+type CompanyFromValues = z.infer<typeof companyFormSchema>;
+
 export default function Page(): JSX.Element {
   // @TODO: validate the form
-  const companyForm = useForm<z.infer<typeof companyFormSchema>>({
-    resolver: zodResolver(companyFormSchema),
-    defaultValues: {
-      companyName: 'E-corp',
-      fullContactName: 'Phillip Price',
-      organisationNumber: '133742',
-      country: 'Sweden',
-      city: 'Gothenburg',
-      address: 'Vasa Gatan 32',
+  const companyForm: UseFormReturn<CompanyFromValues> =
+    useForm<CompanyFromValues>({
+      resolver: zodResolver(companyFormSchema),
+      defaultValues: {
+        companyName: 'E-corp',
+        fullContactName: 'Phillip Price',
+        organisationNumber: '133742',
+        country: 'Sweden',
+        city: 'Gothenburg',
+        address: 'Vasa Gatan 32',
 
-      pullTestPlan: '',
-      xCyclopsPlan: '',
-      ultraboltsPlan: '',
+        pullTestPlan: '',
+        xCyclopsPlan: '',
+        ultraboltsPlan: '',
 
-      assignSandvikAdministrator: '',
-    },
-  });
+        assignSandvikAdministrator: '',
+      },
+    });
 
   // @TODO Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';

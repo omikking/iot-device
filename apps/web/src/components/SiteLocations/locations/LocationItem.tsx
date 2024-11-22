@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { SiteLocationsForm } from '../SiteLocationsForm';
@@ -37,13 +37,16 @@ export const LocationItem = ({
     name: z.string(),
   });
 
-  const locationForm = useForm<z.infer<typeof locationFormSchema>>({
-    resolver: zodResolver(locationFormSchema),
-    defaultValues: {
-      id: '',
-      name: '',
-    },
-  });
+  type LocationFormValues = z.infer<typeof locationFormSchema>;
+
+  const locationForm: UseFormReturn<LocationFormValues> =
+    useForm<LocationFormValues>({
+      resolver: zodResolver(locationFormSchema),
+      defaultValues: {
+        id: '',
+        name: '',
+      },
+    });
 
   const handleEditLocation = () => {
     setIsEditing(true);

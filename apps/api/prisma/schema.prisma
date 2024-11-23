@@ -79,7 +79,7 @@ model Company {
 
   name                String
   orgNumber           String @unique
-  address             String // Typo, should be adress
+  adress              String
   postalCode          String
   city                String
   country             String
@@ -132,7 +132,7 @@ model UserPermission {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role Role // SANDVIK_TECHNICIAN, SANDVIK_ADMIN, COMPANY_ADMIN or USER
+  role Role // SANDVIK_TECHNICIAN, SANDVIK_ADMIN, COMPANY_ADMIN or COMPANY_USER
 
   appsAccess Application[]
 
@@ -151,7 +151,7 @@ model Site {
   updatedAt DateTime @updatedAt
 
   siteName   String
-  address    String
+  adress     String
   postalCode String
   city       String
   country    String

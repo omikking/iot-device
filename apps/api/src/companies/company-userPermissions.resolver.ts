@@ -17,8 +17,6 @@ export class CompanyUserPermissionsResolver {
       },
     });
 
-    console.log('Fetched userPermissions:', userPermissions);
-
     return userPermissions;
   }
 }

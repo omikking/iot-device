@@ -27,7 +27,7 @@ export class CompaniesService {
       data: {
         name: createCompanyInput.name,
         orgNumber: createCompanyInput.orgNumber,
-        address: createCompanyInput.address,
+        adress: createCompanyInput.adress,
         postalCode: createCompanyInput.postalCode,
         city: createCompanyInput.city,
         country: createCompanyInput.country,
@@ -62,7 +62,7 @@ export class CompaniesService {
       data: {
         name: updateCompanyInput?.name || undefined,
         orgNumber: updateCompanyInput?.orgNumber || undefined,
-        address: updateCompanyInput?.address || undefined,
+        adress: updateCompanyInput?.adress || undefined,
         postalCode: updateCompanyInput?.postalCode || undefined,
         city: updateCompanyInput?.city || undefined,
         country: updateCompanyInput?.country || undefined,

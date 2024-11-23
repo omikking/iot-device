@@ -12,7 +12,7 @@ type Company {
   updatedAt: DateTime!
   name: String!
   orgNumber: String!
-  address: String!
+  adress: String!
   postalCode: String!
   city: String!
   country: String!
@@ -40,7 +40,7 @@ Define the input fields to create a new company
 input CreateCompanyInput {
   name: String!
   orgNumber: String!
-  address: String!
+  adress: String!
   postalCode: String!
   city: String!
   country: String!
@@ -64,7 +64,7 @@ Optional are marked without the exclamation mark
 input UpdateCompanyInput {
   name: String
   orgNumber: String
-  address: String
+  adress: String
   postalCode: String
   city: String
   country: String

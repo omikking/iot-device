@@ -23,7 +23,7 @@ export class UpdateCoffeeInput {
 export class CreateCompanyInput {
     name: string;
     orgNumber: string;
-    address: string;
+    adress: string;
     postalCode: string;
     city: string;
     country: string;
@@ -38,7 +38,7 @@ export class CreateUserPermissionInput {
 export class UpdateCompanyInput {
     name?: Nullable<string>;
     orgNumber?: Nullable<string>;
-    address?: Nullable<string>;
+    adress?: Nullable<string>;
     postalCode?: Nullable<string>;
     city?: Nullable<string>;
     country?: Nullable<string>;
@@ -87,7 +87,7 @@ export class Company {
     updatedAt: DateTime;
     name: string;
     orgNumber: string;
-    address: string;
+    adress: string;
     postalCode: string;
     city: string;
     country: string;

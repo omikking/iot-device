@@ -9,7 +9,7 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   orgNumber: string;
 
   @Length(2, 95)
-  address: string;
+  adress: string;
 
   @Length(5)
   postalCode: string;

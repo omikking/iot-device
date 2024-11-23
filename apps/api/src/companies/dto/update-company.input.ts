@@ -12,7 +12,7 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
 
   @IsOptional()
   @Length(2, 95)
-  address: string;
+  adress: string;
 
   @IsOptional()
   @Length(5)

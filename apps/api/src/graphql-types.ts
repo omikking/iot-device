@@ -33,9 +33,6 @@ export class CreateCompanyInput {
 
 export class CreateUserPermissionInput {
     userId: string;
-    globalRole: string;
-    companyRole: string;
-    appsAccess: string[];
 }
 
 export class UpdateCompanyInput {

@@ -1,4 +1,4 @@
-import { IsOptional, Length } from 'class-validator';
+import { IsArray, IsOptional, Length } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
@@ -30,10 +30,7 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @Length(2, 35)
   companyContactEmail: string;
 
-  // @IsOptional()
-  // @IsArray()
-  // @ArrayNotEmpty()
-  // @ArrayMinSize(1)
-  // @IsString({ each: true })
-  // userPermissions: string[];
+  @IsOptional()
+  @IsArray()
+  userPermissions?: GraphQLTypes.UpdateUserPermissionInput[];
 }

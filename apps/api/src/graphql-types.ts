@@ -50,8 +50,8 @@ export class UpdateCompanyInput {
 }
 
 export class UpdateUserPermissionInput {
-    oldAdminId: string;
-    newAdminId: string;
+    oldUserId: string;
+    newUserId: string;
 }
 
 export class Coffee {

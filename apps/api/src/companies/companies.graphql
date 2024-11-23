@@ -83,8 +83,8 @@ UpdateUserPermissionInput
 Define the input fields to update the sandvik admin to new admin
 """
 input UpdateUserPermissionInput {
-  oldAdminId: String!
-  newAdminId: String!
+  oldUserId: String!
+  newUserId: String!
 }
 
 """

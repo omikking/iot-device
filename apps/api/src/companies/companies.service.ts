@@ -75,10 +75,10 @@ export class CompaniesService {
             (userPermissionInput) => ({
               where: {
                 companyId: id,
-                userId: userPermissionInput?.oldAdminId,
+                userId: userPermissionInput?.oldUserId,
               },
               data: {
-                userId: userPermissionInput?.newAdminId || undefined,
+                userId: userPermissionInput?.newUserId || undefined,
               },
             }),
           ),

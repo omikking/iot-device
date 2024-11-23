@@ -20,18 +20,6 @@ export class UpdateCoffeeInput {
     flavors?: Nullable<string[]>;
 }
 
-export class CreateUserPermissionInput {
-    userId: string;
-    globalRole: string;
-    companyRole: string;
-    appsAccess: string[];
-}
-
-export class UpdateUserPermissionInput {
-    oldAdminId: string;
-    newAdminId: string;
-}
-
 export class CreateCompanyInput {
     name: string;
     orgNumber: string;
@@ -43,6 +31,13 @@ export class CreateCompanyInput {
     userPermissions: CreateUserPermissionInput[];
 }
 
+export class CreateUserPermissionInput {
+    userId: string;
+    globalRole: string;
+    companyRole: string;
+    appsAccess: string[];
+}
+
 export class UpdateCompanyInput {
     name?: Nullable<string>;
     orgNumber?: Nullable<string>;
@@ -52,6 +47,11 @@ export class UpdateCompanyInput {
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
     userPermissions?: Nullable<UpdateUserPermissionInput[]>;
+}
+
+export class UpdateUserPermissionInput {
+    oldAdminId: string;
+    newAdminId: string;
 }
 
 export class Coffee {
@@ -103,9 +103,9 @@ export class UserPermission {
     createdAt: DateTime;
     updatedAt: DateTime;
     userId: string;
-    globalRole: string;
-    companyRole: string;
-    appsAccess: string[];
+    globalRole?: Nullable<string>;
+    companyRole?: Nullable<string>;
+    appsAccess?: Nullable<string[]>;
 }
 
 export type DateTime = any;

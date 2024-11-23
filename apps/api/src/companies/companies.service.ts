@@ -40,7 +40,6 @@ export class CompaniesService {
                 id: userPermission.userId,
               },
             },
-            // userId: userPermission.userId, // no need?
             globalRole: GlobalRole.SANDVIK_ADMIN, // Update to be optional
             companyRole: CompanyRole.COMPANY_ADMIN, // Update to be optional
             appsAccess: [
@@ -59,7 +58,7 @@ export class CompaniesService {
     id: string,
     updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
   ): Promise<Company> {
-    const company = this.prisma.company.update({
+    const company = await this.prisma.company.update({
       where: { id },
       data: {
         name: updateCompanyInput?.name || undefined,

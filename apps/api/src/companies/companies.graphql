@@ -29,9 +29,9 @@ type UserPermission {
   createdAt: DateTime!
   updatedAt: DateTime!
   userId: String!
-  globalRole: String!
-  companyRole: String!
-  appsAccess: [String!]!
+  globalRole: String
+  companyRole: String
+  appsAccess: [String!]
 }
 
 """

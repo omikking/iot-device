@@ -1,6 +1,6 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { Application, Company, CompanyRole, GlobalRole } from '@prisma/client';
+import { Application, Company, Role } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 
@@ -40,8 +40,7 @@ export class CompaniesService {
                 id: userPermission.userId,
               },
             },
-            globalRole: GlobalRole.SANDVIK_ADMIN, // Update to be optional
-            companyRole: CompanyRole.COMPANY_ADMIN, // Update to be optional
+            role: Role.SANDVIK_ADMIN,
             appsAccess: [
               Application.PULL_TEST,
               Application.PULL_TEST_OPERATOR,

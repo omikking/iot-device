@@ -29,8 +29,7 @@ type UserPermission {
   createdAt: DateTime!
   updatedAt: DateTime!
   userId: String!
-  globalRole: String
-  companyRole: String
+  role: String
   appsAccess: [String!]
 }
 
@@ -47,7 +46,6 @@ input CreateCompanyInput {
   country: String!
   companyContactEmail: String!
   userPermissions: [CreateUserPermissionInput!]!
-  # userPermissions: [String!]!
 }
 
 """
@@ -72,7 +70,6 @@ input UpdateCompanyInput {
   country: String
   companyContactEmail: String
   userPermissions: [UpdateUserPermissionInput!]
-  # userPermissions: [String!]
 }
 
 """

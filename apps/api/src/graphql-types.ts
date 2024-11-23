@@ -100,8 +100,7 @@ export class UserPermission {
     createdAt: DateTime;
     updatedAt: DateTime;
     userId: string;
-    globalRole?: Nullable<string>;
-    companyRole?: Nullable<string>;
+    role?: Nullable<string>;
     appsAccess?: Nullable<string[]>;
 }
 

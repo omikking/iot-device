@@ -1,11 +1,12 @@
-import {} from // LucideCheckCircle,
-// LucideOctagonAlert,
-// LucideSearchX,
-'lucide-react';
 import * as React from 'react';
 import { Text } from '../base/text';
 import { cn } from '../../lib/utils';
-// import { Badge } from '../base/badge';
+import {
+  LucideCheckCircle,
+  LucideOctagonAlert,
+  LucideSearchX,
+} from 'lucide-react';
+import { Badge } from '../base/badge';
 
 export interface SpecificationProps {
   title: string;
@@ -14,21 +15,21 @@ export interface SpecificationProps {
 }
 
 const Specification = ({ title, text, className }: SpecificationProps) => {
-  // const getBadge = (
-  //   result: 'Pass' | 'Fail' | 'Abort',
-  // ): {
-  //   variant: 'success' | 'destructive' | 'warning';
-  //   icon: React.ReactNode;
-  // } => {
-  //   switch (result) {
-  //     case 'Pass':
-  //       return { variant: 'success', icon: <LucideCheckCircle /> };
-  //     case 'Fail':
-  //       return { variant: 'destructive', icon: <LucideOctagonAlert /> };
-  //     case 'Abort':
-  //       return { variant: 'warning', icon: <LucideSearchX /> };
-  //   }
-  // };
+  const getBadge = (
+    result: 'Pass' | 'Fail' | 'Abort',
+  ): {
+    variant: 'success' | 'destructive' | 'warning';
+    icon: React.ReactNode;
+  } => {
+    switch (result) {
+      case 'Pass':
+        return { variant: 'success', icon: <LucideCheckCircle /> };
+      case 'Fail':
+        return { variant: 'destructive', icon: <LucideOctagonAlert /> };
+      case 'Abort':
+        return { variant: 'warning', icon: <LucideSearchX /> };
+    }
+  };
 
   return (
     <div
@@ -40,15 +41,16 @@ const Specification = ({ title, text, className }: SpecificationProps) => {
       <Text className="ui-w-32" variant="small" color="muted">
         {title}
       </Text>
-      <Text className="ui-max-w-32" variant="small" color="foreground">
-        {/* {(text === 'Pass' || text === 'Fail' || text === 'Abort') && (
-          <Badge variant={getBadge(text).variant}>
-            {getBadge(text).icon}
-            {row.getValue('result')}
-          </Badge>
-        )} */}
-        {text}
-      </Text>
+      {text === 'Pass' || text === 'Fail' || text === 'Abort' ? (
+        <Badge variant={getBadge(text as 'Pass' | 'Fail' | 'Abort').variant}>
+          {getBadge(text as 'Pass' | 'Fail' | 'Abort').icon}
+          {text}
+        </Badge>
+      ) : (
+        <Text className="ui-max-w-32" variant="small" color="foreground">
+          {text}
+        </Text>
+      )}
     </div>
   );
 };

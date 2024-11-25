@@ -351,18 +351,22 @@ export const hazardCardMock = [
   },
 ];
 
-export const boltSpecifications = [
+const createBoltSpecifications = (
+  peakLoad: string,
+  displacement: string,
+  result: 'Pass' | 'Fail' | 'Abort',
+) => [
   {
     title: 'Bolt type',
     text: 'MD47',
   },
   {
     title: 'Peak load',
-    text: '15',
+    text: peakLoad,
   },
   {
     title: 'Displacement',
-    text: '19mm',
+    text: `${displacement}mm`,
   },
   {
     title: 'Level',
@@ -378,7 +382,7 @@ export const boltSpecifications = [
   },
   {
     title: 'Result',
-    text: 'Pass',
+    text: result,
   },
 ];
 
@@ -386,59 +390,58 @@ export const hazardCardsMock = [
   {
     dateTitle: '2021-05-23',
     isHazard: true,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('15', '19', 'Fail'),
     boltDescription: 'Bolt could not be tested...',
   },
   {
     dateTitle: '2021-08-24',
     isHazard: true,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('8', '22', 'Fail'),
     boltDescription:
       'The equipment showed signs of wear, indicating it may need replacement soon.',
   },
   {
     dateTitle: '2021-03-15',
     isHazard: false,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('14', '18', 'Pass'),
     boltDescription:
       'A routine inspection revealed significant issues, and the system is not functioning as expected.',
   },
   {
     dateTitle: '2021-10-05',
     isHazard: true,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('0', '19', 'Abort'),
     boltDescription:
       'Major scratches were found on the surface that affected the performance.',
   },
   {
     dateTitle: '2021-01-10',
     isHazard: true,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('11', '25', 'Fail'),
     boltDescription: 'There was a delay in response time, exchange ASAP.',
   },
   {
     dateTitle: '2021-11-10',
     isHazard: false,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('15', '17', 'Pass'),
     boltDescription:
       'All tests were successfully completed, and the component is in optimal condition.',
   },
   {
     dateTitle: '2021-11-20',
     isHazard: false,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('13', '18', 'Pass'),
     boltDescription:
-      '"Inspection results show no defects; the equipment meets all operational standards.',
+      'Inspection results show no defects; the equipment meets all operational standards.',
   },
   {
     dateTitle: '2021-03-01',
     isHazard: true,
-    boltSpecifications,
+    boltSpecifications: createBoltSpecifications('16', '21', 'Fail'),
     boltDescription:
-      '"The device has passed all required benchmarks and is ready for use.',
+      'The device has passed all required benchmarks and is ready for use.',
   },
 ];
-
 export const sitesMock = [
   {
     id: '1',

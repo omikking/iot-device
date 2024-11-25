@@ -105,7 +105,7 @@ export const ViewBoltResultModal = ({
             )}
             {isHazard && (
               <div className="flex justify-between pt-5">
-                <Badge variant={'warning'}>
+                <Badge variant="attention">
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
@@ -137,6 +137,11 @@ export const ViewBoltResultModal = ({
                 className="w-1/2"
               />
             ))}
+            {/* Couldnt come up with something better atm, pls dont hate me */}
+            {/* @TODO fix this TEMP solution */}
+            {viewBoltSpecifications.length % 2 === 1 && (
+              <Specification title="" text="" className="w-1/2" />
+            )}
           </div>
         </div>
       </div>

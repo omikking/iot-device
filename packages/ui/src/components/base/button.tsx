@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'ui-bg-blue-primary ui-text-main-white hover:ui-bg-blue-1 active:ui-bg-blue-primary',
+          'ui-bg-blue-primary ui-text-main-white hover:ui-bg-blue-2 active:ui-bg-blue-1',
         secondary:
-          'ui-bg-gold-primary ui-text-main-white hover:ui-bg-gold-1 focus:ui-bg-gold-primary',
+          'ui-bg-gold-primary ui-text-main-black hover:ui-bg-gold-3 focus:ui-bg-gold-1',
         outline:
-          'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-1 focus:ui-bg-main-white',
+          'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-2 focus:ui-border-blue-1',
         destructive:
-          'ui-bg-main-white ui-text-error ui-border ui-border-error hover:ui-bg-error hover:ui-text-main-white',
+          'ui-bg-main-white ui-text-error ui-border ui-border-error focus:ui-bg-error focus:ui-text-main-white',
       },
       size: {
         small:

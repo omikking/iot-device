@@ -3,6 +3,7 @@ import { CompaniesService } from './companies.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CreateCompanyInput } from './dto/create-company.input';
 import { UpdateCompanyInput } from './dto/update-company.input';
+import { ParseUUIDPipe } from '@nestjs/common';
 
 @Resolver()
 export class CompaniesResolver {
@@ -14,9 +15,10 @@ export class CompaniesResolver {
   }
 
   @Query('company')
-  // @TODO if we decide to go back using number instead of string for id - ParseIntPipe
-  // async findOne(@Args('id', ParseIntPipe) id: string):
-  async findOne(@Args('id') id: string): Promise<GraphQLTypes.Company> {
+  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
+  async findOne(
+    @Args('id', ParseUUIDPipe) id: string,
+  ): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
 
@@ -30,7 +32,7 @@ export class CompaniesResolver {
 
   @Mutation('updateCompany')
   async update(
-    @Args('id') id: string,
+    @Args('id', ParseUUIDPipe) id: string,
     @Args('updateCompanyInput')
     updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
@@ -38,7 +40,9 @@ export class CompaniesResolver {
   }
 
   @Mutation('removeCompany')
-  async remove(@Args('id') id: string): Promise<GraphQLTypes.Company> {
+  async remove(
+    @Args('id', ParseUUIDPipe) id: string,
+  ): Promise<GraphQLTypes.Company> {
     return this.companiesService.remove(id);
   }
 }

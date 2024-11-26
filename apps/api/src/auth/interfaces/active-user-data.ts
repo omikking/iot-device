@@ -1,5 +1,5 @@
 export interface ActiveUserData {
   id: string;
   email: string;
-  fullName?: string;
+  fullName: string | null;
 }

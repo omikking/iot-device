@@ -9,6 +9,7 @@ import {
   Badge,
   Headline,
   ModalClose,
+  Specification,
 } from '@gsp/ui';
 import { LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
@@ -89,7 +90,7 @@ export const BoltResultDetailsModal = ({
           )}
           {isHazard && (
             <div className="flex justify-between pt-5">
-              <Badge variant={'warning'}>
+              <Badge variant={'attention'}>
                 <LucideTriangleAlert />
                 Reported hazard
               </Badge>
@@ -113,7 +114,7 @@ export const BoltResultDetailsModal = ({
           Bolt specifications
         </Headline>
         <div className="flex flex-wrap">
-          {specifications.map((boltSpec, index) => (
+          {/* {specifications.map((boltSpec, index) => (
             <div
               key={index}
               className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
@@ -125,7 +126,18 @@ export const BoltResultDetailsModal = ({
                 {boltSpec.text}
               </Text>
             </div>
+          ))} */}
+          {specifications.map((boltSpec, index) => (
+            <Specification
+              key={index}
+              title={boltSpec.title}
+              text={boltSpec.text}
+              className="w-1/2"
+            />
           ))}
+          {specifications.length % 2 === 1 && (
+            <Specification title="" text="" className="w-1/2" />
+          )}
         </div>
         {/* BOLT RESULTS */}
         <div>

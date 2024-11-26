@@ -10,8 +10,8 @@ import {
   Text,
 } from '@gsp/ui';
 import {
+  LucideCircleAlert,
   LucideCircleCheckBig,
-  LucideOctagonAlert,
   LucideSearchX,
   LucideSlidersHorizontal,
   LucideX,
@@ -49,7 +49,7 @@ export const BoltResultsFilter = ({ selectedTab }: BoltResultsFilterProps) => {
         <div className="flex flex-row px-4 py-3 gap-3 items-center m">
           <Checkbox />
           <Badge variant="destructive">
-            <LucideOctagonAlert />
+            <LucideCircleAlert />
             Fail
           </Badge>
         </div>

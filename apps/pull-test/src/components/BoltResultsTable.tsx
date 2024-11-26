@@ -4,7 +4,7 @@ import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 import {
   LucideCheckCircle,
-  LucideOctagonAlert,
+  LucideCircleAlert,
   LucideSearchX,
 } from 'lucide-react';
 
@@ -26,7 +26,7 @@ const getBadge = (
     case 'Pass':
       return { variant: 'success', icon: <LucideCheckCircle /> };
     case 'Fail':
-      return { variant: 'destructive', icon: <LucideOctagonAlert /> };
+      return { variant: 'destructive', icon: <LucideCircleAlert /> };
     case 'Abort':
       return { variant: 'warning', icon: <LucideSearchX /> };
   }

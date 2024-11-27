@@ -68,8 +68,6 @@ export default function Page(): JSX.Element {
     site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
   }, [site]);
 
-  console.log('filteredResults', filteredResults);
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />

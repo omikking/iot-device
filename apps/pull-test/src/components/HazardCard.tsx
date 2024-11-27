@@ -16,6 +16,7 @@ import {
 } from '@gsp/ui';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { BoltResultSchema } from '@/app/mock/mock';
+import { useState } from 'react';
 
 interface HazardCardProps {
   dateTitle: Date;
@@ -40,6 +41,7 @@ export const HazardCard = ({
   boltDescription,
   fullBoltData,
 }: HazardCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const specifications: BoltSpecification[] = [
     { title: 'Diameter', text: fullBoltData?.bitSize || '' },
     { title: 'Pass criteria', text: fullBoltData?.boltType || '' }, // Unsure what the value should be here
@@ -91,7 +93,7 @@ export const HazardCard = ({
             Complete
           </Button>
         )}
-        <Modal>
+        <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
           <ModalTrigger asChild>
             <Button variant="outline" size="small">
               <LucideClipboardList />
@@ -101,6 +103,7 @@ export const HazardCard = ({
           <BoltResultDetailsModal
             modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
             fullBoltData={fullBoltData}
+            onClose={() => setIsModalOpen(false)}
           />
         </Modal>
       </div>

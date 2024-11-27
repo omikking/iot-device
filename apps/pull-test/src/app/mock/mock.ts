@@ -81,7 +81,7 @@ export const boltResultsMock: BoltResultSchema[] = [
     ring: 'LH-BACK',
     result: 'Pass',
     image: '/boltTestImage.png',
-    isHazard: false,
+    isHazard: true,
     author: 'Jimmy Nwadinkpa',
     createdDate: new Date('2024-09-01T10:30:00'),
   },

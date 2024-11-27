@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, ModalTrigger } from '@gsp/ui';
 import { Badge } from '@gsp/ui';
 import {
@@ -13,9 +13,10 @@ interface BoltCommentBadgeProps {
 }
 
 export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { image, comment, isHazard } = fullBoltData;
   return (
-    <Modal>
+    <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
       {image || comment || isHazard ? (
         <ModalTrigger>
           <Badge variant="neutral">
@@ -38,6 +39,7 @@ export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
       <BoltResultDetailsModal
         modalTitle={`Bolt ${fullBoltData.boltNumber}`}
         fullBoltData={fullBoltData}
+        onClose={() => setIsModalOpen(false)}
       />
     </Modal>
   );

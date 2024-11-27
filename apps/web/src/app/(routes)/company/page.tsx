@@ -5,6 +5,7 @@ import {
   LucideMoveRight,
   LucidePyramid,
   LucideSparkles,
+  LucideTrash2,
   LucideUsers,
 } from 'lucide-react';
 import {
@@ -26,6 +27,7 @@ import { AdminForm } from '@/components/AdminForm';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 export const companyFormSchema = z.object({
   companyName: z.string(),
@@ -71,6 +73,7 @@ export default function Page(): JSX.Element {
 
   // @TODO Just for testing user type, will be removed
   const [isAdmin, setIsAdmin] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   return (
@@ -223,15 +226,47 @@ export default function Page(): JSX.Element {
         </form>
       </Form>
 
-      <Button
-        variant="primary"
-        size="large"
-        type="submit"
-        className="self-end mt-[-40px]"
+      <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
+        <Button variant="primary" size="large" type="submit">
+          <LucideCircleCheckBig />
+          {companyToEditName ? 'Update company details' : 'Send invitation'}
+        </Button>
+        <Button
+          variant="destructive"
+          size="large"
+          onClick={() => setIsDeleteModalOpen(true)}
+        >
+          <LucideTrash2 />
+          Inactivate company
+        </Button>
+      </div>
+      <DeleteModalConfirmation
+        deleteIcon="Company"
+        deleteButtonText="Delete company"
+        modalTitle="Delete company"
+        modalText="Confirm inactivation"
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        onDelete={() => {
+          console.log('Deleting item...');
+        }}
       >
-        <LucideCircleCheckBig />
-        {companyToEditName ? 'Update company details' : 'Send invitation'}
-      </Button>
+        <div className="flex flex-col gap-4">
+          <Text variant="medium" color={'foreground'} as="span">
+            You are about to inactivate
+            <Text variant="medium" color={'foreground'} as="span" isBold>
+              {` ${companyToEditName}. `}
+            </Text>
+            <Text variant="medium" color={'foreground'} as="span">
+              Are you sure you want to inactivate?
+            </Text>
+          </Text>
+          <Text color={'foreground'} variant={'medium'}>
+            The company data will not be deleted but the company will become
+            inactive but able to recover data.
+          </Text>
+        </div>
+      </DeleteModalConfirmation>
     </main>
   );
 }

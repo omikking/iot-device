@@ -7,7 +7,7 @@ export class InvalidatedRefreshTokenError extends Error {}
 export class RefreshTokenIdsStorage {
   constructor(private prisma: PrismaService) {}
 
-  async insert(userId: number, tokenId: string) {
+  async insert(userId: string, tokenId: string) {
     // Consider if this should be insert instead?
     await this.prisma.refreshTokenId.upsert({
       where: {
@@ -23,7 +23,7 @@ export class RefreshTokenIdsStorage {
     });
   }
 
-  async validate(userId: number, tokenId: string) {
+  async validate(userId: string, tokenId: string) {
     console.log('validate', userId, tokenId);
     const storedId = await this.prisma.refreshTokenId.findUnique({
       where: {
@@ -38,7 +38,7 @@ export class RefreshTokenIdsStorage {
     return storedId?.refreshTokenId === tokenId;
   }
 
-  async invalidate(userId: number, tokenId: string) {
+  async invalidate(userId: string, tokenId: string) {
     await this.prisma.refreshTokenId.delete({
       where: {
         userId: this.getKey(userId),
@@ -47,7 +47,7 @@ export class RefreshTokenIdsStorage {
     });
   }
 
-  private getKey(userId: number) {
+  private getKey(userId: string) {
     return `user-${userId}`;
   }
 }

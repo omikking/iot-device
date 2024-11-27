@@ -37,8 +37,9 @@ export class AuthService {
         data: {
           email: dto.email,
           hash: hash,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
+          fullName: dto.fullName,
+          workPlace: dto.workPlace,
+          phoneNumber: dto.phoneNumber || undefined,
         },
       });
 
@@ -70,8 +71,7 @@ export class AuthService {
     const userResponse: ActiveUserData = {
       id: user.id,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      fullName: user.fullName,
     };
 
     return {
@@ -144,7 +144,7 @@ export class AuthService {
     };
   }
 
-  private async signToken<T>(userId: number, expiresIn: number, payload: T) {
+  private async signToken<T>(userId: string, expiresIn: number, payload: T) {
     return await this.jwt.signAsync(
       {
         sub: userId,

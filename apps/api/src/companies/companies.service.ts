@@ -23,6 +23,7 @@ export class CompaniesService {
   async create(
     createCompanyInput: GraphQLTypes.CreateCompanyInput,
   ): Promise<Company> {
+    // @TODO Need to make a check to make sure the connected user has the Sandvik Admin role
     return this.prisma.company.create({
       data: {
         name: createCompanyInput.name,

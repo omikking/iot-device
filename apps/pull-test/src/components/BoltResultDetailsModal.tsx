@@ -21,6 +21,7 @@ interface BoltResultDetailsModalProps {
   modalTitle: string;
   fullBoltData?: BoltResultSchema;
   onClose?: () => void;
+  isHazardCompletable?: boolean;
 }
 
 interface BoltSpecification {
@@ -30,6 +31,7 @@ interface BoltSpecification {
 
 export const BoltResultDetailsModal = ({
   modalTitle,
+  isHazardCompletable = false,
   fullBoltData,
   onClose,
 }: BoltResultDetailsModalProps) => {
@@ -77,11 +79,13 @@ export const BoltResultDetailsModal = ({
       !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
       setIsLoading(false);
 
-      console.log('isCompleted', isCompleted);
       if (isCompleted) {
         setTimeout(() => {
-          console.log('MUSTAAARD');
           onClose?.();
+
+          setTimeout(() => {
+            resetConfirmation();
+          }, 200);
         }, 1000);
       }
     }, 1000);
@@ -103,14 +107,10 @@ export const BoltResultDetailsModal = ({
       }`}
     >
       <ModalHeader>
-        {isCompleted ? (
-          <ModalTitle>Complete hazard</ModalTitle>
-        ) : (
-          <ModalTitle>{modalTitle}</ModalTitle>
-        )}
+        <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
       </ModalHeader>
 
-      {/* First View - Main Content */}
+      {/* First View */}
       <div
         className={`transition-all duration-500 ${
           isCompleted || isConfirmed ? 'hidden' : 'block'
@@ -214,74 +214,70 @@ export const BoltResultDetailsModal = ({
           </Text>
         </div>
       </div>
-
-      {/* Second View - Completion Confirmation */}
-      <div
-        className={`flex items-center justify-center transition-all duration-500 ${
-          isCompleted && !isConfirmed ? 'opacity-100 block' : 'opacity-0 hidden'
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center h-48 gap-6 p-4">
-          <div className="flex gap-4">
-            <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="small" isBold>
-              Confirm hazard completion
-            </Headline>
-          </div>
-          <Text
-            className="text-center w-2/3"
-            color="foreground"
-            variant="medium"
+      {isCompleted && (
+        <div className="relative h-[250px]">
+          {/* Second View */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+              isCompleted && !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
           >
-            You are about to complete the selected hazard. Are you sure you want
-            to complete it?
-          </Text>
-        </div>
-      </div>
+            <div className="flex flex-col items-center justify-center gap-6 p-4">
+              <div className="flex gap-4">
+                <LucideCircleCheckBig size={30} className="text-success" />
+                <Headline as="h3" color="foreground" variant="small" isBold>
+                  Confirm hazard completion
+                </Headline>
+              </div>
+              <Text
+                className="text-center w-2/3"
+                color="foreground"
+                variant="medium"
+              >
+                You are about to complete the selected hazard. Are you sure you
+                want to complete it?
+              </Text>
+            </div>
+          </div>
 
-      {/* Third View - Success Message */}
-      <div
-        className={`flex items-center justify-center transition-all duration-500 ${
-          isConfirmed && !isSuccessful
-            ? 'opacity-100 block'
-            : 'opacity-0 hidden'
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center h-48 gap-6 p-4">
-          <div className="flex gap-4">
-            <LucideCircleCheckBig size={30} className="text-success" />
-            <Headline as="h3" color="foreground" variant="small" isBold>
-              Hazard completed
-            </Headline>
+          {/* Third View */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+              isConfirmed && !isSuccessful
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0 z-0'
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center gap-6 p-4">
+              <div className="flex gap-4">
+                <LucideCircleCheckBig size={30} className="text-success" />
+                <Headline as="h3" color="foreground" variant="small" isBold>
+                  Hazard completed
+                </Headline>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>
           <div className="flex justify-end items-center gap-5">
-            {isHazard && (
-              <div>
+            {isHazard && isHazardCompletable && (
+              <Button
+                size="large"
+                variant="primary"
+                disabled={isConfirmed}
+                onClick={isCompleted ? hazardConfirmed : completeHazard}
+              >
                 {isLoading ? (
-                  <Button size="large" variant="primary">
-                    <LoadingSpinner className="animate-spin" size={24} />
-                    Complete
-                  </Button>
+                  <LoadingSpinner className="animate-spin" size={24} />
                 ) : (
-                  !isConfirmed && (
-                    <Button
-                      size="large"
-                      variant="primary"
-                      onClick={isCompleted ? hazardConfirmed : completeHazard}
-                    >
-                      <LucideCircleCheckBig />
-                      Complete
-                    </Button>
-                  )
+                  <LucideCircleCheckBig />
                 )}
-              </div>
+                Complete
+              </Button>
             )}
-
             {isCompleted ? (
               <Button
                 variant="outline"

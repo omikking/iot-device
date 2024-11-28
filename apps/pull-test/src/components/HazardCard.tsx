@@ -42,6 +42,7 @@ export const HazardCard = ({
   fullBoltData,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const specifications: BoltSpecification[] = [
     { title: 'Diameter', text: fullBoltData?.bitSize || '' },
     { title: 'Pass criteria', text: fullBoltData?.boltType || '' }, // Unsure what the value should be here
@@ -101,6 +102,7 @@ export const HazardCard = ({
             </Button>
           </ModalTrigger>
           <BoltResultDetailsModal
+            isHazardCompletable
             modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
             fullBoltData={fullBoltData}
             onClose={() => setIsModalOpen(false)}

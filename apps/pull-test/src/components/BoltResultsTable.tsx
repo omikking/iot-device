@@ -1,15 +1,10 @@
 'use client';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
-import {
-  LucideCheckCircle,
-  LucideCircleAlert,
-  LucideSearchX,
-} from 'lucide-react';
-
+import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { MultiReadBadge } from './MultiReadBadge';
+import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
 
 interface BoltResultsTableProps {
   boltResults?: BoltResultSchema[];
@@ -26,7 +21,7 @@ const getBadge = (
     case 'Pass':
       return { variant: 'success', icon: <LucideCheckCircle /> };
     case 'Fail':
-      return { variant: 'destructive', icon: <LucideCircleAlert /> };
+      return { variant: 'destructive', icon: <LucideXCircle /> };
     case 'Abort':
       return { variant: 'warning', icon: <LucideSearchX /> };
   }

@@ -1,12 +1,8 @@
-import {
-  LucideCheckCircle,
-  LucideCircleAlert,
-  LucideSearchX,
-} from 'lucide-react';
 import * as React from 'react';
 import { Text } from '../base/text';
 import { cn } from '../../lib/utils';
 import { Badge } from '../base/badge';
+import { LucideCheckCircle, LucideSearchX, LucideXCircle } from 'lucide-react';
 
 export interface SpecificationProps {
   title: string;
@@ -25,7 +21,7 @@ const Specification = ({ title, text, className }: SpecificationProps) => {
       case 'Pass':
         return { variant: 'success', icon: <LucideCheckCircle /> };
       case 'Fail':
-        return { variant: 'destructive', icon: <LucideCircleAlert /> };
+        return { variant: 'destructive', icon: <LucideXCircle /> };
       case 'Abort':
         return { variant: 'warning', icon: <LucideSearchX /> };
     }

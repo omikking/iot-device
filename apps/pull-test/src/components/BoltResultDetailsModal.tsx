@@ -11,9 +11,9 @@ import {
   ModalClose,
   Specification,
 } from '@gsp/ui';
-import { LucideTriangleAlert } from 'lucide-react';
-import Image from 'next/image';
 import React from 'react';
+import Image from 'next/image';
+import { LucideTriangleAlert } from 'lucide-react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { BoltResultSchema } from '@/app/mock/mock';
 
@@ -36,7 +36,6 @@ export const BoltResultDetailsModal = ({
     isHazard,
     peakLoad,
     peakDisplacement,
-    // location,
     drive,
     bitSize,
     boltType,
@@ -53,8 +52,8 @@ export const BoltResultDetailsModal = ({
     { title: 'Bit size', text: bitSize },
     { title: 'Level', text: level },
     { title: 'Drive', text: drive },
-    { title: 'Position in ring', text: ring }, // TODO fix this one, should be position in ring
-    { title: 'Rotations', text: rotations }, // should this be in?
+    { title: 'Position in ring', text: ring },
+    { title: 'Rotations', text: rotations },
     { title: 'Pass criteria', text: boltType },
     { title: 'Pass criteria', text: boltType },
   ];
@@ -66,7 +65,6 @@ export const BoltResultDetailsModal = ({
       <div className="p-10 flex gap-10 flex-grow h-full">
         {image && (
           <Image
-            // src={image} // passing image but hardcoded for now
             src="/boltTestImage.png"
             alt="Attached bolt result image"
             width={390}
@@ -114,19 +112,6 @@ export const BoltResultDetailsModal = ({
           Bolt specifications
         </Headline>
         <div className="flex flex-wrap">
-          {/* {specifications.map((boltSpec, index) => (
-            <div
-              key={index}
-              className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-            >
-              <Text className="w-32" variant="small" color="muted">
-                {boltSpec.title}
-              </Text>
-              <Text className="max-w-60" variant="small" color="foreground">
-                {boltSpec.text}
-              </Text>
-            </div>
-          ))} */}
           {specifications.map((boltSpec, index) => (
             <Specification
               key={index}

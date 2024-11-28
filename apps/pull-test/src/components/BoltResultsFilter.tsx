@@ -1,5 +1,4 @@
 'use client';
-
 import {
   Badge,
   Button,
@@ -10,7 +9,7 @@ import {
   Text,
 } from '@gsp/ui';
 import {
-  LucideCircleAlert,
+  LucideXCircle,
   LucideCircleCheckBig,
   LucideSearchX,
   LucideSlidersHorizontal,
@@ -49,7 +48,7 @@ export const BoltResultsFilter = ({ selectedTab }: BoltResultsFilterProps) => {
         <div className="flex flex-row px-4 py-3 gap-3 items-center m">
           <Checkbox />
           <Badge variant="destructive">
-            <LucideCircleAlert />
+            <LucideXCircle />
             Fail
           </Badge>
         </div>

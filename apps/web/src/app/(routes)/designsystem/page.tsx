@@ -138,6 +138,10 @@ export default function Page(): JSX.Element {
         Design system experiments 🦄
       </Headline>
       <hr className="w-full" />
+
+      <LucideEllipsis className="text-blue-2" />
+
+      <hr className="w-full" />
       <Headline variant="xl" as="h1" color="foreground">
         Breadcrumb 🦄
       </Headline>

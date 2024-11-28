@@ -7,27 +7,30 @@ Company model
 Define the Company model and its fields
 """
 type Company {
-  id: ID!
+  id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  companyCode: Int!
-  country: String!
+  orgNumber: String!
+  adress: String!
+  postalCode: String!
   city: String!
-  address: String!
-
-  users: [User]
+  country: String!
+  companyContactEmail: String!
+  userPermissions: [UserPermission!]
 }
 
-type User {
-  id: ID!
+"""
+UserPermission model
+Define the UserPermission model and its fields
+"""
+type UserPermission {
+  id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  email: String!
-  firstName: String
-  lastName: String
-
-  companies: [Company]
+  userId: String!
+  role: String
+  appsAccess: [String!]
 }
 
 """
@@ -36,12 +39,21 @@ Define the input fields to create a new company
 """
 input CreateCompanyInput {
   name: String!
-  companyCode: Int!
-  country: String!
+  orgNumber: String!
+  adress: String!
+  postalCode: String!
   city: String!
-  address: String!
+  country: String!
+  companyContactEmail: String!
+  userPermissions: [CreateUserPermissionInput!]!
+}
 
-  users: [Int!]
+"""
+CreateUserPermissionInput
+Define the input fields to create a new userPermission
+"""
+input CreateUserPermissionInput {
+  userId: String!
 }
 
 """
@@ -51,12 +63,22 @@ Optional are marked without the exclamation mark
 """
 input UpdateCompanyInput {
   name: String
-  companyCode: Int
-  country: String
+  orgNumber: String
+  adress: String
+  postalCode: String
   city: String
-  address: String
+  country: String
+  companyContactEmail: String
+  userPermissions: [UpdateUserPermissionInput!]
+}
 
-  users: [Int!]
+"""
+UpdateUserPermissionInput
+Define the input fields to update the sandvik admin to new admin
+"""
+input UpdateUserPermissionInput {
+  oldUserId: String!
+  newUserId: String!
 }
 
 """
@@ -65,7 +87,7 @@ Define the queries that can be made to the Company model
 """
 type Query {
   companies: [Company!]!
-  company(id: ID!): Company!
+  company(id: String!): Company!
 }
 
 """
@@ -74,6 +96,6 @@ Define the mutations that can be made to the Company model
 """
 type Mutation {
   createCompany(createCompanyInput: CreateCompanyInput!): Company!
-  updateCompany(id: ID!, updateCompanyInput: UpdateCompanyInput!): Company!
-  removeCompany(id: ID!): Company!
+  updateCompany(id: String!, updateCompanyInput: UpdateCompanyInput!): Company!
+  removeCompany(id: String!): Company!
 }

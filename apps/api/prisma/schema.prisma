@@ -10,12 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum CompanyRole {
-  COMPANY_ADMIN
-  USER
+enum GlobalRole {
+  SANDVIK_ADMIN
+  SANDVIK_TECHNICIAN
 }
 
-enum GlobalRole {
+enum Role {
+  COMPANY_USER
+  COMPANY_ADMIN
   SANDVIK_ADMIN
   SANDVIK_TECHNICIAN
 }
@@ -77,7 +79,7 @@ model Company {
 
   name                String
   orgNumber           String @unique
-  address             String
+  adress              String
   postalCode          String
   city                String
   country             String
@@ -116,7 +118,7 @@ model User {
   fullName           String
   workPlace          String
   phoneNumber        String?
-  globalRole         GlobalRole?
+  globalRole         GlobalRole? // For role SANDVIK_TECHNICIAN or SANDVIK_ADMIN
   isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
 
   userRole   UserPermission[]
@@ -130,8 +132,7 @@ model UserPermission {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  companyRole CompanyRole // Permission to user type COMPANY_ADMIN or USER
-  globalRole  GlobalRole // Permission to user type SANDVIK_TECHNICIAN. Just query from User table to avoid repeated?
+  role Role // SANDVIK_TECHNICIAN, SANDVIK_ADMIN, COMPANY_ADMIN or COMPANY_USER
 
   appsAccess Application[]
 
@@ -150,7 +151,7 @@ model Site {
   updatedAt DateTime @updatedAt
 
   siteName   String
-  address    String
+  adress     String
   postalCode String
   city       String
   country    String

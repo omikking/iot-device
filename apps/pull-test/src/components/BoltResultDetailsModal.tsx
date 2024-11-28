@@ -10,16 +10,19 @@ import {
   Headline,
   ModalClose,
   Specification,
+  LoadingSpinner,
 } from '@gsp/ui';
-import React from 'react';
+import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
-import { LucideTriangleAlert } from 'lucide-react';
+import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { BoltResultSchema } from '@/app/mock/mock';
 
 interface BoltResultDetailsModalProps {
   modalTitle: string;
   fullBoltData?: BoltResultSchema;
+  onClose?: () => void;
+  isHazardCompletable?: boolean;
 }
 
 interface BoltSpecification {
@@ -29,8 +32,15 @@ interface BoltSpecification {
 
 export const BoltResultDetailsModal = ({
   modalTitle,
+  isHazardCompletable = false,
   fullBoltData,
+  onClose,
 }: BoltResultDetailsModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
   const {
     image,
     isHazard,
@@ -43,10 +53,11 @@ export const BoltResultDetailsModal = ({
     rotations,
     level,
     ring,
+    author,
   } = (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
-  const author = 'Angela Moss';
+
   const specifications: BoltSpecification[] = [
     { title: 'Bolt', text: boltNumber },
     { title: 'Bit size', text: bitSize },
@@ -55,12 +66,49 @@ export const BoltResultDetailsModal = ({
     { title: 'Position in ring', text: ring },
     { title: 'Rotations', text: rotations },
     { title: 'Pass criteria', text: boltType },
-    { title: 'Pass criteria', text: boltType },
   ];
+
+  const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event?.preventDefault();
+    setIsCompleted(true);
+  };
+
+  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event?.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
+      setIsLoading(false);
+
+      if (isCompleted) {
+        setTimeout(() => {
+          onClose?.();
+
+          setTimeout(() => {
+            resetConfirmation();
+          }, 200);
+        }, 1000);
+      }
+    }, 1000);
+  };
+
+  const resetConfirmation = () => {
+    setIsCompleted(false);
+    setIsSuccessful(false);
+    setIsConfirmed(false);
+    setIsLoading(false);
+  };
+
   return (
-    <ModalContent className="w-96 overflow-y-auto">
+    <ModalContent
+      onEscapeKeyDown={resetConfirmation}
+      onPointerDownOutside={resetConfirmation}
+      className={`overflow-y-auto w-96 ${
+        isCompleted || isConfirmed ? 'h-[450px]' : ''
+      }`}
+    >
       <ModalHeader>
-        <ModalTitle>{modalTitle}</ModalTitle>
+        <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
       </ModalHeader>
       <div className="p-10 flex gap-10 flex-grow h-full">
         {image && (
@@ -94,11 +142,30 @@ export const BoltResultDetailsModal = ({
               </Badge>
               {author && (
                 <Text variant="small" color="foreground">
-                  Author: {author}
+                  Comment
                 </Text>
-              )}
-            </div>
-          )}
+                <Textarea
+                  value={boltDescription}
+                  className="flex-grow"
+                  disabled
+                  readOnly
+                />)}
+              </div>
+            )}
+            {isHazard && (
+              <div className="flex justify-between pt-5">
+                <Badge variant={'warning'}>
+                  <LucideTriangleAlert />
+                  Reported hazard
+                </Badge>
+                {author && (
+                  <Text variant="small" color="foreground">
+                    Author: {author}
+                  </Text>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="px-10 pb-10">
@@ -127,37 +194,140 @@ export const BoltResultDetailsModal = ({
         {/* BOLT RESULTS */}
         <div>
           <Headline
-            className="pt-10"
+            className="pb-4"
             variant="small"
             as="h3"
             color="foreground"
             isBold
           >
-            Bolt results
+            Bolt specifications
           </Headline>
-          <MultiBoltReadingTable
-            peakLoad={peakLoad}
-            peakDisplacement={peakDisplacement}
-          />
+          <div className="flex flex-wrap">
+            {specifications.map((boltSpec, index) => (
+              <div
+                key={index}
+                className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
+              >
+                <Text className="w-32" variant="small" color="muted">
+                  {boltSpec.title}
+                </Text>
+                <Text className="max-w-60" variant="small" color="foreground">
+                  {boltSpec.text}
+                </Text>
+              </div>
+            ))}
+          </div>
+          {/* BOLT RESULTS */}
+          <div>
+            <Headline
+              className="pt-10"
+              variant="small"
+              as="h3"
+              color="foreground"
+              isBold
+            >
+              Bolt results
+            </Headline>
+            <MultiBoltReadingTable
+              peakLoad={peakLoad}
+              peakDisplacement={peakDisplacement}
+            />
+          </div>
+        </div>
+        {/* Bolt plot */}
+        <div className="px-10">
+          <Headline
+            className="pb-4"
+            variant="small"
+            as="h3"
+            color="foreground"
+            isBold
+          >
+            Bolt plot Graph
+          </Headline>
+          <Text variant="small" color="foreground">
+            Graph will be shown here. Incoming feature...
+          </Text>
         </div>
       </div>
-      {/* Bolt plot */}
-      <div className="px-10">
-        <Headline
-          className="pb-4"
-          variant="small"
-          as="h3"
-          color="foreground"
-          isBold
-        >
-          Bolt plot Graph
-        </Headline>
-      </div>
+      {isCompleted && (
+        <div className="relative h-[250px]">
+          {/* Second View */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+              isCompleted && !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center gap-6 p-4">
+              <div className="flex gap-4">
+                <LucideCircleCheckBig size={30} className="text-success" />
+                <Headline as="h3" color="foreground" variant="small" isBold>
+                  Confirm hazard completion
+                </Headline>
+              </div>
+              <Text
+                className="text-center w-2/3"
+                color="foreground"
+                variant="medium"
+              >
+                You are about to complete the selected hazard. Are you sure you
+                want to complete it?
+              </Text>
+            </div>
+          </div>
+
+          {/* Third View */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+              isConfirmed && !isSuccessful
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0 z-0'
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center gap-6 p-4">
+              <div className="flex gap-4">
+                <LucideCircleCheckBig size={30} className="text-success" />
+                <Headline as="h3" color="foreground" variant="small" isBold>
+                  Hazard completed
+                </Headline>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>
-          <Button variant="outline" size="large" type="submit">
-            Close
-          </Button>
+          <div className="flex justify-end items-end gap-5">
+            {isHazard && isHazardCompletable && (
+              <Button
+                size="large"
+                variant="primary"
+                disabled={isConfirmed}
+                onClick={isCompleted ? hazardConfirmed : completeHazard}
+              >
+                {isLoading ? (
+                  <LoadingSpinner className="animate-spin" size={24} />
+                ) : (
+                  <LucideCircleCheckBig />
+                )}
+                Complete
+              </Button>
+            )}
+            {isCompleted ? (
+              <Button
+                variant="outline"
+                size="large"
+                onClick={resetConfirmation}
+              >
+                {isConfirmed ? 'Close' : 'Cancel'}
+              </Button>
+            ) : (
+              <Button variant="outline" size="large">
+                Close
+              </Button>
+            )}
+          </div>
         </ModalClose>
       </ModalFooter>
     </ModalContent>

@@ -1,16 +1,19 @@
 'use client';
-
-import { Badge, Button, DataTable } from '@gsp/ui';
-import {
-  LucideEllipsis,
-  LucideKey,
-  LucidePickaxe,
-  LucideUser,
-} from 'lucide-react';
+import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
+import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { UserSchema, usersMock } from '@/app/mock/mock';
+import { useState } from 'react';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 export const UsersTable = () => {
+  const [users, setUsers] = useState(usersMock);
+  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | undefined>(
+    undefined,
+  );
+
   const getBadge = (
     role: 'User' | 'Technician' | 'Admin',
   ): {
@@ -25,6 +28,20 @@ export const UsersTable = () => {
       case 'Admin':
         return { variant: 'primary', icon: <LucideKey /> };
     }
+  };
+
+  const openDeleteModal = (index: number) => {
+    setUserToDelete(index);
+    setIsDeleteUserModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteUserModalOpen(false);
+    setUserToDelete(undefined);
+  };
+
+  const handleDelete = (index: number) => {
+    setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
   };
 
   const columns: ColumnDef<UserSchema>[] = [
@@ -59,12 +76,17 @@ export const UsersTable = () => {
     {
       accessorKey: 'settings',
       header: '',
-      cell: () => {
-        // @TODO send row getValue id data to open delete/edit modals
+      cell: ({ row }) => {
+        const rowIndex = users.findIndex((user) => user.id === row.original.id);
+
         return (
-          <Button variant="outline" size="small">
-            <LucideEllipsis />
-          </Button>
+          <>
+            <DeleteEditDropdown
+              itemToDelete={rowIndex}
+              openDeleteModal={openDeleteModal}
+              handleEdit={() => console.log('Edit')}
+            />
+          </>
         );
       },
     },
@@ -72,14 +94,35 @@ export const UsersTable = () => {
 
   return (
     <>
+      <DeleteModalConfirmation
+        deleteButtonText="Confirm deletion"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        isOpen={isDeleteUserModalOpen}
+        itemToDelete={userToDelete}
+        onOpenChange={closeDeleteModal}
+        onDelete={(event, index) => {
+          handleDelete(index);
+          closeDeleteModal();
+        }}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {userToDelete && ` ${users[userToDelete].fullName} `}
+          </Text>
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
       <DataTable
         columns={columns}
-        data={usersMock}
+        data={users}
         noResultMessage="There are no users added yet."
       />
-      {usersMock.length && (
+      {users.length && (
         <Badge variant="neutral" className="self-start">
-          {usersMock.length} total
+          {users.length} total
         </Badge>
       )}
     </>

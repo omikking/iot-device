@@ -51,6 +51,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakLoad',
       header: ({ column }) => (
+        // Felinho, should the header be sortable? answer in the PR comments
         <TableHeadWithSorting column={column} header="Peak load(tons)" />
       ),
       cell: ({ row }) => {
@@ -78,21 +79,21 @@ export const BoltResultsTable = ({
 
       meta: { headerClassName: 'w-32' },
     },
-    {
-      accessorKey: 'bitSize',
-      header: 'Bit size',
-    },
-    {
-      accessorKey: 'rotations',
-      header: 'Rotations',
-    },
-    {
-      accessorKey: 'displacementPerTonnage',
-      header: 'Displacement per tonnage',
-      meta: {
-        headerClassName: 'w-32',
-      },
-    },
+    // {
+    //   accessorKey: 'bitSize',
+    //   header: 'Bit size',
+    // },
+    // {
+    //   accessorKey: 'rotations',
+    //   header: 'Rotations',
+    // },
+    // {
+    //   accessorKey: 'displacementPerTonnage',
+    //   header: 'Displacement per tonnage',
+    //   meta: {
+    //     headerClassName: 'w-32',
+    //   },
+    // },
     {
       accessorKey: 'level',
       header: 'Level',
@@ -107,7 +108,7 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'ring',
-      header: 'Position in the ring',
+      header: 'Position in ring',
     },
     {
       accessorKey: 'comment',
@@ -118,11 +119,13 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'result',
-      header: ({ column }) => (
-        <div className="text-right w-16">
-          <TableHeadWithSorting column={column} header="Result" />
-        </div>
-      ),
+      header: 'Result',
+      // Felinho, should the header be sortable? answer in the PR comments
+      // header: ({ column }) => (
+      //   <div className="text-right w-16">
+      //     <TableHeadWithSorting column={column} header="Result" />
+      //   </div>
+      // ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
           <Badge variant={getBadge(row.getValue('result')).variant}>

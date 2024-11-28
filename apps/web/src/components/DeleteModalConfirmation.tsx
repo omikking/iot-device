@@ -7,42 +7,48 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@gsp/ui';
-import { LucideTrash2, LucideMountain, LucideUserMinus } from 'lucide-react';
+import {
+  LucideTrash2,
+  LucideMountain,
+  LucideUserMinus,
+  LucideBuilding2,
+} from 'lucide-react';
 import React from 'react';
 
 interface DeleteModalConfirmationProps {
   modalTitle: string;
-  deleteIcon?: 'User' | 'Site';
+  deleteIcon?: 'User' | 'Site' | 'Company';
+  modalText?: string;
   deleteButtonText?: string;
   children: React.ReactNode;
   itemToDelete?: number;
-  // eslint-disable-next-line no-unused-vars
   onDelete: (
-    // eslint-disable-next-line no-unused-vars
     event: React.MouseEvent<HTMLButtonElement>,
-    // eslint-disable-next-line no-unused-vars
     itemToDelete: number,
   ) => void;
   isOpen?: boolean;
-  // eslint-disable-next-line no-unused-vars
   onOpenChange: (open: boolean) => void;
 }
 
 export const DeleteModalConfirmation = ({
   modalTitle,
   deleteIcon = 'User',
+  deleteButtonText,
   children,
+  modalText,
   itemToDelete = -1,
   onDelete,
   isOpen,
   onOpenChange,
 }: DeleteModalConfirmationProps) => {
-  const getDeleteIcon = (role: 'User' | 'Site') => {
+  const getDeleteIcon = (role: 'User' | 'Site' | 'Company') => {
     switch (role) {
       case 'User':
         return <LucideUserMinus className="text-error" size="32" />;
       case 'Site':
         return <LucideMountain className="text-error" size="32" />;
+      case 'Company':
+        return <LucideBuilding2 className="text-error" size="32" />;
       default:
         return null;
     }
@@ -56,8 +62,8 @@ export const DeleteModalConfirmation = ({
         </ModalHeader>
         <div className="flex flex-row justify-center items-center pt-16 gap-4">
           {getDeleteIcon(deleteIcon)}
-          <Headline variant="medium" as="h3" color="foreground">
-            Confirm deletion
+          <Headline variant="medium" as="h3" color="foreground" isBold>
+            {modalText || 'Confirm deletion'}
           </Headline>
         </div>
         <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
@@ -72,7 +78,7 @@ export const DeleteModalConfirmation = ({
             }}
           >
             <LucideTrash2 />
-            Confirm deletion
+            {deleteButtonText || 'Confirm deletion'}
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -15,7 +15,6 @@ interface SiteLocationsFormProps {
   // @TODO Gives error but it works. investigate why.
   // eslint-disable-next-line no-unused-vars
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;
-  // eslint-disable-next-line no-unused-vars
   onCancel: (index: number) => void;
   placeholder: string;
   name: string;

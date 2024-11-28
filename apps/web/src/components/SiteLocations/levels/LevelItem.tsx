@@ -18,8 +18,6 @@ interface LevelComponentProps {
   levelsOptionsMock: ILevelMock[];
   index: number;
   inputRef: React.RefObject<HTMLInputElement>;
-  // @TODO Gives error but it works. investigate why.
-  // eslint-disable-next-line no-unused-vars
   handleSetLevel: (name: string) => void;
   setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;

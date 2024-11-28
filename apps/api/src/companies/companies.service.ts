@@ -1,6 +1,6 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { Company } from '@prisma/client';
+import { Application, Company, Role } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 
@@ -12,7 +12,7 @@ export class CompaniesService {
     return this.prisma.company.findMany();
   }
 
-  async findOne(id: number): Promise<Company> {
+  async findOne(id: string): Promise<Company> {
     const company = await this.prisma.company.findUnique({ where: { id } });
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
@@ -26,13 +26,27 @@ export class CompaniesService {
     return this.prisma.company.create({
       data: {
         name: createCompanyInput.name,
-        companyCode: createCompanyInput.companyCode,
-        country: createCompanyInput.country,
+        orgNumber: createCompanyInput.orgNumber,
+        adress: createCompanyInput.adress,
+        postalCode: createCompanyInput.postalCode,
         city: createCompanyInput.city,
-        address: createCompanyInput.address,
-        users: {
-          connect: createCompanyInput.users?.map((userId) => ({
-            id: userId,
+        country: createCompanyInput.country,
+        companyContactEmail: createCompanyInput.companyContactEmail,
+
+        userPermission: {
+          create: createCompanyInput.userPermissions?.map((userPermission) => ({
+            user: {
+              connect: {
+                id: userPermission.userId,
+              },
+            },
+            role: Role.SANDVIK_ADMIN,
+            appsAccess: [
+              Application.PULL_TEST,
+              Application.PULL_TEST_OPERATOR,
+              Application.ULTRABOLTS,
+              Application.XCYCLOPS,
+            ],
           })),
         },
       },
@@ -40,21 +54,33 @@ export class CompaniesService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
   ): Promise<Company> {
-    const company = this.prisma.company.update({
+    const company = await this.prisma.company.update({
       where: { id },
       data: {
         name: updateCompanyInput?.name || undefined,
-        companyCode: updateCompanyInput?.companyCode || undefined,
-        country: updateCompanyInput?.country || undefined,
+        orgNumber: updateCompanyInput?.orgNumber || undefined,
+        adress: updateCompanyInput?.adress || undefined,
+        postalCode: updateCompanyInput?.postalCode || undefined,
         city: updateCompanyInput?.city || undefined,
-        address: updateCompanyInput?.address || undefined,
-        users: {
-          connect: updateCompanyInput.users?.map((userId) => ({
-            id: userId,
-          })),
+        country: updateCompanyInput?.country || undefined,
+        companyContactEmail:
+          updateCompanyInput?.companyContactEmail || undefined,
+
+        userPermission: {
+          updateMany: updateCompanyInput.userPermissions?.map(
+            (userPermissionInput) => ({
+              where: {
+                companyId: id,
+                userId: userPermissionInput?.oldUserId,
+              },
+              data: {
+                userId: userPermissionInput?.newUserId || undefined,
+              },
+            }),
+          ),
         },
       },
     });
@@ -64,7 +90,7 @@ export class CompaniesService {
     return company;
   }
 
-  async remove(id: number): Promise<Company> {
+  async remove(id: string): Promise<Company> {
     const company = await this.prisma.company.delete({ where: { id } });
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);

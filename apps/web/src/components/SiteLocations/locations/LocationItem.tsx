@@ -14,7 +14,6 @@ interface LocationComponentProps {
   index: number;
   locationsOptionsMock: ILocationMock[];
   inputRef: React.RefObject<HTMLInputElement>;
-  // eslint-disable-next-line no-unused-vars
   handleSetLocation: (name: string) => void;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>

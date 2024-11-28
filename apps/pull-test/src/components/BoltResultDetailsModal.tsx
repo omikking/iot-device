@@ -262,7 +262,7 @@ export const BoltResultDetailsModal = ({
 
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>
-          <div className="flex justify-end items-center gap-5">
+          <div className="flex justify-end items-end gap-5">
             {isHazard && isHazardCompletable && (
               <Button
                 size="large"

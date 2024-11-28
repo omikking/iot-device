@@ -4,13 +4,12 @@ import { Button, Form } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideX } from 'lucide-react';
 import { z } from 'zod';
 
-// unsure if this is the correct way to do this?
-const siteLocationsSchema = z.object({
+export const siteLocationsSchema = z.object({
   id: z.string(),
   name: z.string(),
 });
 
-type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
+export type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
 interface SiteLocationsFormProps {
   form: UseFormReturn<SiteLocationsValue>;
   // @TODO Gives error but it works. investigate why.

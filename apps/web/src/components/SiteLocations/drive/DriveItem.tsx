@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
 import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
-import { z } from 'zod';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 interface DriveComponentProps {
   drive: IDriveMock;
   drivesOptionsMock: IDriveMock[];
@@ -36,20 +36,14 @@ export const DriveItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const driveFormSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
-
-  type DriveFormValues = z.infer<typeof driveFormSchema>;
-
-  const driveForm: UseFormReturn<DriveFormValues> = useForm<DriveFormValues>({
-    resolver: zodResolver(driveFormSchema),
-    defaultValues: {
-      id: '',
-      name: '',
-    },
-  });
+  const driveForm: UseFormReturn<SiteLocationsValue> =
+    useForm<SiteLocationsValue>({
+      resolver: zodResolver(siteLocationsSchema),
+      defaultValues: {
+        id: '',
+        name: '',
+      },
+    });
 
   const handleEditDrive = () => {
     setIsEditing(true);

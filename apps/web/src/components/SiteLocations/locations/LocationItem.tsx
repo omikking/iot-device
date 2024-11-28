@@ -1,13 +1,13 @@
-import { z } from 'zod';
 import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { ILocationMock } from '@/app/(routes)/sitelocations/page';
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 
 interface LocationComponentProps {
   location: ILocationMock;
@@ -32,16 +32,9 @@ export const LocationItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const locationFormSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
-
-  type LocationFormValues = z.infer<typeof locationFormSchema>;
-
-  const locationForm: UseFormReturn<LocationFormValues> =
-    useForm<LocationFormValues>({
-      resolver: zodResolver(locationFormSchema),
+  const locationForm: UseFormReturn<SiteLocationsValue> =
+    useForm<SiteLocationsValue>({
+      resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
         id: '',
         name: '',

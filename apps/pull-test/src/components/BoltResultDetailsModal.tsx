@@ -10,6 +10,7 @@ import {
   Headline,
   ModalClose,
   LoadingSpinner,
+  Specification,
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
@@ -168,17 +169,12 @@ export const BoltResultDetailsModal = ({
           </Headline>
           <div className="flex flex-wrap">
             {specifications.map((boltSpec, index) => (
-              <div
+              <Specification
                 key={index}
-                className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-              >
-                <Text className="w-32" variant="small" color="muted">
-                  {boltSpec.title}
-                </Text>
-                <Text className="max-w-60" variant="small" color="foreground">
-                  {boltSpec.text}
-                </Text>
-              </div>
+                title={boltSpec.title}
+                text={boltSpec.text}
+                className="w-1/2"
+              />
             ))}
           </div>
           {/* BOLT RESULTS */}

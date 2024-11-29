@@ -9,8 +9,8 @@ import {
   Badge,
   Headline,
   ModalClose,
-  Specification,
   LoadingSpinner,
+  Specification,
 } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
@@ -110,37 +110,26 @@ export const BoltResultDetailsModal = ({
       <ModalHeader>
         <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
       </ModalHeader>
-      <div className="p-10 flex gap-10 flex-grow h-full">
-        {image && (
-          <Image
-            src="/boltTestImage.png"
-            alt="Attached bolt result image"
-            width={390}
-            height={280}
-            className="rounded-md h-72"
-          />
-        )}
-        <div className="flex flex-col w-1/2">
-          {boltDescription && (
-            <div className="flex flex-col flex-grow ">
-              <Text variant="small" color="foreground">
-                Comment
-              </Text>
-              <Textarea
-                value={boltDescription}
-                className="flex-grow"
-                disabled
-                readOnly
-              />
-            </div>
+
+      {/* First View */}
+      <div
+        className={`transition-all duration-500 ${
+          isCompleted || isConfirmed ? 'hidden' : 'block'
+        }`}
+      >
+        <div className="p-10 flex gap-10 flex-grow">
+          {image && (
+            <Image
+              src={image}
+              alt="Attached bolt result image"
+              width={390}
+              height={280}
+              className="rounded-md h-72"
+            />
           )}
-          {isHazard && (
-            <div className="flex justify-between pt-5">
-              <Badge variant={'attention'}>
-                <LucideTriangleAlert />
-                Reported hazard
-              </Badge>
-              {author && (
+          <div className="flex flex-col w-1/2">
+            {boltDescription && (
+              <div className="flex flex-col flex-grow ">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
@@ -149,12 +138,12 @@ export const BoltResultDetailsModal = ({
                   className="flex-grow"
                   disabled
                   readOnly
-                />)}
+                />
               </div>
             )}
             {isHazard && (
               <div className="flex justify-between pt-5">
-                <Badge variant={'warning'}>
+                <Badge variant={'attention'}>
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
@@ -167,32 +156,8 @@ export const BoltResultDetailsModal = ({
             )}
           </div>
         </div>
-      </div>
-      <div className="px-10 pb-10">
-        <Headline
-          className="pb-4"
-          variant="small"
-          as="h3"
-          color="foreground"
-          isBold
-        >
-          Bolt specifications
-        </Headline>
-        <div className="flex flex-wrap">
-          {specifications.map((boltSpec, index) => (
-            <Specification
-              key={index}
-              title={boltSpec.title}
-              text={boltSpec.text}
-              className="w-1/2"
-            />
-          ))}
-          {specifications.length % 2 === 1 && (
-            <Specification title="" text="" className="w-1/2" />
-          )}
-        </div>
-        {/* BOLT RESULTS */}
-        <div>
+
+        <div className="px-10 pb-10">
           <Headline
             className="pb-4"
             variant="small"
@@ -204,18 +169,16 @@ export const BoltResultDetailsModal = ({
           </Headline>
           <div className="flex flex-wrap">
             {specifications.map((boltSpec, index) => (
-              <div
+              <Specification
                 key={index}
-                className="flex w-1/2 items-center px-2 py-2 border-b border-neutral-3 break-words"
-              >
-                <Text className="w-32" variant="small" color="muted">
-                  {boltSpec.title}
-                </Text>
-                <Text className="max-w-60" variant="small" color="foreground">
-                  {boltSpec.text}
-                </Text>
-              </div>
+                title={boltSpec.title}
+                text={boltSpec.text}
+                className="w-1/2"
+              />
             ))}
+            {specifications.length % 2 === 1 && (
+              <Specification title="" text="" className="w-1/2" />
+            )}
           </div>
           {/* BOLT RESULTS */}
           <div>

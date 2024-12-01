@@ -32,7 +32,7 @@ export default function Page(): JSX.Element {
             hazardCard.isHazard && (
               <HazardCard
                 key={index}
-                dateTitle={hazardCard.dateTitle}
+                dateTitle={new Date('2024-09-05T10:30:00')}
                 isHazard={hazardCard.isHazard}
                 boltInfoItems={hazardCard.boltSpecifications}
                 boltDescription={hazardCard.boltDescription}

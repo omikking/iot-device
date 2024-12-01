@@ -58,7 +58,7 @@ export class CompaniesService {
                   );
                 }
 
-                // Check if user has globalRole Sandvik_ADMIN
+                // Check that user has globalRole Sandvik_ADMIN
                 if (user.globalRole !== Role.SANDVIK_ADMIN) {
                   throw new UserInputError(
                     `User ${userPermission.userId} does not have global role as SANDVIK_ADMIN`,
@@ -91,13 +91,9 @@ export class CompaniesService {
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
             companyId: createdCompany.id,
-            // Should we type Application and PlanLevel here really?
             applicationName: plan.applicationName as Application,
             planLevel: plan.planLevel as PlanLevel,
             expiringDate: plan.expiringDate || null,
-            // expiringDate: plan.expiringDate
-            //   ? new Date(plan.expiringDate).toISOString()
-            //   : null,
           })),
         });
       }
@@ -144,7 +140,7 @@ export class CompaniesService {
       });
 
       if (plans && plans.length > 0) {
-        // Delete plans that are not listed in the request
+        // Delete plans that are not in the request
         const plansToKeepId = plans.map((plan) => plan.id);
         await prisma.plan.deleteMany({
           where: {
@@ -167,7 +163,7 @@ export class CompaniesService {
               where: { id: plan.id },
               data: {
                 planLevel: plan.planLevel as PlanLevel,
-                expiringDate: plan.expiringDate || undefined,
+                expiringDate: plan.expiringDate || null,
               },
             });
           } else {

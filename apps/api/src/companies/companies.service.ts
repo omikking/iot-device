@@ -1,8 +1,16 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { Application, Company, Role } from '@prisma/client';
+import {
+  Application,
+  Company,
+  PlanLevel,
+  PrismaClient,
+  Role,
+} from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
@@ -23,35 +31,63 @@ export class CompaniesService {
   async create(
     createCompanyInput: GraphQLTypes.CreateCompanyInput,
   ): Promise<Company> {
-    // @TODO Need to make a check to make sure the connected user has the Sandvik Admin role
-    return this.prisma.company.create({
-      data: {
-        name: createCompanyInput.name,
-        orgNumber: createCompanyInput.orgNumber,
-        adress: createCompanyInput.adress,
-        postalCode: createCompanyInput.postalCode,
-        city: createCompanyInput.city,
-        country: createCompanyInput.country,
-        companyContactEmail: createCompanyInput.companyContactEmail,
+    const { plans, ...companyData } = createCompanyInput;
 
-        userPermission: {
-          create: createCompanyInput.userPermissions?.map((userPermission) => ({
-            user: {
-              connect: {
-                id: userPermission.userId,
+    // @TODO Need to make a check to make sure the connected user has the Sandvik Admin role
+    const company = await prisma.$transaction(async (prisma) => {
+      const createdCompany = await prisma.company.create({
+        data: {
+          name: companyData.name,
+          orgNumber: companyData.orgNumber,
+          adress: companyData.adress,
+          postalCode: companyData.postalCode,
+          city: companyData.city,
+          country: companyData.country,
+          companyContactEmail: companyData.companyContactEmail,
+
+          userPermission: {
+            create: companyData.userPermissions?.map((userPermission) => ({
+              user: {
+                connect: {
+                  id: userPermission.userId,
+                },
               },
-            },
-            role: Role.SANDVIK_ADMIN,
-            appsAccess: [
-              Application.PULL_TEST,
-              Application.PULL_TEST_OPERATOR,
-              Application.ULTRABOLTS,
-              Application.XCYCLOPS,
-            ],
-          })),
+              role: Role.SANDVIK_ADMIN,
+              appsAccess: [
+                Application.PULL_TEST,
+                Application.PULL_TEST_OPERATOR,
+                Application.ULTRABOLTS,
+                Application.XCYCLOPS,
+              ],
+            })),
+          },
         },
-      },
+      });
+
+      if (plans && plans.length > 0) {
+        console.log(plans);
+
+        await prisma.plan.createMany({
+          data: plans.map((plan) => ({
+            companyId: createdCompany.id,
+            // Should we type Application and PlanLevel here really?
+            applicationName: plan.applicationName as Application,
+            planLevel: plan.planLevel as PlanLevel,
+            expiringDate: plan.expiringDate,
+            // expiringDate: plan.expiringDate
+            //   ? new Date(plan.expiringDate).toISOString()
+            //   : null,
+          })),
+        });
+      }
+
+      return createdCompany;
     });
+
+    if (!company) {
+      throw new UserInputError('Failed to create the company and plans');
+    }
+    return company;
   }
 
   async update(

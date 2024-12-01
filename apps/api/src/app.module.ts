@@ -8,6 +8,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CoffeesModule } from './coffees/coffees.module';
 import { CompaniesModule } from './companies/companies.module';
+import { DateScalar } from './common/scalars/date.scalar';
 
 @Module({
   imports: [
@@ -23,5 +24,6 @@ import { CompaniesModule } from './companies/companies.module';
     CoffeesModule,
     CompaniesModule,
   ],
+  providers: [DateScalar],
 })
 export class AppModule {}

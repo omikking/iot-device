@@ -57,7 +57,7 @@ export class UpdateCompanyInput {
 export class UpdatePlanInput {
     id: string;
     applicationName: string;
-    planLevel: string;
+    planLevel?: Nullable<string>;
     expiringDate?: Nullable<DateTime>;
 }
 

@@ -3,6 +3,8 @@
 
 # Use npx ts-node src/generate-types.ts to generate the types
 
+scalar DateTime
+
 """
 Company model
 Define the Company model and its fields
@@ -140,7 +142,7 @@ Define the input fields to update the plans
 input UpdatePlanInput {
   id: String!
   applicationName: String!
-  planLevel: String!
+  planLevel: String
   expiringDate: DateTime
 }
 

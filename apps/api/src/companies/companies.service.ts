@@ -33,7 +33,6 @@ export class CompaniesService {
   ): Promise<Company> {
     const { plans, ...companyData } = createCompanyInput;
 
-    // @TODO Need to make a check to make sure the connected user has the Sandvik Admin role
     const company = await prisma.$transaction(async (prisma) => {
       const createdCompany = await prisma.company.create({
         data: {
@@ -46,20 +45,42 @@ export class CompaniesService {
           companyContactEmail: companyData.companyContactEmail,
 
           userPermission: {
-            create: companyData.userPermissions?.map((userPermission) => ({
-              user: {
-                connect: {
-                  id: userPermission.userId,
-                },
-              },
-              role: Role.SANDVIK_ADMIN,
-              appsAccess: [
-                Application.PULL_TEST,
-                Application.PULL_TEST_OPERATOR,
-                Application.ULTRABOLTS,
-                Application.XCYCLOPS,
-              ],
-            })),
+            create: await Promise.all(
+              companyData.userPermissions?.map(async (userPermission) => {
+                const user = await prisma.user.findUnique({
+                  where: { id: userPermission.userId },
+                  select: { globalRole: true },
+                });
+
+                if (!user) {
+                  throw new UserInputError(
+                    `User ${userPermission.userId} does not exist`,
+                  );
+                }
+
+                // Check if user has globalRole Sandvik_ADMIN
+                if (user.globalRole !== Role.SANDVIK_ADMIN) {
+                  throw new UserInputError(
+                    `User ${userPermission.userId} does not have global role as SANDVIK_ADMIN`,
+                  );
+                }
+
+                return {
+                  user: {
+                    connect: {
+                      id: userPermission.userId,
+                    },
+                  },
+                  role: Role.SANDVIK_ADMIN,
+                  appsAccess: [
+                    Application.PULL_TEST,
+                    Application.PULL_TEST_OPERATOR,
+                    Application.ULTRABOLTS,
+                    Application.XCYCLOPS,
+                  ],
+                };
+              }),
+            ),
           },
         },
       });

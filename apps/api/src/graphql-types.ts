@@ -29,10 +29,17 @@ export class CreateCompanyInput {
     country: string;
     companyContactEmail: string;
     userPermissions: CreateUserPermissionInput[];
+    plans?: Nullable<CreatePlanInput[]>;
 }
 
 export class CreateUserPermissionInput {
     userId: string;
+}
+
+export class CreatePlanInput {
+    applicationName: string;
+    planLevel: string;
+    expiringDate?: Nullable<DateTime>;
 }
 
 export class UpdateCompanyInput {
@@ -101,6 +108,7 @@ export class Plan {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    companyId: string;
     applicationName: string;
     planLevel: string;
     expiringDate?: Nullable<DateTime>;

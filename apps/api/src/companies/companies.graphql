@@ -31,6 +31,7 @@ type Plan {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  companyId: String!
   applicationName: String!
   planLevel: String!
   expiringDate: DateTime
@@ -94,6 +95,7 @@ input CreateCompanyInput {
   country: String!
   companyContactEmail: String!
   userPermissions: [CreateUserPermissionInput!]!
+  plans: [CreatePlanInput!]
 }
 
 """
@@ -102,6 +104,16 @@ Define the input fields to create a new userPermission
 """
 input CreateUserPermissionInput {
   userId: String!
+}
+
+"""
+CreatePlanInput
+Define the input fields to create a new plan
+"""
+input CreatePlanInput {
+  applicationName: String!
+  planLevel: String!
+  expiringDate: DateTime
 }
 
 """

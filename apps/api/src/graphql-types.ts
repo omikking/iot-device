@@ -51,6 +51,14 @@ export class UpdateCompanyInput {
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
     userPermissions?: Nullable<UpdateUserPermissionInput[]>;
+    plans?: Nullable<UpdatePlanInput[]>;
+}
+
+export class UpdatePlanInput {
+    id: string;
+    applicationName: string;
+    planLevel: string;
+    expiringDate?: Nullable<DateTime>;
 }
 
 export class UpdateUserPermissionInput {

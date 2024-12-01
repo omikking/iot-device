@@ -73,7 +73,7 @@ export class CompaniesService {
             // Should we type Application and PlanLevel here really?
             applicationName: plan.applicationName as Application,
             planLevel: plan.planLevel as PlanLevel,
-            expiringDate: plan.expiringDate,
+            expiringDate: plan.expiringDate || null,
             // expiringDate: plan.expiringDate
             //   ? new Date(plan.expiringDate).toISOString()
             //   : null,
@@ -94,21 +94,22 @@ export class CompaniesService {
     id: string,
     updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
   ): Promise<Company> {
-    const company = await this.prisma.company.update({
-      where: { id },
-      data: {
-        name: updateCompanyInput?.name || undefined,
-        orgNumber: updateCompanyInput?.orgNumber || undefined,
-        adress: updateCompanyInput?.adress || undefined,
-        postalCode: updateCompanyInput?.postalCode || undefined,
-        city: updateCompanyInput?.city || undefined,
-        country: updateCompanyInput?.country || undefined,
-        companyContactEmail:
-          updateCompanyInput?.companyContactEmail || undefined,
+    const { plans, userPermissions, ...companyData } = updateCompanyInput;
 
-        userPermission: {
-          updateMany: updateCompanyInput.userPermissions?.map(
-            (userPermissionInput) => ({
+    const company = await this.prisma.$transaction(async (prisma) => {
+      const updatedCompany = await prisma.company.update({
+        where: { id },
+        data: {
+          name: companyData?.name || undefined,
+          orgNumber: companyData?.orgNumber || undefined,
+          adress: companyData?.adress || undefined,
+          postalCode: companyData?.postalCode || undefined,
+          city: companyData?.city || undefined,
+          country: companyData?.country || undefined,
+          companyContactEmail: companyData?.companyContactEmail || undefined,
+
+          userPermission: {
+            updateMany: userPermissions?.map((userPermissionInput) => ({
               where: {
                 companyId: id,
                 userId: userPermissionInput?.oldUserId,
@@ -116,11 +117,55 @@ export class CompaniesService {
               data: {
                 userId: userPermissionInput?.newUserId || undefined,
               },
-            }),
-          ),
+            })),
+          },
         },
-      },
+      });
+
+      if (plans && plans.length > 0) {
+        // Delete plans that are not listed in the request
+        const plansToKeepId = plans.map((plan) => plan.id);
+        await prisma.plan.deleteMany({
+          where: {
+            companyId: id,
+            NOT: {
+              id: { in: plansToKeepId },
+            },
+          },
+        });
+
+        // Update existing plans or create new
+        for (const plan of plans) {
+          const existingPlan = await prisma.plan.findUnique({
+            where: { id: plan.id },
+          });
+
+          if (existingPlan) {
+            // Update plan if it already exists
+            await prisma.plan.update({
+              where: { id: plan.id },
+              data: {
+                planLevel: plan.planLevel as PlanLevel,
+                expiringDate: plan.expiringDate || undefined,
+              },
+            });
+          } else {
+            // Create new plan if new one was added
+            await prisma.plan.create({
+              data: {
+                companyId: updatedCompany.id,
+                applicationName: plan.applicationName as Application,
+                planLevel: plan.planLevel as PlanLevel,
+                expiringDate: plan.expiringDate || null,
+              },
+            });
+          }
+        }
+      }
+
+      return updatedCompany;
     });
+
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
     }

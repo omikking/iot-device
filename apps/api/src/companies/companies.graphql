@@ -130,6 +130,18 @@ input UpdateCompanyInput {
   country: String
   companyContactEmail: String
   userPermissions: [UpdateUserPermissionInput!]
+  plans: [UpdatePlanInput!]
+}
+
+"""
+UpdatePlanInput
+Define the input fields to update the plans
+"""
+input UpdatePlanInput {
+  id: String!
+  applicationName: String!
+  planLevel: String!
+  expiringDate: DateTime
 }
 
 """

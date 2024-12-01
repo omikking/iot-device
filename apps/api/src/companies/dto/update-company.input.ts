@@ -33,4 +33,8 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @IsOptional()
   @IsArray()
   userPermissions: GraphQLTypes.UpdateUserPermissionInput[];
+
+  @IsOptional()
+  @IsArray()
+  plans: GraphQLTypes.UpdatePlanInput[];
 }

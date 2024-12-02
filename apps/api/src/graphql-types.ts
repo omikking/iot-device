@@ -23,7 +23,7 @@ export class UpdateCoffeeInput {
 export class CreateCompanyInput {
     name: string;
     orgNumber: string;
-    adress: string;
+    address: string;
     postalCode: string;
     city: string;
     country: string;
@@ -45,7 +45,7 @@ export class CreatePlanInput {
 export class UpdateCompanyInput {
     name?: Nullable<string>;
     orgNumber?: Nullable<string>;
-    adress?: Nullable<string>;
+    address?: Nullable<string>;
     postalCode?: Nullable<string>;
     city?: Nullable<string>;
     country?: Nullable<string>;
@@ -69,7 +69,7 @@ export class UpdateUserPermissionInput {
 export class CreateSiteInput {
     siteName: string;
     orgNumber: string;
-    adress: string;
+    address: string;
     postalCode: string;
     city: string;
     country: string;
@@ -79,7 +79,7 @@ export class CreateSiteInput {
 export class UpdateSiteInput {
     siteName?: Nullable<string>;
     orgNumber?: Nullable<string>;
-    adress?: Nullable<string>;
+    address?: Nullable<string>;
     postalCode?: Nullable<string>;
     city?: Nullable<string>;
     country?: Nullable<string>;
@@ -121,7 +121,7 @@ export class Company {
     updatedAt: DateTime;
     name: string;
     orgNumber: string;
-    adress: string;
+    address: string;
     postalCode: string;
     city: string;
     country: string;
@@ -168,7 +168,7 @@ export class Site {
     createdAt: DateTime;
     updatedAt: DateTime;
     siteName: string;
-    adress: string;
+    address: string;
     postalCode: string;
     city: string;
     country: string;

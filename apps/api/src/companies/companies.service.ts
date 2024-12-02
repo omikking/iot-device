@@ -38,7 +38,7 @@ export class CompaniesService {
         data: {
           name: companyData.name,
           orgNumber: companyData.orgNumber,
-          adress: companyData.adress,
+          address: companyData.address,
           postalCode: companyData.postalCode,
           city: companyData.city,
           country: companyData.country,
@@ -119,7 +119,7 @@ export class CompaniesService {
         data: {
           name: companyData?.name || undefined,
           orgNumber: companyData?.orgNumber || undefined,
-          adress: companyData?.adress || undefined,
+          address: companyData?.address || undefined,
           postalCode: companyData?.postalCode || undefined,
           city: companyData?.city || undefined,
           country: companyData?.country || undefined,

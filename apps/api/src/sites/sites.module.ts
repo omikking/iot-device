@@ -5,6 +5,6 @@ import { SitesResolver } from './sites.resolver';
 
 @Module({
   providers: [SitesService, SitesResolver],
-  controllers: [SitesController]
+  controllers: [SitesController],
 })
 export class SitesModule {}

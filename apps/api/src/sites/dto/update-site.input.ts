@@ -10,7 +10,7 @@ export class UpdateSiteInput extends GraphQLTypes.UpdateSiteInput {
   @IsOptional()
   @IsString()
   @Length(2, 95)
-  adress: string;
+  address: string;
 
   @IsOptional()
   @IsString()

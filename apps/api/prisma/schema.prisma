@@ -79,7 +79,7 @@ model Company {
 
   name                String
   orgNumber           String @unique
-  adress              String
+  address             String
   postalCode          String
   city                String
   country             String
@@ -151,7 +151,7 @@ model Site {
   updatedAt DateTime @updatedAt
 
   siteName   String
-  adress     String // @TODO nvm update to address, adress is a misspelling lol
+  address    String
   postalCode String
   city       String
   country    String

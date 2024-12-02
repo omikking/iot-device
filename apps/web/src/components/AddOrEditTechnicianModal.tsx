@@ -32,7 +32,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideCircleHelp, LucidePlus } from 'lucide-react';
 
 interface AddOrEditTechnicianModalProps {
-  // eslint-disable-next-line no-unused-vars
   onOpenChange: (open: boolean) => void;
 }
 

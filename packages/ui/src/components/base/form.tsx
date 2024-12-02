@@ -11,7 +11,7 @@ import {
   FormProvider,
   useFormContext,
 } from 'react-hook-form';
-import { LucideCircleAlert } from 'lucide-react';
+import { LucideXCircle } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
 import { Text } from './text';
@@ -163,7 +163,7 @@ const FormMessage = React.forwardRef<
 
   return (
     <div className="ui-flex ui-items-center ui-gap-1.5">
-      <LucideCircleAlert size="14" className="ui-stroke-error" />
+      <LucideXCircle size="14" className="ui-stroke-error" />
       <Text variant="small" color="destructive" id={formMessageId} ref={ref}>
         {body}
       </Text>

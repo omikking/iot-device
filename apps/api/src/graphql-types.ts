@@ -66,6 +66,25 @@ export class UpdateUserPermissionInput {
     newUserId: string;
 }
 
+export class CreateSiteInput {
+    siteName: string;
+    orgNumber: string;
+    adress: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyId: string;
+}
+
+export class UpdateSiteInput {
+    siteName?: Nullable<string>;
+    orgNumber?: Nullable<string>;
+    adress?: Nullable<string>;
+    postalCode?: Nullable<string>;
+    city?: Nullable<string>;
+    country?: Nullable<string>;
+}
+
 export class Coffee {
     id: number;
     name: string;
@@ -122,17 +141,6 @@ export class Plan {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class Site {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    siteName: string;
-    adress: string;
-    postalCode: string;
-    city: string;
-    country: string;
-}
-
 export class User {
     id: string;
     createdAt: DateTime;
@@ -153,6 +161,28 @@ export class UserPermission {
     userId: string;
     role: string;
     appsAccess?: Nullable<string[]>;
+}
+
+export class Site {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    siteName: string;
+    adress: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyId: string;
+    levels?: Nullable<Level[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Level {
+    levelName: string;
+}
+
+export class BoltResult {
+    boltNumber: number;
 }
 
 export type DateTime = any;

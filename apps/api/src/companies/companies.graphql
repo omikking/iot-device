@@ -40,21 +40,6 @@ type Plan {
 }
 
 """
-Site model
-Define the Site model and its fields
-"""
-type Site {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  siteName: String!
-  adress: String!
-  postalCode: String!
-  city: String!
-  country: String!
-}
-
-"""
 User model
 Define the User model and its fields
 """

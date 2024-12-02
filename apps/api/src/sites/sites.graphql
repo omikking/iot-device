@@ -1,0 +1,73 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+Site model
+Define the Site model and its fields
+"""
+type Site {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  siteName: String!
+  adress: String!
+  postalCode: String!
+  city: String!
+  country: String!
+
+  companyId: String!
+  levels: [Level!]
+  boltResults: [BoltResult!]
+}
+
+# @TODO move later to Level model when it exists
+"""
+Level model
+Define the Level model and its fields
+"""
+type Level {
+  # @TODO fully later
+  levelName: String!
+}
+
+# @TODO move later to BoltResult model when it exists
+"""
+BoltResult model
+Define the BoltResult model and its fields
+"""
+type BoltResult {
+  # @TODO fully later
+  boltNumber: Int!
+}
+
+"""
+CreateSiteInput
+Define the input fields to create a new site
+"""
+input CreateSiteInput {
+  siteName: String!
+  orgNumber: String!
+  adress: String!
+  postalCode: String!
+  city: String!
+  country: String!
+  companyId: String!
+}
+
+"""
+UpdateSiteInput
+Define the input fields to update an existing site
+Optional are marked without the exclamation mark
+"""
+input UpdateSiteInput {
+  siteName: String
+  orgNumber: String
+  adress: String
+  postalCode: String
+  city: String
+  country: String
+}

@@ -1,17 +1,17 @@
 import {
+  Text,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Text,
 } from '@gsp/ui';
-import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import React from 'react';
+import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 interface DeleteEditDropdownProps {
   itemSelected: number;
-  openDeleteModal: ((itemSelected: number) => void) | (() => void);
+  openDeleteModal: (itemSelected: number) => void;
   handleEdit: (itemSelected: number) => void;
 }
 

@@ -20,16 +20,15 @@ import {
   TechnicianFormValues,
   technicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucidePlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LucidePlus, LucideSquarePen } from 'lucide-react';
 
 interface AddOrEditTechnicianModalProps {
-  // eslint-disable-next-line no-unused-vars
   onOpenChange: (open: boolean) => void;
-  technician: TechnicianFormValues | null;
+  technician?: TechnicianFormValues | null;
 }
 
 export const AddOrEditTechnicianModal = ({
@@ -90,7 +89,6 @@ export const AddOrEditTechnicianModal = ({
 
   useEffect(() => {
     if (technician) {
-      console.log('MUSTAAARD');
       form.reset({
         fullName: technician.fullName,
         company: technician.company,
@@ -99,7 +97,7 @@ export const AddOrEditTechnicianModal = ({
         isGlobal: technician.isGlobal,
       });
     }
-    // Call handleModalClose when technician becomes null (modal closes)
+    // Call handleModalClose when technician is null (modal closes)
     if (!technician) {
       handleModalClose();
     }
@@ -109,7 +107,7 @@ export const AddOrEditTechnicianModal = ({
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
         <ModalTitle>
-          {technician ? 'Edit technician' : 'Ass technician'}
+          {technician ? 'Edit technician' : 'Add technician'}
         </ModalTitle>
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
@@ -210,8 +208,11 @@ export const AddOrEditTechnicianModal = ({
                     <FormItem className="pt-4">
                       <FormControl>
                         <RadioGroup
-                          onValueChange={field.onChange}
                           value={String(field.value)}
+                          onValueChange={field.onChange}
+                          // onValueChange={(value) =>
+                          //   field.onChange(value === 'true')
+                          // }
                         >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>
@@ -241,10 +242,10 @@ export const AddOrEditTechnicianModal = ({
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <LoadingSpinner size={24} />
+                  <LoadingSpinner className="animate-spin" size={24} />
                 ) : technician ? (
                   <>
-                    <LucidePlus />
+                    <LucideSquarePen />
                     Edit technician
                   </>
                 ) : (

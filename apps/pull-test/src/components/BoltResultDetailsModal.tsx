@@ -11,11 +11,11 @@ import {
   ModalClose,
   LoadingSpinner,
 } from '@gsp/ui';
-import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { BoltResultSchema } from '@/app/mock/mock';
+import { MultiBoltReadingTable } from './MultiBoltReadingTable';
+import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
 interface BoltResultDetailsModalProps {
   modalTitle: string;

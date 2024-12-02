@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
-import { LucideEyeOff, LucideView } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
+import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
 
 interface TechniciansTableProps {
   onOpenChange: (open: boolean) => void;

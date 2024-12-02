@@ -225,7 +225,7 @@ model PositionInRing {
 
   boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give positionInRingId to BoltResult, is this relation correct?
 
-  @@map("positions")
+  @@map("positions_in_ring")
 }
 
 model BoltResult {

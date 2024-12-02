@@ -151,7 +151,7 @@ model Site {
   updatedAt DateTime @updatedAt
 
   siteName   String
-  adress     String
+  adress     String // @TODO nvm update to address, adress is a misspelling lol
   postalCode String
   city       String
   country    String

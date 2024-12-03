@@ -1,32 +1,32 @@
 'use client';
 import {
-  LucideCircleCheckBig,
-  LucideMountain,
-  LucideMoveRight,
-  LucidePyramid,
-  LucideSparkles,
-  LucideTrash2,
   LucideUsers,
+  LucideTrash2,
+  LucidePyramid,
+  LucideMountain,
+  LucideSparkles,
+  LucideMoveRight,
+  LucideCircleCheckBig,
 } from 'lucide-react';
 import {
-  Headline,
-  Text,
-  ContentHolder,
-  Button,
-  NavigationCard,
   Form,
+  Text,
+  Button,
+  Headline,
+  ContentHolder,
+  NavigationCard,
 } from '@gsp/ui';
+import { z } from 'zod';
 import Link from 'next/link';
 import { useState } from 'react';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { appPlansMock } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
+import { appPlansMock } from '@/app/mock/mock';
 import { AdminForm } from '@/components/AdminForm';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 export const companyFormSchema = z.object({
@@ -69,9 +69,6 @@ export default function Page(): JSX.Element {
 
   // @TODO Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';
-  // const companyToEditName = false;
-
-  // @TODO Just for testing user type, will be removed
   const [isAdmin, setIsAdmin] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const user = isAdmin ? 'Superadmin' : 'Client';
@@ -80,7 +77,6 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      {/* @TODO TEMPORARY: will be removed */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
           Dev mode

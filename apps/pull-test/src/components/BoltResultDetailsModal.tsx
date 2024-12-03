@@ -16,7 +16,7 @@ import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
 
 interface BoltResultDetailsModalProps {
   modalTitle: string;
@@ -47,10 +47,9 @@ export const BoltResultDetailsModal = ({
     peakLoad,
     peakDisplacement,
     drive,
-    bitSize,
+    location,
     boltType,
     boltNumber,
-    rotations,
     level,
     ring,
     author,
@@ -60,12 +59,13 @@ export const BoltResultDetailsModal = ({
 
   const specifications: BoltSpecification[] = [
     { title: 'Bolt', text: boltNumber },
-    { title: 'Bit size', text: bitSize },
+    { title: 'Bolt type', text: boltType },
     { title: 'Level', text: level },
     { title: 'Drive', text: drive },
+    { title: 'Location', text: location },
     { title: 'Position in ring', text: ring },
-    { title: 'Rotations', text: rotations },
-    { title: 'Pass criteria', text: boltType },
+    { title: 'Result', text: 'Fail' },
+    { title: 'Abort Reason', text: 'None ya bizz' },
   ];
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -168,7 +168,8 @@ export const BoltResultDetailsModal = ({
             Bolt specifications
           </Headline>
           <div className="flex flex-wrap">
-            {specifications.map((boltSpec, index) => (
+            //
+            {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
               <Specification
                 key={index}
                 title={boltSpec.title}
@@ -176,7 +177,7 @@ export const BoltResultDetailsModal = ({
                 className="w-1/2"
               />
             ))}
-            {specifications.length % 2 === 1 && (
+            {boltSpecifications.length % 2 === 2 && (
               <Specification title="" text="" className="w-1/2" />
             )}
           </div>

@@ -361,16 +361,16 @@ export const hazardCardMock = [
 
 export const boltSpecifications = [
   {
+    title: 'Site',
+    text: 'Garpenberg',
+  },
+  {
+    title: 'Bolt',
+    text: '242',
+  },
+  {
     title: 'Bolt type',
     text: 'MD47',
-  },
-  {
-    title: 'Peak load',
-    text: '15',
-  },
-  {
-    title: 'Displacement',
-    text: '19mm',
   },
   {
     title: 'Level',
@@ -381,12 +381,20 @@ export const boltSpecifications = [
     text: 'COS 1842',
   },
   {
+    title: 'Location',
+    text: '22, 49',
+  },
+  {
     title: 'Position in ring',
     text: 'L/H Shoulder',
   },
   {
     title: 'Result',
     text: 'Pass',
+  },
+  {
+    title: 'Abort Reason',
+    text: 'N/A',
   },
 ];
 

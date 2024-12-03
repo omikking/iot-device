@@ -30,24 +30,25 @@ interface HazardCardProps {
   fullBoltData?: BoltResultSchema;
 }
 
-interface BoltSpecification {
-  title: string;
-  text: string;
-}
+// interface BoltSpecification {
+//   title: string;
+//   text: string;
+// }
 
 export const HazardCard = ({
   dateTitle,
   isHazard,
   boltDescription,
   fullBoltData,
+  boltInfoItems,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const specifications: BoltSpecification[] = [
-    { title: 'Diameter', text: fullBoltData?.bitSize || '' },
-    { title: 'Pass criteria', text: fullBoltData?.boltType || '' }, // Unsure what the value should be here
-    { title: 'Location', text: fullBoltData?.location || '' },
-  ];
+  // const specifications: BoltSpecification[] = [
+  //   { title: 'Diameter', text: fullBoltData?.bitSize || '' },
+  //   { title: 'Pass criteria', text: fullBoltData?.boltType || '' }, // Unsure what the value should be here
+  //   { title: 'Location', text: fullBoltData?.location || '' },
+  // ];
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -64,7 +65,7 @@ export const HazardCard = ({
           {formatDate(new Date(dateTitle))}
         </Headline>
         {isHazard && (
-          <Badge variant="warning">
+          <Badge variant="attention">
             <LucideAlertTriangle />
             Hazard
           </Badge>
@@ -72,13 +73,15 @@ export const HazardCard = ({
       </div>
       <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
-          {specifications.map((boltSpec, index) => (
-            <Specification
-              key={index}
-              title={boltSpec.title}
-              text={boltSpec.text}
-            />
-          ))}
+          {[...boltInfoItems.slice(0, 2), ...boltInfoItems.slice(-1)].map(
+            (boltSpec, i) => (
+              <Specification
+                key={i}
+                title={boltSpec.title}
+                text={boltSpec.text}
+              />
+            ),
+          )}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">

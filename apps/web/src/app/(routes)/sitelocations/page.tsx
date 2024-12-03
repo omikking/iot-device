@@ -145,7 +145,7 @@ export default function Page(): JSX.Element {
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">
-                      {selectedSite}
+                      {selectedSiteName}
                     </Text>
                   </BreadcrumbItem>
                 </>

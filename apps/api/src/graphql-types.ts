@@ -68,7 +68,6 @@ export class UpdateUserPermissionInput {
 
 export class CreateSiteInput {
     siteName: string;
-    orgNumber: string;
     address: string;
     postalCode: string;
     city: string;
@@ -78,11 +77,11 @@ export class CreateSiteInput {
 
 export class UpdateSiteInput {
     siteName?: Nullable<string>;
-    orgNumber?: Nullable<string>;
     address?: Nullable<string>;
     postalCode?: Nullable<string>;
     city?: Nullable<string>;
     country?: Nullable<string>;
+    companyId: string;
 }
 
 export class Coffee {
@@ -104,6 +103,8 @@ export abstract class IQuery {
     coffee?: Coffee;
     companies: Company[];
     company?: Company;
+    sites: Site[];
+    site?: Site;
 }
 
 export abstract class IMutation {
@@ -113,6 +114,9 @@ export abstract class IMutation {
     createCompany?: Company;
     updateCompany?: Company;
     removeCompany?: Company;
+    createSite?: Site;
+    updateSite?: Site;
+    removeSite?: Site;
 }
 
 export class Company {

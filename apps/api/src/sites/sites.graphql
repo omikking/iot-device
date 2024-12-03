@@ -30,7 +30,7 @@ Level model
 Define the Level model and its fields
 """
 type Level {
-  # @TODO fully later
+  # @TODO add all fields later, this is just added to make sure it works
   levelName: String!
 }
 
@@ -40,7 +40,7 @@ BoltResult model
 Define the BoltResult model and its fields
 """
 type BoltResult {
-  # @TODO fully later
+  # @TODO add all fields later, this is just added to make sure it works
   boltNumber: Int!
 }
 
@@ -50,7 +50,6 @@ Define the input fields to create a new site
 """
 input CreateSiteInput {
   siteName: String!
-  orgNumber: String!
   address: String!
   postalCode: String!
   city: String!
@@ -65,9 +64,28 @@ Optional are marked without the exclamation mark
 """
 input UpdateSiteInput {
   siteName: String
-  orgNumber: String
   address: String
   postalCode: String
   city: String
   country: String
+  companyId: String!
+}
+
+"""
+Query
+Define the queries that can be made to the Site model
+"""
+type Query {
+  sites: [Site!]!
+  site(id: String!): Site!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Site model
+"""
+type Mutation {
+  createSite(createSiteInput: CreateSiteInput!): Site!
+  updateSite(id: String!, updateSiteInput: UpdateSiteInput!): Site!
+  removeSite(id: String!): Site!
 }

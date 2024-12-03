@@ -103,7 +103,6 @@ export const TechniciansTable = () => {
         itemToDelete={technicianToDelete}
         onOpenChange={closeDeleteModal}
         onDelete={(event, index) => {
-          console.log('Deleting site at index:', index);
           handleDelete(index);
           closeDeleteModal();
         }}

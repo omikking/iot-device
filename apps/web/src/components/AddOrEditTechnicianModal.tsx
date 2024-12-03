@@ -97,7 +97,7 @@ export const AddOrEditTechnicianModal = ({
         isGlobal: technician.isGlobal,
       });
     }
-    // Call handleModalClose when technician is null (modal closes)
+
     if (!technician) {
       handleModalClose();
     }
@@ -210,9 +210,6 @@ export const AddOrEditTechnicianModal = ({
                         <RadioGroup
                           value={String(field.value)}
                           onValueChange={field.onChange}
-                          // onValueChange={(value) =>
-                          //   field.onChange(value === 'true')
-                          // }
                         >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>

@@ -29,10 +29,17 @@ export class CreateCompanyInput {
     country: string;
     companyContactEmail: string;
     userPermissions: CreateUserPermissionInput[];
+    plans?: Nullable<CreatePlanInput[]>;
 }
 
 export class CreateUserPermissionInput {
     userId: string;
+}
+
+export class CreatePlanInput {
+    applicationName: string;
+    planLevel: string;
+    expiringDate?: Nullable<DateTime>;
 }
 
 export class UpdateCompanyInput {
@@ -44,6 +51,14 @@ export class UpdateCompanyInput {
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
     userPermissions?: Nullable<UpdateUserPermissionInput[]>;
+    plans?: Nullable<UpdatePlanInput[]>;
+}
+
+export class UpdatePlanInput {
+    id: string;
+    applicationName: string;
+    planLevel?: Nullable<string>;
+    expiringDate?: Nullable<DateTime>;
 }
 
 export class UpdateUserPermissionInput {
@@ -92,7 +107,43 @@ export class Company {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions?: Nullable<UserPermission[]>;
+    users?: Nullable<User[]>;
+    plans?: Nullable<Plan[]>;
+    sites?: Nullable<Site[]>;
+}
+
+export class Plan {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    companyId: string;
+    applicationName: string;
+    planLevel: string;
+    expiringDate?: Nullable<DateTime>;
+}
+
+export class Site {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    siteName: string;
+    adress: string;
+    postalCode: string;
+    city: string;
+    country: string;
+}
+
+export class User {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+    userPermission?: Nullable<UserPermission[]>;
 }
 
 export class UserPermission {
@@ -100,7 +151,7 @@ export class UserPermission {
     createdAt: DateTime;
     updatedAt: DateTime;
     userId: string;
-    role?: Nullable<string>;
+    role: string;
     appsAccess?: Nullable<string[]>;
 }
 

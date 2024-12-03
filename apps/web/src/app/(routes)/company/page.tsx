@@ -47,12 +47,12 @@ export const companyFormSchema = z.object({
   assignSandvikAdministrator: z.string(),
 });
 
-type CompanyFromValues = z.infer<typeof companyFormSchema>;
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
 export default function Page(): JSX.Element {
   // @TODO: validate the form
-  const companyForm: UseFormReturn<CompanyFromValues> =
-    useForm<CompanyFromValues>({
+  const companyForm: UseFormReturn<CompanyFormValues> =
+    useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
       defaultValues: {
         companyName: 'E-corp',

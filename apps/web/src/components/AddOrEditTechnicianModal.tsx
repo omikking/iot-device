@@ -15,6 +15,11 @@ import {
   RadioGroupItem,
   RadioGroup,
   LoadingSpinner,
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  Text,
 } from '@gsp/ui';
 import {
   TechnicianFormValues,
@@ -24,7 +29,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LucidePlus, LucideSquarePen } from 'lucide-react';
+import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 
 interface AddOrEditTechnicianModalProps {
   onOpenChange: (open: boolean) => void;
@@ -197,9 +202,30 @@ export const AddOrEditTechnicianModal = ({
                 />
               </div>
               <div className="pt-10">
-                <Headline as="h3" color="foreground" variant="small" isBold>
-                  Make this technician visible globally?
-                </Headline>
+                <div className="flex flex-row items-center gap-2">
+                  <Headline as="h3" color="foreground" variant="small" isBold>
+                    Make this technician visible globally?
+                  </Headline>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={100}>
+                      <TooltipTrigger>
+                        <LucideCircleHelp className="text-orange-primary" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <Text
+                          color={'foreground'}
+                          variant={'small'}
+                          className="w-72"
+                        >
+                          If it’s set to visible, all your customers will be
+                          able to assign this technician on them. If it’s
+                          private, only the administrator will be able to assign
+                          this technician.
+                        </Text>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
 
                 <FormField
                   control={form.control}

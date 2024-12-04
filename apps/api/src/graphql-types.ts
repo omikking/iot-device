@@ -66,6 +66,15 @@ export class UpdateUserPermissionInput {
     newUserId: string;
 }
 
+export class CreateDriveInput {
+    driveName: string;
+    levelId: string;
+}
+
+export class UpdateDriveInput {
+    driveName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -103,6 +112,8 @@ export abstract class IQuery {
     coffee?: Coffee;
     companies: Company[];
     company?: Company;
+    drives: Drive[];
+    drive?: Drive;
     sites: Site[];
     site?: Site;
 }
@@ -114,6 +125,9 @@ export abstract class IMutation {
     createCompany?: Company;
     updateCompany?: Company;
     removeCompany?: Company;
+    createDrive?: Drive;
+    updateDrive?: Drive;
+    removeDrive?: Drive;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -167,6 +181,24 @@ export class UserPermission {
     appsAccess?: Nullable<string[]>;
 }
 
+export class Drive {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    driveName: string;
+    levelId: string;
+    locations?: Nullable<Location[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Location {
+    locationName: string;
+}
+
+export class BoltResult {
+    boltNumber: number;
+}
+
 export class Site {
     id: string;
     createdAt: DateTime;
@@ -183,10 +215,6 @@ export class Site {
 
 export class Level {
     levelName: string;
-}
-
-export class BoltResult {
-    boltNumber: number;
 }
 
 export type DateTime = any;

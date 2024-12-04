@@ -1,0 +1,77 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+Drive model
+Define the Drive model and its fields
+"""
+type Drive {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  driveName: String!
+  levelId: String!
+  locations: [Location!]
+  boltResults: [BoltResult!]
+}
+
+# @TODO move later to Location model when it exists
+"""
+Location model
+Define the Location model and its fields
+"""
+type Location {
+  # @TODO add all fields later, this is just added to make sure it works
+  locationName: String!
+}
+
+# @TODO move later to BoltResult model when it exists
+"""
+BoltResult model
+Define the BoltResult model and its fields
+"""
+type BoltResult {
+  # @TODO add all fields later, this is just added to make sure it works
+  boltNumber: Int!
+}
+
+"""
+CreateDriveInput
+Define the input fields to create a new drive
+"""
+input CreateDriveInput {
+  driveName: String!
+  levelId: String!
+}
+
+"""
+UpdateDriveInput
+Define the input fields to update an existing drive
+Optional are marked without the exclamation mark
+"""
+input UpdateDriveInput {
+  driveName: String
+}
+
+"""
+Query
+Define the queries that can be made to the Drive model
+"""
+type Query {
+  drives: [Drive!]!
+  drive(id: String!): Drive!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Drive model
+"""
+type Mutation {
+  createDrive(createDriveInput: CreateDriveInput!): Drive!
+  updateDrive(id: String!, updateDriveInput: UpdateDriveInput!): Drive!
+  removeDrive(id: String!): Drive!
+}

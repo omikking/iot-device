@@ -44,7 +44,7 @@ export default function Page(): JSX.Element {
         </NavigationCard>
       </div>
 
-      <hr className="w-full border-gold-3 mb-4" />
+      <hr className="w-full border-neutral-3 mb-4" />
 
       <ContentHolder variant="table" headlineText="Companies to administrate">
         <CompanyList />

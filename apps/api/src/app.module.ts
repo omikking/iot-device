@@ -10,6 +10,7 @@ import { CoffeesModule } from './coffees/coffees.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DateScalar } from './common/scalars/date.scalar';
 import { SitesModule } from './sites/sites.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SitesModule } from './sites/sites.module';
     CoffeesModule,
     CompaniesModule,
     SitesModule,
+    UsersModule,
   ],
   providers: [DateScalar],
 })

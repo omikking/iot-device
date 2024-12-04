@@ -12,7 +12,7 @@ export default function Page(): JSX.Element {
         Design system - Pull Test Portal 🦄
       </Headline>
 
-      <hr className="w-full" />
+      <hr className="w-full border-neutral-3" />
 
       <Headline variant="large" as="h1" color="foreground">
         Bolt results filter 🦄
@@ -21,7 +21,7 @@ export default function Page(): JSX.Element {
         <BoltResultsFilter />
       </div>
 
-      <hr className="w-full" />
+      <hr className="w-full border-neutral-3" />
 
       <Headline variant="large" as="h1" color="foreground">
         Hazard card 🦄
@@ -41,7 +41,7 @@ export default function Page(): JSX.Element {
         )}
       </div>
 
-      <hr className="w-full" />
+      <hr className="w-full border-neutral-3" />
     </main>
   );
 }

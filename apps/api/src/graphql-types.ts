@@ -75,6 +75,15 @@ export class UpdateDriveInput {
     driveName?: Nullable<string>;
 }
 
+export class CreateLevelInput {
+    levelName: string;
+    siteId: string;
+}
+
+export class UpdateLevelInput {
+    levelName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -114,6 +123,8 @@ export abstract class IQuery {
     company?: Company;
     drives: Drive[];
     drive?: Drive;
+    levels: Level[];
+    level?: Level;
     sites: Site[];
     site?: Site;
 }
@@ -128,6 +139,9 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createLevel?: Level;
+    updateLevel?: Level;
+    removeLevel?: Level;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -199,6 +213,16 @@ export class BoltResult {
     boltNumber: number;
 }
 
+export class Level {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    levelName: string;
+    siteId: string;
+    drives?: Nullable<Drive[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
 export class Site {
     id: string;
     createdAt: DateTime;
@@ -211,10 +235,6 @@ export class Site {
     companyId: string;
     levels?: Nullable<Level[]>;
     boltResults?: Nullable<BoltResult[]>;
-}
-
-export class Level {
-    levelName: string;
 }
 
 export type DateTime = any;

@@ -1,0 +1,77 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+Level model
+Define the Level model and its fields
+"""
+type Level {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  levelName: String!
+  siteId: String!
+  drives: [Drive!]
+  boltResults: [BoltResult!]
+}
+
+# @TODO move later to Drive model when it exists
+"""
+Drive model
+Define the Drive model and its fields
+"""
+type Drive {
+  # @TODO add all fields later, this is just added to make sure it works
+  driveName: String!
+}
+
+# @TODO move later to BoltResult model when it exists
+"""
+BoltResult model
+Define the BoltResult model and its fields
+"""
+type BoltResult {
+  # @TODO add all fields later, this is just added to make sure it works
+  boltNumber: Int!
+}
+
+"""
+CreateLevelInput
+Define the input fields to create a new level
+"""
+input CreateLevelInput {
+  levelName: String!
+  siteId: String!
+}
+
+"""
+UpdateLevelInput
+Define the input fields to update an existing level
+Optional are marked without the exclamation mark
+"""
+input UpdateLevelInput {
+  levelName: String
+}
+
+"""
+Query
+Define the queries that can be made to the Level model
+"""
+type Query {
+  levels: [Level!]!
+  level(id: String!): Level!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Level model
+"""
+type Mutation {
+  createLevel(createLevelInput: CreateLevelInput!): Level!
+  updateLevel(id: String!, updateLevelInput: UpdateLevelInput!): Level!
+  removeLevel(id: String!): Level!
+}

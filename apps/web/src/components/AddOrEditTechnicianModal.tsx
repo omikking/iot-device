@@ -33,7 +33,7 @@ import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 
 interface AddOrEditTechnicianModalProps {
   onOpenChange: (open: boolean) => void;
-  technician?: TechnicianFormValues | null;
+  technician?: TechnicianFormValues;
 }
 
 export const AddOrEditTechnicianModal = ({
@@ -82,25 +82,13 @@ export const AddOrEditTechnicianModal = ({
   };
 
   const handleModalClose = () => {
-    form.reset({
-      fullName: '',
-      company: '',
-      email: '',
-      phoneNumber: '',
-      isGlobal: false,
-    });
+    resetFormValues();
     onOpenChange(false);
   };
 
   useEffect(() => {
     if (technician) {
-      form.reset({
-        fullName: technician.fullName,
-        company: technician.company,
-        email: technician.email,
-        phoneNumber: technician.phoneNumber,
-        isGlobal: technician.isGlobal,
-      });
+      form.reset(technician);
     }
 
     if (!technician) {
@@ -264,7 +252,7 @@ export const AddOrEditTechnicianModal = ({
                 variant="primary"
                 disabled={isLoading}
               >
-                {isLoading ? (
+                {/* {isLoading ? (
                   <LoadingSpinner className="animate-spin" size={24} />
                 ) : technician ? (
                   <>
@@ -274,6 +262,25 @@ export const AddOrEditTechnicianModal = ({
                 ) : (
                   <>
                     <LucidePlus />
+                    Add technician
+                  </>
+                )} */}
+                {technician ? (
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucideSquarePen />
+                    )}
+                    Edit technician
+                  </>
+                ) : (
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucidePlus />
+                    )}
                     Add technician
                   </>
                 )}

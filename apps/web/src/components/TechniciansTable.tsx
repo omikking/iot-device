@@ -9,7 +9,7 @@ import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
 
 interface TechniciansTableProps {
   onOpenChange: (open: boolean) => void;
-  onSelectTechnician?: (technician: TechniciansSchema) => void;
+  onSelectTechnician: (technician: TechniciansSchema) => void;
 }
 export const TechniciansTable = ({
   onOpenChange,
@@ -30,7 +30,7 @@ export const TechniciansTable = ({
   // get the index of the technician to edit and pass it to the modal
   const openEditModal = (index: number) => {
     const technicianToEdit = technicians[index];
-    onSelectTechnician?.(technicianToEdit);
+    onSelectTechnician(technicianToEdit);
     onOpenChange(true);
   };
 

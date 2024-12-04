@@ -10,14 +10,15 @@ import { TechniciansSchema } from '@/app/mock/mock';
 export default function Page(): JSX.Element {
   const [openTechModal, setOpenTechModal] = useState<boolean>(false);
   // selectedTechnician is used to pass the selected technician to the modal
-  const [selectedTechnician, setSelectedTechnician] =
-    useState<TechniciansSchema | null>(null);
+  const [selectedTechnician, setSelectedTechnician] = useState<
+    TechniciansSchema | undefined
+  >(undefined);
 
   // handle the opening and closing of the modal, but also reset the selected technician when the modal is closed
   const handleModalClose = (open: boolean) => {
     setOpenTechModal(open);
     if (!open) {
-      setSelectedTechnician(null);
+      setSelectedTechnician(undefined);
     }
   };
 

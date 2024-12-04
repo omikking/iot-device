@@ -16,16 +16,7 @@ export const technicianFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers' }),
-  isGlobal: z
-    // Felinho: answer in PR comments
-    // Is there a reason why we are using a string instead of boolean?
-    // I have an issue with default values in forms when im using a string
-
-    // .string({
-    //   message: 'Please select the visibility of the technician.',
-    // })
-    // .transform((val) => val === 'true'),
-    .boolean(),
+  isGlobal: z.boolean(),
 });
 
 // This creates the type from the schema

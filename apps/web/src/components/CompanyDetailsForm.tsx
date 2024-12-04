@@ -7,8 +7,17 @@ import {
   FormMessage,
   Input,
 } from '@gsp/ui';
+import { companyFormSchema } from '@/app/(routes)/company/page';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 
-export const CompanyDetailsForm = ({ companyForm }) => {
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
+
+export const CompanyDetailsForm = ({
+  companyForm,
+}: {
+  companyForm: UseFormReturn<CompanyFormValues>;
+}) => {
   return (
     <ContentHolder variant="general" headlineText="Company details">
       <FormField

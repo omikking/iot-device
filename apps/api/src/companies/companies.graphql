@@ -2,6 +2,9 @@
 # We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
 
 # Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
 """
 Company model
 Define the Company model and its fields
@@ -17,7 +20,55 @@ type Company {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [UserPermission!]
+  users: [User!]
+  plans: [Plan!]
+  sites: [Site!]
+}
+
+"""
+Plan model
+Define the Plan model and its fields
+"""
+type Plan {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  companyId: String!
+  applicationName: String!
+  planLevel: String!
+  expiringDate: DateTime
+}
+
+"""
+Site model
+Define the Site model and its fields
+"""
+type Site {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  siteName: String!
+  adress: String!
+  postalCode: String!
+  city: String!
+  country: String!
+}
+
+"""
+User model
+Define the User model and its fields
+"""
+type User {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  fullName: String!
+  workPlace: String!
+  phoneNumber: String
+  globalRole: String
+  isGlobalVisibility: Boolean
+  userPermission: [UserPermission!]
 }
 
 """
@@ -29,7 +80,7 @@ type UserPermission {
   createdAt: DateTime!
   updatedAt: DateTime!
   userId: String!
-  role: String
+  role: String!
   appsAccess: [String!]
 }
 
@@ -46,6 +97,7 @@ input CreateCompanyInput {
   country: String!
   companyContactEmail: String!
   userPermissions: [CreateUserPermissionInput!]!
+  plans: [CreatePlanInput!]
 }
 
 """
@@ -54,6 +106,16 @@ Define the input fields to create a new userPermission
 """
 input CreateUserPermissionInput {
   userId: String!
+}
+
+"""
+CreatePlanInput
+Define the input fields to create a new plan
+"""
+input CreatePlanInput {
+  applicationName: String!
+  planLevel: String!
+  expiringDate: DateTime
 }
 
 """
@@ -70,6 +132,18 @@ input UpdateCompanyInput {
   country: String
   companyContactEmail: String
   userPermissions: [UpdateUserPermissionInput!]
+  plans: [UpdatePlanInput!]
+}
+
+"""
+UpdatePlanInput
+Define the input fields to update the plans
+"""
+input UpdatePlanInput {
+  id: String!
+  applicationName: String!
+  planLevel: String
+  expiringDate: DateTime
 }
 
 """

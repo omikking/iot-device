@@ -125,8 +125,9 @@ export const TechniciansTable = ({
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {technicianToDelete &&
-              ` ${technicians[technicianToDelete].fullName} `}
+            {technicianToDelete !== undefined
+              ? ` ${technicians[technicianToDelete].fullName} `
+              : ''}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

@@ -19,11 +19,11 @@ import {
 import { z } from 'zod';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { GoBack } from '@/components/GoBack';
 import { appPlansMock } from '@/app/mock/mock';
 import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
@@ -47,25 +47,28 @@ export const companyFormSchema = z.object({
   assignSandvikAdministrator: z.string(),
 });
 
+type CompanyFormValues = z.infer<typeof companyFormSchema>;
+
 export default function Page(): JSX.Element {
   // @TODO: validate the form
-  const companyForm = useForm<z.infer<typeof companyFormSchema>>({
-    resolver: zodResolver(companyFormSchema),
-    defaultValues: {
-      companyName: 'E-corp',
-      fullContactName: 'Phillip Price',
-      organisationNumber: '133742',
-      country: 'Sweden',
-      city: 'Gothenburg',
-      address: 'Vasa Gatan 32',
+  const companyForm: UseFormReturn<CompanyFormValues> =
+    useForm<CompanyFormValues>({
+      resolver: zodResolver(companyFormSchema),
+      defaultValues: {
+        companyName: 'E-corp',
+        fullContactName: 'Phillip Price',
+        organisationNumber: '133742',
+        country: 'Sweden',
+        city: 'Gothenburg',
+        address: 'Vasa Gatan 32',
 
-      pullTestPlan: '',
-      xCyclopsPlan: '',
-      ultraboltsPlan: '',
+        pullTestPlan: '',
+        xCyclopsPlan: '',
+        ultraboltsPlan: '',
 
-      assignSandvikAdministrator: '',
-    },
-  });
+        assignSandvikAdministrator: '',
+      },
+    });
 
   // @TODO Just for testing Add company / Edit company state
   const companyToEditName = 'E-Corp';

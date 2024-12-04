@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
-import { Text } from '@gsp/ui';
-import { z } from 'zod';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IDriveMock,
   ILevelMock,
   ILocationMock,
 } from '@/app/(routes)/sitelocations/page';
+import React, { useState } from 'react';
+import { SiteLocationsForm } from '../SiteLocationsForm';
+import { Text } from '@gsp/ui';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 interface LevelComponentProps {
   selectedLevel?: string;
   level: ILevelMock;
@@ -40,20 +40,14 @@ export const LevelItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const levelFormSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-  });
-
-  type LevelFormValues = z.infer<typeof levelFormSchema>;
-
-  const levelForm: UseFormReturn<LevelFormValues> = useForm<LevelFormValues>({
-    resolver: zodResolver(levelFormSchema),
-    defaultValues: {
-      id: '',
-      name: '',
-    },
-  });
+  const levelForm: UseFormReturn<SiteLocationsValue> =
+    useForm<SiteLocationsValue>({
+      resolver: zodResolver(siteLocationsSchema),
+      defaultValues: {
+        id: '',
+        name: '',
+      },
+    });
 
   const handleEditLevel = () => {
     setIsEditing(true);

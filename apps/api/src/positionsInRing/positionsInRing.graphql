@@ -1,0 +1,71 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+PositionInRing model
+Define the PositionInRing model and its fields
+"""
+type PositionInRing {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  positionInRingName: String!
+  locationId: String!
+  boltResults: [BoltResult!]
+}
+
+# @TODO move later to BoltResult model when it exists
+"""
+BoltResult model
+Define the BoltResult model and its fields
+"""
+type BoltResult {
+  # @TODO add all fields later, this is just added to make sure it works
+  boltNumber: Int!
+}
+
+"""
+CreatePositionInRingInput
+Define the input fields to create a new positionInRing
+"""
+input CreatePositionInRingInput {
+  positionInRingName: String!
+  locationId: String!
+}
+
+"""
+UpdatePositionInRingInput
+Define the input fields to update an existing positionInRing
+Optional are marked without the exclamation mark
+"""
+input UpdatePositionInRingInput {
+  positionInRingName: String
+}
+
+"""
+Query
+Define the queries that can be made to the PositionInRing model
+"""
+type Query {
+  positionsInRing: [PositionInRing!]!
+  positionInRing(id: String!): PositionInRing!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the PositionInRing model
+"""
+type Mutation {
+  createPositionInRing(
+    createPositionInRingInput: CreatePositionInRingInput!
+  ): PositionInRing!
+  updatePositionInRing(
+    id: String!
+    updatePositionInRingInput: UpdatePositionInRingInput!
+  ): PositionInRing!
+  removePositionInRing(id: String!): PositionInRing!
+}

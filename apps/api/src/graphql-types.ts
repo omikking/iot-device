@@ -93,6 +93,15 @@ export class UpdateLocationInput {
     locationName?: Nullable<string>;
 }
 
+export class CreatePositionInRingInput {
+    positionInRingName: string;
+    locationId: string;
+}
+
+export class UpdatePositionInRingInput {
+    positionInRingName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -136,6 +145,8 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
+    positionsInRing: PositionInRing[];
+    positionInRing?: PositionInRing;
     sites: Site[];
     site?: Site;
 }
@@ -156,6 +167,9 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    createPositionInRing?: PositionInRing;
+    updatePositionInRing?: PositionInRing;
+    removePositionInRing?: PositionInRing;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -245,6 +259,11 @@ export class Location {
 
 export class PositionInRing {
     positionInRingName: string;
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    locationId: string;
+    boltResults?: Nullable<BoltResult[]>;
 }
 
 export class Site {

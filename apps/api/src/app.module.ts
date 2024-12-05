@@ -13,6 +13,7 @@ import { SitesModule } from './sites/sites.module';
 import { LevelsModule } from './levels/levels.module';
 import { DrivesModule } from './drives/drives.module';
 import { LocationsModule } from './locations/locations.module';
+import { PositionsInRingModule } from './positionsInRing/positionsInRing.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { LocationsModule } from './locations/locations.module';
     LevelsModule,
     DrivesModule,
     LocationsModule,
+    PositionsInRingModule,
   ],
   providers: [DateScalar],
 })

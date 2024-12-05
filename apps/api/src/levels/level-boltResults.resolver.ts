@@ -1,7 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BoltResult } from 'src/sites/interface/boltResult-data';
-import { Level } from 'src/sites/interface/levels-data';
+import { Level } from './interface/level-data';
 
 @Resolver('Level')
 export class LevelBoltResultsResolver {

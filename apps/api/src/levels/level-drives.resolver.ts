@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Level } from 'src/sites/interface/levels-data';
+import { Level } from 'src/sites/interface/level-data';
 import { Drive } from './interface/drive-data';
 
 @Resolver('Level')

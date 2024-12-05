@@ -240,7 +240,7 @@ model BoltResult {
 
   result              Result
   isHazard            Boolean              @default(false)
-  hazardCompletedDate DateTime[]
+  hazardCompletedDate DateTime[] // Need to make optional
   abortReason         PullTestAbortReason?
   comment             String?
   image               String? // base64

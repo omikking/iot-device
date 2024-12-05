@@ -1,6 +1,5 @@
 import {
   ArrayMaxSize,
-  ArrayMinSize,
   ArrayNotEmpty,
   IsArray,
   IsEmail,
@@ -40,7 +39,6 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
 
   @IsArray()
   @ArrayNotEmpty()
-  @ArrayMinSize(1)
   @ArrayMaxSize(1)
   userPermissions: GraphQLTypes.CreateUserPermissionInput[];
 

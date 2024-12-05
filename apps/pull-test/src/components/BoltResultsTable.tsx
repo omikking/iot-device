@@ -49,7 +49,6 @@ export const BoltResultsTable = ({
       header: 'Bolt type',
     },
     {
-      // PEAK LOAD
       accessorKey: 'peakLoad',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Peak load(tons)" />
@@ -67,9 +66,9 @@ export const BoltResultsTable = ({
         const a = rowA.getValue('peakLoad') as string[];
         const b = rowB.getValue('peakLoad') as string[];
 
-        if (a.length > 1 && b.length <= 1) return 1; // a is badge, push to end
-        if (b.length > 1 && a.length <= 1) return -1; // b is badge, push to end
-        if (a.length > 1 && b.length > 1) return 0; // both are badges
+        if (a.length > 1 && b.length <= 1) return 1;
+        if (b.length > 1 && a.length <= 1) return -1;
+        if (a.length > 1 && b.length > 1) return 0;
 
         const aNum = Number(a[0]);
         const bNum = Number(b[0]);
@@ -78,7 +77,6 @@ export const BoltResultsTable = ({
       },
     },
     {
-      // PEAK DISPLACEMENT
       accessorKey: 'peakDisplacement',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Peak displacement(mm)" />
@@ -96,9 +94,9 @@ export const BoltResultsTable = ({
         const a = rowA.getValue('peakDisplacement') as string[];
         const b = rowB.getValue('peakDisplacement') as string[];
 
-        if (a.length > 1 && b.length <= 1) return 1; // a is badge, push to end
-        if (b.length > 1 && a.length <= 1) return -1; // b is badge, push to end
-        if (a.length > 1 && b.length > 1) return 0; // both are badges
+        if (a.length > 1 && b.length <= 1) return 1;
+        if (b.length > 1 && a.length <= 1) return -1;
+        if (a.length > 1 && b.length > 1) return 0;
 
         const aNum = Number(a[0]);
         const bNum = Number(b[0]);

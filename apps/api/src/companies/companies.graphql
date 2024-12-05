@@ -15,7 +15,7 @@ type Company {
   updatedAt: DateTime!
   name: String!
   orgNumber: String!
-  adress: String!
+  address: String!
   postalCode: String!
   city: String!
   country: String!
@@ -37,21 +37,6 @@ type Plan {
   applicationName: String!
   planLevel: String!
   expiringDate: DateTime
-}
-
-"""
-Site model
-Define the Site model and its fields
-"""
-type Site {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  siteName: String!
-  adress: String!
-  postalCode: String!
-  city: String!
-  country: String!
 }
 
 """
@@ -91,7 +76,7 @@ Define the input fields to create a new company
 input CreateCompanyInput {
   name: String!
   orgNumber: String!
-  adress: String!
+  address: String!
   postalCode: String!
   city: String!
   country: String!
@@ -126,7 +111,7 @@ Optional are marked without the exclamation mark
 input UpdateCompanyInput {
   name: String
   orgNumber: String
-  adress: String
+  address: String
   postalCode: String
   city: String
   country: String

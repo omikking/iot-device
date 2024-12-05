@@ -9,6 +9,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CoffeesModule } from './coffees/coffees.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DateScalar } from './common/scalars/date.scalar';
+import { SitesModule } from './sites/sites.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { DateScalar } from './common/scalars/date.scalar';
     }),
     CoffeesModule,
     CompaniesModule,
+    SitesModule,
   ],
   providers: [DateScalar],
 })

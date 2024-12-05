@@ -38,7 +38,7 @@ export class CompaniesService {
         data: {
           name: companyData.name,
           orgNumber: companyData.orgNumber,
-          adress: companyData.adress,
+          address: companyData.address,
           postalCode: companyData.postalCode,
           city: companyData.city,
           country: companyData.country,
@@ -86,8 +86,6 @@ export class CompaniesService {
       });
 
       if (plans && plans.length > 0) {
-        console.log(plans);
-
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
             companyId: createdCompany.id,
@@ -119,7 +117,7 @@ export class CompaniesService {
         data: {
           name: companyData?.name || undefined,
           orgNumber: companyData?.orgNumber || undefined,
-          adress: companyData?.adress || undefined,
+          address: companyData?.address || undefined,
           postalCode: companyData?.postalCode || undefined,
           city: companyData?.city || undefined,
           country: companyData?.country || undefined,

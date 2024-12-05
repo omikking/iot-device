@@ -19,16 +19,6 @@ type Level {
   boltResults: [BoltResult!]
 }
 
-# @TODO move later to Drive model when it exists
-"""
-Drive model
-Define the Drive model and its fields
-"""
-type Drive {
-  # @TODO add all fields later, this is just added to make sure it works
-  driveName: String!
-}
-
 # @TODO move later to BoltResult model when it exists
 """
 BoltResult model

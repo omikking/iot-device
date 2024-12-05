@@ -24,16 +24,6 @@ type Site {
   boltResults: [BoltResult!]
 }
 
-# @TODO move later to Level model when it exists
-"""
-Level model
-Define the Level model and its fields
-"""
-type Level {
-  # @TODO add all fields later, this is just added to make sure it works
-  levelName: String!
-}
-
 # @TODO move later to BoltResult model when it exists
 """
 BoltResult model

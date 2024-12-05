@@ -1,7 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Drive } from './interface/drive-data';
-import { Location } from './interface/locations-data';
+import { Location } from './interface/location-data';
 
 @Resolver('Drive')
 export class DriveLocationsResolver {

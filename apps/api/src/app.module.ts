@@ -10,6 +10,7 @@ import { CoffeesModule } from './coffees/coffees.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DateScalar } from './common/scalars/date.scalar';
 import { SitesModule } from './sites/sites.module';
+import { LevelsModule } from './levels/levels.module';
 import { DrivesModule } from './drives/drives.module';
 
 @Module({
@@ -26,6 +27,7 @@ import { DrivesModule } from './drives/drives.module';
     CoffeesModule,
     CompaniesModule,
     SitesModule,
+    LevelsModule,
     DrivesModule,
   ],
   providers: [DateScalar],

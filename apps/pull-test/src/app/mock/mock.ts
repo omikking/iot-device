@@ -388,6 +388,7 @@ export const boltSpecifications = [
     title: 'Position in ring',
     text: 'L/H Shoulder',
   },
+  // @TODO: make these dynamic?
   {
     title: 'Result',
     text: 'Pass',

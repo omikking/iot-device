@@ -25,11 +25,6 @@ interface BoltResultDetailsModalProps {
   isHazardCompletable?: boolean;
 }
 
-interface BoltSpecification {
-  title: string;
-  text: string;
-}
-
 export const BoltResultDetailsModal = ({
   modalTitle,
   isHazardCompletable = false,
@@ -41,32 +36,10 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const {
-    image,
-    isHazard,
-    peakLoad,
-    peakDisplacement,
-    drive,
-    location,
-    boltType,
-    boltNumber,
-    level,
-    ring,
-    author,
-  } = (fullBoltData as BoltResultSchema) || {};
+  const { image, isHazard, peakLoad, peakDisplacement, author } =
+    (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
-
-  const specifications: BoltSpecification[] = [
-    { title: 'Bolt', text: boltNumber },
-    { title: 'Bolt type', text: boltType },
-    { title: 'Level', text: level },
-    { title: 'Drive', text: drive },
-    { title: 'Location', text: location },
-    { title: 'Position in ring', text: ring },
-    { title: 'Result', text: 'Fail' },
-    { title: 'Abort Reason', text: 'None ya bizz' },
-  ];
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
@@ -168,7 +141,6 @@ export const BoltResultDetailsModal = ({
             Bolt specifications
           </Headline>
           <div className="flex flex-wrap">
-            //
             {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
               <Specification
                 key={index}
@@ -177,7 +149,7 @@ export const BoltResultDetailsModal = ({
                 className="w-1/2"
               />
             ))}
-            {boltSpecifications.length % 2 === 2 && (
+            {boltSpecifications.length % 2 === 0 && (
               <Specification title="" text="" className="w-1/2" />
             )}
           </div>
@@ -239,7 +211,6 @@ export const BoltResultDetailsModal = ({
               </Text>
             </div>
           </div>
-
           {/* Third View */}
           <div
             className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${

@@ -27,6 +27,3 @@ export type TechnicianFormValues = {
   phoneNumber: string;
   isGlobal: boolean;
 };
-
-// Or you can infer it directly from the schema:
-//export type TechnicianFormValues = z.infer<typeof technicianFormSchema>;

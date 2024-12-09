@@ -4,6 +4,7 @@ import {
   Result,
   PullTestAbortReason,
   BoltType,
+  RingPosition,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
@@ -36,6 +37,7 @@ export class BoltResultsService {
         boltType: createBoltResultInput.boltType as BoltType,
         peakLoad: createBoltResultInput.peakLoad,
         peakDisplacement: createBoltResultInput.peakDisplacement,
+        positionInRing: createBoltResultInput.positionInRing as RingPosition,
         result: createBoltResultInput.result as Result,
         isHazard: createBoltResultInput.isHazard,
         abortReason:
@@ -48,7 +50,6 @@ export class BoltResultsService {
         levelId: createBoltResultInput.levelId,
         driveId: createBoltResultInput.driveId,
         locationId: createBoltResultInput.locationId,
-        positionInRingId: createBoltResultInput.positionInRingId,
         userId: createBoltResultInput.userId,
       },
     });
@@ -71,6 +72,8 @@ export class BoltResultsService {
         boltType: (updateBoltResultInput?.boltType as BoltType) || undefined,
         peakLoad: updateBoltResultInput?.peakLoad || undefined,
         peakDisplacement: updateBoltResultInput?.peakDisplacement || undefined,
+        positionInRing:
+          (updateBoltResultInput?.positionInRing as RingPosition) || undefined,
         result: (updateBoltResultInput?.result as Result) || undefined,
         isHazard: updateBoltResultInput?.isHazard || undefined,
         hazardCompletedDate:

@@ -13,9 +13,9 @@ export class CreateBoltResultInput {
     boltType: string;
     peakLoad: number[];
     peakDisplacement: number[];
+    positionInRing: string;
     result: string;
     isHazard: boolean;
-    hazardCompletedDate?: Nullable<DateTime[]>;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
     image?: Nullable<string>;
@@ -23,7 +23,6 @@ export class CreateBoltResultInput {
     levelId: string;
     driveId: string;
     locationId: string;
-    positionInRingId: string;
     userId: string;
 }
 
@@ -32,6 +31,7 @@ export class UpdateBoltResultInput {
     boltType?: Nullable<string>;
     peakLoad?: Nullable<number[]>;
     peakDisplacement?: Nullable<number[]>;
+    positionInRing?: Nullable<string>;
     result?: Nullable<string>;
     isHazard?: Nullable<boolean>;
     hazardCompletedDate?: Nullable<DateTime[]>;
@@ -151,6 +151,7 @@ export class BoltResult {
     boltType: string;
     peakLoad: number[];
     peakDisplacement: number[];
+    positionInRing: string;
     result: string;
     isHazard: boolean;
     hazardCompletedDate?: Nullable<DateTime[]>;
@@ -161,7 +162,6 @@ export class BoltResult {
     levelId: string;
     driveId: string;
     locationId: string;
-    positionInRingId: string;
     userId: string;
 }
 
@@ -294,12 +294,7 @@ export class Location {
     updatedAt: DateTime;
     locationName: string;
     driveId: string;
-    positionsInRing?: Nullable<PositionInRing[]>;
     boltResults?: Nullable<BoltResult[]>;
-}
-
-export class PositionInRing {
-    positionInRingName: string;
 }
 
 export class Site {

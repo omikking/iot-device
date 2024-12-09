@@ -15,18 +15,7 @@ type Location {
   updatedAt: DateTime!
   locationName: String!
   driveId: String!
-  positionsInRing: [PositionInRing!]
   boltResults: [BoltResult!]
-}
-
-# @TODO move later to Location model when it exists
-"""
-PositionInRing model
-Define the PositionInRing model and its fields
-"""
-type PositionInRing {
-  # @TODO add all fields later, this is just added to make sure it works
-  positionInRingName: String!
 }
 
 """

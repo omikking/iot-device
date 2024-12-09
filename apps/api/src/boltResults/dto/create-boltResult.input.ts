@@ -28,6 +28,10 @@ export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
   @IsNumber({}, { each: true })
   peakDisplacement: number[];
 
+  @Length(2, 35)
+  @IsString()
+  positionInRing: string;
+
   @IsString()
   result: string;
 
@@ -57,9 +61,6 @@ export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
 
   @IsUUID()
   locationId: string;
-
-  @IsUUID()
-  positionInRingId: string;
 
   @IsUUID()
   userId: string;

@@ -1,11 +1,7 @@
 'use client';
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql } from 'urql';
 
-// This is how we can fetch data from GraphQL on a client component! We use the regular docs useQuery, useSuspenseQuery etc...
-// In a RSC (component without 'use client'), we will have to import the ApolloClient.tsx file and use the exported functions like getClient or query.
-// It could look something like const {data} = await getClient.query(GET_COFFEES_QUERY).
-// It could also look like const {data} = await query(GET_COFFEES_QUERY). (both do the same, query is a shortcut for getClient.query)
 const GET_COFFEES_QUERY = gql`
   query GetCoffees {
     coffees {
@@ -20,17 +16,23 @@ const GET_COFFEES_QUERY = gql`
 `;
 
 function CoffeesListClient() {
-  const { loading, error, data } = useQuery(GET_COFFEES_QUERY);
+  // const [{ data, fetching, error }] = useQuery({ query: CoffeesQuery });
+  const [result, reexecuteQuery] = useQuery({
+    query: GET_COFFEES_QUERY,
+    // requestPolicy: 'cache-only',
+  });
+
+  const { data, fetching, error } = result;
 
   // console.log('error: ', error);
   // console.log('DATA: ', data);
-  if (loading) return <p>Loading...</p>;
+  if (fetching) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
 
   return (
     <div>
       <h2 className="text-sm">Client GetCoffees / CoffeesListClient </h2>
-      {data.coffees.map(({ id, name, brand }: any) => (
+      {data?.coffees.map(({ id, name, brand }: any) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>
         </div>

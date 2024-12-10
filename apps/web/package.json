@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.10.6",
@@ -28,6 +29,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/client-preset": "^4.5.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@gsp/eslint-config": "workspace:*",
     "@gsp/tailwind-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",

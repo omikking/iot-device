@@ -1,8 +1,9 @@
 'use client';
 import React from 'react';
-import { useQuery, gql } from 'urql';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 
-const GET_COFFEES_QUERY = gql`
+const GET_COFFEES_QUERY = graphql(`
   query GetCoffees {
     coffees {
       id
@@ -13,7 +14,7 @@ const GET_COFFEES_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 function CoffeesListClient() {
   // const [{ data, fetching, error }] = useQuery({ query: CoffeesQuery });
@@ -32,7 +33,7 @@ function CoffeesListClient() {
   return (
     <div>
       <h2 className="text-sm">Client GetCoffees / CoffeesListClient </h2>
-      {data?.coffees.map(({ id, name, brand }: any) => (
+      {data?.coffees.map(({ id, name, brand }) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>
         </div>

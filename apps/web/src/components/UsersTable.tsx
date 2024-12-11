@@ -7,7 +7,12 @@ import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
-export const UsersTable = () => {
+interface UsersTableProps {
+  onOpenChange: (open: boolean) => void;
+  onSelectUser: (user: UserSchema) => void;
+}
+
+export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const [users, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
@@ -42,6 +47,12 @@ export const UsersTable = () => {
 
   const handleDelete = (index: number) => {
     setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+  };
+
+  const openEditModal = (index: number) => {
+    const userToEdit = users[index];
+    onSelectUser(userToEdit);
+    onOpenChange(true);
   };
 
   const columns: ColumnDef<UserSchema>[] = [
@@ -82,9 +93,9 @@ export const UsersTable = () => {
         return (
           <>
             <DeleteEditDropdown
-              itemToDelete={rowIndex}
+              itemSelected={rowIndex}
               openDeleteModal={openDeleteModal}
-              handleEdit={() => console.log('Edit')}
+              handleEdit={openEditModal}
             />
           </>
         );

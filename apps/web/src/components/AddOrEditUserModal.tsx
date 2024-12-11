@@ -1,9 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import { technicians, roles } from '@/app/mock/mock';
 import {
   Button,
   Dropdown,
@@ -22,40 +16,95 @@ import {
   Switch,
   Text,
 } from '@gsp/ui';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { technicians, roles } from '@/app/mock/mock';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
+import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
 
-export const AddUserModal = () => {
-  type FormSchema = z.infer<typeof formSchema>;
-  {
-    /* @TODO dynamic validation messages */
-  }
-  const formSchema = z.object({
-    // @TODO error message
-    role: z.enum(['admin', 'technician', 'user']),
-    email: z
-      .string()
-      .email({ message: 'Email must be a valid email address.' }),
-    pullTest: z.boolean(),
-    xCyclops: z.boolean(),
-    ultrabolts: z.boolean(),
-  });
+interface AddOrEditUserModalProps {
+  onOpenChange: (open: boolean) => void;
+  user?: UserFormValues;
+}
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export const AddOrEditUserModal = ({
+  onOpenChange,
+  user,
+}: AddOrEditUserModalProps) => {
+  //@Todo move out form + formschema, make the code more readable
+  // type FormSchema = z.infer<typeof formSchema>;
+  // {
+  //   /* @TODO dynamic validation messages */
+  // }
+
+  // const formSchema = z.object({
+  //   // @TODO error message
+  //   role: z.enum(['admin', 'technician', 'user']),
+  //   email: z
+  //     .string()
+  //     .email({ message: 'Email must be a valid email address.' }),
+  //   pullTest: z.boolean(),
+  //   xCyclops: z.boolean(),
+  //   ultrabolts: z.boolean(),
+  // });
+
+  // const form = useForm<z.infer<typeof userFormSchema>>({
+  //   resolver: zodResolver(userFormSchema),
+  //   defaultValues: {
+  //     email: user?.email || '',
+  //     role: user?.role.toLowerCase() as 'admin' | 'user' | 'technician',
+  //     pullTest: user?.pullTest || false,
+  //     xCyclops: user?.xCyclops || false,
+  //     ultrabolts: user?.ultrabolts || false,
+  //   },
+  // });
+
+  const form = useForm<z.infer<typeof userFormSchema>>({
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
       email: '',
+      role: 'user',
       pullTest: false,
       xCyclops: false,
       ultrabolts: false,
     },
   });
 
-  const [role, setRole] = useState<FormSchema['role']>('user');
+  const resetFormValues = () => {
+    form.reset({
+      email: '',
+      pullTest: false,
+      xCyclops: false,
+      ultrabolts: false,
+    });
+  };
+
+  const onSubmit = async (data: UserFormValues) => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('User added:', data);
+    setIsSuccessful(true);
+    setIsLoading(false);
+    setTimeout(() => {
+      onOpenChange(false);
+    }, 1500);
+    setTimeout(() => {
+      setIsSuccessful(false);
+      resetFormValues();
+    }, 1700);
+  };
+
+  // const [role, setRole] = useState<FormSchema['role']>('user');
+  const [role, setRole] = useState<z.infer<typeof userFormSchema>['role']>(
+    user?.role || 'user',
+  );
   const [technician, setTechnician] = useState<string | undefined>('');
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
 
   const watchPullTest = form.watch('pullTest');
   const watchxCyclops = form.watch('xCyclops');
@@ -90,10 +139,28 @@ export const AddUserModal = () => {
     }
   }, [watchPullTest, watchxCyclops, watchUltrabolts]);
 
+  const handleModalClose = () => {
+    resetFormValues();
+    onOpenChange(false);
+  };
+
+  useEffect(() => {
+    if (user) {
+      form.reset(user);
+    }
+
+    if (!user) {
+      handleModalClose();
+    }
+  }, [user, form]);
+  console.log('USER', user?.email);
+  console.log('FORM', form.getValues());
   return (
     <ModalContent>
       <ModalHeader>
-        <ModalTitle className="mb-10">Add user</ModalTitle>
+        <ModalTitle className="mb-10">
+          {user ? 'Edit user' : 'Add user'}
+        </ModalTitle>
       </ModalHeader>
 
       <Form {...form}>
@@ -117,10 +184,10 @@ export const AddUserModal = () => {
                           badgeIcon
                           options={roles}
                           onSelect={(e) => {
-                            setRole(e as FormSchema['role']);
+                            setRole(e as UserFormValues['role']);
                             field.onChange(
                               getRoleById(
-                                e as FormSchema['role'],
+                                e as UserFormValues['role'],
                               )?.toLowerCase(),
                             );
                           }}
@@ -169,9 +236,9 @@ export const AddUserModal = () => {
                             selectedId={technician}
                             options={technicians}
                             onSelect={(e) => {
-                              setTechnician(e as FormSchema['role']);
+                              setTechnician(e as UserFormValues['role']);
                               field.onChange(
-                                getEmailById(e as FormSchema['role']),
+                                getEmailById(e as UserFormValues['role']),
                               );
                             }}
                             {...field}
@@ -220,7 +287,10 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            value={field.value.toString()}
+                            // value={field.value.toString()}
+                            // value={(field.value ?? false).toString()}
+
+                            value={String(field.value)}
                           />
                         </FormControl>
                       </FormItem>
@@ -246,7 +316,8 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            value={field.value.toString()}
+                            // value={field.value.toString()}
+                            value={(field.value ?? false).toString()}
                           />
                         </FormControl>
                         <FormMessage />
@@ -273,7 +344,8 @@ export const AddUserModal = () => {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            value={field.value.toString()}
+                            // value={field.value.toString()}
+                            value={(field.value ?? false).toString()}
                           />
                         </FormControl>
                         <FormMessage />

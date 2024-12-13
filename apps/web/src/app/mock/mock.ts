@@ -186,9 +186,15 @@ export interface UserSchema {
   id: string;
   fullName: string;
   email: string;
-  appAccess: string;
-  role: 'User' | 'Technician' | 'Admin';
-  phoneNumber: string;
+  phoneNumber?: string;
+  workPlace?: string;
+  globalRole?: boolean;
+  isGlobalVisibility?: boolean;
+  userPermissions: {
+    id: string;
+    role: 'User' | 'Technician' | 'Admin';
+    appAccess: string[];
+  };
 }
 
 export const usersMock: UserSchema[] = [
@@ -196,32 +202,54 @@ export const usersMock: UserSchema[] = [
     id: '1',
     fullName: 'Elliot Alderson',
     email: 'alderson@sandvik.com',
-    appAccess: 'Pull-test, Ultrabolts, xCyclops',
-    role: 'User',
+    workPlace: 'Garpenberg',
+    globalRole: true,
+    isGlobalVisibility: true,
+    userPermissions: {
+      id: '10',
+      role: 'Admin',
+      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+    },
     phoneNumber: '+4683729327',
   },
   {
     id: '2',
     fullName: 'Jimmy Nwadinkpa',
     email: 'jimmy@sandvik.com',
-    appAccess: 'Ultrabolts, xCyclops',
-    role: 'Technician',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '11',
+      role: 'Technician',
+      appAccess: ['ULTRABOLTS, XCYCLOPS'],
+    },
     phoneNumber: '+4683729327',
   },
   {
     id: '3',
     fullName: 'Felix Östergren',
     email: 'felix@sandvik.com',
-    appAccess: 'Pull-test',
-    role: 'User',
+    workPlace: 'Garpenberg',
+    globalRole: true,
+    isGlobalVisibility: true,
+    userPermissions: {
+      id: '12',
+      role: 'User',
+      appAccess: ['PULL_TEST'],
+    },
     phoneNumber: '+4683729327',
   },
   {
     id: '4',
     fullName: 'Darlene Alderson',
     email: 'darlenealderson@sandvik.com',
-    appAccess: 'Pull-test, Ultrabolts, xCyclops',
-    role: 'Admin',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '13',
+      role: 'Admin',
+      appAccess: ['PULL_TEST, ULTRABOLTS, XCYCLOPS'],
+    },
     phoneNumber: '+4683729327',
   },
 ];
@@ -555,6 +583,9 @@ export const sitesMock = [
 ];
 
 export const roles: DropdownItem[] = [
+  // { id: 'User', name: 'User', background: 'neutral' },
+  // { id: 'Technician', name: 'Technician', background: 'neutral' },
+  // { id: 'Admin', name: 'Admin', background: 'primary' },
   {
     id: '1',
     name: 'User',
@@ -563,6 +594,7 @@ export const roles: DropdownItem[] = [
   {
     id: '2',
     name: 'Technician',
+    background: 'neutral',
   },
   {
     id: '3',

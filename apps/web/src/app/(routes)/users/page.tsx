@@ -43,6 +43,8 @@ export default function Page(): JSX.Element {
           </ModalTrigger>
           <AddOrEditUserModal
             onOpenChange={handleModalClose}
+            // Selected user is of type UserSchema
+            // user is of type UserFormValues
             user={selectedUser}
           />
         </Modal>

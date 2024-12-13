@@ -16,128 +16,74 @@ import {
   Switch,
   Text,
 } from '@gsp/ui';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import { technicians, roles } from '@/app/mock/mock';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
+import { UserSchema } from '@/app/mock/mock';
 
 interface AddOrEditUserModalProps {
   onOpenChange: (open: boolean) => void;
-  user?: UserFormValues;
+  user?: UserSchema;
 }
 
 export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
-  //@Todo move out form + formschema, make the code more readable
-  // type FormSchema = z.infer<typeof formSchema>;
-  // {
-  //   /* @TODO dynamic validation messages */
-  // }
-
-  // const formSchema = z.object({
-  //   // @TODO error message
-  //   role: z.enum(['admin', 'technician', 'user']),
-  //   email: z
-  //     .string()
-  //     .email({ message: 'Email must be a valid email address.' }),
-  //   pullTest: z.boolean(),
-  //   xCyclops: z.boolean(),
-  //   ultrabolts: z.boolean(),
-  // });
-
-  // const form = useForm<z.infer<typeof userFormSchema>>({
-  //   resolver: zodResolver(userFormSchema),
-  //   defaultValues: {
-  //     email: user?.email || '',
-  //     role: user?.role.toLowerCase() as 'admin' | 'user' | 'technician',
-  //     pullTest: user?.pullTest || false,
-  //     xCyclops: user?.xCyclops || false,
-  //     ultrabolts: user?.ultrabolts || false,
-  //   },
-  // });
-
-  const form = useForm<z.infer<typeof userFormSchema>>({
+  const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      email: '',
-      role: 'user',
-      pullTest: false,
-      xCyclops: false,
-      ultrabolts: false,
+      id: '',
+      fullName: '',
+      email: user?.email || '',
+      phoneNumber: '',
+      workPlace: '',
+      globalRole: false,
+      isGlobalVisibility: false,
+      userPermissions: {
+        id: '',
+        role: user?.userPermissions?.role || 'User',
+        appAccess: [],
+      },
     },
   });
 
   const resetFormValues = () => {
     form.reset({
+      id: '',
+      fullName: '',
       email: '',
-      pullTest: false,
-      xCyclops: false,
-      ultrabolts: false,
+      phoneNumber: '',
+      workPlace: '',
+      globalRole: false,
+      isGlobalVisibility: false,
+      userPermissions: {
+        id: '',
+        role: 'User',
+        appAccess: [],
+      },
     });
   };
 
   const onSubmit = async (data: UserFormValues) => {
-    setIsLoading(true);
-    // Simulate API call
+    // setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('User added:', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
+    console.log('User added', data);
+
+    // setIsSuccessful(true);
+    // setIsLoading(false);
+
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
     setTimeout(() => {
-      setIsSuccessful(false);
+      // setIsSuccessful(false);
       resetFormValues();
     }, 1700);
   };
-
-  // const [role, setRole] = useState<FormSchema['role']>('user');
-  const [role, setRole] = useState<z.infer<typeof userFormSchema>['role']>(
-    user?.role || 'user',
-  );
-  const [technician, setTechnician] = useState<string | undefined>('');
-  const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
-
-  const watchPullTest = form.watch('pullTest');
-  const watchxCyclops = form.watch('xCyclops');
-  const watchUltrabolts = form.watch('ultrabolts');
-  const watchRole = form.watch('role');
-
-  const getRoleById = (id: string) => {
-    return roles.find((role) => role.name === id)?.name;
-  };
-
-  const getEmailById = (id: string) => {
-    return technicians.find((tech) => tech.name === id)?.email;
-  };
-
-  const handleGlobalAccess = (checked: boolean) => {
-    setGlobalAccess(checked);
-    form.setValue('pullTest', checked);
-    form.setValue('xCyclops', checked);
-    form.setValue('ultrabolts', checked);
-  };
-
-  useEffect(() => {
-    form.setValue('email', '');
-    setTechnician('');
-  }, [watchRole]);
-
-  useEffect(() => {
-    if (watchPullTest && watchxCyclops && watchUltrabolts) {
-      setGlobalAccess(true);
-    } else {
-      setGlobalAccess(false);
-    }
-  }, [watchPullTest, watchxCyclops, watchUltrabolts]);
 
   const handleModalClose = () => {
     resetFormValues();
@@ -153,8 +99,66 @@ export const AddOrEditUserModal = ({
       handleModalClose();
     }
   }, [user, form]);
-  console.log('USER', user?.email);
-  console.log('FORM', form.getValues());
+
+  const [role, setRole] = useState<'User' | 'Technician' | 'Admin'>(
+    user?.userPermissions?.role || 'User',
+  );
+  const [selectedTechnician, setSelectedTechnician] = useState<
+    string | undefined
+  >(
+    user?.email
+      ? technicians.find((tech) => tech.email === user.email)?.id
+      : undefined,
+  );
+
+  // const [technician, setTechnician] = useState<string | undefined>('');
+  const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isSuccessful, setIsSuccessful] = useState<boolean>(false);
+
+  // const watchPullTest = form.watch('pullTest');
+  // const watchxCyclops = form.watch('xCyclops');
+  // const watchUltrabolts = form.watch('ultrabolts');
+  // const watchRole = form.watch('role');
+
+  // const getRoleById = (id: string) => {
+  //   return roles.find((role) => role.name === id)?.name;
+  // };
+
+  const getEmailById = (id: string) => {
+    return technicians.find((tech) => tech.name === id)?.email;
+  };
+
+  const handleGlobalAccess = (checked: boolean) => {
+    setGlobalAccess(checked);
+    if (checked) {
+      form.setValue('userPermissions.appAccess', [
+        'PULL_TEST',
+        'XCYCLOPS',
+        'ULTRABOLTS',
+      ] as ('PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS')[]);
+    } else {
+      form.setValue('userPermissions.appAccess', []);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (watchPullTest && watchxCyclops && watchUltrabolts) {
+  //     setGlobalAccess(true);
+  //   } else {
+  //     setGlobalAccess(false);
+  //   }
+  // }, [watchPullTest, watchxCyclops, watchUltrabolts]);
+
+  useEffect(() => {
+    if (user?.userPermissions?.role) {
+      setRole(user.userPermissions.role as 'User' | 'Technician' | 'Admin');
+    }
+  }, [user]);
+
+  // console.log('HelloW', user?.userPermissions?.appAccess);
+  console.log('HelloW', user?.userPermissions.appAccess);
+
   return (
     <ModalContent>
       <ModalHeader>
@@ -169,7 +173,7 @@ export const AddOrEditUserModal = ({
             <div className="flex flex-col gap-8">
               <FormField
                 control={form.control}
-                name="role"
+                name="userPermissions.role"
                 render={({ field }) => {
                   return (
                     <FormItem>
@@ -179,19 +183,19 @@ export const AddOrEditUserModal = ({
                           id="role"
                           className="w-96"
                           placeholder="Select role"
-                          selectedId={role}
+                          selectedId={user?.userPermissions?.role}
                           isBadge
                           badgeIcon
                           options={roles}
                           onSelect={(e) => {
-                            setRole(e as UserFormValues['role']);
-                            field.onChange(
-                              getRoleById(
-                                e as UserFormValues['role'],
-                              )?.toLowerCase(),
-                            );
+                            const selectedRole = e as
+                              | 'User'
+                              | 'Technician'
+                              | 'Admin';
+                            setRole(selectedRole);
+                            field.onChange(selectedRole);
+                            // field.onChange(role);
                           }}
-                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -199,7 +203,7 @@ export const AddOrEditUserModal = ({
                   );
                 }}
               />
-              {(watchRole === 'admin' || watchRole === 'user') && (
+              {(role === 'Admin' || role === 'User') && (
                 <FormField
                   control={form.control}
                   name="email"
@@ -220,11 +224,12 @@ export const AddOrEditUserModal = ({
                   }}
                 />
               )}
-              {watchRole === 'technician' && (
+              {role === 'Technician' && (
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => {
+                    //@TODO find a way to figure out how to prefill the dropdown with the selected technician
                     return (
                       <FormItem>
                         <FormLabel>* Technician</FormLabel>
@@ -233,13 +238,11 @@ export const AddOrEditUserModal = ({
                             id="email"
                             className="w-96"
                             placeholder="Select technician"
-                            selectedId={technician}
+                            selectedId={matchingTechnician?.email}
                             options={technicians}
                             onSelect={(e) => {
-                              setTechnician(e as UserFormValues['role']);
-                              field.onChange(
-                                getEmailById(e as UserFormValues['role']),
-                              );
+                              setSelectedTechnician(e);
+                              field.onChange(e ? getEmailById(e) : '');
                             }}
                             {...field}
                           />
@@ -251,6 +254,7 @@ export const AddOrEditUserModal = ({
                 />
               )}
             </div>
+
             <div className="flex flex-col flex-grow w-full border-2 border-neutral-2">
               <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
                 <div className="flex flex-grow  items-center gap-2">
@@ -279,18 +283,30 @@ export const AddOrEditUserModal = ({
                 </Text>
                 <FormField
                   control={form.control}
-                  name="pullTest"
+                  name="userPermissions.appAccess"
                   render={({ field }) => {
+                    const handleAppAccess = (checked: boolean) => {
+                      const apps = field.value || [];
+                      if (checked) {
+                        field.onChange([...apps, 'PULL_TEST'] as const); // Type assertion to match the expected type
+                      } else {
+                        field.onChange(
+                          apps.filter((app) => app !== 'PULL_TEST') as (
+                            | 'PULL_TEST'
+                            | 'PULL_TEST_OPERATOR'
+                            | 'ULTRABOLTS'
+                            | 'XCYCLOPS'
+                          )[],
+                        );
+                      }
+                    };
+
                     return (
                       <FormItem>
                         <FormControl>
                           <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            // value={field.value.toString()}
-                            // value={(field.value ?? false).toString()}
-
-                            value={String(field.value)}
+                            checked={field.value?.includes('PULL_TEST')}
+                            onCheckedChange={handleAppAccess}
                           />
                         </FormControl>
                       </FormItem>
@@ -298,7 +314,7 @@ export const AddOrEditUserModal = ({
                   }}
                 />
               </div>
-              <div className="flex items-center px-6 py-3 border-b border-neutral-2">
+              {/* <div className="flex items-center px-6 py-3 border-b border-neutral-2">
                 <Text
                   color={'foreground'}
                   variant={'medium'}
@@ -316,7 +332,6 @@ export const AddOrEditUserModal = ({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            // value={field.value.toString()}
                             value={(field.value ?? false).toString()}
                           />
                         </FormControl>
@@ -325,7 +340,7 @@ export const AddOrEditUserModal = ({
                     );
                   }}
                 />
-              </div>
+              </div> 
               <div className="flex items-center px-6 py-3">
                 <Text
                   color={'foreground'}
@@ -344,7 +359,6 @@ export const AddOrEditUserModal = ({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            // value={field.value.toString()}
                             value={(field.value ?? false).toString()}
                           />
                         </FormControl>
@@ -353,7 +367,7 @@ export const AddOrEditUserModal = ({
                     );
                   }}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           <ModalFooter className="px-10 pt-8 pb-6">

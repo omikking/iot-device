@@ -20,7 +20,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   );
 
   const getBadge = (
-    role: 'User' | 'Technician' | 'Admin',
+    role: UserSchema['userPermissions']['role'],
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -65,17 +65,21 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       header: 'Email',
     },
     {
-      accessorKey: 'appAccess',
+      id: 'appAccess',
       header: 'App access',
+      accessorFn: (row) => row.userPermissions.appAccess,
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'userPermissions.role',
       header: 'Role',
       cell: ({ row }) => {
+        const role = row.original.userPermissions.role;
+        const { variant, icon } = getBadge(role);
+
         return (
-          <Badge variant={getBadge(row.getValue('role')).variant}>
-            {getBadge(row.getValue('role')).icon}
-            {row.getValue('role')}
+          <Badge variant={variant}>
+            {icon}
+            {role}
           </Badge>
         );
       },

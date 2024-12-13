@@ -252,19 +252,6 @@ export const AddOrEditTechnicianModal = ({
                 variant="primary"
                 disabled={isLoading}
               >
-                {/* {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : technician ? (
-                  <>
-                    <LucideSquarePen />
-                    Edit technician
-                  </>
-                ) : (
-                  <>
-                    <LucidePlus />
-                    Add technician
-                  </>
-                )} */}
                 {technician ? (
                   <>
                     {isLoading ? (

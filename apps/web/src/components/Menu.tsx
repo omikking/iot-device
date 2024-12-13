@@ -93,7 +93,7 @@ export const Menu = () => {
             </Button>
           </div>
 
-          <hr className="border-neutral-3" />
+          <hr className="border-neutral-2" />
 
           <div className="flex flex-col gap-1">
             <Headline
@@ -139,7 +139,7 @@ export const Menu = () => {
             </Headline>
           </div>
 
-          <hr className="border-neutral-3" />
+          <hr className="border-neutral-2" />
 
           <div className="flex flex-col gap-1">
             <Headline variant="medium" color="foreground" as="h3">

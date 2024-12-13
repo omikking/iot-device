@@ -236,11 +236,17 @@ export default function Page(): JSX.Element {
           from the list. Are you sure you want to delete?
         </Text>
       </DeleteModalConfirmation>
+      <hr className="w-full" />
+      <Headline variant="large" as="h1" color="foreground">
+        Dropdown Delete 🦄
+      </Headline>
 
-      <Headline variant="medium" as="h3" color="foreground">
-        Dropdown Delete
+      <div>
         {sites.map((site, index) => (
-          <div className="flex items-center justify-between py-2" key={index}>
+          <div
+            className="flex items-center justify-between py-2 gap-2"
+            key={index}
+          >
             <Text color={'foreground'} variant={'small'}>
               {site.name}
             </Text>
@@ -274,7 +280,7 @@ export default function Page(): JSX.Element {
             from the list. Are you sure you want to delete?
           </Text>
         </DeleteModalConfirmation>
-      </Headline>
+      </div>
 
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

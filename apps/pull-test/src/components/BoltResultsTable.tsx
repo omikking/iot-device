@@ -57,10 +57,25 @@ export const BoltResultsTable = ({
           return peakLoad[0];
         }
       },
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.getValue('peakLoad') as string[];
+        const b = rowB.getValue('peakLoad') as string[];
+
+        if (a.length > 1 && b.length <= 1) return 1;
+        if (b.length > 1 && a.length <= 1) return -1;
+        if (a.length > 1 && b.length > 1) return 0;
+
+        const aNum = Number(a[0]);
+        const bNum = Number(b[0]);
+
+        return aNum < bNum ? -1 : 1;
+      },
     },
     {
       accessorKey: 'peakDisplacement',
-      header: 'Peak displacement',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Peak displacement(mm)" />
+      ),
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
         if (peakDisplacement.length > 1) {
@@ -70,22 +85,18 @@ export const BoltResultsTable = ({
           return peakDisplacement[0];
         }
       },
+      sortingFn: (rowA, rowB) => {
+        const a = rowA.getValue('peakDisplacement') as string[];
+        const b = rowB.getValue('peakDisplacement') as string[];
 
-      meta: { headerClassName: 'w-32' },
-    },
-    {
-      accessorKey: 'bitSize',
-      header: 'Bit size',
-    },
-    {
-      accessorKey: 'rotations',
-      header: 'Rotations',
-    },
-    {
-      accessorKey: 'displacementPerTonnage',
-      header: 'Displacement per tonnage',
-      meta: {
-        headerClassName: 'w-32',
+        if (a.length > 1 && b.length <= 1) return 1;
+        if (b.length > 1 && a.length <= 1) return -1;
+        if (a.length > 1 && b.length > 1) return 0;
+
+        const aNum = Number(a[0]);
+        const bNum = Number(b[0]);
+
+        return aNum < bNum ? -1 : 1;
       },
     },
     {
@@ -102,7 +113,7 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'ring',
-      header: 'Position in the ring',
+      header: 'Position in ring',
     },
     {
       accessorKey: 'comment',
@@ -114,9 +125,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'result',
       header: ({ column }) => (
-        <div className="text-right w-16">
-          <TableHeadWithSorting column={column} header="Result" />
-        </div>
+        <TableHeadWithSorting column={column} header="Result" />
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">

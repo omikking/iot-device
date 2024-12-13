@@ -2,9 +2,16 @@ import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Form } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideX } from 'lucide-react';
+import { z } from 'zod';
+
+export const siteLocationsSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
 interface SiteLocationsFormProps {
-  // @TODO fick this type
-  form: UseFormReturn<any>;
+  form: UseFormReturn<SiteLocationsValue>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>, index: number) => void;
   onCancel: (index: number) => void;
   placeholder: string;

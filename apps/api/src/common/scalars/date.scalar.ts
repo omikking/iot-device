@@ -16,7 +16,10 @@ export class DateScalar {
 
   parseLiteral(ast: ValueNode) {
     if (ast.kind === Kind.INT) {
-      return new Date(ast.value); // value from the client query
+      return new Date(Number(ast.value)); // If it receives Timestamp format
+    }
+    if (ast.kind === Kind.STRING) {
+      return new Date(ast.value); // If it receives ISO string format
     }
     return null;
   }

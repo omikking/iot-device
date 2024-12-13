@@ -12,11 +12,11 @@ import {
   LoadingSpinner,
   Specification,
 } from '@gsp/ui';
-import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
+import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
 interface BoltResultDetailsModalProps {
   modalTitle: string;
@@ -100,7 +100,7 @@ export const BoltResultDetailsModal = ({
               className="rounded-md h-72"
             />
           )}
-          <div className="flex flex-col w-1/2">
+          <div className="flex flex-col w-1/2 h-72">
             {boltDescription && (
               <div className="flex flex-col flex-grow ">
                 <Text variant="small" color="foreground">

@@ -18,6 +18,7 @@ type BoltResult {
   boltType: String!
   peakLoad: [Int!]!
   peakDisplacement: [Int!]!
+  positionInRing: String!
   result: String!
   isHazard: Boolean!
   hazardCompletedDate: [DateTime!]
@@ -29,7 +30,6 @@ type BoltResult {
   levelId: String!
   driveId: String!
   locationId: String!
-  positionInRingId: String!
   userId: String!
 }
 
@@ -42,6 +42,7 @@ input CreateBoltResultInput {
   boltType: String!
   peakLoad: [Int!]!
   peakDisplacement: [Int!]!
+  positionInRing: String!
   result: String!
   isHazard: Boolean!
   abortReason: String
@@ -52,7 +53,6 @@ input CreateBoltResultInput {
   levelId: String!
   driveId: String!
   locationId: String!
-  positionInRingId: String!
   userId: String!
 }
 
@@ -66,6 +66,7 @@ input UpdateBoltResultInput {
   boltType: String
   peakLoad: [Int!]
   peakDisplacement: [Int!]
+  positionInRing: String
   result: String
   isHazard: Boolean
   hazardCompletedDate: [DateTime!]

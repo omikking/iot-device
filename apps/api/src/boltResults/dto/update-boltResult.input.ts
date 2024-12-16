@@ -32,6 +32,11 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
   peakDisplacement: number[];
 
   @IsOptional()
+  @Length(2, 35)
+  @IsString()
+  positionInRing: string;
+
+  @IsOptional()
   @IsString()
   result: string;
 

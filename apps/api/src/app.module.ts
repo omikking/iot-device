@@ -12,6 +12,7 @@ import { DateScalar } from './common/scalars/date.scalar';
 import { SitesModule } from './sites/sites.module';
 import { LevelsModule } from './levels/levels.module';
 import { DrivesModule } from './drives/drives.module';
+import { LocationsModule } from './locations/locations.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { DrivesModule } from './drives/drives.module';
     SitesModule,
     LevelsModule,
     DrivesModule,
+    LocationsModule,
   ],
   providers: [DateScalar],
 })

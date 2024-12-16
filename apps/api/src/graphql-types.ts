@@ -84,6 +84,15 @@ export class UpdateLevelInput {
     levelName?: Nullable<string>;
 }
 
+export class CreateLocationInput {
+    locationName: string;
+    driveId: string;
+}
+
+export class UpdateLocationInput {
+    locationName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -125,6 +134,8 @@ export abstract class IQuery {
     drive?: Drive;
     levels: Level[];
     level?: Level;
+    locations: Location[];
+    location?: Location;
     sites: Site[];
     site?: Site;
 }
@@ -142,6 +153,9 @@ export abstract class IMutation {
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
+    createLocation?: Location;
+    updateLocation?: Location;
+    removeLocation?: Location;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -205,10 +219,6 @@ export class Drive {
     boltResults?: Nullable<BoltResult[]>;
 }
 
-export class Location {
-    locationName: string;
-}
-
 export class BoltResult {
     boltNumber: number;
 }
@@ -221,6 +231,20 @@ export class Level {
     siteId: string;
     drives?: Nullable<Drive[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Location {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    locationName: string;
+    driveId: string;
+    positionsInRing?: Nullable<PositionInRing[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
+export class PositionInRing {
+    positionInRingName: string;
 }
 
 export class Site {

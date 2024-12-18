@@ -25,18 +25,20 @@ import {
   TechnicianFormValues,
   technicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideCircleHelp, LucidePlus } from 'lucide-react';
+import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 
 interface AddOrEditTechnicianModalProps {
   onOpenChange: (open: boolean) => void;
+  technician?: TechnicianFormValues;
 }
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
+  technician,
 }: AddOrEditTechnicianModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -79,10 +81,27 @@ export const AddOrEditTechnicianModal = ({
     }, 1700);
   };
 
+  const handleModalClose = () => {
+    resetFormValues();
+    onOpenChange(false);
+  };
+
+  useEffect(() => {
+    if (technician) {
+      form.reset(technician);
+    }
+
+    if (!technician) {
+      handleModalClose();
+    }
+  }, [technician, form]);
+
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
-        <ModalTitle>Add technician</ModalTitle>
+        <ModalTitle>
+          {technician ? 'Edit technician' : 'Add technician'}
+        </ModalTitle>
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
@@ -202,7 +221,10 @@ export const AddOrEditTechnicianModal = ({
                   render={({ field }) => (
                     <FormItem className="pt-4">
                       <FormControl>
-                        <RadioGroup onValueChange={field.onChange}>
+                        <RadioGroup
+                          value={String(field.value)}
+                          onValueChange={field.onChange}
+                        >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>
                               <RadioGroupItem value="false" />
@@ -230,12 +252,25 @@ export const AddOrEditTechnicianModal = ({
                 variant="primary"
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
+                {technician ? (
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucideSquarePen />
+                    )}
+                    Edit technician
+                  </>
                 ) : (
-                  <LucidePlus />
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucidePlus />
+                    )}
+                    Add technician
+                  </>
                 )}
-                Add technician
               </Button>
             </ModalFooter>
           </form>

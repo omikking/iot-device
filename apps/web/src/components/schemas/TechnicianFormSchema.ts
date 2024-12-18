@@ -16,11 +16,7 @@ export const technicianFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers' }),
-  isGlobal: z
-    .string({
-      message: 'Please select the visibility of the technician.',
-    })
-    .transform((val) => val === 'true'),
+  isGlobal: z.boolean(),
 });
 
 // This creates the type from the schema
@@ -31,6 +27,3 @@ export type TechnicianFormValues = {
   phoneNumber: string;
   isGlobal: boolean;
 };
-
-// Or you can infer it directly from the schema:
-//export type TechnicianFormValues = z.infer<typeof technicianFormSchema>;

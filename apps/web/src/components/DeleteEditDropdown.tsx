@@ -1,22 +1,22 @@
 import {
+  Text,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Text,
 } from '@gsp/ui';
-import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 import React from 'react';
+import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 interface DeleteEditDropdownProps {
-  itemToDelete: number;
-  openDeleteModal: ((itemToDelete: number) => void) | (() => void);
-  handleEdit: () => void;
+  itemSelected: number;
+  openDeleteModal: (itemSelected: number) => void;
+  handleEdit: (itemSelected: number) => void;
 }
 
 export const DeleteEditDropdown = ({
-  itemToDelete,
+  itemSelected,
   openDeleteModal,
   handleEdit,
 }: DeleteEditDropdownProps) => {
@@ -28,13 +28,13 @@ export const DeleteEditDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-4">
-        <DropdownMenuItem onSelect={() => handleEdit()}>
+        <DropdownMenuItem onSelect={() => handleEdit(itemSelected)}>
           <LucideSquarePen />
           <Text color={'foreground'} variant={'medium'}>
             Edit
           </Text>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openDeleteModal(itemToDelete)}>
+        <DropdownMenuItem onClick={() => openDeleteModal(itemSelected)}>
           <LucideTrash2 className="text-error" />
           <Text color={'destructive'} variant={'medium'}>
             Delete

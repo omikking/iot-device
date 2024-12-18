@@ -139,7 +139,7 @@ export default function Page(): JSX.Element {
       </Headline>
       <hr className="w-full" />
       <Headline variant="xl" as="h1" color="foreground">
-        Breadcrumb 🦄
+        Tooltip 🦄
       </Headline>
       <TooltipProvider>
         <Tooltip delayDuration={100}>
@@ -251,7 +251,7 @@ export default function Page(): JSX.Element {
               {site.name}
             </Text>
             <DeleteEditDropdown
-              itemToDelete={index}
+              itemSelected={index}
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('edit')}
             />

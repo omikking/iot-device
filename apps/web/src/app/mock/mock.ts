@@ -286,6 +286,82 @@ export const techniciansMock: TechniciansSchema[] = [
   },
 ];
 
+export interface AdministratorSchema {
+  id: string;
+  fullName: string;
+  email: string;
+  company: string;
+  phoneNumber: string;
+  role: string;
+}
+
+export const administratorsMock: AdministratorSchema[] = [
+  {
+    id: '1',
+    fullName: 'Elliot Alderson',
+    email: 'elliot@sandvik.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '2',
+    fullName: 'Darlene Alderson',
+    email: 'darlenealderson@sandvik.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '3',
+    fullName: 'Tyrell Wellick',
+    email: 'tyrellwellick@sandvik.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '4',
+    fullName: 'Joanna Wellick',
+    email: 'joanna@sandvik.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '5',
+    fullName: 'Angela Moss',
+    email: 'angela@moss.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '6',
+    fullName: 'Whiterose',
+    email: 'whiterose.sandvik.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '7',
+    fullName: 'Felix Östergren',
+    email: 'felix@hackerboy.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+  {
+    id: '8',
+    fullName: 'Jimmy Nwadinkpa',
+    email: 'jimmy@madchadlad.com',
+    company: 'Sandvik',
+    phoneNumber: '+4683729327',
+    role: 'Sandvik admin',
+  },
+];
+
 export const sitesMock = [
   {
     id: '1',

@@ -147,7 +147,7 @@ export default function Page(): JSX.Element {
             </NavigationCard>
           </div>
 
-          <hr className="w-full border-gold-3" />
+          <hr className="w-full border-neutral-2" />
         </>
       )}
 

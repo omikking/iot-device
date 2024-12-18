@@ -102,13 +102,13 @@ export const BoltResultDetailsModal = ({
           )}
           <div className="flex flex-col w-1/2 h-72">
             {boltDescription && (
-              <div className="flex flex-col flex-grow ">
+              <div className="flex flex-col flex-grow">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
                   value={boltDescription}
-                  className="flex-grow"
+                  className="flex-grow mt-2"
                   disabled
                   readOnly
                 />

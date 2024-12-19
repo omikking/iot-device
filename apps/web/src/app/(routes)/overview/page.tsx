@@ -6,6 +6,7 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucidePlus,
+  LucideUserCog,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +27,20 @@ export default function Page(): JSX.Element {
             <Link href="/company">
               <LucidePlus />
               Add new company
+            </Link>
+          </Button>
+        </NavigationCard>
+
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Administrators
+          </Headline>
+          <LucideUserCog />
+          <Button variant="secondary" size="small" asChild>
+            {/*@TODO delete this todo when Link is working*/}
+            <Link href="/administrators">
+              <LucideMoveRight />
+              View administrators
             </Link>
           </Button>
         </NavigationCard>

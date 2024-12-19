@@ -12,7 +12,15 @@ import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { AdministratorSchema, administratorsMock } from '@/app/mock/mock';
 import { LucideUserCog } from 'lucide-react';
 
-export const AdministratorsTable = () => {
+type AdministratorsTableProps = {
+  onOpenChange: (open: boolean) => void;
+  onSelectAdministrator: (administrator: AdministratorSchema) => void;
+};
+
+export const AdministratorsTable = ({
+  onOpenChange,
+  onSelectAdministrator,
+}: AdministratorsTableProps) => {
   const [administrators, setAdministrators] = useState(administratorsMock);
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
@@ -23,6 +31,12 @@ export const AdministratorsTable = () => {
   const openDeleteModal = (index: number) => {
     setAdministratorToDelete(index);
     setIsDeleteAdministratorModalOpen(true);
+  };
+
+  const openEditModal = (index: number) => {
+    const technicianToEdit = administrators[index];
+    onSelectAdministrator(technicianToEdit);
+    onOpenChange(true);
   };
 
   const closeDeleteModal = () => {
@@ -61,10 +75,17 @@ export const AdministratorsTable = () => {
       header: 'Role',
       cell: ({ row }) => (
         <>
-          {row.getValue('role') && (
+          {/* TODO find a better solution */}
+          {row.getValue('role') === 'Sandvik admin' && (
             <Badge variant="primary">
               <LucideUserCog />
               Sandvik admin
+            </Badge>
+          )}
+          {row.getValue('role') === 'Sandvik Supah admin' && (
+            <Badge variant="attention">
+              <LucideUserCog />
+              Supah admin
             </Badge>
           )}
         </>
@@ -84,9 +105,9 @@ export const AdministratorsTable = () => {
 
         return (
           <DeleteEditDropdown
-            itemToDelete={rowIndex}
+            itemSelected={rowIndex}
             openDeleteModal={openDeleteModal}
-            handleEdit={() => console.log('Edit')}
+            handleEdit={() => openEditModal(rowIndex)}
           />
         );
       },

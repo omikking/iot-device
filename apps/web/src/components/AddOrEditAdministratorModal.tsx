@@ -18,8 +18,8 @@ import {
   administratorFormSchema,
   AdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
-import { useState } from 'react';
-import { LucidePlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { LucidePlus, LucideSquarePen } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,10 +27,12 @@ import { optionAdministratorRoleMock } from '@/app/mock/mock';
 
 interface AddOrEditAdministratorModalProps {
   onOpenChange: (open: boolean) => void;
+  administrator?: AdministratorFormValues;
 }
 
 export const AddOrEditAdministratorModal = ({
   onOpenChange,
+  administrator,
 }: AddOrEditAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -73,10 +75,27 @@ export const AddOrEditAdministratorModal = ({
     }, 1700);
   };
 
+  const handleModalClose = () => {
+    resetFormValues();
+    onOpenChange(false);
+  };
+
+  useEffect(() => {
+    if (administrator) {
+      form.reset(administrator);
+    }
+
+    if (!administrator) {
+      handleModalClose();
+    }
+  }, [administrator, form]);
+
   return (
     <ModalContent className="sm:max-w-[425px]">
       <ModalHeader>
-        <ModalTitle>Add administrator</ModalTitle>
+        <ModalTitle>
+          {administrator ? 'Edit Administrator' : 'Add administrator'}
+        </ModalTitle>
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
@@ -169,7 +188,7 @@ export const AddOrEditAdministratorModal = ({
                   render={({ field }) => {
                     return (
                       <FormItem className="w-96">
-                        <FormLabel>Dropdown</FormLabel>
+                        <FormLabel>Role</FormLabel>
                         <FormControl>
                           <Dropdown
                             id="role"
@@ -194,12 +213,25 @@ export const AddOrEditAdministratorModal = ({
                 variant="primary"
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
+                {administrator ? (
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucideSquarePen />
+                    )}
+                    Edit administrator
+                  </>
                 ) : (
-                  <LucidePlus />
+                  <>
+                    {isLoading ? (
+                      <LoadingSpinner className="animate-spin" size={24} />
+                    ) : (
+                      <LucidePlus />
+                    )}
+                    Add administrator
+                  </>
                 )}
-                Add administrator
               </Button>
             </ModalFooter>
           </form>

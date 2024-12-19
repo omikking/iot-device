@@ -102,6 +102,13 @@ export const optionsDesignSystemMock = [
   },
 ];
 
+export const optionAdministratorRoleMock = [
+  {
+    id: '1',
+    name: 'Sandvik admin',
+  },
+];
+
 export const appPlansMock: AppPlan[] = [
   {
     name: 'Pull-test',

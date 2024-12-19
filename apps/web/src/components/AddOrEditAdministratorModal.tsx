@@ -1,5 +1,6 @@
 import {
   Button,
+  Dropdown,
   Form,
   FormControl,
   FormField,
@@ -22,6 +23,7 @@ import { LucidePlus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { optionAdministratorRoleMock } from '@/app/mock/mock';
 
 interface AddOrEditAdministratorModalProps {
   onOpenChange: (open: boolean) => void;
@@ -153,6 +155,28 @@ export const AddOrEditAdministratorModal = ({
                           <Input
                             placeholder="Enter phone number"
                             {...field}
+                            className="w-96"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="w-96">
+                        <FormLabel>Dropdown</FormLabel>
+                        <FormControl>
+                          <Dropdown
+                            id="role"
+                            placeholder="Select role..."
+                            selectedId={field.value}
+                            options={optionAdministratorRoleMock}
+                            onSelect={(value) => field.onChange(value)}
                             className="w-96"
                           />
                         </FormControl>

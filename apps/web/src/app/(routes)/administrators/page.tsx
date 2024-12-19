@@ -32,7 +32,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Modal
           open={openAdministratorsModal}
-          onOpenChange={setOpenAdministratorsModal}
+          onOpenChange={(open) => handleModalClose(open)}
         >
           <ModalTrigger asChild>
             <Button variant="primary" size="large">

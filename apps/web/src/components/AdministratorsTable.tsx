@@ -76,13 +76,12 @@ export const AdministratorsTable = ({
       cell: ({ row }) => (
         <>
           {/* TODO find a better solution */}
-          {row.getValue('role') === 'Sandvik admin' && (
+          {row.getValue('role') === 'Sandvik admin' ? (
             <Badge variant="primary">
               <LucideUserCog />
               Sandvik admin
             </Badge>
-          )}
-          {row.getValue('role') === 'Sandvik Supah admin' && (
+          ) : (
             <Badge variant="attention">
               <LucideUserCog />
               Supah admin

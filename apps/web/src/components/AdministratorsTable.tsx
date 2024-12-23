@@ -61,11 +61,14 @@ export const AdministratorsTable = () => {
       header: 'Role',
       cell: ({ row }) => (
         <>
-          {row.getValue('role') && (
+          {row.getValue('role') ? (
             <Badge variant="primary">
               <LucideUserCog />
               Sandvik admin
             </Badge>
+          ) : (
+            // TODO: Temp fix to remove error. Jimmy is working on this site. REMOVE ME.
+            <Badge variant="neutral">Remove me</Badge>
           )}
         </>
       ),
@@ -84,7 +87,7 @@ export const AdministratorsTable = () => {
 
         return (
           <DeleteEditDropdown
-            itemToDelete={rowIndex}
+            itemSelected={rowIndex}
             openDeleteModal={openDeleteModal}
             handleEdit={() => console.log('Edit')}
           />

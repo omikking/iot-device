@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { gql } from '@apollo/client';
 import { getClient } from '../../libs/ApolloClient';

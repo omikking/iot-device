@@ -120,7 +120,7 @@ export const DriveItem = ({
             </Text>
 
             <DeleteEditDropdown
-              itemToDelete={index}
+              itemSelected={index}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
             />

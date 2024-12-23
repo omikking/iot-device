@@ -82,7 +82,7 @@ export const UsersTable = () => {
         return (
           <>
             <DeleteEditDropdown
-              itemToDelete={rowIndex}
+              itemSelected={rowIndex}
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('Edit')}
             />

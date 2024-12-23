@@ -16,7 +16,6 @@ import {
   ContentHolder,
   NavigationCard,
 } from '@gsp/ui';
-import { z } from 'zod';
 import Link from 'next/link';
 import { useState } from 'react';
 import { GoBack } from '@/components/GoBack';
@@ -28,26 +27,10 @@ import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-
-export const companyFormSchema = z.object({
-  companyName: z.string(),
-  fullContactName: z.string(),
-  organisationNumber: z
-    .string()
-    .min(10, { message: 'Must be 10 numbers.' })
-    .max(10, { message: 'Must be 10 numbers.' }),
-  country: z.string(),
-  city: z.string(),
-  address: z.string(),
-
-  pullTestPlan: z.string(),
-  xCyclopsPlan: z.string(),
-  ultraboltsPlan: z.string(),
-
-  assignSandvikAdministrator: z.string(),
-});
-
-type CompanyFormValues = z.infer<typeof companyFormSchema>;
+import {
+  companyFormSchema,
+  CompanyFormValues,
+} from '@/components/schemas/CompanyFormSchema';
 
 export default function Page(): JSX.Element {
   // @TODO: validate the form

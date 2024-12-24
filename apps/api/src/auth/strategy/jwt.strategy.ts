@@ -29,10 +29,31 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         },
       });
 
+      // Return companies user has access to
+      const userCompanies = await this.prisma.userPermission.findMany({
+        where: {
+          userId: prismaUser.id,
+        },
+        select: {
+          company: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
       const activeUser: ActiveUserData = {
         id: prismaUser.id,
         email: prismaUser.email,
         fullName: prismaUser.fullName,
+        companies: userCompanies.map((userCompany) => {
+          return {
+            id: userCompany.company.id,
+            name: userCompany.company.name,
+          };
+        }),
       };
 
       return activeUser;

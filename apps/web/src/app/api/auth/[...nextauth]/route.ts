@@ -82,7 +82,9 @@ const authOptions: NextAuthOptions = {
       const current = Math.floor(Date.now() / 1000);
       const isExpired = (exp ?? 0) < current;
 
+      console.log('JWT Callback', { exp, current, isExpired });
       if (isExpired) {
+        console.log('Access token expired, refreshing...');
         return refreshAccessToken(token);
       }
 
@@ -90,6 +92,7 @@ const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
+      console.log('Session Callback', { token, session });
       session.userData = token.userData;
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;

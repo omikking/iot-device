@@ -68,10 +68,31 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user);
 
+    // Return companies user has access to
+    const userCompanies = await this.prisma.userPermission.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
     const userResponse: ActiveUserData = {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
+      companies: userCompanies.map((userCompany) => {
+        return {
+          id: userCompany.company.id,
+          name: userCompany.company.name,
+        };
+      }),
     };
 
     return {

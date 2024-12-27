@@ -9,8 +9,7 @@ declare module 'next-auth/jwt' {
     userData: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     tokens: {
       refreshToken: string;
@@ -25,8 +24,7 @@ declare module 'next-auth' {
     userData: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     tokens: {
       refreshToken: string;
@@ -41,8 +39,7 @@ declare module 'next-auth' {
     userData: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     accessToken: string;
     error: string?;

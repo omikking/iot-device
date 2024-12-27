@@ -21,10 +21,4 @@ export const administratorFormSchema = z.object({
     .min(10, { message: 'Phone number must be at least 10 numbers' }),
 });
 
-export type AdministratorFormValues = {
-  fullName: string;
-  company: string;
-  email: string;
-  phoneNumber: string;
-  role: string;
-};
+export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;

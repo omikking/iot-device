@@ -19,11 +19,4 @@ export const technicianFormSchema = z.object({
   isGlobal: z.boolean(),
 });
 
-// This creates the type from the schema
-export type TechnicianFormValues = {
-  fullName: string;
-  company: string;
-  email: string;
-  phoneNumber: string;
-  isGlobal: boolean;
-};
+export type TechnicianFormValues = z.infer<typeof technicianFormSchema>;

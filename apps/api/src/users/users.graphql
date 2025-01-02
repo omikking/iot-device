@@ -1,0 +1,75 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+# TODO remove types from companies graphql
+
+"""
+User model
+Define the User model and its fields
+"""
+type User {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  fullName: String!
+  workPlace: String!
+  phoneNumber: String
+  globalRole: String
+  isGlobalVisibility: Boolean
+  userPermission: [UserPermission!]
+}
+
+"""
+UserPermission model
+Define the UserPermission model and its fields
+"""
+type UserPermission {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userId: String!
+  role: String!
+  appsAccess: [String!]
+}
+
+"""
+CreateUserInput
+Define the input fields to create a new user
+"""
+input CreateUserInput {
+  email: String!
+  fullName: String!
+  workPlace: String!
+  phoneNumber: String
+  globalRole: String
+  isGlobalVisibility: Boolean
+}
+
+"""
+UpdateUserInput
+Define the input fields to update an existing user
+Optional are marked without the exclamation mark
+"""
+input UpdateUserInput {
+  email: String
+  fullName: String
+  workPlace: String
+  phoneNumber: String
+  globalRole: String
+  isGlobalVisibility: Boolean
+}
+
+"""
+Mutation
+Define the mutations that can be made to the User model
+"""
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(id: String!, updateUserInput: UpdateUserInput!): User!
+  removeUser(id: String!): User!
+}

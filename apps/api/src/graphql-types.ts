@@ -143,6 +143,15 @@ export class UpdateSiteInput {
     companyId: string;
 }
 
+export class UpdateUserInput {
+    email?: Nullable<string>;
+    fullName?: Nullable<string>;
+    workPlace?: Nullable<string>;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+}
+
 export class BoltResult {
     id: string;
     createdAt: DateTime;
@@ -180,6 +189,8 @@ export abstract class IQuery {
     location?: Location;
     sites: Site[];
     site?: Site;
+    users: User[];
+    user?: User;
 }
 
 export abstract class IMutation {
@@ -204,6 +215,8 @@ export abstract class IMutation {
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
+    updateUser?: User;
+    removeUser?: User;
 }
 
 export class Coffee {
@@ -244,28 +257,6 @@ export class Plan {
     applicationName: string;
     planLevel: string;
     expiringDate?: Nullable<DateTime>;
-}
-
-export class User {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    email: string;
-    fullName: string;
-    workPlace: string;
-    phoneNumber?: Nullable<string>;
-    globalRole?: Nullable<string>;
-    isGlobalVisibility?: Nullable<boolean>;
-    userPermission?: Nullable<UserPermission[]>;
-}
-
-export class UserPermission {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    userId: string;
-    role: string;
-    appsAccess?: Nullable<string[]>;
 }
 
 export class Drive {
@@ -309,6 +300,28 @@ export class Site {
     companyId: string;
     levels?: Nullable<Level[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class User {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+    userPermissions?: Nullable<UserPermission[]>;
+}
+
+export class UserPermission {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    userId: string;
+    role: string;
+    appsAccess?: Nullable<string[]>;
 }
 
 export type DateTime = any;

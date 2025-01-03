@@ -40,36 +40,6 @@ type Plan {
 }
 
 """
-User model
-Define the User model and its fields
-"""
-type User {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  email: String!
-  fullName: String!
-  workPlace: String!
-  phoneNumber: String
-  globalRole: String
-  isGlobalVisibility: Boolean
-  userPermission: [UserPermission!]
-}
-
-"""
-UserPermission model
-Define the UserPermission model and its fields
-"""
-type UserPermission {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  userId: String!
-  role: String!
-  appsAccess: [String!]
-}
-
-"""
 CreateCompanyInput
 Define the input fields to create a new company
 """

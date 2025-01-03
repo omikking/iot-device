@@ -23,19 +23,6 @@ type User {
 }
 
 """
-UserPermission model
-Define the UserPermission model and its fields
-"""
-type UserPermission {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  userId: String!
-  role: String!
-  appsAccess: [String!]
-}
-
-"""
 UpdateUserInput
 Define the input fields to update an existing user
 Optional are marked without the exclamation mark

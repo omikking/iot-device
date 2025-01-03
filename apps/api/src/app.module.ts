@@ -8,6 +8,7 @@ import { CoffeesModule } from './coffees/coffees.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DateScalar } from './common/scalars/date.scalar';
 import { UsersModule } from './users/users.module';
+import { UserPermissionsModule } from './userPermissions/userPermissions.module';
 import { SitesModule } from './sites/sites.module';
 import { LevelsModule } from './levels/levels.module';
 import { DrivesModule } from './drives/drives.module';
@@ -25,6 +26,7 @@ import { BoltResultsModule } from './boltResults/boltResults.module';
     }),
     CoffeesModule,
     UsersModule,
+    UserPermissionsModule,
     CompaniesModule,
     SitesModule,
     LevelsModule,

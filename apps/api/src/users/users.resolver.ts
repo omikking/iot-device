@@ -1,7 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import * as GraphQLTypes from 'src/graphql-types';
-import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 
@@ -20,14 +19,6 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.User> {
     return this.usersService.findOne(id);
-  }
-
-  @Mutation('createUser')
-  async create(
-    @Args('createUserInput')
-    createUserInput: CreateUserInput,
-  ): Promise<GraphQLTypes.User> {
-    return this.usersService.create(createUserInput);
   }
 
   @Mutation('updateUser')

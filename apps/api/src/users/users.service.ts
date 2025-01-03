@@ -1,6 +1,6 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { GlobalRole, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 
@@ -20,27 +20,6 @@ export class UsersService {
     return user;
   }
 
-  // This should be the table that adds the user with only email data.
-  // The user gets the invitation email, and then finished to SignUp.
-  // Maybe we should call this inviteUserInput? Or maybe we should have a separate table for this?
-  async create(createUserInput: GraphQLTypes.CreateUserInput): Promise<User> {
-    const createdUser = await this.prisma.user.create({
-      data: {
-        email: createUserInput.email,
-        // fullName: createUserInput.fullName,
-        // workPlace: createUserInput.workPlace,
-        // phoneNumber: createUserInput.phoneNumber,
-        // globalRole: createUserInput.globalRole,
-        // isGlobalVisibility: createUserInput.isGlobalVisibility,
-      },
-    });
-
-    if (!createdUser) {
-      throw new UserInputError('Failed to create user');
-    }
-    return createdUser;
-  }
-
   async update(
     id: string,
     updateUserInput: GraphQLTypes.UpdateUserInput,
@@ -52,7 +31,7 @@ export class UsersService {
         fullName: updateUserInput?.fullName || undefined,
         workPlace: updateUserInput?.workPlace || undefined,
         phoneNumber: updateUserInput?.phoneNumber || undefined,
-        globalRole: updateUserInput?.globalRole || undefined,
+        globalRole: (updateUserInput?.globalRole as GlobalRole) || undefined,
         isGlobalVisibility: updateUserInput?.isGlobalVisibility || undefined,
       },
     });

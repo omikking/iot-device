@@ -111,6 +111,7 @@ export const BoltResultDetailsModal = ({
                   className="flex-grow mt-2"
                   disabled
                   readOnly
+                  resize={false}
                 />
               </div>
             )}

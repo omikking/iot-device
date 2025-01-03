@@ -20,7 +20,7 @@ import {
 } from './refresh-token-storage';
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
-import type { User } from '@prisma/client';
+import type { GlobalRole, User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +40,8 @@ export class AuthService {
           fullName: dto.fullName,
           workPlace: dto.workPlace,
           phoneNumber: dto.phoneNumber || undefined,
+          globalRole: (dto.globalRole as GlobalRole) || undefined,
+          isGlobalVisibility: dto.isGlobalVisibility || undefined,
         },
       });
 

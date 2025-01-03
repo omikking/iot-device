@@ -17,6 +17,12 @@ export class SignupDto {
 
   @IsString()
   phoneNumber?: string;
+
+  @IsString()
+  globalRole?: string;
+
+  @IsString()
+  isGlobalVisibility?: boolean;
 }
 
 export class SigninDto {

@@ -54,7 +54,7 @@ Query
 Define the queries that can be made to the User model
 """
 type Query {
-  users: [User!]!
+  users(roles: [String]): [User!]!
   user(id: String!): User!
 }
 

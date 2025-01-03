@@ -189,7 +189,7 @@ export abstract class IQuery {
     location?: Location;
     sites: Site[];
     site?: Site;
-    users: User[];
+    users?: User[];
     user?: User;
 }
 

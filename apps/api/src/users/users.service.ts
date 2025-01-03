@@ -1,6 +1,6 @@
 import { UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
-import { GlobalRole, User } from '@prisma/client';
+import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 
@@ -8,8 +8,16 @@ import * as GraphQLTypes from 'src/graphql-types';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  findAll(roles?: GlobalRole[]): Promise<User[]> {
+    // If roles are provided, only the users with the provided roles will be returned
+    const where: Prisma.UserWhereInput = {};
+
+    if (roles && roles.length > 0) {
+      where.globalRole = { in: roles };
+    }
+    return this.prisma.user.findMany({
+      where,
+    });
   }
 
   async findOne(id: string): Promise<User> {

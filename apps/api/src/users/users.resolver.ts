@@ -3,14 +3,18 @@ import { UsersService } from './users.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { GlobalRole } from '@prisma/client';
 
 @Resolver()
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query('users')
-  async findAll(): Promise<GraphQLTypes.User[]> {
-    return this.usersService.findAll();
+  async findAll(
+    @Args('roles', { type: () => [String], nullable: true })
+    roles?: GlobalRole[],
+  ): Promise<GraphQLTypes.User[]> {
+    return this.usersService.findAll(roles);
   }
 
   @Query('user')

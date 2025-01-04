@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import React from 'react';
-import { useQuery, gql } from 'urql';
 
-const GET_COFFEES_QUERY = gql`
-  query {
+'use client';
+
+import React from 'react';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
+
+const getMeCoffeesDocument = graphql(`
+  query getMeCoffees {
     coffees {
       id
       name
@@ -15,12 +17,12 @@ const GET_COFFEES_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 function CoffeesClientUrql() {
-  // const [{ data, fetching, error }] = useQuery({ query: CoffeesQuery });
+  // const [{ data, fetching, error }] = useQuery({ query: getCoffeesDocument });
   const [result, reexecuteQuery] = useQuery({
-    query: GET_COFFEES_QUERY,
+    query: getMeCoffeesDocument,
   });
 
   const { data, fetching, error } = result;
@@ -31,7 +33,7 @@ function CoffeesClientUrql() {
   return (
     <div>
       <h2 className="text-sm">Client Coffees List</h2>
-      {data?.coffees.map(({ id, name, brand }: any) => (
+      {data?.coffees.map(({ id, name, brand }) => (
         <div key={id}>
           <p>{`${name} by ${brand}`}</p>
         </div>

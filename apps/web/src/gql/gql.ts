@@ -17,6 +17,7 @@ const documents = {
     "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query GetCoffeeWithID($id: ID!) {\n    coffee(id: $id) {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n": types.GetCoffeeWithIdDocument,
     "\n  query GetCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n": types.GetCoffeesDocument,
+    "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n": types.GetMeCoffeesDocument,
 };
 
 /**
@@ -45,6 +46,10 @@ export function graphql(source: "\n  query GetCoffeeWithID($id: ID!) {\n    coff
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

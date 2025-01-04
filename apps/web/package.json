@@ -13,6 +13,7 @@
   "dependencies": {
     "@apollo/client": "^3.10.6",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@gsp/ui": "workspace:*",
     "@hookform/resolvers": "^3.4.2",
     "@svgr/webpack": "^8.1.0",

@@ -12,9 +12,6 @@ const getMeCoffeesDocument = graphql(`
       id
       name
       brand
-      flavors {
-        name
-      }
     }
   }
 `);

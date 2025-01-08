@@ -1,7 +1,13 @@
 {
   "extends": "@gsp/typescript-config/nextjs.json",
   "compilerOptions": {
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      { "name": "next" },
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "http://localhost:3333/graphql"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],

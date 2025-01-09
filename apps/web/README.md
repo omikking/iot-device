@@ -10,7 +10,16 @@ cp .env.exmaple .env
 Then, run the development server:
 
 ```sh
+pnpm dev
+# or if at root
 pnpm --filter=web dev
+```
+
+Whenever working with GraphQL, please run the GraphQL TypeScript generator
+graphql-types
+
+```sh
+pnpm graphql-types --watch
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

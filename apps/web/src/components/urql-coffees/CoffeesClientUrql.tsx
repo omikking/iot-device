@@ -1,4 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// This file is an example on how to query GraphQL from a client component
+
+// A component is a client component when it includes 'use client' at the top.
+// A component is also rendered as a client component when it is imported to a parent component/page that has 'use client', even when itself does not contain 'use client'
+// Please look into client component vs server component (RSC) in Next.js if you are unsure about the differences between the two.
 
 'use client';
 
@@ -17,12 +21,12 @@ const getMeCoffeesDocument = graphql(`
 `);
 
 function CoffeesClientUrql() {
-  // const [{ data, fetching, error }] = useQuery({ query: getCoffeesDocument });
-  const [result, reexecuteQuery] = useQuery({
-    query: getMeCoffeesDocument,
-  });
+  // const [result, reexecuteQuery] = useQuery({
+  //   query: getMeCoffeesDocument,
+  // });
 
-  const { data, fetching, error } = result;
+  // const { data, fetching, error } = result;
+  const [{ data, fetching, error }] = useQuery({ query: getMeCoffeesDocument });
 
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Error</p>;

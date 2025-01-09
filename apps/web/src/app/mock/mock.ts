@@ -192,6 +192,7 @@ export interface UserSchema {
   isGlobalVisibility?: boolean;
   userPermissions: {
     id: string;
+    userId: string;
     role: 'User' | 'Technician' | 'Admin';
     appAccess: string[];
   };
@@ -207,8 +208,9 @@ export const usersMock: UserSchema[] = [
     isGlobalVisibility: true,
     userPermissions: {
       id: '10',
+      userId: '1',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },
@@ -220,8 +222,9 @@ export const usersMock: UserSchema[] = [
     isGlobalVisibility: false,
     userPermissions: {
       id: '11',
+      userId: '2',
       role: 'Technician',
-      appAccess: ['ULTRABOLTS, XCYCLOPS'],
+      appAccess: ['ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },
@@ -234,8 +237,9 @@ export const usersMock: UserSchema[] = [
     isGlobalVisibility: true,
     userPermissions: {
       id: '12',
+      userId: '3',
       role: 'User',
-      appAccess: ['PULL_TEST'],
+      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR'],
     },
     phoneNumber: '+4683729327',
   },
@@ -246,9 +250,10 @@ export const usersMock: UserSchema[] = [
     globalRole: false,
     isGlobalVisibility: false,
     userPermissions: {
-      id: '13',
+      id: '100',
+      userId: '4',
       role: 'Admin',
-      appAccess: ['PULL_TEST, ULTRABOLTS, XCYCLOPS'],
+      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },
@@ -583,9 +588,6 @@ export const sitesMock = [
 ];
 
 export const roles: DropdownItem[] = [
-  // { id: 'User', name: 'User', background: 'neutral' },
-  // { id: 'Technician', name: 'Technician', background: 'neutral' },
-  // { id: 'Admin', name: 'Admin', background: 'primary' },
   {
     id: '1',
     name: 'User',
@@ -606,42 +608,50 @@ export const roles: DropdownItem[] = [
 export const technicians = [
   {
     id: '1',
+    userId: '1',
     name: 'Elliot Alderson',
     email: 'elliot@ecorp.com',
   },
   {
     id: '2',
+    userId: '2',
     name: 'Darlene Alderson',
     email: 'dolores@haze.com',
   },
   {
     id: '3',
+    userId: '3',
     name: 'Tyrell Wellick',
     email: 'tyrell@ecorp.com',
   },
   {
     id: '4',
+    userId: '4',
     name: 'Joanna Wellick',
     email: 'joanna@ecorp.com',
   },
   {
     id: '5',
+    userId: '5',
     name: 'Angela Moss',
     email: 'angela@ecorp.com',
   },
   {
     id: '6',
+    userId: '6',
     name: 'Whiterose',
     email: 'dark@army.com',
   },
   {
     id: '7',
+    userId: '7',
     name: 'Felix Östergren',
     email: 'felix@ecorp.com',
   },
   {
     id: '8',
+    userId: '8',
     name: 'Jimmy Nwadinkpa',
-    email: 'jimmy@ecorp.com',
+    email: 'jimmy@sandvik.com',
   },
 ];

@@ -19,26 +19,6 @@ type Drive {
   boltResults: [BoltResult!]
 }
 
-# @TODO move later to Location model when it exists
-"""
-Location model
-Define the Location model and its fields
-"""
-type Location {
-  # @TODO add all fields later, this is just added to make sure it works
-  locationName: String!
-}
-
-# @TODO move later to BoltResult model when it exists
-"""
-BoltResult model
-Define the BoltResult model and its fields
-"""
-type BoltResult {
-  # @TODO add all fields later, this is just added to make sure it works
-  boltNumber: Int!
-}
-
 """
 CreateDriveInput
 Define the input fields to create a new drive

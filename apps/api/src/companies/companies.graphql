@@ -40,36 +40,6 @@ type Plan {
 }
 
 """
-User model
-Define the User model and its fields
-"""
-type User {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  email: String!
-  fullName: String!
-  workPlace: String!
-  phoneNumber: String
-  globalRole: String
-  isGlobalVisibility: Boolean
-  userPermission: [UserPermission!]
-}
-
-"""
-UserPermission model
-Define the UserPermission model and its fields
-"""
-type UserPermission {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  userId: String!
-  role: String!
-  appsAccess: [String!]
-}
-
-"""
 CreateCompanyInput
 Define the input fields to create a new company
 """
@@ -81,15 +51,15 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateUserPermissionInput!]!
+  userPermissions: [CreateAdminPermissionInput!]!
   plans: [CreatePlanInput!]
 }
 
 """
-CreateUserPermissionInput
+CreateAdminPermissionInput
 Define the input fields to create a new userPermission
 """
-input CreateUserPermissionInput {
+input CreateAdminPermissionInput {
   userId: String!
 }
 
@@ -116,7 +86,7 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateUserPermissionInput!]
+  userPermissions: [UpdateAdminPermissionInput!]
   plans: [UpdatePlanInput!]
 }
 
@@ -132,10 +102,10 @@ input UpdatePlanInput {
 }
 
 """
-UpdateUserPermissionInput
+UpdateAdminPermissionInput
 Define the input fields to update the sandvik admin to new admin
 """
-input UpdateUserPermissionInput {
+input UpdateAdminPermissionInput {
   oldUserId: String!
   newUserId: String!
 }

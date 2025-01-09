@@ -30,11 +30,6 @@ interface HazardCardProps {
   fullBoltData?: BoltResultSchema;
 }
 
-// interface BoltSpecification {
-//   title: string;
-//   text: string;
-// }
-
 export const HazardCard = ({
   dateTitle,
   isHazard,
@@ -43,12 +38,6 @@ export const HazardCard = ({
   boltInfoItems,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const specifications: BoltSpecification[] = [
-  //   { title: 'Diameter', text: fullBoltData?.bitSize || '' },
-  //   { title: 'Pass criteria', text: fullBoltData?.boltType || '' }, // Unsure what the value should be here
-  //   { title: 'Location', text: fullBoltData?.location || '' },
-  // ];
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();

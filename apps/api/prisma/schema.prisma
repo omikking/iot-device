@@ -207,25 +207,9 @@ model Location {
   drive   Drive  @relation(fields: [driveId], references: [id])
   driveId String
 
-  boltResult     BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
-  positionInRing PositionInRing[]
+  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
 
   @@map("locations")
-}
-
-model PositionInRing {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  positionInRingName RingPosition
-
-  location   Location @relation(fields: [locationId], references: [id])
-  locationId String
-
-  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give positionInRingId to BoltResult, is this relation correct?
-
-  @@map("positions_in_ring")
 }
 
 model BoltResult {
@@ -237,10 +221,11 @@ model BoltResult {
   boltType         BoltType
   peakLoad         Int[]
   peakDisplacement Int[]
+  positionInRing   RingPosition
 
   result              Result
   isHazard            Boolean              @default(false)
-  hazardCompletedDate DateTime[]
+  hazardCompletedDate DateTime[] // Need to make optional
   abortReason         PullTestAbortReason?
   comment             String?
   image               String? // base64
@@ -256,9 +241,6 @@ model BoltResult {
 
   location   Location @relation(fields: [locationId], references: [id])
   locationId String
-
-  positionInRing   PositionInRing @relation(fields: [positionInRingId], references: [id])
-  positionInRingId String
 
   user   User   @relation(fields: [userId], references: [id])
   userId String

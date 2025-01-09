@@ -8,6 +8,38 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export class CreateBoltResultInput {
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
+}
+
+export class UpdateBoltResultInput {
+    boltNumber?: Nullable<number>;
+    boltType?: Nullable<string>;
+    peakLoad?: Nullable<number[]>;
+    peakDisplacement?: Nullable<number[]>;
+    positionInRing?: Nullable<string>;
+    result?: Nullable<string>;
+    isHazard?: Nullable<boolean>;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+}
+
 export class CreateCoffeeInput {
     name: string;
     brand: string;
@@ -28,11 +60,11 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateUserPermissionInput[];
+    userPermissions: CreateAdminPermissionInput[];
     plans?: Nullable<CreatePlanInput[]>;
 }
 
-export class CreateUserPermissionInput {
+export class CreateAdminPermissionInput {
     userId: string;
 }
 
@@ -50,7 +82,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateUserPermissionInput[]>;
+    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -61,7 +93,7 @@ export class UpdatePlanInput {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class UpdateUserPermissionInput {
+export class UpdateAdminPermissionInput {
     oldUserId: string;
     newUserId: string;
 }
@@ -84,6 +116,15 @@ export class UpdateLevelInput {
     levelName?: Nullable<string>;
 }
 
+export class CreateLocationInput {
+    locationName: string;
+    driveId: string;
+}
+
+export class UpdateLocationInput {
+    locationName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -102,21 +143,52 @@ export class UpdateSiteInput {
     companyId: string;
 }
 
-export class Coffee {
-    id: number;
-    name: string;
-    brand: string;
-    flavors?: Nullable<Flavor[]>;
-    createdAt: DateTime;
-    updatedAt: DateTime;
+export class CreateUserPermissionInput {
+    userId: string;
+    role: string;
+    appsAccess: string[];
+    companyId: string;
 }
 
-export class Flavor {
-    id: number;
-    name: string;
+export class UpdateUserPermissionInput {
+    role?: Nullable<string>;
+    appsAccess?: Nullable<string[]>;
+}
+
+export class UpdateUserInput {
+    email?: Nullable<string>;
+    fullName?: Nullable<string>;
+    workPlace?: Nullable<string>;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+}
+
+export class BoltResult {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
 }
 
 export abstract class IQuery {
+    boltResults: BoltResult[];
+    boltResult?: BoltResult;
     coffees: Coffee[];
     coffee?: Coffee;
     companies: Company[];
@@ -125,11 +197,20 @@ export abstract class IQuery {
     drive?: Drive;
     levels: Level[];
     level?: Level;
+    locations: Location[];
+    location?: Location;
     sites: Site[];
     site?: Site;
+    userPermissions: UserPermission[];
+    userPermission?: UserPermission;
+    users?: User[];
+    user?: User;
 }
 
 export abstract class IMutation {
+    createBoltResult?: BoltResult;
+    updateBoltResult?: BoltResult;
+    removeBoltResult?: BoltResult;
     createCoffee?: Coffee;
     updateCoffee?: Coffee;
     removeCoffee?: Coffee;
@@ -142,9 +223,31 @@ export abstract class IMutation {
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
+    createLocation?: Location;
+    updateLocation?: Location;
+    removeLocation?: Location;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
+    createUserPermission?: UserPermission;
+    updateUserPermission?: UserPermission;
+    removeUserPermission?: UserPermission;
+    updateUser?: User;
+    removeUser?: User;
+}
+
+export class Coffee {
+    id: number;
+    name: string;
+    brand: string;
+    flavors?: Nullable<Flavor[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class Flavor {
+    id: number;
+    name: string;
 }
 
 export class Company {
@@ -173,28 +276,6 @@ export class Plan {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class User {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    email: string;
-    fullName: string;
-    workPlace: string;
-    phoneNumber?: Nullable<string>;
-    globalRole?: Nullable<string>;
-    isGlobalVisibility?: Nullable<boolean>;
-    userPermission?: Nullable<UserPermission[]>;
-}
-
-export class UserPermission {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    userId: string;
-    role: string;
-    appsAccess?: Nullable<string[]>;
-}
-
 export class Drive {
     id: string;
     createdAt: DateTime;
@@ -205,14 +286,6 @@ export class Drive {
     boltResults?: Nullable<BoltResult[]>;
 }
 
-export class Location {
-    locationName: string;
-}
-
-export class BoltResult {
-    boltNumber: number;
-}
-
 export class Level {
     id: string;
     createdAt: DateTime;
@@ -220,6 +293,15 @@ export class Level {
     levelName: string;
     siteId: string;
     drives?: Nullable<Drive[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Location {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    locationName: string;
+    driveId: string;
     boltResults?: Nullable<BoltResult[]>;
 }
 
@@ -235,6 +317,29 @@ export class Site {
     companyId: string;
     levels?: Nullable<Level[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class UserPermission {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    userId: string;
+    role: string;
+    appsAccess: string[];
+    companyId: string;
+}
+
+export class User {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+    userPermissions?: Nullable<UserPermission[]>;
 }
 
 export type DateTime = any;

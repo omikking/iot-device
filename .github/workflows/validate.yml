@@ -1,0 +1,54 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  validate-pr:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Restore Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.cache/turbo
+            apps/*/.turbo
+            packages/*/.turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install pnpm
+        uses: Sandvik-SMR/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client in API
+        run: pnpm --filter api prisma:generate
+
+      - name: Run build
+        run: pnpm build
+
+      - name: Run type-check
+        run: pnpm type-check
+
+      - name: Run lint
+        run: pnpm lint

@@ -1,13 +1,20 @@
 'use client';
 import { useState } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
-import { LucideEyeOff, LucideView } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
+import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
 
-export const TechniciansTable = () => {
+interface TechniciansTableProps {
+  onOpenChange: (open: boolean) => void;
+  onSelectTechnician: (technician: TechniciansSchema) => void;
+}
+export const TechniciansTable = ({
+  onOpenChange,
+  onSelectTechnician,
+}: TechniciansTableProps) => {
   const [technicians, setTechnicians] = useState(techniciansMock);
   const [isDeleteTechnicianModalOpen, setIsDeleteTechnicianModalOpen] =
     useState(false);
@@ -18,6 +25,13 @@ export const TechniciansTable = () => {
   const openDeleteModal = (index: number) => {
     setTechnicianToDelete(index);
     setIsDeleteTechnicianModalOpen(true);
+  };
+
+  // get the index of the technician to edit and pass it to the modal
+  const openEditModal = (index: number) => {
+    const technicianToEdit = technicians[index];
+    onSelectTechnician(technicianToEdit);
+    onOpenChange(true);
   };
 
   const closeDeleteModal = () => {
@@ -84,9 +98,10 @@ export const TechniciansTable = () => {
 
         return (
           <DeleteEditDropdown
-            itemToDelete={rowIndex}
+            itemSelected={rowIndex}
             openDeleteModal={openDeleteModal}
-            handleEdit={() => console.log('Edit')}
+            // when the edit button is clicked, the index of the technician is passed to the modal
+            handleEdit={openEditModal}
           />
         );
       },

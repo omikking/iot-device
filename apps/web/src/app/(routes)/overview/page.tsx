@@ -6,6 +6,7 @@ import {
   LucideMoveRight,
   LucidePickaxe,
   LucidePlus,
+  LucideUserCog,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -32,6 +33,20 @@ export default function Page(): JSX.Element {
 
         <NavigationCard>
           <Headline as="h3" variant="medium" color="foreground">
+            Administrators
+          </Headline>
+          <LucideUserCog />
+          <Button variant="secondary" size="small" asChild>
+            {/*@TODO delete this todo when Link is working*/}
+            <Link href="/administrators">
+              <LucideMoveRight />
+              View administrators
+            </Link>
+          </Button>
+        </NavigationCard>
+
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
             Technicians
           </Headline>
           <LucidePickaxe />
@@ -44,7 +59,7 @@ export default function Page(): JSX.Element {
         </NavigationCard>
       </div>
 
-      <hr className="w-full border-gold-3 mb-4" />
+      <hr className="w-full border-neutral-2 mb-4" />
 
       <ContentHolder variant="table" headlineText="Companies to administrate">
         <CompanyList />

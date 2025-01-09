@@ -91,7 +91,10 @@ export const AddOrEditAdministratorModal = ({
   }, [administrator, form]);
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent
+      className="sm:max-w-[425px]"
+      onCloseAutoFocus={resetFormValues}
+    >
       <ModalHeader>
         <ModalTitle>
           {administrator ? 'Edit Administrator' : 'Add administrator'}
@@ -195,7 +198,7 @@ export const AddOrEditAdministratorModal = ({
                             placeholder="Select role..."
                             selectedId={field.value}
                             options={optionAdministratorRoleMock}
-                            onSelect={(value) => field.onChange(value)}
+                            onSelect={field.onChange}
                             className="w-96"
                           />
                         </FormControl>

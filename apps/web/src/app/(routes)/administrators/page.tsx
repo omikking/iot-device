@@ -14,7 +14,7 @@ export default function Page(): JSX.Element {
     AdministratorSchema | undefined
   >(undefined);
 
-  const handleModalClose = (open: boolean) => {
+  const handleToggleModal = (open: boolean) => {
     setOpenAdministratorsModal(open);
     if (!open) {
       setSelectedAdministrator(undefined);
@@ -30,10 +30,7 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Modal
-          open={openAdministratorsModal}
-          onOpenChange={(open) => handleModalClose(open)}
-        >
+        <Modal open={openAdministratorsModal} onOpenChange={handleToggleModal}>
           <ModalTrigger asChild>
             <Button variant="primary" size="large">
               <LucidePlus />
@@ -47,7 +44,7 @@ export default function Page(): JSX.Element {
         </Modal>
 
         <AdministratorsTable
-          onOpenChange={handleModalClose}
+          onOpenChange={handleToggleModal}
           onSelectAdministrator={setSelectedAdministrator}
         />
       </div>

@@ -1,3 +1,5 @@
+import { UseFormReturn } from 'react-hook-form';
+import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   FormControl,
   FormField,
@@ -7,7 +9,13 @@ import {
   Input,
 } from '@gsp/ui';
 
-export const AssociateDetailsForm = ({ companyForm }) => {
+interface AssociateDetailsFormProps {
+  companyForm: UseFormReturn<CompanyFormValues>;
+}
+
+export const AssociateDetailsForm = ({
+  companyForm,
+}: AssociateDetailsFormProps) => {
   return (
     <>
       <FormField

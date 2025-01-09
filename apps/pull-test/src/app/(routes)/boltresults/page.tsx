@@ -35,6 +35,15 @@ export default function Page(): JSX.Element {
     to: undefined,
   });
 
+  const [filterState, setFilterState] = useState({
+    pass: false,
+    fail: false,
+    abort: false,
+    withComment: false,
+    withImage: false,
+    reportedHazard: false,
+  });
+
   const [boltResults, setBoltResults] = useState<
     BoltResultSchema[] | undefined
   >([]);
@@ -57,7 +66,26 @@ export default function Page(): JSX.Element {
             bolt.createdDate <= dateRange.to
           : true;
 
-      return matchLocation && matchDrive && matchLevel && matchDateRange;
+      // Filtering
+      const matchResult =
+        (!filterState.pass && !filterState.fail && !filterState.abort) ||
+        (filterState.pass && bolt.result === 'Pass') ||
+        (filterState.fail && bolt.result === 'Fail') ||
+        (filterState.abort && bolt.result === 'Abort');
+
+      const matchComment =
+        (!filterState.withComment || bolt.comment) &&
+        (!filterState.withImage || bolt.image) &&
+        (!filterState.reportedHazard || bolt.isHazard);
+
+      return (
+        matchLocation &&
+        matchDrive &&
+        matchLevel &&
+        matchDateRange &&
+        matchResult &&
+        matchComment
+      );
     });
   };
 
@@ -159,12 +187,14 @@ export default function Page(): JSX.Element {
           drive={drive}
           location={location}
           dateRange={dateRange}
+          selectedTab={selectedTab}
+          filterState={filterState}
           onSetSite={setSite}
           onSetLevel={setLevel}
           onSetDrive={setDrive}
           onSetLocation={setLocation}
           onSetDateRange={setDateRange}
-          selectedTab={selectedTab}
+          onFilterChange={setFilterState}
         />
         <TabsContent value="table">
           <BoltResultsTable site={site} boltResults={filteredResults} />

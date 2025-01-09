@@ -67,7 +67,6 @@ export const LevelsList = ({
             level={level}
             levelsOptionsMock={levelsOptionsMock}
             index={index}
-            key={index}
             inputRef={inputRef}
             handleSetLevel={handleSetLevel}
             setLevelsOptionsMock={setLevelsOptionsMock}

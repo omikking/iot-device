@@ -19,10 +19,4 @@ export const administratorFormSchema = z.object({
   role: z.string().min(10, { message: 'Select a role.' }),
 });
 
-export type AdministratorFormValues = {
-  fullName: string;
-  company: string;
-  email: string;
-  phoneNumber: string;
-  role: string;
-};
+export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;

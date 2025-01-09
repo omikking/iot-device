@@ -65,7 +65,6 @@ export const DrivesList = ({
             selectedDrive={selectedDrive}
             inputRef={inputRef}
             index={index}
-            key={index}
             setDrivesOptionsMock={setDrivesOptionsMock}
             setLocationsOptionsMock={setLocationsOptionsMock}
             handleSetDrive={handleSetDrive}

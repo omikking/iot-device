@@ -44,6 +44,7 @@ cd apps/api
 pnpm run prisma:generate # This generates the Prisma client and has to be re-run whenever changes are done to the schema.
 cp .env.example .env # Populate with valid values
 pnpm run db:dev:up # Start Docker Postgres DB (dev)
+pnpm run prisma:dev:deploy # Apply Prisma migrations to Docker Postgres DB (dev)
 pnpm run start:dev # Start NestJS in watch mode
 ```
 

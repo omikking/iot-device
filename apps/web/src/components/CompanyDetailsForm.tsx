@@ -1,3 +1,5 @@
+import { UseFormReturn } from 'react-hook-form';
+import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   ContentHolder,
   FormControl,
@@ -7,11 +9,6 @@ import {
   FormMessage,
   Input,
 } from '@gsp/ui';
-import { companyFormSchema } from '@/app/(routes)/company/page';
-import { UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-
-type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
 export const CompanyDetailsForm = ({
   companyForm,

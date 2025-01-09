@@ -1,3 +1,4 @@
+import CoffeeCreateUrql from '@/components/urql-coffees/CoffeeCreateUrql';
 import CoffeesClientUrql from '@/components/urql-coffees/CoffeesClientUrql';
 import CoffeesUrql from '@/components/urql-coffees/CoffeesUrql';
 
@@ -8,6 +9,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col gap-10">
         <CoffeesClientUrql />
         <CoffeesUrql />
+        <CoffeeCreateUrql />
       </div>
     </main>
   );

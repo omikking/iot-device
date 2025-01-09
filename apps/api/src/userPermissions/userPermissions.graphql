@@ -1,0 +1,65 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+UserPermission model
+Define the UserPermission model and its fields
+"""
+type UserPermission {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userId: String!
+  role: String!
+  appsAccess: [String!]!
+  companyId: String!
+}
+
+"""
+CreateUserPermissionInput
+Define the input fields to create a new userPermission
+"""
+input CreateUserPermissionInput {
+  userId: String!
+  role: String!
+  appsAccess: [String!]!
+  companyId: String!
+}
+
+"""
+UpdateUserPermissionInput
+Define the input fields to update an existing userPermission
+Optional are marked without the exclamation mark
+"""
+input UpdateUserPermissionInput {
+  role: String
+  appsAccess: [String!]
+}
+
+"""
+Query
+Define the queries that can be made to the UserPermission model
+"""
+type Query {
+  userPermissions: [UserPermission!]!
+  userPermission(id: String!): UserPermission!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the UserPermission model
+"""
+type Mutation {
+  createUserPermission(
+    createUserPermissionInput: CreateUserPermissionInput!
+  ): UserPermission!
+  updateUserPermission(
+    id: String!
+    updateUserPermissionInput: UpdateUserPermissionInput!
+  ): UserPermission!
+  removeUserPermission(id: String!): UserPermission!
+}

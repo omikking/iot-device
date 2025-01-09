@@ -1,4 +1,5 @@
 import CoffeesClientUrql from '@/components/urql-coffees/CoffeesClientUrql';
+import CoffeesUrql from '@/components/urql-coffees/CoffeesUrql';
 
 export default function Page(): JSX.Element {
   return (
@@ -6,6 +7,7 @@ export default function Page(): JSX.Element {
       <h1 className="text-md">URQL Coffees ☕️</h1>
       <div className="flex flex-col gap-10">
         <CoffeesClientUrql />
+        <CoffeesUrql />
       </div>
     </main>
   );

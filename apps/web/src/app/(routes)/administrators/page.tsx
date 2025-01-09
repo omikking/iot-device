@@ -5,10 +5,22 @@ import { GoBack } from '@/components/GoBack';
 import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
 import { AdministratorsTable } from '@/components/AdministratorsTable';
+import { AdministratorSchema } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   const [openAdministratorsModal, setOpenAdministratorsModal] =
     useState<boolean>(false);
+  const [selectedAdministrator, setSelectedAdministrator] = useState<
+    AdministratorSchema | undefined
+  >(undefined);
+
+  const handleToggleModal = (open: boolean) => {
+    setOpenAdministratorsModal(open);
+    if (!open) {
+      setSelectedAdministrator(undefined);
+    }
+  };
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
@@ -18,10 +30,7 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Modal
-          open={openAdministratorsModal}
-          onOpenChange={setOpenAdministratorsModal}
-        >
+        <Modal open={openAdministratorsModal} onOpenChange={handleToggleModal}>
           <ModalTrigger asChild>
             <Button variant="primary" size="large">
               <LucidePlus />
@@ -30,10 +39,14 @@ export default function Page(): JSX.Element {
           </ModalTrigger>
           <AddOrEditAdministratorModal
             onOpenChange={setOpenAdministratorsModal}
+            administrator={selectedAdministrator}
           />
         </Modal>
 
-        <AdministratorsTable />
+        <AdministratorsTable
+          onOpenChange={handleToggleModal}
+          onSelectAdministrator={setSelectedAdministrator}
+        />
       </div>
     </main>
   );

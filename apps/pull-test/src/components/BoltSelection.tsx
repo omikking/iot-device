@@ -8,7 +8,7 @@ import {
   Label,
   RangeCalendar,
 } from '@gsp/ui';
-import { BoltResultsFilter } from './BoltResultsFilter';
+import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 import { sitesMock } from '@/app/mock/mock';
 
 // @TODO Is this typing really correct?
@@ -22,12 +22,14 @@ interface BoltSelectionProps {
   location?: string;
   dateRange?: DateRange;
   selectedTab?: string;
+  filterState: FilterState;
   // Is this typing correct? or should it be (id: string) => void;
   onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  onFilterChange: (filters: FilterState) => void;
 }
 
 export const BoltSelection = ({
@@ -42,6 +44,7 @@ export const BoltSelection = ({
   onSetDrive,
   onSetLocation,
   onSetDateRange,
+  onFilterChange,
 }: BoltSelectionProps) => {
   const handleSetSite = (site?: string) => {
     onSetSite(site);
@@ -81,7 +84,10 @@ export const BoltSelection = ({
 
   return (
     <ContentHolder variant="filter">
-      <BoltResultsFilter selectedTab={selectedTab} />
+      <BoltResultsFilter
+        selectedTab={selectedTab}
+        onFilterChange={onFilterChange}
+      />
 
       <div className="space-y-1.5 mt-0.5">
         <Label>Site</Label>

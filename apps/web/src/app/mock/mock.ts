@@ -102,6 +102,17 @@ export const optionsDesignSystemMock = [
   },
 ];
 
+export const optionAdministratorRoleMock = [
+  {
+    id: 'Sandvik admin',
+    name: 'Sandvik admin',
+  },
+  {
+    id: 'Sandvik Supah admin',
+    name: 'Sandvik Supah admin',
+  },
+];
+
 export const appPlansMock: AppPlan[] = [
   {
     name: 'Pull-test',
@@ -310,7 +321,7 @@ export const administratorsMock: AdministratorSchema[] = [
     email: 'darlenealderson@sandvik.com',
     company: 'Sandvik',
     phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
+    role: 'Sandvik Supah admin',
   },
   {
     id: '3',
@@ -326,7 +337,7 @@ export const administratorsMock: AdministratorSchema[] = [
     email: 'joanna@sandvik.com',
     company: 'Sandvik',
     phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
+    role: 'Sandvik Supah admin',
   },
   {
     id: '5',
@@ -342,7 +353,7 @@ export const administratorsMock: AdministratorSchema[] = [
     email: 'whiterose.sandvik.com',
     company: 'Sandvik',
     phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
+    role: 'Sandvik Supah admin',
   },
   {
     id: '7',

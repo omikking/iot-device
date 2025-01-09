@@ -14,9 +14,6 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-    "\n  mutation CreateCoffeeApollo($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeApolloDocument,
-    "\n  query GetCoffeeWithIDApollo($id: ID!) {\n    coffee(id: $id) {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n": types.GetCoffeeWithIdApolloDocument,
-    "\n  query GetCoffeesApollo {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n": types.GetCoffeesApolloDocument,
     "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
 };
@@ -35,18 +32,6 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation CreateCoffeeApollo($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCoffeeApollo($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetCoffeeWithIDApollo($id: ID!) {\n    coffee(id: $id) {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCoffeeWithIDApollo($id: ID!) {\n    coffee(id: $id) {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetCoffeesApollo {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCoffeesApollo {\n    coffees {\n      id\n      name\n      brand\n      flavors {\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

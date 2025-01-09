@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import type { ActiveUserData } from '../interfaces/active-user-data';
 export class SignupDto {
   @IsEmail()
@@ -16,13 +16,8 @@ export class SignupDto {
   workPlace: string;
 
   @IsString()
+  @IsOptional()
   phoneNumber?: string;
-
-  @IsString()
-  globalRole?: string;
-
-  @IsString()
-  isGlobalVisibility?: boolean;
 }
 
 export class SigninDto {

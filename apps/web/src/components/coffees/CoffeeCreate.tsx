@@ -3,8 +3,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { Button } from '@gsp/ui';
 
-const CREATE_COFFEE = gql`
-  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {
+const CREATE_COFFEE_APOLLO = gql`
+  mutation CreateCoffeeApollo($createCoffeeInput: CreateCoffeeInput!) {
     createCoffee(createCoffeeInput: $createCoffeeInput) {
       id
       name
@@ -43,7 +43,7 @@ export default function CoffeeCreate() {
   const [createCoffee] = useMutation<
     CreateCoffeeMutationResult,
     CreateCoffeeMutationVariables
-  >(CREATE_COFFEE);
+  >(CREATE_COFFEE_APOLLO);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

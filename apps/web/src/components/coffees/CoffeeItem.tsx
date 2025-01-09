@@ -2,8 +2,8 @@
 import { gql, ApolloError } from '@apollo/client';
 import { getClient } from '../../libs/ApolloClient';
 
-const GET_COFFEE_BY_ID = gql`
-  query GetCoffeeWithID($id: ID!) {
+const GET_COFFEE_BY_ID_APOLLO = gql`
+  query GetCoffeeWithIDApollo($id: ID!) {
     coffee(id: $id) {
       id
       name
@@ -21,7 +21,7 @@ async function CoffeeItem({ params }: { params: { id: string } }) {
   let data, error;
   try {
     const response = await getClient().query({
-      query: GET_COFFEE_BY_ID,
+      query: GET_COFFEE_BY_ID_APOLLO,
       variables: { id: params?.id },
     });
     data = response.data;

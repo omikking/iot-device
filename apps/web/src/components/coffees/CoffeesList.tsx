@@ -3,8 +3,8 @@ import React from 'react';
 import { gql } from '@apollo/client';
 import { getClient } from '../../libs/ApolloClient';
 
-const GET_COFFEES_QUERY = gql`
-  query GetCoffees {
+const GET_COFFEES_QUERY_APOLLO = gql`
+  query GetCoffeesApollo {
     coffees {
       id
       name
@@ -18,7 +18,7 @@ const GET_COFFEES_QUERY = gql`
 
 async function CoffeesList() {
   const { data }: any = await getClient().query({
-    query: GET_COFFEES_QUERY,
+    query: GET_COFFEES_QUERY_APOLLO,
   });
 
   // console.log('RSC Coffee: ', data);

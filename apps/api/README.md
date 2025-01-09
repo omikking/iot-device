@@ -58,6 +58,29 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+## Generate types
+
+```bash
+# generate typescript types from GraphQL SDL (.graphql files)
+$ npx ts-node src/generate-types.ts
+
+# regenerate prisma client (generate prisma client types)
+$ pnpm run prisma:generate
+```
+
+## Other helpful commands
+
+```bash
+# start up docker db
+$ pnpm run db:dev:up
+
+# remove current docker db, create and start new docker db, apply latest prisma migrations
+$ pnpm run db:dev:restart
+
+# run prisma studio. interface to look at & interact with our docker db
+$ pnpm run prisma:studio
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).

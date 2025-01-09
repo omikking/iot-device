@@ -1,0 +1,59 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+Location model
+Define the Location model and its fields
+"""
+type Location {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  locationName: String!
+  driveId: String!
+  boltResults: [BoltResult!]
+}
+
+"""
+CreateLocationInput
+Define the input fields to create a new location
+"""
+input CreateLocationInput {
+  locationName: String!
+  driveId: String!
+}
+
+"""
+UpdateLocationInput
+Define the input fields to update an existing location
+Optional are marked without the exclamation mark
+"""
+input UpdateLocationInput {
+  locationName: String
+}
+
+"""
+Query
+Define the queries that can be made to the Location model
+"""
+type Query {
+  locations: [Location!]!
+  location(id: String!): Location!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the Location model
+"""
+type Mutation {
+  createLocation(createLocationInput: CreateLocationInput!): Location!
+  updateLocation(
+    id: String!
+    updateLocationInput: UpdateLocationInput!
+  ): Location!
+  removeLocation(id: String!): Location!
+}

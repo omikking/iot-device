@@ -8,6 +8,38 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export class CreateBoltResultInput {
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
+}
+
+export class UpdateBoltResultInput {
+    boltNumber?: Nullable<number>;
+    boltType?: Nullable<string>;
+    peakLoad?: Nullable<number[]>;
+    peakDisplacement?: Nullable<number[]>;
+    positionInRing?: Nullable<string>;
+    result?: Nullable<string>;
+    isHazard?: Nullable<boolean>;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+}
+
 export class CreateCoffeeInput {
     name: string;
     brand: string;
@@ -84,6 +116,15 @@ export class UpdateLevelInput {
     levelName?: Nullable<string>;
 }
 
+export class CreateLocationInput {
+    locationName: string;
+    driveId: string;
+}
+
+export class UpdateLocationInput {
+    locationName?: Nullable<string>;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -102,21 +143,31 @@ export class UpdateSiteInput {
     companyId: string;
 }
 
-export class Coffee {
-    id: number;
-    name: string;
-    brand: string;
-    flavors?: Nullable<Flavor[]>;
+export class BoltResult {
+    id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-}
-
-export class Flavor {
-    id: number;
-    name: string;
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
 }
 
 export abstract class IQuery {
+    boltResults: BoltResult[];
+    boltResult?: BoltResult;
     coffees: Coffee[];
     coffee?: Coffee;
     companies: Company[];
@@ -125,11 +176,16 @@ export abstract class IQuery {
     drive?: Drive;
     levels: Level[];
     level?: Level;
+    locations: Location[];
+    location?: Location;
     sites: Site[];
     site?: Site;
 }
 
 export abstract class IMutation {
+    createBoltResult?: BoltResult;
+    updateBoltResult?: BoltResult;
+    removeBoltResult?: BoltResult;
     createCoffee?: Coffee;
     updateCoffee?: Coffee;
     removeCoffee?: Coffee;
@@ -142,9 +198,26 @@ export abstract class IMutation {
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
+    createLocation?: Location;
+    updateLocation?: Location;
+    removeLocation?: Location;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
+}
+
+export class Coffee {
+    id: number;
+    name: string;
+    brand: string;
+    flavors?: Nullable<Flavor[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class Flavor {
+    id: number;
+    name: string;
 }
 
 export class Company {
@@ -205,14 +278,6 @@ export class Drive {
     boltResults?: Nullable<BoltResult[]>;
 }
 
-export class Location {
-    locationName: string;
-}
-
-export class BoltResult {
-    boltNumber: number;
-}
-
 export class Level {
     id: string;
     createdAt: DateTime;
@@ -220,6 +285,15 @@ export class Level {
     levelName: string;
     siteId: string;
     drives?: Nullable<Drive[]>;
+    boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Location {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    locationName: string;
+    driveId: string;
     boltResults?: Nullable<BoltResult[]>;
 }
 

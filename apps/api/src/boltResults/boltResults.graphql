@@ -1,0 +1,98 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar DateTime
+
+"""
+BoltResult model
+Define the BoltResult model and its fields
+"""
+type BoltResult {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  boltNumber: Int!
+  boltType: String!
+  peakLoad: [Int!]!
+  peakDisplacement: [Int!]!
+  positionInRing: String!
+  result: String!
+  isHazard: Boolean!
+  hazardCompletedDate: [DateTime!]
+  abortReason: String
+  comment: String
+  image: String
+
+  siteId: String!
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  userId: String!
+}
+
+"""
+CreateBoltResultInput
+Define the input fields to create a new boltResult
+"""
+input CreateBoltResultInput {
+  boltNumber: Int!
+  boltType: String!
+  peakLoad: [Int!]!
+  peakDisplacement: [Int!]!
+  positionInRing: String!
+  result: String!
+  isHazard: Boolean!
+  abortReason: String
+  comment: String
+  image: String
+
+  siteId: String!
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  userId: String!
+}
+
+"""
+UpdateBoltResultInput
+Define the input fields to update an existing boltResult
+Optional are marked without the exclamation mark
+"""
+input UpdateBoltResultInput {
+  boltNumber: Int
+  boltType: String
+  peakLoad: [Int!]
+  peakDisplacement: [Int!]
+  positionInRing: String
+  result: String
+  isHazard: Boolean
+  hazardCompletedDate: [DateTime!]
+  abortReason: String
+  comment: String
+  image: String
+}
+
+"""
+Query
+Define the queries that can be made to the BoltResult model
+"""
+type Query {
+  boltResults: [BoltResult!]!
+  boltResult(id: String!): BoltResult!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the BoltResult model
+"""
+type Mutation {
+  createBoltResult(createBoltResultInput: CreateBoltResultInput!): BoltResult!
+  updateBoltResult(
+    id: String!
+    updateBoltResultInput: UpdateBoltResultInput!
+  ): BoltResult!
+  removeBoltResult(id: String!): BoltResult!
+}

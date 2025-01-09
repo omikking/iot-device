@@ -7,6 +7,7 @@
       "@/*": ["src/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  // The d.ts file is included to fix build error of missing react-table types. Ugly fix, but it works for now... 
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../packages/ui/src/types/react-table.d.ts"],
   "exclude": ["node_modules"]
 }

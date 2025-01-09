@@ -12,22 +12,17 @@ import {
   LoadingSpinner,
   Specification,
 } from '@gsp/ui';
-import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
+import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
 interface BoltResultDetailsModalProps {
   modalTitle: string;
   fullBoltData?: BoltResultSchema;
   onClose?: () => void;
   isHazardCompletable?: boolean;
-}
-
-interface BoltSpecification {
-  title: string;
-  text: string;
 }
 
 export const BoltResultDetailsModal = ({
@@ -41,32 +36,10 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const {
-    image,
-    isHazard,
-    peakLoad,
-    peakDisplacement,
-    drive,
-    bitSize,
-    boltType,
-    boltNumber,
-    rotations,
-    level,
-    ring,
-    author,
-  } = (fullBoltData as BoltResultSchema) || {};
+  const { image, isHazard, peakLoad, peakDisplacement, author } =
+    (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
-
-  const specifications: BoltSpecification[] = [
-    { title: 'Bolt', text: boltNumber },
-    { title: 'Bit size', text: bitSize },
-    { title: 'Level', text: level },
-    { title: 'Drive', text: drive },
-    { title: 'Position in ring', text: ring },
-    { title: 'Rotations', text: rotations },
-    { title: 'Pass criteria', text: boltType },
-  ];
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
@@ -168,7 +141,7 @@ export const BoltResultDetailsModal = ({
             Bolt specifications
           </Headline>
           <div className="flex flex-wrap">
-            {specifications.map((boltSpec, index) => (
+            {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
               <Specification
                 key={index}
                 title={boltSpec.title}
@@ -176,7 +149,7 @@ export const BoltResultDetailsModal = ({
                 className="w-1/2"
               />
             ))}
-            {specifications.length % 2 === 1 && (
+            {boltSpecifications.length % 2 === 0 && (
               <Specification title="" text="" className="w-1/2" />
             )}
           </div>
@@ -238,7 +211,6 @@ export const BoltResultDetailsModal = ({
               </Text>
             </div>
           </div>
-
           {/* Third View */}
           <div
             className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${

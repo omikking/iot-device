@@ -3,11 +3,12 @@ import NextAuth from 'next-auth';
 import { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { User } from 'next-auth';
+import { UUID } from 'crypto';
 
 declare module 'next-auth/jwt' {
   interface JWT {
     user: {
-      id: number;
+      id: UUID;
       email: string;
       fullName: string;
     };
@@ -22,7 +23,7 @@ declare module 'next-auth/jwt' {
 declare module 'next-auth' {
   interface User {
     user: {
-      id: number;
+      id: UUID;
       email: string;
       fullName: string;
     };
@@ -37,9 +38,14 @@ declare module 'next-auth' {
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: number;
+      id: UUID;
       email: string;
       fullName: string;
+    };
+    // TODO: Backend integration
+    company: {
+      id: UUID;
+      name: string;
     };
     accessToken: string;
     error: string?;

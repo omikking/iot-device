@@ -4,6 +4,7 @@ import NextAuth from 'next-auth/next';
 import type { Session, User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
+import { UUID } from 'crypto';
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -93,6 +94,11 @@ const authOptions: NextAuthOptions = {
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;
+      // TODO: Backend integration
+      session.company = {
+        id: (process.env.TEMP_COMPANY_ID as UUID) || '404',
+        name: 'Default Company Name',
+      };
       return session;
     },
   },

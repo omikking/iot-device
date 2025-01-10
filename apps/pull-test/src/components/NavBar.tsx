@@ -31,7 +31,7 @@ export const NavBar = () => {
             <div className="flex items-center gap-2">
               <div className="border border-gold-3 px-5 py-1.5">
                 <Text variant="medium" color="foreground">
-                  Ecorp
+                  {session.company.name}
                 </Text>
               </div>
 

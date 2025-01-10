@@ -76,6 +76,7 @@ const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
+      console.log('dawdawdawd');
       if (user) return { ...token, ...user };
 
       const { exp } = jwtDecode(token.tokens.accessToken);

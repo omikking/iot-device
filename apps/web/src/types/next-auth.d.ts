@@ -6,11 +6,10 @@ import { User } from 'next-auth';
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    userData: {
+    user: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     tokens: {
       refreshToken: string;
@@ -22,11 +21,10 @@ declare module 'next-auth/jwt' {
 
 declare module 'next-auth' {
   interface User {
-    userData: {
+    user: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     tokens: {
       refreshToken: string;
@@ -38,11 +36,10 @@ declare module 'next-auth' {
 
 declare module 'next-auth' {
   interface Session {
-    userData: {
+    user: {
       id: number;
       email: string;
-      firstName: string;
-      lastName: string;
+      fullName: string;
     };
     accessToken: string;
     error: string?;

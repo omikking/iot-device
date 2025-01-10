@@ -60,11 +60,11 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateUserPermissionInput[];
+    userPermissions: CreateAdminPermissionInput[];
     plans?: Nullable<CreatePlanInput[]>;
 }
 
-export class CreateUserPermissionInput {
+export class CreateAdminPermissionInput {
     userId: string;
 }
 
@@ -82,7 +82,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateUserPermissionInput[]>;
+    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -93,7 +93,7 @@ export class UpdatePlanInput {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class UpdateUserPermissionInput {
+export class UpdateAdminPermissionInput {
     oldUserId: string;
     newUserId: string;
 }
@@ -143,6 +143,27 @@ export class UpdateSiteInput {
     companyId: string;
 }
 
+export class CreateUserPermissionInput {
+    userId: string;
+    role: string;
+    appsAccess: string[];
+    companyId: string;
+}
+
+export class UpdateUserPermissionInput {
+    role?: Nullable<string>;
+    appsAccess?: Nullable<string[]>;
+}
+
+export class UpdateUserInput {
+    email?: Nullable<string>;
+    fullName?: Nullable<string>;
+    workPlace?: Nullable<string>;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+}
+
 export class BoltResult {
     id: string;
     createdAt: DateTime;
@@ -180,6 +201,10 @@ export abstract class IQuery {
     location?: Location;
     sites: Site[];
     site?: Site;
+    userPermissions: UserPermission[];
+    userPermission?: UserPermission;
+    users?: User[];
+    user?: User;
 }
 
 export abstract class IMutation {
@@ -204,6 +229,11 @@ export abstract class IMutation {
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
+    createUserPermission?: UserPermission;
+    updateUserPermission?: UserPermission;
+    removeUserPermission?: UserPermission;
+    updateUser?: User;
+    removeUser?: User;
 }
 
 export class Coffee {
@@ -244,28 +274,6 @@ export class Plan {
     applicationName: string;
     planLevel: string;
     expiringDate?: Nullable<DateTime>;
-}
-
-export class User {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    email: string;
-    fullName: string;
-    workPlace: string;
-    phoneNumber?: Nullable<string>;
-    globalRole?: Nullable<string>;
-    isGlobalVisibility?: Nullable<boolean>;
-    userPermission?: Nullable<UserPermission[]>;
-}
-
-export class UserPermission {
-    id: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    userId: string;
-    role: string;
-    appsAccess?: Nullable<string[]>;
 }
 
 export class Drive {
@@ -309,6 +317,29 @@ export class Site {
     companyId: string;
     levels?: Nullable<Level[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class UserPermission {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    userId: string;
+    role: string;
+    appsAccess: string[];
+    companyId: string;
+}
+
+export class User {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
+    globalRole?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
+    userPermissions?: Nullable<UserPermission[]>;
 }
 
 export type DateTime = any;

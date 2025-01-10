@@ -5,7 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["BACKEND_URL"]
+      "env": ["BACKEND_URL", "TEMP_COMPANY_ID"]
     },
     "lint": {},
     "type-check": {},

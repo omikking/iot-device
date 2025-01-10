@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
+    "dev": "concurrently -k --raw \"pnpm:dev:*\"",
+    "dev:next": "next dev --port 3001",
+    "dev:graphql-types": "pnpm graphql-types --watch",
+    "graphql-types": "graphql-codegen --config codegen.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit",
-    "graphql-types": "graphql-codegen --config codegen.ts"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -39,6 +41,7 @@
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.18",
+    "concurrently": "^9.1.2",
     "graphql": "^16.10.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",

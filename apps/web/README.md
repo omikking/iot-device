@@ -10,13 +10,18 @@ cp .env.exmaple .env
 Then, run the development server:
 
 ```sh
-pnpm dev
-# or if at root
 pnpm --filter=web dev
+# or if in directory
+pnpm dev
 ```
 
-Whenever working with GraphQL, please run the GraphQL TypeScript generator
-graphql-types
+Run development server without graphql type generation
+
+```sh
+pnpm dev:next
+```
+
+Generate GraphQL TypeScript types.
 
 ```sh
 pnpm graphql-types --watch

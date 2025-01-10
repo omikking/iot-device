@@ -19,6 +19,10 @@ Monorepo powered by [Turborepo](https://turbo.build/) and [pnpm workspace](https
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
 
+### Notices!
+
+> ❗️ 2025-01-10: I have set up the 'concurrently' package to make `pnpm run dev` run both next dev & graphql-types generation on our nextjs projects at the same time. I have not extensively tested this setup. If there is any broken or buggy output, please revert this commit. Then you will have to run `pnpm run dev` as usual, but cd into the web projects and run `pnpm run graphql-types --watch` whenever you are working with graphql in the Nextjs apps. You can find the commit to revert by git blaming this comment. ❗️
+
 ## Getting Started
 
 **Prerequisties**

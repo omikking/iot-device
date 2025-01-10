@@ -46,6 +46,11 @@ export function CoffeeCreateUrql() {
   const [result, createCoffee] = useMutation(createCoffeeMutation);
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: '',
+      brand: '',
+      flavors: [],
+    },
   });
 
   const onSubmit = (data: FormData) => {
@@ -80,6 +85,7 @@ export function CoffeeCreateUrql() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="brand"

@@ -17,6 +17,8 @@ const makeClient = () => {
   return createClient({
     url: 'http://localhost:3333/graphql',
     exchanges: [cacheExchange, fetchExchange],
+    // TODO: Look into enabling cache and invalidating it from client components on updates.
+    fetchOptions: { cache: 'no-store' },
   });
 };
 

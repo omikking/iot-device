@@ -31,6 +31,7 @@ Monorepo powered by [Turborepo](https://turbo.build/) and [pnpm workspace](https
 - [Docker](https://docs.docker.com/get-docker/) to run database containers
 - [nvm](https://github.com/nvm-sh/nvm) to install and manage correct node version
 - [pnpm](https://pnpm.io/installation) package manager
+  test
 
 ### Setting up project
 

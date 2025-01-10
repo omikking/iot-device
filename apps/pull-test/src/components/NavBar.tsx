@@ -31,14 +31,14 @@ export const NavBar = () => {
             <div className="flex items-center gap-2">
               <div className="border border-gold-3 px-5 py-1.5">
                 <Text variant="medium" color="foreground">
-                  Ecorp
+                  {session.company.name}
                 </Text>
               </div>
 
               <div className="flex items-center gap-1 border border-gold-3 px-5 py-1.5">
                 <LucideUser size="16" className="mr-2" />
                 <Text variant="medium" color="foreground">
-                  {session.userData.firstName} {session.userData.lastName}
+                  {session.user.fullName}
                 </Text>
               </div>
             </div>

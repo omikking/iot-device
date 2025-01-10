@@ -12,6 +12,10 @@
       "mode": "auto"
     }
   ],
+  // Ensure that we are using workspace version of TS. Prompt user to switch.
+  // @TODO: Look into more elegant solution, shared TS version across root?
+  "typescript.tsdk": "apps/web/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   // This adds IntelliSense for Tailwind classnames in cva.
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],

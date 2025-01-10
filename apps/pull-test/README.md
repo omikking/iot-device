@@ -11,6 +11,20 @@ Then, run the development server:
 
 ```sh
 pnpm --filter=pull-test dev
+# or if in directory
+pnpm dev
+```
+
+Run development server without graphql type generation
+
+```sh
+pnpm dev:next
+```
+
+Generate GraphQL TypeScript types.
+
+```sh
+pnpm graphql-types --watch
 ```
 
 Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.

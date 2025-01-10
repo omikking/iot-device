@@ -15,10 +15,8 @@ export const administratorFormSchema = z.object({
     .max(50, { message: 'Email must be at most 50 characters.' }),
   phoneNumber: z
     .string()
-    .min(10, { message: 'Phone number must be at least 10 numbers' }),
-  role: z
-    .string()
-    .min(10, { message: 'Phone number must be at least 10 numbers' }),
+    .min(10, { message: 'Phone number must be at least 10 numbers.' }),
+  role: z.string().min(10, { message: 'Select a role.' }),
 });
 
 export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;

@@ -3,7 +3,7 @@ import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import Providers from '@/components/Providers';
 import { NavBar } from '@/components/NavBar';
-import { ApolloWrapper } from '@/libs/ApolloWrapper';
+import { UrqlWrapper } from '@/libs/UrqlClient';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
@@ -18,12 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <ApolloWrapper>
+        <UrqlWrapper>
           <Providers>
             <NavBar />
             {children}
           </Providers>
-        </ApolloWrapper>
+        </UrqlWrapper>
       </body>
     </html>
   );

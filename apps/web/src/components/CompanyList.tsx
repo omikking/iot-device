@@ -5,9 +5,6 @@ import { Button, Text } from '@gsp/ui';
 import { useCompanies } from './urql-overview/OverviewClientUrql';
 
 export const CompanyList = () => {
-  console.log('companies: ', useCompanies().companies);
-  console.log(useCompanies().)
-
   return (
     <>
       {/* {companiesMock.map((company) => (

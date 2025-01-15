@@ -31,8 +31,13 @@ import {
   companyFormSchema,
   CompanyFormValues,
 } from '@/components/schemas/CompanyFormSchema';
+import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
 
-export default function Page(): JSX.Element {
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   // @TODO: validate the form
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
@@ -58,6 +63,14 @@ export default function Page(): JSX.Element {
   const [isAdmin, setIsAdmin] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const user = isAdmin ? 'Superadmin' : 'Client';
+
+  const { company, error, isLoading } = useCompany(params.id);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!company) return <div>Company not found</div>;
+
+  console.log('HEJSAN', company);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

@@ -171,6 +171,7 @@ export const Menu = () => {
               <LucideLogOut />
               Logout
             </Button>
+            <div className="mb-4"></div>
           </div>
         </div>
       </MenuContent>

@@ -32,25 +32,45 @@ import {
   CompanyFormValues,
 } from '@/components/schemas/CompanyFormSchema';
 
+import { useSearchParams } from 'next/navigation';
+
 export default function Page(): JSX.Element {
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode'); // 'add' or 'edit'
+  const companyName = searchParams.get('name'); // Get company name if editing
+
+  const isEditing = mode === 'edit';
   // @TODO: validate the form
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
-      defaultValues: {
-        companyName: 'E-corp',
-        fullContactName: 'Phillip Price',
-        organisationNumber: '133742',
-        country: 'Sweden',
-        city: 'Gothenburg',
-        address: 'Vasa Gatan 32',
+      defaultValues: isEditing
+        ? {
+            companyName: 'E-corp',
+            fullContactName: 'Phillip Price',
+            organisationNumber: '133742',
+            country: 'Sweden',
+            city: 'Gothenburg',
+            address: 'Vasa Gatan 32',
 
-        pullTestPlan: '',
-        xCyclopsPlan: '',
-        ultraboltsPlan: '',
+            pullTestPlan: '',
+            xCyclopsPlan: '',
+            ultraboltsPlan: '',
 
-        assignSandvikAdministrator: '',
-      },
+            assignSandvikAdministrator: '',
+          }
+        : {
+            companyName: '',
+            fullContactName: '',
+            organisationNumber: '',
+            country: '',
+            city: '',
+            address: '',
+            pullTestPlan: '',
+            xCyclopsPlan: '',
+            ultraboltsPlan: '',
+            assignSandvikAdministrator: '',
+          },
     });
 
   // @TODO Just for testing Add company / Edit company state
@@ -84,10 +104,10 @@ export default function Page(): JSX.Element {
       </div>
 
       <Headline as="h1" variant="xl" color="foreground">
-        {companyToEditName || 'Add company'}
+        {isEditing ? companyToEditName : 'Add Company'}
       </Headline>
 
-      {companyToEditName && (
+      {isEditing && (
         <>
           <div className="flex gap-8">
             <NavigationCard>
@@ -211,16 +231,18 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
         <Button variant="primary" size="large" type="submit">
           <LucideCircleCheckBig />
-          {companyToEditName ? 'Update company details' : 'Send invitation'}
+          {isEditing ? 'Update company details' : 'Send invitation'}
         </Button>
-        <Button
-          variant="destructive"
-          size="large"
-          onClick={() => setIsDeleteModalOpen(true)}
-        >
-          <LucideTrash2 />
-          Inactivate company
-        </Button>
+        {isEditing && (
+          <Button
+            variant="destructive"
+            size="large"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            <LucideTrash2 />
+            Inactivate company
+          </Button>
+        )}
       </div>
       <DeleteModalConfirmation
         deleteIcon="Company"

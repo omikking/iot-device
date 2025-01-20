@@ -1,7 +1,7 @@
 export interface SiteResultSchema {
   id: string;
   name: string;
-  adress: string;
+  address: string;
   totalSiteLocations: number;
   passCriteria?: string;
   notification?: string;
@@ -19,7 +19,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '1',
     name: 'Garpenberg',
-    adress: 'Kaspersbo 20, 77849, Sverige',
+    address: 'Kaspersbo 20, 77849, Sverige',
     totalSiteLocations: 44,
     passCriteria: 'D47 MDX, D34 MD',
     notification: '20% per submission',
@@ -28,7 +28,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '2',
     name: 'Garpenberg',
-    adress: 'Gaspersbo 20, 55849, Sverige',
+    address: 'Gaspersbo 20, 55849, Sverige',
     totalSiteLocations: 34,
     passCriteria: 'D47 MDX, D34 MD',
     notification: '20% per submission',
@@ -37,7 +37,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '3',
     name: 'Berggarpen',
-    adress: 'Aaspersbo 20, 77049, Sverige',
+    address: 'Aaspersbo 20, 77049, Sverige',
     totalSiteLocations: 44,
     passCriteria: 'N/A',
     notification: '10% per submission',
@@ -46,7 +46,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '4',
     name: 'Berggarpen',
-    adress: 'Baspersbogatan 20, 12345, Sverige',
+    address: 'Baspersbogatan 20, 12345, Sverige',
     totalSiteLocations: 24,
     passCriteria: 'D47 MDX',
     notification: '20% per submission',
@@ -55,7 +55,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '5',
     name: 'Garpenberg',
-    adress: 'Kaspersbo 20, 77849, Sverige',
+    address: 'Kaspersbo 20, 77849, Sverige',
     totalSiteLocations: 44,
     passCriteria: 'D34 MD',
     notification: '30% per submission',
@@ -64,7 +64,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '6',
     name: 'Garpenberg',
-    adress: 'Kaspersbo 20, 77849, Sverige',
+    address: 'Kaspersbo 20, 77849, Sverige',
     totalSiteLocations: 8,
     passCriteria: 'D34 MD',
     notification: '30% per submission',
@@ -73,7 +73,7 @@ export const siteResultMock: SiteResultSchema[] = [
   {
     id: '7',
     name: 'Garpenberg',
-    adress: 'Kaspersbo 20, 77849, Sverige',
+    address: 'Kaspersbo 20, 77849, Sverige',
     totalSiteLocations: 4,
     passCriteria: 'D34 MD',
     notification: '30% per submission',

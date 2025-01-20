@@ -1,14 +1,19 @@
 'use client';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import type { ColumnDef } from '@gsp/ui';
-import { siteResultMock, SiteResultSchema } from '@/app/mock/mock';
-import { LucideMoveRight } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import type { ColumnDef } from '@gsp/ui';
+import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { siteResultMock, SiteResultSchema } from '@/app/mock/mock';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
 
-export const SitesTable = () => {
+type SitesTableProps = {
+  onOpenChange: (isOpen: boolean) => void;
+  onSelectSite: (site: SiteResultSchema) => void;
+};
+
+export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
   const [sites, setSites] = useState(siteResultMock);
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
@@ -27,6 +32,12 @@ export const SitesTable = () => {
 
   const handleDelete = (index: number) => {
     setSites((currentSites) => currentSites.filter((item, i) => i !== index));
+  };
+
+  const openEditModal = (index: number) => {
+    const siteToEdit = sites[index];
+    onSelectSite(siteToEdit);
+    onOpenChange(true);
   };
 
   const columns: ColumnDef<SiteResultSchema>[] = [
@@ -79,7 +90,7 @@ export const SitesTable = () => {
             <DeleteEditDropdown
               itemSelected={rowIndex}
               openDeleteModal={openDeleteModal}
-              handleEdit={() => console.log('Edit')}
+              handleEdit={openEditModal}
             />
           </>
         );

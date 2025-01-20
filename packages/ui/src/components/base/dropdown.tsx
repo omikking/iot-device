@@ -18,7 +18,7 @@ import { Badge } from './badge';
 export interface DropdownItem {
   id: string;
   name: string;
-  background?: 'primary' | 'neutral' | undefined;
+  background?: 'primary' | 'neutral';
 }
 
 export interface DropdownProps {
@@ -65,7 +65,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
-      selectedId ? options?.find((item) => item.id === selectedId) : undefined,
+      selectedId
+        ? options?.find((item) => item.name === selectedId)
+        : undefined,
     );
 
     const handleChange = (item?: DropdownItem) => {

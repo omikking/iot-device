@@ -37,6 +37,7 @@ import { useSearchParams } from 'next/navigation';
 export default function Page(): JSX.Element {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode'); // 'add' or 'edit'
+
   const isEditing = mode === 'edit';
   // @TODO: validate the form
   const companyForm: UseFormReturn<CompanyFormValues> =

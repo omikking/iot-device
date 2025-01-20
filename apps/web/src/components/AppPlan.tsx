@@ -25,6 +25,11 @@ export const AppPlan = ({
   const user = isAdmin ? 'Superadmin' : 'Client';
   const isActive = plan === activePlan;
 
+  const toTitleCase = (str: string) => {
+    // First convert to lowercase, then capitalize first letter
+    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  };
+
   return (
     <div
       className={`flex justify-between items-center border-b border-gray-200 py-3 px-6 ${
@@ -47,7 +52,6 @@ export const AppPlan = ({
                 <Switch
                   checked={field.value === plan}
                   onCheckedChange={(checked) => {
-                    console.log('field.value', field.value);
                     field.onChange(checked ? plan : undefined);
                   }}
                 />
@@ -62,7 +66,8 @@ export const AppPlan = ({
             variant="medium"
             color="foreground"
           >
-            {plan}
+            {/* {plan} */}
+            {toTitleCase(plan)}
           </FormLabel>
           {isActive && (
             <Badge variant="attention">

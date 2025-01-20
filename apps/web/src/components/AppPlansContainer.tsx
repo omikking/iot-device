@@ -40,8 +40,11 @@ export const AppPlansContainer = ({
   const formField = getFormFieldName(applicationName) || '';
 
   // console.log('APPPLAN: ', appPlan);
-  // console.log('planLevel', planLevel);
-  // console.log('applicationName', applicationName);
+  // export to a utility file?
+  const toTitleCase = (str: string) => {
+    // First convert to lowercase, then capitalize first letter
+    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  };
 
   return (
     <div
@@ -50,7 +53,8 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {applicationName}
+          {/* {applicationName} */}
+          {toTitleCase(applicationName.replace('_', ' '))}
         </Headline>
 
         {user === 'Superadmin' && planLevel && (

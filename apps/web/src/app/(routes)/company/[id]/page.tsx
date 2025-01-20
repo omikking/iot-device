@@ -56,7 +56,7 @@ export default function Page({
         address: '',
         pullTestPlan: '',
         xCyclopsPlan: '',
-        ultrabotsPlan: '',
+        ultraboltsPlan: '',
         plans: [], // Initialize empty array for the plans
         // assignSandvikAdministrator: '',
       },
@@ -90,7 +90,7 @@ export default function Page({
         xCyclopsPlan:
           company.plans.find((p) => p.applicationName === 'XCYCLOPS')
             ?.planLevel || '',
-        ultrabotsPlan:
+        ultraboltsPlan:
           company.plans.find((p) => p.applicationName === 'ULTRABOLTS')
             ?.planLevel || '',
         plans: company.plans,
@@ -101,8 +101,6 @@ export default function Page({
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!company) return <div>Company not found</div>;
-
-  // console.log('company.plans: ', company.plans);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

@@ -10,7 +10,7 @@ export const companyFormSchema = z.object({
   companyContactEmail: z.string(),
   pullTestPlan: z.string().optional(),
   xCyclopsPlan: z.string().optional(),
-  ultrabotsPlan: z.string().optional(),
+  ultraboltsPlan: z.string().optional(),
   plans: z.array(
     z.object({
       id: z.string(),

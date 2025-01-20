@@ -19,7 +19,7 @@ export const CompanyDetailsForm = ({
     <ContentHolder variant="general" headlineText="Company details">
       <FormField
         control={companyForm.control}
-        name="companyName"
+        name="name"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
@@ -38,7 +38,7 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="fullContactName"
+        name="companyContactEmail"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
@@ -57,7 +57,7 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="organisationNumber"
+        name="orgNumber"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">

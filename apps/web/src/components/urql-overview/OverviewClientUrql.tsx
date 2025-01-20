@@ -14,6 +14,53 @@ import { useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 
+//@TODO A better way to handle all these types/interfaces?
+type IUserPermissions = {
+  id: string;
+  userId: string;
+  companyId: string;
+  role: string;
+  appsAccess: string[];
+};
+
+type IUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: string;
+  isGlobalVisibility: boolean;
+  userPermissions: IUserPermissions[];
+};
+
+type IPlan = {
+  id: string;
+  companyId: string;
+  applicationName: string;
+  planLevel: string;
+  expiringDate: string;
+};
+
+export type ICompany = {
+  __typename?: string;
+  id: string;
+  name: string;
+  orgNumber: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  companyContactEmail: string;
+  plans: IPlan[];
+  users: IUser[];
+  sites: string[];
+};
+
+export type ICompaniesData = {
+  companies: ICompany[];
+};
+
 const getMeCompaniesDocument = graphql(`
   query getMeCompanies {
     companies {
@@ -31,14 +78,19 @@ const getMeCompaniesDocument = graphql(`
 
 // Create a custom hook for fetching companies
 export function useCompanies() {
-  const [result] = useQuery({
+  const [result] = useQuery<ICompaniesData>({
     query: getMeCompaniesDocument,
   });
 
   const { data, fetching, error } = result;
 
   // Memoize the companies data to prevent unnecessary rerenders
-  const companies = useMemo(() => data?.companies ?? [], [data]);
+  const companies = useMemo(() => {
+    if (!data?.companies) {
+      return [];
+    }
+    return data.companies;
+  }, [data]);
 
   return {
     companies,
@@ -47,13 +99,12 @@ export function useCompanies() {
   };
 }
 
-// Optional: Create a non-hook version for use in non-React contexts
+// @Todo ask Felix about this
+// optional: create a non-hook version for use in non-react contexts, maybe something like this for mobile?
 // export async function fetchCompanies(client: Client) {
 //   const result = await client.query(getMeCompaniesDocument, {}).toPromise();
-
 //   if (result.error) {
 //     throw result.error;
 //   }
-
 //   return result.data?.companies ?? [];
 // }

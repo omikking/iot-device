@@ -17,7 +17,7 @@ import {
   NavigationCard,
 } from '@gsp/ui';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
 import { appPlansMock } from '@/app/mock/mock';
 import { AdminForm } from '@/components/AdminForm';
@@ -32,29 +32,33 @@ import {
   CompanyFormValues,
 } from '@/components/schemas/CompanyFormSchema';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
+import { ICompany } from '@/components/urql-overview/OverviewClientUrql';
 
 export default function Page({
   params,
 }: {
   params: { id: string };
 }): JSX.Element {
+  const { company, error, isLoading } = useCompany(params.id);
+
+  console.log('company.plans: ', company?.plans);
+
   // @TODO: validate the form
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
       defaultValues: {
-        companyName: 'E-corp',
-        fullContactName: 'Phillip Price',
-        organisationNumber: '133742',
-        country: 'Sweden',
-        city: 'Gothenburg',
-        address: 'Vasa Gatan 32',
-
+        name: '',
+        companyContactEmail: '',
+        orgNumber: '',
+        country: '',
+        city: '',
+        address: '',
         pullTestPlan: '',
         xCyclopsPlan: '',
-        ultraboltsPlan: '',
-
-        assignSandvikAdministrator: '',
+        ultrabotsPlan: '',
+        plans: [], // Initialize empty array for the plans
+        // assignSandvikAdministrator: '',
       },
     });
 
@@ -64,19 +68,48 @@ export default function Page({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const { company, error, isLoading } = useCompany(params.id);
+  const allPlansTypes = [
+    { id: 'pull-test', applicationName: 'PULL_TEST' },
+    { id: 'xcyclops', applicationName: 'XCYCLOPS' },
+    { id: 'ultrabolts', applicationName: 'ULTRABOLTS' },
+  ] as const;
+
+  useEffect(() => {
+    if (company) {
+      companyForm.reset({
+        name: company.name,
+        companyContactEmail: company.companyContactEmail || 'Phillip Price',
+        orgNumber: company.orgNumber || '133742',
+        country: company.country || 'Sweden',
+        city: company.city || 'Gothenburg',
+        address: company.address || 'Vasa Gatan 32',
+        postalCode: company.postalCode || '',
+        pullTestPlan:
+          company.plans.find((p) => p.applicationName === 'PULL_TEST')
+            ?.planLevel || '',
+        xCyclopsPlan:
+          company.plans.find((p) => p.applicationName === 'XCYCLOPS')
+            ?.planLevel || '',
+        ultrabotsPlan:
+          company.plans.find((p) => p.applicationName === 'ULTRABOLTS')
+            ?.planLevel || '',
+        plans: company.plans,
+      });
+    }
+  }, [company]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!company) return <div>Company not found</div>;
 
-  console.log('HEJSAN', company);
+  // console.log('company.plans: ', company.plans);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
+      {/* disabled for now */}
+      {/* <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
           Dev mode
         </Headline>
@@ -94,10 +127,10 @@ export default function Page({
         >
           Set to {isAdmin ? 'Client' : 'Superadmin'}
         </Button>
-      </div>
+      </div> */}
 
       <Headline as="h1" variant="xl" color="foreground">
-        {companyToEditName || 'Add company'}
+        {company.name || 'Add company'}
       </Headline>
 
       {companyToEditName && (
@@ -192,13 +225,29 @@ export default function Page({
 
               {/* App plans */}
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {appPlansMock.map((appPlan) => (
-                  <AppPlansContainer
-                    appPlan={appPlan}
-                    key={appPlan.id}
-                    isAdmin={isAdmin}
-                  />
-                ))}
+                {allPlansTypes.map((planType) => {
+                  // look for a matching plan from company data, if not found then create a new plan
+                  // if it exists, then use the existingPlan
+                  const existingPlan = company.plans.find(
+                    (plan) => plan.applicationName === planType.applicationName,
+                  );
+
+                  const appPlan = existingPlan || {
+                    id: planType.id,
+                    applicationName: planType.applicationName,
+                    planLevel: undefined,
+                    companyId: company.id,
+                    expiringDate: '',
+                  };
+
+                  return (
+                    <AppPlansContainer
+                      appPlan={appPlan}
+                      key={appPlan.id}
+                      isAdmin={isAdmin}
+                    />
+                  );
+                })}
               </div>
             </div>
 

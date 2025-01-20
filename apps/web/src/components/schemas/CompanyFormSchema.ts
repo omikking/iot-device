@@ -1,21 +1,25 @@
 import { z } from 'zod';
 
 export const companyFormSchema = z.object({
-  companyName: z.string(),
-  fullContactName: z.string(),
-  organisationNumber: z
-    .string()
-    .min(10, { message: 'Must be 10 numbers.' })
-    .max(10, { message: 'Must be 10 numbers.' }),
-  country: z.string(),
-  city: z.string(),
+  name: z.string(),
+  orgNumber: z.string(),
   address: z.string(),
-
-  pullTestPlan: z.string(),
-  xCyclopsPlan: z.string(),
-  ultraboltsPlan: z.string(),
-
-  assignSandvikAdministrator: z.string(),
+  postalCode: z.string(),
+  city: z.string(),
+  country: z.string(),
+  companyContactEmail: z.string(),
+  pullTestPlan: z.string().optional(),
+  xCyclopsPlan: z.string().optional(),
+  ultrabotsPlan: z.string().optional(),
+  plans: z.array(
+    z.object({
+      id: z.string(),
+      companyId: z.string(),
+      applicationName: z.string(),
+      planLevel: z.string(),
+      expiringDate: z.string(),
+    }),
+  ),
 });
 
 export type CompanyFormValues = z.infer<typeof companyFormSchema>;

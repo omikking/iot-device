@@ -5,7 +5,7 @@ import { useCompanies } from './urql-overview/OverviewClientUrql';
 
 export const CompanyList = () => {
   const { companies } = useCompanies();
-
+  console.log('WDADASDASD', companies);
   return (
     <>
       {companies.map((company) => (

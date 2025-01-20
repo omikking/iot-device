@@ -8,20 +8,23 @@ import { AppPlan } from '@/components/AppPlan';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
-    case 'Pull-test':
+    // case 'Pull-test':
+    case 'PULL_TEST':
       return 'pullTestPlan';
-    case 'xCyclops':
+    // case 'xCyclops':
+    case 'XCYCLOPS':
       return 'xCyclopsPlan';
-    case 'Ultrabots':
-      return 'ultrabotsPlan';
+    // case 'Ultrabots':
+    case 'ULTRABOLTS':
+      return 'ultraboltsPlan';
   }
 };
 
 interface AppPlansContainerProps {
   appPlan: {
     id: string;
-    name: string;
-    activePlan?: 'Gold' | 'Silver' | 'Bronze';
+    applicationName: string;
+    planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   };
   isAdmin: boolean;
 }
@@ -32,9 +35,13 @@ export const AppPlansContainer = ({
   isAdmin,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { name, activePlan } = appPlan;
+  const { applicationName, planLevel } = appPlan;
   const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(name) || '';
+  const formField = getFormFieldName(applicationName) || '';
+
+  // console.log('APPPLAN: ', appPlan);
+  // console.log('planLevel', planLevel);
+  // console.log('applicationName', applicationName);
 
   return (
     <div
@@ -43,17 +50,17 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {name}
+          {applicationName}
         </Headline>
 
-        {user === 'Superadmin' && activePlan && (
+        {user === 'Superadmin' && planLevel && (
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
           </Badge>
         )}
 
-        {user === 'Client' && !activePlan && (
+        {user === 'Client' && !planLevel && (
           <Badge variant="primary">
             <LucideSparkles size="14" />
             Available plans
@@ -63,26 +70,26 @@ export const AppPlansContainer = ({
 
       {/* Plans */}
       <AppPlan
-        plan="Gold"
-        activePlan={activePlan}
+        plan="GOLD"
+        activePlan={planLevel}
         isAdmin={isAdmin}
         formField={formField}
       />
       <AppPlan
-        plan="Silver"
-        activePlan={activePlan}
+        plan="SILVER"
+        activePlan={planLevel}
         isAdmin={isAdmin}
         formField={formField}
       />
       <AppPlan
-        plan="Bronze"
-        activePlan={activePlan}
+        plan="BRONZE"
+        activePlan={planLevel}
         isAdmin={isAdmin}
         formField={formField}
       />
 
       {/* Calendar */}
-      {activePlan && (
+      {planLevel && (
         <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && (
             <Badge variant="primary">

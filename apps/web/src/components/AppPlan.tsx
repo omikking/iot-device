@@ -9,8 +9,8 @@ import {
 import { LucideCircleCheckBig } from 'lucide-react';
 
 interface AppPlanProps {
-  plan: 'Gold' | 'Silver' | 'Bronze';
-  activePlan?: 'Gold' | 'Silver' | 'Bronze';
+  plan: 'GOLD' | 'SILVER' | 'BRONZE';
+  activePlan?: 'GOLD' | 'SILVER' | 'BRONZE';
   isAdmin: boolean;
   formField: string;
 }
@@ -31,7 +31,7 @@ export const AppPlan = ({
         isActive ? 'bg-gray-50' : ''
       }`}
     >
-      {user === 'Superadmin' && (
+      {user === 'Superadmin' ? (
         <FormField
           name={formField}
           render={({ field }) => (
@@ -47,6 +47,7 @@ export const AppPlan = ({
                 <Switch
                   checked={field.value === plan}
                   onCheckedChange={(checked) => {
+                    console.log('field.value', field.value);
                     field.onChange(checked ? plan : undefined);
                   }}
                 />
@@ -54,14 +55,30 @@ export const AppPlan = ({
             </FormItem>
           )}
         />
+      ) : (
+        <div className="flex w-full justify-between items-center">
+          <FormLabel
+            className="flex items-center"
+            variant="medium"
+            color="foreground"
+          >
+            {plan}
+          </FormLabel>
+          {isActive && (
+            <Badge variant="attention">
+              <LucideCircleCheckBig />
+              Your selected plan
+            </Badge>
+          )}
+        </div>
       )}
 
-      {user === 'Client' && isActive && (
+      {/* {user === 'Client' && isActive && (
         <Badge variant={'attention'}>
           <LucideCircleCheckBig />
           Your selected plan
         </Badge>
-      )}
+      )} */}
     </div>
   );
 };

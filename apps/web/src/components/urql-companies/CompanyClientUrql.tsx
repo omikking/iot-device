@@ -144,18 +144,20 @@ const getMeCompanyDocument = graphql(`
 `);
 
 export function useCompany(id: string) {
+  const skipQuery = id === 'new';
   const [result] = useQuery<ICompanyData>({
     query: getMeCompanyDocument,
     variables: { id },
+    pause: skipQuery, // skip the whole query if id === 'new'
   });
 
   const { data, fetching, error } = result;
-
   const company = useMemo(() => data?.company, [data]);
 
   return {
     company,
     isLoading: fetching,
     error,
+    isNew: skipQuery,
   };
 }

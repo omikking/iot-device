@@ -34,7 +34,8 @@ export const AppPlan = ({
 
   return (
     <div
-      className={`flex justify-between items-center border border-gray-200 py-3 px-6 ${
+      // @TODO Border is a bit off in the y-axis
+      className={`flex justify-between items-center border-y border-gray-200 py-3 px-6 ${
         isActive ? 'bg-gray-100' : ''
       }`}
     >
@@ -48,7 +49,7 @@ export const AppPlan = ({
                 variant="medium"
                 color="foreground"
               >
-                {plan}
+                {toTitleCase(plan)}
               </FormLabel>
               <FormControl>
                 <Switch
@@ -82,7 +83,7 @@ export const AppPlan = ({
         </div>
       )}
 
-      {user === 'Client' && (
+      {/* {user === 'Client' && (
         <div className="flex w-full justify-between items-center">
           <FormLabel
             className={`text-lg font-semibold ${isActive ? 'text-orange-600' : 'text-gray-800'}`}
@@ -97,7 +98,7 @@ export const AppPlan = ({
             </Badge>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

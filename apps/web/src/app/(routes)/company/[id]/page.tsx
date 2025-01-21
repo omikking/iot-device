@@ -38,7 +38,7 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const { company, error, isLoading } = useCompany(params.id);
+  const { company, error, isLoading, isNew } = useCompany(params.id);
 
   console.log('company.plans: ', company?.plans);
 
@@ -50,7 +50,7 @@ export default function Page({
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
-      defaultValues: isEditing
+      defaultValues: !isNew
         ? {
             name: 'E-corp',
             companyContactEmail: 'Phillip Price',
@@ -73,8 +73,7 @@ export default function Page({
             pullTestPlan: '',
             xCyclopsPlan: '',
             ultraboltsPlan: '',
-            plans: [],
-            // Initialize empty array for the plans
+            plans: [], // Initialize empty array for the plans
             // assignSandvikAdministrator: '',
           },
     });
@@ -95,21 +94,21 @@ export default function Page({
     if (company) {
       companyForm.reset({
         name: company.name,
-        companyContactEmail: company.companyContactEmail || 'Phillip Price',
-        orgNumber: company.orgNumber || '133742',
-        country: company.country || 'Sweden',
-        city: company.city || 'Gothenburg',
-        address: company.address || 'Vasa Gatan 32',
-        postalCode: company.postalCode || '',
-        pullTestPlan:
-          company.plans.find((p) => p.applicationName === 'PULL_TEST')
-            ?.planLevel || '',
-        xCyclopsPlan:
-          company.plans.find((p) => p.applicationName === 'XCYCLOPS')
-            ?.planLevel || '',
-        ultraboltsPlan:
-          company.plans.find((p) => p.applicationName === 'ULTRABOLTS')
-            ?.planLevel || '',
+        companyContactEmail: company.companyContactEmail,
+        orgNumber: company.orgNumber,
+        country: company.country,
+        city: company.city,
+        address: company.address,
+        postalCode: company.postalCode,
+        pullTestPlan: company.plans.find(
+          (p) => p.applicationName === 'PULL_TEST',
+        )?.planLevel,
+        xCyclopsPlan: company.plans.find(
+          (p) => p.applicationName === 'XCYCLOPS',
+        )?.planLevel,
+        ultraboltsPlan: company.plans.find(
+          (p) => p.applicationName === 'ULTRABOLTS',
+        )?.planLevel,
         plans: company.plans,
       });
     }
@@ -119,12 +118,16 @@ export default function Page({
   if (error) return <div>Error: {error.message}</div>;
   if (!company) return <div>Company not found</div>;
 
+  if (isNew) {
+    return <div>Holllaaaaaa</div>;
+  }
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
       {/* disabled for now */}
-      {/* <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
+      <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
           Dev mode
         </Headline>
@@ -142,10 +145,10 @@ export default function Page({
         >
           Set to {isAdmin ? 'Client' : 'Superadmin'}
         </Button>
-      </div> */}
+      </div>
 
       <Headline as="h1" variant="xl" color="foreground">
-        {isEditing ? companyToEditName : 'Add Company'}
+        {isNew ? 'Add Company' : company.name}
       </Headline>
 
       {isEditing && (
@@ -288,9 +291,9 @@ export default function Page({
       <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
         <Button variant="primary" size="large" type="submit">
           <LucideCircleCheckBig />
-          {isEditing ? 'Update company details' : 'Send invitation'}
+          {isNew ? 'Send invitation' : 'Update company details'}
         </Button>
-        {isEditing && (
+        {!isNew && (
           <Button
             variant="destructive"
             size="large"

@@ -141,7 +141,7 @@ export const Menu = () => {
 
           <hr className="border-neutral-2" />
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col mb-8">
             <Headline variant="medium" color="foreground" as="h3">
               <Link href="/selectapplication" passHref legacyBehavior>
                 <Anchor color="foreground">
@@ -171,7 +171,6 @@ export const Menu = () => {
               <LucideLogOut />
               Logout
             </Button>
-            <div className="mb-4"></div>
           </div>
         </div>
       </MenuContent>

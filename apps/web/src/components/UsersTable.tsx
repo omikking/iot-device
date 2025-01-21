@@ -56,6 +56,12 @@ export const UsersTable = () => {
     {
       accessorKey: 'appAccess',
       header: 'App access',
+      cell: ({ row }) => {
+        const appAccessValue = row.getValue('appAccess');
+        return appAccessValue === 'Pull-test, Ultrabolts, xCyclops'
+          ? 'All Apps'
+          : appAccessValue;
+      },
     },
     {
       accessorKey: 'role',

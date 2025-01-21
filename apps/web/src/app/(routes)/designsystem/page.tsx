@@ -832,11 +832,12 @@ export default function Page(): JSX.Element {
               <TableRow key={user.id}>
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.appAccess}</TableCell>
+                {/* @TODO fix the formatting */}
+                <TableCell>{user.userPermissions.appAccess}</TableCell>
                 <TableCell>
-                  <Badge variant={getBadge(user.role).variant}>
-                    {getBadge(user.role).icon}
-                    {user.role}
+                  <Badge variant={getBadge(user.userPermissions.role).variant}>
+                    {getBadge(user.userPermissions.role).icon}
+                    {user.userPermissions.role}
                   </Badge>
                 </TableCell>
                 <TableCell>{user.phoneNumber}</TableCell>

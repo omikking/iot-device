@@ -16,23 +16,22 @@ import {
   ContentHolder,
   NavigationCard,
 } from '@gsp/ui';
+import {
+  companyFormSchema,
+  CompanyFormValues,
+} from '@/components/schemas/CompanyFormSchema';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
-import { appPlansMock } from '@/app/mock/mock';
+import { useSearchParams } from 'next/navigation';
 import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import {
-  companyFormSchema,
-  CompanyFormValues,
-} from '@/components/schemas/CompanyFormSchema';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
-import { ICompany } from '@/components/urql-overview/OverviewClientUrql';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 export default function Page({
   params,
@@ -43,23 +42,41 @@ export default function Page({
 
   console.log('company.plans: ', company?.plans);
 
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode'); // 'add' or 'edit'
+
+  const isEditing = mode === 'edit';
   // @TODO: validate the form
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
-      defaultValues: {
-        name: '',
-        companyContactEmail: '',
-        orgNumber: '',
-        country: '',
-        city: '',
-        address: '',
-        pullTestPlan: '',
-        xCyclopsPlan: '',
-        ultraboltsPlan: '',
-        plans: [], // Initialize empty array for the plans
-        // assignSandvikAdministrator: '',
-      },
+      defaultValues: isEditing
+        ? {
+            name: 'E-corp',
+            companyContactEmail: 'Phillip Price',
+            orgNumber: '133742',
+            country: 'Sweden',
+            city: 'Gothenburg',
+            address: 'Vasa Gatan 32',
+            pullTestPlan: '',
+            xCyclopsPlan: '',
+            ultraboltsPlan: '',
+            plans: [],
+          }
+        : {
+            name: '',
+            companyContactEmail: '',
+            orgNumber: '',
+            country: '',
+            city: '',
+            address: '',
+            pullTestPlan: '',
+            xCyclopsPlan: '',
+            ultraboltsPlan: '',
+            plans: [],
+            // Initialize empty array for the plans
+            // assignSandvikAdministrator: '',
+          },
     });
 
   // @TODO Just for testing Add company / Edit company state
@@ -128,10 +145,10 @@ export default function Page({
       </div> */}
 
       <Headline as="h1" variant="xl" color="foreground">
-        {company.name || 'Add company'}
+        {isEditing ? companyToEditName : 'Add Company'}
       </Headline>
 
-      {companyToEditName && (
+      {isEditing && (
         <>
           <div className="flex gap-8">
             <NavigationCard>
@@ -271,16 +288,18 @@ export default function Page({
       <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
         <Button variant="primary" size="large" type="submit">
           <LucideCircleCheckBig />
-          {companyToEditName ? 'Update company details' : 'Send invitation'}
+          {isEditing ? 'Update company details' : 'Send invitation'}
         </Button>
-        <Button
-          variant="destructive"
-          size="large"
-          onClick={() => setIsDeleteModalOpen(true)}
-        >
-          <LucideTrash2 />
-          Inactivate company
-        </Button>
+        {isEditing && (
+          <Button
+            variant="destructive"
+            size="large"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            <LucideTrash2 />
+            Inactivate company
+          </Button>
+        )}
       </div>
       <DeleteModalConfirmation
         deleteIcon="Company"

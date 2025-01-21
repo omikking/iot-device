@@ -13,6 +13,7 @@ interface AppPlanProps {
   activePlan?: 'GOLD' | 'SILVER' | 'BRONZE';
   isAdmin: boolean;
   formField: string;
+  onPlanChange: (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => void;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
@@ -21,6 +22,7 @@ export const AppPlan = ({
   activePlan,
   isAdmin,
   formField,
+  onPlanChange,
 }: AppPlanProps) => {
   const user = isAdmin ? 'Superadmin' : 'Client';
   const isActive = plan === activePlan;
@@ -32,8 +34,8 @@ export const AppPlan = ({
 
   return (
     <div
-      className={`flex justify-between items-center border-b border-gray-200 py-3 px-6 ${
-        isActive ? 'bg-gray-50' : ''
+      className={`flex justify-between items-center border border-gray-200 py-3 px-6 ${
+        isActive ? 'bg-gray-100' : ''
       }`}
     >
       {user === 'Superadmin' ? (
@@ -50,9 +52,11 @@ export const AppPlan = ({
               </FormLabel>
               <FormControl>
                 <Switch
-                  checked={field.value === plan}
+                  checked={activePlan === plan}
                   onCheckedChange={(checked) => {
+                    const newPlan = checked ? plan : undefined;
                     field.onChange(checked ? plan : undefined);
+                    onPlanChange(newPlan);
                   }}
                 />
               </FormControl>
@@ -78,12 +82,22 @@ export const AppPlan = ({
         </div>
       )}
 
-      {/* {user === 'Client' && isActive && (
-        <Badge variant={'attention'}>
-          <LucideCircleCheckBig />
-          Your selected plan
-        </Badge>
-      )} */}
+      {user === 'Client' && (
+        <div className="flex w-full justify-between items-center">
+          <FormLabel
+            className={`text-lg font-semibold ${isActive ? 'text-orange-600' : 'text-gray-800'}`}
+          >
+            {plan}
+          </FormLabel>
+
+          {isActive && (
+            <Badge variant="attention" className="flex items-center">
+              <LucideCircleCheckBig size="16" className="mr-1" />
+              Your selected plan
+            </Badge>
+          )}
+        </div>
+      )}
     </div>
   );
 };

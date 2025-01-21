@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import { AppPlan } from '@/components/AppPlan';
+import { useState } from 'react';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -17,6 +18,8 @@ const getFormFieldName = (name: string) => {
     // case 'Ultrabots':
     case 'ULTRABOLTS':
       return 'ultraboltsPlan';
+    default:
+      return '';
   }
 };
 
@@ -35,7 +38,11 @@ export const AppPlansContainer = ({
   isAdmin,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { applicationName, planLevel } = appPlan;
+  // const { applicationName, planLevel } = appPlan;
+  const { applicationName, planLevel: initialActivePlan } = appPlan;
+  const [activePlan, setActivePlan] = useState<
+    'GOLD' | 'SILVER' | 'BRONZE' | undefined
+  >(initialActivePlan);
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(applicationName) || '';
 
@@ -44,6 +51,10 @@ export const AppPlansContainer = ({
   const toTitleCase = (str: string) => {
     // First convert to lowercase, then capitalize first letter
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  };
+
+  const handlePlanChange = (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => {
+    setActivePlan(plan);
   };
 
   return (
@@ -57,14 +68,14 @@ export const AppPlansContainer = ({
           {toTitleCase(applicationName.replace('_', ' '))}
         </Headline>
 
-        {user === 'Superadmin' && planLevel && (
+        {user === 'Superadmin' && activePlan && (
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
           </Badge>
         )}
 
-        {user === 'Client' && !planLevel && (
+        {user === 'Client' && !activePlan && (
           <Badge variant="primary">
             <LucideSparkles size="14" />
             Available plans
@@ -72,28 +83,42 @@ export const AppPlansContainer = ({
         )}
       </div>
 
+      {/* Selected Plan Label for Client */}
+      {user === 'Client' && (
+        <div className="px-6 py-3">
+          <Badge variant={activePlan ? 'success' : 'neutral'}>
+            {activePlan
+              ? `Your selected plan: ${activePlan}`
+              : 'No plan selected'}
+          </Badge>
+        </div>
+      )}
+
       {/* Plans */}
       <AppPlan
         plan="GOLD"
-        activePlan={planLevel}
+        activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
         plan="SILVER"
-        activePlan={planLevel}
+        activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
         plan="BRONZE"
-        activePlan={planLevel}
+        activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
 
       {/* Calendar */}
-      {planLevel && (
+      {activePlan && (
         <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && (
             <Badge variant="primary">

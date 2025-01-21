@@ -17,8 +17,9 @@ export const CompanyList = () => {
           </Text>
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
-              {/* <Link href="/company"> */}
               <Link href={`/company/${company.id}`}>
+                {/* @TODO find a solution that works for edit view aswell */}
+                {/* <Link href="/company?mode=edit"> */}
                 <LucideMoveRight />
                 Administrate
               </Link>

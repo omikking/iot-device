@@ -14,6 +14,13 @@ export const UsersTable = () => {
     undefined,
   );
 
+  const appAccessShortNames: Record<string, string> = {
+    'Pull-test': 'PT',
+    Ultrabolts: 'UB',
+    xCyclops: 'xLops',
+    'Pull test operator': 'PT-O',
+  };
+
   const getBadge = (
     role: 'User' | 'Technician' | 'Admin',
   ): {
@@ -57,10 +64,26 @@ export const UsersTable = () => {
       accessorKey: 'appAccess',
       header: 'App access',
       cell: ({ row }) => {
-        const appAccessValue = row.getValue('appAccess');
-        return appAccessValue === 'Pull-test, Ultrabolts, xCyclops'
-          ? 'All Apps'
-          : appAccessValue;
+        const appAccessValue = row.getValue('appAccess') as string;
+
+        // Split the appAccessValue into an array of apps
+        const apps = appAccessValue.split(', ');
+
+        if (apps.length === 1) {
+          return apps[0]; // Show full name
+        }
+
+        if (appAccessValue === 'Pull-test, Ultrabolts, xCyclops') {
+          return 'All Apps';
+        }
+
+        // Split the appAccessValue and map with defined types
+        const shortenedApps = appAccessValue
+          .split(', ')
+          .map((app: string) => appAccessShortNames[app] || app)
+          .join(', ');
+
+        return shortenedApps;
       },
     },
     {

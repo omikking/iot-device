@@ -19,6 +19,12 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     undefined,
   );
 
+  const appAccessShortNames: Record<string, string> = {
+    PULL_TEST: 'PT',
+    ULTRABOLTS: 'UB',
+    XCYCLOPS: 'xLops',
+    PULL_TEST_OPERATOR: 'PT-O',
+  };
   const getBadge = (
     role: UserSchema['userPermissions']['role'],
   ): {
@@ -68,6 +74,24 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       id: 'appAccess',
       header: 'App access',
       accessorFn: (row) => row.userPermissions.appAccess,
+      cell: ({ row }) => {
+        const appAccessValue = row.getValue('appAccess') as string[];
+
+        if (appAccessValue.length === 1) {
+          return appAccessValue[0]; // Show full name
+        }
+
+        if (appAccessValue.length === 4) {
+          return 'All Apps';
+        }
+
+        // Split the appAccessValue and map with defined types
+        const shortenedApps = appAccessValue
+          .map((app: string) => appAccessShortNames[app] || app)
+          .join(', ');
+
+        return shortenedApps;
+      },
     },
     {
       accessorKey: 'userPermissions.role',

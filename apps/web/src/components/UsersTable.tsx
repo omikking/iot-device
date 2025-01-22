@@ -7,7 +7,12 @@ import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
-export const UsersTable = () => {
+interface UsersTableProps {
+  onOpenChange: (open: boolean) => void;
+  onSelectUser: (user: UserSchema) => void;
+}
+
+export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const [users, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
@@ -22,7 +27,7 @@ export const UsersTable = () => {
   };
 
   const getBadge = (
-    role: 'User' | 'Technician' | 'Admin',
+    role: UserSchema['userPermissions']['role'],
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -51,6 +56,12 @@ export const UsersTable = () => {
     setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
   };
 
+  const openEditModal = (index: number) => {
+    const userToEdit = users[index];
+    onSelectUser(userToEdit);
+    onOpenChange(true);
+  };
+
   const columns: ColumnDef<UserSchema>[] = [
     {
       accessorKey: 'fullName',
@@ -61,7 +72,7 @@ export const UsersTable = () => {
       header: 'Email',
     },
     {
-      accessorKey: 'appAccess',
+      id: 'appAccess',
       header: 'App access',
       cell: ({ row }) => {
         const appAccessValue = row.getValue('appAccess') as string;
@@ -87,13 +98,16 @@ export const UsersTable = () => {
       },
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'userPermissions.role',
       header: 'Role',
       cell: ({ row }) => {
+        const role = row.original.userPermissions.role;
+        const { variant, icon } = getBadge(role);
+
         return (
-          <Badge variant={getBadge(row.getValue('role')).variant}>
-            {getBadge(row.getValue('role')).icon}
-            {row.getValue('role')}
+          <Badge variant={variant}>
+            {icon}
+            {role}
           </Badge>
         );
       },
@@ -113,7 +127,7 @@ export const UsersTable = () => {
             <DeleteEditDropdown
               itemSelected={rowIndex}
               openDeleteModal={openDeleteModal}
-              handleEdit={() => console.log('Edit')}
+              handleEdit={openEditModal}
             />
           </>
         );

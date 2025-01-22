@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import { AppPlan } from '@/components/AppPlan';
+import { useState } from 'react';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -14,6 +15,8 @@ const getFormFieldName = (name: string) => {
       return 'xCyclopsPlan';
     case 'Ultrabots':
       return 'ultrabotsPlan';
+    default:
+      return '';
   }
 };
 
@@ -32,9 +35,15 @@ export const AppPlansContainer = ({
   isAdmin,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { name, activePlan } = appPlan;
+  const { name, activePlan : initialActivePlan} = appPlan;
+  const [activePlan, setActivePlan] = useState<'Gold' | 'Silver' | 'Bronze' | undefined>(initialActivePlan);
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(name) || '';
+
+  const handlePlanChange = (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => {
+    setActivePlan(plan);
+  };
+
 
   return (
     <div
@@ -61,24 +70,39 @@ export const AppPlansContainer = ({
         )}
       </div>
 
+      {/* Selected Plan Label for Client */}
+      {user === 'Client' && (
+        <div className="px-6 py-3">
+          <Badge
+            variant={activePlan ? "success" : "neutral"}
+          >
+            {activePlan ? `Your selected plan: ${activePlan}` : "No plan selected"}
+          </Badge>
+        </div>
+      )}
+
+
       {/* Plans */}
       <AppPlan
         plan="Gold"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
         plan="Silver"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
         plan="Bronze"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={handlePlanChange}
       />
 
       {/* Calendar */}

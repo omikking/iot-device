@@ -51,7 +51,8 @@ export default function Page({
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
       defaultValues: !isNew
-        ? {
+        ? // remove the pre-filled values for testing
+          {
             name: 'E-corp',
             companyContactEmail: 'Phillip Price',
             orgNumber: '133742',
@@ -101,13 +102,13 @@ export default function Page({
         address: company.address,
         postalCode: company.postalCode,
         pullTestPlan: company.plans.find(
-          (p) => p.applicationName === 'PULL_TEST',
+          (plan) => plan.applicationName === 'PULL_TEST',
         )?.planLevel,
         xCyclopsPlan: company.plans.find(
-          (p) => p.applicationName === 'XCYCLOPS',
+          (plan) => plan.applicationName === 'XCYCLOPS',
         )?.planLevel,
         ultraboltsPlan: company.plans.find(
-          (p) => p.applicationName === 'ULTRABOLTS',
+          (plan) => plan.applicationName === 'ULTRABOLTS',
         )?.planLevel,
         plans: company.plans,
       });
@@ -116,11 +117,12 @@ export default function Page({
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-  if (!company) return <div>Company not found</div>;
 
   if (isNew) {
     return <div>Holllaaaaaa</div>;
   }
+
+  if (!company) return <div>Company not found</div>; // able to create a new company
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

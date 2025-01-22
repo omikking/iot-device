@@ -144,7 +144,7 @@ const getMeCompanyDocument = graphql(`
 `);
 
 export function useCompany(id: string) {
-  const skipQuery = id === 'new';
+  const skipQuery = id === 'new'; //
   const [result] = useQuery<ICompanyData>({
     query: getMeCompanyDocument,
     variables: { id },

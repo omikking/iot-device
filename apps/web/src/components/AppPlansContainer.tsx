@@ -83,17 +83,6 @@ export const AppPlansContainer = ({
         )}
       </div>
 
-      {/* Selected Plan Label for Client */}
-      {/* {user === 'Client' && (
-        <div className="px-6 py-3">
-          <Badge variant={activePlan ? 'success' : 'neutral'}>
-            {activePlan
-              ? `Your selected plan: ${activePlan}`
-              : 'No plan selected'}
-          </Badge>
-        </div>
-      )} */}
-
       {/* Plans */}
       <AppPlan
         plan="GOLD"

@@ -32,6 +32,7 @@ import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { CompanyCreate } from './CompanyCreate';
 
 export default function Page({
   params,
@@ -118,17 +119,17 @@ export default function Page({
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  if (isNew) {
-    return <div>Holllaaaaaa</div>;
-  }
+  // if (isNew) {
+  //   return <div>Holllaaaaaa</div>;
+  // }
 
-  if (!company) return <div>Company not found</div>; // able to create a new company
+  if (!company && !isNew) return <div>Company not found</div>; // able to create a new company
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      {/* disabled for now */}
+      {/* TODO break down into a component DevModeToggle, something like that */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
           Dev mode
@@ -150,7 +151,7 @@ export default function Page({
       </div>
 
       <Headline as="h1" variant="xl" color="foreground">
-        {isNew ? 'Add Company' : company.name}
+        {isNew ? 'Add Company' : company?.name}
       </Headline>
 
       {isEditing && (
@@ -200,139 +201,147 @@ export default function Page({
         </>
       )}
 
-      <Form {...companyForm}>
-        <form
-          onSubmit={companyForm.handleSubmit((e) =>
-            console.log(e, 'company added'),
-          )}
-          className="w-full flex flex-row flex-wrap gap-6"
-        >
-          <div className="w-full mt-4 flex flex-col gap-20">
-            <CompanyDetailsForm companyForm={companyForm} />
+      {isNew ? (
+        <CompanyCreate isAdmin={isAdmin} />
+      ) : (
+        <>
+          <Form {...companyForm}>
+            <form
+              onSubmit={companyForm.handleSubmit((e) =>
+                console.log(e, 'company added'),
+              )}
+              className="w-full flex flex-row flex-wrap gap-6"
+            >
+              <div className="w-full mt-4 flex flex-col gap-20">
+                <CompanyDetailsForm companyForm={companyForm} />
 
-            <div>
-              <div className="flex justify-between">
-                <Headline
-                  as="h2"
-                  color="foreground"
-                  variant="medium"
-                  className="ml-8"
-                >
-                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
-                </Headline>
-
-                {user === 'Client' && (
-                  <div className="flex items-center">
-                    <LucideSparkles size="20" />
+                <div>
+                  <div className="flex justify-between">
                     <Headline
                       as="h2"
                       color="foreground"
                       variant="medium"
-                      className="ml-3"
+                      className="ml-8"
                     >
-                      Want to update your plan?
+                      {user === 'Superadmin' ? 'Plans' : 'Your plans'}
                     </Headline>
-                    <Text
-                      color="accent"
-                      variant="medium"
-                      className="mt-1 ml-4 underline underline-offset-2"
-                    >
-                      Call +46 70 174 06 21
-                    </Text>
+
+                    {user === 'Client' && (
+                      <div className="flex items-center">
+                        <LucideSparkles size="20" />
+                        <Headline
+                          as="h2"
+                          color="foreground"
+                          variant="medium"
+                          className="ml-3"
+                        >
+                          Want to update your plan?
+                        </Headline>
+                        <Text
+                          color="accent"
+                          variant="medium"
+                          className="mt-1 ml-4 underline underline-offset-2"
+                        >
+                          Call +46 70 174 06 21
+                        </Text>
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* App plans */}
+                  <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
+                    {allPlansTypes.map((planType) => {
+                      // look for a matching plan from company data, if not found then create a new plan
+                      // if it exists, then use the existingPlan
+                      const existingPlan = company?.plans.find(
+                        (plan) =>
+                          plan.applicationName === planType.applicationName,
+                      );
+
+                      const appPlan = existingPlan || {
+                        id: planType.id,
+                        applicationName: planType.applicationName,
+                        planLevel: undefined,
+                        companyId: company?.id,
+                        expiringDate: '',
+                      };
+
+                      return (
+                        <AppPlansContainer
+                          appPlan={appPlan}
+                          key={appPlan.id}
+                          isAdmin={isAdmin}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Admin assignment */}
+                <ContentHolder
+                  variant="general"
+                  headlineText={
+                    user === 'Superadmin'
+                      ? 'Admin'
+                      : 'Sandvik associate contact details'
+                  }
+                >
+                  {user === 'Superadmin' && (
+                    <AdminForm companyForm={companyForm} />
+                  )}
+
+                  {user === 'Client' && (
+                    <AssociateDetailsForm companyForm={companyForm} />
+                  )}
+                </ContentHolder>
               </div>
-
-              {/* App plans */}
-              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlansTypes.map((planType) => {
-                  // look for a matching plan from company data, if not found then create a new plan
-                  // if it exists, then use the existingPlan
-                  const existingPlan = company.plans.find(
-                    (plan) => plan.applicationName === planType.applicationName,
-                  );
-
-                  const appPlan = existingPlan || {
-                    id: planType.id,
-                    applicationName: planType.applicationName,
-                    planLevel: undefined,
-                    companyId: company.id,
-                    expiringDate: '',
-                  };
-
-                  return (
-                    <AppPlansContainer
-                      appPlan={appPlan}
-                      key={appPlan.id}
-                      isAdmin={isAdmin}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Admin assignment */}
-            <ContentHolder
-              variant="general"
-              headlineText={
-                user === 'Superadmin'
-                  ? 'Admin'
-                  : 'Sandvik associate contact details'
-              }
-            >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
-
-              {user === 'Client' && (
-                <AssociateDetailsForm companyForm={companyForm} />
-              )}
-            </ContentHolder>
+            </form>
+          </Form>
+          <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
+            <Button variant="primary" size="large" type="submit">
+              <LucideCircleCheckBig />
+              {isNew ? 'Send invitation' : 'Update company details'}
+            </Button>
+            {!isNew && (
+              <Button
+                variant="destructive"
+                size="large"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <LucideTrash2 />
+                Inactivate company
+              </Button>
+            )}
           </div>
-        </form>
-      </Form>
-
-      <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
-        <Button variant="primary" size="large" type="submit">
-          <LucideCircleCheckBig />
-          {isNew ? 'Send invitation' : 'Update company details'}
-        </Button>
-        {!isNew && (
-          <Button
-            variant="destructive"
-            size="large"
-            onClick={() => setIsDeleteModalOpen(true)}
+          <DeleteModalConfirmation
+            deleteIcon="Company"
+            deleteButtonText="Delete company"
+            modalTitle="Delete company"
+            modalText="Confirm inactivation"
+            isOpen={isDeleteModalOpen}
+            onOpenChange={setIsDeleteModalOpen}
+            onDelete={() => {
+              console.log('Deleting item...');
+            }}
           >
-            <LucideTrash2 />
-            Inactivate company
-          </Button>
-        )}
-      </div>
-      <DeleteModalConfirmation
-        deleteIcon="Company"
-        deleteButtonText="Delete company"
-        modalTitle="Delete company"
-        modalText="Confirm inactivation"
-        isOpen={isDeleteModalOpen}
-        onOpenChange={setIsDeleteModalOpen}
-        onDelete={() => {
-          console.log('Deleting item...');
-        }}
-      >
-        <div className="flex flex-col gap-4">
-          <Text variant="medium" color={'foreground'} as="span">
-            You are about to inactivate
-            <Text variant="medium" color={'foreground'} as="span" isBold>
-              {` ${companyToEditName}. `}
-            </Text>
-            <Text variant="medium" color={'foreground'} as="span">
-              Are you sure you want to inactivate?
-            </Text>
-          </Text>
-          <Text color={'foreground'} variant={'medium'}>
-            The company data will not be deleted but the company will become
-            inactive but able to recover data.
-          </Text>
-        </div>
-      </DeleteModalConfirmation>
+            <div className="flex flex-col gap-4">
+              <Text variant="medium" color={'foreground'} as="span">
+                You are about to inactivate
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  {` ${companyToEditName}. `}
+                </Text>
+                <Text variant="medium" color={'foreground'} as="span">
+                  Are you sure you want to inactivate?
+                </Text>
+              </Text>
+              <Text color={'foreground'} variant={'medium'}>
+                The company data will not be deleted but the company will become
+                inactive but able to recover data.
+              </Text>
+            </div>
+          </DeleteModalConfirmation>
+        </>
+      )}
     </main>
   );
 }

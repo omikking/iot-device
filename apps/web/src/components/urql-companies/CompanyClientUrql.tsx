@@ -58,7 +58,7 @@ type IPlan = {
   companyId: string;
   applicationName: string;
   // planLevel: string;
-  planLevel: 'GOLD' | 'SILVER' | 'BRONZE' | undefined;
+  planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   expiringDate: string;
 };
 

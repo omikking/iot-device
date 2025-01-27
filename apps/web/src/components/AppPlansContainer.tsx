@@ -3,23 +3,22 @@ import {
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { AppPlan } from '@/components/AppPlan';
 import { useState } from 'react';
+import { AppPlan } from '@/components/AppPlan';
+import { UseFormReturn } from 'react-hook-form';
+import { CompanyFormValues } from './schemas/CompanyFormSchema';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
-    // case 'Pull-test':
     case 'PULL_TEST':
       return 'pullTestPlan';
-    // case 'xCyclops':
     case 'XCYCLOPS':
       return 'xCyclopsPlan';
-    // case 'Ultrabots':
     case 'ULTRABOLTS':
       return 'ultraboltsPlan';
     default:
-      return '';
+      return undefined;
   }
 };
 
@@ -30,26 +29,25 @@ interface AppPlansContainerProps {
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   };
   isAdmin: boolean;
+  companyForm: UseFormReturn<CompanyFormValues>;
 }
 
-// @TODO: Remove temporary isAdmin prop
 export const AppPlansContainer = ({
   appPlan,
   isAdmin,
+  companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  // const { applicationName, planLevel } = appPlan;
   const { applicationName, planLevel: initialActivePlan } = appPlan;
   const [activePlan, setActivePlan] = useState<
     'GOLD' | 'SILVER' | 'BRONZE' | undefined
   >(initialActivePlan);
+
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(applicationName) || '';
 
-  // console.log('APPPLAN: ', appPlan);
   // export to a utility file?
   const toTitleCase = (str: string) => {
-    // First convert to lowercase, then capitalize first letter
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
   };
 
@@ -64,7 +62,6 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {/* {applicationName} */}
           {toTitleCase(applicationName.replace('_', ' '))}
         </Headline>
 
@@ -89,6 +86,8 @@ export const AppPlansContainer = ({
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
       <AppPlan
@@ -96,6 +95,8 @@ export const AppPlansContainer = ({
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
       <AppPlan
@@ -103,6 +104,8 @@ export const AppPlansContainer = ({
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
 

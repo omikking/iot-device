@@ -1,22 +1,21 @@
 'use client';
 
-import { AdminForm } from '@/components/AdminForm';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
-import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import {
   CompanyFormValues,
   companyFormSchema,
 } from '@/components/schemas/CompanyFormSchema';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { AdminForm } from '@/components/AdminForm';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
+import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
+import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
+import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
 
 type IPlan = {
   id: string;
   companyId: string;
   applicationName: string;
-  // planLevel: string;
   planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   expiringDate: string;
 };
@@ -57,9 +56,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
       country: '',
       city: '',
       address: '',
-      pullTestPlan: '',
-      xCyclopsPlan: '',
-      ultraboltsPlan: '',
+      userPermissions: [{ userId: '6411e9b8-7925-4c80-b76b-8f5d47d19aec' }],
       plans: [], // Initialize empty array for the plans
       // assignSandvikAdministrator: '',
     },
@@ -79,7 +76,6 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
             >
               {isAdmin ? 'Plans' : 'Your plans'}
             </Headline>
-
             {!isAdmin && (
               <div className="flex items-center">
                 <LucideSparkles size="20" />
@@ -100,6 +96,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
                 </Text>
               </div>
             )}
+
             <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
               {allPlansTypes.map((planType) => {
                 const existingPlan = company?.plans.find(
@@ -119,6 +116,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
                     appPlan={appPlan}
                     key={appPlan.id}
                     isAdmin={isAdmin}
+                    companyForm={companyForm}
                   />
                 );
               })}

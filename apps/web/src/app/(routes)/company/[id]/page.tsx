@@ -51,33 +51,20 @@ export default function Page({
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
-      defaultValues: !isNew
-        ? // remove the pre-filled values for testing
-          {
-            name: 'E-corp',
-            companyContactEmail: 'Phillip Price',
-            orgNumber: '133742',
-            country: 'Sweden',
-            city: 'Gothenburg',
-            address: 'Vasa Gatan 32',
-            pullTestPlan: '',
-            xCyclopsPlan: '',
-            ultraboltsPlan: '',
-            plans: [],
-          }
-        : {
-            name: '',
-            companyContactEmail: '',
-            orgNumber: '',
-            country: '',
-            city: '',
-            address: '',
-            pullTestPlan: '',
-            xCyclopsPlan: '',
-            ultraboltsPlan: '',
-            plans: [], // Initialize empty array for the plans
-            // assignSandvikAdministrator: '',
-          },
+      defaultValues: {
+        name: '',
+        companyContactEmail: '',
+        orgNumber: '',
+        country: '',
+        city: '',
+        address: '',
+        postalCode: '',
+        userPermissions: [],
+        pullTestPlan: '',
+        xCyclopsPlan: '',
+        ultraboltsPlan: '',
+        // assignSandvikAdministrator: '', // not included in the prisma model
+      },
     });
 
   // @TODO Just for testing Add company / Edit company state
@@ -118,17 +105,11 @@ export default function Page({
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-
-  // if (isNew) {
-  //   return <div>Holllaaaaaa</div>;
-  // }
-
   if (!company && !isNew) return <div>Company not found</div>; // able to create a new company
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
-
       {/* TODO break down into a component DevModeToggle, something like that */}
       <div className="fixed opacity-10 hover:opacity-80 duration-100 ease-linear right-24 top-24 bg-slate-200 p-4 w-56">
         <Headline as="h2" variant="medium" color="foreground">
@@ -271,6 +252,7 @@ export default function Page({
                           appPlan={appPlan}
                           key={appPlan.id}
                           isAdmin={isAdmin}
+                          companyForm={companyForm}
                         />
                       );
                     })}

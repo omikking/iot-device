@@ -8,9 +8,6 @@ export const companyFormSchema = z.object({
   city: z.string().min(3),
   country: z.string().min(3),
   companyContactEmail: z.string().min(3),
-  pullTestPlan: z.string().optional(),
-  xCyclopsPlan: z.string().optional(),
-  ultraboltsPlan: z.string().optional(),
   userPermissions: z.array(
     z.object({
       userId: z.string(),
@@ -19,10 +16,8 @@ export const companyFormSchema = z.object({
   plans: z
     .array(
       z.object({
-        id: z.string().optional(),
-        companyId: z.string().optional(),
-        applicationName: z.string().optional(),
-        planLevel: z.string().optional(),
+        applicationName: z.string(),
+        planLevel: z.string(),
         expiringDate: z.string().optional(),
       }),
     )

@@ -4,6 +4,8 @@ import {
   CompanyFormValues,
   companyFormSchema,
 } from '@/components/schemas/CompanyFormSchema';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 import { useForm } from 'react-hook-form';
 import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +14,7 @@ import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
 
+// TODO - move to shared types?
 type IPlan = {
   id: string;
   companyId: string;
@@ -30,8 +33,6 @@ type ICompany = {
   country: string;
   companyContactEmail: string;
   plans: IPlan[];
-  // users: IUser[];
-  // sites: ISite[];
 };
 
 type CompanyFormProps = {
@@ -46,7 +47,29 @@ const allPlansTypes = [
   { id: 'ultrabolts', applicationName: 'ULTRABOLTS' },
 ] as const;
 
+const createCompanyMutation = graphql(`
+  mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {
+    createCompany(createCompanyInput: $createCompanyInput) {
+      id
+      name
+      orgNumber
+      address
+      postalCode
+      city
+      country
+      companyContactEmail
+      plans {
+        id
+        applicationName
+        planLevel
+        expiringDate
+      }
+    }
+  }
+`);
+
 export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
+  const [result, createCompany] = useMutation(createCompanyMutation);
   const companyForm = useForm<CompanyFormValues>({
     resolver: zodResolver(companyFormSchema),
     defaultValues: {
@@ -61,10 +84,23 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
       // assignSandvikAdministrator: '',
     },
   });
+  console.log('Result: ', result);
+  const onSubmit = (data: CompanyFormValues) => {
+    createCompany({ createCompanyInput: data }).then((result) => {
+      console.log('Submitting data:', JSON.stringify(data, null, 2));
+      if (result.error) {
+        console.error('Error: ', result.error);
+      } else {
+        if (result.data) {
+          console.log('Company created: ', result.data.createCompany);
+        }
+      }
+    });
+  };
 
   return (
     <Form {...companyForm}>
-      <form onSubmit={companyForm.handleSubmit((data) => console.log(data))}>
+      <form onSubmit={companyForm.handleSubmit(onSubmit)}>
         <div className="w-full mt-4 flex flex-col gap-20">
           <CompanyDetailsForm companyForm={companyForm} />
           <div className="flex-col justify-between">

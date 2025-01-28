@@ -40,9 +40,6 @@ export default function Page({
   params: { id: string };
 }): JSX.Element {
   const { company, error, isLoading, isNew } = useCompany(params.id);
-
-  console.log('company.plans: ', company?.plans);
-
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode'); // 'add' or 'edit'
 
@@ -60,9 +57,6 @@ export default function Page({
         address: '',
         postalCode: '',
         userPermissions: [],
-        pullTestPlan: '',
-        xCyclopsPlan: '',
-        ultraboltsPlan: '',
         // assignSandvikAdministrator: '', // not included in the prisma model
       },
     });
@@ -89,15 +83,15 @@ export default function Page({
         city: company.city,
         address: company.address,
         postalCode: company.postalCode,
-        pullTestPlan: company.plans.find(
-          (plan) => plan.applicationName === 'PULL_TEST',
-        )?.planLevel,
-        xCyclopsPlan: company.plans.find(
-          (plan) => plan.applicationName === 'XCYCLOPS',
-        )?.planLevel,
-        ultraboltsPlan: company.plans.find(
-          (plan) => plan.applicationName === 'ULTRABOLTS',
-        )?.planLevel,
+        // pullTestPlan: company.plans.find(
+        //   (plan) => plan.applicationName === 'PULL_TEST',
+        // )?.planLevel,
+        // xCyclopsPlan: company.plans.find(
+        //   (plan) => plan.applicationName === 'XCYCLOPS',
+        // )?.planLevel,
+        // ultraboltsPlan: company.plans.find(
+        //   (plan) => plan.applicationName === 'ULTRABOLTS',
+        // )?.planLevel,
         plans: company.plans,
       });
     }
@@ -188,8 +182,8 @@ export default function Page({
         <>
           <Form {...companyForm}>
             <form
-              onSubmit={companyForm.handleSubmit((e) =>
-                console.log(e, 'company added'),
+              onSubmit={companyForm.handleSubmit(() =>
+                console.log('Dwadwadwa'),
               )}
               className="w-full flex flex-row flex-wrap gap-6"
             >

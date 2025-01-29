@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
-import { companiesMock } from '@/app/mock/mock';
+//import { companiesMock } from '@/app/mock/mock';
 import { Button, Text } from '@gsp/ui';
+import { useCompanies } from './urql-overview/OverviewClientUrql';
 
 export const CompanyList = () => {
+  const { companies } = useCompanies();
   return (
     <>
-      {companiesMock.map((company) => (
+      {/* {companiesMock.map((company) => ( */}
+      {companies.map((company) => (
         <div
           key={company.id}
           className="w-full flex justify-between items-center px-6 py-4 bg-main-white"
@@ -16,13 +19,14 @@ export const CompanyList = () => {
           </Text>
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
-              <Link href="/company?mode=edit">
+              {/* <Link href="/company?mode=edit"> */}
+              <Link href={`/company/${company.id}`}>
                 <LucideMoveRight />
                 Administrate
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href="/selectapplication">
+              <Link href={`/selectapplication/${company.id}`}>
                 <LucideLayoutGrid />
                 View Apps
               </Link>

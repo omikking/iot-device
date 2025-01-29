@@ -1,3 +1,5 @@
+'use client';
+
 import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
@@ -6,14 +8,23 @@ import {
   LucideTriangleAlert,
 } from 'lucide-react';
 import Link from 'next/link';
+//import { gql, useQuery } from 'urql';
+import { useParams } from 'next/navigation';
+import CompanyNameUrql from '@/components/urql-pulltest/GetCompanyName';
 
 export default function Page(): JSX.Element {
+  const companyParams = useParams();
+
+  const companyId = Array.isArray(companyParams.id)
+    ? companyParams.id[0]
+    : companyParams.id;
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
+      {/* Render badge dynamically */}
       <Badge variant="primary" size="large" className="absolute top-24">
-        Ecorp
+        <CompanyNameUrql companyId={companyId} />
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">

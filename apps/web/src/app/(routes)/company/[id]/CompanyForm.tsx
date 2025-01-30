@@ -1,18 +1,18 @@
 'use client';
 
 import {
-  CompanyFormValues,
-  companyFormSchema,
+  CreateCompanyFormValues,
+  createCompanyFormSchema,
 } from '@/components/schemas/CompanyFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { useForm } from 'react-hook-form';
 import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AppPlansContainer } from '@/components/AppPlansContainer';
+import { CreateAppPlansContainer } from '@/components/CreateAppPlansContainer';
 import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
-import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import { CompanyCreateDetailsForm } from '@/components/CompanyCreateDetailsForm';
 
 // TODO - move to shared types?
 type IPlan = {
@@ -70,8 +70,8 @@ const createCompanyMutation = graphql(`
 
 export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
   const [result, createCompany] = useMutation(createCompanyMutation);
-  const companyForm = useForm<CompanyFormValues>({
-    resolver: zodResolver(companyFormSchema),
+  const companyForm = useForm<CreateCompanyFormValues>({
+    resolver: zodResolver(createCompanyFormSchema),
     defaultValues: {
       name: '',
       companyContactEmail: '',
@@ -79,13 +79,14 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
       country: '',
       city: '',
       address: '',
+      postalCode: '',
       userPermissions: [{ userId: '6411e9b8-7925-4c80-b76b-8f5d47d19aec' }],
       plans: [], // Initialize empty array for the plans
       // assignSandvikAdministrator: '',
     },
   });
   console.log('Result: ', result);
-  const onSubmit = (data: CompanyFormValues) => {
+  const onSubmit = (data: CreateCompanyFormValues) => {
     createCompany({ createCompanyInput: data }).then((result) => {
       console.log('Submitting data:', JSON.stringify(data, null, 2));
       if (result.error) {
@@ -102,7 +103,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
     <Form {...companyForm}>
       <form onSubmit={companyForm.handleSubmit(onSubmit)}>
         <div className="w-full mt-4 flex flex-col gap-20">
-          <CompanyDetailsForm companyForm={companyForm} />
+          <CompanyCreateDetailsForm companyForm={companyForm} />
           <div className="flex-col justify-between">
             <Headline
               as="h2"
@@ -148,7 +149,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
                 };
 
                 return (
-                  <AppPlansContainer
+                  <CreateAppPlansContainer
                     appPlan={appPlan}
                     key={appPlan.id}
                     isAdmin={isAdmin}

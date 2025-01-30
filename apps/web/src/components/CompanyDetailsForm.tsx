@@ -8,12 +8,12 @@ import {
   Input,
 } from '@gsp/ui';
 import { UseFormReturn } from 'react-hook-form';
-import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
+import { UpdateCompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 
 export const CompanyDetailsForm = ({
   companyForm,
 }: {
-  companyForm: UseFormReturn<CompanyFormValues>;
+  companyForm: UseFormReturn<UpdateCompanyFormValues>;
 }) => {
   return (
     <ContentHolder variant="general" headlineText="Company details">

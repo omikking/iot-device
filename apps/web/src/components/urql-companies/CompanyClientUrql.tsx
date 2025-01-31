@@ -14,45 +14,6 @@ import { useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 
-type IBoltResult = {
-  boltNumber: string;
-};
-
-type ILevel = {
-  levelName: string;
-};
-
-type ISite = {
-  id: string;
-  siteName: string;
-  address: string;
-  postalCode: string;
-  city: string;
-  country: string;
-  companyId: string;
-  levels: ILevel[];
-  boltResults: IBoltResult[];
-};
-
-type IUserPermissions = {
-  id: string;
-  userId: string;
-  companyId: string;
-  role: string;
-  appsAccess: string[];
-};
-
-type IUser = {
-  id: string;
-  email: string;
-  fullName: string;
-  workPlace: string;
-  phoneNumber: string;
-  globalRole: string;
-  isGlobalVisibility: boolean;
-  userPermissions: IUserPermissions[];
-};
-
 type IPlan = {
   id: string;
   companyId: string;
@@ -72,8 +33,6 @@ type ICompany = {
   country: string;
   companyContactEmail: string;
   plans: IPlan[];
-  // users: IUser[];
-  // sites: ISite[];
 };
 
 type ICompanyData = {
@@ -91,29 +50,6 @@ const getMeCompanyDocument = graphql(`
       city
       country
       companyContactEmail
-      # plans {
-      #   id
-      #   companyId
-      #   applicationName
-      #   planLevel
-      #   expiringDate
-      # }
-      # users {
-      #   id
-      #   email
-      #   fullName
-      #   workPlace
-      #   phoneNumber
-      #   globalRole
-      #   isGlobalVisibility
-      #   userPermissions {
-      #     id
-      #     userId
-      #     companyId
-      #     role
-      #     appsAccess
-      #   }
-      # }
 
       plans {
         id
@@ -122,23 +58,6 @@ const getMeCompanyDocument = graphql(`
         planLevel
         expiringDate
       }
-      # sites {
-      #   id
-      #   siteName
-      #   address
-      #   postalCode
-      #   city
-      #   country
-      #   companyId
-
-      #   levels {
-      #     levelName
-      #   }
-
-      #   boltResults {
-      #     boltNumber
-      #   }
-      # }
     }
   }
 `);

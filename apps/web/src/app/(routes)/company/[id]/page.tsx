@@ -54,7 +54,7 @@ const updateCompanyMutation = graphql(`
         id
         applicationName
         planLevel
-        # expiringDate
+        expiringDate
       }
     }
   }
@@ -95,8 +95,6 @@ export default function Page({
       plans: [],
     },
   });
-
-  // @TODO Just for testing Add company / Edit company state
 
   useEffect(() => {
     if (company) {
@@ -220,11 +218,7 @@ export default function Page({
       <Form {...companyForm}>
         <form
           onSubmit={companyForm.handleSubmit(onSubmit)}
-          // onSubmit={(e) => {
-          //   e.preventDefault();
-          //   console.log('Submitted data:', companyForm.getValues());
-          // }}
-          className="w-full flex flex-row flex-wrap gap-6"
+          // className="w-full flex flex-row flex-wrap gap-6"
         >
           <div className="w-full mt-4 flex flex-col gap-20">
             <CompanyDetailsForm companyForm={companyForm} />
@@ -305,7 +299,7 @@ export default function Page({
               )}
             </ContentHolder>
           </div>
-          <div className="flex flex-col gap-6 items-end self-end mt-[-40px]">
+          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
             <Button variant="primary" size="large" type="submit">
               <LucideCircleCheckBig />
               {isNew ? 'Send invitation' : 'Update company details'}

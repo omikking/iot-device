@@ -93,7 +93,6 @@ export const CreateAppPlan = ({
                       );
                     }
                     // AI generated code ends
-                    // field.onChange(checked ? plan : undefined);
                     field.onChange(updatedPlans);
                     onPlanChange(newPlan);
                   }}

@@ -7,7 +7,7 @@ import {
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { useForm } from 'react-hook-form';
-import { AdminForm } from '@/components/AdminForm';
+// import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateAppPlansContainer } from '@/components/CreateAppPlansContainer';
 import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
@@ -166,7 +166,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
               isAdmin ? 'Admin' : 'Sandvik associate contact details'
             }
           >
-            {isAdmin && <AdminForm companyForm={companyForm} />}
+            {/* {isAdmin && <AdminForm companyForm={companyForm} />} */}
           </ContentHolder>
         </div>
         <div className="flex justify-end mt-8">

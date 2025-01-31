@@ -24,7 +24,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
 import { useSearchParams } from 'next/navigation';
-import { AdminForm } from '@/components/AdminForm';
+// import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
@@ -292,7 +292,7 @@ export default function Page({
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
+              {/* {user === 'Superadmin' && <AdminForm companyForm={companyForm} />} */}
 
               {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />

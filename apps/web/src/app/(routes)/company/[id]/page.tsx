@@ -29,7 +29,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
+// import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { CompanyCreate } from './CompanyCreate';
@@ -294,9 +294,9 @@ export default function Page({
             >
               {/* {user === 'Superadmin' && <AdminForm companyForm={companyForm} />} */}
 
-              {user === 'Client' && (
+              {/* {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
-              )}
+              )} */}
             </ContentHolder>
           </div>
           <div className="flex flex-col gap-6 items-end self-end mt-[40px]">

@@ -2,11 +2,22 @@ import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { useCompanies } from './urql-overview/OverviewClientUrql';
+import { getCompanies } from './urql-companies/CompaniesUrql';
 
 export const CompanyList = () => {
   const { companies } = useCompanies();
+
+  const testCompanies = getCompanies();
+
+  testCompanies.then((res) => console.log('testCompanies', res));
+
   return (
     <>
+      {testCompanies.then((res) => {
+        res?.map((company) => {
+          console.log('company', company);
+        });
+      })}
       {companies.map((company) => (
         <div
           key={company.id}

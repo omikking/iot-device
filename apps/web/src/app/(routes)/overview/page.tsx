@@ -1,4 +1,3 @@
-'use client';
 import { CompanyList } from '@/components/CompanyList';
 import { Headline, Button, NavigationCard, ContentHolder } from '@gsp/ui';
 import {

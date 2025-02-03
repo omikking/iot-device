@@ -1,4 +1,4 @@
-import { CompanyList } from '@/components/CompanyList';
+import { CompanyListServer } from '@/components/CompanyListServer';
 import { Headline, Button, NavigationCard, ContentHolder } from '@gsp/ui';
 import {
   LucideBuilding2,
@@ -62,7 +62,7 @@ export default function Page(): JSX.Element {
       <hr className="w-full border-neutral-2 mb-4" />
 
       <ContentHolder variant="table" headlineText="Companies to administrate">
-        <CompanyList />
+        <CompanyListServer />
       </ContentHolder>
     </main>
   );

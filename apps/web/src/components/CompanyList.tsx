@@ -1,24 +1,24 @@
+'use client';
 import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
-import { useCompanies } from './urql-overview/OverviewClientUrql';
-import { getCompanies } from './urql-companies/CompaniesUrql';
+import { useCompanies } from '@/hooks/useCompanies';
 
-export const CompanyList = () => {
-  const { companies } = useCompanies();
+type Company = {
+  id: string;
+  name: string;
+};
 
-  const testCompanies = getCompanies();
+type CompanyListProps = {
+  initialCompanies: Company[];
+};
 
-  testCompanies.then((res) => console.log('testCompanies', res));
+export const CompanyList = ({ initialCompanies }: CompanyListProps) => {
+  const { companies = initialCompanies } = useCompanies();
 
   return (
     <>
-      {testCompanies.then((res) => {
-        res?.map((company) => {
-          console.log('company', company);
-        });
-      })}
-      {companies.map((company) => (
+      {companies.map((company: Company) => (
         <div
           key={company.id}
           className="w-full flex justify-between items-center px-6 py-4 bg-main-white"

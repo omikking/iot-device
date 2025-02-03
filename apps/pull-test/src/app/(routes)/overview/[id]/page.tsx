@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 //import { gql, useQuery } from 'urql';
 import { useParams } from 'next/navigation';
-import CompanyNameUrql from '@/components/urql-pulltest/GetCompanyName';
+import { useCompanyDetails } from '@/components/urql-pulltest/GetCompanyDetails';
 
 export default function Page(): JSX.Element {
   const companyParams = useParams();
@@ -18,13 +18,22 @@ export default function Page(): JSX.Element {
   const companyId = Array.isArray(companyParams.id)
     ? companyParams.id[0]
     : companyParams.id;
+
+  const { company, error, isLoading, isNew } = useCompanyDetails(companyId);
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
       {/* Render badge dynamically */}
       <Badge variant="primary" size="large" className="absolute top-24">
-        <CompanyNameUrql companyId={companyId} />
+        {isLoading
+          ? 'Loading...'
+          : error
+            ? 'Error fetching data'
+            : isNew
+              ? 'New Company'
+              : company?.name ?? 'Unknown'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">

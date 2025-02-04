@@ -81,6 +81,14 @@ export type Company = {
 };
 
 /**
+ * CreateAdminPermissionInput
+ * Define the input fields to create a new userPermission
+ */
+export type CreateAdminPermissionInput = {
+  userId: Scalars['String']['input'];
+};
+
+/**
  * CreateBoltResultInput
  * Define the input fields to create a new boltResult
  */
@@ -125,7 +133,7 @@ export type CreateCompanyInput = {
   orgNumber: Scalars['String']['input'];
   plans?: InputMaybe<Array<CreatePlanInput>>;
   postalCode: Scalars['String']['input'];
-  userPermissions: Array<CreateUserPermissionInput>;
+  userPermissions: Array<CreateAdminPermissionInput>;
 };
 
 /**
@@ -183,6 +191,9 @@ export type CreateSiteInput = {
  * Define the input fields to create a new userPermission
  */
 export type CreateUserPermissionInput = {
+  appsAccess: Array<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  role: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
 
@@ -238,7 +249,7 @@ export type Location = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type Mutation = {
   __typename?: 'Mutation';
@@ -249,6 +260,7 @@ export type Mutation = {
   createLevel: Level;
   createLocation: Location;
   createSite: Site;
+  createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
   removeCoffee: Coffee;
   removeCompany: Company;
@@ -256,6 +268,8 @@ export type Mutation = {
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
+  removeUser: User;
+  removeUserPermission: UserPermission;
   updateBoltResult: BoltResult;
   updateCoffee: Coffee;
   updateCompany: Company;
@@ -263,12 +277,14 @@ export type Mutation = {
   updateLevel: Level;
   updateLocation: Location;
   updateSite: Site;
+  updateUser: User;
+  updateUserPermission: UserPermission;
 };
 
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
@@ -277,7 +293,7 @@ export type MutationCreateBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateCoffeeArgs = {
   createCoffeeInput: CreateCoffeeInput;
@@ -286,7 +302,7 @@ export type MutationCreateCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
@@ -295,7 +311,7 @@ export type MutationCreateCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
@@ -304,7 +320,7 @@ export type MutationCreateDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateLevelArgs = {
   createLevelInput: CreateLevelInput;
@@ -313,7 +329,7 @@ export type MutationCreateLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
@@ -322,7 +338,7 @@ export type MutationCreateLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateSiteArgs = {
   createSiteInput: CreateSiteInput;
@@ -331,7 +347,16 @@ export type MutationCreateSiteArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateUserPermissionArgs = {
+  createUserPermissionInput: CreateUserPermissionInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -340,7 +365,7 @@ export type MutationRemoveBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -349,7 +374,7 @@ export type MutationRemoveCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveCompanyArgs = {
   id: Scalars['String']['input'];
@@ -358,7 +383,7 @@ export type MutationRemoveCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveDriveArgs = {
   id: Scalars['String']['input'];
@@ -367,7 +392,7 @@ export type MutationRemoveDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
@@ -376,7 +401,7 @@ export type MutationRemoveLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveLocationArgs = {
   id: Scalars['String']['input'];
@@ -385,7 +410,7 @@ export type MutationRemoveLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveSiteArgs = {
   id: Scalars['String']['input'];
@@ -394,7 +419,25 @@ export type MutationRemoveSiteArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveUserArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -404,7 +447,7 @@ export type MutationUpdateBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -414,7 +457,7 @@ export type MutationUpdateCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateCompanyArgs = {
   id: Scalars['String']['input'];
@@ -424,7 +467,7 @@ export type MutationUpdateCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateDriveArgs = {
   id: Scalars['String']['input'];
@@ -434,7 +477,7 @@ export type MutationUpdateDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateLevelArgs = {
   id: Scalars['String']['input'];
@@ -444,7 +487,7 @@ export type MutationUpdateLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateLocationArgs = {
   id: Scalars['String']['input'];
@@ -454,11 +497,31 @@ export type MutationUpdateLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateSiteArgs = {
   id: Scalars['String']['input'];
   updateSiteInput: UpdateSiteInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateUserArgs = {
+  id: Scalars['String']['input'];
+  updateUserInput: UpdateUserInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateUserPermissionArgs = {
+  id: Scalars['String']['input'];
+  updateUserPermissionInput: UpdateUserPermissionInput;
 };
 
 /**
@@ -478,7 +541,7 @@ export type Plan = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type Query = {
   __typename?: 'Query';
@@ -496,12 +559,16 @@ export type Query = {
   locations: Array<Location>;
   site: Site;
   sites: Array<Site>;
+  user: User;
+  userPermission: UserPermission;
+  userPermissions: Array<UserPermission>;
+  users: Array<User>;
 };
 
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -510,7 +577,7 @@ export type QueryBoltResultArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -519,7 +586,7 @@ export type QueryCoffeeArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryCompanyArgs = {
   id: Scalars['String']['input'];
@@ -528,7 +595,7 @@ export type QueryCompanyArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryDriveArgs = {
   id: Scalars['String']['input'];
@@ -537,7 +604,7 @@ export type QueryDriveArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryLevelArgs = {
   id: Scalars['String']['input'];
@@ -546,7 +613,7 @@ export type QueryLevelArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
@@ -555,10 +622,37 @@ export type QueryLocationArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QuerySiteArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUserArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUsersArgs = {
+  roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 /**
@@ -578,6 +672,15 @@ export type Site = {
   postalCode: Scalars['String']['output'];
   siteName: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+/**
+ * UpdateAdminPermissionInput
+ * Define the input fields to update the sandvik admin to new admin
+ */
+export type UpdateAdminPermissionInput = {
+  newUserId: Scalars['String']['input'];
+  oldUserId: Scalars['String']['input'];
 };
 
 /**
@@ -624,7 +727,7 @@ export type UpdateCompanyInput = {
   orgNumber?: InputMaybe<Scalars['String']['input']>;
   plans?: InputMaybe<Array<UpdatePlanInput>>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
-  userPermissions?: InputMaybe<Array<UpdateUserPermissionInput>>;
+  userPermissions?: InputMaybe<Array<UpdateAdminPermissionInput>>;
 };
 
 /**
@@ -680,12 +783,27 @@ export type UpdateSiteInput = {
 };
 
 /**
+ * UpdateUserInput
+ * Define the input fields to update an existing user
+ * Optional are marked without the exclamation mark
+ */
+export type UpdateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
+  globalRole?: InputMaybe<Scalars['String']['input']>;
+  isGlobalVisibility?: InputMaybe<Scalars['Boolean']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  workPlace?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
  * UpdateUserPermissionInput
- * Define the input fields to update the sandvik admin to new admin
+ * Define the input fields to update an existing userPermission
+ * Optional are marked without the exclamation mark
  */
 export type UpdateUserPermissionInput = {
-  newUserId: Scalars['String']['input'];
-  oldUserId: Scalars['String']['input'];
+  appsAccess?: InputMaybe<Array<Scalars['String']['input']>>;
+  role?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -702,7 +820,7 @@ export type User = {
   isGlobalVisibility?: Maybe<Scalars['Boolean']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
-  userPermission?: Maybe<Array<UserPermission>>;
+  userPermissions?: Maybe<Array<UserPermission>>;
   workPlace: Scalars['String']['output'];
 };
 
@@ -712,13 +830,29 @@ export type User = {
  */
 export type UserPermission = {
   __typename?: 'UserPermission';
-  appsAccess?: Maybe<Array<Scalars['String']['output']>>;
+  appsAccess: Array<Scalars['String']['output']>;
+  companyId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
 };
+
+export type CreateCompanyMutationVariables = Exact<{
+  createCompanyInput: CreateCompanyInput;
+}>;
+
+
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
+
+export type UpdateCompanyMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  updateCompanyInput: UpdateCompanyInput;
+}>;
+
+
+export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
 
 export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
@@ -732,6 +866,28 @@ export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetMeCoffeesQuery = { __typename?: 'Query', coffees: Array<{ __typename?: 'Coffee', id: string, name: string, brand: string }> };
 
+export type GetMeCompanyQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
 
+
+export type GetMeCompanyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, companyId: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
+
+export type GetMeCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMeCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string }> };
+
+export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string }> };
+
+
+export const CreateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCompanyMutation, CreateCompanyMutationVariables>;
+export const UpdateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
 export const CreateCoffeeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCoffee"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCoffeeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCoffee"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCoffeeInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"flavors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCoffeeMutation, CreateCoffeeMutationVariables>;
 export const GetMeCoffeesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCoffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"coffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}}]}}]}}]} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;
+export const GetMeCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetMeCompanyQuery, GetMeCompanyQueryVariables>;
+export const GetMeCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}}]}}]}}]} as unknown as DocumentNode<GetMeCompaniesQuery, GetMeCompaniesQueryVariables>;
+export const GetCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}}]}}]}}]} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;

@@ -24,7 +24,8 @@ export default function Page(): JSX.Element {
           </Headline>
           <LucideBuilding2 />
           <Button variant="primary" size="small" asChild>
-            <Link href="/company?mode=add">
+            {/* <Link href="/company?mode=add"> */}
+            <Link href="/company/new">
               <LucidePlus />
               Add new company
             </Link>

@@ -1,5 +1,3 @@
-import { UseFormReturn } from 'react-hook-form';
-import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   ContentHolder,
   FormControl,
@@ -9,17 +7,19 @@ import {
   FormMessage,
   Input,
 } from '@gsp/ui';
+import { UseFormReturn } from 'react-hook-form';
+import { UpdateCompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 
 export const CompanyDetailsForm = ({
   companyForm,
 }: {
-  companyForm: UseFormReturn<CompanyFormValues>;
+  companyForm: UseFormReturn<UpdateCompanyFormValues>;
 }) => {
   return (
     <ContentHolder variant="general" headlineText="Company details">
       <FormField
         control={companyForm.control}
-        name="companyName"
+        name="name"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
@@ -38,7 +38,7 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="fullContactName"
+        name="companyContactEmail"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
@@ -57,7 +57,7 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="organisationNumber"
+        name="orgNumber"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
@@ -122,6 +122,25 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   placeholder="Enter address..."
+                  {...field}
+                  className="w-full"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+      <FormField
+        control={companyForm.control}
+        name="postalCode"
+        render={({ field }) => {
+          return (
+            <FormItem className="min-w-[31%]">
+              <FormLabel>Postal code</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter postal code..."
                   {...field}
                   className="w-full"
                 />

@@ -6,14 +6,18 @@ import {
   FormLabel,
   Switch,
 } from '@gsp/ui';
+import { UseFormReturn } from 'react-hook-form';
 import { LucideCircleCheckBig } from 'lucide-react';
+import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
 
 interface AppPlanProps {
-  plan: 'Gold' | 'Silver' | 'Bronze';
-  activePlan?: 'Gold' | 'Silver' | 'Bronze';
+  plan: 'GOLD' | 'SILVER' | 'BRONZE';
+  activePlan?: 'GOLD' | 'SILVER' | 'BRONZE';
   isAdmin: boolean;
   formField: string;
-  onPlanChange: (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => void;
+  companyForm: UseFormReturn<UpdateCompanyFormValues>;
+  applicationName: string;
+  onPlanChange: (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => void;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
@@ -21,61 +25,64 @@ export const AppPlan = ({
   plan,
   activePlan,
   isAdmin,
-  formField,
+  companyForm,
   onPlanChange,
 }: AppPlanProps) => {
   const user = isAdmin ? 'Superadmin' : 'Client';
   const isActive = plan === activePlan;
 
+  const toTitleCase = (str: string) => {
+    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  };
+
   return (
     <div
-      className={`flex justify-between items-center border border-gray-200 py-3 px-6 ${
+      // @TODO Border is a bit off in the y-axis
+      className={`flex justify-between items-center border-y border-gray-200 py-3 px-6 ${
         isActive ? 'bg-gray-100' : ''
       }`}
     >
-      {user === 'Superadmin' && (
+      {user === 'Superadmin' ? (
         <FormField
-          name={formField}
-          render={({ field }) => (
+          control={companyForm.control}
+          name="plans"
+          render={() => (
             <FormItem className="flex w-full justify-between items-center">
               <FormLabel
                 className="flex items-center"
                 variant="medium"
                 color="foreground"
               >
-                {plan}
+                {toTitleCase(plan)}
               </FormLabel>
               <FormControl>
                 <Switch
                   checked={activePlan === plan}
                   onCheckedChange={(checked) => {
-                    const newPlan = checked ? plan : undefined;
-                    field.onChange(checked ? plan : undefined);
-                    onPlanChange(newPlan);
+                    onPlanChange(checked ? plan : undefined);
                   }}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-      )}
-
-      {user === 'Client' && (
+      ) : (
         <div className="flex w-full justify-between items-center">
           <FormLabel
-            className={`text-lg font-semibold ${isActive ? 'text-orange-600' : 'text-gray-800'}`}
+            className="flex items-center"
+            variant="medium"
+            color="foreground"
           >
-            {plan}
+            {toTitleCase(plan)}
           </FormLabel>
-
-      {isActive && (
-        <Badge variant="attention" className="flex items-center">
-          <LucideCircleCheckBig size="16" className="mr-1" />
-          Your selected plan
-        </Badge>
+          {isActive && (
+            <Badge variant="attention">
+              <LucideCircleCheckBig />
+              Your selected plan
+            </Badge>
+          )}
+        </div>
       )}
-      </div>
-    )}
     </div>
   );
 };

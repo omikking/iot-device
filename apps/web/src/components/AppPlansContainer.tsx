@@ -3,47 +3,110 @@ import {
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { useMemo } from 'react';
 import { AppPlan } from '@/components/AppPlan';
-import { useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
-    case 'Pull-test':
+    case 'PULL_TEST':
       return 'pullTestPlan';
-    case 'xCyclops':
+    case 'XCYCLOPS':
       return 'xCyclopsPlan';
-    case 'Ultrabots':
-      return 'ultrabotsPlan';
+    case 'ULTRABOLTS':
+      return 'ultraboltsPlan';
     default:
-      return '';
+      return undefined;
   }
 };
+
+type PlanLevel = 'GOLD' | 'SILVER' | 'BRONZE';
 
 interface AppPlansContainerProps {
   appPlan: {
     id: string;
-    name: string;
-    activePlan?: 'Gold' | 'Silver' | 'Bronze';
+    applicationName: string;
+    planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   };
   isAdmin: boolean;
+  companyForm: UseFormReturn<UpdateCompanyFormValues>;
 }
 
-// @TODO: Remove temporary isAdmin prop
+const isValidPlanLevel = (plan: string | undefined): plan is PlanLevel => {
+  return plan === 'GOLD' || plan === 'SILVER' || plan === 'BRONZE';
+};
+
 export const AppPlansContainer = ({
   appPlan,
   isAdmin,
+  companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { name, activePlan : initialActivePlan} = appPlan;
-  const [activePlan, setActivePlan] = useState<'Gold' | 'Silver' | 'Bronze' | undefined>(initialActivePlan);
-  const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(name) || '';
+  const { applicationName } = appPlan;
+  // const [activePlan, setActivePlan] = useState<
+  //   'GOLD' | 'SILVER' | 'BRONZE' | undefined
+  // >(initialActivePlan);
 
-  const handlePlanChange = (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => {
-    setActivePlan(plan);
+  const user = isAdmin ? 'Superadmin' : 'Client';
+  const formField = getFormFieldName(applicationName) || '';
+
+  // used memo to avoid re-rendering, and update the plan level based on the form values
+  const activePlan = useMemo(() => {
+    const currentPlans = companyForm.getValues('plans') || [];
+    const currentPlan = currentPlans.find(
+      (p) => p.applicationName === applicationName,
+    );
+    return isValidPlanLevel(currentPlan?.planLevel)
+      ? currentPlan.planLevel
+      : undefined;
+  }, [companyForm.getValues('plans'), applicationName]);
+
+  // export to a utility file?
+  const toTitleCase = (str: string) => {
+    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
   };
 
+  const handlePlanChange = (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => {
+    const currentPlans = companyForm.getValues('plans') || [];
+    // Update plans array based on the change
+    let updatedPlans;
+    if (plan === undefined) {
+      // Remove this application's plan
+      updatedPlans = currentPlans.filter(
+        (p) => p.applicationName !== applicationName,
+      );
+    } else {
+      const existingPlanIndex = currentPlans.findIndex(
+        (p) => p.applicationName === applicationName,
+      );
+
+      if (existingPlanIndex >= 0) {
+        // Update existing plan
+        updatedPlans = currentPlans.map((p, index) =>
+          index === existingPlanIndex ? { ...p, planLevel: plan } : p,
+        );
+      } else {
+        // Add new plan
+        updatedPlans = [
+          ...currentPlans,
+          {
+            id: '',
+            applicationName,
+            planLevel: plan,
+          },
+        ];
+      }
+    }
+
+    // Update form with new plans array
+    companyForm.setValue('plans', updatedPlans, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
 
   return (
     <div
@@ -52,7 +115,7 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {name}
+          {toTitleCase(applicationName.replace('_', ' '))}
         </Headline>
 
         {user === 'Superadmin' && activePlan && (
@@ -70,38 +133,32 @@ export const AppPlansContainer = ({
         )}
       </div>
 
-      {/* Selected Plan Label for Client */}
-      {user === 'Client' && (
-        <div className="px-6 py-3">
-          <Badge
-            variant={activePlan ? "success" : "neutral"}
-          >
-            {activePlan ? `Your selected plan: ${activePlan}` : "No plan selected"}
-          </Badge>
-        </div>
-      )}
-
-
       {/* Plans */}
       <AppPlan
-        plan="Gold"
+        plan="GOLD"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
       <AppPlan
-        plan="Silver"
+        plan="SILVER"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
       <AppPlan
-        plan="Bronze"
+        plan="BRONZE"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        companyForm={companyForm}
+        applicationName={applicationName}
         onPlanChange={handlePlanChange}
       />
 
@@ -118,8 +175,6 @@ export const AppPlansContainer = ({
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              {/* @TODO Do we want to have it as disabled or invisible when plan is not selected? */}
-              {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
               <SingleDateCalendar className="mt-2" />
             </>
           )}

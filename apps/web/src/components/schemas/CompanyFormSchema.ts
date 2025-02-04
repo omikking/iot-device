@@ -1,21 +1,48 @@
 import { z } from 'zod';
 
-export const companyFormSchema = z.object({
-  companyName: z.string(),
-  fullContactName: z.string(),
-  organisationNumber: z
-    .string()
-    .min(10, { message: 'Must be 10 numbers.' })
-    .max(10, { message: 'Must be 10 numbers.' }),
-  country: z.string(),
-  city: z.string(),
-  address: z.string(),
-
-  pullTestPlan: z.string(),
-  xCyclopsPlan: z.string(),
-  ultraboltsPlan: z.string(),
-
-  assignSandvikAdministrator: z.string(),
+export const updateCompanyFormSchema = z.object({
+  name: z.string().min(3),
+  orgNumber: z.string().min(3),
+  address: z.string().min(3),
+  postalCode: z.string().min(3),
+  city: z.string().min(3),
+  country: z.string().min(3),
+  companyContactEmail: z.string().min(3),
+  plans: z
+    .array(
+      z.object({
+        id: z.string(),
+        applicationName: z.string(),
+        planLevel: z.string().optional(),
+        // expiringDate: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
-export type CompanyFormValues = z.infer<typeof companyFormSchema>;
+export const createCompanyFormSchema = z.object({
+  name: z.string().min(3),
+  orgNumber: z.string().min(3),
+  address: z.string().min(3),
+  postalCode: z.string().min(3),
+  city: z.string().min(3),
+  country: z.string().min(3),
+  companyContactEmail: z.string().min(3),
+  plans: z
+    .array(
+      z.object({
+        applicationName: z.string(),
+        planLevel: z.string(),
+        expiringDate: z.string().optional(),
+      }),
+    )
+    .optional(),
+  userPermissions: z.array(
+    z.object({
+      userId: z.string(),
+    }),
+  ),
+});
+
+export type UpdateCompanyFormValues = z.infer<typeof updateCompanyFormSchema>;
+export type CreateCompanyFormValues = z.infer<typeof createCompanyFormSchema>;

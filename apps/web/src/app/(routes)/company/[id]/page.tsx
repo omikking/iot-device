@@ -163,7 +163,8 @@ export default function Page({
           </Headline>
           <LucideUsers />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/users">
+            {/* <Link href="/users"> */}
+            <Link href={`/users/${company?.id}`}>
               <LucideMoveRight />
               View users
             </Link>

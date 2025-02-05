@@ -205,7 +205,7 @@ export interface UserSchema {
     id: string;
     userId: string;
     role: 'User' | 'Technician' | 'Admin';
-    appAccess: string[];
+    appsAccess: string[];
   };
 }
 
@@ -221,7 +221,7 @@ export const usersMock: UserSchema[] = [
       id: '10',
       userId: '1',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS'],
+      appsAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },
@@ -235,7 +235,7 @@ export const usersMock: UserSchema[] = [
       id: '11',
       userId: '2',
       role: 'Technician',
-      appAccess: ['ULTRABOLTS', 'XCYCLOPS'],
+      appsAccess: ['ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },
@@ -250,7 +250,7 @@ export const usersMock: UserSchema[] = [
       id: '12',
       userId: '3',
       role: 'User',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR'],
+      appsAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR'],
     },
     phoneNumber: '+4683729327',
   },
@@ -264,7 +264,7 @@ export const usersMock: UserSchema[] = [
       id: '100',
       userId: '4',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+      appsAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
     },
     phoneNumber: '+4683729327',
   },

@@ -6,18 +6,40 @@ import { UserSchema, usersMock } from '@/app/mock/mock';
 import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { useUsers } from '@/components/urql-users/UsersClientUrql';
 
-interface UsersTableProps {
+type UsersTableProps = {
   onOpenChange: (open: boolean) => void;
   onSelectUser: (user: UserSchema) => void;
-}
+};
+
+// type IUser = {
+//   id: string;
+//   email: string;
+//   fullName: string;
+//   workPlace: string;
+//   phoneNumber: string;
+//   globalRole: boolean;
+//   isGlobalVisibility: boolean;
+//   userPermissions: {
+//     id: string;
+//     userId: string;
+//     role: 'User' | 'Technician' | 'Admin';
+//     appsAccess: string[];
+//   };
+// };
 
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
-  const [users, setUsers] = useState(usersMock);
+  // const [users, setUsers] = useState(usersMock);
+  const { users } = useUsers();
+  const [, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
     undefined,
   );
+
+  // console.log('Users: ', users);
+  // console.log('Test Users: ', usersTest);
 
   const appAccessShortNames: Record<string, string> = {
     PULL_TEST: 'PT',
@@ -56,8 +78,8 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   };
 
   const openEditModal = (index: number) => {
-    const userToEdit = users[index];
-    onSelectUser(userToEdit);
+    // const userToEdit = users[index];
+    // onSelectUser(userToEdit as IUser);
     onOpenChange(true);
   };
 
@@ -73,7 +95,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     {
       id: 'appAccess',
       header: 'App access',
-      accessorFn: (row) => row.userPermissions.appAccess,
+      accessorFn: (row) => row.userPermissions.appsAccess,
       cell: ({ row }) => {
         const appAccessValue = row.getValue('appAccess') as string[];
 

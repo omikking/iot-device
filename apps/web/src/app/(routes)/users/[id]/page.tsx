@@ -6,8 +6,10 @@ import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
+import { useUsers } from '@/components/urql-users/UsersClientUrql';
 
 export default function Page(): JSX.Element {
+  const { users } = useUsers();
   // @TODO Only superadmin should be able to see this page
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
@@ -20,6 +22,8 @@ export default function Page(): JSX.Element {
       setSelectedUser(undefined);
     }
   };
+
+  console.log('Users: ', users);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

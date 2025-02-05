@@ -16,6 +16,8 @@ import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
 import { SiteResultSchema } from '@/app/mock/mock';
+import { useParams } from 'next/navigation';
+import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 
 export default function Page(): JSX.Element {
   const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
@@ -33,11 +35,17 @@ export default function Page(): JSX.Element {
     }
   };
 
+  const params = useParams();
+  
+    const companyId = Array.isArray(params.id)
+      ? params.id[0]
+      : params.id;
+
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
       <GoBack />
       <Badge variant="primary" size="large" className="absolute top-24">
-        Sites
+        <CompanyNameUrql companyId={companyId} />
       </Badge>
       <Headline as="h1" variant="xl" color="foreground">
         Sites

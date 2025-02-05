@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
+import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';

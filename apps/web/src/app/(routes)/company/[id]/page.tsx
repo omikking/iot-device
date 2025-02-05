@@ -163,7 +163,7 @@ export default function Page({
           </Headline>
           <LucideUsers />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/users">
+            <Link href={`/users/${params.id}`}>
               <LucideMoveRight />
               View users
             </Link>
@@ -176,7 +176,7 @@ export default function Page({
           </Headline>
           <LucideMountain />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/sites">
+            <Link href={`/sites/${params.id}`}>
               <LucideMoveRight />
               View sites
             </Link>
@@ -189,7 +189,7 @@ export default function Page({
           </Headline>
           <LucidePyramid />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/sitelocations">
+            <Link href={`/sitelocations/${params.id}`}>
               <LucideMoveRight />
               View site locations
             </Link>

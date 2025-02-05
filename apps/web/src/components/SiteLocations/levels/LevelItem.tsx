@@ -2,7 +2,7 @@ import {
   IDriveMock,
   ILevelMock,
   ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
+} from '@/app/(routes)/sitelocations/[id]/page';
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';

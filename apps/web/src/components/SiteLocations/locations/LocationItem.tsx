@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { ILocationMock } from '@/app/(routes)/sitelocations/page';
+import { ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 

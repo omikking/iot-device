@@ -28,3 +28,4 @@ export function CompanyNameUrql({ companyId }: { companyId: string }) {
 }
 
 export default CompanyNameUrql;
+

@@ -25,7 +25,7 @@ export const CompanyList = () => {
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href="/selectapplication">
+              <Link href={`/selectapplication/${company.id}`}>
                 <LucideLayoutGrid />
                 View Apps
               </Link>

@@ -13,33 +13,38 @@ type UsersTableProps = {
   onSelectUser: (user: UserSchema) => void;
 };
 
-// type IUser = {
-//   id: string;
-//   email: string;
-//   fullName: string;
-//   workPlace: string;
-//   phoneNumber: string;
-//   globalRole: boolean;
-//   isGlobalVisibility: boolean;
-//   userPermissions: {
-//     id: string;
-//     userId: string;
-//     role: 'User' | 'Technician' | 'Admin';
-//     appsAccess: string[];
-//   };
-// };
+type IUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: boolean;
+  isGlobalVisibility: boolean;
+  userPermissions: UserPermission | UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
 
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   // const [users, setUsers] = useState(usersMock);
   const { users } = useUsers();
-  const [, setUsers] = useState(usersMock);
+  const [testFoo, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
     undefined,
   );
 
-  // console.log('Users: ', users);
-  // console.log('Test Users: ', usersTest);
+  // console.log('userPerm:', users);
+  users.map((user) => {
+    console.log('user.permissions:', user.userPermissions.id);
+  });
+  // console.log('testFoo:', testFoo);
 
   const appAccessShortNames: Record<string, string> = {
     PULL_TEST: 'PT',
@@ -47,8 +52,22 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     XCYCLOPS: 'xLops',
     PULL_TEST_OPERATOR: 'PT-O',
   };
+
+  // check if userPermissions is an array otherwise return a single object
+  const getUserPermissions = (
+    permissions: UserPermission | UserPermission[],
+  ): UserPermission => {
+    console.log('permissions:', permissions);
+    if (Array.isArray(permissions)) {
+      return (
+        permissions[0] || { id: '', userId: '', role: 'User', appsAccess: [] }
+      );
+    }
+    return permissions;
+  };
+
   const getBadge = (
-    role: UserSchema['userPermissions']['role'],
+    role: UserPermission['role'],
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -59,6 +78,8 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       case 'Technician':
         return { variant: 'neutral', icon: <LucidePickaxe /> };
       case 'Admin':
+        return { variant: 'primary', icon: <LucideKey /> };
+      case 'SANDVIK_ADMIN':
         return { variant: 'primary', icon: <LucideKey /> };
     }
   };
@@ -78,12 +99,12 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   };
 
   const openEditModal = (index: number) => {
-    // const userToEdit = users[index];
-    // onSelectUser(userToEdit as IUser);
+    const userToEdit = users[index];
+    onSelectUser(userToEdit);
     onOpenChange(true);
   };
 
-  const columns: ColumnDef<UserSchema>[] = [
+  const columns: ColumnDef<IUser>[] = [
     {
       accessorKey: 'fullName',
       header: 'Full name',
@@ -93,11 +114,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       header: 'Email',
     },
     {
-      id: 'appAccess',
+      id: 'appsAccess',
       header: 'App access',
-      accessorFn: (row) => row.userPermissions.appsAccess,
+      // accessorFn: (row) => row.userPermissions.appsAccess,
+      accessorFn: (row) => row.userPermissions,
       cell: ({ row }) => {
-        const appAccessValue = row.getValue('appAccess') as string[];
+        const userPerm = getUserPermissions(row.original.userPermissions);
+        const appAccessValue = userPerm?.appsAccess || [];
+        // const appAccessValue = (row.getValue('appsAccess') as string[]) || [];
 
         if (appAccessValue.length === 1) {
           return appAccessValue[0]; // Show full name
@@ -119,13 +143,18 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       accessorKey: 'userPermissions.role',
       header: 'Role',
       cell: ({ row }) => {
-        const role = row.original.userPermissions.role;
-        const { variant, icon } = getBadge(role);
+        const userPermissionRole = getUserPermissions(
+          row.original.userPermissions,
+        ).role;
+        // const role = testing.role;
+        // const role = row.original.userPermissions || 'User'; // We only have sandvik_admin atm
+        // console.log('role:', testing.role);
+        const { variant, icon } = getBadge(userPermissionRole);
 
         return (
           <Badge variant={variant}>
             {icon}
-            {role}
+            {userPermissionRole}
           </Badge>
         );
       },

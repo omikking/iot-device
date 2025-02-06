@@ -145,7 +145,7 @@ export const AddOrEditUserModal = ({
         userPermissions: {
           ...user.userPermissions,
           role: userRole,
-          appAccess: user.userPermissions.appAccess.map(
+          appsAccess: user.userPermissions.appsAccess.map(
             (access) => access as AppPermission,
           ),
         },

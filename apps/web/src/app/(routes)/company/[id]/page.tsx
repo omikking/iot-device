@@ -139,7 +139,6 @@ export default function Page({
   if (isNew) {
     return <CompanyCreate isAdmin={isAdmin} mode="new" />;
   }
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
@@ -168,52 +167,48 @@ export default function Page({
         {isNew ? 'Add Company' : company?.name}
       </Headline>
 
-      {isEditing && (
-        <>
-          <div className="flex gap-8">
-            <NavigationCard>
-              <Headline as="h3" variant="medium" color="foreground">
-                Users
-              </Headline>
-              <LucideUsers />
-              <Button variant="secondary" size="small" asChild>
-                <Link href="/users">
-                  <LucideMoveRight />
-                  View users
-                </Link>
-              </Button>
-            </NavigationCard>
+      <div className="flex gap-8">
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Users
+          </Headline>
+          <LucideUsers />
+          <Button variant="secondary" size="small" asChild>
+            <Link href={`/users/${params.id}`}>
+              <LucideMoveRight />
+              View users
+            </Link>
+          </Button>
+        </NavigationCard>
 
-            <NavigationCard>
-              <Headline as="h3" variant="medium" color="foreground">
-                Sites
-              </Headline>
-              <LucideMountain />
-              <Button variant="secondary" size="small" asChild>
-                <Link href="/sites">
-                  <LucideMoveRight />
-                  View sites
-                </Link>
-              </Button>
-            </NavigationCard>
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Sites
+          </Headline>
+          <LucideMountain />
+          <Button variant="secondary" size="small" asChild>
+            <Link href={`/sites/${params.id}`}>
+              <LucideMoveRight />
+              View sites
+            </Link>
+          </Button>
+        </NavigationCard>
 
-            <NavigationCard>
-              <Headline as="h3" variant="medium" color="foreground">
-                Site locations
-              </Headline>
-              <LucidePyramid />
-              <Button variant="secondary" size="small" asChild>
-                <Link href="/sitelocations">
-                  <LucideMoveRight />
-                  View site locations
-                </Link>
-              </Button>
-            </NavigationCard>
-          </div>
+        <NavigationCard>
+          <Headline as="h3" variant="medium" color="foreground">
+            Site locations
+          </Headline>
+          <LucidePyramid />
+          <Button variant="secondary" size="small" asChild>
+            <Link href={`/sitelocations/${params.id}`}>
+              <LucideMoveRight />
+              View site locations
+            </Link>
+          </Button>
+        </NavigationCard>
+      </div>
 
-          <hr className="w-full border-neutral-2" />
-        </>
-      )}
+      <hr className="w-full border-neutral-2" />
 
       <Form {...companyForm}>
         <form
@@ -284,7 +279,7 @@ export default function Page({
             </div>
 
             {/* Admin assignment */}
-            <ContentHolder
+            {/* <ContentHolder
               variant="general"
               headlineText={
                 user === 'Superadmin'
@@ -292,12 +287,12 @@ export default function Page({
                   : 'Sandvik associate contact details'
               }
             >
-              {/* {user === 'Superadmin' && <AdminForm companyForm={companyForm} />} */}
+              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
 
-              {/* {user === 'Client' && (
+              {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
-              )} */}
-            </ContentHolder>
+              )}
+            </ContentHolder> */}
           </div>
           <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
             <Button variant="primary" size="large" type="submit">

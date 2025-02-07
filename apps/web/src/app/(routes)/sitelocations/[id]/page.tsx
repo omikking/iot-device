@@ -18,7 +18,8 @@ import { LucideMoveLeft } from 'lucide-react';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 
 export interface ISiteMock {
   id: string;
@@ -44,6 +45,12 @@ export interface ILocationMock {
 }
 
 export default function Page(): JSX.Element {
+  const params = useParams();
+
+  const companyId = Array.isArray(params.id)
+    ? params.id[0]
+    : params.id;
+
   const searchParams = useSearchParams();
   const siteTableValue = searchParams.get('data');
   const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
@@ -122,7 +129,7 @@ export default function Page(): JSX.Element {
         </Link>
       </Text>
       <Badge variant="primary" size="large" className="absolute top-24">
-        {selectedSiteName || 'Select site'}
+        <CompanyNameUrql companyId={companyId} />
       </Badge>
       <Headline as="h1" variant="xl" color="foreground">
         Site locations

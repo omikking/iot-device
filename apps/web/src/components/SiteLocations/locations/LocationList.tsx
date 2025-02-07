@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
+import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
 
 interface LocationsListComponentProps {

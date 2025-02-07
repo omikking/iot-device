@@ -2,7 +2,7 @@
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { UserSchema, usersMock } from '@/app/mock/mock';
+import { UserSchema } from '@/app/mock/mock';
 import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
@@ -21,7 +21,7 @@ type IUser = {
   phoneNumber: string;
   globalRole: boolean;
   isGlobalVisibility: boolean;
-  userPermissions: UserPermission | UserPermission[];
+  userPermissions: UserPermission[];
 };
 
 type UserPermission = {
@@ -32,19 +32,11 @@ type UserPermission = {
 };
 
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
-  // const [users, setUsers] = useState(usersMock);
   const { users } = useUsers();
-  const [testFoo, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
     undefined,
   );
-
-  // console.log('userPerm:', users);
-  users.map((user) => {
-    console.log('user.permissions:', user.userPermissions.id);
-  });
-  // console.log('testFoo:', testFoo);
 
   const appAccessShortNames: Record<string, string> = {
     PULL_TEST: 'PT',
@@ -53,17 +45,18 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     PULL_TEST_OPERATOR: 'PT-O',
   };
 
-  // check if userPermissions is an array otherwise return a single object
+  // Check if userPermissions is an array otherwise return a single object
   const getUserPermissions = (
-    permissions: UserPermission | UserPermission[],
+    permissions: UserPermission[],
   ): UserPermission => {
-    console.log('permissions:', permissions);
-    if (Array.isArray(permissions)) {
-      return (
-        permissions[0] || { id: '', userId: '', role: 'User', appsAccess: [] }
-      );
-    }
-    return permissions;
+    const defaultPermission: UserPermission = {
+      id: '',
+      userId: '',
+      role: 'User',
+      appsAccess: [],
+    };
+
+    return permissions[0] || defaultPermission;
   };
 
   const getBadge = (
@@ -89,14 +82,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setIsDeleteUserModalOpen(true);
   };
 
-  const closeDeleteModal = () => {
-    setIsDeleteUserModalOpen(false);
-    setUserToDelete(undefined);
-  };
+  // const closeDeleteModal = () => {
+  //   setIsDeleteUserModalOpen(false);
+  //   setUserToDelete(undefined);
+  // };
 
-  const handleDelete = (index: number) => {
-    setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
-  };
+  // const handleDelete = (index: number) => {
+  //   setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+  // };
 
   const openEditModal = (index: number) => {
     const userToEdit = users[index];
@@ -146,9 +139,6 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         const userPermissionRole = getUserPermissions(
           row.original.userPermissions,
         ).role;
-        // const role = testing.role;
-        // const role = row.original.userPermissions || 'User'; // We only have sandvik_admin atm
-        // console.log('role:', testing.role);
         const { variant, icon } = getBadge(userPermissionRole);
 
         return (
@@ -184,7 +174,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
 
   return (
     <>
-      <DeleteModalConfirmation
+      {/* <DeleteModalConfirmation
         deleteButtonText="Confirm deletion"
         deleteIcon="User"
         modalTitle="Delete user"
@@ -203,7 +193,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
           </Text>
           from the list. Are you sure you want to delete?
         </Text>
-      </DeleteModalConfirmation>
+      </DeleteModalConfirmation> */}
 
       <DataTable
         columns={columns}

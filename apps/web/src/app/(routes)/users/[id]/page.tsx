@@ -1,16 +1,33 @@
 'use client';
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
-import { UserSchema } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 
+type IUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: boolean;
+  isGlobalVisibility: boolean;
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
+
 export default function Page(): JSX.Element {
   // @TODO Only superadmin should be able to see this page
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
+  const [selectedUser, setSelectedUser] = useState<IUser | undefined>(
     undefined,
   );
 
@@ -25,6 +42,7 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
+      {/* Get company name, replace with Shreyas query */}
       <Badge variant="primary" size="large" className="absolute top-24">
         Ecorp AB
       </Badge>

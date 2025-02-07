@@ -2,16 +2,16 @@ import { z } from 'zod';
 
 export type UserFormValues = {
   // id: string;
-  // fullName: string;
   email: string;
-  // phoneNumber?: string;
+  // fullName: string;
   // workPlace?: string;
+  // phoneNumber?: string;
   // globalRole?: boolean;
   // isGlobalVisibility?: boolean;
   userPermissions: {
     userId: string;
-    role: 'User' | 'Technician' | 'Admin';
-    appAccess: (
+    role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+    appsAccess: (
       | 'PULL_TEST'
       | 'PULL_TEST_OPERATOR'
       | 'ULTRABOLTS'
@@ -36,8 +36,8 @@ export const userFormSchema = z.object({
   // isGlobalVisibility: z.boolean().optional(),
   userPermissions: z.object({
     userId: z.string(),
-    role: z.enum(['User', 'Technician', 'Admin']),
-    appAccess: z.array(
+    role: z.enum(['User', 'Technician', 'Admin', 'SANDVIK_ADMIN']),
+    appsAccess: z.array(
       z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
     ),
   }),

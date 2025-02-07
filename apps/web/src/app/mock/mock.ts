@@ -690,6 +690,11 @@ export const roles: DropdownItem[] = [
     name: 'Admin',
     background: 'primary',
   },
+  {
+    id: '4',
+    name: 'SANDVIK_ADMIN',
+    background: 'primary',
+  },
 ];
 
 export const technicians = [

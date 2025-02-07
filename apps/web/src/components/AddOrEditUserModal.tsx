@@ -21,13 +21,13 @@ import { useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import { technicians, roles, UserSchema } from '@/app/mock/mock';
+import { technicians, roles } from '@/app/mock/mock';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
 import { SuccessMessage } from './SuccessMessage';
-
+import { UsersUpdateUrql } from './urql-users/UsersUpdateUrql';
 interface AddOrEditUserModalProps {
   onOpenChange: (open: boolean) => void;
-  user?: UserSchema;
+  user?: IUser;
 }
 
 type AppPermission =
@@ -36,27 +36,58 @@ type AppPermission =
   | 'ULTRABOLTS'
   | 'XCYCLOPS';
 
+type IUser = {
+  id: string;
+  email: string;
+  // fullName: string;
+  // workPlace: string;
+  // phoneNumber: string;
+  // globalRole: boolean;
+  // isGlobalVisibility: boolean;
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
+
+const getUserPermissions = (permissions: UserPermission[]): UserPermission => {
+  const defaultPermission: UserPermission = {
+    id: '',
+    userId: '',
+    role: 'User',
+    appsAccess: [],
+  };
+
+  return permissions[0] || defaultPermission;
+};
+
 export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
+  console.log('user: ', user);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [role, setRole] = useState<'User' | 'Technician' | 'Admin'>(
-    user?.userPermissions?.role || 'User',
-  );
+  const [role, setRole] = useState<
+    'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN'
+    // >(user?.userPermissions?.role || 'User');
+  >(getUserPermissions(user?.userPermissions || []).role || 'User');
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
+  const { updateUser } = UsersUpdateUrql();
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      // id: '',
       email: user?.email || '',
       userPermissions: {
         userId: '',
-        role: user?.userPermissions?.role || 'User',
-        appAccess: [],
+        role: getUserPermissions(user?.userPermissions || []).role || 'User',
+        appsAccess: [],
       },
     },
   });
@@ -71,7 +102,7 @@ export const AddOrEditUserModal = ({
       userPermissions: {
         userId: '',
         role: 'User',
-        appAccess: [],
+        appsAccess: [],
       },
     });
   };
@@ -88,38 +119,45 @@ export const AddOrEditUserModal = ({
   };
 
   const onSubmit = async (data: UserFormValues) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Simulate API call
-    console.log('User added', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
+    console.log('userUpdateData: ', updateUser);
+    if (user) {
+      await updateUser(user.id, {
+        email: data.email,
+      });
+    } else {
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Simulate API call
+      // console.log('User added', data);
+      setIsSuccessful(true);
+      setIsLoading(false);
 
-    setTimeout(() => {
-      onOpenChange(false);
-    }, 1500);
-    setTimeout(() => {
-      setIsSuccessful(false);
-      resetFormValues();
-    }, 1700);
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 1500);
+      setTimeout(() => {
+        setIsSuccessful(false);
+        resetFormValues();
+      }, 1700);
+    }
   };
 
   const handleGlobalAccess = (checked: boolean) => {
     setGlobalAccess(checked);
     if (checked) {
-      form.setValue('userPermissions.appAccess', [
+      form.setValue('userPermissions.appsAccess', [
         'PULL_TEST',
         'PULL_TEST_OPERATOR',
         'XCYCLOPS',
         'ULTRABOLTS',
       ] as ('PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS')[]);
     } else {
-      form.setValue('userPermissions.appAccess', []);
+      form.setValue('userPermissions.appsAccess', []);
     }
   };
 
   useEffect(() => {
-    const appAccess = form.watch('userPermissions.appAccess');
+    const appAccess = form.watch('userPermissions.appsAccess');
     const allAppsSelected = [
       'PULL_TEST',
       'PULL_TEST_OPERATOR',
@@ -127,12 +165,14 @@ export const AddOrEditUserModal = ({
       'XCYCLOPS',
     ].every((app) => appAccess?.includes(app as AppPermission));
     setGlobalAccess(allAppsSelected);
-  }, [form.watch('userPermissions.appAccess')]);
+  }, [form.watch('userPermissions.appsAccess')]);
 
+  // Steps in if user exists
   useEffect(() => {
     if (user) {
-      const userRole = user.userPermissions?.role || 'User';
-      setRole(userRole as 'User' | 'Technician' | 'Admin');
+      const userRole = getUserPermissions(user?.userPermissions).role || 'User';
+      // setRole(userRole as 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN');
+      setRole(userRole);
 
       if (userRole === 'Technician') {
         const techId = getTechnicianIdByEmail(user.email);
@@ -144,8 +184,10 @@ export const AddOrEditUserModal = ({
         ...user,
         userPermissions: {
           ...user.userPermissions,
+          userId: '',
           role: userRole,
-          appsAccess: user.userPermissions.appsAccess.map(
+
+          appsAccess: getUserPermissions(user.userPermissions).appsAccess.map(
             (access) => access as AppPermission,
           ),
         },
@@ -165,6 +207,13 @@ export const AddOrEditUserModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
+            {/* <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log('form.handleSubmit', form.getValues());
+              console.log('Gehss', user);
+            }}
+          > */}
             <div className="flex px-10 gap-10">
               <div className="flex flex-col gap-8">
                 <FormField
@@ -187,7 +236,8 @@ export const AddOrEditUserModal = ({
                               const selectedRole = e as
                                 | 'User'
                                 | 'Technician'
-                                | 'Admin';
+                                | 'Admin'
+                                | 'SANDVIK_ADMIN';
                               setRole(selectedRole);
                               field.onChange(selectedRole);
                               if (selectedRole !== 'Technician') {
@@ -222,7 +272,7 @@ export const AddOrEditUserModal = ({
                     }}
                   />
                 )}
-                {role === 'Technician' && (
+                {(role === 'Technician' || role === 'SANDVIK_ADMIN') && (
                   <FormField
                     control={form.control}
                     name="email"
@@ -283,7 +333,7 @@ export const AddOrEditUserModal = ({
 
                   <FormField
                     control={form.control}
-                    name="userPermissions.appAccess"
+                    name="userPermissions.appsAccess"
                     render={({ field }) => {
                       const handleAppAccess = (checked: boolean) => {
                         const apps = field.value || [];
@@ -324,7 +374,7 @@ export const AddOrEditUserModal = ({
                   </Text>
                   <FormField
                     control={form.control}
-                    name="userPermissions.appAccess"
+                    name="userPermissions.appsAccess"
                     render={({ field }) => {
                       const handleAppAccess = (checked: boolean) => {
                         const apps = field.value || [];
@@ -372,7 +422,7 @@ export const AddOrEditUserModal = ({
                   </Text>
                   <FormField
                     control={form.control}
-                    name="userPermissions.appAccess"
+                    name="userPermissions.appsAccess"
                     render={({ field }) => {
                       const handleAppAccess = (checked: boolean) => {
                         const apps = field.value || ([] as AppPermission[]);
@@ -413,7 +463,7 @@ export const AddOrEditUserModal = ({
                   </Text>
                   <FormField
                     control={form.control}
-                    name="userPermissions.appAccess"
+                    name="userPermissions.appsAccess"
                     render={({ field }) => {
                       const handleAppAccess = (checked: boolean) => {
                         const apps = field.value || [];

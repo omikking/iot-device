@@ -15,11 +15,11 @@ import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 
 //@TODO A better way to handle all these types/interfaces?
-type IUserPermissions = {
+type UserPermissions = {
   id: string;
   userId: string;
-  companyId: string;
-  role: string;
+  // companyId: string;
+  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
   appsAccess: string[];
 };
 
@@ -31,7 +31,7 @@ type IUser = {
   phoneNumber: string;
   globalRole: string;
   isGlobalVisibility: boolean;
-  userPermissions: IUserPermissions[];
+  userPermissions: UserPermissions[];
 };
 
 type IPlan = {

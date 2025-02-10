@@ -2,15 +2,16 @@
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { UserSchema } from '@/app/mock/mock';
+// import { UserSchema } from '@/app/mock/mock';
 import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { useUsers } from '@/components/urql-users/UsersClientUrql';
+import { UsersDeleteUrql } from '@/components/urql-users/UsersDeleteUrql';
 
 type UsersTableProps = {
   onOpenChange: (open: boolean) => void;
-  onSelectUser: (user: UserSchema) => void;
+  onSelectUser: (user: IUser) => void;
 };
 
 type IUser = {
@@ -31,12 +32,17 @@ type UserPermission = {
   appsAccess: string[];
 };
 
+// type IUsers = {
+//   users: IUser[];
+// };
+
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const { users } = useUsers();
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
     undefined,
   );
+  const { deleteUser } = UsersDeleteUrql();
 
   const appAccessShortNames: Record<string, string> = {
     PULL_TEST: 'PT',
@@ -82,14 +88,15 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setIsDeleteUserModalOpen(true);
   };
 
-  // const closeDeleteModal = () => {
-  //   setIsDeleteUserModalOpen(false);
-  //   setUserToDelete(undefined);
-  // };
+  const closeDeleteModal = () => {
+    setIsDeleteUserModalOpen(false);
+    setUserToDelete(undefined);
+  };
 
-  // const handleDelete = (index: number) => {
-  //   setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
-  // };
+  const handleDelete = async (index: number) => {
+    // deleteUser(users[index].id);
+    await deleteUser(users[index].id);
+  };
 
   const openEditModal = (index: number) => {
     const userToEdit = users[index];
@@ -174,13 +181,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
 
   return (
     <>
-      {/* <DeleteModalConfirmation
+      <DeleteModalConfirmation
         deleteButtonText="Confirm deletion"
         deleteIcon="User"
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
         itemToDelete={userToDelete}
         onOpenChange={closeDeleteModal}
+        // onDelete={() => {
         onDelete={(event, index) => {
           handleDelete(index);
           closeDeleteModal();
@@ -193,7 +201,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
           </Text>
           from the list. Are you sure you want to delete?
         </Text>
-      </DeleteModalConfirmation> */}
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

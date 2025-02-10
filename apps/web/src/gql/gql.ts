@@ -22,6 +22,7 @@ const documents = {
     "\n  query getMeCompanies {\n    companies {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n    }\n  }\n": types.GetMeCompaniesDocument,
     "\n  query getCompanies {\n    companies {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n    }\n  }\n": types.GetCompaniesDocument,
     "\n  query getCompanyUsers {\n    users {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n      userPermissions {\n        id\n        role\n        appsAccess\n      }\n    }\n  }\n": types.GetCompanyUsersDocument,
+    "\n  mutation DeleteUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n": types.DeleteUserDocument,
     "\n  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n    }\n  }\n": types.UpdateUserDocument,
     "\n  query getUsers {\n    users {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n      userPermissions {\n        id\n        role\n        appsAccess\n      }\n    }\n  }\n": types.GetUsersDocument,
 };
@@ -72,6 +73,10 @@ export function graphql(source: "\n  query getCompanies {\n    companies {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getCompanyUsers {\n    users {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n      userPermissions {\n        id\n        role\n        appsAccess\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompanyUsers {\n    users {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n      userPermissions {\n        id\n        role\n        appsAccess\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

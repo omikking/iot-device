@@ -10,12 +10,14 @@ type IUser = {
   phoneNumber: string;
   globalRole: boolean;
   isGlobalVisibility: boolean;
-  userPermissions: {
-    id: string;
-    userId: string;
-    role: 'User' | 'Technician' | 'Admin';
-    appsAccess: string[];
-  };
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  appsAccess: string[];
 };
 
 type IUsers = {

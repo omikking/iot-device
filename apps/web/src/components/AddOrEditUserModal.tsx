@@ -39,11 +39,11 @@ type AppPermission =
 type IUser = {
   id: string;
   email: string;
-  // fullName: string;
-  // workPlace: string;
-  // phoneNumber: string;
-  // globalRole: boolean;
-  // isGlobalVisibility: boolean;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: boolean;
+  isGlobalVisibility: boolean;
   userPermissions: UserPermission[];
 };
 
@@ -69,7 +69,6 @@ export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
-  console.log('user: ', user);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [role, setRole] = useState<

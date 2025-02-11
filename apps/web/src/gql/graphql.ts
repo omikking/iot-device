@@ -2,20 +2,33 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
   /** Date custom scalar type */
-  DateTime: { input: any; output: any; }
+  DateTime: { input: any; output: any };
 };
 
 /**
@@ -281,7 +294,6 @@ export type Mutation = {
   updateUserPermission: UserPermission;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -289,7 +301,6 @@ export type Mutation = {
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
 };
-
 
 /**
  * Mutation
@@ -299,7 +310,6 @@ export type MutationCreateCoffeeArgs = {
   createCoffeeInput: CreateCoffeeInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -307,7 +317,6 @@ export type MutationCreateCoffeeArgs = {
 export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
 };
-
 
 /**
  * Mutation
@@ -317,7 +326,6 @@ export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -325,7 +333,6 @@ export type MutationCreateDriveArgs = {
 export type MutationCreateLevelArgs = {
   createLevelInput: CreateLevelInput;
 };
-
 
 /**
  * Mutation
@@ -335,7 +342,6 @@ export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -343,7 +349,6 @@ export type MutationCreateLocationArgs = {
 export type MutationCreateSiteArgs = {
   createSiteInput: CreateSiteInput;
 };
-
 
 /**
  * Mutation
@@ -353,7 +358,6 @@ export type MutationCreateUserPermissionArgs = {
   createUserPermissionInput: CreateUserPermissionInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -361,7 +365,6 @@ export type MutationCreateUserPermissionArgs = {
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -371,7 +374,6 @@ export type MutationRemoveCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -379,7 +381,6 @@ export type MutationRemoveCoffeeArgs = {
 export type MutationRemoveCompanyArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -389,7 +390,6 @@ export type MutationRemoveDriveArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -397,7 +397,6 @@ export type MutationRemoveDriveArgs = {
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -407,7 +406,6 @@ export type MutationRemoveLocationArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -415,7 +413,6 @@ export type MutationRemoveLocationArgs = {
 export type MutationRemoveSiteArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -425,7 +422,6 @@ export type MutationRemoveUserArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -433,7 +429,6 @@ export type MutationRemoveUserArgs = {
 export type MutationRemoveUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -444,7 +439,6 @@ export type MutationUpdateBoltResultArgs = {
   updateBoltResultInput: UpdateBoltResultInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -453,7 +447,6 @@ export type MutationUpdateCoffeeArgs = {
   id: Scalars['ID']['input'];
   updateCoffeeInput: UpdateCoffeeInput;
 };
-
 
 /**
  * Mutation
@@ -464,7 +457,6 @@ export type MutationUpdateCompanyArgs = {
   updateCompanyInput: UpdateCompanyInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -473,7 +465,6 @@ export type MutationUpdateDriveArgs = {
   id: Scalars['String']['input'];
   updateDriveInput: UpdateDriveInput;
 };
-
 
 /**
  * Mutation
@@ -484,7 +475,6 @@ export type MutationUpdateLevelArgs = {
   updateLevelInput: UpdateLevelInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -493,7 +483,6 @@ export type MutationUpdateLocationArgs = {
   id: Scalars['String']['input'];
   updateLocationInput: UpdateLocationInput;
 };
-
 
 /**
  * Mutation
@@ -504,7 +493,6 @@ export type MutationUpdateSiteArgs = {
   updateSiteInput: UpdateSiteInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -513,7 +501,6 @@ export type MutationUpdateUserArgs = {
   id: Scalars['String']['input'];
   updateUserInput: UpdateUserInput;
 };
-
 
 /**
  * Mutation
@@ -565,7 +552,6 @@ export type Query = {
   users: Array<User>;
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -573,7 +559,6 @@ export type Query = {
 export type QueryBoltResultArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -583,7 +568,6 @@ export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -591,7 +575,6 @@ export type QueryCoffeeArgs = {
 export type QueryCompanyArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -601,7 +584,6 @@ export type QueryDriveArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -609,7 +591,6 @@ export type QueryDriveArgs = {
 export type QueryLevelArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -619,7 +600,6 @@ export type QueryLocationArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -627,7 +607,6 @@ export type QueryLocationArgs = {
 export type QuerySiteArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -637,7 +616,6 @@ export type QueryUserArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -645,7 +623,6 @@ export type QueryUserArgs = {
 export type QueryUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -843,80 +820,929 @@ export type CreateCompanyMutationVariables = Exact<{
   createCompanyInput: CreateCompanyInput;
 }>;
 
-
-export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
+export type CreateCompanyMutation = {
+  __typename?: 'Mutation';
+  createCompany: {
+    __typename?: 'Company';
+    id: string;
+    name: string;
+    orgNumber: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+    plans?: Array<{
+      __typename?: 'Plan';
+      id: string;
+      applicationName: string;
+      planLevel: string;
+      expiringDate?: any | null;
+    }> | null;
+  };
+};
 
 export type UpdateCompanyMutationVariables = Exact<{
   id: Scalars['String']['input'];
   updateCompanyInput: UpdateCompanyInput;
 }>;
 
-
-export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
+export type UpdateCompanyMutation = {
+  __typename?: 'Mutation';
+  updateCompany: {
+    __typename?: 'Company';
+    id: string;
+    name: string;
+    orgNumber: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+    plans?: Array<{
+      __typename?: 'Plan';
+      id: string;
+      applicationName: string;
+      planLevel: string;
+      expiringDate?: any | null;
+    }> | null;
+  };
+};
 
 export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
 }>;
 
+export type CreateCoffeeMutation = {
+  __typename?: 'Mutation';
+  createCoffee: {
+    __typename?: 'Coffee';
+    id: string;
+    name: string;
+    brand: string;
+    flavors?: Array<{ __typename?: 'Flavor'; id: string; name: string }> | null;
+  };
+};
 
-export type CreateCoffeeMutation = { __typename?: 'Mutation', createCoffee: { __typename?: 'Coffee', id: string, name: string, brand: string, flavors?: Array<{ __typename?: 'Flavor', id: string, name: string }> | null } };
+export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMeCoffeesQuery = { __typename?: 'Query', coffees: Array<{ __typename?: 'Coffee', id: string, name: string, brand: string }> };
+export type GetMeCoffeesQuery = {
+  __typename?: 'Query';
+  coffees: Array<{
+    __typename?: 'Coffee';
+    id: string;
+    name: string;
+    brand: string;
+  }>;
+};
 
 export type GetMeCompanyQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
+export type GetMeCompanyQuery = {
+  __typename?: 'Query';
+  company: {
+    __typename?: 'Company';
+    id: string;
+    name: string;
+    orgNumber: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+    plans?: Array<{
+      __typename?: 'Plan';
+      id: string;
+      companyId: string;
+      applicationName: string;
+      planLevel: string;
+      expiringDate?: any | null;
+    }> | null;
+  };
+};
 
-export type GetMeCompanyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string, plans?: Array<{ __typename?: 'Plan', id: string, companyId: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null } };
+export type GetMeCompaniesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetMeCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMeCompaniesQuery = {
+  __typename?: 'Query';
+  companies: Array<{
+    __typename?: 'Company';
+    id: string;
+    name: string;
+    orgNumber: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+  }>;
+};
 
+export type GetCompaniesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetMeCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string }> };
+export type GetCompaniesQuery = {
+  __typename?: 'Query';
+  companies: Array<{
+    __typename?: 'Company';
+    id: string;
+    name: string;
+    orgNumber: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    companyContactEmail: string;
+  }>;
+};
 
-export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCompanyUsersQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string, orgNumber: string, address: string, postalCode: string, city: string, country: string, companyContactEmail: string }> };
-
-export type GetCompanyUsersQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCompanyUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, fullName: string, workPlace: string, phoneNumber?: string | null, globalRole?: string | null, isGlobalVisibility?: boolean | null, userPermissions?: Array<{ __typename?: 'UserPermission', id: string, role: string, appsAccess: Array<string> }> | null }> };
+export type GetCompanyUsersQuery = {
+  __typename?: 'Query';
+  users: Array<{
+    __typename?: 'User';
+    id: string;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: string | null;
+    globalRole?: string | null;
+    isGlobalVisibility?: boolean | null;
+    userPermissions?: Array<{
+      __typename?: 'UserPermission';
+      id: string;
+      role: string;
+      appsAccess: Array<string>;
+    }> | null;
+  }>;
+};
 
 export type DeleteUserMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-
-export type DeleteUserMutation = { __typename?: 'Mutation', removeUser: { __typename?: 'User', id: string } };
+export type DeleteUserMutation = {
+  __typename?: 'Mutation';
+  removeUser: { __typename?: 'User'; id: string };
+};
 
 export type UpdateUserMutationVariables = Exact<{
   id: Scalars['String']['input'];
   updateUserInput: UpdateUserInput;
 }>;
 
+export type UpdateUserMutation = {
+  __typename?: 'Mutation';
+  updateUser: {
+    __typename?: 'User';
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: string | null;
+    globalRole?: string | null;
+    isGlobalVisibility?: boolean | null;
+  };
+};
 
-export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', email: string, fullName: string, workPlace: string, phoneNumber?: string | null, globalRole?: string | null, isGlobalVisibility?: boolean | null } };
+export type GetUsersQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetUsersQuery = {
+  __typename?: 'Query';
+  users: Array<{
+    __typename?: 'User';
+    id: string;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: string | null;
+    globalRole?: string | null;
+    isGlobalVisibility?: boolean | null;
+    userPermissions?: Array<{
+      __typename?: 'UserPermission';
+      id: string;
+      role: string;
+      appsAccess: Array<string>;
+    }> | null;
+  }>;
+};
+export type GetCompanyNameQuery = {
+  __typename?: 'Query';
+  company: { __typename?: 'Company'; name: string };
+};
 
-
-export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, fullName: string, workPlace: string, phoneNumber?: string | null, globalRole?: string | null, isGlobalVisibility?: boolean | null, userPermissions?: Array<{ __typename?: 'UserPermission', id: string, role: string, appsAccess: Array<string> }> | null }> };
-
-
-export const CreateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCompanyMutation, CreateCompanyMutationVariables>;
-export const UpdateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
-export const CreateCoffeeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCoffee"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCoffeeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCoffee"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCoffeeInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"flavors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCoffeeMutation, CreateCoffeeMutationVariables>;
-export const GetMeCoffeesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCoffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"coffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}}]}}]}}]} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;
-export const GetMeCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetMeCompanyQuery, GetMeCompanyQueryVariables>;
-export const GetMeCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}}]}}]}}]} as unknown as DocumentNode<GetMeCompaniesQuery, GetMeCompaniesQueryVariables>;
-export const GetCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}}]}}]}}]} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
-export const GetCompanyUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanyUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"workPlace"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}},{"kind":"Field","name":{"kind":"Name","value":"isGlobalVisibility"}},{"kind":"Field","name":{"kind":"Name","value":"userPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"appsAccess"}}]}}]}}]}}]} as unknown as DocumentNode<GetCompanyUsersQuery, GetCompanyUsersQueryVariables>;
-export const DeleteUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteUserMutation, DeleteUserMutationVariables>;
-export const UpdateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateUserInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateUserInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateUserInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"workPlace"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}},{"kind":"Field","name":{"kind":"Name","value":"isGlobalVisibility"}}]}}]}}]} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;
-export const GetUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"workPlace"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}},{"kind":"Field","name":{"kind":"Name","value":"isGlobalVisibility"}},{"kind":"Field","name":{"kind":"Name","value":"userPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"appsAccess"}}]}}]}}]}}]} as unknown as DocumentNode<GetUsersQuery, GetUsersQueryVariables>;
+export const CreateCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'createCompanyInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateCompanyInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'createCompanyInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'createCompanyInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orgNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyContactEmail' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'plans' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'applicationName' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'planLevel' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'expiringDate' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables
+>;
+export const UpdateCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'updateCompanyInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateCompanyInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'updateCompanyInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'updateCompanyInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orgNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyContactEmail' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'plans' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'applicationName' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'planLevel' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'expiringDate' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables
+>;
+export const CreateCoffeeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateCoffee' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'createCoffeeInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateCoffeeInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCoffee' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'createCoffeeInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'createCoffeeInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'flavors' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateCoffeeMutation,
+  CreateCoffeeMutationVariables
+>;
+export const GetMeCoffeesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getMeCoffees' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'coffees' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;
+export const GetMeCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getMeCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'company' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orgNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyContactEmail' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'plans' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'companyId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'applicationName' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'planLevel' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'expiringDate' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetMeCompanyQuery, GetMeCompanyQueryVariables>;
+export const GetMeCompaniesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getMeCompanies' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'companies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orgNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyContactEmail' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetMeCompaniesQuery, GetMeCompaniesQueryVariables>;
+export const GetCompaniesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCompanies' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'companies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orgNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyContactEmail' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
+export const GetCompanyUsersDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCompanyUsers' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'users' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'globalRole' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'isGlobalVisibility' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'userPermissions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'role' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'appsAccess' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetCompanyUsersQuery,
+  GetCompanyUsersQueryVariables
+>;
+export const DeleteUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteUserMutation, DeleteUserMutationVariables>;
+export const UpdateUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'updateUserInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateUserInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'updateUserInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'updateUserInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'globalRole' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'isGlobalVisibility' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetUsersDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getUsers' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'users' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'globalRole' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'isGlobalVisibility' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'userPermissions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'role' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'appsAccess' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetUsersQuery, GetUsersQueryVariables>;
+export const GetCompanyNameDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCompanyName' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'company' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompanyNameQuery, GetCompanyNameQueryVariables>;

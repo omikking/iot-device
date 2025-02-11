@@ -5,7 +5,7 @@ import {
   IDriveMock,
   ILevelMock,
   ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
+} from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
 
 // @TODO have to fix why im getting warning

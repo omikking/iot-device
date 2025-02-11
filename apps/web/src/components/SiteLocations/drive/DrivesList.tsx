@@ -5,7 +5,7 @@ import {
   IDriveMock,
   ILevelMock,
   ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
+} from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
 
 interface DrivesListComponentProps {

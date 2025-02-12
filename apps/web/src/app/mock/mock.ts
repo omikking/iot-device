@@ -677,17 +677,17 @@ export const sitesMock = [
 export const roles: DropdownItem[] = [
   {
     id: '1',
-    name: 'User',
+    name: 'COMPANY_USER',
     background: 'neutral',
   },
   {
     id: '2',
-    name: 'Technician',
+    name: 'SANDVIK_TECHNICIAN',
     background: 'neutral',
   },
   {
     id: '3',
-    name: 'Admin',
+    name: 'COMPANY_ADMIN',
     background: 'primary',
   },
   {

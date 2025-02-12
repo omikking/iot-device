@@ -18,17 +18,18 @@ import {
   Text,
 } from '@gsp/ui';
 import { useForm } from 'react-hook-form';
+import { technicians } from '@/app/mock/mock';
+import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import { technicians, roles } from '@/app/mock/mock';
-import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
-import { SuccessMessage } from './SuccessMessage';
 import { UsersUpdateUrql } from './urql-users/UsersUpdateUrql';
-interface AddOrEditUserModalProps {
+import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
+
+type AddOrEditUserModalProps = {
   onOpenChange: (open: boolean) => void;
-  user?: IUser;
-}
+  user?: ICompanyUser;
+};
 
 type AppPermission =
   | 'PULL_TEST'
@@ -36,21 +37,22 @@ type AppPermission =
   | 'ULTRABOLTS'
   | 'XCYCLOPS';
 
-type IUser = {
+type ICompanyUser = {
   id: string;
   email: string;
   fullName: string;
-  workPlace: string;
   phoneNumber: string;
-  globalRole: boolean;
-  isGlobalVisibility: boolean;
   userPermissions: UserPermission[];
 };
 
 type UserPermission = {
   id: string;
   userId: string;
-  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
   appsAccess: string[];
 };
 
@@ -58,12 +60,20 @@ const getUserPermissions = (permissions: UserPermission[]): UserPermission => {
   const defaultPermission: UserPermission = {
     id: '',
     userId: '',
-    role: 'User',
+    role: 'COMPANY_USER',
     appsAccess: [],
   };
 
   return permissions[0] || defaultPermission;
 };
+
+// return readable name if the value is a role
+const roles = [
+  { id: 'COMPANY_USER', name: 'User', value: 'COMPANY_USER' },
+  { id: 'COMPANY_ADMIN', name: 'Admin', value: 'COMPANY_ADMIN' },
+  { id: 'SANDVIK_TECHNICIAN', name: 'Technician', value: 'SANDVIK_TECHNICIAN' },
+  { id: 'SANDVIK_ADMIN', name: 'S. Admin', value: 'SANDVIK_ADMIN' },
+];
 
 export const AddOrEditUserModal = ({
   onOpenChange,
@@ -72,8 +82,7 @@ export const AddOrEditUserModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [role, setRole] = useState<
-    'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN'
-    // >(user?.userPermissions?.role || 'User');
+    'COMPANY_USER' | 'COMPANY_ADMIN' | 'SANDVIK_TECHNICIAN' | 'SANDVIK_ADMIN'
   >(getUserPermissions(user?.userPermissions || []).role || 'User');
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
@@ -94,13 +103,12 @@ export const AddOrEditUserModal = ({
   // keep this function for now Felix.
   // It resets the form when switching from edit to add a new user.
   const resetFormValues = () => {
-    setRole('User');
+    setRole('COMPANY_USER');
     form.reset({
-      // id: '',
       email: '',
       userPermissions: {
         userId: '',
-        role: 'User',
+        role: 'COMPANY_USER',
         appsAccess: [],
       },
     });
@@ -118,26 +126,29 @@ export const AddOrEditUserModal = ({
   };
 
   const onSubmit = async (data: UserFormValues) => {
-    console.log('userUpdateData: ', updateUser);
-    if (user) {
-      await updateUser(user.id, {
-        email: data.email,
-      });
-    } else {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Simulate API call
-      // console.log('User added', data);
-      setIsSuccessful(true);
-      setIsLoading(false);
+    setIsLoading(true);
+    try {
+      if (user) {
+        await updateUser(user.id, {
+          email: data.email,
+        });
+      }
 
+      setIsSuccessful(true);
+      // Close modal after success
       setTimeout(() => {
         onOpenChange(false);
       }, 1500);
+
+      // Reset form and success state
       setTimeout(() => {
         setIsSuccessful(false);
         resetFormValues();
       }, 1700);
+    } catch (error) {
+      console.error('Failed to save user:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -170,13 +181,11 @@ export const AddOrEditUserModal = ({
   useEffect(() => {
     if (user) {
       const userRole = getUserPermissions(user?.userPermissions).role || 'User';
-      // setRole(userRole as 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN');
       setRole(userRole);
 
-      if (userRole === 'Technician') {
+      if (userRole === 'SANDVIK_TECHNICIAN') {
         const techId = getTechnicianIdByEmail(user.email);
         setSelectedTechnician(techId);
-        // setSelectedTechnician(user.id);
       }
 
       form.reset({
@@ -206,13 +215,6 @@ export const AddOrEditUserModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            {/* <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log('form.handleSubmit', form.getValues());
-              console.log('Gehss', user);
-            }}
-          > */}
             <div className="flex px-10 gap-10">
               <div className="flex flex-col gap-8">
                 <FormField
@@ -233,13 +235,13 @@ export const AddOrEditUserModal = ({
                             options={roles}
                             onSelect={(e) => {
                               const selectedRole = e as
-                                | 'User'
-                                | 'Technician'
-                                | 'Admin'
+                                | 'COMPANY_USER'
+                                | 'COMPANY_ADMIN'
+                                | 'SANDVIK_TECHNICIAN'
                                 | 'SANDVIK_ADMIN';
                               setRole(selectedRole);
                               field.onChange(selectedRole);
-                              if (selectedRole !== 'Technician') {
+                              if (selectedRole !== 'SANDVIK_TECHNICIAN') {
                                 form.setValue('email', '');
                               }
                             }}
@@ -250,7 +252,7 @@ export const AddOrEditUserModal = ({
                     );
                   }}
                 />
-                {(role === 'Admin' || role === 'User') && (
+                {(role === 'COMPANY_ADMIN' || role === 'COMPANY_USER') && (
                   <FormField
                     control={form.control}
                     name="email"
@@ -271,7 +273,8 @@ export const AddOrEditUserModal = ({
                     }}
                   />
                 )}
-                {(role === 'Technician' || role === 'SANDVIK_ADMIN') && (
+                {(role === 'SANDVIK_TECHNICIAN' ||
+                  role === 'SANDVIK_ADMIN') && (
                   <FormField
                     control={form.control}
                     name="email"

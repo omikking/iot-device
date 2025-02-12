@@ -27,21 +27,20 @@ type UpdateUserInput = {
 };
 
 // result of the update
-type UpdateUserResult = {
-  updateUser: {
-    email: string;
-    fullName: string;
-    workPlace: string;
-    phoneNumber: string;
-    globalRole: string;
-    isGlobalVisibility: boolean;
-  };
-};
+// type UpdateUserResult = {
+//   updateUser: {
+//     email: string;
+//     fullName: string;
+//     workPlace: string;
+//     phoneNumber: string;
+//     globalRole: string;
+//     isGlobalVisibility: boolean;
+//   };
+// };
 
 export const UsersUpdateUrql = () => {
   // use the useMutation hook to update the user
-  const [result, updateUserMutation] =
-    useMutation<UpdateUserResult>(updateUsersMutation);
+  const [result, updateUserMutation] = useMutation(updateUsersMutation);
 
   // update the user with the id and the input
   const updateUser = async (id: string, input: UpdateUserInput) => {

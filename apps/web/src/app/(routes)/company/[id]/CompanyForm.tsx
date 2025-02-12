@@ -13,6 +13,7 @@ import { CreateAppPlansContainer } from '@/components/CreateAppPlansContainer';
 import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
 import { CompanyCreateDetailsForm } from '@/components/CompanyCreateDetailsForm';
+import { useSession } from 'next-auth/react';
 
 // TODO - move to shared types?
 type IPlan = {
@@ -69,6 +70,7 @@ const createCompanyMutation = graphql(`
 `);
 
 export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
+  const { data: session } = useSession();
   const [result, createCompany] = useMutation(createCompanyMutation);
   const companyForm = useForm<CreateCompanyFormValues>({
     resolver: zodResolver(createCompanyFormSchema),
@@ -81,7 +83,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
       address: '',
       postalCode: '',
       // userPermissions: [{ userId: '6411e9b8-7925-4c80-b76b-8f5d47d19aec' }], // jimmy@jimmy.com ID
-      userPermissions: [{ userId: 'e0ca23e0-d1a2-49b8-8bdc-a6e897d65377' }], // Gambit ID
+      userPermissions: [{ userId: session?.user.id }], // Gambit ID
       plans: [], // Initialize empty array for the plans
       // assignSandvikAdministrator: '',
     },

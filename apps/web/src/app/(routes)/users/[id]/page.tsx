@@ -1,35 +1,47 @@
 'use client';
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { useParams } from 'next/navigation';
 import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 
-type IUser = {
+// type IUser = {
+//   id: string;
+//   email: string;
+//   fullName: string;
+//   workPlace: string;
+//   phoneNumber: string;
+//   globalRole: boolean;
+//   isGlobalVisibility: boolean;
+//   userPermissions: UserPermission[];
+// };
+
+type ICompanyUser = {
   id: string;
   email: string;
   fullName: string;
-  workPlace: string;
   phoneNumber: string;
-  globalRole: boolean;
-  isGlobalVisibility: boolean;
   userPermissions: UserPermission[];
 };
 
 type UserPermission = {
   id: string;
   userId: string;
-  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
   appsAccess: string[];
 };
 
 export default function Page(): JSX.Element {
   // @TODO Only superadmin should be able to see this page
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | undefined>(
+  const [selectedUser, setSelectedUser] = useState<ICompanyUser | undefined>(
     undefined,
   );
 
@@ -41,10 +53,8 @@ export default function Page(): JSX.Element {
   };
 
   const params = useParams();
-    
-    const companyId = Array.isArray(params.id)
-      ? params.id[0]
-      : params.id;
+
+  const companyId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

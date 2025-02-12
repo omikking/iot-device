@@ -1,43 +1,42 @@
 'use client';
-import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-// import { UserSchema } from '@/app/mock/mock';
-import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { useUsers } from '@/components/urql-users/UsersClientUrql';
 import { UsersDeleteUrql } from '@/components/urql-users/UsersDeleteUrql';
+import { useCompanyUsers } from '@/components/urql-companies/CompanyClientUrql';
 
 type UsersTableProps = {
   onOpenChange: (open: boolean) => void;
-  onSelectUser: (user: IUser) => void;
+  onSelectUser: (user: ICompanyUser) => void;
 };
 
-type IUser = {
+type ICompanyUser = {
   id: string;
   email: string;
   fullName: string;
-  workPlace: string;
   phoneNumber: string;
-  globalRole: boolean;
-  isGlobalVisibility: boolean;
   userPermissions: UserPermission[];
 };
 
 type UserPermission = {
   id: string;
   userId: string;
-  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
   appsAccess: string[];
 };
 
-// type IUsers = {
-//   users: IUser[];
-// };
-
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
-  const { users } = useUsers();
+  const params = useParams();
+  const companyId = params.id as string;
+  const { users } = useCompanyUsers(companyId);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | undefined>(
     undefined,
@@ -58,11 +57,24 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     const defaultPermission: UserPermission = {
       id: '',
       userId: '',
-      role: 'User',
+      role: 'COMPANY_USER',
       appsAccess: [],
     };
 
     return permissions[0] || defaultPermission;
+  };
+
+  const getRoleDisplayName = (role: UserPermission['role']): string => {
+    switch (role) {
+      case 'COMPANY_USER':
+        return 'User';
+      case 'COMPANY_ADMIN':
+        return 'Admin';
+      case 'SANDVIK_TECHNICIAN':
+        return 'Technician';
+      case 'SANDVIK_ADMIN':
+        return 'S. Admin';
+    }
   };
 
   const getBadge = (
@@ -72,12 +84,12 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     icon: React.ReactNode;
   } => {
     switch (role) {
-      case 'User':
+      case 'COMPANY_USER':
         return { variant: 'neutral', icon: <LucideUser /> };
-      case 'Technician':
-        return { variant: 'neutral', icon: <LucidePickaxe /> };
-      case 'Admin':
+      case 'COMPANY_ADMIN':
         return { variant: 'primary', icon: <LucideKey /> };
+      case 'SANDVIK_TECHNICIAN':
+        return { variant: 'neutral', icon: <LucidePickaxe /> };
       case 'SANDVIK_ADMIN':
         return { variant: 'primary', icon: <LucideKey /> };
     }
@@ -94,7 +106,6 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   };
 
   const handleDelete = async (index: number) => {
-    // deleteUser(users[index].id);
     await deleteUser(users[index].id);
   };
 
@@ -104,7 +115,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     onOpenChange(true);
   };
 
-  const columns: ColumnDef<IUser>[] = [
+  const columns: ColumnDef<ICompanyUser>[] = [
     {
       accessorKey: 'fullName',
       header: 'Full name',
@@ -116,12 +127,10 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     {
       id: 'appsAccess',
       header: 'App access',
-      // accessorFn: (row) => row.userPermissions.appsAccess,
       accessorFn: (row) => row.userPermissions,
       cell: ({ row }) => {
         const userPerm = getUserPermissions(row.original.userPermissions);
         const appAccessValue = userPerm?.appsAccess || [];
-        // const appAccessValue = (row.getValue('appsAccess') as string[]) || [];
 
         if (appAccessValue.length === 1) {
           return appAccessValue[0]; // Show full name
@@ -131,6 +140,8 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
           return 'All Apps';
         }
 
+        // This is not working when is a single app.
+        // Should display the full name in a more proper way not "PULL_TEST" maybe "Pull Test" instead.
         // Split the appAccessValue and map with defined types
         const shortenedApps = appAccessValue
           .map((app: string) => appAccessShortNames[app] || app)
@@ -146,12 +157,13 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         const userPermissionRole = getUserPermissions(
           row.original.userPermissions,
         ).role;
+
         const { variant, icon } = getBadge(userPermissionRole);
 
         return (
           <Badge variant={variant}>
             {icon}
-            {userPermissionRole}
+            {getRoleDisplayName(userPermissionRole)}
           </Badge>
         );
       },
@@ -188,7 +200,6 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         isOpen={isDeleteUserModalOpen}
         itemToDelete={userToDelete}
         onOpenChange={closeDeleteModal}
-        // onDelete={() => {
         onDelete={(event, index) => {
           handleDelete(index);
           closeDeleteModal();

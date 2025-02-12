@@ -62,6 +62,53 @@ const getMeCompanyDocument = graphql(`
   }
 `);
 
+type ICompanyUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  companyId: string;
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
+
+type ICompanyUserData = {
+  company: {
+    id: string;
+    users: ICompanyUser[];
+  };
+};
+const getMeCompanyUsersDocument = graphql(`
+  query getMeCompanyUsers($id: String!) {
+    company(id: $id) {
+      id
+      users {
+        id
+        email
+        fullName
+        phoneNumber
+        userPermissions {
+          id
+          userId
+          companyId
+          role
+          appsAccess
+        }
+      }
+    }
+  }
+`);
+
 export function useCompany(id: string) {
   const skipQuery = id === 'new'; //
   const [result] = useQuery<ICompanyData>({
@@ -78,5 +125,21 @@ export function useCompany(id: string) {
     isLoading: fetching,
     error,
     isNew: skipQuery,
+  };
+}
+
+export function useCompanyUsers(id: string) {
+  const [result] = useQuery<ICompanyUserData>({
+    query: getMeCompanyUsersDocument,
+    variables: { id },
+  });
+
+  const { data, fetching, error } = result;
+  const users = useMemo(() => data?.company, [data]);
+
+  return {
+    users: users?.users || [],
+    isLoading: fetching,
+    error,
   };
 }

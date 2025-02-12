@@ -10,7 +10,11 @@ export type UserFormValues = {
   // isGlobalVisibility?: boolean;
   userPermissions: {
     userId: string;
-    role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+    role:
+      | 'COMPANY_USER'
+      | 'COMPANY_ADMIN'
+      | 'SANDVIK_TECHNICIAN'
+      | 'SANDVIK_ADMIN';
     appsAccess: (
       | 'PULL_TEST'
       | 'PULL_TEST_OPERATOR'
@@ -36,7 +40,12 @@ export const userFormSchema = z.object({
   // isGlobalVisibility: z.boolean().optional(),
   userPermissions: z.object({
     userId: z.string(),
-    role: z.enum(['User', 'Technician', 'Admin', 'SANDVIK_ADMIN']),
+    role: z.enum([
+      'COMPANY_USER',
+      'COMPANY_ADMIN',
+      'SANDVIK_TECHNICIAN',
+      'SANDVIK_ADMIN',
+    ]),
     appsAccess: z.array(
       z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
     ),

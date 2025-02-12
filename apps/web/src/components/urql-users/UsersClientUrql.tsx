@@ -16,7 +16,11 @@ type IUser = {
 type UserPermission = {
   id: string;
   userId: string;
-  role: 'User' | 'Technician' | 'Admin' | 'SANDVIK_ADMIN';
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
   appsAccess: string[];
 };
 

@@ -30,7 +30,7 @@ interface AppPlansContainerProps {
     id: string;
     applicationName: string;
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-    expiringDate: Date;
+    expiringDate?: Date;
   };
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;

@@ -255,7 +255,7 @@ export default function Page({
                     applicationName: planType.applicationName,
                     planLevel: undefined,
                     companyId: company?.id,
-                    expiringDate: '',
+                    expiringDate: undefined,
                   };
 
                   return (

@@ -99,7 +99,7 @@ export default function Page({
           id: plan.id,
           applicationName: plan.applicationName,
           planLevel: plan.planLevel,
-          expiringDate: plan.expiringDate || new Date().toISOString(),
+          expiringDate: plan.expiringDate || new Date(),
         })),
       });
     }

@@ -8,6 +8,7 @@ import { AppPlan } from '@/components/AppPlan';
 import { UseFormReturn } from 'react-hook-form';
 import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { DateTime } from 'next-auth/providers/kakao';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -29,6 +30,7 @@ interface AppPlansContainerProps {
     id: string;
     applicationName: string;
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
+    expiringDate: DateTime;
   };
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;
@@ -51,6 +53,8 @@ export const AppPlansContainer = ({
 
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(applicationName) || '';
+  //const [result, updateExpiryDate] = useMutation(UpdateExpiryDate);
+  //console.log('result', updateExpiryDate);
 
   // used memo to avoid re-rendering, and update the plan level based on the form values
   const activePlan = useMemo(() => {
@@ -61,6 +65,15 @@ export const AppPlansContainer = ({
     return isValidPlanLevel(currentPlan?.planLevel)
       ? currentPlan.planLevel
       : undefined;
+  }, [companyForm.getValues('plans'), applicationName]);
+
+  const expiringDate = useMemo(() => {
+    const currentPlans = companyForm.getValues('plans') || [];
+    const currentPlan = currentPlans.find(
+      (p) => p.applicationName === applicationName,
+    );
+
+    return currentPlan?.expiringDate ?? undefined;
   }, [companyForm.getValues('plans'), applicationName]);
 
   // export to a utility file?
@@ -95,12 +108,14 @@ export const AppPlansContainer = ({
             id: '',
             applicationName,
             planLevel: plan,
+            expiringDate,
           },
         ];
       }
     }
 
     // Update form with new plans array
+    console.log('Updated Plans:', updatedPlans);
     companyForm.setValue('plans', updatedPlans, {
       shouldValidate: true,
       shouldDirty: true,
@@ -108,6 +123,56 @@ export const AppPlansContainer = ({
     });
   };
 
+  const handleExpiryDateChange = (expiringDate: Date | undefined) => {
+    const currentPlans = companyForm.getValues('plans') || [];
+    // Update plans array based on the change
+    let updatedPlans;
+    const utcDate = new Date(
+      Date.UTC(
+        expiringDate.getFullYear(),
+        expiringDate.getMonth(),
+        expiringDate.getDate(),
+      ),
+    );
+
+    if (expiringDate === undefined) {
+      console.log('inside if');
+      // Remove this application's plan
+      updatedPlans = currentPlans.filter(
+        (p) => p.applicationName !== applicationName,
+      );
+    } else {
+      console.log('inside else');
+      const existingPlanIndex = currentPlans.findIndex(
+        (p) => p.applicationName === applicationName,
+      );
+      // const formattedDate = expiringDate.to;
+      if (existingPlanIndex >= 0) {
+        // Update existing plan
+        updatedPlans = currentPlans.map((p, index) =>
+          index === existingPlanIndex ? { ...p, expiringDate: utcDate } : p,
+        );
+      } else {
+        // Add new plan
+        updatedPlans = [
+          ...currentPlans,
+          {
+            id: '',
+            applicationName,
+            planLevel: '',
+            expiringDate: utcDate,
+          },
+        ];
+      }
+    }
+    console.log('Updated Plans:', updatedPlans);
+    // Update form with new plans array
+    companyForm.setValue('plans', updatedPlans, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
   return (
     <div
       key={appPlan.id}
@@ -163,19 +228,53 @@ export const AppPlansContainer = ({
       />
 
       {/* Calendar */}
-      {activePlan && (
+      {/* {activePlan && (
         <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && (
             <Badge variant="primary">
               <LucideCalendar size="14" />
-              Your plan expires 2025-08-10
+              Your plan expires{' '}
+              {expiringDate
+                ? new Date(expiringDate).toLocaleDateString()
+                : 'Select date'}
             </Badge>
           )}
 
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              <SingleDateCalendar className="mt-2" />
+              <SingleDateCalendar
+                className="mt-2"
+                expiryDate={expiringDate} // Ensure it gets the current expiry date
+                onDateChange={handleExpiryDateChange} // Update expiry date when selected
+              />
+            </>
+          )}
+        </div>
+      )} */}
+      {/* Calendar */}
+      {activePlan && (
+        <div className="py-5 px-6 border-b border-neutral-2">
+          {user === 'Client' && (
+            <Badge variant="primary">
+              <LucideCalendar size="14" />
+              Your plan expires{' '}
+              {expiringDate
+                ? new Date(expiringDate).toISOString()
+                : 'Select date'}
+            </Badge>
+          )}
+
+          {user === 'Superadmin' && (
+            <>
+              <FormLabel>Expiring date</FormLabel>
+              <SingleDateCalendar
+                className="mt-2"
+                expiryDate={expiringDate} // Ensure it gets the current expiry date
+                onDateChange={(newExpiryDate) =>
+                  handleExpiryDateChange(newExpiryDate)
+                } // Update expiry date when selected
+              />
             </>
           )}
         </div>

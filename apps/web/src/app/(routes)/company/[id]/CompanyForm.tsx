@@ -20,7 +20,7 @@ type IPlan = {
   companyId: string;
   applicationName: string;
   planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-  expiringDate: string;
+  expiringDate: Date;
 };
 
 type ICompany = {

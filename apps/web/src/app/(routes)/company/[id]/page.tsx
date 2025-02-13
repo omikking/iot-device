@@ -201,6 +201,9 @@ export default function Page({
 
       <Form {...companyForm}>
         <form
+          //onSubmit={(e) => {
+          // e.preventDefault(), console.log(companyForm.getValues('plans'));
+          //}}
           onSubmit={companyForm.handleSubmit(onSubmit)}
           // className="w-full flex flex-row flex-wrap gap-6"
         >

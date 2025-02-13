@@ -8,7 +8,7 @@ import { AppPlan } from '@/components/AppPlan';
 import { UseFormReturn } from 'react-hook-form';
 import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { DateTime } from 'next-auth/providers/kakao';
+//import { DateTime } from 'next-auth/providers/kakao';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -30,7 +30,7 @@ interface AppPlansContainerProps {
     id: string;
     applicationName: string;
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-    expiringDate: DateTime;
+    expiringDate: Date;
   };
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;

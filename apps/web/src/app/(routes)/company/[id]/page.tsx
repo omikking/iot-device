@@ -106,10 +106,10 @@ export default function Page({
   }, [company]);
 
   const onSubmit = (data: UpdateCompanyFormValues) => {
-    console.log('Result: ', result);
     updateCompany({ id: params.id, updateCompanyInput: data }).then(
       (result) => {
-        console.log('Submitted data:', JSON.stringify(data, null, 2));
+        console.log('RESULT DATA: ', result.data);
+        console.log('Cleaned data:', data);
         if (result.error) {
           console.error('Error:', result.error);
         } else {

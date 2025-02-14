@@ -17,7 +17,8 @@ export const updateCompanyFormSchema = z.object({
         // expiringDate: z.string().optional(),
       }),
     )
-    .optional(),
+    .optional()
+    .default([]),
 });
 
 export const createCompanyFormSchema = z.object({

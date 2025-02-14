@@ -59,6 +59,7 @@ export const AppPlan = ({
                 <Switch
                   checked={activePlan === plan}
                   onCheckedChange={(checked) => {
+                    console.log('checked', checked);
                     onPlanChange(checked ? plan : undefined);
                   }}
                 />

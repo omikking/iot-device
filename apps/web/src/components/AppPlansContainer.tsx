@@ -68,10 +68,13 @@ export const AppPlansContainer = ({
     return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
   };
 
+  // Only used for toggling, nothing to do with the actual plan(I think)
   const handlePlanChange = (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => {
-    const currentPlans = companyForm.getValues('plans') || [];
-    // Update plans array based on the change
-    let updatedPlans;
+    // const currentPlans = companyForm.getValues('plans') || [];
+    const currentPlans = companyForm.getValues('plans') ?? [];
+
+    let updatedPlans = [];
+
     if (plan === undefined) {
       // Remove this application's plan
       updatedPlans = currentPlans.filter(

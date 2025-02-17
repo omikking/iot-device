@@ -15,6 +15,12 @@ interface AppPlan {
   id: string;
 }
 
+export type Application =
+  | 'PULL_TEST'
+  | 'PULL_TEST_OPERATOR'
+  | 'ULTRABOLTS'
+  | 'XCYCLOPS';
+
 export const siteResultMock: SiteResultSchema[] = [
   {
     id: '1',

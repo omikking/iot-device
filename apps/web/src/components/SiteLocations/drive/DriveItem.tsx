@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
+import {
+  IDriveMock,
+  ILocationMock,
+} from '@/app/(routes)/sitelocations/[id]/page';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -10,7 +13,7 @@ import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsFor
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 interface DriveComponentProps {
   drive: IDriveMock;
-  drivesOptionsMock: IDriveMock[];
+  drivesOptions: IDriveMock[];
   index: number;
   selectedDrive?: string;
   inputRef: React.RefObject<HTMLInputElement>;
@@ -23,11 +26,11 @@ interface DriveComponentProps {
 
 export const DriveItem = ({
   drive,
-  drivesOptionsMock,
+  drivesOptions,
   selectedDrive,
   inputRef,
   index,
-  setDrivesOptionsMock,
+  // setDrivesOptions,
   setLocationsOptionsMock,
   handleSetDrive,
 }: DriveComponentProps) => {
@@ -39,18 +42,18 @@ export const DriveItem = ({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
         id: '',
-        name: '',
+        driveName: '',
       },
     });
 
   const handleEditDrive = () => {
     setIsEditing(true);
 
-    driveForm.setValue('name', drive.name);
+    driveForm.setValue('name', drive.driveName);
   };
 
   const handleCancelDrive = (index: number) => {
-    const newDrives = [...drivesOptionsMock];
+    const newDrives = [...drivesOptions];
     newDrives[index].locations = [];
     newDrives.splice(index, 1);
     setDrivesOptionsMock(newDrives);
@@ -67,8 +70,8 @@ export const DriveItem = ({
     const formData = new FormData(e.currentTarget);
     const newDriveName = formData.get('drive') as string;
 
-    const isDuplicate = drivesOptionsMock.some(
-      (drive) => drive.name === newDriveName,
+    const isDuplicate = drivesOptions.some(
+      (drive) => drive.driveName === newDriveName,
     );
 
     if (isDuplicate) {
@@ -76,7 +79,7 @@ export const DriveItem = ({
       return;
     }
 
-    const newDrives = [...drivesOptionsMock];
+    const newDrives = [...drivesOptions];
     newDrives[index] = {
       ...newDrives[index],
       name: formData.get('drive') as string,
@@ -93,14 +96,14 @@ export const DriveItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedDrive === drive.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 ${selectedDrive === drive.driveName ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetDrive(drive.name)}
+        onClick={() => !isEditing && handleSetDrive(drive.driveName)}
       >
-        {!drive.name || isEditing ? (
+        {!drive.driveName || isEditing ? (
           <SiteLocationsForm
             form={driveForm}
             onSubmit={handleEditSubmit}
@@ -116,7 +119,7 @@ export const DriveItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {drive.name}
+              {drive.driveName}
             </Text>
 
             <DeleteEditDropdown
@@ -138,7 +141,7 @@ export const DriveItem = ({
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${drive.name} `}
+                  {` ${drive.driveName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

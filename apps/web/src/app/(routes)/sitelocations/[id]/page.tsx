@@ -15,11 +15,28 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { sitesMock } from '@/app/mock/mock';
 import { LucideMoveLeft } from 'lucide-react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
-import { useParams, useSearchParams } from 'next/navigation';
 import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
+import {
+  useSites,
+  useSite,
+} from '@/components/urql-siteslocations/SitesLocationsUrql';
+
+export type Site = {
+  id: string;
+  siteName: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  companyId: string;
+
+  // createdAt
+  // updatedAt
+};
 
 export interface ISiteMock {
   id: string;
@@ -29,35 +46,29 @@ export interface ISiteMock {
 
 export interface ILevelMock {
   id: string;
-  name: string;
+  levelName: string;
+  siteId: string;
   drives: IDriveMock[];
 }
 
 export interface IDriveMock {
   id: string;
-  name: string;
+  driveName: string;
   locations: ILocationMock[];
 }
 
-export interface ILocationMock {
+export interface ILocation {
   id: string;
-  name: string;
+  driveId: string;
+  locationName: string;
 }
 
 export default function Page(): JSX.Element {
   const params = useParams();
-
-  const companyId = Array.isArray(params.id)
-    ? params.id[0]
-    : params.id;
-
+  const companyId = Array.isArray(params.id) ? params.id[0] : params.id;
   const searchParams = useSearchParams();
   const siteTableValue = searchParams.get('data');
   const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
-
-  const levelsFromUrlSite =
-    sitesMock.find((boltSites) => boltSites.name === siteFromUrl?.name)
-      ?.levels || [];
 
   const [selectedSite, setSelectedSite] = useState<string | undefined>(
     siteFromUrl?.id,
@@ -69,13 +80,37 @@ export default function Page(): JSX.Element {
 
   const [selectedLevel, setSelectedLevel] = useState<string | undefined>();
   const [selectedDrive, setSelectedDrive] = useState<string | undefined>();
-
-  const [levelsOptionsMock, setLevelsOptionsMock] =
-    useState<ILevelMock[]>(levelsFromUrlSite);
   const [drivesOptionsMock, setDrivesOptionsMock] = useState<IDriveMock[]>([]);
   const [locationsOptionsMock, setLocationsOptionsMock] = useState<
     ILocationMock[]
   >([]);
+
+  const { sites } = useSites();
+  // get site by name by selected site
+  const foundSite = sites.find((site) => site.siteName === selectedSite);
+  // get site by id
+  const { site } = useSite(foundSite?.id || '');
+  const levels = site?.levels;
+
+  const drives = levels?.find(
+    (level) => level.levelName === selectedLevel,
+  )?.drives;
+
+  const locations = drives?.find(
+    (drive) => drive.driveName === selectedDrive,
+  )?.locations;
+
+  console.log('levels', levels);
+  console.log('drives', drives);
+  console.log('locations', locations);
+
+  // Function would be nice to have in utils or helper
+  const getSiteDropdownOptions = (sites: Site[]) => {
+    return sites.map((site) => ({
+      id: site.id,
+      name: site.siteName,
+    }));
+  };
 
   const handleSetSite = (site?: string) => {
     setSelectedSite(site);
@@ -84,30 +119,16 @@ export default function Page(): JSX.Element {
     setSelectedDrive(undefined);
     setDrivesOptionsMock([]);
     setLocationsOptionsMock([]);
-
-    const levels =
-      sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
-    setLevelsOptionsMock(levels);
   };
 
   const handleSetLevel = (level?: string) => {
     setSelectedLevel(level);
     setSelectedDrive(undefined);
     setLocationsOptionsMock([]);
-
-    const drives =
-      levelsOptionsMock?.find((boltLevels) => boltLevels.name === level)
-        ?.drives || [];
-    setDrivesOptionsMock(drives);
   };
 
   const handleSetDrive = (drive?: string) => {
     setSelectedDrive(drive);
-
-    const locations =
-      drivesOptionsMock?.find((boltDrives) => boltDrives.name === drive)
-        ?.locations || [];
-    setLocationsOptionsMock(locations);
   };
 
   const handleSetLocation = (location?: string) => {
@@ -141,7 +162,8 @@ export default function Page(): JSX.Element {
             id="site"
             placeholder="Select site"
             selectedId={selectedSite}
-            options={sitesMock as DropdownItem[]}
+            // options={sitesMock as DropdownItem[]}
+            options={getSiteDropdownOptions(sites) as DropdownItem[]}
             onSelect={handleSetSite}
             className="w-96"
           />
@@ -183,21 +205,21 @@ export default function Page(): JSX.Element {
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
-              levelsOptionsMock={levelsOptionsMock}
+              // levelsOptionsMock={levelsOptionsMock}
+              levelsOptions={levels || []}
               selectedLevel={selectedLevel}
               selectedSite={selectedSite}
               handleSetLevel={handleSetLevel}
-              setLevelsOptionsMock={setLevelsOptionsMock}
               setDrivesOptionsMock={setDrivesOptionsMock}
               setLocationsOptionsMock={setLocationsOptionsMock}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
-              drivesOptionsMock={drivesOptionsMock}
+              drivesOptions={drives || []}
               selectedDrive={selectedDrive}
               selectedLevel={selectedLevel}
-              levelsOptionsMock={levelsOptionsMock}
+              levelsOptions={levels || []}
               setDrivesOptionsMock={setDrivesOptionsMock}
               setLocationsOptionsMock={setLocationsOptionsMock}
               handleSetDrive={handleSetDrive}
@@ -206,8 +228,8 @@ export default function Page(): JSX.Element {
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LocationsList
               selectedDrive={selectedDrive}
-              drivesOptionsMock={drivesOptionsMock}
-              locationsOptionsMock={locationsOptionsMock}
+              drivesOptions={drives || []}
+              locationsOptions={locations || []}
               handleSetLocation={handleSetLocation}
               setLocationsOptionsMock={setLocationsOptionsMock}
             />

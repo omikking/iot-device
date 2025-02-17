@@ -9,10 +9,10 @@ import {
 import { LucidePlus } from 'lucide-react';
 
 interface DrivesListComponentProps {
-  drivesOptionsMock: IDriveMock[];
+  drivesOptions: IDriveMock[];
   selectedDrive?: string;
   selectedLevel?: string;
-  levelsOptionsMock: ILevelMock[];
+  levelsOptions: ILevelMock[];
   setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>
@@ -20,28 +20,34 @@ interface DrivesListComponentProps {
   handleSetDrive: () => void;
 }
 export const DrivesList = ({
-  drivesOptionsMock,
+  drivesOptions,
   selectedDrive,
   selectedLevel,
-  levelsOptionsMock,
+  levelsOptions,
   setDrivesOptionsMock,
   setLocationsOptionsMock,
   handleSetDrive,
 }: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const addDrive = () => {
-    drivesOptionsMock.push({
-      id: `${drivesOptionsMock.length + 1}`,
-      name: '',
+    drivesOptions.push({
+      id: `${drivesOptions.length + 1}`,
+      driveName: '',
       locations: [],
     });
-    setDrivesOptionsMock([...drivesOptionsMock] as IDriveMock[]);
+    setDrivesOptionsMock([...drivesOptions] as IDriveMock[]);
   };
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [drivesOptionsMock]);
+  }, [drivesOptions]);
+
+  console.log(
+    'drivesOptions',
+    drivesOptions?.map((drive) => drive.driveName),
+  );
+
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -50,18 +56,18 @@ export const DrivesList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {drivesOptionsMock?.length === 0 && (
+        {drivesOptions?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available drives
             </Text>
           </div>
         )}
-        {drivesOptionsMock?.map((drive, index) => (
+        {drivesOptions?.map((drive, index) => (
           <DriveItem
             key={index}
             drive={drive}
-            drivesOptionsMock={drivesOptionsMock}
+            drivesOptions={drivesOptions}
             selectedDrive={selectedDrive}
             inputRef={inputRef}
             index={index}
@@ -78,8 +84,8 @@ export const DrivesList = ({
             variant={'primary'}
             onClick={() => addDrive()}
             disabled={
-              levelsOptionsMock.length === 0 ||
-              drivesOptionsMock.some((drive) => drive.name === '')
+              levelsOptions.length === 0 ||
+              drivesOptions.some((drive) => drive?.driveName === '')
             }
           >
             <LucidePlus /> Add drive

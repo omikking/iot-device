@@ -12,7 +12,7 @@ import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm
 interface LocationComponentProps {
   location: ILocationMock;
   index: number;
-  locationsOptionsMock: ILocationMock[];
+  locationsOptions: ILocationMock[];
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLocation: (name: string) => void;
   setLocationsOptionsMock: React.Dispatch<
@@ -23,7 +23,7 @@ interface LocationComponentProps {
 export const LocationItem = ({
   location,
   index,
-  locationsOptionsMock,
+  locationsOptions,
   inputRef,
   setLocationsOptionsMock,
   handleSetLocation,
@@ -42,7 +42,7 @@ export const LocationItem = ({
 
   const handleEditLocation = () => {
     setIsEditing(true);
-    locationForm.setValue('name', location.name);
+    locationForm.setValue('name', location.locationName);
   };
 
   const handleCancelEdit = () => {
@@ -51,7 +51,7 @@ export const LocationItem = ({
   };
 
   const handleCancelLocation = (index: number) => {
-    const newLocations = [...locationsOptionsMock];
+    const newLocations = [...locationName];
     newLocations.splice(index, 1);
     setLocationsOptionsMock(newLocations);
   };
@@ -66,7 +66,7 @@ export const LocationItem = ({
     const newLocationName = formData.get('location') as string;
 
     const isDuplicate = locationsOptionsMock.some(
-      (location) => location.name === newLocationName,
+      (location) => location.locationName === newLocationName,
     );
 
     if (isDuplicate) {
@@ -90,9 +90,9 @@ export const LocationItem = ({
     >
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetLocation(location.name)}
+        onClick={() => !isEditing && handleSetLocation(location.locationName)}
       >
-        {!location.name || isEditing ? (
+        {!location.locationName || isEditing ? (
           <SiteLocationsForm
             form={locationForm}
             onSubmit={handleEditSubmit}
@@ -108,7 +108,7 @@ export const LocationItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {location.name}
+              {location.locationName}
             </Text>
             <DeleteEditDropdown
               itemSelected={index}
@@ -129,7 +129,7 @@ export const LocationItem = ({
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${location.name} `}
+                  {` ${location.locationName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

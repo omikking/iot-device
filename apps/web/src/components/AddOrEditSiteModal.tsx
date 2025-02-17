@@ -14,7 +14,7 @@ import {
   ModalTitle,
   Headline,
 } from '@gsp/ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SiteResultSchema } from '@/app/mock/mock';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -68,6 +68,12 @@ export const AddOrEditSiteModal = ({
       resetFormValues();
     }, 1700);
   };
+
+  useEffect(() => {
+    if (site) {
+      form.reset(site);
+    }
+  }, [site, form]);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

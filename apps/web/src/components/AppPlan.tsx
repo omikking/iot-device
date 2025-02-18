@@ -14,11 +14,10 @@ interface AppPlanProps {
   plan: 'GOLD' | 'SILVER' | 'BRONZE';
   activePlan?: 'GOLD' | 'SILVER' | 'BRONZE';
   isAdmin: boolean;
-  // formField: string;
+  formField: string;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;
   applicationName: string;
   onPlanChange: (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => void;
-  // onPlanChange: (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => void;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
@@ -27,7 +26,6 @@ export const AppPlan = ({
   activePlan,
   isAdmin,
   companyForm,
-  // formField,
   onPlanChange,
 }: AppPlanProps) => {
   const user = isAdmin ? 'Superadmin' : 'Client';

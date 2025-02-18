@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
-import { CompanyCreateDetailsForm } from '@/components/CompanyCreateDetailsForm';
+import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 
 // TODO - move to shared types?
 type IPlan = {
@@ -103,7 +103,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
     <Form {...companyForm}>
       <form onSubmit={companyForm.handleSubmit(onSubmit)}>
         <div className="w-full mt-4 flex flex-col gap-20">
-          <CompanyCreateDetailsForm companyForm={companyForm} />
+          <CompanyDetailsForm companyForm={companyForm} />
           <div className="flex-col justify-between">
             <Headline
               as="h2"

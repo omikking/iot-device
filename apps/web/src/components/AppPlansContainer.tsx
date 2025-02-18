@@ -3,12 +3,11 @@ import {
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { useMemo } from 'react';
-import { AppPlan } from '@/components/AppPlan';
-import { UseFormReturn } from 'react-hook-form';
-import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import { useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { AppPlan } from '@/components/AppPlan';
+import { CreateCompanyFormValues } from './schemas/CompanyFormSchema';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -23,8 +22,6 @@ const getFormFieldName = (name: string) => {
   }
 };
 
-type PlanLevel = 'GOLD' | 'SILVER' | 'BRONZE';
-
 interface AppPlansContainerProps {
   appPlan: {
     id: string;
@@ -32,12 +29,8 @@ interface AppPlansContainerProps {
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
   };
   isAdmin: boolean;
-  companyForm: UseFormReturn<UpdateCompanyFormValues>;
+  companyForm: UseFormReturn<CreateCompanyFormValues>;
 }
-
-const isValidPlanLevel = (plan: string | undefined): plan is PlanLevel => {
-  return plan === 'GOLD' || plan === 'SILVER' || plan === 'BRONZE';
-};
 
 export const AppPlansContainer = ({
   appPlan,
@@ -45,24 +38,13 @@ export const AppPlansContainer = ({
   companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { applicationName } = appPlan;
-  // const [activePlan, setActivePlan] = useState<
-  //   'GOLD' | 'SILVER' | 'BRONZE' | undefined
-  // >(initialActivePlan);
+  const { applicationName, planLevel: initialActivePlan } = appPlan;
+  const [activePlan, setActivePlan] = useState<
+    'GOLD' | 'SILVER' | 'BRONZE' | undefined
+  >(initialActivePlan);
 
   const user = isAdmin ? 'Superadmin' : 'Client';
-  // const formField = getFormFieldName(applicationName) || '';
-
-  // used memo to avoid re-rendering, and update the plan level based on the form values
-  const activePlan = useMemo(() => {
-    const currentPlans = companyForm.getValues('plans') || [];
-    const currentPlan = currentPlans.find(
-      (p) => p.applicationName === applicationName,
-    );
-    return isValidPlanLevel(currentPlan?.planLevel)
-      ? currentPlan.planLevel
-      : undefined;
-  }, [companyForm.getValues('plans'), applicationName]);
+  const formField = getFormFieldName(applicationName) || '';
 
   // export to a utility file?
   const toTitleCase = (str: string) => {
@@ -70,43 +52,7 @@ export const AppPlansContainer = ({
   };
 
   const handlePlanChange = (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => {
-    const currentPlans = companyForm.getValues('plans') || [];
-    // Update plans array based on the change
-    let updatedPlans;
-    if (plan === undefined) {
-      // Remove this application's plan
-      updatedPlans = currentPlans.filter(
-        (p) => p.applicationName !== applicationName,
-      );
-    } else {
-      const existingPlanIndex = currentPlans.findIndex(
-        (p) => p.applicationName === applicationName,
-      );
-
-      if (existingPlanIndex >= 0) {
-        // Update existing plan
-        updatedPlans = currentPlans.map((p, index) =>
-          index === existingPlanIndex ? { ...p, planLevel: plan } : p,
-        );
-      } else {
-        // Add new plan
-        updatedPlans = [
-          ...currentPlans,
-          {
-            id: '',
-            applicationName,
-            planLevel: plan,
-          },
-        ];
-      }
-    }
-
-    // Update form with new plans array
-    companyForm.setValue('plans', updatedPlans, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    });
+    setActivePlan(plan);
   };
 
   return (
@@ -139,7 +85,7 @@ export const AppPlansContainer = ({
         plan="GOLD"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        // formField={formField}
+        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -148,7 +94,7 @@ export const AppPlansContainer = ({
         plan="SILVER"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        // formField={formField}
+        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -157,7 +103,7 @@ export const AppPlansContainer = ({
         plan="BRONZE"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        // formField={formField}
+        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}

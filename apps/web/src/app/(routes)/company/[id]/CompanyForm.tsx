@@ -9,7 +9,7 @@ import { useMutation } from 'urql';
 import { useForm } from 'react-hook-form';
 // import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateAppPlansContainer } from '@/components/CreateAppPlansContainer';
+import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { LucideCircleCheckBig, LucideSparkles } from 'lucide-react';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
 import { CompanyCreateDetailsForm } from '@/components/CompanyCreateDetailsForm';
@@ -149,7 +149,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
                 };
 
                 return (
-                  <CreateAppPlansContainer
+                  <AppPlansContainer
                     appPlan={appPlan}
                     key={appPlan.id}
                     isAdmin={isAdmin}

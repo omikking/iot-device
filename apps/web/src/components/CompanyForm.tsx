@@ -26,6 +26,7 @@ const allPlansTypes = [
   { id: 'ultrabolts', applicationName: 'ULTRABOLTS' },
 ] as const;
 
+// @TODO Move to CompanyClient?
 const createCompanyMutation = graphql(`
   mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {
     createCompany(createCompanyInput: $createCompanyInput) {
@@ -53,6 +54,7 @@ const createCompanyMutation = graphql(`
   }
 `);
 
+// @TODO Move to CompanyClient?
 const updateCompanyMutation = graphql(`
   mutation UpdateCompany(
     $id: String!

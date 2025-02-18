@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
 import { AppPlan } from '@/components/AppPlan';
+import { useState } from 'react';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -26,13 +27,19 @@ interface AppPlansContainerProps {
   isAdmin: boolean;
 }
 
-// @TODO: Remove temporary isAdmin prop
 export const AppPlansContainer = ({
   appPlan,
   isAdmin,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { name, activePlan } = appPlan;
+
+  const { name, activePlan: initialActivePlan } = appPlan;
+
+  const [activePlan, setActivePlan] = useState<
+    'Gold' | 'Silver' | 'Bronze' | undefined
+  >(initialActivePlan);
+
+  // @TODO: Remove temporary isAdmin prop when we have hook
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(name) || '';
 
@@ -67,18 +74,21 @@ export const AppPlansContainer = ({
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="Silver"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="Bronze"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
+        onPlanChange={setActivePlan}
       />
 
       {/* Calendar */}
@@ -94,8 +104,6 @@ export const AppPlansContainer = ({
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              {/* @TODO Do we want to have it as disabled or invisible when plan is not selected? */}
-              {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
               <SingleDateCalendar className="mt-2" />
             </>
           )}

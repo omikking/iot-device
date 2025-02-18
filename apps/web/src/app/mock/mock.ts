@@ -1,3 +1,12 @@
+// @TODO Currently ENUMS from backend are not able to access in the FE. Hardcode them here for now.
+export type PlanLevel = 'GOLD' | 'SILVER' | 'BRONZE' | 'INACTIVE';
+
+export type Application =
+  | 'PULL_TEST'
+  | 'PULL_TEST_OPERATOR'
+  | 'ULTRABOLTS'
+  | 'XCYCLOPS';
+
 export interface SiteResultSchema {
   id: string;
   name: string;
@@ -7,19 +16,12 @@ export interface SiteResultSchema {
   notification?: string;
   fooBar?: string;
 }
-type PlanType = 'Gold' | 'Silver' | 'Bronze';
 
 interface AppPlan {
   name: string;
-  activePlan?: PlanType;
+  activePlan?: PlanLevel;
   id: string;
 }
-
-export type Application =
-  | 'PULL_TEST'
-  | 'PULL_TEST_OPERATOR'
-  | 'ULTRABOLTS'
-  | 'XCYCLOPS';
 
 export const siteResultMock: SiteResultSchema[] = [
   {
@@ -122,7 +124,7 @@ export const optionAdministratorRoleMock = [
 export const appPlansMock: AppPlan[] = [
   {
     name: 'Pull-test',
-    activePlan: 'Gold',
+    activePlan: 'GOLD',
     id: '1',
   },
   {
@@ -132,7 +134,7 @@ export const appPlansMock: AppPlan[] = [
   },
   {
     name: 'Ultrabolts',
-    activePlan: 'Bronze',
+    activePlan: 'BRONZE',
     id: '3',
   },
 ];

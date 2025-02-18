@@ -15,8 +15,6 @@ const getFormFieldName = (name: string) => {
       return 'xCyclopsPlan';
     case 'Ultrabots':
       return 'ultrabotsPlan';
-    default:
-      return '';
   }
 };
 
@@ -45,10 +43,6 @@ export const AppPlansContainer = ({
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(name) || '';
 
-  const handlePlanChange = (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => {
-    setActivePlan(plan);
-  };
-
   return (
     <div
       key={appPlan.id}
@@ -73,17 +67,6 @@ export const AppPlansContainer = ({
           </Badge>
         )}
       </div>
-
-      {/* Selected Plan Label for Client */}
-      {user === 'Client' && (
-        <div className="px-6 py-3">
-          <Badge variant={activePlan ? 'success' : 'neutral'}>
-            {activePlan
-              ? `Your selected plan: ${activePlan}`
-              : 'No plan selected'}
-          </Badge>
-        </div>
-      )}
 
       {/* Plans */}
       <AppPlan

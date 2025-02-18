@@ -141,7 +141,7 @@ export const Menu = () => {
 
           <hr className="border-neutral-2" />
 
-          <div className="flex flex-col gap-1 mb-8">
+          <div className="flex flex-col gap-1 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
               <Link href="/selectapplication" passHref legacyBehavior>
                 <Anchor color="foreground">

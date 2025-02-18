@@ -18,6 +18,7 @@ import {
 } from '@gsp/ui';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { GoBack } from '@/components/GoBack';
 import { appPlansMock } from '@/app/mock/mock';
 import { AdminForm } from '@/components/AdminForm';
@@ -32,14 +33,11 @@ import {
   CompanyFormValues,
 } from '@/components/schemas/CompanyFormSchema';
 
-import { useSearchParams } from 'next/navigation';
-
 export default function Page(): JSX.Element {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode'); // 'add' or 'edit'
-
   const isEditing = mode === 'edit';
-  // @TODO: validate the form
+
   const companyForm: UseFormReturn<CompanyFormValues> =
     useForm<CompanyFormValues>({
       resolver: zodResolver(companyFormSchema),
@@ -232,6 +230,7 @@ export default function Page(): JSX.Element {
           <LucideCircleCheckBig />
           {isEditing ? 'Update company details' : 'Send invitation'}
         </Button>
+
         {isEditing && (
           <Button
             variant="destructive"
@@ -243,6 +242,7 @@ export default function Page(): JSX.Element {
           </Button>
         )}
       </div>
+
       <DeleteModalConfirmation
         deleteIcon="Company"
         deleteButtonText="Delete company"

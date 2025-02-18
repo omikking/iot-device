@@ -8,9 +8,10 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
+import { Company } from '@/gql/graphql';
 import { PlanLevel } from '@/app/mock/mock';
 
+// @TODO put in a utils folder
 export const capitalizeFirstLetter = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 };
@@ -19,7 +20,8 @@ interface AppPlanProps {
   plan: PlanLevel;
   activePlan?: PlanLevel;
   isAdmin: boolean;
-  companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  // companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  companyForm: UseFormReturn<Company>;
   applicationName: string;
   onPlanChange: (plan: PlanLevel) => void;
 }
@@ -36,6 +38,7 @@ export const AppPlan = ({
   const user = isAdmin ? 'Superadmin' : 'Client';
   const isActive = plan === activePlan;
 
+  // @TODO Updating app not working atm. Fix it.
   return (
     <div
       className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${

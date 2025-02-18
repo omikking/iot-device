@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { adminsMock } from '@/app/mock/mock';
-// import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   Dropdown,
   FormControl,
@@ -10,10 +9,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
+import { Company } from '@/gql/graphql';
 
 interface AdminFormProps {
-  //   companyForm: UseFormReturn<CompanyFormValues>;
-  companyForm: any;
+  // companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  companyForm: UseFormReturn<Company>;
 }
 
 export const AdminForm = ({ companyForm }: AdminFormProps) => {
@@ -24,7 +24,8 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
   return (
     <FormField
       control={companyForm.control}
-      name="assignSandvikAdministrator"
+      // @TODO fix this
+      name="users"
       render={() => {
         return (
           <FormItem className="w-96">
@@ -35,7 +36,9 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
                 options={adminsMock}
-                onSelect={(e) => setAdministrator(e)}
+                onSelect={(e) => {
+                  setAdministrator(e);
+                }}
               />
             </FormControl>
             <FormMessage />

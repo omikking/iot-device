@@ -1,3 +1,4 @@
+import { Company } from '@/gql/graphql';
 import {
   ContentHolder,
   FormControl,
@@ -8,10 +9,10 @@ import {
   Input,
 } from '@gsp/ui';
 import { UseFormReturn } from 'react-hook-form';
-import { CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
 
 type CompanyDetailsFormProps = {
-  companyForm?: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  // not sure about this
+  companyForm: UseFormReturn<Company>;
 };
 
 export const CompanyDetailsForm = ({
@@ -20,7 +21,7 @@ export const CompanyDetailsForm = ({
   return (
     <ContentHolder variant="general" headlineText="Company details">
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="name"
         render={({ field }) => {
           return (
@@ -30,8 +31,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter company name..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -40,18 +41,18 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="companyContactEmail"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
-              <FormLabel>Full contact name</FormLabel>
+              <FormLabel>Full contact email</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter full contact name..."
-                  value={field.value ?? ''}
+                  placeholder="Enter full contact email..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -60,7 +61,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="orgNumber"
         render={({ field }) => {
           return (
@@ -70,8 +71,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter organisation number..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -80,7 +81,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="country"
         render={({ field }) => {
           return (
@@ -90,8 +91,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter country..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -100,7 +101,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="city"
         render={({ field }) => {
           return (
@@ -110,8 +111,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter city..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -120,7 +121,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="address"
         render={({ field }) => {
           return (
@@ -130,8 +131,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter address..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -140,7 +141,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm?.control}
+        control={companyForm.control}
         name="postalCode"
         render={({ field }) => {
           return (
@@ -150,8 +151,8 @@ export const CompanyDetailsForm = ({
                 <Input
                   {...field}
                   placeholder="Enter postal code..."
-                  value={field.value ?? ''}
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

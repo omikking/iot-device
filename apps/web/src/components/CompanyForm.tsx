@@ -8,10 +8,13 @@ import {
 import { AppPlansContainer } from './AppPlansContainer';
 import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
-import { updateCompanyFormSchema } from './schemas/CompanyFormSchema';
+import {
+  createCompanyFormSchema,
+  updateCompanyFormSchema,
+} from './schemas/CompanyFormSchema';
 import { Company, CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
@@ -40,6 +43,12 @@ const createCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
+      # userPermissions {
+      #   userId
+      # }
+      # users {
+
+      # }
     }
   }
 `);
@@ -64,6 +73,12 @@ const updateCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
+      # userPermissions {
+      #   userId
+      # }
+      # users {
+
+      # }
     }
   }
 `);
@@ -87,23 +102,28 @@ export const CompanyForm = ({
   const user = isAdmin ? 'Superadmin' : 'Client';
 
   // @TODO is zodResolver correct type?
-  const companyForm = useForm<CreateCompanyInput | UpdateCompanyInput>({
-    resolver: zodResolver(updateCompanyFormSchema),
+  // CreateCompanyFormValues | UpdateCompanyFormValues
+  const companyForm = useForm<Company>({
+    resolver: zodResolver(
+      company ? updateCompanyFormSchema : createCompanyFormSchema,
+    ),
     defaultValues: {
-      name: '',
-      companyContactEmail: '',
-      orgNumber: '',
-      country: '',
-      city: '',
-      address: '',
-      postalCode: '',
-      plans: [],
+      name: company?.name || '',
+      companyContactEmail: company?.companyContactEmail || '',
+      orgNumber: company?.orgNumber || '',
+      country: company?.country || '',
+      city: company?.city || '',
+      address: company?.address || '',
+      postalCode: company?.postalCode || '',
+      plans: company?.plans || [],
+      users: company?.users || [],
     },
   });
 
   const onSubmit: SubmitHandler<CreateCompanyInput | UpdateCompanyInput> = (
     data,
   ) => {
+    console.log(data);
     if (company) {
       updateCompany({
         id: company.id,
@@ -123,6 +143,12 @@ export const CompanyForm = ({
       );
     }
   };
+
+  useEffect(() => {
+    if (company) {
+      companyForm.reset(company);
+    }
+  }, [company]);
 
   return (
     <>

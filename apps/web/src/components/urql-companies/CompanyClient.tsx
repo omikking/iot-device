@@ -38,6 +38,11 @@ const getCompanyDocument = graphql(`
         planLevel
         expiringDate
       }
+
+      users {
+        id
+        fullName
+      }
     }
   }
 `);

@@ -20,6 +20,13 @@ export const updateCompanyFormSchema = z.object({
       }),
     )
     .optional(),
+  userPermissions: z
+    .array(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 export const createCompanyFormSchema = z.object({

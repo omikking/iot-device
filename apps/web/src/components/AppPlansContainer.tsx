@@ -7,13 +7,14 @@ import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AppPlan } from '@/components/AppPlan';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { CreateCompanyInput, Plan, UpdateCompanyInput } from '@/gql/graphql';
+import { Company, Plan } from '@/gql/graphql';
 import { PlanLevel } from '@/app/mock/mock';
 import { formatAppName } from './UsersTable';
 
 interface AppPlansContainerProps {
   appPlan: Plan;
-  companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  // companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+  companyForm: UseFormReturn<Company>;
   isAdmin: boolean;
 }
 
@@ -86,6 +87,7 @@ export const AppPlansContainer = ({
         onPlanChange={handlePlanChange}
       />
 
+      {/* @TODO Updating calendar not working atm. Fix it. */}
       {/* Calendar */}
       {activePlan && (
         <div className="py-5 px-6 border-b border-neutral-2">

@@ -8,6 +8,7 @@ import { AppPlan } from '@/components/AppPlan';
 import { UseFormReturn } from 'react-hook-form';
 import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { useState } from 'react';
 
 const getFormFieldName = (name: string) => {
   switch (name) {
@@ -50,7 +51,7 @@ export const AppPlansContainer = ({
   // >(initialActivePlan);
 
   const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(applicationName) || '';
+  // const formField = getFormFieldName(applicationName) || '';
 
   // used memo to avoid re-rendering, and update the plan level based on the form values
   const activePlan = useMemo(() => {
@@ -138,7 +139,7 @@ export const AppPlansContainer = ({
         plan="GOLD"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
+        // formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -147,7 +148,7 @@ export const AppPlansContainer = ({
         plan="SILVER"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
+        // formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -156,7 +157,7 @@ export const AppPlansContainer = ({
         plan="BRONZE"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
+        // formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}

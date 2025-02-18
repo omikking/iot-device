@@ -8,7 +8,6 @@ import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 
 export default function Page(): JSX.Element {
-  // @TODO Only superadmin should be able to see this page
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
     undefined,

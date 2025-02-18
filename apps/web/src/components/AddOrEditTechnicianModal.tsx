@@ -81,23 +81,14 @@ export const AddOrEditTechnicianModal = ({
     }, 1700);
   };
 
-  const handleModalClose = () => {
-    resetFormValues();
-    onOpenChange(false);
-  };
-
   useEffect(() => {
     if (technician) {
       form.reset(technician);
     }
-
-    if (!technician) {
-      handleModalClose();
-    }
   }, [technician, form]);
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
         <ModalTitle>
           {technician ? 'Edit technician' : 'Add technician'}

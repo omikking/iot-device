@@ -2,7 +2,7 @@
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { UserSchema, usersMock } from '@/app/mock/mock';
+import { Application, UserSchema, usersMock } from '@/app/mock/mock';
 import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
@@ -33,6 +33,26 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       case 'Admin':
         return { variant: 'primary', icon: <LucideKey /> };
     }
+  };
+
+  const getAppShortening = (appAccessValue: Application[]) => {
+    const appAccessShortNames: Record<string, string> = {
+      PULL_TEST: 'Pull Test',
+      ULTRABOLTS: 'Ultrabolts',
+      XCYCLOPS: 'xCyclops',
+      PULL_TEST_OPERATOR: 'Pull Test Operator',
+    };
+
+    // @TODO hardcoded application count 4, we should get a dynamic number later to avoid bug
+    if (appAccessValue.length === 4) {
+      return <Badge variant="primary">All Apps</Badge>;
+    }
+
+    const shortenedApps = appAccessValue
+      .map((app: string) => appAccessShortNames[app] || app)
+      .join(', ');
+
+    return shortenedApps;
   };
 
   const openDeleteModal = (index: number) => {
@@ -68,6 +88,10 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       id: 'appAccess',
       header: 'App access',
       accessorFn: (row) => row.userPermissions.appAccess,
+      cell: ({ row }) => {
+        const appAccessValue = row.getValue('appAccess') as Application[];
+        return getAppShortening(appAccessValue);
+      },
     },
     {
       accessorKey: 'userPermissions.role',

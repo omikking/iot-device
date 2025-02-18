@@ -8,7 +8,14 @@ import {
   LucideMoveRight,
   LucideCircleCheckBig,
 } from 'lucide-react';
-import { Form, Text, Button, Headline, NavigationCard } from '@gsp/ui';
+import {
+  Form,
+  Text,
+  Button,
+  Headline,
+  NavigationCard,
+  ContentHolder,
+} from '@gsp/ui';
 import {
   updateCompanyFormSchema,
   UpdateCompanyFormValues,
@@ -24,9 +31,11 @@ import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
 // import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { CompanyCreate } from './CompanyCreate';
+// import { CompanyCreate } from './CompanyCreate';
 import { useMutation } from 'urql';
 import { graphql } from '@/gql';
+import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
+import { AdminForm } from '@/components/AdminForm';
 
 const updateCompanyMutation = graphql(`
   mutation UpdateCompany(
@@ -125,9 +134,9 @@ export default function Page({
   if (error) return <div>Error: {error.message}</div>;
   if (!company && !isNew) return <div>Company not found</div>;
 
-  if (isNew) {
-    return <CompanyCreate isAdmin={isAdmin} mode="new" />;
-  }
+  // if (isNew) {
+  //   return <CompanyCreate isAdmin={isAdmin} mode="new" />;
+  // }
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
@@ -202,7 +211,7 @@ export default function Page({
       <Form {...companyForm}>
         <form
           onSubmit={companyForm.handleSubmit(onSubmit)}
-          // className="w-full flex flex-row flex-wrap gap-6"
+          // className="w-full flex flex-row flex-wrap gap-6" do we need this?
         >
           <div className="w-full mt-4 flex flex-col gap-20">
             <CompanyDetailsForm companyForm={companyForm} />
@@ -268,7 +277,7 @@ export default function Page({
             </div>
 
             {/* Admin assignment */}
-            {/* <ContentHolder
+            <ContentHolder
               variant="general"
               headlineText={
                 user === 'Superadmin'
@@ -281,13 +290,15 @@ export default function Page({
               {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
               )}
-            </ContentHolder> */}
+            </ContentHolder>
           </div>
+
           <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
             <Button variant="primary" size="large" type="submit">
               <LucideCircleCheckBig />
               {isNew ? 'Send invitation' : 'Update company details'}
             </Button>
+
             {!isNew && (
               <Button
                 variant="destructive"

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+// Remove this file?
+
 export const updateCompanyFormSchema = z.object({
   name: z.string().min(3),
   orgNumber: z.string().min(3),

@@ -8,16 +8,20 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { CreateCompanyFormValues } from './schemas/CompanyFormSchema';
+import { CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
+import { PlanLevel } from '@/app/mock/mock';
+
+export const capitalizeFirstLetter = (word: string) => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+};
 
 interface AppPlanProps {
-  plan: 'GOLD' | 'SILVER' | 'BRONZE';
-  activePlan?: 'GOLD' | 'SILVER' | 'BRONZE';
+  plan: PlanLevel;
+  activePlan?: PlanLevel;
   isAdmin: boolean;
-  formField: string;
-  companyForm: UseFormReturn<CreateCompanyFormValues>;
+  companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
   applicationName: string;
-  onPlanChange: (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => void;
+  onPlanChange: (plan: PlanLevel) => void;
 }
 
 // @TODO fix toggle state and bg color on plan when selected
@@ -31,10 +35,6 @@ export const AppPlan = ({
 }: AppPlanProps) => {
   const user = isAdmin ? 'Superadmin' : 'Client';
   const isActive = plan === activePlan;
-
-  const toTitleCase = (str: string) => {
-    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  };
 
   return (
     <div
@@ -52,8 +52,7 @@ export const AppPlan = ({
               variant="medium"
               color="foreground"
             >
-              {/* {plan} */}
-              {toTitleCase(plan)}
+              {capitalizeFirstLetter(plan)}
             </FormLabel>
 
             {user === 'Superadmin' && (
@@ -95,7 +94,7 @@ export const AppPlan = ({
                     }
                     // AI generated code ends
                     field.onChange(updatedPlans);
-                    onPlanChange(newPlan);
+                    onPlanChange(newPlan as PlanLevel);
                   }}
                 />
               </FormControl>

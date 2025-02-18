@@ -6,30 +6,15 @@ import {
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AppPlan } from '@/components/AppPlan';
-import { CreateCompanyFormValues } from './schemas/CompanyFormSchema';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-
-const getFormFieldName = (name: string) => {
-  switch (name) {
-    case 'PULL_TEST':
-      return 'pullTestPlan';
-    case 'XCYCLOPS':
-      return 'xCyclopsPlan';
-    case 'ULTRABOLTS':
-      return 'ultraboltsPlan';
-    default:
-      return undefined;
-  }
-};
+import { CreateCompanyInput, Plan, UpdateCompanyInput } from '@/gql/graphql';
+import { PlanLevel } from '@/app/mock/mock';
+import { formatAppName } from './UsersTable';
 
 interface AppPlansContainerProps {
-  appPlan: {
-    id: string;
-    applicationName: string;
-    planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-  };
+  appPlan: Plan;
+  companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
   isAdmin: boolean;
-  companyForm: UseFormReturn<CreateCompanyFormValues>;
 }
 
 export const AppPlansContainer = ({
@@ -38,20 +23,15 @@ export const AppPlansContainer = ({
   companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { applicationName, planLevel: initialActivePlan } = appPlan;
-  const [activePlan, setActivePlan] = useState<
-    'GOLD' | 'SILVER' | 'BRONZE' | undefined
-  >(initialActivePlan);
 
-  const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(applicationName) || '';
-
-  // export to a utility file?
-  const toTitleCase = (str: string) => {
-    return str.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  const { applicationName, planLevel: initialActivePlan } = appPlan as {
+    applicationName: string;
+    planLevel: PlanLevel;
   };
+  const [activePlan, setActivePlan] = useState<PlanLevel>(initialActivePlan);
+  const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const handlePlanChange = (plan: 'GOLD' | 'SILVER' | 'BRONZE' | undefined) => {
+  const handlePlanChange = (plan: PlanLevel) => {
     setActivePlan(plan);
   };
 
@@ -62,7 +42,7 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {toTitleCase(applicationName.replace('_', ' '))}
+          {formatAppName(applicationName)}
         </Headline>
 
         {user === 'Superadmin' && activePlan && (
@@ -85,7 +65,6 @@ export const AppPlansContainer = ({
         plan="GOLD"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -94,7 +73,6 @@ export const AppPlansContainer = ({
         plan="SILVER"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}
@@ -103,7 +81,6 @@ export const AppPlansContainer = ({
         plan="BRONZE"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
         companyForm={companyForm}
         applicationName={applicationName}
         onPlanChange={handlePlanChange}

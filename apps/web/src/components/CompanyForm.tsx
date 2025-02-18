@@ -86,6 +86,7 @@ export const CompanyForm = ({
   const [isAdmin, setIsAdmin] = useState(true);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
+  // @TODO is zodResolver correct type?
   const companyForm = useForm<CreateCompanyInput | UpdateCompanyInput>({
     resolver: zodResolver(updateCompanyFormSchema),
     defaultValues: {

@@ -13,34 +13,14 @@
 import { useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-
-type IPlan = {
-  id: string;
-  companyId: string;
-  applicationName: string;
-  // planLevel: string;
-  planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-  expiringDate: string;
-};
-
-type ICompany = {
-  id: string;
-  name: string;
-  orgNumber: string;
-  address: string;
-  postalCode: string;
-  city: string;
-  country: string;
-  companyContactEmail: string;
-  plans: IPlan[];
-};
+import { Company } from '@/gql/graphql';
 
 type ICompanyData = {
-  company: ICompany;
+  company: Company;
 };
 
-const getMeCompanyDocument = graphql(`
-  query getMeCompany($id: String!) {
+const getCompanyDocument = graphql(`
+  query getCompany($id: String!) {
     company(id: $id) {
       id
       name
@@ -63,11 +43,9 @@ const getMeCompanyDocument = graphql(`
 `);
 
 export function useCompany(id: string) {
-  const skipQuery = id === 'new'; //
   const [result] = useQuery<ICompanyData>({
-    query: getMeCompanyDocument,
+    query: getCompanyDocument,
     variables: { id },
-    pause: skipQuery, // skip the whole query if id === 'new'
   });
 
   const { data, fetching, error } = result;
@@ -77,6 +55,5 @@ export function useCompany(id: string) {
     company,
     isLoading: fetching,
     error,
-    isNew: skipQuery,
   };
 }

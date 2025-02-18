@@ -8,17 +8,19 @@ import {
   Input,
 } from '@gsp/ui';
 import { UseFormReturn } from 'react-hook-form';
-import { CreateCompanyFormValues } from './schemas/CompanyFormSchema';
+import { CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
+
+type CompanyDetailsFormProps = {
+  companyForm?: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
+};
 
 export const CompanyDetailsForm = ({
   companyForm,
-}: {
-  companyForm: UseFormReturn<CreateCompanyFormValues>;
-}) => {
+}: CompanyDetailsFormProps) => {
   return (
     <ContentHolder variant="general" headlineText="Company details">
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="name"
         render={({ field }) => {
           return (
@@ -26,8 +28,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Company name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter company name..."
                   {...field}
+                  placeholder="Enter company name..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -37,7 +40,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="companyContactEmail"
         render={({ field }) => {
           return (
@@ -45,8 +48,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Full contact name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter full contact name..."
                   {...field}
+                  placeholder="Enter full contact name..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -56,7 +60,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="orgNumber"
         render={({ field }) => {
           return (
@@ -64,8 +68,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Organisation number</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter organisation number..."
                   {...field}
+                  placeholder="Enter organisation number..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -75,7 +80,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="country"
         render={({ field }) => {
           return (
@@ -83,8 +88,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Country</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter country..."
                   {...field}
+                  placeholder="Enter country..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -94,7 +100,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="city"
         render={({ field }) => {
           return (
@@ -102,8 +108,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>City</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter city..."
                   {...field}
+                  placeholder="Enter city..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -113,7 +120,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="address"
         render={({ field }) => {
           return (
@@ -121,8 +128,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter address..."
                   {...field}
+                  placeholder="Enter address..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>
@@ -132,7 +140,7 @@ export const CompanyDetailsForm = ({
         }}
       />
       <FormField
-        control={companyForm.control}
+        control={companyForm?.control}
         name="postalCode"
         render={({ field }) => {
           return (
@@ -140,8 +148,9 @@ export const CompanyDetailsForm = ({
               <FormLabel>Postal code</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter postal code..."
                   {...field}
+                  placeholder="Enter postal code..."
+                  value={field.value ?? ''}
                   className="w-full"
                 />
               </FormControl>

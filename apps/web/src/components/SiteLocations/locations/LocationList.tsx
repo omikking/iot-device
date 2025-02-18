@@ -1,37 +1,35 @@
 import React, { useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
+import {
+  IDrive,
+  ILocation,
+} from '@/components/urql-siteslocations/SitesLocationsUrql';
 
 interface LocationsListComponentProps {
   selectedDrive?: string;
-  locationsOptions: ILocationMock[];
-  drivesOptionsMock: IDriveMock[];
+  locationsOptions: ILocation[];
+  drivesOptions: IDrive[];
   handleSetLocation: () => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  // setLocationsOptionsMock: React.Dispatch<React.SetStateAction<ILocation[]>>;
 }
 
 export const LocationsList = ({
   selectedDrive,
   locationsOptions,
-  drivesOptionsMock,
+  // drivesOptions,
   handleSetLocation,
-  setLocationsOptionsMock,
+  // setLocationsOptionsMock,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addLocation = () => {
     locationsOptions.push({
-      id: `${locationsOptionsMock.length + 1}`,
+      driveId: '', // This is not correct
+      id: `${locationsOptions.length + 1}`,
       locationName: '',
     });
-    setLocationsOptionsMock([...locationsOptions] as ILocationMock[]);
   };
 
   useEffect(() => {
@@ -63,7 +61,7 @@ export const LocationsList = ({
             index={index}
             inputRef={inputRef}
             handleSetLocation={handleSetLocation}
-            setLocationsOptionsMock={setLocationsOptionsMock}
+            // setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>

@@ -1,8 +1,3 @@
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
@@ -12,30 +7,24 @@ import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
+
 interface LevelComponentProps {
   selectedLevel?: string;
-  level: ILevelMock;
-  levelsOptionsMock: ILevelMock[];
+  level: ILevel;
+  levelsOptions: ILevel[];
   index: number;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLevel: (name: string) => void;
-  // setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
 }
 
 export const LevelItem = ({
   selectedLevel,
   level,
-  levelsOptionsMock,
+  levelsOptions,
   index,
   inputRef,
   handleSetLevel,
-  // setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -61,7 +50,7 @@ export const LevelItem = ({
     const formData = new FormData(e.currentTarget);
     const newLevelName = formData.get('level') as string;
 
-    const isDuplicate = levelsOptionsMock.some(
+    const isDuplicate = levelsOptions.some(
       (level) => level.levelName === newLevelName,
     );
 
@@ -70,12 +59,12 @@ export const LevelItem = ({
       return;
     }
 
-    const newLevels = [...levelsOptionsMock];
+    const newLevels = [...levelsOptions];
     newLevels[index] = {
       ...newLevels[index],
       levelName: newLevelName,
     };
-    // setLevelsOptionsMock(newLevels);
+
     setIsEditing(false);
   };
 
@@ -88,13 +77,9 @@ export const LevelItem = ({
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    const newLevels = [...levelsOptionsMock];
+    const newLevels = [...levelsOptions];
     newLevels[index].drives = [];
     newLevels.splice(index, 1);
-
-    // setLevelsOptionsMock(newLevels);
-    setDrivesOptionsMock([]);
-    setLocationsOptionsMock([]);
   };
 
   return (

@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { IDrive } from '@/components/SiteLocations/urql-siteslocations/SitesLocationsUrql';
+
 interface DriveComponentProps {
-  drive: IDriveMock;
-  drivesOptions: IDriveMock[];
+  drive: IDrive;
+  drivesOptions: IDrive[];
   index: number;
   selectedDrive?: string;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetDrive: (name: string) => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
 }
 
 export const DriveItem = ({
@@ -30,8 +24,6 @@ export const DriveItem = ({
   selectedDrive,
   inputRef,
   index,
-  // setDrivesOptions,
-  setLocationsOptionsMock,
   handleSetDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -56,9 +48,6 @@ export const DriveItem = ({
     const newDrives = [...drivesOptions];
     newDrives[index].locations = [];
     newDrives.splice(index, 1);
-    setDrivesOptionsMock(newDrives);
-
-    setLocationsOptionsMock([]);
   };
 
   const handleEditSubmit = (
@@ -85,7 +74,6 @@ export const DriveItem = ({
       name: formData.get('drive') as string,
       locations: [],
     };
-    setDrivesOptionsMock(newDrives);
     setIsEditing(false);
   };
 

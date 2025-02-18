@@ -2,31 +2,35 @@ import { useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 
-export interface ISite {
+export type ISite = {
   id: string;
-  name: string;
+  siteName: string;
   levels: ILevel[];
-}
+};
 
-export interface ILevel {
+export type ILevel = {
   id: string;
   levelName: string;
   siteId: string;
   drives: IDrive[];
-}
+};
 
-export interface IDrive {
+export type IDrive = {
   id: string;
   driveName: string;
+  levelId: string;
   locations: ILocation[];
-}
+};
 
-export interface ILocation {
+export type ILocation = {
   id: string;
   driveId: string;
   locationName: string;
-}
+};
 
+type ISitesData = {
+  sites: ISite[];
+};
 type ISiteData = {
   site: ISite;
 };
@@ -43,12 +47,27 @@ const getMeSitesLocationsDocument = graphql(`
       city
       country
       companyId
+      levels {
+        id
+        levelName
+        siteId
+        drives {
+          id
+          driveName
+          levelId
+          locations {
+            id
+            driveId
+            locationName
+          }
+        }
+      }
     }
   }
 `);
 
 export function useSites() {
-  const [result] = useQuery({
+  const [result] = useQuery<ISitesData>({
     query: getMeSitesLocationsDocument,
   });
 

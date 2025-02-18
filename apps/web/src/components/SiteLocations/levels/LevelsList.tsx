@@ -1,24 +1,15 @@
-import React, { useEffect, useRef } from 'react';
 import { LevelItem } from './LevelItem';
-import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
-
+import React, { useEffect, useRef } from 'react';
+import { Button, Headline, Text } from '@gsp/ui';
+import {} from '@/app/(routes)/sitelocations/[id]/page';
+import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
 // @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
-  levelsOptions: ILevelMock[];
+  levelsOptions: ILevel[];
   selectedLevel?: string;
   selectedSite?: string;
   handleSetLevel: () => void;
-  // setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
 }
 
 export const LevelsList = ({
@@ -26,9 +17,6 @@ export const LevelsList = ({
   selectedLevel,
   selectedSite,
   handleSetLevel,
-  // setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const addLevel = () => {
@@ -38,7 +26,6 @@ export const LevelsList = ({
       siteId: selectedSite as string,
       drives: [],
     });
-    // setLevelsOptionsMock([...levelsOptionsMock] as ILevelMock[]);
   };
 
   useEffect(() => {
@@ -66,13 +53,10 @@ export const LevelsList = ({
             key={index}
             selectedLevel={selectedLevel}
             level={level}
-            levelsOptionsMock={levelsOptions}
+            levelsOptions={levelsOptions}
             index={index}
             inputRef={inputRef}
             handleSetLevel={handleSetLevel}
-            // setLevelsOptionsMock={setLevelsOptionsMock}
-            setDrivesOptionsMock={setDrivesOptionsMock}
-            setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>

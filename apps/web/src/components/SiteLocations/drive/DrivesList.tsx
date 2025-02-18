@@ -1,22 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { DriveItem } from './DriveItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
+// import { IDriveMock, ILevelMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
+// import { IDrive, ILevel } from "@/components/SiteLocations/urql-siteslocations/SitesLocationsUrql";
 
 interface DrivesListComponentProps {
   drivesOptions: IDriveMock[];
   selectedDrive?: string;
   selectedLevel?: string;
   levelsOptions: ILevelMock[];
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
   handleSetDrive: () => void;
 }
 export const DrivesList = ({
@@ -24,8 +17,6 @@ export const DrivesList = ({
   selectedDrive,
   selectedLevel,
   levelsOptions,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
   handleSetDrive,
 }: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -35,18 +26,12 @@ export const DrivesList = ({
       driveName: '',
       locations: [],
     });
-    setDrivesOptionsMock([...drivesOptions] as IDriveMock[]);
   };
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, [drivesOptions]);
-
-  console.log(
-    'drivesOptions',
-    drivesOptions?.map((drive) => drive.driveName),
-  );
 
   return (
     <>
@@ -71,8 +56,6 @@ export const DrivesList = ({
             selectedDrive={selectedDrive}
             inputRef={inputRef}
             index={index}
-            setDrivesOptionsMock={setDrivesOptionsMock}
-            setLocationsOptionsMock={setLocationsOptionsMock}
             handleSetDrive={handleSetDrive}
           />
         ))}

@@ -5,19 +5,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
 
 interface LocationComponentProps {
-  location: ILocationMock;
+  location: ILocation;
   index: number;
-  locationsOptions: ILocationMock[];
+  locationsOptions: ILocation[];
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLocation: (name: string) => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  // setLocationsOptionsMock: React.Dispatch<React.SetStateAction<ILocation[]>>;
 }
 
 export const LocationItem = ({
@@ -25,7 +23,7 @@ export const LocationItem = ({
   index,
   locationsOptions,
   inputRef,
-  setLocationsOptionsMock,
+  // setLocationsOptionsMock,
   handleSetLocation,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -51,9 +49,9 @@ export const LocationItem = ({
   };
 
   const handleCancelLocation = (index: number) => {
-    const newLocations = [...locationName];
+    const newLocations = [...locationsOptions];
     newLocations.splice(index, 1);
-    setLocationsOptionsMock(newLocations);
+    // setLocationsOptionsMock(newLocations);
   };
 
   const handleEditSubmit = (
@@ -65,7 +63,7 @@ export const LocationItem = ({
     const formData = new FormData(e.currentTarget);
     const newLocationName = formData.get('location') as string;
 
-    const isDuplicate = locationsOptionsMock.some(
+    const isDuplicate = locationsOptions.some(
       (location) => location.locationName === newLocationName,
     );
 
@@ -74,12 +72,12 @@ export const LocationItem = ({
       return;
     }
 
-    const newLocations = [...locationsOptionsMock];
+    const newLocations = [...locationsOptions];
     newLocations[index] = {
       ...newLocations[index],
-      name: newLocationName,
+      locationName: newLocationName,
     };
-    setLocationsOptionsMock(newLocations);
+    // setLocationsOptionsMock(newLocations);
     setIsEditing(false);
   };
 

@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import { technicians, roles, UserSchema } from '@/app/mock/mock';
+import { technicians, roles, UserSchema, Application } from '@/app/mock/mock';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
 import { SuccessMessage } from './SuccessMessage';
 
@@ -30,19 +30,13 @@ interface AddOrEditUserModalProps {
   user?: UserSchema;
 }
 
-type AppPermission =
-  | 'PULL_TEST'
-  | 'PULL_TEST_OPERATOR'
-  | 'ULTRABOLTS'
-  | 'XCYCLOPS';
-
 export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [role, setRole] = useState<'User' | 'Technician' | 'Admin'>(
+  const [role, setRole] = useState<UserSchema['userPermissions']['role']>(
     user?.userPermissions?.role || 'User',
   );
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
@@ -51,7 +45,6 @@ export const AddOrEditUserModal = ({
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      // id: '',
       email: user?.email || '',
       userPermissions: {
         userId: '',
@@ -61,12 +54,10 @@ export const AddOrEditUserModal = ({
     },
   });
 
-  // keep this function for now Felix.
-  // It resets the form when switching from edit to add a new user.
   const resetFormValues = () => {
     setRole('User');
+    setSelectedTechnician('');
     form.reset({
-      // id: '',
       email: '',
       userPermissions: {
         userId: '',
@@ -74,12 +65,6 @@ export const AddOrEditUserModal = ({
         appAccess: [],
       },
     });
-  };
-
-  //@Todo - remove one of these functions or merge them. Look them over to see if they are needed
-  const getEmailById = (id: string) => {
-    const technician = technicians.find((tech) => tech.id === id);
-    return technician?.email;
   };
 
   const getTechnicianIdByEmail = (email: string) => {
@@ -104,6 +89,18 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
+  const handleSelectRole = (e: UserSchema['userPermissions']['role']) => {
+    form.setValue('userPermissions.role', e);
+    form.setValue('email', undefined);
+    setRole(e);
+
+    if (e !== 'Technician') {
+      form.setValue('email', '');
+      form.setValue('technician', undefined);
+      setSelectedTechnician('');
+    }
+  };
+
   const handleGlobalAccess = (checked: boolean) => {
     setGlobalAccess(checked);
     if (checked) {
@@ -118,6 +115,18 @@ export const AddOrEditUserModal = ({
     }
   };
 
+  const handleAppAccess = (app: Application) => (checked: boolean) => {
+    const apps = form.getValues('userPermissions.appAccess') || [];
+    if (checked) {
+      form.setValue('userPermissions.appAccess', [...apps, app]);
+    } else {
+      form.setValue(
+        'userPermissions.appAccess',
+        apps.filter((appItem) => appItem !== app),
+      );
+    }
+  };
+
   useEffect(() => {
     const appAccess = form.watch('userPermissions.appAccess');
     const allAppsSelected = [
@@ -125,19 +134,18 @@ export const AddOrEditUserModal = ({
       'PULL_TEST_OPERATOR',
       'ULTRABOLTS',
       'XCYCLOPS',
-    ].every((app) => appAccess?.includes(app as AppPermission));
+    ].every((app) => appAccess?.includes(app as Application));
     setGlobalAccess(allAppsSelected);
   }, [form.watch('userPermissions.appAccess')]);
 
   useEffect(() => {
     if (user) {
       const userRole = user.userPermissions?.role || 'User';
-      setRole(userRole as 'User' | 'Technician' | 'Admin');
+      setRole(userRole as UserSchema['userPermissions']['role']);
 
       if (userRole === 'Technician') {
-        const techId = getTechnicianIdByEmail(user.email);
-        setSelectedTechnician(techId);
-        // setSelectedTechnician(user.id);
+        const technicianId = getTechnicianIdByEmail(user.email);
+        setSelectedTechnician(technicianId);
       }
 
       form.reset({
@@ -146,12 +154,10 @@ export const AddOrEditUserModal = ({
           ...user.userPermissions,
           role: userRole,
           appAccess: user.userPermissions.appAccess.map(
-            (access) => access as AppPermission,
+            (access) => access as Application,
           ),
         },
       });
-    } else {
-      resetFormValues();
     }
   }, [user]);
 
@@ -170,7 +176,7 @@ export const AddOrEditUserModal = ({
                 <FormField
                   control={form.control}
                   name="userPermissions.role"
-                  render={({ field }) => {
+                  render={() => {
                     return (
                       <FormItem>
                         <FormLabel>* Role</FormLabel>
@@ -184,15 +190,9 @@ export const AddOrEditUserModal = ({
                             badgeIcon
                             options={roles}
                             onSelect={(e) => {
-                              const selectedRole = e as
-                                | 'User'
-                                | 'Technician'
-                                | 'Admin';
-                              setRole(selectedRole);
-                              field.onChange(selectedRole);
-                              if (selectedRole !== 'Technician') {
-                                form.setValue('email', '');
-                              }
+                              handleSelectRole(
+                                e as UserSchema['userPermissions']['role'],
+                              );
                             }}
                           />
                         </FormControl>
@@ -225,24 +225,24 @@ export const AddOrEditUserModal = ({
                 {role === 'Technician' && (
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="technician"
                     render={({ field }) => {
                       return (
                         <FormItem>
                           <FormLabel>* Technician</FormLabel>
                           <FormControl>
                             <Dropdown
-                              id="email"
+                              id="technician"
                               className="w-96"
                               placeholder="Select technician"
                               selectedId={
                                 selectedTechnician ||
-                                getTechnicianIdByEmail(field.value)
+                                getTechnicianIdByEmail(field.value || '')
                               }
                               options={technicians}
                               onSelect={(e) => {
+                                form.setValue('technician', e);
                                 setSelectedTechnician(e ?? '');
-                                field.onChange(e ? getEmailById(e) : '');
                               }}
                             />
                           </FormControl>
@@ -285,28 +285,12 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="userPermissions.appAccess"
                     render={({ field }) => {
-                      const handleAppAccess = (checked: boolean) => {
-                        const apps = field.value || [];
-                        if (checked) {
-                          field.onChange([...apps, 'PULL_TEST'] as const); // Type assertion to match the expected type
-                        } else {
-                          field.onChange(
-                            apps.filter((app) => app !== 'PULL_TEST') as (
-                              | 'PULL_TEST'
-                              | 'PULL_TEST_OPERATOR'
-                              | 'ULTRABOLTS'
-                              | 'XCYCLOPS'
-                            )[],
-                          );
-                        }
-                      };
-
                       return (
                         <FormItem>
                           <FormControl>
                             <Switch
                               checked={field.value?.includes('PULL_TEST')}
-                              onCheckedChange={handleAppAccess}
+                              onCheckedChange={handleAppAccess('PULL_TEST')}
                             />
                           </FormControl>
                         </FormItem>
@@ -326,27 +310,6 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="userPermissions.appAccess"
                     render={({ field }) => {
-                      const handleAppAccess = (checked: boolean) => {
-                        const apps = field.value || [];
-                        if (checked) {
-                          field.onChange([
-                            ...apps,
-                            'PULL_TEST_OPERATOR',
-                          ] as const); // Type assertion to match the expected type
-                        } else {
-                          field.onChange(
-                            apps.filter(
-                              (app) => app !== 'PULL_TEST_OPERATOR',
-                            ) as (
-                              | 'PULL_TEST'
-                              | 'PULL_TEST_OPERATOR'
-                              | 'ULTRABOLTS'
-                              | 'XCYCLOPS'
-                            )[],
-                          );
-                        }
-                      };
-
                       return (
                         <FormItem>
                           <FormControl>
@@ -354,7 +317,9 @@ export const AddOrEditUserModal = ({
                               checked={field.value?.includes(
                                 'PULL_TEST_OPERATOR',
                               )}
-                              onCheckedChange={handleAppAccess}
+                              onCheckedChange={handleAppAccess(
+                                'PULL_TEST_OPERATOR',
+                              )}
                             />
                           </FormControl>
                         </FormItem>
@@ -374,28 +339,12 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="userPermissions.appAccess"
                     render={({ field }) => {
-                      const handleAppAccess = (checked: boolean) => {
-                        const apps = field.value || ([] as AppPermission[]);
-                        if (checked) {
-                          field.onChange([...apps, 'ULTRABOLTS'] as const); // Type assertion to match the expected type
-                        } else {
-                          field.onChange(
-                            apps.filter((app) => app !== 'ULTRABOLTS') as (
-                              | 'PULL_TEST'
-                              | 'PULL_TEST_OPERATOR'
-                              | 'ULTRABOLTS'
-                              | 'XCYCLOPS'
-                            )[],
-                          );
-                        }
-                      };
-
                       return (
                         <FormItem>
                           <FormControl>
                             <Switch
                               checked={field.value?.includes('ULTRABOLTS')}
-                              onCheckedChange={handleAppAccess}
+                              onCheckedChange={handleAppAccess('ULTRABOLTS')}
                             />
                           </FormControl>
                         </FormItem>
@@ -403,7 +352,7 @@ export const AddOrEditUserModal = ({
                     }}
                   />
                 </div>
-                <div className="flex items-center px-6 py-3 border-b border-neutral-2">
+                <div className="flex items-center px-6 py-3 border-b border-neutral-1">
                   <Text
                     color={'foreground'}
                     variant={'medium'}
@@ -415,28 +364,12 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="userPermissions.appAccess"
                     render={({ field }) => {
-                      const handleAppAccess = (checked: boolean) => {
-                        const apps = field.value || [];
-                        if (checked) {
-                          field.onChange([...apps, 'XCYCLOPS'] as const); // Type assertion to match the expected type
-                        } else {
-                          field.onChange(
-                            apps.filter((app) => app !== 'XCYCLOPS') as (
-                              | 'PULL_TEST'
-                              | 'PULL_TEST_OPERATOR'
-                              | 'ULTRABOLTS'
-                              | 'XCYCLOPS'
-                            )[],
-                          );
-                        }
-                      };
-
                       return (
                         <FormItem>
                           <FormControl>
                             <Switch
                               checked={field.value?.includes('XCYCLOPS')}
-                              onCheckedChange={handleAppAccess}
+                              onCheckedChange={handleAppAccess('XCYCLOPS')}
                             />
                           </FormControl>
                         </FormItem>

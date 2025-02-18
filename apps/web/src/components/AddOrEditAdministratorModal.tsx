@@ -75,26 +75,14 @@ export const AddOrEditAdministratorModal = ({
     }, 1700);
   };
 
-  const handleModalClose = () => {
-    resetFormValues();
-    onOpenChange(false);
-  };
-
   useEffect(() => {
     if (administrator) {
       form.reset(administrator);
     }
-
-    if (!administrator) {
-      handleModalClose();
-    }
   }, [administrator, form]);
 
   return (
-    <ModalContent
-      className="sm:max-w-[425px]"
-      onCloseAutoFocus={resetFormValues}
-    >
+    <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
         <ModalTitle>
           {administrator ? 'Edit Administrator' : 'Add administrator'}

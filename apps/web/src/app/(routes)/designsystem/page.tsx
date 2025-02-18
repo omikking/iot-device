@@ -828,25 +828,29 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.fullName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.appAccess}</TableCell>
-                <TableCell>
-                  <Badge variant={getBadge(user.role).variant}>
-                    {getBadge(user.role).icon}
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="outline" size="small">
-                    <LucideEllipsis />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {usersMock.map((user) => {
+              const role = user.userPermissions.role;
+              const { variant, icon } = getBadge(role);
+              return (
+                <TableRow key={user.id}>
+                  <TableCell>{user.fullName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.userPermissions.appAccess}</TableCell>
+                  <TableCell>
+                    <Badge variant={variant}>
+                      {icon}
+                      {role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="small">
+                      <LucideEllipsis />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         <Badge variant="neutral" className="self-start">

@@ -23,15 +23,12 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
-// import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { AppPlansContainer } from '@/components/AppPlansContainer';
 import { CompanyDetailsForm } from '@/components/CompanyDetailsForm';
-// import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';
 import { useCompany } from '@/components/urql-companies/CompanyClientUrql';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-// import { CompanyCreate } from './CompanyCreate';
 import { useMutation } from 'urql';
 import { graphql } from '@/gql';
 import { AssociateDetailsForm } from '@/components/AssociateDetailsForm';

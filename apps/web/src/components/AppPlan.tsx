@@ -6,8 +6,8 @@ import {
   FormLabel,
   Switch,
 } from '@gsp/ui';
-import { UseFormReturn } from 'react-hook-form';
 import { LucideCircleCheckBig } from 'lucide-react';
+import { UseFormReturn } from 'react-hook-form';
 import { CreateCompanyFormValues } from './schemas/CompanyFormSchema';
 
 interface AppPlanProps {
@@ -38,24 +38,25 @@ export const AppPlan = ({
 
   return (
     <div
-      // @TODO Border is a bit off in the y-axis
-      className={`flex justify-between items-center border-y border-gray-200 py-3 px-6 ${
-        isActive ? 'bg-gray-100' : ''
+      className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
+        isActive ? 'bg-neutral-1' : ''
       }`}
     >
-      {user === 'Superadmin' ? (
-        <FormField
-          control={companyForm.control}
-          name="plans"
-          render={({ field }) => (
-            <FormItem className="flex w-full justify-between items-center">
-              <FormLabel
-                className="flex items-center"
-                variant="medium"
-                color="foreground"
-              >
-                {toTitleCase(plan)}
-              </FormLabel>
+      <FormField
+        control={companyForm.control}
+        name="plans"
+        render={({ field }) => (
+          <FormItem className="flex w-full justify-between items-center">
+            <FormLabel
+              className="flex items-center"
+              variant="medium"
+              color="foreground"
+            >
+              {/* {plan} */}
+              {toTitleCase(plan)}
+            </FormLabel>
+
+            {user === 'Superadmin' && (
               <FormControl>
                 <Switch
                   checked={activePlan === plan}
@@ -98,27 +99,17 @@ export const AppPlan = ({
                   }}
                 />
               </FormControl>
-            </FormItem>
-          )}
-        />
-      ) : (
-        <div className="flex w-full justify-between items-center">
-          <FormLabel
-            className="flex items-center"
-            variant="medium"
-            color="foreground"
-          >
-            {/* {plan} */}
-            {toTitleCase(plan)}
-          </FormLabel>
-          {isActive && (
-            <Badge variant="attention">
-              <LucideCircleCheckBig />
-              Your selected plan
-            </Badge>
-          )}
-        </div>
-      )}
+            )}
+
+            {user === 'Client' && isActive && (
+              <Badge variant="attention" className="flex items-center">
+                <LucideCircleCheckBig size="16" className="mr-1" />
+                Your selected plan
+              </Badge>
+            )}
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

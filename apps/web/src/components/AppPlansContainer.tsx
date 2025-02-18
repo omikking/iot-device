@@ -29,21 +29,25 @@ interface AppPlansContainerProps {
   isAdmin: boolean;
 }
 
-// @TODO: Remove temporary isAdmin prop
 export const AppPlansContainer = ({
   appPlan,
   isAdmin,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-  const { name, activePlan : initialActivePlan} = appPlan;
-  const [activePlan, setActivePlan] = useState<'Gold' | 'Silver' | 'Bronze' | undefined>(initialActivePlan);
+
+  const { name, activePlan: initialActivePlan } = appPlan;
+
+  const [activePlan, setActivePlan] = useState<
+    'Gold' | 'Silver' | 'Bronze' | undefined
+  >(initialActivePlan);
+
+  // @TODO: Remove temporary isAdmin prop when we have hook
   const user = isAdmin ? 'Superadmin' : 'Client';
   const formField = getFormFieldName(name) || '';
 
   const handlePlanChange = (plan: 'Gold' | 'Silver' | 'Bronze' | undefined) => {
     setActivePlan(plan);
   };
-
 
   return (
     <div
@@ -73,14 +77,13 @@ export const AppPlansContainer = ({
       {/* Selected Plan Label for Client */}
       {user === 'Client' && (
         <div className="px-6 py-3">
-          <Badge
-            variant={activePlan ? "success" : "neutral"}
-          >
-            {activePlan ? `Your selected plan: ${activePlan}` : "No plan selected"}
+          <Badge variant={activePlan ? 'success' : 'neutral'}>
+            {activePlan
+              ? `Your selected plan: ${activePlan}`
+              : 'No plan selected'}
           </Badge>
         </div>
       )}
-
 
       {/* Plans */}
       <AppPlan
@@ -88,21 +91,21 @@ export const AppPlansContainer = ({
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="Silver"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="Bronze"
         activePlan={activePlan}
         isAdmin={isAdmin}
         formField={formField}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
 
       {/* Calendar */}
@@ -118,8 +121,6 @@ export const AppPlansContainer = ({
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              {/* @TODO Do we want to have it as disabled or invisible when plan is not selected? */}
-              {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
               <SingleDateCalendar className="mt-2" />
             </>
           )}

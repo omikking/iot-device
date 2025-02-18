@@ -1,44 +1,51 @@
+import { Application, UserSchema } from '@/app/mock/mock';
 import { z } from 'zod';
 
 export type UserFormValues = {
-  // id: string;
-  // fullName: string;
-  email: string;
-  // phoneNumber?: string;
-  // workPlace?: string;
-  // globalRole?: boolean;
-  // isGlobalVisibility?: boolean;
+  email?: string;
+  technician?: string;
   userPermissions: {
     userId: string;
-    role: 'User' | 'Technician' | 'Admin';
-    appAccess: (
-      | 'PULL_TEST'
-      | 'PULL_TEST_OPERATOR'
-      | 'ULTRABOLTS'
-      | 'XCYCLOPS'
-    )[];
+    role: UserSchema['userPermissions']['role'];
+    appAccess: Application[];
   };
 };
 
-export const userFormSchema = z.object({
-  // id: z.string(),
-  // fullName: z
-  //   .string()
-  //   .min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z
-    .string()
-    .email({ message: 'Email must be a valid email address.' })
-    .min(2, { message: 'Email must be at least 2 characters.' })
-    .max(50, { message: 'Email must be at most 50 characters.' }),
-  // phoneNumber: z.string().optional(),
-  // workPlace: z.string().optional(),
-  // globalRole: z.boolean().optional(),
-  // isGlobalVisibility: z.boolean().optional(),
-  userPermissions: z.object({
-    userId: z.string(),
-    role: z.enum(['User', 'Technician', 'Admin']),
-    appAccess: z.array(
-      z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
-    ),
-  }),
-});
+export const userFormSchema = z
+  .object({
+    email: z
+      .string()
+      .email({ message: 'Email must be valid.' })
+      .min(2, { message: 'Email must be at least 2 characters.' })
+      .max(50, { message: 'Email must be at most 50 characters.' })
+      .optional(),
+    technician: z.string().optional(),
+    userPermissions: z.object({
+      userId: z.string().optional(),
+      role: z.enum(['User', 'Technician', 'Admin']),
+      appAccess: z.array(
+        z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
+      ),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    const { role } = data.userPermissions;
+    if (role === 'Technician') {
+      if (!data.technician) {
+        ctx.addIssue({
+          path: ['technician'],
+          message: 'Choose a technician.',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+    if (role === 'User') {
+      if (!data.email) {
+        ctx.addIssue({
+          path: ['email'],
+          message: 'Email must be added.',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+  });

@@ -29,22 +29,23 @@ export const AppPlan = ({
 
   return (
     <div
-      className={`flex justify-between items-center border border-gray-200 py-3 px-6 ${
-        isActive ? 'bg-gray-100' : ''
+      className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
+        isActive ? 'bg-neutral-1' : ''
       }`}
     >
-      {user === 'Superadmin' && (
-        <FormField
-          name={formField}
-          render={({ field }) => (
-            <FormItem className="flex w-full justify-between items-center">
-              <FormLabel
-                className="flex items-center"
-                variant="medium"
-                color="foreground"
-              >
-                {plan}
-              </FormLabel>
+      <FormField
+        name={formField}
+        render={({ field }) => (
+          <FormItem className="flex w-full justify-between items-center">
+            <FormLabel
+              className="flex items-center"
+              variant="medium"
+              color="foreground"
+            >
+              {plan}
+            </FormLabel>
+
+            {user === 'Superadmin' && (
               <FormControl>
                 <Switch
                   checked={activePlan === plan}
@@ -55,27 +56,17 @@ export const AppPlan = ({
                   }}
                 />
               </FormControl>
-            </FormItem>
-          )}
-        />
-      )}
+            )}
 
-      {user === 'Client' && (
-        <div className="flex w-full justify-between items-center">
-          <FormLabel
-            className={`text-lg font-semibold ${isActive ? 'text-orange-600' : 'text-gray-800'}`}
-          >
-            {plan}
-          </FormLabel>
-
-      {isActive && (
-        <Badge variant="attention" className="flex items-center">
-          <LucideCircleCheckBig size="16" className="mr-1" />
-          Your selected plan
-        </Badge>
-      )}
-      </div>
-    )}
+            {user === 'Client' && isActive && (
+              <Badge variant="attention" className="flex items-center">
+                <LucideCircleCheckBig size="16" className="mr-1" />
+                Your selected plan
+              </Badge>
+            )}
+          </FormItem>
+        )}
+      />
     </div>
   );
 };

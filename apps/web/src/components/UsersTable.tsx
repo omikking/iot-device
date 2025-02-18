@@ -95,13 +95,11 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         const rowIndex = users.findIndex((user) => user.id === row.original.id);
 
         return (
-          <>
-            <DeleteEditDropdown
-              itemSelected={rowIndex}
-              openDeleteModal={openDeleteModal}
-              handleEdit={openEditModal}
-            />
-          </>
+          <DeleteEditDropdown
+            itemSelected={rowIndex}
+            openDeleteModal={openDeleteModal}
+            handleEdit={openEditModal}
+          />
         );
       },
     },

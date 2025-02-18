@@ -20,7 +20,7 @@ export default function Page(): JSX.Element {
         Pull-test overview
       </Headline>
 
-      <div className="flex flex-wrap gap-12 w-full justify-center  border-gold-3">
+      <div className="flex flex-wrap gap-12 w-full justify-center">
         <Link href="/boltresults">
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">

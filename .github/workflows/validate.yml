@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - dev-2
     paths-ignore:
       - '**.md'
 

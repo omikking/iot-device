@@ -63,6 +63,7 @@ export const AppPlan = ({
                 <Switch
                   checked={activePlan === plan}
                   onCheckedChange={(checked) => {
+                    // @TODO Look into this, might be over complex
                     const newPlan = checked ? plan : undefined;
                     // AI Generated Code
                     const currentPlans = field.value || [];

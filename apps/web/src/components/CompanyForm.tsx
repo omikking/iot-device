@@ -105,6 +105,7 @@ export const CompanyForm = ({
   // CreateCompanyFormValues | UpdateCompanyFormValues
   const companyForm = useForm<Company>({
     resolver: zodResolver(
+      // companyFormSchema should be?
       company ? updateCompanyFormSchema : createCompanyFormSchema,
     ),
     defaultValues: {

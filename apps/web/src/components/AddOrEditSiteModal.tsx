@@ -16,17 +16,23 @@ import {
 } from '@gsp/ui';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { SiteResultSchema } from '@/app/mock/mock';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { siteFormSchema, SiteFormValues } from './schemas/SitesFormSchema';
 import { LucidePlus } from 'lucide-react';
 import { SuccessMessage } from './SuccessMessage';
 
 type AddOrEditSiteModalProps = {
-  site?: SiteResultSchema;
+  site?: ISite;
   appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabolts';
   onOpenChange: (open: boolean) => void;
 };
+
+type ISite = {
+  id: string;
+  siteName: string;
+  address: string;
+  passCriteria: string;
+}
 
 export const AddOrEditSiteModal = ({
   site,
@@ -39,7 +45,7 @@ export const AddOrEditSiteModal = ({
   const form = useForm<SiteFormValues>({
     resolver: zodResolver(siteFormSchema),
     defaultValues: {
-      name: site?.name ?? '',
+      name: site?.siteName ?? '',
       address: site?.address ?? '',
       passCriteria: site?.passCriteria ?? '',
     },
@@ -54,12 +60,12 @@ export const AddOrEditSiteModal = ({
   };
 
   const onSubmit = async (data: SiteFormValues) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    // Simulate API call
+    // setIsLoading(true);
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
+    // // Simulate API call
     console.log('Site added', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
+    // setIsSuccessful(true);
+    // setIsLoading(false);
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
@@ -156,7 +162,7 @@ export const AddOrEditSiteModal = ({
                   <LucidePlus />
                 )}
 
-                {site ? 'Save changes' : 'Add user'}
+                {site ? 'Save changes' : 'Add site'}
               </Button>
             </ModalFooter>
           </form>

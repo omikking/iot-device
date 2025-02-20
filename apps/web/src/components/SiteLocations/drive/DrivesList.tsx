@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { DriveItem } from './DriveItem';
 import { Button, Headline, Text } from '@gsp/ui';
-// import { IDriveMock, ILevelMock } from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
-// import { IDrive, ILevel } from "@/components/SiteLocations/urql-siteslocations/SitesLocationsUrql";
-
+import {
+  ILevel,
+  IDrive,
+} from '@/components/urql-siteslocations/SitesLocationsUrql';
 interface DrivesListComponentProps {
-  drivesOptions: IDriveMock[];
+  drivesOptions: IDrive[];
   selectedDrive?: string;
   selectedLevel?: string;
-  levelsOptions: ILevelMock[];
+  levelsOptions: ILevel[];
   handleSetDrive: () => void;
 }
 export const DrivesList = ({
@@ -24,6 +25,7 @@ export const DrivesList = ({
     drivesOptions.push({
       id: `${drivesOptions.length + 1}`,
       driveName: '',
+      levelId: selectedLevel as string,
       locations: [],
     });
   };

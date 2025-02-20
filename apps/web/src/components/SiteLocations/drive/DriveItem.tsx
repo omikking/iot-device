@@ -1,13 +1,14 @@
 import { Text } from '@gsp/ui';
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
-import { IDrive } from '@/components/SiteLocations/urql-siteslocations/SitesLocationsUrql';
+import { IDrive } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { DriveUpdateUrql } from '@/components/urql-siteslocations/DriveUpdateUrql';
 
 interface DriveComponentProps {
   drive: IDrive;
@@ -28,20 +29,48 @@ export const DriveItem = ({
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { updateDrive } = DriveUpdateUrql();
 
-  const driveForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: '',
-        driveName: '',
-      },
-    });
+  const form = useForm<SiteLocationsValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: drive.id,
+      driveName: drive.driveName,
+    },
+  });
+
+  const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
+    console.log('Form state:', form.getValues());
+    console.log('Form data:', formData);
+    console.log('Drive ID:', drive.id);
+
+    try {
+      const isDuplicate = drivesOptions.some(
+        (drive) => drive.driveName === formData.driveName,
+      );
+
+      if (isDuplicate) {
+        alert('This drive already exists. Please enter a different drive.');
+        return;
+      }
+
+      const result = await updateDrive(drive.id, {
+        driveName: formData.driveName || '',
+      });
+
+      console.log('update result: ', result);
+
+      if (result) {
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Error updating drive:', error);
+    }
+  };
 
   const handleEditDrive = () => {
     setIsEditing(true);
-
-    driveForm.setValue('name', drive.driveName);
+    form.setValue('driveName', drive.driveName);
   };
 
   const handleCancelDrive = (index: number) => {
@@ -50,36 +79,9 @@ export const DriveItem = ({
     newDrives.splice(index, 1);
   };
 
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const newDriveName = formData.get('drive') as string;
-
-    const isDuplicate = drivesOptions.some(
-      (drive) => drive.driveName === newDriveName,
-    );
-
-    if (isDuplicate) {
-      alert('This drive already exists. Please enter a different drive.');
-      return;
-    }
-
-    const newDrives = [...drivesOptions];
-    newDrives[index] = {
-      ...newDrives[index],
-      name: formData.get('drive') as string,
-      locations: [],
-    };
-    setIsEditing(false);
-  };
-
   const handleCancelEdit = () => {
     setIsEditing(false);
-    driveForm.reset();
+    form.reset();
   };
 
   return (
@@ -93,11 +95,10 @@ export const DriveItem = ({
       >
         {!drive.driveName || isEditing ? (
           <SiteLocationsForm
-            form={driveForm}
-            onSubmit={handleEditSubmit}
+            form={form}
+            onSubmit={handleSubmit}
             onCancel={handleCancelEdit}
-            placeholder="New drive..."
-            name="drive"
+            type={'drive'}
             index={index}
             inputRef={inputRef}
           />

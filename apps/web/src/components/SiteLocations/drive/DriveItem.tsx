@@ -40,10 +40,6 @@ export const DriveItem = ({
   });
 
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
-    console.log('Form state:', form.getValues());
-    console.log('Form data:', formData);
-    console.log('Drive ID:', drive.id);
-
     try {
       const isDuplicate = drivesOptions.some(
         (drive) => drive.driveName === formData.driveName,

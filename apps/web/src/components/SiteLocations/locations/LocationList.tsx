@@ -12,21 +12,19 @@ interface LocationsListComponentProps {
   locationsOptions: ILocation[];
   drivesOptions: IDrive[];
   handleSetLocation: () => void;
-  // setLocationsOptionsMock: React.Dispatch<React.SetStateAction<ILocation[]>>;
 }
 
 export const LocationsList = ({
   selectedDrive,
   locationsOptions,
-  // drivesOptions,
+  drivesOptions,
   handleSetLocation,
-  // setLocationsOptionsMock,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addLocation = () => {
     locationsOptions.push({
-      driveId: '', // This is not correct
+      driveId: selectedDrive ?? '', // Better to use nullish coalescing
       id: `${locationsOptions.length + 1}`,
       locationName: '',
     });
@@ -61,7 +59,6 @@ export const LocationsList = ({
             index={index}
             inputRef={inputRef}
             handleSetLocation={handleSetLocation}
-            // setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>
@@ -71,10 +68,10 @@ export const LocationsList = ({
             size={'small'}
             variant={'primary'}
             onClick={() => addLocation()}
-            // disabled={
-            //   drivesOptions.length === 0 ||
-            //   locationsOptions.some((location) => location.locationName === '')
-            // }
+            disabled={
+              drivesOptions.length === 0 ||
+              locationsOptions.some((location) => location.locationName === '')
+            }
           >
             <LucidePlus /> Add location
           </Button>

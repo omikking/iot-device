@@ -122,6 +122,7 @@ export default function Page(): JSX.Element {
     setSelectedDrive(drive);
   };
 
+  // Remove this function later, just for logging
   const handleSetLocation = (location?: string) => {
     console.log('location', location);
   };
@@ -195,17 +196,17 @@ export default function Page(): JSX.Element {
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
-              levelsOptions={levels || []}
               selectedLevel={selectedLevel}
               selectedSite={selectedSite}
+              levelsOptions={levels || []}
               handleSetLevel={handleSetLevel}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
-              drivesOptions={drives || []}
               selectedDrive={selectedDrive}
               selectedLevel={selectedLevel}
+              drivesOptions={drives || []}
               levelsOptions={levels || []}
               handleSetDrive={handleSetDrive}
             />

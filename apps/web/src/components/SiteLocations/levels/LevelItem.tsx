@@ -40,10 +40,6 @@ export const LevelItem = ({
   });
 
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
-    console.log('Form state:', form.getValues());
-    console.log('Form data:', formData);
-    console.log('Level ID:', level.id);
-
     try {
       const isDuplicate = levelsOptions.some(
         (level) => level.levelName === formData.levelName,
@@ -116,9 +112,6 @@ export const LevelItem = ({
               itemSelected={index}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
-              // handleEdit={() => {
-              //   console.log('DAWdawDAWD');
-              // }}
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"

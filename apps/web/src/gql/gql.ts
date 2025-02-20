@@ -22,8 +22,8 @@ const documents = {
     "\n  query getMeCompanies {\n    companies {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n    }\n  }\n": types.GetMeCompaniesDocument,
     "\n  query getCompanies {\n    companies {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n    }\n  }\n": types.GetCompaniesDocument,
     "\n  query GetCompanyName($id: String!) {\n    company(id: $id) {\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
-    "\n  query getCompanySites {\n    sites {\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.GetCompanySitesDocument,
-    "\n  mutation DeleteSite($siteName: String!) {\n    removeSite(id: $siteName) {\n      id\n      siteName\n      address\n    }\n  }\n": types.DeleteSiteDocument,
+    "\n  query getCompanySites {\n    sites {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.GetCompanySitesDocument,
+    "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.DeleteSiteDocument,
     "\n  query getSites {\n    sites {\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.GetSitesDocument,
 };
 
@@ -76,11 +76,11 @@ export function graphql(source: "\n  query GetCompanyName($id: String!) {\n    c
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getCompanySites {\n    sites {\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"): (typeof documents)["\n  query getCompanySites {\n    sites {\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"];
+export function graphql(source: "\n  query getCompanySites {\n    sites {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"): (typeof documents)["\n  query getCompanySites {\n    sites {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation DeleteSite($siteName: String!) {\n    removeSite(id: $siteName) {\n      id\n      siteName\n      address\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSite($siteName: String!) {\n    removeSite(id: $siteName) {\n      id\n      siteName\n      address\n    }\n  }\n"];
+export function graphql(source: "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"): (typeof documents)["\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

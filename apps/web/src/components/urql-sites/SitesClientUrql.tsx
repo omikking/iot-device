@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 
-type ISite = {
+export type ISite = {
   id: string;
   siteName: string;
   address: string;
@@ -16,6 +16,7 @@ type ISites = {
 const getSitesQuery = graphql(`
   query getCompanySites {
     sites {
+      id
       siteName
       address
       postalCode

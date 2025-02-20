@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
 
 interface LevelComponentProps {
   selectedLevel?: string;
@@ -28,49 +29,51 @@ export const LevelItem = ({
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { updateLevel } = LevelUpdateUrql();
 
-  const levelForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: '',
-        name: '',
-      },
-    });
+  const form = useForm<SiteLocationsValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: level.id,
+      levelName: level.levelName,
+    },
+  });
+
+  const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
+    console.log('Form state:', form.getValues());
+    console.log('Form data:', formData);
+    console.log('Level ID:', level.id);
+
+    try {
+      const isDuplicate = levelsOptions.some(
+        (level) => level.levelName === formData.levelName,
+      );
+
+      if (isDuplicate) {
+        alert('This level already exists. Please enter a different level.');
+        return;
+      }
+
+      const result = await updateLevel(level.id, {
+        levelName: formData.levelName || '',
+      });
+      console.log('update result: ', result);
+      if (result) {
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Failed to update level:', error);
+    }
+  };
 
   const handleEditLevel = () => {
     setIsEditing(true);
-    levelForm.setValue('name', level.levelName);
-  };
-
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    const formData = new FormData(e.currentTarget);
-    const newLevelName = formData.get('level') as string;
-
-    const isDuplicate = levelsOptions.some(
-      (level) => level.levelName === newLevelName,
-    );
-
-    if (isDuplicate) {
-      alert('This level already exists. Please enter a different level.');
-      return;
-    }
-
-    const newLevels = [...levelsOptions];
-    newLevels[index] = {
-      ...newLevels[index],
-      levelName: newLevelName,
-    };
-
-    setIsEditing(false);
+    form.setValue('levelName', level.levelName);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    levelForm.reset();
+    form.reset();
   };
 
   const handleCancelLevel = (
@@ -93,11 +96,10 @@ export const LevelItem = ({
       >
         {!level.levelName || isEditing ? (
           <SiteLocationsForm
-            form={levelForm}
-            onSubmit={handleEditSubmit}
+            form={form}
+            type="level"
+            onSubmit={handleSubmit}
             onCancel={handleCancelEdit}
-            placeholder="New level..."
-            name="level"
             index={index}
             inputRef={inputRef}
           />
@@ -114,6 +116,9 @@ export const LevelItem = ({
               itemSelected={index}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
+              // handleEdit={() => {
+              //   console.log('DAWdawDAWD');
+              // }}
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"

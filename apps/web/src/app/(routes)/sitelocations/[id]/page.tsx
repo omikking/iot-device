@@ -25,47 +25,9 @@ import {
   ISite,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
 
-// export type Site = {
-//   id: string;
-//   siteName: string;
-//   address: string;
-//   postalCode: string;
-//   city: string;
-//   country: string;
-//   companyId: string;
-
-//   // createdAt
-//   // updatedAt
-// };
-
-// export interface ISiteMock {
-//   id: string;
-//   name: string;
-//   levels: ILevelMock[];
-// }
-
-// export interface ILevelMock {
-//   id: string;
-//   levelName: string;
-//   siteId: string;
-//   drives: IDriveMock[];
-// }
-
-// export interface IDriveMock {
-//   id: string;
-//   driveName: string;
-//   locations: ILocationMock[];
-// }
-
-// export interface ILocation {
-//   id: string;
-//   driveId: string;
-//   locationName: string;
-// }
-
 export default function Page(): JSX.Element {
   const params = useParams();
-  const companyId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const companyId = params.id as string;
   const searchParams = useSearchParams();
   const siteTableValue = searchParams.get('data');
   // fetch sites

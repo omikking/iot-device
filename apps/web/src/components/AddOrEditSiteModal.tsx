@@ -39,7 +39,7 @@ export const AddOrEditSiteModal = ({
   appSelected,
   onOpenChange,
 }: AddOrEditSiteModalProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading ] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
   const form = useForm<SiteFormValues>({

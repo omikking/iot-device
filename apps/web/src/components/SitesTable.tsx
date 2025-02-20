@@ -126,7 +126,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
         isOpen={isDeleteSiteModalOpen}
         itemToDelete={siteToDelete}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
+        onDelete={() => {
           handleDelete();
           closeDeleteModal();
         }}

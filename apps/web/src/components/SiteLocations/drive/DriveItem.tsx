@@ -9,6 +9,8 @@ import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsFor
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 import { IDrive } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { DriveUpdateUrql } from '@/components/urql-siteslocations/DriveUpdateUrql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 
 type DriveComponentProps = {
   index: number;
@@ -20,6 +22,16 @@ type DriveComponentProps = {
   setNewDriveId?: (id: string | undefined) => void;
   handleSetDrive: (name: string) => void;
 };
+
+const deleteDrivesMutation = graphql(`
+  mutation removeDrive($id: String!) {
+    removeDrive(id: $id) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
 
 export const DriveItem = ({
   drive,
@@ -33,6 +45,7 @@ export const DriveItem = ({
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(isNewDrive);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteDriveMutation] = useMutation(deleteDrivesMutation);
   const { updateDrive } = DriveUpdateUrql();
 
   const form = useForm<SiteLocationsValue>({
@@ -42,6 +55,21 @@ export const DriveItem = ({
       driveName: drive.driveName,
     },
   });
+
+  const deleteDrive = async (id: string) => {
+    try {
+      const response = await deleteDriveMutation({ id });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error deleting drive:', error);
+    }
+  };
 
   useEffect(() => {
     if (isNewDrive) {
@@ -133,7 +161,9 @@ export const DriveItem = ({
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {
-                handleCancelDrive(index), setIsDeleteModalOpen(false);
+                handleCancelDrive(index),
+                  setIsDeleteModalOpen(false),
+                  deleteDrive(drive.id);
               }}
             >
               <Text variant="medium" color={'foreground'}>

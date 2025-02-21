@@ -9,6 +9,8 @@ import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsFor
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 
 type LevelComponentProps = {
   level: ILevel;
@@ -20,6 +22,16 @@ type LevelComponentProps = {
   handleSetLevel: (name: string) => void;
   setNewLevelId?: (id: string | undefined) => void;
 };
+
+const deleteLevelsMutation = graphql(`
+  mutation removeLevel($id: String!) {
+    removeLevel(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
 
 export const LevelItem = ({
   selectedLevel,
@@ -34,6 +46,7 @@ export const LevelItem = ({
   // const [isEditing, setIsEditing] = useState(false);
   const [isEditing, setIsEditing] = useState(isNewLevel);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteLevelMutation] = useMutation(deleteLevelsMutation);
   const { updateLevel } = LevelUpdateUrql();
 
   const form = useForm<SiteLocationsValue>({
@@ -43,6 +56,21 @@ export const LevelItem = ({
       levelName: level.levelName,
     },
   });
+
+  const deleteLevel = async (id: string) => {
+    try {
+      const response = await deleteLevelMutation({ id });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error deleting level:', error);
+    }
+  };
 
   useEffect(() => {
     if (isNewLevel) {
@@ -138,7 +166,9 @@ export const LevelItem = ({
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={(e) => {
-                handleCancelLevel(e, index), setIsDeleteModalOpen(false);
+                handleCancelLevel(e, index),
+                  setIsDeleteModalOpen(false),
+                  deleteLevel(level.id);
               }}
             >
               <Text variant="medium" color={'foreground'}>

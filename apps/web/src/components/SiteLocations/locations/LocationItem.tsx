@@ -9,8 +9,10 @@ import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsFor
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
 import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { LocationUpdateUrql } from '@/components/urql-siteslocations/LocationUpdateUrql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 
-interface LocationComponentProps {
+type LocationComponentProps = {
   index: number;
   location: ILocation;
   locationsOptions: ILocation[];
@@ -18,7 +20,17 @@ interface LocationComponentProps {
   isNewLocation?: boolean;
   setNewLocationId?: (id: string | undefined) => void;
   handleSetLocation: (name: string) => void;
-}
+};
+
+const deleteLocationsMutation = graphql(`
+  mutation removeLocation($id: String!) {
+    removeLocation(id: $id) {
+      id
+      locationName
+      driveId
+    }
+  }
+`);
 
 export const LocationItem = ({
   location,
@@ -31,6 +43,7 @@ export const LocationItem = ({
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteLocationMutation] = useMutation(deleteLocationsMutation);
   const { updateLocation } = LocationUpdateUrql();
 
   const form = useForm<SiteLocationsValue>({
@@ -40,6 +53,20 @@ export const LocationItem = ({
       locationName: location.locationName,
     },
   });
+
+  const deleteLocation = async (id: string) => {
+    try {
+      const response = await deleteLocationMutation({ id });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error deleting location:', error);
+    }
+  };
 
   useEffect(() => {
     if (isNewLocation) {
@@ -132,7 +159,9 @@ export const LocationItem = ({
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {
-                handleCancelLocation(index), setIsDeleteModalOpen(false);
+                handleCancelLocation(index),
+                  setIsDeleteModalOpen(false),
+                  deleteLocation(location.id);
               }}
             >
               <Text variant="medium" color={'foreground'}>

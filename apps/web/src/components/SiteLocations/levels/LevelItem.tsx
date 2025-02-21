@@ -10,16 +10,16 @@ import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm
 import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
 
-interface LevelComponentProps {
-  selectedLevel?: string;
+type LevelComponentProps = {
   level: ILevel;
-  levelsOptions: ILevel[];
   index: number;
+  selectedLevel?: string;
+  levelsOptions: ILevel[];
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetLevel: (name: string) => void;
   isNewLevel?: boolean;
+  handleSetLevel: (name: string) => void;
   setNewLevelId?: (id: string | undefined) => void;
-}
+};
 
 export const LevelItem = ({
   selectedLevel,

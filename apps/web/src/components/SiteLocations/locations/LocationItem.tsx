@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text } from '@gsp/ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,10 +11,12 @@ import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { LocationUpdateUrql } from '@/components/urql-siteslocations/LocationUpdateUrql';
 
 interface LocationComponentProps {
-  location: ILocation;
   index: number;
+  location: ILocation;
   locationsOptions: ILocation[];
   inputRef: React.RefObject<HTMLInputElement>;
+  isNewLocation?: boolean;
+  setNewLocationId?: (id: string | undefined) => void;
   handleSetLocation: (name: string) => void;
 }
 
@@ -23,6 +25,8 @@ export const LocationItem = ({
   index,
   locationsOptions,
   inputRef,
+  isNewLocation,
+  setNewLocationId,
   handleSetLocation,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +40,12 @@ export const LocationItem = ({
       locationName: location.locationName,
     },
   });
+
+  useEffect(() => {
+    if (isNewLocation) {
+      setIsEditing(true);
+    }
+  }, [isNewLocation]);
 
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
@@ -53,9 +63,14 @@ export const LocationItem = ({
       const result = await updateLocation(location.id, {
         locationName: formData.locationName || '',
       });
+
       console.log('update result: ', result);
+
       if (result) {
         setIsEditing(false);
+        if (isNewLocation) {
+          setNewLocationId && setNewLocationId(undefined);
+        }
       }
     } catch (error) {
       console.error('Error updating location:', error);
@@ -103,6 +118,7 @@ export const LocationItem = ({
             <Text className="w-full" variant="small" color="foreground">
               {location.locationName}
             </Text>
+
             <DeleteEditDropdown
               itemSelected={index}
               openDeleteModal={() => setIsDeleteModalOpen(true)}

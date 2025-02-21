@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DriveItem } from './DriveItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
@@ -6,13 +6,26 @@ import {
   ILevel,
   IDrive,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
-interface DrivesListComponentProps {
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+
+type DrivesListComponentProps = {
   drivesOptions: IDrive[];
   selectedDrive?: string;
   selectedLevel?: string;
   levelsOptions: ILevel[];
   handleSetDrive: () => void;
-}
+};
+
+const createDrivesMutation = graphql(`
+  mutation createDrive($createDriveInput: CreateDriveInput!) {
+    createDrive(createDriveInput: $createDriveInput) {
+      driveName
+      levelId
+    }
+  }
+`);
+
 export const DrivesList = ({
   drivesOptions,
   selectedDrive,
@@ -21,14 +34,48 @@ export const DrivesList = ({
   handleSetDrive,
 }: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const addDrive = () => {
-    drivesOptions.push({
-      id: `${drivesOptions.length + 1}`,
-      driveName: '',
-      levelId: selectedLevel as string,
-      locations: [],
-    });
+  const [, createDriveMutation] = useMutation(createDrivesMutation);
+  const [newDriveId, setNewDriveId] = useState<string | undefined>(undefined);
+
+  // Finding the level to use levelId
+  const level = levelsOptions.find(
+    (level) => level.levelName === selectedLevel,
+  );
+
+  const addDrive = async () => {
+    if (!selectedLevel) return;
+
+    try {
+      const fooTemp = `New drive ${drivesOptions.length + 1}`;
+      const response = await createDriveMutation({
+        createDriveInput: {
+          driveName: fooTemp,
+          levelId: level?.id || '',
+        },
+      });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      // if (inputRef.current) {
+      //   setTimeout(() => {
+      //     inputRef.current?.focus();
+      //   }, 0);
+      // }
+
+      // // Focus the input
+      // setTimeout(() => {
+      //   if (inputRef.current) {
+      //     inputRef.current.focus();
+      //   }
+      // }, 0);
+    } catch (error) {
+      console.error('Mutation error:', error);
+    }
   };
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -52,13 +99,15 @@ export const DrivesList = ({
         )}
         {drivesOptions?.map((drive, index) => (
           <DriveItem
-            key={index}
+            key={drive.id}
             drive={drive}
-            drivesOptions={drivesOptions}
-            selectedDrive={selectedDrive}
-            inputRef={inputRef}
             index={index}
+            inputRef={inputRef}
+            selectedDrive={selectedDrive}
+            drivesOptions={drivesOptions}
+            isNewDrive={drive.id === newDriveId}
             handleSetDrive={handleSetDrive}
+            setNewDriveId={setNewDriveId}
           />
         ))}
       </div>

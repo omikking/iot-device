@@ -1,5 +1,5 @@
 import { Text } from '@gsp/ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { SiteLocationsForm } from '../SiteLocationsForm';
@@ -10,14 +10,16 @@ import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm
 import { IDrive } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { DriveUpdateUrql } from '@/components/urql-siteslocations/DriveUpdateUrql';
 
-interface DriveComponentProps {
+type DriveComponentProps = {
+  index: number;
   drive: IDrive;
   drivesOptions: IDrive[];
-  index: number;
   selectedDrive?: string;
   inputRef: React.RefObject<HTMLInputElement>;
+  isNewDrive?: boolean;
+  setNewDriveId?: (id: string | undefined) => void;
   handleSetDrive: (name: string) => void;
-}
+};
 
 export const DriveItem = ({
   drive,
@@ -25,9 +27,11 @@ export const DriveItem = ({
   selectedDrive,
   inputRef,
   index,
+  isNewDrive,
+  setNewDriveId,
   handleSetDrive,
 }: DriveComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isNewDrive);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { updateDrive } = DriveUpdateUrql();
 
@@ -38,6 +42,12 @@ export const DriveItem = ({
       driveName: drive.driveName,
     },
   });
+
+  useEffect(() => {
+    if (isNewDrive) {
+      setIsEditing(true);
+    }
+  }, [isNewDrive]);
 
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
@@ -58,6 +68,9 @@ export const DriveItem = ({
 
       if (result) {
         setIsEditing(false);
+        if (isNewDrive) {
+          setNewDriveId && setNewDriveId(undefined);
+        }
       }
     } catch (error) {
       console.error('Error updating drive:', error);

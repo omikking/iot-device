@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
@@ -6,13 +6,24 @@ import {
   IDrive,
   ILocation,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 
-interface LocationsListComponentProps {
+type LocationsListComponentProps = {
   selectedDrive?: string;
   locationsOptions: ILocation[];
   drivesOptions: IDrive[];
   handleSetLocation: () => void;
-}
+};
+
+const createLocationsMutation = graphql(`
+  mutation createLocation($createLocationInput: CreateLocationInput!) {
+    createLocation(createLocationInput: $createLocationInput) {
+      locationName
+      driveId
+    }
+  }
+`);
 
 export const LocationsList = ({
   selectedDrive,
@@ -21,13 +32,36 @@ export const LocationsList = ({
   handleSetLocation,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [, createLocationMutation] = useMutation(createLocationsMutation);
+  const [newLocationId, setNewLocationId] = useState<string | undefined>(
+    undefined,
+  );
 
-  const addLocation = () => {
-    locationsOptions.push({
-      driveId: selectedDrive ?? '', // Better to use nullish coalescing
-      id: `${locationsOptions.length + 1}`,
-      locationName: '',
-    });
+  const drive = drivesOptions.find(
+    (drive) => drive.driveName === selectedDrive,
+  );
+
+  const addLocation = async () => {
+    if (!selectedDrive) return;
+
+    try {
+      const fooTemp = `New location ${locationsOptions.length + 1}`;
+      const response = await createLocationMutation({
+        createLocationInput: {
+          locationName: fooTemp,
+          driveId: drive?.id || '',
+        },
+      });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   useEffect(() => {
@@ -53,11 +87,13 @@ export const LocationsList = ({
         )}
         {locationsOptions?.map((location, index) => (
           <LocationItem
-            key={index}
-            location={location}
-            locationsOptions={locationsOptions}
+            key={location.id}
             index={index}
+            location={location}
             inputRef={inputRef}
+            locationsOptions={locationsOptions}
+            isNewLocation={location.id === newLocationId}
+            setNewLocationId={setNewLocationId}
             handleSetLocation={handleSetLocation}
           />
         ))}

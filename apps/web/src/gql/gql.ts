@@ -16,7 +16,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {\n    createCompany(createCompanyInput: $createCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.CreateCompanyDocument,
     "\n  mutation UpdateCompany(\n    $id: String!\n    $updateCompanyInput: UpdateCompanyInput!\n  ) {\n    updateCompany(id: $id, updateCompanyInput: $updateCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.UpdateCompanyDocument,
+    "\n  mutation createDrive($createDriveInput: CreateDriveInput!) {\n    createDrive(createDriveInput: $createDriveInput) {\n      driveName\n      levelId\n    }\n  }\n": types.CreateDriveDocument,
     "\n  mutation createLevel($createLevelInput: CreateLevelInput!) {\n    createLevel(createLevelInput: $createLevelInput) {\n      levelName\n      siteId\n    }\n  }\n": types.CreateLevelDocument,
+    "\n  mutation createLocation($createLocationInput: CreateLocationInput!) {\n    createLocation(createLocationInput: $createLocationInput) {\n      locationName\n      driveId\n    }\n  }\n": types.CreateLocationDocument,
     "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
     "\n  query getMeCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.GetMeCompanyDocument,
@@ -55,7 +57,15 @@ export function graphql(source: "\n  mutation UpdateCompany(\n    $id: String!\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation createDrive($createDriveInput: CreateDriveInput!) {\n    createDrive(createDriveInput: $createDriveInput) {\n      driveName\n      levelId\n    }\n  }\n"): (typeof documents)["\n  mutation createDrive($createDriveInput: CreateDriveInput!) {\n    createDrive(createDriveInput: $createDriveInput) {\n      driveName\n      levelId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation createLevel($createLevelInput: CreateLevelInput!) {\n    createLevel(createLevelInput: $createLevelInput) {\n      levelName\n      siteId\n    }\n  }\n"): (typeof documents)["\n  mutation createLevel($createLevelInput: CreateLevelInput!) {\n    createLevel(createLevelInput: $createLevelInput) {\n      levelName\n      siteId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation createLocation($createLocationInput: CreateLocationInput!) {\n    createLocation(createLocationInput: $createLocationInput) {\n      locationName\n      driveId\n    }\n  }\n"): (typeof documents)["\n  mutation createLocation($createLocationInput: CreateLocationInput!) {\n    createLocation(createLocationInput: $createLocationInput) {\n      locationName\n      driveId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -8,12 +8,12 @@ import { useMutation } from 'urql';
 import { graphql } from '@/gql';
 
 // @TODO have to fix why im getting warning
-interface LevelsListComponentProps {
+type LevelsListComponentProps = {
   levelsOptions: ILevel[];
   selectedLevel?: string;
   selectedSiteId?: string;
   handleSetLevel: () => void;
-}
+};
 
 const createLevelsMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -31,7 +31,7 @@ export const LevelsList = ({
   handleSetLevel,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [result, createLevelMutation] = useMutation(createLevelsMutation);
+  const [, createLevelMutation] = useMutation(createLevelsMutation);
   const [newLevelId, setNewLevelId] = useState<string | undefined>(undefined);
 
   const addLevel = async () => {
@@ -49,7 +49,6 @@ export const LevelsList = ({
           siteId: selectedSiteId,
         },
       });
-      console.log('Result', result);
 
       if (response.error) {
         console.error('Mutation error:', response.error);
@@ -58,18 +57,18 @@ export const LevelsList = ({
 
       console.log('Mutation response:', response);
 
-      if (inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
-      }
+      // if (inputRef.current) {
+      //   setTimeout(() => {
+      //     inputRef.current?.focus();
+      //   }, 0);
+      // }
 
-      // Focus the input
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 0);
+      // // Focus the input
+      // setTimeout(() => {
+      //   if (inputRef.current) {
+      //     inputRef.current.focus();
+      //   }
+      // }, 0);
     } catch (error) {
       // @TODO add toast or alert for error?
       console.error('Mutation error:', error);
@@ -99,13 +98,13 @@ export const LevelsList = ({
         {levelsOptions?.map((level, index) => (
           <LevelItem
             key={level.id} // backend generates an id
-            selectedLevel={selectedLevel}
             level={level}
-            levelsOptions={levelsOptions}
             index={index}
             inputRef={inputRef}
-            handleSetLevel={handleSetLevel}
+            selectedLevel={selectedLevel}
+            levelsOptions={levelsOptions}
             isNewLevel={level.id === newLevelId}
+            handleSetLevel={handleSetLevel}
             setNewLevelId={setNewLevelId}
           />
         ))}

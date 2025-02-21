@@ -17,7 +17,7 @@ type SitesTableProps = {
 
 export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
   const { sites } = useSites();
-  const [, deleteSite ] = useMutation(deleteSitesMutation);
+  const [, deleteSite] = useMutation(deleteSitesMutation);
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
     undefined,
@@ -36,7 +36,6 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
   const handleDelete = async () => {
     if (siteToDelete !== undefined) {
       const siteToDeleteId = sites[siteToDelete]?.id;
-      console.log(siteToDeleteId)
       if (siteToDeleteId) {
         try {
           // Run the GraphQL mutation
@@ -44,8 +43,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
           if (response?.error) {
             throw new Error(response?.error?.message);
           }
-          console.log(`Site with id ${siteToDeleteId} removed successfully.`);
-          closeDeleteModal(); 
+          closeDeleteModal();
         } catch (error) {
           console.error('Failed to remove site:', error);
         }

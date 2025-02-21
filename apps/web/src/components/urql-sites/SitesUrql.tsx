@@ -29,6 +29,4 @@ const { getClient } = registerUrql(makeClient);
 export default async function SitesUrql() {
   const result = await getClient().query(getSitesQuery, {});
   if (result.error) return <p>Error</p>;
-
-  console.log(result.data?.sites);
 }

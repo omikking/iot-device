@@ -14,12 +14,43 @@ import {
   ModalTitle,
   Headline,
 } from '@gsp/ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { siteFormSchema, SiteFormValues } from './schemas/SitesFormSchema';
 import { LucidePlus } from 'lucide-react';
 import { SuccessMessage } from './SuccessMessage';
+import { useMutation } from 'urql';
+import { useParams } from 'next/navigation';
+import { graphql } from '@/gql';
+
+const createSite = graphql(`
+  mutation CreateSite($createSiteInput: CreateSiteInput!) {
+    createSite(createSiteInput: $createSiteInput) {
+      id
+      siteName
+      address
+      postalCode
+      city
+      country
+      companyId
+    }
+  }
+`);
+
+const updateSite = graphql(`
+  mutation UpdateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {
+    updateSite(id: $id, updateSiteInput: $updateSiteInput) {
+      id
+      siteName
+      address
+      postalCode
+      city
+      country
+      companyId
+    }
+  }
+`);
 
 type AddOrEditSiteModalProps = {
   site?: ISite;
@@ -32,15 +63,19 @@ type ISite = {
   siteName: string;
   address: string;
   passCriteria: string;
-}
+};
 
 export const AddOrEditSiteModal = ({
   site,
   appSelected,
   onOpenChange,
 }: AddOrEditSiteModalProps) => {
-  const [isLoading ] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const siteParams = useParams();
+  const siteId = Array.isArray(siteParams?.id)
+    ? siteParams?.id[0]
+    : siteParams?.id;
 
   const form = useForm<SiteFormValues>({
     resolver: zodResolver(siteFormSchema),
@@ -59,20 +94,61 @@ export const AddOrEditSiteModal = ({
     });
   };
 
+  useEffect(() => {
+    if (site) {
+      form.setValue('name', site.siteName);
+      form.setValue('address', site.address);
+      form.setValue('passCriteria', site.passCriteria);
+    }
+  }, [site, form]);
+
+  const [, createSiteResult] = useMutation(createSite);
+  const [, updateSiteResult] = useMutation(updateSite);
+
   const onSubmit = async (data: SiteFormValues) => {
-    // setIsLoading(true);
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // // Simulate API call
-    console.log('Site added', data);
-    // setIsSuccessful(true);
-    // setIsLoading(false);
-    setTimeout(() => {
-      onOpenChange(false);
-    }, 1500);
+    setIsLoading(true);
+
+    const input = {
+      siteName: data.name,
+      address: data.address,
+      passCriteria: undefined,
+      postalCode: '133713',
+      city: 'Göteborg',
+      country: 'Sweden',
+      companyId: siteId,
+    };
+
+    if (site) {
+      try {
+        const response = await updateSiteResult({
+          id: site.id,
+          updateSiteInput: input,
+        });
+        if (response.data) {
+          setIsSuccessful(true);
+          setTimeout(() => onOpenChange(false), 1500);
+        }
+      } catch (error) {
+        console.error('Error updating site', error);
+      }
+    } else {
+      try {
+        const response = await createSiteResult({ createSiteInput: input });
+        if (response.data) {
+          setIsSuccessful(true);
+          setTimeout(() => onOpenChange(false), 1500);
+        }
+      } catch (error) {
+        console.error('Error creating site', error);
+      }
+    }
+
     setTimeout(() => {
       setIsSuccessful(false);
       resetFormValues();
     }, 1700);
+
+    setIsLoading(false);
   };
 
   return (

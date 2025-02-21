@@ -15,9 +15,15 @@ import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
-import { SiteResultSchema } from '@/app/mock/mock';
 import { useParams } from 'next/navigation';
 import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
+
+type ISite = {
+  id: string;
+  siteName: string;
+  address: string;
+  passCriteria: string;
+};
 
 export default function Page(): JSX.Element {
   const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
@@ -25,7 +31,7 @@ export default function Page(): JSX.Element {
   );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<
-    SiteResultSchema | undefined
+    ISite | undefined
   >(undefined);
 
   const handleModalToggle = (open: boolean) => {

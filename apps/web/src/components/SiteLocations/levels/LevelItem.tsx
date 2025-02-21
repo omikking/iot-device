@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -17,6 +17,8 @@ interface LevelComponentProps {
   index: number;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLevel: (name: string) => void;
+  isNewLevel?: boolean;
+  setNewLevelId?: (id: string | undefined) => void;
 }
 
 export const LevelItem = ({
@@ -25,9 +27,12 @@ export const LevelItem = ({
   levelsOptions,
   index,
   inputRef,
+  isNewLevel,
+  setNewLevelId,
   handleSetLevel,
 }: LevelComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isNewLevel);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { updateLevel } = LevelUpdateUrql();
 
@@ -38,6 +43,12 @@ export const LevelItem = ({
       levelName: level.levelName,
     },
   });
+
+  useEffect(() => {
+    if (isNewLevel) {
+      setIsEditing(true);
+    }
+  }, [isNewLevel]);
 
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
@@ -53,9 +64,14 @@ export const LevelItem = ({
       const result = await updateLevel(level.id, {
         levelName: formData.levelName || '',
       });
+
       console.log('update result: ', result);
+
       if (result) {
         setIsEditing(false);
+        if (isNewLevel) {
+          setNewLevelId && setNewLevelId(undefined);
+        }
       }
     } catch (error) {
       console.error('Failed to update level:', error);
@@ -63,6 +79,7 @@ export const LevelItem = ({
   };
 
   const handleEditLevel = () => {
+    console.log('In editing mode');
     setIsEditing(true);
     form.setValue('levelName', level.levelName);
   };

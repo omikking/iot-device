@@ -35,7 +35,7 @@ export default function Page(): JSX.Element {
   // Find the site that matches the sitename from url
   const siteFromUrl = sites.find((site) => site.siteName === siteTableValue);
 
-  const [selectedSite, setSelectedSite] = useState<string | undefined>(
+  const [selectedSiteId, setSelectedSiteId] = useState<string | undefined>(
     siteFromUrl?.id,
   );
 
@@ -47,7 +47,7 @@ export default function Page(): JSX.Element {
   const [selectedDrive, setSelectedDrive] = useState<string | undefined>();
 
   // get site by name by selected site
-  const foundSite = sites.find((site) => site.siteName === selectedSite);
+  const foundSite = sites.find((site) => site.siteName === selectedSiteName);
   // get site by id
   const { site } = useSite(foundSite?.id || '');
   const levels = site?.levels;
@@ -68,9 +68,11 @@ export default function Page(): JSX.Element {
     }));
   };
 
-  const handleSetSite = (site?: string) => {
-    setSelectedSite(site);
-    setSelectedSiteName(site);
+  const handleSetSite = (siteName?: string) => {
+    const site = sites.find((s) => s.siteName === siteName);
+    setSelectedSiteId(site?.id);
+    setSelectedSiteName(site?.siteName);
+
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
   };
@@ -115,14 +117,14 @@ export default function Page(): JSX.Element {
           <Dropdown
             id="site"
             placeholder="Select site"
-            selectedId={selectedSite}
+            selectedId={selectedSiteId}
             options={getSiteDropdownOptions(sites) as DropdownItem[]}
             onSelect={handleSetSite}
             className="w-96"
           />
           <Breadcrumb>
             <BreadcrumbList>
-              {selectedSite && (
+              {selectedSiteName && (
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
@@ -159,7 +161,7 @@ export default function Page(): JSX.Element {
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
               selectedLevel={selectedLevel}
-              selectedSite={selectedSite}
+              selectedSiteId={selectedSiteId}
               levelsOptions={levels || []}
               handleSetLevel={handleSetLevel}
             />

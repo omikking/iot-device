@@ -1,5 +1,4 @@
 import { UseFormReturn } from 'react-hook-form';
-// import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   FormControl,
   FormField,
@@ -8,10 +7,13 @@ import {
   FormMessage,
   Input,
 } from '@gsp/ui';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 interface AssociateDetailsFormProps {
-  //   companyForm: UseFormReturn<CompanyFormValues>;
-  companyForm: any;
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
 export const AssociateDetailsForm = ({
@@ -21,7 +23,7 @@ export const AssociateDetailsForm = ({
     <>
       <FormField
         control={companyForm.control}
-        name="assignSandvikAdministrator"
+        name="userPermissions"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">
@@ -36,7 +38,7 @@ export const AssociateDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="assignSandvikAdministrator"
+        name="userPermissions"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">
@@ -51,7 +53,7 @@ export const AssociateDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="assignSandvikAdministrator"
+        name="userPermissions"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">

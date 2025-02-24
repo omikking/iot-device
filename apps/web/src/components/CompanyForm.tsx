@@ -9,10 +9,12 @@ import { AppPlansContainer } from './AppPlansContainer';
 import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
 import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
   createCompanyFormSchema,
   updateCompanyFormSchema,
 } from './schemas/CompanyFormSchema';
-import { Company, CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
+import { Company } from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -44,12 +46,6 @@ const createCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
-      # userPermissions {
-      #   userId
-      # }
-      # users {
-
-      # }
     }
   }
 `);
@@ -75,12 +71,6 @@ const updateCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
-      # userPermissions {
-      #   userId
-      # }
-      # users {
-
-      # }
     }
   }
 `);
@@ -96,18 +86,17 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  const [, updateCompany] = useMutation(updateCompanyMutation);
   const [, createCompany] = useMutation(createCompanyMutation);
+  const [, updateCompany] = useMutation(updateCompanyMutation);
 
   // Temporary state for devmode
   const [isAdmin, setIsAdmin] = useState(true);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  // @TODO is zodResolver correct type?
-  // CreateCompanyFormValues | UpdateCompanyFormValues
-  const companyForm = useForm<Company>({
+  const companyForm = useForm<
+    CreateCompanyFormValues | UpdateCompanyFormValues
+  >({
     resolver: zodResolver(
-      // companyFormSchema should be?
       company ? updateCompanyFormSchema : createCompanyFormSchema,
     ),
     defaultValues: {
@@ -118,19 +107,23 @@ export const CompanyForm = ({
       city: company?.city || '',
       address: company?.address || '',
       postalCode: company?.postalCode || '',
-      plans: company?.plans || [],
-      users: company?.users || [],
+      plans: company?.plans ?? [],
+      userPermissions: company?.users?.map((user) => ({
+        newUserId: user.id,
+        oldUserId: user.id,
+      })),
     },
   });
 
-  const onSubmit: SubmitHandler<CreateCompanyInput | UpdateCompanyInput> = (
-    data,
-  ) => {
+  const onSubmit: SubmitHandler<
+    CreateCompanyFormValues | UpdateCompanyFormValues
+  > = (data) => {
     console.log(data);
+
     if (company) {
       updateCompany({
         id: company.id,
-        updateCompanyInput: data as UpdateCompanyInput,
+        updateCompanyInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
         console.error('Update company failed:', result.error);
@@ -138,18 +131,24 @@ export const CompanyForm = ({
     }
 
     if (!company && isNewCompany) {
-      createCompany({ createCompanyInput: data as CreateCompanyInput }).then(
-        (result) => {
-          // @TODO Add component later for handling error
-          console.error('Invite company failed:', result.error);
-        },
-      );
+      createCompany({ createCompanyInput: data }).then((result) => {
+        // @TODO Add component later for handling error
+        console.error('Invite company failed:', result.error);
+      });
     }
   };
 
   useEffect(() => {
     if (company) {
-      companyForm.reset(company);
+      companyForm.reset({
+        ...company,
+        plans: company.plans ?? [],
+        userPermissions:
+          company?.users?.map((user) => ({
+            newUserId: user.id,
+            oldUserId: user.id,
+          })) ?? [],
+      });
     }
   }, [company]);
 

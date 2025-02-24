@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-// Remove this file?
-
 export const companyFormSchema = z.object({
   name: z.string().min(3),
   orgNumber: z
@@ -21,14 +19,15 @@ export const companyFormSchema = z.object({
         id: z.string(),
         applicationName: z.string(),
         planLevel: z.string().optional(),
-        // expiringDate: z.string().optional(),
+        expiringDate: z.string().optional(),
       }),
     )
     .optional(),
-  userPermissions: z
+  users: z
     .array(
       z.object({
         userId: z.string(),
+        fullName: z.string(),
       }),
     )
     .optional(),
@@ -48,14 +47,15 @@ export const updateCompanyFormSchema = z.object({
         id: z.string(),
         applicationName: z.string(),
         planLevel: z.string().optional(),
-        // expiringDate: z.string().optional(),
+        expiringDate: z.string().optional(),
       }),
     )
     .optional(),
   userPermissions: z
     .array(
       z.object({
-        userId: z.string(),
+        newUserId: z.string().optional(),
+        oldUserId: z.string().optional(),
       }),
     )
     .optional(),
@@ -72,6 +72,7 @@ export const createCompanyFormSchema = z.object({
   plans: z
     .array(
       z.object({
+        id: z.string(),
         applicationName: z.string(),
         planLevel: z.string(),
         expiringDate: z.string().optional(),
@@ -80,7 +81,7 @@ export const createCompanyFormSchema = z.object({
     .optional(),
   userPermissions: z.array(
     z.object({
-      userId: z.string(),
+      newUserId: z.string(),
     }),
   ),
 });

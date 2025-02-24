@@ -8,8 +8,11 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { Company } from '@/gql/graphql';
 import { PlanLevel } from '@/app/mock/mock';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 // @TODO put in a utils folder
 export const capitalizeFirstLetter = (word: string) => {
@@ -20,13 +23,11 @@ interface AppPlanProps {
   plan: PlanLevel;
   activePlan?: PlanLevel;
   isAdmin: boolean;
-  // companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
-  companyForm: UseFormReturn<Company>;
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   applicationName: string;
   onPlanChange: (plan: PlanLevel) => void;
 }
 
-// @TODO fix toggle state and bg color on plan when selected
 export const AppPlan = ({
   plan,
   activePlan,

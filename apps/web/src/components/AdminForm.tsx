@@ -9,11 +9,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
-import { Company } from '@/gql/graphql';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 interface AdminFormProps {
-  // companyForm: UseFormReturn<CreateCompanyInput | UpdateCompanyInput>;
-  companyForm: UseFormReturn<Company>;
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
 export const AdminForm = ({ companyForm }: AdminFormProps) => {
@@ -24,8 +26,7 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
   return (
     <FormField
       control={companyForm.control}
-      // @TODO fix this
-      name="users"
+      name="userPermissions"
       render={() => {
         return (
           <FormItem className="w-96">

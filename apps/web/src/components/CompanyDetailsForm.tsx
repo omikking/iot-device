@@ -1,4 +1,3 @@
-import { Company } from '@/gql/graphql';
 import {
   ContentHolder,
   FormControl,
@@ -9,10 +8,13 @@ import {
   Input,
 } from '@gsp/ui';
 import { UseFormReturn } from 'react-hook-form';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 type CompanyDetailsFormProps = {
-  // not sure about this
-  companyForm: UseFormReturn<Company>;
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 };
 
 export const CompanyDetailsForm = ({

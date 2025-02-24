@@ -2,7 +2,7 @@
 import { Text, Headline } from '@gsp/ui';
 import { useState } from 'react';
 import { GoBack } from '@/components/GoBack';
-import { useCompany } from '@/components/urql-companies/CompanyClient';
+import { useCompany } from '@/components/urql-company/CompanyClient';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { CompanyForm } from '@/components/CompanyForm';

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
-import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
-import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import React, { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SiteLocationsForm } from '../SiteLocationsForm';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
 
 type LevelComponentProps = {
   level: ILevel;
@@ -43,7 +43,6 @@ export const LevelItem = ({
   setNewLevelId,
   handleSetLevel,
 }: LevelComponentProps) => {
-  // const [isEditing, setIsEditing] = useState(false);
   const [isEditing, setIsEditing] = useState(isNewLevel);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [, deleteLevelMutation] = useMutation(deleteLevelsMutation);

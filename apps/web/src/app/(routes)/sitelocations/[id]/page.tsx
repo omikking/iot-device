@@ -11,19 +11,19 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
-import Link from 'next/link';
-import React, { useState } from 'react';
-import { LucideMoveLeft } from 'lucide-react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
-import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
-import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
-import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 import {
   useSites,
   useSite,
   ISite,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { LucideMoveLeft } from 'lucide-react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
+import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
+import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
+import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 
 export default function Page(): JSX.Element {
   const params = useParams();
@@ -72,7 +72,6 @@ export default function Page(): JSX.Element {
     const site = sites.find((s) => s.siteName === siteName);
     setSelectedSiteId(site?.id);
     setSelectedSiteName(site?.siteName);
-
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
   };

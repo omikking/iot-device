@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { LucidePlus } from 'lucide-react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { LucidePlus } from 'lucide-react';
+import React, { useRef, useState } from 'react';
 import {
   IDrive,
   ILocation,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
-import { graphql } from '@/gql';
-import { useMutation } from 'urql';
 
 type LocationsListComponentProps = {
   selectedDrive?: string;
@@ -63,12 +63,6 @@ export const LocationsList = ({
       console.error('Error:', error);
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [locationsOptions]);
 
   return (
     <>

@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { DriveItem } from './DriveItem';
-import { Button, Headline, Text } from '@gsp/ui';
-import { LucidePlus } from 'lucide-react';
 import {
   ILevel,
   IDrive,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { DriveItem } from './DriveItem';
+import { LucidePlus } from 'lucide-react';
+import { Button, Headline, Text } from '@gsp/ui';
+import React, { useRef, useState } from 'react';
 
 type DrivesListComponentProps = {
   drivesOptions: IDrive[];
@@ -58,29 +58,10 @@ export const DrivesList = ({
         console.error('Mutation error:', response.error);
         return;
       }
-
-      // if (inputRef.current) {
-      //   setTimeout(() => {
-      //     inputRef.current?.focus();
-      //   }, 0);
-      // }
-
-      // // Focus the input
-      // setTimeout(() => {
-      //   if (inputRef.current) {
-      //     inputRef.current.focus();
-      //   }
-      // }, 0);
     } catch (error) {
       console.error('Mutation error:', error);
     }
   };
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [drivesOptions]);
 
   return (
     <>

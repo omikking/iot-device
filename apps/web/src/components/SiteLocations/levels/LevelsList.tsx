@@ -1,11 +1,10 @@
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 import { LevelItem } from './LevelItem';
 import { LucidePlus } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
 import { Button, Headline, Text } from '@gsp/ui';
-import {} from '@/app/(routes)/sitelocations/[id]/page';
+import React, { useRef, useState } from 'react';
 import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
-import { useMutation } from 'urql';
-import { graphql } from '@/gql';
 
 // @TODO have to fix why im getting warning
 type LevelsListComponentProps = {
@@ -57,29 +56,20 @@ export const LevelsList = ({
 
       console.log('Mutation response:', response);
 
-      // if (inputRef.current) {
-      //   setTimeout(() => {
-      //     inputRef.current?.focus();
-      //   }, 0);
-      // }
-
-      // // Focus the input
-      // setTimeout(() => {
-      //   if (inputRef.current) {
-      //     inputRef.current.focus();
-      //   }
-      // }, 0);
+      setNewLevelId(response.data?.createLevel?.siteId);
     } catch (error) {
       // @TODO add toast or alert for error?
       console.error('Mutation error:', error);
     }
   };
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [levelsOptions]);
+  //TODO Redirect not working, fix bug
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //   }
+  // }, [levelsOptions]);
+
   return (
     <>
       <div className="flex flex-row w-full p-6">

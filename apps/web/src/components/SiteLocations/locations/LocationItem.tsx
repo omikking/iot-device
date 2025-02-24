@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SiteLocationsForm } from '../SiteLocationsForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
-import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
-import { LocationUpdateUrql } from '@/components/urql-siteslocations/LocationUpdateUrql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import React, { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SiteLocationsForm } from '../SiteLocationsForm';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { LocationUpdateUrql } from '@/components/urql-siteslocations/LocationUpdateUrql';
 
 type LocationComponentProps = {
   index: number;
@@ -120,10 +120,7 @@ export const LocationItem = ({
   };
 
   return (
-    <div
-      className={`bg-main-white px-6  'border-2 border-transparent`}
-      key={index}
-    >
+    <div className="bg-main-white px-6 border-2 border-transparent" key={index}>
       <div
         className="py-3"
         onClick={() => !isEditing && handleSetLocation(location.locationName)}

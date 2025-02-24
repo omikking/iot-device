@@ -46,9 +46,10 @@ const createCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
-      # userPermissions {
-      #   userId
-      # }
+      users {
+        id
+        fullName
+      }
     }
   }
 `);
@@ -73,10 +74,10 @@ const updateCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
-      # userPermissions {
-      #   newUserId
-      #   oldUserId
-      # }
+      users {
+        id
+        fullName
+      }
     }
   }
 `);
@@ -92,7 +93,6 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  // @TODO something seems to be wrong in the typing. Need to review the whole userPermissions which could be the issue.
   const [, createCompany] = useMutation<CreateCompanyFormValues>(
     createCompanyMutation,
   );
@@ -119,10 +119,11 @@ export const CompanyForm = ({
       address: company?.address || '',
       postalCode: company?.postalCode || '',
       plans: company?.plans ?? [],
-      userPermissions: company?.users?.map((user) => ({
-        newUserId: user.id,
-        oldUserId: user.id,
-      })),
+      userPermissions:
+        company?.users?.map((user) => ({
+          newUserId: user.id,
+          oldUserId: user.id,
+        })) ?? [],
     },
   });
 
@@ -134,7 +135,7 @@ export const CompanyForm = ({
     if (company) {
       updateCompany({
         id: company.id,
-        updateCompanyInput: data as UpdateCompanyFormValues,
+        updateCompanyInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
         console.error('Update company failed:', result.error);
@@ -143,7 +144,7 @@ export const CompanyForm = ({
 
     if (!company && isNewCompany) {
       createCompany({
-        createCompanyInput: data as CreateCompanyFormValues,
+        createCompanyInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
         console.error('Invite company failed:', result.error);

@@ -132,6 +132,20 @@ export default function Page(): JSX.Element {
     setSites((sites) => sites.filter((item, i) => i !== index));
   };
 
+  const appAccessFullNames: Record<string, string> = {
+    PULL_TEST: 'Pull-Test',
+    ULTRABOLTS: 'Ultrabolts',
+    XCYCLOPS: 'xCyclops',
+    PULL_TEST_OPERATOR: 'Pull-Test Operator',
+  };
+
+  const appAccessShortNames: Record<string, string> = {
+    PULL_TEST: 'PT',
+    ULTRABOLTS: 'UB',
+    XCYCLOPS: 'xLops',
+    PULL_TEST_OPERATOR: 'PT-O',
+  };
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
@@ -833,7 +847,16 @@ export default function Page(): JSX.Element {
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 {/* @TODO fix the formatting */}
-                <TableCell>{user.userPermissions.appAccess}</TableCell>
+                {/* <TableCell>{user.userPermissions.appsAccess}</TableCell> */}
+                <TableCell>
+                  {(user.userPermissions.appsAccess.length === 1 &&
+                    appAccessFullNames[user.userPermissions.appsAccess[0]]) ||
+                    (user.userPermissions.appsAccess.length === 4 &&
+                      'All Apps') ||
+                    user.userPermissions.appsAccess
+                      .map((app: string) => appAccessShortNames[app] || app)
+                      .join(', ')}
+                </TableCell>
                 <TableCell>
                   <Badge variant={getBadge(user.userPermissions.role).variant}>
                     {getBadge(user.userPermissions.role).icon}

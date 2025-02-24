@@ -43,6 +43,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   );
   const { deleteUser } = UsersDeleteUrql();
 
+  //@TODO - move to shared types?
+  const appAccessFullNames: Record<string, string> = {
+    PULL_TEST: 'Pull-Test',
+    ULTRABOLTS: 'Ultrabolts',
+    XCYCLOPS: 'xCyclops',
+    PULL_TEST_OPERATOR: 'Pull-Test Operator',
+  };
+
   const appAccessShortNames: Record<string, string> = {
     PULL_TEST: 'PT',
     ULTRABOLTS: 'UB',
@@ -133,15 +141,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         const appAccessValue = userPerm?.appsAccess || [];
 
         if (appAccessValue.length === 1) {
-          return appAccessValue[0]; // Show full name
+          return appAccessFullNames[appAccessValue[0] || appaccessValue[0]];
         }
 
+        // write more clear code something checking for max length
         if (appAccessValue.length === 4) {
           return 'All Apps';
         }
 
-        // This is not working when is a single app.
-        // Should display the full name in a more proper way not "PULL_TEST" maybe "Pull Test" instead.
         // Split the appAccessValue and map with defined types
         const shortenedApps = appAccessValue
           .map((app: string) => appAccessShortNames[app] || app)

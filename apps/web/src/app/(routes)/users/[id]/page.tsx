@@ -8,17 +8,6 @@ import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 import { CompanyNameUrql } from '@/components/urql-selectapplications/SelectApplicationUrql';
 
-// type IUser = {
-//   id: string;
-//   email: string;
-//   fullName: string;
-//   workPlace: string;
-//   phoneNumber: string;
-//   globalRole: boolean;
-//   isGlobalVisibility: boolean;
-//   userPermissions: UserPermission[];
-// };
-
 type ICompanyUser = {
   id: string;
   email: string;
@@ -60,7 +49,7 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      {/* Get company name, replace with Shreyas query */}
+      {/* TODO Get company name, replace with Shreyas query */}
       <Badge variant="primary" size="large" className="absolute top-24">
         <CompanyNameUrql companyId={companyId} />
       </Badge>

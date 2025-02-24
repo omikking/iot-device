@@ -26,18 +26,6 @@ type UpdateUserInput = {
   // UserPermission will be added later
 };
 
-// result of the update
-// type UpdateUserResult = {
-//   updateUser: {
-//     email: string;
-//     fullName: string;
-//     workPlace: string;
-//     phoneNumber: string;
-//     globalRole: string;
-//     isGlobalVisibility: boolean;
-//   };
-// };
-
 export const UsersUpdateUrql = () => {
   // use the useMutation hook to update the user
   const [result, updateUserMutation] = useMutation(updateUsersMutation);

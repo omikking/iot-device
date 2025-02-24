@@ -82,8 +82,7 @@ export function CompanyForm({ company, isAdmin, mode }: CompanyFormProps) {
       city: '',
       address: '',
       postalCode: '',
-      // userPermissions: [{ userId: '6411e9b8-7925-4c80-b76b-8f5d47d19aec' }], // jimmy@jimmy.com ID
-      userPermissions: [{ userId: session?.user.id }], // Gambit ID
+      userPermissions: [{ userId: session?.user.id }],
       plans: [], // Initialize empty array for the plans
       // assignSandvikAdministrator: '',
     },

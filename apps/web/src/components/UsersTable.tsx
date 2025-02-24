@@ -141,7 +141,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         const appAccessValue = userPerm?.appsAccess || [];
 
         if (appAccessValue.length === 1) {
-          return appAccessFullNames[appAccessValue[0] || appaccessValue[0]];
+          return appAccessFullNames[appAccessValue[0]];
         }
 
         // write more clear code something checking for max length

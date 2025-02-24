@@ -1,3 +1,4 @@
+'use client';
 import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
@@ -28,7 +29,6 @@ const allPlansTypes = [
   { id: 'ultrabolts', applicationName: 'ULTRABOLTS' },
 ] as const;
 
-// @TODO Move to CompanyClient?
 const createCompanyMutation = graphql(`
   mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {
     createCompany(createCompanyInput: $createCompanyInput) {
@@ -46,11 +46,13 @@ const createCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
+      # userPermissions {
+      #   userId
+      # }
     }
   }
 `);
 
-// @TODO Move to CompanyClient?
 const updateCompanyMutation = graphql(`
   mutation UpdateCompany(
     $id: String!
@@ -71,6 +73,10 @@ const updateCompanyMutation = graphql(`
         planLevel
         expiringDate
       }
+      # userPermissions {
+      #   newUserId
+      #   oldUserId
+      # }
     }
   }
 `);
@@ -86,8 +92,13 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  const [, createCompany] = useMutation(createCompanyMutation);
-  const [, updateCompany] = useMutation(updateCompanyMutation);
+  // @TODO something seems to be wrong in the typing. Need to review the whole userPermissions which could be the issue.
+  const [, createCompany] = useMutation<CreateCompanyFormValues>(
+    createCompanyMutation,
+  );
+  const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
+    updateCompanyMutation,
+  );
 
   // Temporary state for devmode
   const [isAdmin, setIsAdmin] = useState(true);
@@ -123,7 +134,7 @@ export const CompanyForm = ({
     if (company) {
       updateCompany({
         id: company.id,
-        updateCompanyInput: data,
+        updateCompanyInput: data as UpdateCompanyFormValues,
       }).then((result) => {
         // @TODO Add component later for handling error
         console.error('Update company failed:', result.error);
@@ -131,7 +142,9 @@ export const CompanyForm = ({
     }
 
     if (!company && isNewCompany) {
-      createCompany({ createCompanyInput: data }).then((result) => {
+      createCompany({
+        createCompanyInput: data as CreateCompanyFormValues,
+      }).then((result) => {
         // @TODO Add component later for handling error
         console.error('Invite company failed:', result.error);
       });

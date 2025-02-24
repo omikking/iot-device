@@ -81,7 +81,7 @@ export const createCompanyFormSchema = z.object({
     .optional(),
   userPermissions: z.array(
     z.object({
-      newUserId: z.string(),
+      userId: z.string(),
     }),
   ),
 });

@@ -1,13 +1,25 @@
+'use client';
 import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
-import { useCompanies } from './urql-overview/OverviewClientUrql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+
+const getCompanies = graphql(`
+  query getCompanies {
+    companies {
+      id
+      name
+    }
+  }
+`);
 
 export const CompanyList = () => {
-  const { companies } = useCompanies();
+  const [companiesData] = useMutation(getCompanies);
+
   return (
     <>
-      {companies.map((company) => (
+      {companiesData?.data?.companies.map((company) => (
         <div
           key={company.id}
           className="w-full flex justify-between items-center px-6 py-4 bg-main-white"
@@ -18,8 +30,6 @@ export const CompanyList = () => {
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
               <Link href={`/company/${company.id}`}>
-                {/* @TODO find a solution that works for edit view aswell */}
-                {/* <Link href="/company?mode=edit"> */}
                 <LucideMoveRight />
                 Administrate
               </Link>

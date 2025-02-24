@@ -4,17 +4,20 @@ import { useState } from 'react';
 import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { siteResultMock, SiteResultSchema } from '@/app/mock/mock';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { useSites, ISite } from '@/components/urql-sites/SitesClientUrql';
+import { deleteSitesMutation } from './urql-sites/SitesDeleteUrql';
+import { useMutation } from 'urql';
 
 type SitesTableProps = {
   onOpenChange: (isOpen: boolean) => void;
-  onSelectSite: (site: SiteResultSchema) => void;
+  onSelectSite: (site: ISite) => void;
 };
 
 export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
-  const [sites, setSites] = useState(siteResultMock);
+  const { sites } = useSites();
+  const [, deleteSite] = useMutation(deleteSitesMutation);
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
     undefined,
@@ -30,8 +33,22 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setSites((currentSites) => currentSites.filter((item, i) => i !== index));
+  const handleDelete = async () => {
+    if (siteToDelete !== undefined) {
+      const siteToDeleteId = sites[siteToDelete]?.id;
+      if (siteToDeleteId) {
+        try {
+          // Run the GraphQL mutation
+          const response = await deleteSite({ id: String(siteToDeleteId) });
+          if (response?.error) {
+            throw new Error(response?.error?.message);
+          }
+          closeDeleteModal();
+        } catch (error) {
+          console.error('Failed to remove site:', error);
+        }
+      }
+    }
   };
 
   const openEditModal = (index: number) => {
@@ -40,9 +57,9 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
     onOpenChange(true);
   };
 
-  const columns: ColumnDef<SiteResultSchema>[] = [
+  const columns: ColumnDef<ISite>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'siteName',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Name" />
       ),
@@ -60,7 +77,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
             <Link
               href={{
                 pathname: '/sitelocations',
-                query: { data: `${row.original.name} site` },
+                query: { data: `${row.original.siteName} site` },
               }}
             >
               <LucideMoveRight />
@@ -107,15 +124,15 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
         isOpen={isDeleteSiteModalOpen}
         itemToDelete={siteToDelete}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
+        onDelete={() => {
+          handleDelete();
           closeDeleteModal();
         }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {siteToDelete && ` ${sites[siteToDelete].name} `}
+            {siteToDelete && ` ${sites[siteToDelete].siteName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

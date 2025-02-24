@@ -24,7 +24,7 @@ import Link from 'next/link';
 export const Menu = () => {
   // @TODO fix colors on icons
   const { data: session } = useSession();
-  // console.log(session);
+  console.log(session);
 
   return (
     <MenuWrapper>

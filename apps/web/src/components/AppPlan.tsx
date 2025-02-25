@@ -13,6 +13,7 @@ import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
+import { Plan } from '@/gql/graphql';
 
 // @TODO put in a utils folder
 export const capitalizeFirstLetter = (word: string) => {
@@ -21,11 +22,11 @@ export const capitalizeFirstLetter = (word: string) => {
 
 interface AppPlanProps {
   plan: PlanLevel;
-  activePlan?: PlanLevel;
+  applicationName: string;
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-  applicationName: string;
-  onPlanChange: (plan: PlanLevel) => void;
+  activePlan?: PlanLevel;
+  onPlanChange: (plan?: PlanLevel) => void;
 }
 
 export const AppPlan = ({
@@ -36,14 +37,51 @@ export const AppPlan = ({
   applicationName,
   onPlanChange,
 }: AppPlanProps) => {
-  const user = isAdmin ? 'Superadmin' : 'Client';
-  const isActive = plan === activePlan;
+  const userRole = isAdmin ? 'Superadmin' : 'Client';
+  const isPlanActive = plan === activePlan;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePlanChange = (isChecked: boolean, field: any) => {
+    const newPlan = isChecked ? plan : undefined;
+    const currentPlans = field.value || [];
+    let updatedPlans;
+
+    const existingPlan = currentPlans.findIndex(
+      (planItem: Plan) => planItem.applicationName === applicationName,
+    );
+
+    if (isChecked) {
+      // Update existing plan
+      if (existingPlan >= 0) {
+        updatedPlans = currentPlans.map((planItem: Plan, i: number) =>
+          i === existingPlan ? { ...planItem, planLevel: plan } : planItem,
+        );
+        // Add new plan
+      } else {
+        updatedPlans = [
+          ...currentPlans,
+          {
+            applicationName,
+            planLevel: plan,
+          },
+        ];
+      }
+      // If switch is unchecked, remove plan
+    } else {
+      updatedPlans = currentPlans.filter(
+        (planItem: Plan) => planItem.applicationName !== applicationName,
+      );
+    }
+
+    field.onChange(updatedPlans);
+    onPlanChange(newPlan);
+  };
 
   // @TODO Updating app not working atm. Fix it.
   return (
     <div
       className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
-        isActive ? 'bg-neutral-1' : ''
+        isPlanActive ? 'bg-neutral-1' : ''
       }`}
     >
       <FormField
@@ -59,53 +97,18 @@ export const AppPlan = ({
               {capitalizeFirstLetter(plan)}
             </FormLabel>
 
-            {user === 'Superadmin' && (
+            {userRole === 'Superadmin' && (
               <FormControl>
                 <Switch
                   checked={activePlan === plan}
-                  onCheckedChange={(checked) => {
-                    // @TODO Look into this, might be over complex
-                    const newPlan = checked ? plan : undefined;
-                    // AI Generated Code
-                    const currentPlans = field.value || [];
-                    const existingPlanIndex = currentPlans.findIndex(
-                      (p) => p.applicationName === applicationName,
-                    );
-                    let updatedPlans;
-                    if (checked) {
-                      // If checking the switch, update or add the plan
-                      if (existingPlanIndex >= 0) {
-                        // Update existing plan
-                        updatedPlans = currentPlans.map((p, index) =>
-                          index === existingPlanIndex
-                            ? { ...p, planLevel: plan }
-                            : p,
-                        );
-                      } else {
-                        // Add new plan
-                        updatedPlans = [
-                          ...currentPlans,
-                          {
-                            applicationName,
-                            planLevel: plan,
-                          },
-                        ];
-                      }
-                    } else {
-                      // If unchecking, remove the plan
-                      updatedPlans = currentPlans.filter(
-                        (p) => p.applicationName !== applicationName,
-                      );
-                    }
-                    // AI generated code ends
-                    field.onChange(updatedPlans);
-                    onPlanChange(newPlan as PlanLevel);
-                  }}
+                  onCheckedChange={(isChecked) =>
+                    handlePlanChange(isChecked, field)
+                  }
                 />
               </FormControl>
             )}
 
-            {user === 'Client' && isActive && (
+            {userRole === 'Client' && isPlanActive && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
                 Your selected plan

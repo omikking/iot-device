@@ -247,7 +247,12 @@ export const CompanyForm = ({
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
+              {user === 'Superadmin' && (
+                <AdminForm
+                  isNewCompany={isNewCompany}
+                  companyForm={companyForm}
+                />
+              )}
               {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
               )}

@@ -48,11 +48,11 @@ export const CompanyDetailsForm = ({
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
-              <FormLabel>Full contact email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter full contact email..."
+                  placeholder="Email..."
                   className="w-full"
                   onChange={field.onChange}
                 />

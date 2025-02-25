@@ -15,10 +15,11 @@ import {
 } from './schemas/CompanyFormSchema';
 
 interface AdminFormProps {
+  isNewCompany: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
-export const AdminForm = ({ companyForm }: AdminFormProps) => {
+export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
@@ -27,7 +28,7 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
     <FormField
       control={companyForm.control}
       name="userPermissions"
-      render={() => {
+      render={({ field }) => {
         return (
           <FormItem className="w-96">
             <FormLabel>Assigned Sandvik administrator</FormLabel>
@@ -39,6 +40,14 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
                 options={adminsMock}
                 onSelect={(e) => {
                   setAdministrator(e);
+                  field.onChange([
+                    isNewCompany
+                      ? { userId: '123' }
+                      : {
+                          newUserId: '456',
+                          oldUserId: '789',
+                        },
+                  ]);
                 }}
               />
             </FormControl>

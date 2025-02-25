@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 export const updateCompanyFormSchema = z.object({
   name: z.string().min(3),
-  orgNumber: z.string().min(3),
+  orgNumber: z.string().min(10).max(10),
   address: z.string().min(3),
-  postalCode: z.string().min(3),
+  postalCode: z.string().min(5),
   city: z.string().min(3),
   country: z.string().min(3),
-  companyContactEmail: z.string().min(3),
+  companyContactEmail: z.string().email(),
   plans: z
     .array(
       z.object({
@@ -30,12 +30,12 @@ export const updateCompanyFormSchema = z.object({
 
 export const createCompanyFormSchema = z.object({
   name: z.string().min(3),
-  orgNumber: z.string().min(3),
+  orgNumber: z.string().min(10).max(10),
   address: z.string().min(3),
-  postalCode: z.string().min(3),
+  postalCode: z.string().min(5),
   city: z.string().min(3),
   country: z.string().min(3),
-  companyContactEmail: z.string().min(3),
+  companyContactEmail: z.string().email(),
   plans: z
     .array(
       z.object({

@@ -18,17 +18,39 @@ import {
   administratorFormSchema,
   AdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
-import { useEffect, useState } from 'react';
-import { LucidePlus, LucideSquarePen } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { optionAdministratorRoleMock } from '@/app/mock/mock';
+import { LucidePlus, LucideSquarePen } from 'lucide-react';
+import { AdministratorUpdateUrql } from '@/components/urql-administrator/AdministratorUpdateUrql';
 
-interface AddOrEditAdministratorModalProps {
+type AddOrEditAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
-  administrator?: AdministratorFormValues;
-}
+  // administrator?: AdministratorFormValues;
+  administrator?: ICompanyUser;
+};
+
+// type UserPermission = {
+//   id: string;
+//   userId: string;
+//   role:
+//     | 'COMPANY_USER'
+//     | 'COMPANY_ADMIN'
+//     | 'SANDVIK_TECHNICIAN'
+//     | 'SANDVIK_ADMIN';
+//   appsAccess: string[];
+// };
+
+type ICompanyUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  // globalRole: string;
+  // isGlobalVisibility: boolean;
+};
 
 export const AddOrEditAdministratorModal = ({
   onOpenChange,
@@ -36,32 +58,53 @@ export const AddOrEditAdministratorModal = ({
 }: AddOrEditAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+  const { updateUser, loading, error } = AdministratorUpdateUrql();
+
+  const [role, setRole] = useState<'COMPANY_ADMIN' | 'SANDVIK_ADMIN'>(
+    'SANDVIK_ADMIN',
+  );
+
+  const roles = [
+    // { id: 'COMPANY_ADMIN', name: 'Admin', value: 'COMPANY_ADMIN' },
+    { id: 'SANDVIK_ADMIN', name: 'Sandvik Admin', value: 'SANDVIK_ADMIN' },
+  ];
 
   const form = useForm<AdministratorFormValues>({
     resolver: zodResolver(administratorFormSchema),
     defaultValues: {
-      fullName: '',
-      company: '',
-      email: '',
-      phoneNumber: '',
-      role: '',
+      fullName: administrator?.fullName || '',
+      workPlace: administrator?.workPlace || '',
+      email: administrator?.email || '',
+      phoneNumber: administrator?.phoneNumber || '',
+      // globalRole: administrator?.globalRole || '',
+      // isGlobalVisibility: administrator?.isGlobalVisibility || false,
     },
   });
 
   const resetFormValues = () => {
     form.reset({
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      role: '',
+      // globalRole: '',
+      // isGlobalVisibility: false,
     });
   };
 
   const onSubmit = async (data: AdministratorFormValues) => {
     setIsLoading(true);
     // Simulate API call
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // try {
+    if (administrator) {
+      await updateUser(administrator.id, {
+        email: data.email,
+      });
+    }
+    // } catch (error) {}
     console.log('Administrator added:', data);
     setIsSuccessful(true);
     setIsLoading(false);
@@ -102,7 +145,13 @@ export const AddOrEditAdministratorModal = ({
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          {/* <form onSubmit={form.handleSubmit(onSubmit)}> */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log('getValues', form.getValues());
+            }}
+          >
             <div className="px-10 pt-10">
               <div className="flex flex-row flex-wrap justify-between gap-8">
                 <FormField
@@ -127,7 +176,7 @@ export const AddOrEditAdministratorModal = ({
                 />
                 <FormField
                   control={form.control}
-                  name="company"
+                  name="workPlace"
                   disabled={isSuccessful}
                   render={({ field }) => {
                     return (
@@ -185,9 +234,9 @@ export const AddOrEditAdministratorModal = ({
                     );
                   }}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
-                  name="role"
+                  name="globalRole"
                   render={({ field }) => {
                     return (
                       <FormItem className="w-96">
@@ -196,9 +245,18 @@ export const AddOrEditAdministratorModal = ({
                           <Dropdown
                             id="role"
                             placeholder="Select role..."
-                            selectedId={field.value}
-                            options={optionAdministratorRoleMock}
-                            onSelect={field.onChange}
+                            selectedId={form.getValues('globalRole') || role}
+                            options={roles}
+                            onSelect={(e) => {
+                              const selectedRole = e as
+                                | 'COMPANY_ADMIN'
+                                | 'SANDVIK_ADMIN';
+                              setRole(selectedRole);
+                              field.onChange(selectedRole);
+                              if (selectedRole !== 'SANDVIK_ADMIN') {
+                                form.setValue('globalRole', '');
+                              }
+                            }}
                             className="w-96"
                           />
                         </FormControl>
@@ -206,7 +264,7 @@ export const AddOrEditAdministratorModal = ({
                       </FormItem>
                     );
                   }}
-                />
+                /> */}
               </div>
             </div>
             <ModalFooter className="ui-px-10 ui-py-6">

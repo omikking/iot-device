@@ -9,24 +9,87 @@ import {
 } from '@gsp/ui';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { AdministratorSchema, administratorsMock } from '@/app/mock/mock';
+// import { AdministratorSchema, administratorsMock } from '@/app/mock/mock';
 import { LucideUserCog } from 'lucide-react';
+import { useAdmins } from '@/components/urql-administrator/AdministratorFetchUrql';
+
+// export interface AdministratorSchema {
+//   id: string;
+//   fullName: string;
+//   email: string;
+//   company: string;
+//   phoneNumber: string;
+//   role: string;
+// }
+
+type IUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: boolean;
+  isGlobalVisibility: boolean;
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
 
 type AdministratorsTableProps = {
   onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator: AdministratorSchema) => void;
+  onSelectAdministrator: (administrator: IUser) => void;
 };
 
 export const AdministratorsTable = ({
   onOpenChange,
   onSelectAdministrator,
 }: AdministratorsTableProps) => {
-  const [administrators, setAdministrators] = useState(administratorsMock);
+  // const [administrators, setAdministrators] = useState(administratorsMock);
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
   const [administratorToDelete, setAdministratorToDelete] = useState<
     number | undefined
   >(undefined);
+
+  const { administrators } = useAdmins(['SANDVIK_ADMIN']);
+
+  // const getUserPermissions = (
+  //   permissions: UserPermission[],
+  // ): UserPermission => {
+  //   const defaultPermission: UserPermission = {
+  //     id: '',
+  //     userId: '',
+  //     role: 'COMPANY_USER',
+  //     appsAccess: [],
+  //   };
+
+  //   return permissions[0] || defaultPermission;
+  // };
+
+  // const getBadge = (
+  //   role: UserPermission['role'],
+  // ): {
+  //   variant: 'neutral' | 'primary';
+  //   icon: React.ReactNode;
+  // } => {
+  //   switch (role) {
+  //     case 'COMPANY_ADMIN':
+  //       return { variant: 'primary', icon: <LucideKey /> };
+  //     case 'SANDVIK_ADMIN':
+  //       return { variant: 'primary', icon: <LucideKey /> };
+  //     default:
+  //       return { variant: 'neutral', icon: <LucideUserCog /> };
+  //   }
+  // };
 
   const openDeleteModal = (index: number) => {
     setAdministratorToDelete(index);
@@ -45,12 +108,12 @@ export const AdministratorsTable = ({
   };
 
   const handleDelete = (index: number) => {
-    setAdministrators((currentAdministrators) =>
-      currentAdministrators.filter((_, i) => i !== index),
-    );
+    // setAdministrators((currentAdministrators) =>
+    //   currentAdministrators.filter((_, i) => i !== index),
+    // );
   };
 
-  const columns: ColumnDef<AdministratorSchema>[] = [
+  const columns: ColumnDef<IUser>[] = [
     {
       accessorKey: 'fullName',
       header: ({ column }) => (
@@ -65,30 +128,24 @@ export const AdministratorsTable = ({
       },
     },
     {
-      accessorKey: 'company',
+      accessorKey: 'workPlace',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Company" />
       ),
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'globalRole',
       header: 'Role',
-      cell: ({ row }) => (
-        <>
-          {/* TODO find a better solution */}
-          {row.getValue('role') === 'Sandvik admin' ? (
+      cell: ({ row }) => {
+        if (row.original.globalRole) {
+          return (
             <Badge variant="primary">
               <LucideUserCog />
               Sandvik admin
             </Badge>
-          ) : (
-            <Badge variant="attention">
-              <LucideUserCog />
-              Supah admin
-            </Badge>
-          )}
-        </>
-      ),
+          );
+        }
+      },
     },
     {
       accessorKey: 'phoneNumber',

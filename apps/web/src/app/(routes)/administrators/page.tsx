@@ -2,16 +2,38 @@
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
-import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
-import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
-import { AdministratorsTable } from '@/components/AdministratorsTable';
 import { AdministratorSchema } from '@/app/mock/mock';
+import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
+import { AdministratorsTable } from '@/components/AdministratorsTable';
+import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
+
+type IUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  workPlace: string;
+  phoneNumber: string;
+  globalRole: boolean;
+  isGlobalVisibility: boolean;
+  userPermissions: UserPermission[];
+};
+
+type UserPermission = {
+  id: string;
+  userId: string;
+  role:
+    | 'COMPANY_USER'
+    | 'COMPANY_ADMIN'
+    | 'SANDVIK_TECHNICIAN'
+    | 'SANDVIK_ADMIN';
+  appsAccess: string[];
+};
 
 export default function Page(): JSX.Element {
   const [openAdministratorsModal, setOpenAdministratorsModal] =
     useState<boolean>(false);
   const [selectedAdministrator, setSelectedAdministrator] = useState<
-    AdministratorSchema | undefined
+    IUser | undefined
   >(undefined);
 
   const handleToggleModal = (open: boolean) => {

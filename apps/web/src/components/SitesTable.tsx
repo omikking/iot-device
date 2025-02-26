@@ -118,9 +118,9 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        deleteIcon="User"
-        modalTitle="Delete user"
+        deleteButtonText="Delete site"
+        deleteIcon="Site"
+        modalTitle="Delete site"
         isOpen={isDeleteSiteModalOpen}
         itemToDelete={siteToDelete}
         onOpenChange={closeDeleteModal}
@@ -132,7 +132,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {siteToDelete && ` ${sites[siteToDelete].siteName} `}
+          {siteToDelete !== undefined && siteToDelete !== null && sites[siteToDelete] && ` ${sites[siteToDelete].siteName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

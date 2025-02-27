@@ -223,11 +223,7 @@ export const AddOrEditTechnicianModal = ({
                       <FormControl>
                         <RadioGroup
                           value={String(field.value)}
-                          onValueChange={
-                            ((e) => e.preventDefault(),
-                            console.log('dawdawdaw'),
-                            field.onChange)
-                          }
+                          onValueChange={field.onChange}
                         >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>

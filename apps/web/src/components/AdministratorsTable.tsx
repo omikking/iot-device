@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import {
   Badge,
   ColumnDef,
@@ -7,20 +6,12 @@ import {
   TableHeadWithSorting,
   Text,
 } from '@gsp/ui';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { DeleteEditDropdown } from './DeleteEditDropdown';
-// import { AdministratorSchema, administratorsMock } from '@/app/mock/mock';
+import { useState } from 'react';
 import { LucideUserCog } from 'lucide-react';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { useAdmins } from '@/components/urql-administrator/AdministratorFetchUrql';
-
-// export interface AdministratorSchema {
-//   id: string;
-//   fullName: string;
-//   email: string;
-//   company: string;
-//   phoneNumber: string;
-//   role: string;
-// }
+import { AdministratorDeleteUrql } from '@/components/urql-administrator/AdministratorDeleteUrql';
 
 type IUser = {
   id: string;
@@ -29,19 +20,6 @@ type IUser = {
   workPlace: string;
   phoneNumber: string;
   globalRole: boolean;
-  isGlobalVisibility: boolean;
-  userPermissions: UserPermission[];
-};
-
-type UserPermission = {
-  id: string;
-  userId: string;
-  role:
-    | 'COMPANY_USER'
-    | 'COMPANY_ADMIN'
-    | 'SANDVIK_TECHNICIAN'
-    | 'SANDVIK_ADMIN';
-  appsAccess: string[];
 };
 
 type AdministratorsTableProps = {
@@ -61,35 +39,7 @@ export const AdministratorsTable = ({
   >(undefined);
 
   const { administrators } = useAdmins(['SANDVIK_ADMIN']);
-
-  // const getUserPermissions = (
-  //   permissions: UserPermission[],
-  // ): UserPermission => {
-  //   const defaultPermission: UserPermission = {
-  //     id: '',
-  //     userId: '',
-  //     role: 'COMPANY_USER',
-  //     appsAccess: [],
-  //   };
-
-  //   return permissions[0] || defaultPermission;
-  // };
-
-  // const getBadge = (
-  //   role: UserPermission['role'],
-  // ): {
-  //   variant: 'neutral' | 'primary';
-  //   icon: React.ReactNode;
-  // } => {
-  //   switch (role) {
-  //     case 'COMPANY_ADMIN':
-  //       return { variant: 'primary', icon: <LucideKey /> };
-  //     case 'SANDVIK_ADMIN':
-  //       return { variant: 'primary', icon: <LucideKey /> };
-  //     default:
-  //       return { variant: 'neutral', icon: <LucideUserCog /> };
-  //   }
-  // };
+  const { removeUser } = AdministratorDeleteUrql();
 
   const openDeleteModal = (index: number) => {
     setAdministratorToDelete(index);
@@ -97,8 +47,8 @@ export const AdministratorsTable = ({
   };
 
   const openEditModal = (index: number) => {
-    const technicianToEdit = administrators[index];
-    onSelectAdministrator(technicianToEdit);
+    const adminToEdit = administrators[index];
+    onSelectAdministrator(adminToEdit);
     onOpenChange(true);
   };
 
@@ -108,9 +58,8 @@ export const AdministratorsTable = ({
   };
 
   const handleDelete = (index: number) => {
-    // setAdministrators((currentAdministrators) =>
-    //   currentAdministrators.filter((_, i) => i !== index),
-    // );
+    // Unable to remove due to foreign key constraint
+    removeUser(administrators[index].id);
   };
 
   const columns: ColumnDef<IUser>[] = [

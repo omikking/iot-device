@@ -1,6 +1,6 @@
 import {
   Button,
-  Dropdown,
+  // Dropdown,
   Form,
   FormControl,
   FormField,
@@ -27,20 +27,8 @@ import { AdministratorUpdateUrql } from '@/components/urql-administrator/Adminis
 
 type AddOrEditAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
-  // administrator?: AdministratorFormValues;
   administrator?: ICompanyUser;
 };
-
-// type UserPermission = {
-//   id: string;
-//   userId: string;
-//   role:
-//     | 'COMPANY_USER'
-//     | 'COMPANY_ADMIN'
-//     | 'SANDVIK_TECHNICIAN'
-//     | 'SANDVIK_ADMIN';
-//   appsAccess: string[];
-// };
 
 type ICompanyUser = {
   id: string;
@@ -48,8 +36,6 @@ type ICompanyUser = {
   fullName: string;
   workPlace: string;
   phoneNumber: string;
-  // globalRole: string;
-  // isGlobalVisibility: boolean;
 };
 
 export const AddOrEditAdministratorModal = ({
@@ -58,16 +44,7 @@ export const AddOrEditAdministratorModal = ({
 }: AddOrEditAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const { updateUser, loading, error } = AdministratorUpdateUrql();
-
-  const [role, setRole] = useState<'COMPANY_ADMIN' | 'SANDVIK_ADMIN'>(
-    'SANDVIK_ADMIN',
-  );
-
-  const roles = [
-    // { id: 'COMPANY_ADMIN', name: 'Admin', value: 'COMPANY_ADMIN' },
-    { id: 'SANDVIK_ADMIN', name: 'Sandvik Admin', value: 'SANDVIK_ADMIN' },
-  ];
+  const { updateUser } = AdministratorUpdateUrql();
 
   const form = useForm<AdministratorFormValues>({
     resolver: zodResolver(administratorFormSchema),
@@ -76,8 +53,6 @@ export const AddOrEditAdministratorModal = ({
       workPlace: administrator?.workPlace || '',
       email: administrator?.email || '',
       phoneNumber: administrator?.phoneNumber || '',
-      // globalRole: administrator?.globalRole || '',
-      // isGlobalVisibility: administrator?.isGlobalVisibility || false,
     },
   });
 
@@ -87,35 +62,35 @@ export const AddOrEditAdministratorModal = ({
       workPlace: '',
       email: '',
       phoneNumber: '',
-      // globalRole: '',
-      // isGlobalVisibility: false,
     });
   };
 
   const onSubmit = async (data: AdministratorFormValues) => {
     setIsLoading(true);
-    // Simulate API call
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      if (administrator) {
+        await updateUser(administrator.id, {
+          fullName: data.fullName,
+          workPlace: data.workPlace,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+        });
+      }
+      setIsSuccessful(true);
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 1500);
 
-    // try {
-    if (administrator) {
-      await updateUser(administrator.id, {
-        email: data.email,
-      });
+      setTimeout(() => {
+        setIsSuccessful(false);
+        resetFormValues();
+      }, 1700);
+    } catch (error) {
+      console.log('Failed to save administrator: ', error);
+    } finally {
+      setIsLoading(false);
     }
-    // } catch (error) {}
-    console.log('Administrator added:', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
-
-    setTimeout(() => {
-      onOpenChange(false);
-    }, 1500);
-    setTimeout(() => {
-      setIsSuccessful(false);
-      resetFormValues();
-    }, 1700);
   };
 
   const handleModalClose = () => {
@@ -145,13 +120,7 @@ export const AddOrEditAdministratorModal = ({
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
-          {/* <form onSubmit={form.handleSubmit(onSubmit)}> */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log('getValues', form.getValues());
-            }}
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
               <div className="flex flex-row flex-wrap justify-between gap-8">
                 <FormField

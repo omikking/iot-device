@@ -16,8 +16,6 @@ export const administratorFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers.' }),
-  // globalRole: z.string().min(10, { message: 'Select a role.' }),
-  // isGlobalVisibility: z.boolean().optional(),
 });
 
 export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;

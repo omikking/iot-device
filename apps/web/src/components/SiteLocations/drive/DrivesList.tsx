@@ -8,6 +8,7 @@ import { DriveItem } from './DriveItem';
 import { LucidePlus } from 'lucide-react';
 import { Button, Headline, Text } from '@gsp/ui';
 import React, { useRef, useState } from 'react';
+import { getNextAvailableIndex } from '@/libs/utils';
 
 type DrivesListComponentProps = {
   drivesOptions: IDrive[];
@@ -46,10 +47,16 @@ export const DrivesList = ({
     if (!selectedLevel) return;
 
     try {
-      const fooTemp = `New drive ${drivesOptions.length + 1}`;
+      const nextIndex = getNextAvailableIndex(
+        drivesOptions.map((drive) => ({ name: drive.driveName })),
+        'New drive',
+      );
+
+      const defaultDriveName = `New drive ${nextIndex}`;
+
       const response = await createDriveMutation({
         createDriveInput: {
-          driveName: fooTemp,
+          driveName: defaultDriveName,
           levelId: level?.id || '',
         },
       });

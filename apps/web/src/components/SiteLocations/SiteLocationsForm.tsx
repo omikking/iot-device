@@ -68,7 +68,6 @@ export const SiteLocationsForm = ({
           control={form.control}
           name={name}
           render={({ field }) => {
-            console.log('hajj');
             return (
               <FormItem className="w-full min-w-0 flex-1">
                 <FormControl>

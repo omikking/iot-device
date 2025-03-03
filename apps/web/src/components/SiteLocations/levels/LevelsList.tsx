@@ -2,10 +2,10 @@ import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { LevelItem } from './LevelItem';
 import { LucidePlus } from 'lucide-react';
-import { Button, Headline, Text } from '@gsp/ui';
 import React, { useRef, useState } from 'react';
+import { Button, Headline, Text } from '@gsp/ui';
 import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
-
+import { getNextAvailableIndex } from '@/libs/utils';
 // @TODO have to fix why im getting warning
 type LevelsListComponentProps = {
   levelsOptions: ILevel[];
@@ -38,13 +38,16 @@ export const LevelsList = ({
 
     // @TODO add try catch to every mutation
     try {
-      // is this the best way to handle this?
-      // user can create level with default name, will be updated by user
-      const fooTemp = `New level ${levelsOptions.length + 1}`;
+      const nextIndex = getNextAvailableIndex(
+        levelsOptions.map((level) => ({ name: level.levelName })),
+        'New level',
+      );
+
+      const defaultLevelName = `New level ${nextIndex}`;
 
       const response = await createLevelMutation({
         createLevelInput: {
-          levelName: fooTemp, // create new level with default name, will be updated by user
+          levelName: defaultLevelName, // create new level with default name, will be updated by user
           siteId: selectedSiteId,
         },
       });
@@ -85,19 +88,21 @@ export const LevelsList = ({
             </Text>
           </div>
         )}
-        {levelsOptions?.map((level, index) => (
-          <LevelItem
-            key={level.id} // backend generates an id
-            level={level}
-            index={index}
-            inputRef={inputRef}
-            selectedLevel={selectedLevel}
-            levelsOptions={levelsOptions}
-            isNewLevel={level.id === newLevelId}
-            handleSetLevel={handleSetLevel}
-            setNewLevelId={setNewLevelId}
-          />
-        ))}
+        {levelsOptions?.map((level, index) => {
+          return (
+            <LevelItem
+              key={level.id} // backend generates an id
+              level={level}
+              index={index}
+              inputRef={inputRef}
+              selectedLevel={selectedLevel}
+              levelsOptions={levelsOptions}
+              isNewLevel={level.id === newLevelId}
+              handleSetLevel={handleSetLevel}
+              setNewLevelId={setNewLevelId}
+            />
+          );
+        })}
       </div>
       <div className="flex justify-end w-full p-3">
         {selectedSiteId ? (

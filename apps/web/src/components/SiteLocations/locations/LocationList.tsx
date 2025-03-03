@@ -8,6 +8,7 @@ import {
   IDrive,
   ILocation,
 } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { getNextAvailableIndex } from '@/libs/utils';
 
 type LocationsListComponentProps = {
   selectedDrive?: string;
@@ -45,10 +46,15 @@ export const LocationsList = ({
     if (!selectedDrive) return;
 
     try {
-      const fooTemp = `New location ${locationsOptions.length + 1}`;
+      const nextIndex = getNextAvailableIndex(
+        locationsOptions.map((location) => ({ name: location.locationName })),
+        'New location',
+      );
+
+      const defaultDriveName = `New location ${nextIndex}`;
       const response = await createLocationMutation({
         createLocationInput: {
-          locationName: fooTemp,
+          locationName: defaultDriveName,
           driveId: drive?.id || '',
         },
       });

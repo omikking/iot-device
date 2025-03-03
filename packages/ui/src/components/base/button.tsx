@@ -16,7 +16,7 @@ const buttonVariants = cva(
         outline:
           'ui-bg-main-white ui-border ui-border-neutral-3 ui-text-main-black hover:ui-border-blue-2 focus:ui-border-blue-1',
         destructive:
-          'ui-bg-main-white ui-text-error ui-border-opacity-30 ui-border ui-border-error hover:ui-border-opacity-100 focus:ui-bg-error focus:ui-text-main-white',
+          'ui-bg-main-white ui-text-error ui-border-opacity-30 ui-border ui-border-error hover:ui-border-opacity-100 hover:ui-bg-error hover:ui-text-main-white',
       },
       size: {
         small:

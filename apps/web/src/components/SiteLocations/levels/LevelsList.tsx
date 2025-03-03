@@ -17,6 +17,7 @@ type LevelsListComponentProps = {
 const createLevelsMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
     createLevel(createLevelInput: $createLevelInput) {
+      id
       levelName
       siteId
     }
@@ -59,19 +60,12 @@ export const LevelsList = ({
 
       console.log('Mutation response:', response);
 
-      setNewLevelId(response.data?.createLevel?.siteId);
+      setNewLevelId(response.data?.createLevel?.id);
     } catch (error) {
       // @TODO add toast or alert for error?
       console.error('Mutation error:', error);
     }
   };
-
-  //TODO Redirect not working, fix bug
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.focus();
-  //   }
-  // }, [levelsOptions]);
 
   return (
     <>

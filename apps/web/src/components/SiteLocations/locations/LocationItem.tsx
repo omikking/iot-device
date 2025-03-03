@@ -74,10 +74,18 @@ export const LocationItem = ({
     }
   }, [isNewLocation]);
 
+  useEffect(() => {
+    if (isNewLocation && isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isNewLocation, isEditing]);
+
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
       const isDuplicate = locationsOptions.some(
-        (location) => location.locationName === formData.locationName,
+        (location) =>
+          location.locationName === formData.locationName &&
+          location.id !== location.id,
       );
 
       if (isDuplicate) {

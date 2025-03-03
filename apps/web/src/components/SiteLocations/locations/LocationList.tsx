@@ -20,6 +20,7 @@ type LocationsListComponentProps = {
 const createLocationsMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
     createLocation(createLocationInput: $createLocationInput) {
+      id
       locationName
       driveId
     }
@@ -65,6 +66,7 @@ export const LocationsList = ({
       }
 
       console.log('Mutation response:', response);
+      setNewLocationId(response.data?.createLocation?.id);
     } catch (error) {
       console.error('Error:', error);
     }

@@ -21,6 +21,7 @@ type DrivesListComponentProps = {
 const createDrivesMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
     createDrive(createDriveInput: $createDriveInput) {
+      id
       driveName
       levelId
     }
@@ -65,6 +66,8 @@ export const DrivesList = ({
         console.error('Mutation error:', response.error);
         return;
       }
+
+      setNewDriveId(response.data?.createDrive?.id);
     } catch (error) {
       console.error('Mutation error:', error);
     }

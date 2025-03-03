@@ -77,10 +77,18 @@ export const LevelItem = ({
     }
   }, [isNewLevel]);
 
+  useEffect(() => {
+    if (isNewLevel && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isNewLevel, inputRef]);
+
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
+      // Check if the level name is a duplicate and prevent updating if the same value exists
       const isDuplicate = levelsOptions.some(
-        (level) => level.levelName === formData.levelName,
+        (level) =>
+          level.levelName === formData.levelName && level.id !== level.id,
       );
 
       if (isDuplicate) {

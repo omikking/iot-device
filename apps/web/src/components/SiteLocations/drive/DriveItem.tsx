@@ -77,10 +77,17 @@ export const DriveItem = ({
     }
   }, [isNewDrive]);
 
+  useEffect(() => {
+    if (isNewDrive && isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isNewDrive, isEditing]);
+
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
       const isDuplicate = drivesOptions.some(
-        (drive) => drive.driveName === formData.driveName,
+        (drive) =>
+          drive.driveName === formData.driveName && drive.id !== drive.id,
       );
 
       if (isDuplicate) {

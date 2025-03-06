@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateLevelInput } from './dto/create-level.input';
 import { UpdateLevelInput } from './dto/update-level.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Resolver()
+@UseGuards(JwtAuthGuard)
 export class LevelsResolver {
   constructor(private readonly levelsService: LevelsService) {}
 

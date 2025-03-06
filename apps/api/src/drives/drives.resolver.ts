@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateDriveInput } from './dto/create-drive.input';
 import { UpdateDriveInput } from './dto/update-drive.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Resolver()
+@UseGuards(JwtAuthGuard)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 

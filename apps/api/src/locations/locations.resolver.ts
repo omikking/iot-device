@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateLocationInput } from './dto/create-location.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateLocationInput } from './dto/update-location.input';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Resolver()
+@UseGuards(JwtAuthGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 

@@ -18,7 +18,6 @@ export class CompaniesResolver {
   }
 
   @Query('company')
-
   // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,

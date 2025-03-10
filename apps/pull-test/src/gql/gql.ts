@@ -14,9 +14,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
+    "\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n": types.GetMeSiteLocationDocument,
     "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
     "\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyDetailsDocument,
+    "\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n": types.GetBoltResultsDocument,
 };
 
 /**
@@ -36,6 +38,10 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n"): (typeof documents)["\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -45,6 +51,10 @@ export function graphql(source: "\n  query getMeCoffees {\n    coffees {\n      
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n"): (typeof documents)["\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

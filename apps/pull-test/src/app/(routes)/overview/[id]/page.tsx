@@ -11,6 +11,7 @@ import Link from 'next/link';
 //import { gql, useQuery } from 'urql';
 import { useParams } from 'next/navigation';
 import { useCompanyDetails } from '@/components/urql-pulltest/GetCompanyDetails';
+import { useBoltResults } from '@/components/urql-reportedhazards/ReportedHazardsUrql';
 
 export default function Page(): JSX.Element {
   const companyParams = useParams();
@@ -20,6 +21,7 @@ export default function Page(): JSX.Element {
     : companyParams.id;
 
   const { company, error, isLoading, isNew } = useCompanyDetails(companyId);
+  const { boltResults } = useBoltResults();
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -53,14 +55,17 @@ export default function Page(): JSX.Element {
             </Button>
           </NavigationCard>
         </Link>
-        <Link href="/reportedhazards">
+        {/* <Link href="/reportedhazards"> */}
+        <Link
+          href={`http://localhost:3001/reportedhazards/${companyParams.id}`}
+        >
           <NavigationCard className="relative">
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"
               variant="neutral"
               size="small"
             >
-              5 active
+              {`${boltResults?.length} active`}
             </Badge>
             <Headline as="h3" variant="medium" color="foreground">
               Hazards

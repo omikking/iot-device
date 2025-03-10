@@ -15,8 +15,10 @@ import {
   Specification,
 } from '@gsp/ui';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-import { BoltResultSchema } from '@/app/mock/mock';
+// import { BoltResultSchema } from '@/app/mock/mock';
 import { useState } from 'react';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 
 interface HazardCardProps {
   dateTitle: Date;
@@ -27,15 +29,68 @@ interface HazardCardProps {
     title: string;
     text: string;
   }[];
-  fullBoltData?: BoltResultSchema;
+  // fullBoltData?: BoltResultSchema;
+  fullBoltData?: IBoltResults;
 }
+
+type IBoltResults = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  boltNumber: number;
+  boltType: string;
+  peakLoad: number[];
+  peakDisplacement: number[];
+  positionInRing: string;
+  result: string;
+  isHazard: boolean;
+  hazardCompletedDate: Date;
+  abortReason: string;
+  comment: string;
+  image: string;
+  siteId: string;
+  levelId: string;
+  driveId: string;
+  locationId: string;
+  userId: string;
+  // companyId: string // this should be here so we can filter on the companyId
+};
+
+// export interface BoltResultSchema {
+//   id: string;
+//   boltNumber: string;
+//   boltType: string;
+//   peakLoad: string[];
+//   peakDisplacement: string[];
+//   bitSize: string;
+//   rotations: string;
+//   displacementPerTonnage: string;
+//   level: string;
+//   drive: string;
+//   location: string;
+//   ring: string;
+//   comment?: string;
+//   result: 'Pass' | 'Fail' | 'Abort';
+//   image?: string;
+//   isHazard?: boolean;
+//   createdDate: Date;
+//   author?: string;
+// }
+
+const getMeSitesLocationDocument = graphql(`
+  query getMeSiteLocation($id: String!) {
+    site(id: $id) {
+      siteName
+    }
+  }
+`);
 
 export const HazardCard = ({
   dateTitle,
   isHazard,
   boltDescription,
-  fullBoltData,
   boltInfoItems,
+  fullBoltData,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,6 +101,14 @@ export const HazardCard = ({
 
     return `${year}-${month}-${day}`;
   };
+
+  const [{ data }] = useQuery({
+    query: getMeSitesLocationDocument,
+    variables: { id: fullBoltData?.siteId || '' },
+    pause: !fullBoltData?.siteId, // avoid running query if siteId is undefined
+  });
+
+  const siteName = data?.site?.siteName || 'N/A';
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
@@ -68,13 +131,20 @@ export const HazardCard = ({
               boltInfoItems.length - 2,
               boltInfoItems.length - 1,
             ),
-          ].map((boltSpec, i) => (
-            <Specification
-              key={i}
-              title={boltSpec.title}
-              text={boltSpec.text}
-            />
-          ))}
+          ].map((boltSpec, i) => {
+            if (boltSpec.title === 'Site') {
+              return (
+                <Specification key={i} title={boltSpec.title} text={siteName} />
+              );
+            }
+            return (
+              <Specification
+                key={i}
+                title={boltSpec.title}
+                text={boltSpec.text}
+              />
+            );
+          })}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
@@ -101,6 +171,7 @@ export const HazardCard = ({
             isHazardCompletable
             modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
             fullBoltData={fullBoltData}
+            boltInfoItems={boltInfoItems}
             onClose={() => setIsModalOpen(false)}
           />
         </Modal>

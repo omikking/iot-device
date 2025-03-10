@@ -12,19 +12,23 @@ import { Text } from './text';
 
 interface SingleDateCalendarProps {
   disabled?: boolean;
+  onDateChange?: (date: Date | undefined) => void;
+  date :Date | undefined,
+  setDate:(date: Date | undefined) => void,
 }
 
 export const SingleDateCalendar = ({
   disabled,
+  date,
+  setDate,
   className,
+  onDateChange,
 }: React.HTMLAttributes<HTMLDivElement> & SingleDateCalendarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const [date, setDate] = React.useState<Date>();
-
   const formattedDate =
     date && `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-
+    
   return (
     <div className={cn('ui-relative ui-border-none', className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -41,7 +45,7 @@ export const SingleDateCalendar = ({
               variant="medium"
               color={disabled || !date ? 'muted' : 'foreground'}
             >
-              {formattedDate || 'Select date'}
+              {formattedDate ?? 'Select date'}
             </Text>
 
             <LucideCalendar
@@ -58,6 +62,7 @@ export const SingleDateCalendar = ({
             selected={date}
             onSelect={(e) => {
               setDate(e);
+              onDateChange?.(e);
               setTimeout(() => {
                 setIsOpen(false);
               }, 150);

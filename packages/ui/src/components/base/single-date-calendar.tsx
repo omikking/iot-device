@@ -13,8 +13,9 @@ import { Text } from './text';
 interface SingleDateCalendarProps {
   disabled?: boolean;
   onDateChange?: (date: Date | undefined) => void;
-  date :Date | undefined,
-  setDate:(date: Date | undefined) => void,
+  date?: Date | undefined,
+  setDate?: ((date: Date | undefined) => void);
+  className: string
 }
 
 export const SingleDateCalendar = ({
@@ -61,7 +62,7 @@ export const SingleDateCalendar = ({
             mode="single"
             selected={date}
             onSelect={(e) => {
-              setDate(e);
+              setDate?.(e);
               onDateChange?.(e);
               setTimeout(() => {
                 setIsOpen(false);

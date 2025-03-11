@@ -275,7 +275,7 @@ export interface TechniciansSchema {
   fullName: string;
   email: string;
   workPlace: string;
-  isGlobalVisibility: boolean;
+  isGlobalVisibility: string;
   phoneNumber: string;
 }
 
@@ -285,7 +285,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Elliot Alderson',
     email: 'elliotalderson@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: true,
+    isGlobalVisibility: 'true',
     phoneNumber: '+4683729327',
   },
   {
@@ -293,7 +293,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Jimmy Nwadinkpa',
     email: 'jimmy@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: false,
+    isGlobalVisibility: 'false',
     phoneNumber: '+4683729327',
   },
   {
@@ -301,7 +301,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Felix Östergren',
     email: 'felix@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: false,
+    isGlobalVisibility: 'false',
     phoneNumber: '+4683729327',
   },
   {
@@ -309,7 +309,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Whiterose',
     email: 'whiterose@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: true,
+    isGlobalVisibility: 'true',
     phoneNumber: '+4683729327',
   },
   {
@@ -317,7 +317,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Darlene Alderson',
     email: 'darlenealderson@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: false,
+    isGlobalVisibility: 'false',
     phoneNumber: '+4683729327',
   },
   {
@@ -325,7 +325,7 @@ export const techniciansMock: TechniciansSchema[] = [
     fullName: 'Tyrell Wellick',
     email: 'tyrellwellick@sandvik.com',
     workPlace: 'Sandvik',
-    isGlobalVisibility: true,
+    isGlobalVisibility: 'true',
     phoneNumber: '+4683729327',
   },
 ];

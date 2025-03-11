@@ -1,41 +1,76 @@
-import React, { useEffect, useRef } from 'react';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { LucidePlus } from 'lucide-react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
-import { LucidePlus } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import {
+  IDrive,
+  ILocation,
+} from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { getNextAvailableIndex } from '@/libs/utils';
 
-interface LocationsListComponentProps {
+type LocationsListComponentProps = {
   selectedDrive?: string;
-  locationsOptionsMock: ILocationMock[];
-  drivesOptionsMock: IDriveMock[];
+  locationsOptions: ILocation[];
+  drivesOptions: IDrive[];
   handleSetLocation: () => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-}
+};
+
+const createLocationsMutation = graphql(`
+  mutation createLocation($createLocationInput: CreateLocationInput!) {
+    createLocation(createLocationInput: $createLocationInput) {
+      id
+      locationName
+      driveId
+    }
+  }
+`);
 
 export const LocationsList = ({
   selectedDrive,
-  locationsOptionsMock,
-  drivesOptionsMock,
+  locationsOptions,
+  drivesOptions,
   handleSetLocation,
-  setLocationsOptionsMock,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [, createLocationMutation] = useMutation(createLocationsMutation);
+  const [newLocationId, setNewLocationId] = useState<string | undefined>(
+    undefined,
+  );
 
-  const addLocation = () => {
-    locationsOptionsMock.push({
-      id: `${locationsOptionsMock.length + 1}`,
-      name: '',
-    });
-    setLocationsOptionsMock([...locationsOptionsMock] as ILocationMock[]);
-  };
+  const drive = drivesOptions.find(
+    (drive) => drive.driveName === selectedDrive,
+  );
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+  const addLocation = async () => {
+    if (!selectedDrive) return;
+
+    try {
+      const nextIndex = getNextAvailableIndex(
+        locationsOptions.map((location) => ({ name: location.locationName })),
+        'New location',
+      );
+
+      const defaultDriveName = `New location ${nextIndex}`;
+      const response = await createLocationMutation({
+        createLocationInput: {
+          locationName: defaultDriveName,
+          driveId: drive?.id || '',
+        },
+      });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+      setNewLocationId(response.data?.createLocation?.id);
+    } catch (error) {
+      console.error('Error:', error);
     }
-  }, [locationsOptionsMock]);
+  };
 
   return (
     <>
@@ -45,22 +80,23 @@ export const LocationsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {locationsOptionsMock?.length === 0 && (
+        {locationsOptions?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available locations
             </Text>
           </div>
         )}
-        {locationsOptionsMock?.map((location, index) => (
+        {locationsOptions?.map((location, index) => (
           <LocationItem
-            key={index}
-            location={location}
-            locationsOptionsMock={locationsOptionsMock}
+            key={location.id}
             index={index}
+            location={location}
             inputRef={inputRef}
+            locationsOptions={locationsOptions}
+            isNewLocation={location.id === newLocationId}
+            setNewLocationId={setNewLocationId}
             handleSetLocation={handleSetLocation}
-            setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}
       </div>
@@ -71,8 +107,8 @@ export const LocationsList = ({
             variant={'primary'}
             onClick={() => addLocation()}
             disabled={
-              drivesOptionsMock.length === 0 ||
-              locationsOptionsMock.some((location) => location.name === '')
+              drivesOptions.length === 0 ||
+              locationsOptions.some((location) => location.locationName === '')
             }
           >
             <LucidePlus /> Add location

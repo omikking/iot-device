@@ -80,22 +80,25 @@ export const TechniciansTable = ({
     {
       accessorKey: 'isGlobalVisibility',
       header: 'Visible globally',
-      cell: ({ row }) => (
-        <>
-          {row.getValue('isGlobalVisibility') && (
-            <Badge variant="success">
-              <LucideView />
-              Visible
-            </Badge>
-          )}
-          {!row.getValue('isGlobalVisibility') && (
-            <Badge variant="neutral">
-              <LucideEyeOff />
-              Private
-            </Badge>
-          )}
-        </>
-      ),
+      cell: ({ row }) => {
+        const isVisible = Boolean(row.getValue('isGlobalVisibility'));
+
+        return (
+          <>
+            {isVisible ? (
+              <Badge variant="success">
+                <LucideView />
+                Visible
+              </Badge>
+            ) : (
+              <Badge variant="neutral">
+                <LucideEyeOff />
+                Private
+              </Badge>
+            )}
+          </>
+        );
+      },
     },
     {
       accessorKey: 'phoneNumber',

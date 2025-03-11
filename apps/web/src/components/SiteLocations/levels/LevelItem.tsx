@@ -167,7 +167,7 @@ export const LevelItem = ({
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete level"
               deleteIcon="Site"
               itemToDelete={index}
               isOpen={isDeleteModalOpen}

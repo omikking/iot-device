@@ -162,7 +162,7 @@ export const DriveItem = ({
             />
             <DeleteModalConfirmation
               modalTitle="Delete drive"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete drive"
               deleteIcon="Site"
               itemToDelete={index}
               isOpen={isDeleteModalOpen}

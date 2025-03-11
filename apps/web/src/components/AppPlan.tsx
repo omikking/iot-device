@@ -38,7 +38,7 @@ export const AppPlan = ({
   return (
     <div
       // @TODO Border is a bit off in the y-axis
-      className={`flex justify-between items-center border-y border-gray-200 py-3 px-6 ${
+      className={`flex justify-between items-center border-b border-gray-200 py-3 px-6 ${
         isActive ? 'bg-gray-100' : ''
       }`}
     >

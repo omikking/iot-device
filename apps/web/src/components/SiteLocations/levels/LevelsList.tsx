@@ -1,50 +1,72 @@
-import React, { useEffect, useRef } from 'react';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 import { LevelItem } from './LevelItem';
-import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
 import { LucidePlus } from 'lucide-react';
-
+import React, { useRef, useState } from 'react';
+import { Button, Headline, Text } from '@gsp/ui';
+import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { getNextAvailableIndex } from '@/libs/utils';
 // @TODO have to fix why im getting warning
-interface LevelsListComponentProps {
-  levelsOptionsMock: ILevelMock[];
+type LevelsListComponentProps = {
+  levelsOptions: ILevel[];
   selectedLevel?: string;
-  selectedSite?: string;
+  selectedSiteId?: string;
   handleSetLevel: () => void;
-  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-}
+};
+
+const createLevelsMutation = graphql(`
+  mutation createLevel($createLevelInput: CreateLevelInput!) {
+    createLevel(createLevelInput: $createLevelInput) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
 
 export const LevelsList = ({
-  levelsOptionsMock,
+  levelsOptions,
   selectedLevel,
-  selectedSite,
+  selectedSiteId,
   handleSetLevel,
-  setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const addLevel = () => {
-    levelsOptionsMock.push({
-      id: `${levelsOptionsMock.length + 1}`,
-      name: '',
-      drives: [],
-    });
-    setLevelsOptionsMock([...levelsOptionsMock] as ILevelMock[]);
+  const [, createLevelMutation] = useMutation(createLevelsMutation);
+  const [newLevelId, setNewLevelId] = useState<string | undefined>(undefined);
+
+  const addLevel = async () => {
+    if (!selectedSiteId) return;
+
+    // @TODO add try catch to every mutation
+    try {
+      const nextIndex = getNextAvailableIndex(
+        levelsOptions.map((level) => ({ name: level.levelName })),
+        'New level',
+      );
+
+      const defaultLevelName = `New level ${nextIndex}`;
+
+      const response = await createLevelMutation({
+        createLevelInput: {
+          levelName: defaultLevelName, // create new level with default name, will be updated by user
+          siteId: selectedSiteId,
+        },
+      });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+
+      setNewLevelId(response.data?.createLevel?.id);
+    } catch (error) {
+      // @TODO add toast or alert for error?
+      console.error('Mutation error:', error);
+    }
   };
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [levelsOptionsMock]);
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -53,35 +75,36 @@ export const LevelsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {levelsOptionsMock?.length === 0 && (
+        {levelsOptions?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available levels
             </Text>
           </div>
         )}
-        {levelsOptionsMock?.map((level, index) => (
-          <LevelItem
-            key={index}
-            selectedLevel={selectedLevel}
-            level={level}
-            levelsOptionsMock={levelsOptionsMock}
-            index={index}
-            inputRef={inputRef}
-            handleSetLevel={handleSetLevel}
-            setLevelsOptionsMock={setLevelsOptionsMock}
-            setDrivesOptionsMock={setDrivesOptionsMock}
-            setLocationsOptionsMock={setLocationsOptionsMock}
-          />
-        ))}
+        {levelsOptions?.map((level, index) => {
+          return (
+            <LevelItem
+              key={level.id} // backend generates an id
+              level={level}
+              index={index}
+              inputRef={inputRef}
+              selectedLevel={selectedLevel}
+              levelsOptions={levelsOptions}
+              isNewLevel={level.id === newLevelId}
+              handleSetLevel={handleSetLevel}
+              setNewLevelId={setNewLevelId}
+            />
+          );
+        })}
       </div>
       <div className="flex justify-end w-full p-3">
-        {selectedSite ? (
+        {selectedSiteId ? (
           <Button
             size={'small'}
             variant={'primary'}
             onClick={() => addLevel()}
-            disabled={levelsOptionsMock.some((level) => level.name === '')}
+            disabled={levelsOptions.some((level) => level.levelName === '')}
           >
             <LucidePlus /> Add level
           </Button>

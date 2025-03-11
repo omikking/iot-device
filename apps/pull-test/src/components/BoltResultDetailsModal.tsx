@@ -15,7 +15,7 @@ import {
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { boltSpecifications } from '@/app/mock/mock';
+// import { boltSpecifications } from '@/app/mock/mock';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
 type IBoltResults = {
@@ -64,8 +64,13 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const { image, isHazard, peakLoad, peakDisplacement, author } =
-    (fullBoltData as IBoltResults) || {};
+  const {
+    image,
+    isHazard,
+    peakLoad,
+    peakDisplacement,
+    // author //  Author doesnt exist shall we keep it?
+  } = (fullBoltData as IBoltResults) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 
@@ -121,6 +126,7 @@ export const BoltResultDetailsModal = ({
         }`}
       >
         <div className="p-10 flex gap-10 flex-grow">
+          {/* <div className="p-10 flex gap-10 flex-grow min-h-80"> */}
           {image && (
             <Image
               // src={image || '/images/placeholder.png'}
@@ -151,11 +157,11 @@ export const BoltResultDetailsModal = ({
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
-                {author && (
+                {/* {author && (
                   <Text variant="small" color="foreground">
                     Author: {author}
                   </Text>
-                )}
+                )} */}
               </div>
             )}
           </div>

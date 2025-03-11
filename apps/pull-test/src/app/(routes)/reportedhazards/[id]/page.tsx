@@ -3,7 +3,7 @@ import React from 'react';
 // import { useParams } from 'next/navigation';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
-import { boltSpecifications } from '@/app/mock/mock';
+// import { boltSpecifications } from '@/app/mock/mock';
 import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 import { useBoltResults } from '@/components/urql-reportedhazards/ReportedHazardsUrql';
 
@@ -35,11 +35,20 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 };
 
-const generateBoltSpecifications = (boltData: IBoltResults) => {
+const generateBoltSpecifications = (
+  boltData: IBoltResults,
+  // need to display level,drive & location names and NOT their ids
+  names: {
+    siteName?: string;
+    levelName?: string;
+    driveName?: string;
+    locationName?: string;
+  },
+) => {
   return [
     {
       title: 'Site',
-      text: boltData.siteId || 'N/A',
+      text: names.siteName || 'N/A',
     },
     {
       title: 'Bolt',
@@ -51,19 +60,19 @@ const generateBoltSpecifications = (boltData: IBoltResults) => {
     },
     {
       title: 'Level',
-      text: boltData.levelId || 'N/A',
+      text: names.levelName || 'N/A',
     },
     {
       title: 'Drive',
-      text: boltData.driveId || 'N/A',
+      text: names.driveName || 'N/A',
     },
     {
       title: 'Location',
-      text: boltData.locationId || 'N/A',
+      text: names.locationName || 'N/A',
     },
     {
       title: 'Position in ring',
-      text: boltData.positionInRing || 'N/A',
+      text: boltData.positionInRing.replaceAll('_', '-') || 'N/A',
     },
     {
       title: 'Result',
@@ -71,17 +80,15 @@ const generateBoltSpecifications = (boltData: IBoltResults) => {
     },
     {
       title: 'Abort Reason',
-      text: boltData.abortReason || 'N/A',
+      text:
+        capitalizeFirstLetter(boltData.abortReason).replaceAll('_', ' ') ||
+        'N/A',
     },
   ];
 };
 
 export default function Page(): JSX.Element {
   const { boltResults } = useBoltResults();
-
-  // const displayData = boltResults && boltResults.length > 0 ? boltResults : boltResultsMock;
-
-  console.log('FROM BACKEND', boltResults);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -117,7 +124,8 @@ export default function Page(): JSX.Element {
                   isHazard={boltResult.isHazard}
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
-                  boltInfoItems={generateBoltSpecifications(boltResult)}
+                  // boltInfoItems={generateBoltSpecifications(boltResult)}
+                  boltInfoItems={generateBoltSpecifications(boltResult, {})}
                   boltDescription={boltResult.comment}
                 />
               ),
@@ -135,7 +143,8 @@ export default function Page(): JSX.Element {
                   isHazard={boltResult.isHazard}
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
-                  boltInfoItems={boltSpecifications}
+                  // boltInfoItems={boltSpecifications}
+                  boltInfoItems={generateBoltSpecifications(boltResult, {})}
                   boltDescription={boltResult.comment}
                 />
               ),
@@ -151,7 +160,8 @@ export default function Page(): JSX.Element {
               isHazard={boltResult.isHazard}
               fullBoltData={boltResult}
               dateTitle={boltResult.createdAt}
-              boltInfoItems={boltSpecifications}
+              // boltInfoItems={boltSpecifications}
+              boltInfoItems={generateBoltSpecifications(boltResult, {})}
               boltDescription={boltResult.comment}
             />
           ))}

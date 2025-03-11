@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import {
   LucideAlertTriangle,
   LucideCircleCheckBig,
@@ -19,6 +19,9 @@ import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { useState } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { useLevelDetails } from './urql-reportedhazards/LevelFetchUrql';
+import { useDriveDetails } from './urql-reportedhazards/DriveFetchUrql';
+import { useLocationDetails } from './urql-reportedhazards/LocationFetchUrql';
 
 interface HazardCardProps {
   dateTitle: Date;
@@ -93,6 +96,8 @@ export const HazardCard = ({
   fullBoltData,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [updatedBoltInfoItems, setUpdatedBoltInfoItems] =
+  //   useState(boltInfoItems);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -102,13 +107,52 @@ export const HazardCard = ({
     return `${year}-${month}-${day}`;
   };
 
-  const [{ data }] = useQuery({
+  const [{ data: siteData }] = useQuery({
     query: getMeSitesLocationDocument,
     variables: { id: fullBoltData?.siteId || '' },
     pause: !fullBoltData?.siteId, // avoid running query if siteId is undefined
   });
 
-  const siteName = data?.site?.siteName || 'N/A';
+  const { level } = useLevelDetails(fullBoltData?.levelId ?? '');
+  const { drive } = useDriveDetails(fullBoltData?.driveId ?? '');
+  const { location } = useLocationDetails(fullBoltData?.locationId ?? '');
+
+  // Update the boltInfoItems with names from fetched data
+  useEffect(() => {
+    if (!fullBoltData) return;
+
+    const siteName = siteData?.site?.siteName || 'N/A';
+    const levelName = level?.levelName || 'N/A';
+    const driveName = drive?.driveName || 'N/A';
+    const locationName = location?.locationName || 'N/A';
+
+    // Create a copy of the original boltInfoItems
+    const updatedItems = [...boltInfoItems];
+
+    // Update the values
+    updatedItems.forEach((item) => {
+      if (item.title === 'Site') {
+        item.text = siteName;
+      } else if (item.title === 'Level') {
+        item.text = levelName;
+      } else if (item.title === 'Drive') {
+        item.text = driveName;
+      } else if (item.title === 'Location') {
+        item.text = locationName;
+      }
+    });
+
+    // setUpdatedBoltInfoItems(updatedItems);
+  }, [boltInfoItems, siteData, level, drive, location, fullBoltData]);
+
+  // remove mby
+  // const visibleSpecifications = [
+  //   ...updatedBoltInfoItems.slice(0, 2), // First two items
+  //   ...updatedBoltInfoItems.slice(3, 5), // Level and Drive
+  // ];
+
+  const siteName = siteData?.site?.siteName || 'N/A';
+  console.log('LEVEL', level);
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">

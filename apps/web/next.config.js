@@ -31,7 +31,7 @@ module.exports = {
   transpilePackages: ["@gsp/ui"],
   // TODO: Remove/fix error ASAP on SiteLocations page and remove me. We need to wrap useSearchParams with a Suspense boundry / rewrite.
   // TODO: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
+  // experimental: {
+  //   missingSuspenseWithCSRBailout: false,
+  // },
 };

@@ -114,8 +114,13 @@ input UpdateAdminPermissionInput {
 Query
 Define the queries that can be made to the Company model
 """
+type CompanyListResponse {
+  totalRecords: Int!
+  results: [Company!]!
+}
+
 type Query {
-  companies: [Company!]!
+  companies(skip: Int, take: Int, userId: String): CompanyListResponse!
   company(id: String!): Company!
 }
 

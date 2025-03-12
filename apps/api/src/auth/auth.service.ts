@@ -123,6 +123,7 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken(
         user.id,
+        user.globalRole ?? 'defaultRole',
         parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
         {
           email: user.email,
@@ -130,6 +131,7 @@ export class AuthService {
       ),
       this.signToken(
         user.id,
+        user.globalRole ?? 'defaultRole',
         parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
         {
           refreshTokenId,
@@ -144,10 +146,16 @@ export class AuthService {
     };
   }
 
-  private async signToken<T>(userId: string, expiresIn: number, payload: T) {
+  private async signToken<T>(
+    userId: string,
+    globalRole: string,
+    expiresIn: number,
+    payload: T,
+  ) {
     return await this.jwt.signAsync(
       {
         sub: userId,
+        globalRole: globalRole,
         ...payload,
       },
       {

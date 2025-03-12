@@ -9,13 +9,49 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { BoltResultResponse } from './BoltResultResponse';
 
 @Injectable()
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<BoltResult[]> {
-    return this.prisma.boltResult.findMany();
+  async findAll(
+    user: ActiveUserData,
+    skip: number,
+    take: number,
+    filters?: {
+      siteId?: string;
+      levelId?: string;
+      driveId?: string;
+      locationId?: string;
+      result?: string;
+      isHazard?: boolean;
+    },
+  ): Promise<BoltResultResponse> {
+    const whereCondition: Record<string, any> = {
+      ...(user.globalRole === 'SANDVIK_TECHNICIAN' ? { userId: user.id } : {}),
+      ...(filters &&
+        Object.fromEntries(
+          Object.entries(filters).filter(
+            ([, value]) => value !== undefined && value !== null, // ✅ Keep `false` values
+          ),
+        )),
+    };
+
+    console.log(whereCondition, 'whereCondition');
+
+    const totalRecords = await this.prisma.boltResult.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.boltResult.findMany({
+      skip: Number(skip), // Ensure it's a number
+      take: Number(take), // Ensure it's a number
+      where: whereCondition,
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<BoltResult> {

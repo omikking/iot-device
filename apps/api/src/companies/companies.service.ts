@@ -9,6 +9,8 @@ import {
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { CompanyListResponse } from './companyListResponse';
 
 const prisma = new PrismaClient();
 
@@ -16,8 +18,39 @@ const prisma = new PrismaClient();
 export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Company[]> {
-    return this.prisma.company.findMany();
+  async findAll(
+    user: ActiveUserData,
+    userId?: string,
+    skip?: number,
+    take?: number,
+  ): Promise<CompanyListResponse> {
+    const whereCondition: Record<string, any> = {};
+
+    if (user.globalRole === 'SANDVIK_ADMIN') {
+      // Admin can see all companies; filter by userId if provided
+      if (userId) {
+        whereCondition.userPermission = {
+          some: { userId: userId }, // Check if userId exists inside userPermission
+        };
+      }
+    } else if (user.globalRole === 'SANDVIK_TECHNICIAN') {
+      // Technicians can only see companies where they have permission
+      whereCondition.userPermission = {
+        some: { userId: user.id },
+      };
+    }
+
+    const totalRecords = await this.prisma.company.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.company.findMany({
+      where: whereCondition,
+      skip,
+      take,
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<Company> {

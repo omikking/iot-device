@@ -99,7 +99,7 @@ export default function Page({
           id: plan.id,
           applicationName: plan.applicationName,
           planLevel: plan.planLevel,
-          expiringDate: plan.expiringDate || new Date().toISOString(),
+          expiringDate: plan.expiringDate,
         })),
       });
     }
@@ -252,7 +252,7 @@ export default function Page({
                     applicationName: planType.applicationName,
                     planLevel: undefined,
                     companyId: company?.id,
-                    expiringDate: '',
+                    expiringDate: 0,
                   };
 
                   return (

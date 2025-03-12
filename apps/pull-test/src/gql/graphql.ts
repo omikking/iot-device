@@ -551,7 +551,8 @@ export type Query = {
   coffees: Array<Coffee>;
   companies: Array<Company>;
   company: Company;
-  drive: Dri  hazards?: Maybe<Array<BoltResult>>;
+  drive: Drive;
+  hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
   location: Location;

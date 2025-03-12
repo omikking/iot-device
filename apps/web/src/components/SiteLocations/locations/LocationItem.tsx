@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
 import { useForm, UseFormReturn } from 'react-hook-form';

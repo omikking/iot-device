@@ -7,6 +7,18 @@ import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
+// @TODO create a utils folder and add these kind of functions there
+export const formatAppName = (appName: string): string => {
+  const appNames: Record<string, string> = {
+    PULL_TEST: 'Pull Test',
+    ULTRABOLTS: 'Ultrabolts',
+    XCYCLOPS: 'xCyclops',
+    PULL_TEST_OPERATOR: 'Pull Test Operator',
+  };
+
+  return appNames[appName] || appName;
+};
+
 interface UsersTableProps {
   onOpenChange: (open: boolean) => void;
   onSelectUser: (user: UserSchema) => void;
@@ -36,23 +48,16 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   };
 
   const getAppShortening = (appAccessValue: Application[]) => {
-    const appAccessShortNames: Record<string, string> = {
-      PULL_TEST: 'Pull Test',
-      ULTRABOLTS: 'Ultrabolts',
-      XCYCLOPS: 'xCyclops',
-      PULL_TEST_OPERATOR: 'Pull Test Operator',
-    };
-
     // @TODO hardcoded application count 4, we should get a dynamic number later to avoid bug
     if (appAccessValue.length === 4) {
       return <Badge variant="primary">All Apps</Badge>;
     }
 
-    const shortenedApps = appAccessValue
-      .map((app: string) => appAccessShortNames[app] || app)
+    const appName = appAccessValue
+      .map((app: string) => formatAppName(app) || app)
       .join(', ');
 
-    return shortenedApps;
+    return appName;
   };
 
   const openDeleteModal = (index: number) => {

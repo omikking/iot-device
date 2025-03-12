@@ -3,45 +3,41 @@ import {
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { AppPlan } from '@/components/AppPlan';
 import { useState } from 'react';
-
-const getFormFieldName = (name: string) => {
-  switch (name) {
-    case 'Pull-test':
-      return 'pullTestPlan';
-    case 'xCyclops':
-      return 'xCyclopsPlan';
-    case 'Ultrabots':
-      return 'ultrabotsPlan';
-  }
-};
+import { UseFormReturn } from 'react-hook-form';
+import { AppPlan } from '@/components/AppPlan';
+import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
+import { GetCompanyQuery } from '@/gql/graphql';
+import { PlanLevel } from '@/app/mock/mock';
+import { formatAppName } from './UsersTable';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 interface AppPlansContainerProps {
-  appPlan: {
-    id: string;
-    name: string;
-    activePlan?: 'Gold' | 'Silver' | 'Bronze';
-  };
+  appPlan: NonNullable<GetCompanyQuery['company']['plans']>[0];
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   isAdmin: boolean;
 }
 
 export const AppPlansContainer = ({
   appPlan,
   isAdmin,
+  companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-
-  const { name, activePlan: initialActivePlan } = appPlan;
-
-  const [activePlan, setActivePlan] = useState<
-    'Gold' | 'Silver' | 'Bronze' | undefined
-  >(initialActivePlan);
-
-  // @TODO: Remove temporary isAdmin prop when we have hook
   const user = isAdmin ? 'Superadmin' : 'Client';
-  const formField = getFormFieldName(name) || '';
+
+  const { applicationName, planLevel: initialPlanLevel } = appPlan;
+
+  const [activePlan, setActivePlan] = useState<PlanLevel | undefined>(
+    initialPlanLevel as PlanLevel,
+  );
+
+  const handlePlanChange = (plan?: PlanLevel) => {
+    setActivePlan(plan);
+  };
 
   return (
     <div
@@ -50,7 +46,7 @@ export const AppPlansContainer = ({
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
         <Headline variant="small" color="foreground" as="h3" isBold>
-          {name}
+          {formatAppName(applicationName)}
         </Headline>
 
         {user === 'Superadmin' && activePlan && (
@@ -70,27 +66,31 @@ export const AppPlansContainer = ({
 
       {/* Plans */}
       <AppPlan
-        plan="Gold"
+        plan="GOLD"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
-        onPlanChange={setActivePlan}
+        companyForm={companyForm}
+        applicationName={applicationName}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
-        plan="Silver"
+        plan="SILVER"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
-        onPlanChange={setActivePlan}
+        companyForm={companyForm}
+        applicationName={applicationName}
+        onPlanChange={handlePlanChange}
       />
       <AppPlan
-        plan="Bronze"
+        plan="BRONZE"
         activePlan={activePlan}
         isAdmin={isAdmin}
-        formField={formField}
-        onPlanChange={setActivePlan}
+        companyForm={companyForm}
+        applicationName={applicationName}
+        onPlanChange={handlePlanChange}
       />
 
+      {/* @TODO Updating calendar not working atm. Fix it. */}
       {/* Calendar */}
       {activePlan && (
         <div className="py-5 px-6 border-b border-neutral-2">

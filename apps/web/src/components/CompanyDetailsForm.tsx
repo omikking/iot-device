@@ -1,5 +1,3 @@
-import { UseFormReturn } from 'react-hook-form';
-import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   ContentHolder,
   FormControl,
@@ -9,26 +7,34 @@ import {
   FormMessage,
   Input,
 } from '@gsp/ui';
+import { UseFormReturn } from 'react-hook-form';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
+
+type CompanyDetailsFormProps = {
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
+};
 
 export const CompanyDetailsForm = ({
   companyForm,
-}: {
-  companyForm: UseFormReturn<CompanyFormValues>;
-}) => {
+}: CompanyDetailsFormProps) => {
   return (
     <ContentHolder variant="general" headlineText="Company details">
       <FormField
         control={companyForm.control}
-        name="companyName"
+        name="name"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
               <FormLabel>Company name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter company name..."
                   {...field}
+                  placeholder="Enter company name..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -38,16 +44,17 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="fullContactName"
+        name="companyContactEmail"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
-              <FormLabel>Full contact name</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter full contact name..."
                   {...field}
+                  placeholder="Email..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -57,16 +64,17 @@ export const CompanyDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="organisationNumber"
+        name="orgNumber"
         render={({ field }) => {
           return (
             <FormItem className="min-w-[31%]">
               <FormLabel>Organisation number</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter organisation number..."
                   {...field}
+                  placeholder="Enter organisation number..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -83,9 +91,10 @@ export const CompanyDetailsForm = ({
               <FormLabel>Country</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter country..."
                   {...field}
+                  placeholder="Enter country..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -102,9 +111,10 @@ export const CompanyDetailsForm = ({
               <FormLabel>City</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter city..."
                   {...field}
+                  placeholder="Enter city..."
                   className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -121,9 +131,30 @@ export const CompanyDetailsForm = ({
               <FormLabel>Address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter address..."
                   {...field}
+                  placeholder="Enter address..."
                   className="w-full"
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+      <FormField
+        control={companyForm.control}
+        name="postalCode"
+        render={({ field }) => {
+          return (
+            <FormItem className="min-w-[31%]">
+              <FormLabel>Postal code</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Enter postal code..."
+                  className="w-full"
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

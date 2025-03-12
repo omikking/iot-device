@@ -1,3 +1,4 @@
+'use client';
 import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
@@ -5,19 +6,24 @@ import {
   LucideMoveRight,
   LucideTriangleAlert,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function Page(): JSX.Element {
+  const { data: session } = useSession();
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      <Badge variant="primary" size="large" className="absolute top-24">
-        Ecorp
-      </Badge>
+      {session?.company.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {session?.company.name}
+        </Badge>
+      )}
 
       <Headline as="h1" variant="xl" color="foreground">
-        Pull-test overview
+        Pull Test overview
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">

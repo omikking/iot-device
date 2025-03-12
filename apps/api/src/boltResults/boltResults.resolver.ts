@@ -6,11 +6,9 @@ import { ParseUUIDPipe } from '@nestjs/common';
 import { BoltResultsService } from './boltResults.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-// import { BoltResult } from '@prisma/client';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from '../auth/decorators/active-user.decorator';
 import { BoltResultResponse } from './BoltResultResponse';
-// import { BoltResultsResponse } from './boltResultsResponse';
 
 @Resolver()
 @UseGuards(JwtAuthGuard)
@@ -31,21 +29,6 @@ export class BoltResultsResolver {
     const filters = { siteId, levelId, driveId, locationId };
     return this.boltResultsService.findAll(skip, take, user, filters);
   }
-
-  // @Query(() => [GraphQLTypes.BoltResult], { name: 'boltResults' })
-  // async findAll(
-  //   @Args('skip', { type: () => Int, nullable: true }) skip = 0,
-  //   @Args('take', { type: () => Int, nullable: true }) take = 10,
-  //   @ActiveUser() user: ActiveUserData, // Extract user
-  //   @Args('siteId', { type: () => String, nullable: true }) siteId?: string,
-  //   @Args('levelId', { type: () => String, nullable: true }) levelId?: string,
-  //   @Args('driveId', { type: () => String, nullable: true }) driveId?: string,
-  //   @Args('locationId', { type: () => String, nullable: true })
-  //   locationId?: string,
-  // ): Promise<BoltResult[]> {
-  //   const filters = { siteId, levelId, driveId, locationId };
-  //   return this.boltResultsService.findAll(skip, take, user, filters);
-  // }
 
   @Query('boltResult')
   async findOne(

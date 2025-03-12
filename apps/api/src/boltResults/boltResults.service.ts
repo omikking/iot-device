@@ -9,14 +9,91 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
-
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { BoltResultResponse } from './BoltResultResponse';
 @Injectable()
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<BoltResult[]> {
-    return this.prisma.boltResult.findMany();
+  async findAll(
+    skip: number,
+    take: number,
+    user: ActiveUserData,
+    filters?: {
+      siteId?: string;
+      levelId?: string;
+      driveId?: string;
+      locationId?: string;
+    },
+  ): Promise<BoltResultResponse> {
+    const whereCondition: Record<string, any> = {
+      ...(user.globalRole === 'SANDVIK_TECHNICIAN' ? { userId: user.sub } : {}),
+      ...(filters &&
+        Object.fromEntries(
+          Object.entries(filters).filter(([, value]) => Boolean(value)),
+        )),
+    };
+
+    console.log(
+      'User:',
+      user,
+      'Filters:',
+      filters,
+      'WhereCondition:',
+      whereCondition,
+    );
+
+    // Get total count of matching records
+    const totalRecords = await this.prisma.boltResult.count({
+      where: whereCondition,
+    });
+
+    // Get paginated results
+    const results = await this.prisma.boltResult.findMany({
+      skip,
+      take,
+      where: whereCondition,
+    });
+
+    console.log(results, 'results', totalRecords, 'totalRecords');
+    return { totalRecords, results };
   }
+
+  // async findAll(
+  //   skip: number,
+  //   take: number,
+  //   user: ActiveUserData,
+  //   filters?: {
+  //     siteId?: string;
+  //     levelId?: string;
+  //     driveId?: string;
+  //     locationId?: string;
+  //   },
+  // ): Promise<BoltResult[]> {
+  //   // Define whereCondition as a constant
+  //   const whereCondition: Record<string, any> = {
+  //     ...(user.globalRole === 'SANDVIK_TECHNICIAN' ? { userId: user.sub } : {}),
+  //     ...(filters &&
+  //       Object.fromEntries(
+  //         Object.entries(filters).filter(([, value]) => Boolean(value)), // Fix: Removed `_`
+  //       )),
+  //   };
+
+  //   console.log(
+  //     'User:',
+  //     user,
+  //     'Filters:',
+  //     filters,
+  //     'WhereCondition:',
+  //     whereCondition,
+  //   );
+
+  //   return this.prisma.boltResult.findMany({
+  //     skip,
+  //     take,
+  //     where: whereCondition,
+  //   });
+  // }
 
   async findOne(id: string): Promise<BoltResult> {
     const boltResult = await this.prisma.boltResult.findUnique({

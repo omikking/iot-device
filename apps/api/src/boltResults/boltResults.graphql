@@ -79,9 +79,22 @@ input UpdateBoltResultInput {
 Query
 Define the queries that can be made to the BoltResult model
 """
+type BoltResultResponse {
+  totalRecords: Int!
+  results: [BoltResult!]!
+}
+
 type Query {
-  boltResults: [BoltResult!]!
-  boltResult(id: String!): BoltResult!
+  boltResults(
+    skip: Int!
+    take: Int!
+    siteId: String
+    levelId: String
+    driveId: String
+    locationId: String
+  ): BoltResultResponse!
+
+  boltResult(id: String!): BoltResult! # Ensure correct formatting
 }
 
 """

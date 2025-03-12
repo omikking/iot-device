@@ -6,8 +6,11 @@ import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
+import { useSession } from 'next-auth/react';
 
 export default function Page(): JSX.Element {
+  const { data: session } = useSession();
+
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
     undefined,
@@ -24,9 +27,11 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      <Badge variant="primary" size="large" className="absolute top-24">
-        Ecorp AB
-      </Badge>
+      {session?.company.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {session?.company.name}
+        </Badge>
+      )}
 
       <Headline as="h1" variant="xl" color="foreground">
         Users

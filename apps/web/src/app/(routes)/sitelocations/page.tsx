@@ -19,6 +19,7 @@ import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
 import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export interface ISiteMock {
   id: string;
@@ -44,6 +45,7 @@ export interface ILocationMock {
 }
 
 export default function Page(): JSX.Element {
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const siteTableValue = searchParams.get('data');
   const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
@@ -122,7 +124,7 @@ export default function Page(): JSX.Element {
         </Link>
       </Text>
       <Badge variant="primary" size="large" className="absolute top-24">
-        {selectedSiteName || 'Select site'}
+        {session?.company.name}
       </Badge>
       <Headline as="h1" variant="xl" color="foreground">
         Site locations

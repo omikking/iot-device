@@ -5,10 +5,10 @@ import { CreateSiteInput } from './dto/create-site.input';
 import { UpdateSiteInput } from './dto/update-site.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 

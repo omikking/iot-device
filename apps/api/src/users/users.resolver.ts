@@ -5,18 +5,22 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { GlobalRole } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query('users')
   async findAll(
+    @ActiveUser() user: ActiveUserData,
     @Args('roles', { type: () => [String], nullable: true })
     roles?: GlobalRole[],
   ): Promise<GraphQLTypes.User[]> {
+    console.log('Authenticated User ', user);
     return this.usersService.findAll(roles);
   }
 

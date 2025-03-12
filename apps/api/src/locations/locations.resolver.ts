@@ -5,10 +5,10 @@ import { CreateLocationInput } from './dto/create-location.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateLocationInput } from './dto/update-location.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 

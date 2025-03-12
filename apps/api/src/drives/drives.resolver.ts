@@ -5,10 +5,10 @@ import { CreateDriveInput } from './dto/create-drive.input';
 import { UpdateDriveInput } from './dto/update-drive.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtGuard)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 

@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useRef } from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';

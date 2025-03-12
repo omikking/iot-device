@@ -2,10 +2,37 @@
 import { Text, Headline } from '@gsp/ui';
 import { useState } from 'react';
 import { GoBack } from '@/components/GoBack';
-import { useCompany } from '@/components/urql-company/CompanyClient';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { CompanyForm } from '@/components/CompanyForm';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+
+const getCompany = graphql(`
+  query getCompany($id: String!) {
+    company(id: $id) {
+      id
+      name
+      orgNumber
+      address
+      postalCode
+      city
+      country
+      companyContactEmail
+      plans {
+        id
+        companyId
+        applicationName
+        planLevel
+        expiringDate
+      }
+      users {
+        id
+        fullName
+      }
+    }
+  }
+`);
 
 export default function Page({
   params,
@@ -13,10 +40,12 @@ export default function Page({
   params: { id: string };
 }): JSX.Element {
   const isNewCompany = params.id === 'new';
-  // Does not call if it's new company.
-  const { company } = isNewCompany
-    ? { company: undefined }
-    : useCompany(params.id);
+
+  // Does not call if it's new company flow.
+  const [companyData] = isNewCompany
+    ? [null]
+    : useQuery({ query: getCompany, variables: { id: params.id } });
+  const company = companyData?.data?.company;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 

@@ -1,3 +1,4 @@
+'use client';
 import {
   Badge,
   FormControl,
@@ -40,6 +41,7 @@ export const AppPlan = ({
   const userRole = isAdmin ? 'Superadmin' : 'Client';
   const isPlanActive = plan === activePlan;
 
+  // @TODO see if we could fix the field typing.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePlanChange = (isChecked: boolean, field: any) => {
     const newPlan = isChecked ? plan : undefined;

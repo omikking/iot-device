@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { graphql } from '@/gql';
-import { useMutation } from 'urql';
+import { useQuery } from 'urql';
 
 const getCompanies = graphql(`
   query getCompanies {
@@ -15,11 +15,12 @@ const getCompanies = graphql(`
 `);
 
 export const CompanyList = () => {
-  const [companiesData] = useMutation(getCompanies);
+  const [{ data }] = useQuery({ query: getCompanies });
+  const companies = data?.companies;
 
   return (
     <>
-      {companiesData?.data?.companies.map((company) => (
+      {companies?.map((company) => (
         <div
           key={company.id}
           className="w-full flex justify-between items-center px-6 py-4 bg-main-white"

@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { adminsMock } from '@/app/mock/mock';
@@ -23,6 +24,9 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
+
+  // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
+  // Leave it for now, and will be worked on later.
 
   return (
     <FormField

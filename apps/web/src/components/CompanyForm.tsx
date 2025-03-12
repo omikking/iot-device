@@ -15,7 +15,7 @@ import {
   createCompanyFormSchema,
   updateCompanyFormSchema,
 } from './schemas/CompanyFormSchema';
-import { Company } from '@/gql/graphql';
+import { GetCompanyQuery } from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -23,11 +23,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
 
-const allPlansTypes = [
-  { id: 'pull-test', applicationName: 'PULL_TEST' },
-  { id: 'xcyclops', applicationName: 'XCYCLOPS' },
-  { id: 'ultrabolts', applicationName: 'ULTRABOLTS' },
-] as const;
+const allPlans = [
+  { applicationName: 'PULL_TEST' },
+  { applicationName: 'XCYCLOPS' },
+  { applicationName: 'ULTRABOLTS' },
+];
 
 const createCompanyMutation = graphql(`
   mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {
@@ -83,7 +83,7 @@ const updateCompanyMutation = graphql(`
 `);
 
 type CompanyFormProps = {
-  company?: Company;
+  company?: GetCompanyQuery['company'];
   isNewCompany: boolean;
   setIsDeleteModalOpen: (open: boolean) => void;
 };
@@ -118,12 +118,12 @@ export const CompanyForm = ({
       city: company?.city || '',
       address: company?.address || '',
       postalCode: company?.postalCode || '',
-      plans: company?.plans ?? [],
+      plans: company?.plans || [],
       userPermissions:
         company?.users?.map((user) => ({
           newUserId: user.id,
           oldUserId: user.id,
-        })) ?? [],
+        })) || [],
     },
   });
 
@@ -153,15 +153,16 @@ export const CompanyForm = ({
   };
 
   useEffect(() => {
+    // Update company data if company exists
     if (company) {
       companyForm.reset({
         ...company,
-        plans: company.plans ?? [],
+        plans: company.plans || [],
         userPermissions:
           company?.users?.map((user) => ({
             newUserId: user.id,
             oldUserId: user.id,
-          })) ?? [],
+          })) || [],
       });
     }
   }, [company]);
@@ -211,19 +212,17 @@ export const CompanyForm = ({
               </div>
 
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlansTypes.map((planType) => {
+                {allPlans.map((planType) => {
                   const existingPlan = company?.plans?.find(
                     (plan) => plan.applicationName === planType.applicationName,
                   );
 
                   const appPlan = existingPlan || {
-                    id: planType.id,
+                    id: planType.applicationName,
                     applicationName: planType.applicationName,
                     planLevel: '',
                     companyId: company?.id || '',
                     expiringDate: '',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
                   };
 
                   return (

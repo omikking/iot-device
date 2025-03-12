@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AppPlan } from '@/components/AppPlan';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { Plan } from '@/gql/graphql';
+import { GetCompanyQuery } from '@/gql/graphql';
 import { PlanLevel } from '@/app/mock/mock';
 import { formatAppName } from './UsersTable';
 import {
@@ -16,7 +16,7 @@ import {
 } from './schemas/CompanyFormSchema';
 
 interface AppPlansContainerProps {
-  appPlan: Plan;
+  appPlan: NonNullable<GetCompanyQuery['company']['plans']>[0];
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   isAdmin: boolean;
 }
@@ -27,15 +27,15 @@ export const AppPlansContainer = ({
   companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
-
-  const { applicationName, planLevel: initialActivePlan } = appPlan as {
-    applicationName: string;
-    planLevel: PlanLevel;
-  };
-  const [activePlan, setActivePlan] = useState<PlanLevel>(initialActivePlan);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const handlePlanChange = (plan: PlanLevel) => {
+  const { applicationName, planLevel: initialPlanLevel } = appPlan;
+
+  const [activePlan, setActivePlan] = useState<PlanLevel | undefined>(
+    initialPlanLevel as PlanLevel,
+  );
+
+  const handlePlanChange = (plan?: PlanLevel) => {
     setActivePlan(plan);
   };
 

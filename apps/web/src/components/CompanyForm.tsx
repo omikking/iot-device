@@ -130,7 +130,9 @@ export const CompanyForm = ({
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
+    console.log('submit');
     console.log(data);
+    console.log(companyForm.getValues());
 
     if (company) {
       updateCompany({

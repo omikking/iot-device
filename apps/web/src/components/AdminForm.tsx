@@ -45,11 +45,12 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
                 onSelect={(e) => {
                   setAdministrator(e);
                   field.onChange([
+                    // @TODO Fix
                     isNewCompany
-                      ? { userId: '123' }
+                      ? { userId: '87506bef-5283-44d8-ab42-a668ea616975' }
                       : {
-                          newUserId: '456',
-                          oldUserId: '789',
+                          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+                          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
                         },
                   ]);
                 }}

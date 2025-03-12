@@ -4,13 +4,14 @@ import { useState } from 'react';
 import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { siteResultMock, SiteResultSchema } from '@/app/mock/mock';
+import { siteResultMock } from '@/app/mock/mock';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { Site } from '@/gql/graphql';
 
 type SitesTableProps = {
   onOpenChange: (isOpen: boolean) => void;
-  onSelectSite: (site: SiteResultSchema) => void;
+  onSelectSite: (site: Site) => void;
 };
 
 export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
@@ -40,32 +41,28 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
     onOpenChange(true);
   };
 
-  const columns: ColumnDef<SiteResultSchema>[] = [
+  const columns: ColumnDef<Site>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'siteName',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Name" />
+        <TableHeadWithSorting column={column} header="Site name" />
       ),
     },
     {
-      accessorKey: 'address',
-      header: 'Address',
-    },
-    {
       accessorKey: 'totalSiteLocations',
-      header: 'Total site locations',
+      header: 'Site locations',
       cell: ({ row }) => {
         return (
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
                 pathname: '/sitelocations',
-                query: { data: `${row.original.name} site` },
+                query: { data: `${row.original.siteName} site` },
               }}
             >
               <LucideMoveRight />
               <Text variant={'medium'} color={'foreground'}>
-                {row.getValue('totalSiteLocations')} site locations
+                {row.getValue('totalSiteLocations')} Site locations
               </Text>
             </Link>
           </Button>
@@ -73,12 +70,20 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
       },
     },
     {
-      accessorKey: 'passCriteria',
-      header: 'Pass criteria',
+      accessorKey: 'address',
+      header: 'Address',
     },
     {
-      accessorKey: 'notification',
-      header: 'Notification',
+      accessorKey: 'city',
+      header: 'City',
+    },
+    {
+      accessorKey: 'country',
+      header: 'Country',
+    },
+    {
+      accessorKey: 'postalCode',
+      header: 'Postal code',
     },
     {
       accessorKey: 'settings',
@@ -86,13 +91,11 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
       cell: ({ row }) => {
         const rowIndex = sites.findIndex((site) => site.id === row.original.id);
         return (
-          <>
-            <DeleteEditDropdown
-              itemSelected={rowIndex}
-              openDeleteModal={openDeleteModal}
-              handleEdit={openEditModal}
-            />
-          </>
+          <DeleteEditDropdown
+            itemSelected={rowIndex}
+            openDeleteModal={openDeleteModal}
+            handleEdit={openEditModal}
+          />
         );
       },
     },
@@ -115,7 +118,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {siteToDelete && ` ${sites[siteToDelete].name} `}
+            {siteToDelete && ` ${sites[siteToDelete].siteName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

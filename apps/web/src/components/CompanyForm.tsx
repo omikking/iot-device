@@ -93,16 +93,16 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
+  // Temporary state for devmode
+  const [isAdmin, setIsAdmin] = useState(true);
+  const user = isAdmin ? 'Superadmin' : 'Client';
+
   const [, createCompany] = useMutation<CreateCompanyFormValues>(
     createCompanyMutation,
   );
   const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
     updateCompanyMutation,
   );
-
-  // Temporary state for devmode
-  const [isAdmin, setIsAdmin] = useState(true);
-  const user = isAdmin ? 'Superadmin' : 'Client';
 
   const companyForm = useForm<
     CreateCompanyFormValues | UpdateCompanyFormValues
@@ -140,7 +140,7 @@ export const CompanyForm = ({
         updateCompanyInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
-        console.error('Update company failed:', result.error);
+        console.log(result);
       });
     }
 
@@ -149,7 +149,7 @@ export const CompanyForm = ({
         createCompanyInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
-        console.error('Invite company failed:', result.error);
+        console.log(result);
       });
     }
   };

@@ -552,6 +552,7 @@ export type Query = {
   companies: Array<Company>;
   company: Company;
   drive: Drive;
+  drives: Array<Drive>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;

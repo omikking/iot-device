@@ -81,6 +81,14 @@ export type Company = {
 };
 
 /**
+ * CreateAdminPermissionInput
+ * Define the input fields to create a new userPermission
+ */
+export type CreateAdminPermissionInput = {
+  userId: Scalars['String']['input'];
+};
+
+/**
  * CreateBoltResultInput
  * Define the input fields to create a new boltResult
  */
@@ -125,7 +133,7 @@ export type CreateCompanyInput = {
   orgNumber: Scalars['String']['input'];
   plans?: InputMaybe<Array<CreatePlanInput>>;
   postalCode: Scalars['String']['input'];
-  userPermissions: Array<CreateUserPermissionInput>;
+  userPermissions: Array<CreateAdminPermissionInput>;
 };
 
 /**
@@ -183,6 +191,9 @@ export type CreateSiteInput = {
  * Define the input fields to create a new userPermission
  */
 export type CreateUserPermissionInput = {
+  appsAccess: Array<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  role: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
 
@@ -238,7 +249,7 @@ export type Location = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type Mutation = {
   __typename?: 'Mutation';
@@ -249,6 +260,7 @@ export type Mutation = {
   createLevel: Level;
   createLocation: Location;
   createSite: Site;
+  createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
   removeCoffee: Coffee;
   removeCompany: Company;
@@ -256,6 +268,8 @@ export type Mutation = {
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
+  removeUser: User;
+  removeUserPermission: UserPermission;
   updateBoltResult: BoltResult;
   updateCoffee: Coffee;
   updateCompany: Company;
@@ -263,12 +277,14 @@ export type Mutation = {
   updateLevel: Level;
   updateLocation: Location;
   updateSite: Site;
+  updateUser: User;
+  updateUserPermission: UserPermission;
 };
 
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
@@ -277,7 +293,7 @@ export type MutationCreateBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateCoffeeArgs = {
   createCoffeeInput: CreateCoffeeInput;
@@ -286,7 +302,7 @@ export type MutationCreateCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
@@ -295,7 +311,7 @@ export type MutationCreateCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
@@ -304,7 +320,7 @@ export type MutationCreateDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateLevelArgs = {
   createLevelInput: CreateLevelInput;
@@ -313,7 +329,7 @@ export type MutationCreateLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
@@ -322,7 +338,7 @@ export type MutationCreateLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationCreateSiteArgs = {
   createSiteInput: CreateSiteInput;
@@ -331,7 +347,16 @@ export type MutationCreateSiteArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateUserPermissionArgs = {
+  createUserPermissionInput: CreateUserPermissionInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -340,7 +365,7 @@ export type MutationRemoveBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -349,7 +374,7 @@ export type MutationRemoveCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveCompanyArgs = {
   id: Scalars['String']['input'];
@@ -358,7 +383,7 @@ export type MutationRemoveCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveDriveArgs = {
   id: Scalars['String']['input'];
@@ -367,7 +392,7 @@ export type MutationRemoveDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
@@ -376,7 +401,7 @@ export type MutationRemoveLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveLocationArgs = {
   id: Scalars['String']['input'];
@@ -385,7 +410,7 @@ export type MutationRemoveLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationRemoveSiteArgs = {
   id: Scalars['String']['input'];
@@ -394,7 +419,25 @@ export type MutationRemoveSiteArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveUserArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -404,7 +447,7 @@ export type MutationUpdateBoltResultArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -414,7 +457,7 @@ export type MutationUpdateCoffeeArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateCompanyArgs = {
   id: Scalars['String']['input'];
@@ -424,7 +467,7 @@ export type MutationUpdateCompanyArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateDriveArgs = {
   id: Scalars['String']['input'];
@@ -434,7 +477,7 @@ export type MutationUpdateDriveArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateLevelArgs = {
   id: Scalars['String']['input'];
@@ -444,7 +487,7 @@ export type MutationUpdateLevelArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateLocationArgs = {
   id: Scalars['String']['input'];
@@ -454,11 +497,31 @@ export type MutationUpdateLocationArgs = {
 
 /**
  * Mutation
- * Define the mutations that can be made to the Site model
+ * Define the mutations that can be made to the User model
  */
 export type MutationUpdateSiteArgs = {
   id: Scalars['String']['input'];
   updateSiteInput: UpdateSiteInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateUserArgs = {
+  id: Scalars['String']['input'];
+  updateUserInput: UpdateUserInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateUserPermissionArgs = {
+  id: Scalars['String']['input'];
+  updateUserPermissionInput: UpdateUserPermissionInput;
 };
 
 /**
@@ -478,7 +541,7 @@ export type Plan = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type Query = {
   __typename?: 'Query';
@@ -496,12 +559,16 @@ export type Query = {
   locations: Array<Location>;
   site: Site;
   sites: Array<Site>;
+  user: User;
+  userPermission: UserPermission;
+  userPermissions: Array<UserPermission>;
+  users: Array<User>;
 };
 
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryBoltResultArgs = {
   id: Scalars['String']['input'];
@@ -510,7 +577,7 @@ export type QueryBoltResultArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
@@ -519,7 +586,7 @@ export type QueryCoffeeArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryCompanyArgs = {
   id: Scalars['String']['input'];
@@ -528,7 +595,7 @@ export type QueryCompanyArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryDriveArgs = {
   id: Scalars['String']['input'];
@@ -537,7 +604,7 @@ export type QueryDriveArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryLevelArgs = {
   id: Scalars['String']['input'];
@@ -546,7 +613,7 @@ export type QueryLevelArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
@@ -555,10 +622,37 @@ export type QueryLocationArgs = {
 
 /**
  * Query
- * Define the queries that can be made to the Site model
+ * Define the queries that can be made to the User model
  */
 export type QuerySiteArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUserArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryUsersArgs = {
+  roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 /**
@@ -578,6 +672,15 @@ export type Site = {
   postalCode: Scalars['String']['output'];
   siteName: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+/**
+ * UpdateAdminPermissionInput
+ * Define the input fields to update the sandvik admin to new admin
+ */
+export type UpdateAdminPermissionInput = {
+  newUserId: Scalars['String']['input'];
+  oldUserId: Scalars['String']['input'];
 };
 
 /**
@@ -624,7 +727,7 @@ export type UpdateCompanyInput = {
   orgNumber?: InputMaybe<Scalars['String']['input']>;
   plans?: InputMaybe<Array<UpdatePlanInput>>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
-  userPermissions?: InputMaybe<Array<UpdateUserPermissionInput>>;
+  userPermissions?: InputMaybe<Array<UpdateAdminPermissionInput>>;
 };
 
 /**
@@ -680,12 +783,27 @@ export type UpdateSiteInput = {
 };
 
 /**
+ * UpdateUserInput
+ * Define the input fields to update an existing user
+ * Optional are marked without the exclamation mark
+ */
+export type UpdateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
+  globalRole?: InputMaybe<Scalars['String']['input']>;
+  isGlobalVisibility?: InputMaybe<Scalars['Boolean']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  workPlace?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
  * UpdateUserPermissionInput
- * Define the input fields to update the sandvik admin to new admin
+ * Define the input fields to update an existing userPermission
+ * Optional are marked without the exclamation mark
  */
 export type UpdateUserPermissionInput = {
-  newUserId: Scalars['String']['input'];
-  oldUserId: Scalars['String']['input'];
+  appsAccess?: InputMaybe<Array<Scalars['String']['input']>>;
+  role?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -702,7 +820,7 @@ export type User = {
   isGlobalVisibility?: Maybe<Scalars['Boolean']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
-  userPermission?: Maybe<Array<UserPermission>>;
+  userPermissions?: Maybe<Array<UserPermission>>;
   workPlace: Scalars['String']['output'];
 };
 
@@ -712,7 +830,8 @@ export type User = {
  */
 export type UserPermission = {
   __typename?: 'UserPermission';
-  appsAccess?: Maybe<Array<Scalars['String']['output']>>;
+  appsAccess: Array<Scalars['String']['output']>;
+  companyId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   role: Scalars['String']['output'];

@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';

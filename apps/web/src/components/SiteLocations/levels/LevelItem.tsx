@@ -1,9 +1,4 @@
 'use client';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
 import React, { useState } from 'react';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
@@ -13,30 +8,29 @@ import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { Drive, Level, Location } from '@/gql/graphql';
 interface LevelComponentProps {
-  selectedLevel?: string;
-  level: ILevelMock;
-  levelsOptionsMock: ILevelMock[];
+  selectedLevelId?: string;
+  level: Level;
+  levelsOptions: Level[];
   index: number;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLevel: (name: string) => void;
-  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
+  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
+  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LevelItem = ({
-  selectedLevel,
+  selectedLevelId,
   level,
-  levelsOptionsMock,
+  levelsOptions,
   index,
   inputRef,
   handleSetLevel,
-  setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
+  setLevelsOptions,
+  setDrivesOptions,
+  setLocationsOptions,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -52,7 +46,7 @@ export const LevelItem = ({
 
   const handleEditLevel = () => {
     setIsEditing(true);
-    levelForm.setValue('name', level.name);
+    levelForm.setValue('name', level.levelName);
   };
 
   const handleEditSubmit = (
@@ -62,8 +56,8 @@ export const LevelItem = ({
     const formData = new FormData(e.currentTarget);
     const newLevelName = formData.get('level') as string;
 
-    const isDuplicate = levelsOptionsMock.some(
-      (level) => level.name === newLevelName,
+    const isDuplicate = levelsOptions.some(
+      (level) => level.levelName === newLevelName,
     );
 
     if (isDuplicate) {
@@ -71,12 +65,12 @@ export const LevelItem = ({
       return;
     }
 
-    const newLevels = [...levelsOptionsMock];
+    const newLevels = [...levelsOptions];
     newLevels[index] = {
       ...newLevels[index],
-      name: newLevelName,
+      levelName: newLevelName,
     };
-    setLevelsOptionsMock(newLevels);
+    setLevelsOptions(newLevels);
     setIsEditing(false);
   };
 
@@ -89,25 +83,25 @@ export const LevelItem = ({
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    const newLevels = [...levelsOptionsMock];
+    const newLevels = [...levelsOptions];
     newLevels[index].drives = [];
     newLevels.splice(index, 1);
 
-    setLevelsOptionsMock(newLevels);
-    setDrivesOptionsMock([]);
-    setLocationsOptionsMock([]);
+    setLevelsOptions(newLevels);
+    setDrivesOptions([]);
+    setLocationsOptions([]);
   };
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetLevel(level.name)}
+        onClick={() => !isEditing && handleSetLevel(level.id)}
       >
-        {!level.name || isEditing ? (
+        {!level.levelName || isEditing ? (
           <SiteLocationsForm
             form={levelForm}
             onSubmit={handleEditSubmit}
@@ -123,12 +117,11 @@ export const LevelItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {level.name}
+              {level.levelName}
             </Text>
 
             <DeleteEditDropdown
-              // itemSelected={index}
-              itemSelected={'1'}
+              itemSelected={level.id}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
             />
@@ -136,8 +129,7 @@ export const LevelItem = ({
               modalTitle="Delete level"
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
-              // itemToDelete={index}
-              itemToDelete={'1'}
+              itemToDelete={level.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={(e) => {
@@ -147,7 +139,7 @@ export const LevelItem = ({
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${level.name} `}
+                  {` ${level.levelName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

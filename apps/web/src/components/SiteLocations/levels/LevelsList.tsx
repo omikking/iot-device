@@ -7,8 +7,8 @@ import { Drive, Level, Location } from '@/gql/graphql';
 
 interface LevelsListComponentProps {
   levelsOptions: Level[];
-  selectedLevel?: string;
-  selectedSite?: string;
+  selectedLevelId?: string;
+  selectedSiteId?: string;
   handleSetLevel: () => void;
   setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
   setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
@@ -17,8 +17,8 @@ interface LevelsListComponentProps {
 
 export const LevelsList = ({
   levelsOptions,
-  selectedLevel,
-  selectedSite,
+  selectedLevelId,
+  selectedSiteId,
   handleSetLevel,
   setLevelsOptions,
   setDrivesOptions,
@@ -61,20 +61,20 @@ export const LevelsList = ({
         {levelsOptions?.map((level, index) => (
           <LevelItem
             key={index}
-            selectedLevel={selectedLevel}
+            selectedLevelId={selectedLevelId}
             level={level}
-            levelsOptionsMock={levelsOptions}
+            levelsOptions={levelsOptions}
             index={index}
             inputRef={inputRef}
             handleSetLevel={handleSetLevel}
-            setLevelsOptionsMock={setLevelsOptions}
-            setDrivesOptionsMock={setDrivesOptions}
-            setLocationsOptionsMock={setLocationsOptions}
+            setLevelsOptions={setLevelsOptions}
+            setDrivesOptions={setDrivesOptions}
+            setLocationsOptions={setLocationsOptions}
           />
         ))}
       </div>
       <div className="flex justify-end w-full p-3">
-        {selectedSite ? (
+        {selectedSiteId ? (
           <Button
             size={'small'}
             variant={'primary'}

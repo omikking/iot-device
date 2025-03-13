@@ -70,6 +70,7 @@ export default function Page(): JSX.Element {
   const [locationsOptions, setLocationsOptions] = useState<Location[]>([]);
 
   console.log(selectedLevel);
+  console.log(levelsOptions);
 
   // Request all sites of company for dropdown
   const [sitesData] = useQuery({
@@ -91,6 +92,7 @@ export default function Page(): JSX.Element {
     pause: !selectedSite?.id,
   });
   const site = (siteData.data?.site as Site) || [];
+
   // When the full site is fetched, set levels, drives, and locations.
   useEffect(() => {
     if (site) {
@@ -123,6 +125,8 @@ export default function Page(): JSX.Element {
   };
 
   const handleSetLevel = (levelId?: string) => {
+    console.log(levelId);
+    console.log('set level');
     const level = levelsOptions.find((level) => level.id === levelId);
     setSelectedLevel(level);
     setSelectedDrive(undefined);
@@ -216,8 +220,8 @@ export default function Page(): JSX.Element {
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
               levelsOptions={levelsOptions}
-              selectedLevel={selectedLevel?.id}
-              selectedSite={selectedSite?.id}
+              selectedLevelId={selectedLevel?.id}
+              selectedSiteId={selectedSite?.id}
               handleSetLevel={handleSetLevel}
               setLevelsOptions={setLevelsOptions}
               setDrivesOptions={setDrivesOptions}
@@ -226,21 +230,21 @@ export default function Page(): JSX.Element {
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
-              drivesOptionsMock={drivesOptions}
-              selectedDrive={selectedDrive?.id}
-              selectedLevel={selectedLevel?.id}
-              levelsOptionsMock={levelsOptions}
-              setDrivesOptionsMock={setDrivesOptions}
-              setLocationsOptionsMock={setLocationsOptions}
+              drivesOptions={drivesOptions}
+              selectedDriveId={selectedDrive?.id}
+              selectedLevelId={selectedLevel?.id}
+              levelsOptions={levelsOptions}
+              setDrivesOptions={setDrivesOptions}
+              setLocationsOptions={setLocationsOptions}
               handleSetDrive={handleSetDrive}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LocationsList
-              selectedDrive={selectedDrive?.id}
-              drivesOptionsMock={drivesOptions}
-              locationsOptionsMock={locationsOptions}
-              setLocationsOptionsMock={setLocationsOptions}
+              selectedDriveId={selectedDrive?.id}
+              drivesOptions={drivesOptions}
+              locationsOptions={locationsOptions}
+              setLocationsOptions={setLocationsOptions}
             />
           </div>
         </div>

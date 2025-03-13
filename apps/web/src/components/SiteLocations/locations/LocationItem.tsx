@@ -6,28 +6,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SiteLocationsForm } from '../SiteLocationsForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { ILocationMock } from '@/app/(routes)/sitelocations/page';
 import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { Location } from '@/gql/graphql';
 
 interface LocationComponentProps {
-  location: ILocationMock;
+  location: Location;
   index: number;
-  locationsOptionsMock: ILocationMock[];
+  locationsOptions: Location[];
   inputRef: React.RefObject<HTMLInputElement>;
-  // handleSetLocation: (name: string) => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LocationItem = ({
   location,
   index,
-  locationsOptionsMock,
+  locationsOptions,
   inputRef,
-  setLocationsOptionsMock,
-  // handleSetLocation,
+  setLocationsOptions,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -43,7 +39,7 @@ export const LocationItem = ({
 
   const handleEditLocation = () => {
     setIsEditing(true);
-    locationForm.setValue('name', location.name);
+    locationForm.setValue('name', location.locationName);
   };
 
   const handleCancelEdit = () => {
@@ -52,9 +48,9 @@ export const LocationItem = ({
   };
 
   const handleCancelLocation = (index: number) => {
-    const newLocations = [...locationsOptionsMock];
+    const newLocations = [...locationsOptions];
     newLocations.splice(index, 1);
-    setLocationsOptionsMock(newLocations);
+    setLocationsOptions(newLocations);
   };
 
   const handleEditSubmit = (
@@ -66,8 +62,8 @@ export const LocationItem = ({
     const formData = new FormData(e.currentTarget);
     const newLocationName = formData.get('location') as string;
 
-    const isDuplicate = locationsOptionsMock.some(
-      (location) => location.name === newLocationName,
+    const isDuplicate = locationsOptions.some(
+      (location) => location.locationName === newLocationName,
     );
 
     if (isDuplicate) {
@@ -75,12 +71,12 @@ export const LocationItem = ({
       return;
     }
 
-    const newLocations = [...locationsOptionsMock];
+    const newLocations = [...locationsOptions];
     newLocations[index] = {
       ...newLocations[index],
-      name: newLocationName,
+      locationName: newLocationName,
     };
-    setLocationsOptionsMock(newLocations);
+    setLocationsOptions(newLocations);
     setIsEditing(false);
   };
 
@@ -89,11 +85,8 @@ export const LocationItem = ({
       className={`bg-main-white px-6  'border-2 border-transparent`}
       key={index}
     >
-      <div
-        className="py-3"
-        // onClick={() => !isEditing && handleSetLocation(location.name)}
-      >
-        {!location.name || isEditing ? (
+      <div className="py-3">
+        {!location.locationName || isEditing ? (
           <SiteLocationsForm
             form={locationForm}
             onSubmit={handleEditSubmit}
@@ -109,11 +102,10 @@ export const LocationItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {location.name}
+              {location.locationName}
             </Text>
             <DeleteEditDropdown
-              // itemSelected={index}
-              itemSelected={'1'}
+              itemSelected={location.id}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
             />
@@ -121,8 +113,7 @@ export const LocationItem = ({
               modalTitle="Delete drive"
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
-              // itemToDelete={index}
-              itemToDelete={'1'}
+              itemToDelete={location.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {
@@ -132,7 +123,7 @@ export const LocationItem = ({
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${location.name} `}
+                  {` ${location.locationName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

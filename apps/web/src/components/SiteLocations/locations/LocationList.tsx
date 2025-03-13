@@ -6,33 +6,36 @@ import { LucidePlus } from 'lucide-react';
 import { Drive, Location } from '@/gql/graphql';
 
 interface LocationsListComponentProps {
-  selectedDrive?: string;
-  locationsOptionsMock: Location[];
-  drivesOptionsMock: Drive[];
-  setLocationsOptionsMock: React.Dispatch<React.SetStateAction<Location[]>>;
+  selectedDriveId?: string;
+  locationsOptions: Location[];
+  drivesOptions: Drive[];
+  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LocationsList = ({
-  selectedDrive,
-  locationsOptionsMock,
-  drivesOptionsMock,
-  setLocationsOptionsMock,
+  selectedDriveId,
+  locationsOptions,
+  drivesOptions,
+  setLocationsOptions,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addLocation = () => {
-    locationsOptionsMock.push({
-      id: `${locationsOptionsMock.length + 1}`,
-      name: '',
+    locationsOptions.push({
+      id: `${locationsOptions.length + 1}`,
+      locationName: '',
+      createdAt: undefined,
+      driveId: '',
+      updatedAt: undefined,
     });
-    setLocationsOptionsMock([...locationsOptionsMock] as Location[]);
+    setLocationsOptions([...locationsOptions] as Location[]);
   };
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [locationsOptionsMock]);
+  }, [locationsOptions]);
 
   return (
     <>
@@ -42,33 +45,33 @@ export const LocationsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {locationsOptionsMock?.length === 0 && (
+        {locationsOptions?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available locations
             </Text>
           </div>
         )}
-        {locationsOptionsMock?.map((location, index) => (
+        {locationsOptions?.map((location, index) => (
           <LocationItem
             key={index}
             location={location}
-            locationsOptionsMock={locationsOptionsMock}
+            locationsOptions={locationsOptions}
             index={index}
             inputRef={inputRef}
-            setLocationsOptionsMock={setLocationsOptionsMock}
+            setLocationsOptions={setLocationsOptions}
           />
         ))}
       </div>
       <div className="flex justify-end w-full p-3">
-        {selectedDrive ? (
+        {selectedDriveId ? (
           <Button
             size={'small'}
             variant={'primary'}
             onClick={() => addLocation()}
             disabled={
-              drivesOptionsMock.length === 0 ||
-              locationsOptionsMock.some((location) => location.name === '')
+              drivesOptions.length === 0 ||
+              locationsOptions.some((location) => location.locationName === '')
             }
           >
             <LucidePlus /> Add location

@@ -8,10 +8,11 @@ import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { TechniciansSchema } from '@/app/mock/mock';
 import { useMutation, useQuery } from 'urql';
 
-import {
-  getUserQuery,
-  removeTechnicianQuery,
-} from './urql-technicians/TechnicianClientUrql';
+import { getUserQuery, removeTechnicianQuery } from './urql-technicians/TechnicianClientUrql';
+
+
+
+
 
 interface TechniciansTableProps {
   onOpenChange: (open: boolean) => void;
@@ -22,7 +23,7 @@ export const TechniciansTable = ({
   onSelectTechnician,
 }: TechniciansTableProps) => {
   const [result] = useQuery({ query: getUserQuery });
-  const [, removeTechnician] = useMutation(removeTechnicianQuery);
+  const [, removeTechnician] = useMutation(removeTechnicianQuery)
   // const [technicians, setTechnicians] = useState(techniciansMock);
   const [isDeleteTechnicianModalOpen, setIsDeleteTechnicianModalOpen] =
     useState(false);
@@ -48,13 +49,13 @@ export const TechniciansTable = ({
   };
 
   const handleDelete = (index: number) => {
-    const id = technicians[index].id;
+    const id = technicians[index].id
     removeTechnician({ id })
       .then((result) => {
-        console.log('User removed:', result);
+        console.log("User removed:", result);
       })
       .catch((error) => {
-        console.error('Error removing user:', error);
+        console.error("Error removing user:", error);
       });
   };
 
@@ -80,25 +81,22 @@ export const TechniciansTable = ({
     {
       accessorKey: 'isGlobalVisibility',
       header: 'Visible globally',
-      cell: ({ row }) => {
-        const isVisible = Boolean(row.getValue('isGlobalVisibility'));
-
-        return (
-          <>
-            {isVisible ? (
-              <Badge variant="success">
-                <LucideView />
-                Visible
-              </Badge>
-            ) : (
-              <Badge variant="neutral">
-                <LucideEyeOff />
-                Private
-              </Badge>
-            )}
-          </>
-        );
-      },
+      cell: ({ row }) => (
+        <>
+          {row.getValue('isGlobalVisibility') && (
+            <Badge variant="success">
+              <LucideView />
+              Visible
+            </Badge>
+          )}
+          {!row.getValue('isGlobalVisibility') && (
+            <Badge variant="neutral">
+              <LucideEyeOff />
+              Private
+            </Badge>
+          )}
+        </>
+      ),
     },
     {
       accessorKey: 'phoneNumber',
@@ -126,7 +124,7 @@ export const TechniciansTable = ({
 
   if (result.fetching) return <div>Loading...</div>;
   if (result.error) return <div>Error: {result.error.message}</div>;
-  const technicians = result.data.users;
+  const technicians = result.data.users
 
   return (
     <>

@@ -10,6 +10,9 @@ import {
 import * as GraphQLTypes from '../../graphql-types';
 
 export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
+  @IsString()
+  id: string;
+
   @IsOptional()
   @IsNumber()
   boltNumber: number;

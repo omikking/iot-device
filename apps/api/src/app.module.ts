@@ -14,6 +14,7 @@ import { LevelsModule } from './levels/levels.module';
 import { DrivesModule } from './drives/drives.module';
 import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
+import { EnumModule } from './enums/enum.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { BoltResultsModule } from './boltResults/boltResults.module';
     DrivesModule,
     LocationsModule,
     BoltResultsModule,
+    EnumModule,
   ],
   providers: [DateScalar],
 })

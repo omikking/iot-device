@@ -1,8 +1,10 @@
 import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
 import * as GraphQLTypes from 'src/graphql-types';
-import { CreateBoltResultInput } from './dto/create-boltResult.input';
-import { UpdateBoltResultInput } from './dto/update-boltResult.input';
-import { ParseUUIDPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  ParseUUIDPipe,
+  ValidationPipe,
+} from '@nestjs/common';
 import { BoltResultsService } from './boltResults.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -10,6 +12,9 @@ import { BoltResultResponse } from './BoltResultResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { ConfigService } from '@nestjs/config';
+import { CreateBoltResultInput } from './dto/create-boltResult.input';
+import { BoltResult } from '@prisma/client';
+import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 
 @Resolver()
 @UseGuards(JwtGuard)
@@ -50,27 +55,35 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
-  @Mutation('createBoltResult')
-  async create(
-    @Args('createBoltResultInput')
-    createBoltResultInput: CreateBoltResultInput,
-  ): Promise<GraphQLTypes.BoltResult> {
-    return this.boltResultsService.create(createBoltResultInput);
+  @Mutation('createBoltResults')
+  async createBulk(
+    @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
+    createBoltResultsInput: CreateBoltResultInput[], // Expect an array directly
+  ): Promise<BoltResult[]> {
+    console.log(createBoltResultsInput.length);
+    return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
-  @Mutation('updateBoltResult')
-  async update(
-    @Args('id', ParseUUIDPipe) id: string,
-    @Args('updateBoltResultInput')
-    updateBoltResultInput: UpdateBoltResultInput,
-  ): Promise<GraphQLTypes.BoltResult> {
-    return this.boltResultsService.update(id, updateBoltResultInput);
+  @Mutation('updateBoltResults')
+  async updateBulk(
+    @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
+    updateBoltResultsInput: UpdateBoltResultInput[],
+  ): Promise<BoltResult[]> {
+    if (!updateBoltResultsInput.length) {
+      throw new BadRequestException('No updates provided.');
+    }
+
+    return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  @Mutation('removeBoltResult')
-  async remove(
-    @Args('id', ParseUUIDPipe) id: string,
-  ): Promise<GraphQLTypes.BoltResult> {
-    return this.boltResultsService.remove(id);
+  @Mutation('removeBoltResults')
+  async removeBulk(
+    @Args('ids', new ValidationPipe({ transform: true })) ids: string[],
+  ): Promise<BoltResult[]> {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException('No IDs provided for deletion.');
+    }
+
+    return this.boltResultsService.removeBulk(ids);
   }
 }

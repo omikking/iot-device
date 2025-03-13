@@ -27,6 +27,7 @@ export class CreateBoltResultInput {
 }
 
 export class UpdateBoltResultInput {
+    id?: string;
     boltNumber?: Nullable<number>;
     boltType?: Nullable<string>;
     peakLoad?: Nullable<number[]>;

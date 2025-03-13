@@ -87,8 +87,8 @@ type BoltResultResponse {
 
 type Query {
   boltResults(
-    skip: Int
-    take: Int
+    offset: Int
+    limit: Int
     siteId: String
     levelId: String
     driveId: String

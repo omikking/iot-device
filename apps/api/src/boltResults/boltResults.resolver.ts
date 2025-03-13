@@ -23,11 +23,12 @@ export class BoltResultsResolver {
     private readonly config: ConfigService,
     private readonly boltResultsService: BoltResultsService,
   ) {}
+
   @Query(() => BoltResultResponse, { name: 'boltResults' })
-  async findAll(
+  async getBoltResults(
     @ActiveUser() user: ActiveUserData,
-    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
-    @Args('take', { type: () => Int, nullable: true }) take?: number,
+    @Args('offset', { type: () => Int, nullable: true }) offset?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('siteId', { type: () => String, nullable: true }) siteId?: string,
     @Args('levelId', { type: () => String, nullable: true }) levelId?: string,
     @Args('driveId', { type: () => String, nullable: true }) driveId?: string,
@@ -37,15 +38,20 @@ export class BoltResultsResolver {
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
   ): Promise<BoltResultResponse> {
-    // Ensure defaults are properly converted to numbers
-    const finalSkip = Number(
-      skip ?? this.config.get<number>('DEFAULT_SKIP') ?? 0,
-    );
-    const finalTake = Number(
-      take ?? this.config.get<number>('DEFAULT_TAKE') ?? 20,
-    );
-    const filters = { siteId, levelId, driveId, locationId, result, isHazard };
-    return this.boltResultsService.findAll(user, finalSkip, finalTake, filters);
+    const pagination = {
+      offset: Number(offset ?? this.config.get<number>('DEFAULT_SKIP') ?? 0),
+      limit: Number(limit ?? this.config.get<number>('DEFAULT_TAKE') ?? 20),
+    };
+    const filters: Partial<Record<string, string | boolean>> = {
+      siteId,
+      levelId,
+      driveId,
+      locationId,
+      result,
+      isHazard,
+    };
+
+    return this.boltResultsService.getBoltResults(user, pagination, filters);
   }
 
   @Query('boltResult')
@@ -58,9 +64,8 @@ export class BoltResultsResolver {
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
-    createBoltResultsInput: CreateBoltResultInput[], // Expect an array directly
+    createBoltResultsInput: CreateBoltResultInput[],
   ): Promise<BoltResult[]> {
-    console.log(createBoltResultsInput.length);
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
@@ -83,7 +88,6 @@ export class BoltResultsResolver {
     if (!Array.isArray(ids) || ids.length === 0) {
       throw new BadRequestException('No IDs provided for deletion.');
     }
-
     return this.boltResultsService.removeBulk(ids);
   }
 }

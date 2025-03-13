@@ -18,19 +18,20 @@ const prisma = new PrismaClient();
 export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
+  async getCompanies(
     user: ActiveUserData,
     userId?: string,
-    skip?: number,
-    take?: number,
+    pagination?: { offset: number; limit: number },
   ): Promise<CompanyListResponse> {
-    const whereCondition: Record<string, any> = {};
+    const { offset, limit } = pagination || { offset: 0, limit: 20 };
+
+    const whereCondition: Partial<Record<string, any>> = {};
 
     if (user.globalRole === 'SANDVIK_ADMIN') {
       // Admin can see all companies; filter by userId if provided
       if (userId) {
         whereCondition.userPermission = {
-          some: { userId: userId }, // Check if userId exists inside userPermission
+          some: { userId },
         };
       }
     } else if (user.globalRole === 'SANDVIK_TECHNICIAN') {
@@ -46,8 +47,8 @@ export class CompaniesService {
 
     const results = await this.prisma.company.findMany({
       where: whereCondition,
-      skip,
-      take,
+      skip: offset,
+      take: limit,
     });
 
     return { totalRecords, results };

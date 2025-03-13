@@ -120,7 +120,7 @@ type CompanyListResponse {
 }
 
 type Query {
-  companies(skip: Int, take: Int, userId: String): CompanyListResponse!
+  companies(offset: Int, limit: Int, userId: String): CompanyListResponse!
   company(id: String!): Company!
 }
 

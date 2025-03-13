@@ -20,19 +20,18 @@ export class CompaniesResolver {
   ) {}
 
   @Query(() => CompanyListResponse, { name: 'companies' })
-  async findAll(
+  async getCompanies(
     @ActiveUser() user: ActiveUserData,
     @Args('userId', { type: () => String, nullable: true }) userId?: string,
-    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
-    @Args('take', { type: () => Int, nullable: true }) take?: number,
+    @Args('offset', { type: () => Int, nullable: true }) offset?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
   ): Promise<CompanyListResponse> {
-    const finalSkip = Number(
-      skip ?? this.config.get<number>('DEFAULT_SKIP') ?? 0,
-    );
-    const finalTake = Number(
-      take ?? this.config.get<number>('DEFAULT_TAKE') ?? 20,
-    );
-    return this.companiesService.findAll(user, userId, finalSkip, finalTake);
+    const pagination = {
+      offset: Number(offset ?? this.config.get<number>('DEFAULT_SKIP') ?? 0),
+      limit: Number(limit ?? this.config.get<number>('DEFAULT_TAKE') ?? 20),
+    };
+
+    return this.companiesService.getCompanies(user, userId, pagination);
   }
 
   @Query('company')

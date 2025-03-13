@@ -17,19 +17,13 @@ import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(
+  async getBoltResults(
     user: ActiveUserData,
-    skip: number,
-    take: number,
-    filters?: {
-      siteId?: string;
-      levelId?: string;
-      driveId?: string;
-      locationId?: string;
-      result?: string;
-      isHazard?: boolean;
-    },
+    pagination: { offset: number; limit: number },
+    filters?: Partial<Record<string, string | boolean>>,
   ): Promise<BoltResultResponse> {
+    const { offset, limit } = pagination;
+
     const whereCondition: Record<string, any> = {
       ...(user.globalRole === 'SANDVIK_TECHNICIAN' ? { userId: user.id } : {}),
       ...(filters &&
@@ -40,18 +34,15 @@ export class BoltResultsService {
         )),
     };
 
-    console.log(whereCondition, 'whereCondition');
-
     const totalRecords = await this.prisma.boltResult.count({
       where: whereCondition,
     });
 
     const results = await this.prisma.boltResult.findMany({
-      skip: Number(skip), // Ensure it's a number
-      take: Number(take), // Ensure it's a number
+      skip: Number(offset), // Ensure it's a number
+      take: Number(limit), // Ensure it's a number
       where: whereCondition,
     });
-
     return { totalRecords, results };
   }
 

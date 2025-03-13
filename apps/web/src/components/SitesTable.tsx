@@ -27,7 +27,7 @@ const getCompanySitesQuery = graphql(`
   }
 `);
 
-export const deleteSiteMutation = graphql(`
+const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
     removeSite(id: $id) {
       id

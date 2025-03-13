@@ -2,50 +2,47 @@
 import React, { useEffect, useRef } from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
+import { Drive, Level, Location } from '@/gql/graphql';
 
-// @TODO have to fix why im getting warning
 interface LevelsListComponentProps {
-  levelsOptionsMock: ILevelMock[];
+  levelsOptions: Level[];
   selectedLevel?: string;
   selectedSite?: string;
   handleSetLevel: () => void;
-  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
+  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
+  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LevelsList = ({
-  levelsOptionsMock,
+  levelsOptions,
   selectedLevel,
   selectedSite,
   handleSetLevel,
-  setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
+  setLevelsOptions,
+  setDrivesOptions,
+  setLocationsOptions,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
   const addLevel = () => {
-    levelsOptionsMock.push({
-      id: `${levelsOptionsMock.length + 1}`,
-      name: '',
+    levelsOptions.push({
+      id: `${levelsOptions.length + 1}`,
+      levelName: '',
       drives: [],
+      createdAt: undefined,
+      siteId: '',
+      updatedAt: undefined,
     });
-    setLevelsOptionsMock([...levelsOptionsMock] as ILevelMock[]);
+    setLevelsOptions([...levelsOptions] as Level[]);
   };
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [levelsOptionsMock]);
+  }, [levelsOptions]);
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -54,25 +51,25 @@ export const LevelsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {levelsOptionsMock?.length === 0 && (
+        {levelsOptions?.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available levels
             </Text>
           </div>
         )}
-        {levelsOptionsMock?.map((level, index) => (
+        {levelsOptions?.map((level, index) => (
           <LevelItem
             key={index}
             selectedLevel={selectedLevel}
             level={level}
-            levelsOptionsMock={levelsOptionsMock}
+            levelsOptionsMock={levelsOptions}
             index={index}
             inputRef={inputRef}
             handleSetLevel={handleSetLevel}
-            setLevelsOptionsMock={setLevelsOptionsMock}
-            setDrivesOptionsMock={setDrivesOptionsMock}
-            setLocationsOptionsMock={setLocationsOptionsMock}
+            setLevelsOptionsMock={setLevelsOptions}
+            setDrivesOptionsMock={setDrivesOptions}
+            setLocationsOptionsMock={setLocationsOptions}
           />
         ))}
       </div>
@@ -82,7 +79,7 @@ export const LevelsList = ({
             size={'small'}
             variant={'primary'}
             onClick={() => addLevel()}
-            disabled={levelsOptionsMock.some((level) => level.name === '')}
+            disabled={levelsOptions.some((level) => level.levelName === '')}
           >
             <LucidePlus /> Add level
           </Button>

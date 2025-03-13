@@ -15,7 +15,7 @@ interface LocationComponentProps {
   index: number;
   locationsOptionsMock: ILocationMock[];
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetLocation: (name: string) => void;
+  // handleSetLocation: (name: string) => void;
   setLocationsOptionsMock: React.Dispatch<
     React.SetStateAction<ILocationMock[]>
   >;
@@ -27,7 +27,7 @@ export const LocationItem = ({
   locationsOptionsMock,
   inputRef,
   setLocationsOptionsMock,
-  handleSetLocation,
+  // handleSetLocation,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -91,7 +91,7 @@ export const LocationItem = ({
     >
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetLocation(location.name)}
+        // onClick={() => !isEditing && handleSetLocation(location.name)}
       >
         {!location.name || isEditing ? (
           <SiteLocationsForm

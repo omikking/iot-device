@@ -2,24 +2,20 @@
 import React, { useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
+import { Drive, Location } from '@/gql/graphql';
 
 interface LocationsListComponentProps {
   selectedDrive?: string;
-  locationsOptionsMock: ILocationMock[];
-  drivesOptionsMock: IDriveMock[];
-  handleSetLocation: () => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  locationsOptionsMock: Location[];
+  drivesOptionsMock: Drive[];
+  setLocationsOptionsMock: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LocationsList = ({
   selectedDrive,
   locationsOptionsMock,
   drivesOptionsMock,
-  handleSetLocation,
   setLocationsOptionsMock,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -29,7 +25,7 @@ export const LocationsList = ({
       id: `${locationsOptionsMock.length + 1}`,
       name: '',
     });
-    setLocationsOptionsMock([...locationsOptionsMock] as ILocationMock[]);
+    setLocationsOptionsMock([...locationsOptionsMock] as Location[]);
   };
 
   useEffect(() => {
@@ -60,7 +56,6 @@ export const LocationsList = ({
             locationsOptionsMock={locationsOptionsMock}
             index={index}
             inputRef={inputRef}
-            handleSetLocation={handleSetLocation}
             setLocationsOptionsMock={setLocationsOptionsMock}
           />
         ))}

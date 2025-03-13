@@ -1,4 +1,5 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import {
   Anchor,
   Badge,
@@ -12,101 +13,133 @@ import {
   BreadcrumbSeparator,
 } from '@gsp/ui';
 import Link from 'next/link';
-import React, { useState } from 'react';
-import { sitesMock } from '@/app/mock/mock';
 import { LucideMoveLeft } from 'lucide-react';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { graphql } from '@/gql';
+import { Drive, Level, Location, Site } from '@/gql/graphql';
+import { useQuery } from 'urql';
 
-export interface ISiteMock {
-  id: string;
-  name: string;
-  levels: ILevelMock[];
-}
+const getCompanySitesNameQuery = graphql(`
+  query getCompanySitesNames($id: String!) {
+    company(id: $id) {
+      sites {
+        id
+        siteName
+      }
+    }
+  }
+`);
 
-export interface ILevelMock {
-  id: string;
-  name: string;
-  drives: IDriveMock[];
-}
-
-export interface IDriveMock {
-  id: string;
-  name: string;
-  locations: ILocationMock[];
-}
-
-export interface ILocationMock {
-  id: string;
-  name: string;
-}
+const getFullSiteLocationsQuery = graphql(`
+  query getFullSiteLocations($id: String!) {
+    site(id: $id) {
+      id
+      siteName
+      levels {
+        id
+        levelName
+        siteId
+        drives {
+          id
+          driveName
+          levelId
+          locations {
+            id
+            driveId
+            locationName
+          }
+        }
+      }
+    }
+  }
+`);
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
+
+  const [selectedSite, setSelectedSite] = useState<Site | undefined>();
+  const [selectedLevel, setSelectedLevel] = useState<Level | undefined>();
+  const [selectedDrive, setSelectedDrive] = useState<Drive | undefined>();
+
+  const [levelsOptions, setLevelsOptions] = useState<Level[]>([]);
+  const [drivesOptions, setDrivesOptions] = useState<Drive[]>([]);
+  const [locationsOptions, setLocationsOptions] = useState<Location[]>([]);
+
+  console.log(selectedLevel);
+
+  // Request all sites of company for dropdown
+  const [sitesData] = useQuery({
+    query: getCompanySitesNameQuery,
+    variables: { id: session?.company?.id || '' },
+    pause: !session?.company?.id,
+  });
+  const sites = (sitesData.data?.company.sites as Site[]) || [];
+
+  const sitesOptions: DropdownItem[] = sites.map((site) => ({
+    id: site.id,
+    name: site.siteName,
+  }));
+
+  // Request the selected full site data (level, drive, location)
+  const [siteData] = useQuery({
+    query: getFullSiteLocationsQuery,
+    variables: { id: selectedSite?.id || '' },
+    pause: !selectedSite?.id,
+  });
+  const site = (siteData.data?.site as Site) || [];
+  // When the full site is fetched, set levels, drives, and locations.
+  useEffect(() => {
+    if (site) {
+      if (site.levels) {
+        setLevelsOptions(site.levels);
+      }
+      setDrivesOptions([]);
+      setLocationsOptions([]);
+    }
+  }, [site]);
+
+  // Set site from url
   const searchParams = useSearchParams();
-  const siteTableValue = searchParams.get('data');
-  const siteFromUrl = sitesMock.find((site) => site.name === siteTableValue);
+  const siteIdFromUrl = searchParams.get('site');
+  const siteFromUrl = sites.find((site) => site.id === siteIdFromUrl);
 
-  const levelsFromUrlSite =
-    sitesMock.find((boltSites) => boltSites.name === siteFromUrl?.name)
-      ?.levels || [];
+  useEffect(() => {
+    if (siteFromUrl) {
+      setSelectedSite(siteFromUrl);
+    }
+  }, [siteFromUrl]);
 
-  const [selectedSite, setSelectedSite] = useState<string | undefined>(
-    siteFromUrl?.id,
-  );
-
-  const [selectedSiteName, setSelectedSiteName] = useState<string | undefined>(
-    siteFromUrl?.name,
-  );
-
-  const [selectedLevel, setSelectedLevel] = useState<string | undefined>();
-  const [selectedDrive, setSelectedDrive] = useState<string | undefined>();
-
-  const [levelsOptionsMock, setLevelsOptionsMock] =
-    useState<ILevelMock[]>(levelsFromUrlSite);
-  const [drivesOptionsMock, setDrivesOptionsMock] = useState<IDriveMock[]>([]);
-  const [locationsOptionsMock, setLocationsOptionsMock] = useState<
-    ILocationMock[]
-  >([]);
-
-  const handleSetSite = (site?: string) => {
+  const handleSetSite = (siteId?: string) => {
+    const site = sites.find((site) => site.id === siteId);
     setSelectedSite(site);
-    setSelectedSiteName(site);
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
-    setDrivesOptionsMock([]);
-    setLocationsOptionsMock([]);
-
-    const levels =
-      sitesMock.find((boltSites) => boltSites.name === site)?.levels || [];
-    setLevelsOptionsMock(levels);
+    setDrivesOptions([]);
+    setLocationsOptions([]);
   };
 
-  const handleSetLevel = (level?: string) => {
+  const handleSetLevel = (levelId?: string) => {
+    const level = levelsOptions.find((level) => level.id === levelId);
     setSelectedLevel(level);
     setSelectedDrive(undefined);
-    setLocationsOptionsMock([]);
+    setLocationsOptions([]);
 
     const drives =
-      levelsOptionsMock?.find((boltLevels) => boltLevels.name === level)
-        ?.drives || [];
-    setDrivesOptionsMock(drives);
+      levelsOptions?.find((level) => level.id === levelId)?.drives || [];
+    setDrivesOptions(drives);
   };
 
-  const handleSetDrive = (drive?: string) => {
+  const handleSetDrive = (driveId?: string) => {
+    const drive = drivesOptions.find((drive) => drive.id === driveId);
     setSelectedDrive(drive);
 
     const locations =
-      drivesOptionsMock?.find((boltDrives) => boltDrives.name === drive)
-        ?.locations || [];
-    setLocationsOptionsMock(locations);
-  };
-
-  const handleSetLocation = (location?: string) => {
-    console.log('location', location);
+      drivesOptions?.find((drive) => drive.id === driveId)?.locations || [];
+    setLocationsOptions(locations);
   };
 
   return (
@@ -139,8 +172,8 @@ export default function Page(): JSX.Element {
           <Dropdown
             id="site"
             placeholder="Select site"
-            selectedId={selectedSite}
-            options={sitesMock as DropdownItem[]}
+            selectedId={selectedSite?.id}
+            options={sitesOptions}
             onSelect={handleSetSite}
             className="w-96"
           />
@@ -151,7 +184,7 @@ export default function Page(): JSX.Element {
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">
-                      {selectedSiteName}
+                      {selectedSite.siteName}
                     </Text>
                   </BreadcrumbItem>
                 </>
@@ -161,7 +194,7 @@ export default function Page(): JSX.Element {
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">
-                      {selectedLevel}
+                      {selectedLevel.levelName}
                     </Text>
                   </BreadcrumbItem>
                 </>
@@ -171,7 +204,7 @@ export default function Page(): JSX.Element {
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <Text variant="medium" color="foreground">
-                      {selectedDrive}
+                      {selectedDrive.driveName}
                     </Text>
                   </BreadcrumbItem>
                 </>
@@ -182,33 +215,32 @@ export default function Page(): JSX.Element {
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
-              levelsOptionsMock={levelsOptionsMock}
-              selectedLevel={selectedLevel}
-              selectedSite={selectedSite}
+              levelsOptions={levelsOptions}
+              selectedLevel={selectedLevel?.id}
+              selectedSite={selectedSite?.id}
               handleSetLevel={handleSetLevel}
-              setLevelsOptionsMock={setLevelsOptionsMock}
-              setDrivesOptionsMock={setDrivesOptionsMock}
-              setLocationsOptionsMock={setLocationsOptionsMock}
+              setLevelsOptions={setLevelsOptions}
+              setDrivesOptions={setDrivesOptions}
+              setLocationsOptions={setLocationsOptions}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
-              drivesOptionsMock={drivesOptionsMock}
-              selectedDrive={selectedDrive}
-              selectedLevel={selectedLevel}
-              levelsOptionsMock={levelsOptionsMock}
-              setDrivesOptionsMock={setDrivesOptionsMock}
-              setLocationsOptionsMock={setLocationsOptionsMock}
+              drivesOptionsMock={drivesOptions}
+              selectedDrive={selectedDrive?.id}
+              selectedLevel={selectedLevel?.id}
+              levelsOptionsMock={levelsOptions}
+              setDrivesOptionsMock={setDrivesOptions}
+              setLocationsOptionsMock={setLocationsOptions}
               handleSetDrive={handleSetDrive}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LocationsList
-              selectedDrive={selectedDrive}
-              drivesOptionsMock={drivesOptionsMock}
-              locationsOptionsMock={locationsOptionsMock}
-              handleSetLocation={handleSetLocation}
-              setLocationsOptionsMock={setLocationsOptionsMock}
+              selectedDrive={selectedDrive?.id}
+              drivesOptionsMock={drivesOptions}
+              locationsOptionsMock={locationsOptions}
+              setLocationsOptionsMock={setLocationsOptions}
             />
           </div>
         </div>

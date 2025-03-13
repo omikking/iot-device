@@ -102,7 +102,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
             <Link
               href={{
                 pathname: '/sitelocations',
-                query: { data: `${row.original.siteName} site` },
+                query: { site: `${row.original.id}` },
               }}
             >
               <LucideMoveRight />
@@ -178,7 +178,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
         data={sites}
         noResultMessage="There are no sites added yet."
       />
-      {sites?.length && (
+      {sites?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">
           {sites.length} total
         </Badge>

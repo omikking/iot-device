@@ -1,118 +1,153 @@
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/[id]/page';
-import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
 import { Text } from '@gsp/ui';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsForm } from '../SiteLocationsForm';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { ILevel } from '@/components/urql-siteslocations/SitesLocationsUrql';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
-interface LevelComponentProps {
-  selectedLevel?: string;
-  level: ILevelMock;
-  levelsOptionsMock: ILevelMock[];
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { LevelUpdateUrql } from '@/components/urql-siteslocations/LevelUpdateUrql';
+
+type LevelComponentProps = {
+  level: ILevel;
   index: number;
+  selectedLevel?: string;
+  levelsOptions: ILevel[];
   inputRef: React.RefObject<HTMLInputElement>;
+  isNewLevel?: boolean;
   handleSetLevel: (name: string) => void;
-  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-}
+  setNewLevelId?: (id: string | undefined) => void;
+};
+
+const deleteLevelsMutation = graphql(`
+  mutation removeLevel($id: String!) {
+    removeLevel(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
 
 export const LevelItem = ({
   selectedLevel,
   level,
-  levelsOptionsMock,
+  levelsOptions,
   index,
   inputRef,
+  isNewLevel,
+  setNewLevelId,
   handleSetLevel,
-  setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
 }: LevelComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isNewLevel);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteLevelMutation] = useMutation(deleteLevelsMutation);
+  const { updateLevel } = LevelUpdateUrql();
 
-  const levelForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: '',
-        name: '',
-      },
-    });
+  const form = useForm<SiteLocationsValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: level.id,
+      levelName: level.levelName,
+    },
+  });
 
-  const handleEditLevel = () => {
-    setIsEditing(true);
-    levelForm.setValue('name', level.name);
+  const deleteLevel = async (id: string) => {
+    try {
+      const response = await deleteLevelMutation({ id });
+
+      if (response.error) {
+        console.error('Mutation error:', response.error);
+        return;
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error deleting level:', error);
+    }
   };
 
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    const formData = new FormData(e.currentTarget);
-    const newLevelName = formData.get('level') as string;
-
-    const isDuplicate = levelsOptionsMock.some(
-      (level) => level.name === newLevelName,
-    );
-
-    if (isDuplicate) {
-      alert('This level already exists. Please enter a different level.');
-      return;
+  useEffect(() => {
+    if (isNewLevel) {
+      setIsEditing(true);
     }
+  }, [isNewLevel]);
 
-    const newLevels = [...levelsOptionsMock];
-    newLevels[index] = {
-      ...newLevels[index],
-      name: newLevelName,
-    };
-    setLevelsOptionsMock(newLevels);
-    setIsEditing(false);
+  useEffect(() => {
+    if (isNewLevel && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isNewLevel, inputRef]);
+
+  const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
+    try {
+      // Check if the level name is a duplicate and prevent updating if the same value exists
+      const isDuplicate = levelsOptions.some(
+        (level) =>
+          level.levelName === formData.levelName && level.id !== level.id,
+      );
+
+      if (isDuplicate) {
+        alert('This level already exists. Please enter a different level.');
+        return;
+      }
+
+      const result = await updateLevel(level.id, {
+        levelName: formData.levelName || '',
+      });
+
+      console.log('update result: ', result);
+
+      if (result) {
+        setIsEditing(false);
+        if (isNewLevel) {
+          setNewLevelId && setNewLevelId(undefined);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update level:', error);
+    }
+  };
+
+  const handleEditLevel = () => {
+    console.log('In editing mode');
+    setIsEditing(true);
+    form.setValue('levelName', level.levelName);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    levelForm.reset();
+    form.reset();
   };
 
   const handleCancelLevel = (
     e: React.MouseEvent<HTMLButtonElement>,
     index: number,
   ) => {
-    const newLevels = [...levelsOptionsMock];
+    const newLevels = [...levelsOptions];
     newLevels[index].drives = [];
     newLevels.splice(index, 1);
-
-    setLevelsOptionsMock(newLevels);
-    setDrivesOptionsMock([]);
-    setLocationsOptionsMock([]);
   };
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedLevel === level.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 ${selectedLevel === level.levelName ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={index}
     >
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetLevel(level.name)}
+        onClick={() => !isEditing && handleSetLevel(level.levelName)}
       >
-        {!level.name || isEditing ? (
+        {!level.levelName || isEditing ? (
           <SiteLocationsForm
-            form={levelForm}
-            onSubmit={handleEditSubmit}
+            form={form}
+            type="level"
+            onSubmit={handleSubmit}
             onCancel={handleCancelEdit}
-            placeholder="New level..."
-            name="level"
             index={index}
             inputRef={inputRef}
           />
@@ -122,7 +157,7 @@ export const LevelItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {level.name}
+              {level.levelName}
             </Text>
 
             <DeleteEditDropdown
@@ -132,19 +167,21 @@ export const LevelItem = ({
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete level"
               deleteIcon="Site"
               itemToDelete={index}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={(e) => {
-                handleCancelLevel(e, index), setIsDeleteModalOpen(false);
+                handleCancelLevel(e, index),
+                  setIsDeleteModalOpen(false),
+                  deleteLevel(level.id);
               }}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${level.name} `}
+                  {` ${level.levelName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

@@ -21,10 +21,10 @@ interface DeleteModalConfirmationProps {
   modalText?: string;
   deleteButtonText?: string;
   children: React.ReactNode;
-  itemToDelete?: number;
+  itemToDelete: string;
   onDelete: (
     event: React.MouseEvent<HTMLButtonElement>,
-    itemToDelete: number,
+    itemToDelete: string,
   ) => void;
   isOpen?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -36,7 +36,7 @@ export const DeleteModalConfirmation = ({
   deleteButtonText,
   children,
   modalText,
-  itemToDelete = -1,
+  itemToDelete,
   onDelete,
   isOpen,
   onOpenChange,

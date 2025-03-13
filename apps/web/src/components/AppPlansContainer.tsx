@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AppPlan } from '@/components/AppPlan';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { GetCompanyQuery } from '@/gql/graphql';
+import { Plan } from '@/gql/graphql';
 import { PlanLevel } from '@/app/mock/mock';
 import { formatAppName } from './UsersTable';
 import {
@@ -16,7 +16,7 @@ import {
 } from './schemas/CompanyFormSchema';
 
 interface AppPlansContainerProps {
-  appPlan: NonNullable<GetCompanyQuery['company']['plans']>[0];
+  appPlan: Plan;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   isAdmin: boolean;
 }

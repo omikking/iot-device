@@ -12,52 +12,92 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
-  Headline,
 } from '@gsp/ui';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { SiteResultSchema } from '@/app/mock/mock';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { siteFormSchema, SiteFormValues } from './schemas/SitesFormSchema';
+import {
+  createSiteFormSchema,
+  updateSiteFormSchema,
+  CreateSiteFormValues,
+  UpdateSiteFormValues,
+} from './schemas/SiteFormSchema';
 import { LucidePlus } from 'lucide-react';
 import { SuccessMessage } from './SuccessMessage';
+import { graphql } from '@/gql';
+import { Site } from '@/gql/graphql';
+import { useMutation } from 'urql';
+import { useSession } from 'next-auth/react';
+
+const createSiteMutation = graphql(`
+  mutation CreateSite($createSiteInput: CreateSiteInput!) {
+    createSite(createSiteInput: $createSiteInput) {
+      id
+      siteName
+      address
+      postalCode
+      city
+      country
+      companyId
+    }
+  }
+`);
+
+const updateSiteMutation = graphql(`
+  mutation UpdateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {
+    updateSite(id: $id, updateSiteInput: $updateSiteInput) {
+      id
+      siteName
+      address
+      postalCode
+      city
+      country
+      companyId
+    }
+  }
+`);
 
 type AddOrEditSiteModalProps = {
-  site?: SiteResultSchema;
-  appSelected: 'Pull Test' | 'xCyclops' | 'Ultrabolts';
+  site?: Site;
   onOpenChange: (open: boolean) => void;
 };
 
 export const AddOrEditSiteModal = ({
   site,
-  appSelected,
   onOpenChange,
 }: AddOrEditSiteModalProps) => {
+  const { data: session } = useSession();
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const form = useForm<SiteFormValues>({
-    resolver: zodResolver(siteFormSchema),
+  const [, createSite] = useMutation<CreateSiteFormValues>(createSiteMutation);
+  const [, updateSite] = useMutation<UpdateSiteFormValues>(updateSiteMutation);
+
+  const form = useForm<CreateSiteFormValues | UpdateSiteFormValues>({
+    resolver: zodResolver(site ? updateSiteFormSchema : createSiteFormSchema),
     defaultValues: {
-      name: site?.name ?? '',
-      address: site?.address ?? '',
-      passCriteria: site?.passCriteria ?? '',
+      siteName: site?.siteName || '',
+      address: site?.address || '',
+      postalCode: site?.postalCode || '',
+      city: site?.city || '',
+      country: site?.country || '',
+      companyId: site?.companyId || session?.company.id,
     },
   });
 
   const resetFormValues = () => {
     form.reset({
-      name: '',
+      siteName: '',
       address: '',
-      passCriteria: '',
+      postalCode: '',
+      city: '',
+      country: '',
+      companyId: session?.company.id,
     });
   };
 
-  const onSubmit = async (data: SiteFormValues) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    // Simulate API call
-    console.log('Site added', data);
+  const onSuccessfulSubmit = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -67,6 +107,35 @@ export const AddOrEditSiteModal = ({
       setIsSuccessful(false);
       resetFormValues();
     }, 1700);
+  };
+
+  const onSubmit = (data: CreateSiteFormValues | UpdateSiteFormValues) => {
+    setIsLoading(true);
+
+    if (site) {
+      updateSite({
+        id: site.id,
+        updateSiteInput: data,
+      }).then((result) => {
+        // @TODO Add component later for handling error
+        console.log(result);
+        if (result.data) {
+          onSuccessfulSubmit();
+        }
+      });
+    }
+
+    if (!site) {
+      createSite({
+        createSiteInput: data,
+      }).then((result) => {
+        // @TODO Add component later for handling error
+        console.log(result);
+        if (result.data) {
+          onSuccessfulSubmit();
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -83,18 +152,18 @@ export const AddOrEditSiteModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex flex-col px-10 p-10">
-              <div className="flex flex-row justify-between pb-10">
+            <div className="px-10 pt-10">
+              <div className="flex flex-row flex-wrap justify-between gap-8">
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="siteName"
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>* Name</FormLabel>
+                        <FormLabel>Site name</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in name..."
+                            placeholder="Fill in site name..."
                             className="w-96"
                             {...field}
                           />
@@ -110,7 +179,7 @@ export const AddOrEditSiteModal = ({
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>* Address</FormLabel>
+                        <FormLabel>Address</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Fill in address..."
@@ -123,21 +192,54 @@ export const AddOrEditSiteModal = ({
                     );
                   }}
                 />
-              </div>
-              <Headline as="h3" color="foreground" variant="small" isBold>
-                {appSelected} settings
-              </Headline>
-              <div className="flex flex-row justify-between pt-5">
                 <FormField
                   control={form.control}
-                  name="passCriteria"
+                  name="postalCode"
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>* Pass Criteria</FormLabel>
+                        <FormLabel>Postal code</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in pass criteria..."
+                            placeholder="Fill in postal code..."
+                            className="w-96"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Fill in city..."
+                            className="w-96"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Fill in country..."
                             className="w-96"
                             {...field}
                           />
@@ -149,7 +251,7 @@ export const AddOrEditSiteModal = ({
                 />
               </div>
             </div>
-            <ModalFooter className="px-10 pb-6">
+            <ModalFooter className="px-10 py-6">
               <Button
                 type="submit"
                 variant="primary"
@@ -162,7 +264,7 @@ export const AddOrEditSiteModal = ({
                   <LucidePlus />
                 )}
 
-                {site ? 'Save changes' : 'Add user'}
+                {site ? 'Save changes' : 'Add site'}
               </Button>
             </ModalFooter>
           </form>

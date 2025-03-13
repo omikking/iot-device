@@ -7,8 +7,9 @@ import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Company } from '@/gql/graphql';
 
-const getCompany = graphql(`
+const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
     company(id: $id) {
       id
@@ -44,8 +45,8 @@ export default function Page({
   // Does not call if it's new company flow.
   const [companyData] = isNewCompany
     ? [null]
-    : useQuery({ query: getCompany, variables: { id: params.id } });
-  const company = companyData?.data?.company;
+    : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
+  const company = companyData?.data?.company as Company;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -65,12 +66,13 @@ export default function Page({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
 
-      {isNewCompany && (
+      {company && (
         <DeleteModalConfirmation
           deleteIcon="Company"
           deleteButtonText="Delete company"
           modalTitle="Delete company"
           modalText="Confirm inactivation"
+          itemToDelete={'1'}
           isOpen={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
           onDelete={() => {
@@ -88,8 +90,8 @@ export default function Page({
               </Text>
             </Text>
             <Text color={'foreground'} variant={'medium'}>
-              The company data will not be deleted but the company will become
-              inactive but able to recover data.
+              The company data will not be deleted and is recoverable. The
+              company will become inactive.
             </Text>
           </div>
         </DeleteModalConfirmation>

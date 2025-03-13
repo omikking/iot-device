@@ -121,7 +121,8 @@ export const DriveItem = ({
             </Text>
 
             <DeleteEditDropdown
-              itemSelected={index}
+              // itemSelected={index}
+              itemSelected={'1'}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
             />
@@ -129,7 +130,8 @@ export const DriveItem = ({
               modalTitle="Delete drive"
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
-              itemToDelete={index}
+              // itemToDelete={index}
+              itemToDelete={'1'}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {

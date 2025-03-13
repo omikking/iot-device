@@ -19,17 +19,18 @@ export const TechniciansTable = ({
   const [isDeleteTechnicianModalOpen, setIsDeleteTechnicianModalOpen] =
     useState(false);
   const [technicianToDelete, setTechnicianToDelete] = useState<
-    number | undefined
+    string | undefined
   >(undefined);
 
-  const openDeleteModal = (index: number) => {
+  const openDeleteModal = (index: string) => {
     setTechnicianToDelete(index);
     setIsDeleteTechnicianModalOpen(true);
   };
 
   // get the index of the technician to edit and pass it to the modal
-  const openEditModal = (index: number) => {
-    const technicianToEdit = technicians[index];
+  const openEditModal = (index: string) => {
+    console.log(index);
+    const technicianToEdit = technicians[0];
     onSelectTechnician(technicianToEdit);
     onOpenChange(true);
   };
@@ -39,10 +40,12 @@ export const TechniciansTable = ({
     setTechnicianToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setTechnicians((currentTechnicians) =>
-      currentTechnicians.filter((_, i) => i !== index),
-    );
+  const handleDelete = (index: string) => {
+    // setTechnicians((currentTechnicians) =>
+    //   currentTechnicians.filter((_, i) => i !== index),
+    // );
+    setTechnicians((currentTechnicians) => currentTechnicians);
+    console.log(index);
   };
 
   const columns: ColumnDef<TechniciansSchema>[] = [
@@ -98,9 +101,8 @@ export const TechniciansTable = ({
 
         return (
           <DeleteEditDropdown
-            itemSelected={rowIndex}
+            itemSelected={rowIndex.toString()}
             openDeleteModal={openDeleteModal}
-            // when the edit button is clicked, the index of the technician is passed to the modal
             handleEdit={openEditModal}
           />
         );
@@ -115,7 +117,7 @@ export const TechniciansTable = ({
         deleteIcon="User"
         modalTitle="Delete technician"
         isOpen={isDeleteTechnicianModalOpen}
-        itemToDelete={technicianToDelete}
+        itemToDelete={technicianToDelete || '1'}
         onOpenChange={closeDeleteModal}
         onDelete={(event, index) => {
           handleDelete(index);
@@ -126,7 +128,7 @@ export const TechniciansTable = ({
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
             {technicianToDelete !== undefined
-              ? ` ${technicians[technicianToDelete].fullName} `
+              ? ` ${technicians[0].fullName} `
               : ''}
           </Text>
           from the list. Are you sure you want to delete?

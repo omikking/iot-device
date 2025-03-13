@@ -197,7 +197,7 @@ export const AddOrEditAdministratorModal = ({
                 />
               </div>
             </div>
-            <ModalFooter className="ui-px-10 ui-py-6">
+            <ModalFooter className="px-10 py-6">
               <Button
                 type="submit"
                 size="large"

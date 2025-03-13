@@ -123,9 +123,13 @@ export default function Page(): JSX.Element {
           </Anchor>
         </Link>
       </Text>
-      <Badge variant="primary" size="large" className="absolute top-24">
-        {session?.company.name}
-      </Badge>
+
+      {session?.company.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {session.company.name}
+        </Badge>
+      )}
+
       <Headline as="h1" variant="xl" color="foreground">
         Site locations
       </Headline>

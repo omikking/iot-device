@@ -1,33 +1,31 @@
 'use client';
 import React from 'react';
-// import { useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
-// import { boltSpecifications } from '@/app/mock/mock';
 import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
-import { useBoltResults } from '@/components/urql-reportedhazards/ReportedHazardsUrql';
+import { useHazardDetails } from '@/components/urql-reportedhazards/HazardsFetchUrql';
 
-type IBoltResults = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+type IHazard = {
+  abortReason?: string;
   boltNumber: number;
   boltType: string;
-  peakLoad: number[];
+  comment?: string;
+  createdAt: Date;
+  driveId: string;
+  hazardCompletedDate: Date[];
+  id: string;
+  image?: string;
+  isHazard: boolean;
+  levelId: string;
+  locationId: string;
   peakDisplacement: number[];
+  peakLoad: number[];
   positionInRing: string;
   result: string;
-  isHazard: boolean;
-  hazardCompletedDate: Date;
-  abortReason: string;
-  comment: string;
-  image: string;
   siteId: string;
-  levelId: string;
-  driveId: string;
-  locationId: string;
+  updatedAt: Date;
   userId: string;
-  // companyId: string // this should be here so we can filter on the companyId
 };
 
 const capitalizeFirstLetter = (text: string | null | undefined): string => {
@@ -36,8 +34,7 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
 };
 
 const generateBoltSpecifications = (
-  boltData: IBoltResults,
-  // need to display level,drive & location names and NOT their ids
+  boltData: IHazard,
   names: {
     siteName?: string;
     levelName?: string;
@@ -88,7 +85,11 @@ const generateBoltSpecifications = (
 };
 
 export default function Page(): JSX.Element {
-  const { boltResults } = useBoltResults();
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { hazards } = useHazardDetails(companyId);
+  console.log('hazards', hazards);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -116,7 +117,7 @@ export default function Page(): JSX.Element {
           value="active"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {boltResults?.map(
+          {hazards?.map(
             (boltResult, index) =>
               boltResult.isHazard && (
                 <HazardCard
@@ -124,7 +125,6 @@ export default function Page(): JSX.Element {
                   isHazard={boltResult.isHazard}
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
-                  // boltInfoItems={generateBoltSpecifications(boltResult)}
                   boltInfoItems={generateBoltSpecifications(boltResult, {})}
                   boltDescription={boltResult.comment}
                 />
@@ -135,7 +135,7 @@ export default function Page(): JSX.Element {
           value="completed"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {boltResults?.map(
+          {hazards?.map(
             (boltResult, index) =>
               !boltResult.isHazard && (
                 <HazardCard
@@ -143,7 +143,6 @@ export default function Page(): JSX.Element {
                   isHazard={boltResult.isHazard}
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
-                  // boltInfoItems={boltSpecifications}
                   boltInfoItems={generateBoltSpecifications(boltResult, {})}
                   boltDescription={boltResult.comment}
                 />
@@ -154,13 +153,12 @@ export default function Page(): JSX.Element {
           value="view all"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {boltResults?.map((boltResult, index) => (
+          {hazards?.map((boltResult, index) => (
             <HazardCard
               key={index}
               isHazard={boltResult.isHazard}
               fullBoltData={boltResult}
               dateTitle={boltResult.createdAt}
-              // boltInfoItems={boltSpecifications}
               boltInfoItems={generateBoltSpecifications(boltResult, {})}
               boltDescription={boltResult.comment}
             />

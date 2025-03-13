@@ -15,35 +15,33 @@ import {
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-// import { boltSpecifications } from '@/app/mock/mock';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
-type IBoltResults = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+type IHazard = {
+  abortReason?: string;
   boltNumber: number;
   boltType: string;
-  peakLoad: number[];
+  comment?: string;
+  createdAt: Date;
+  driveId: string;
+  hazardCompletedDate: Date[];
+  id: string;
+  image?: string;
+  isHazard: boolean;
+  levelId: string;
+  locationId: string;
   peakDisplacement: number[];
+  peakLoad: number[];
   positionInRing: string;
   result: string;
-  isHazard: boolean;
-  hazardCompletedDate: Date;
-  abortReason: string;
-  comment: string;
-  image: string;
   siteId: string;
-  levelId: string;
-  driveId: string;
-  locationId: string;
+  updatedAt: Date;
   userId: string;
-  // companyId: string // this should be here so we can filter on the companyId
 };
 
 type BoltResultDetailsModalProps = {
   modalTitle: string;
-  fullBoltData?: IBoltResults;
+  fullBoltData?: IHazard;
   onClose?: () => void;
   isHazardCompletable?: boolean;
   boltInfoItems: {
@@ -70,7 +68,7 @@ export const BoltResultDetailsModal = ({
     peakLoad,
     peakDisplacement,
     // author //  Author doesnt exist shall we keep it?
-  } = (fullBoltData as IBoltResults) || {};
+  } = (fullBoltData as IHazard) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 
@@ -105,8 +103,6 @@ export const BoltResultDetailsModal = ({
     setIsLoading(false);
   };
 
-  console.log('boltInfoItems', boltInfoItems);
-
   return (
     <ModalContent
       onEscapeKeyDown={resetConfirmation}
@@ -126,7 +122,6 @@ export const BoltResultDetailsModal = ({
         }`}
       >
         <div className="p-10 flex gap-10 flex-grow">
-          {/* <div className="p-10 flex gap-10 flex-grow min-h-80"> */}
           {image && (
             <Image
               // src={image || '/images/placeholder.png'}

@@ -14,11 +14,10 @@ import {
   ModalTrigger,
   Specification,
 } from '@gsp/ui';
-import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-// import { BoltResultSchema } from '@/app/mock/mock';
-import { useState } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { useState } from 'react';
+import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { useLevelDetails } from './urql-reportedhazards/LevelFetchUrql';
 import { useDriveDetails } from './urql-reportedhazards/DriveFetchUrql';
 import { useLocationDetails } from './urql-reportedhazards/LocationFetchUrql';
@@ -32,53 +31,30 @@ interface HazardCardProps {
     title: string;
     text: string;
   }[];
-  // fullBoltData?: BoltResultSchema;
-  fullBoltData?: IBoltResults;
+  fullBoltData?: IHazard;
 }
 
-type IBoltResults = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+type IHazard = {
+  abortReason?: string;
   boltNumber: number;
   boltType: string;
-  peakLoad: number[];
+  comment?: string;
+  createdAt: Date;
+  driveId: string;
+  hazardCompletedDate: Date[];
+  id: string;
+  image?: string;
+  isHazard: boolean;
+  levelId: string;
+  locationId: string;
   peakDisplacement: number[];
+  peakLoad: number[];
   positionInRing: string;
   result: string;
-  isHazard: boolean;
-  hazardCompletedDate: Date;
-  abortReason: string;
-  comment: string;
-  image: string;
   siteId: string;
-  levelId: string;
-  driveId: string;
-  locationId: string;
+  updatedAt: Date;
   userId: string;
-  // companyId: string // this should be here so we can filter on the companyId
 };
-
-// export interface BoltResultSchema {
-//   id: string;
-//   boltNumber: string;
-//   boltType: string;
-//   peakLoad: string[];
-//   peakDisplacement: string[];
-//   bitSize: string;
-//   rotations: string;
-//   displacementPerTonnage: string;
-//   level: string;
-//   drive: string;
-//   location: string;
-//   ring: string;
-//   comment?: string;
-//   result: 'Pass' | 'Fail' | 'Abort';
-//   image?: string;
-//   isHazard?: boolean;
-//   createdDate: Date;
-//   author?: string;
-// }
 
 const getMeSitesLocationDocument = graphql(`
   query getMeSiteLocation($id: String!) {
@@ -96,8 +72,6 @@ export const HazardCard = ({
   fullBoltData,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [updatedBoltInfoItems, setUpdatedBoltInfoItems] =
-  //   useState(boltInfoItems);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -141,18 +115,9 @@ export const HazardCard = ({
         item.text = locationName;
       }
     });
-
-    // setUpdatedBoltInfoItems(updatedItems);
   }, [boltInfoItems, siteData, level, drive, location, fullBoltData]);
 
-  // remove mby
-  // const visibleSpecifications = [
-  //   ...updatedBoltInfoItems.slice(0, 2), // First two items
-  //   ...updatedBoltInfoItems.slice(3, 5), // Level and Drive
-  // ];
-
   const siteName = siteData?.site?.siteName || 'N/A';
-  console.log('LEVEL', level);
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">

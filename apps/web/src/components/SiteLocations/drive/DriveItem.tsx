@@ -87,7 +87,7 @@ export const DriveItem = ({
     try {
       const isDuplicate = drivesOptions.some(
         (drive) =>
-          drive.driveName === formData.driveName && drive.id !== drive.id,
+          drive.driveName === formData.driveName && drive.id !== formData.id,
       );
 
       if (isDuplicate) {

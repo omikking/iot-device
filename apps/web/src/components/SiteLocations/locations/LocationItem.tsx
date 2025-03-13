@@ -19,7 +19,6 @@ type LocationComponentProps = {
   inputRef: React.RefObject<HTMLInputElement>;
   isNewLocation?: boolean;
   setNewLocationId?: (id: string | undefined) => void;
-  handleSetLocation: (name: string) => void;
 };
 
 const deleteLocationsMutation = graphql(`
@@ -39,7 +38,6 @@ export const LocationItem = ({
   inputRef,
   isNewLocation,
   setNewLocationId,
-  handleSetLocation,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -68,24 +66,12 @@ export const LocationItem = ({
     }
   };
 
-  useEffect(() => {
-    if (isNewLocation) {
-      setIsEditing(true);
-    }
-  }, [isNewLocation]);
-
-  useEffect(() => {
-    if (isNewLocation && isEditing) {
-      inputRef.current?.focus();
-    }
-  }, [isNewLocation, isEditing]);
-
   const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
     try {
       const isDuplicate = locationsOptions.some(
         (location) =>
           location.locationName === formData.locationName &&
-          location.id !== location.id,
+          location.id !== formData.id,
       );
 
       if (isDuplicate) {
@@ -127,12 +113,21 @@ export const LocationItem = ({
     newLocations.splice(index, 1);
   };
 
+  useEffect(() => {
+    if (isNewLocation) {
+      setIsEditing(true);
+    }
+  }, [isNewLocation]);
+
+  useEffect(() => {
+    if (isNewLocation && isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isNewLocation, isEditing]);
+
   return (
     <div className="bg-main-white px-6 border-2 border-transparent" key={index}>
-      <div
-        className="py-3"
-        onClick={() => !isEditing && handleSetLocation(location.locationName)}
-      >
+      <div className="py-3" onClick={() => !isEditing}>
         {!location.locationName || isEditing ? (
           <SiteLocationsForm
             form={form}

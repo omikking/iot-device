@@ -14,7 +14,7 @@ type LocationsListComponentProps = {
   selectedDrive?: string;
   locationsOptions: ILocation[];
   drivesOptions: IDrive[];
-  handleSetLocation: () => void;
+  refetchSite: () => void;
 };
 
 const createLocationsMutation = graphql(`
@@ -31,7 +31,7 @@ export const LocationsList = ({
   selectedDrive,
   locationsOptions,
   drivesOptions,
-  handleSetLocation,
+  refetchSite,
 }: LocationsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [, createLocationMutation] = useMutation(createLocationsMutation);
@@ -64,9 +64,12 @@ export const LocationsList = ({
         console.error('Mutation error:', response.error);
         return;
       }
-
       console.log('Mutation response:', response);
-      setNewLocationId(response.data?.createLocation?.id);
+
+      if (response.data?.createLocation) {
+        setNewLocationId(response.data?.createLocation?.id);
+        refetchSite();
+      }
     } catch (error) {
       console.error('Error:', error);
     }
@@ -96,7 +99,6 @@ export const LocationsList = ({
             locationsOptions={locationsOptions}
             isNewLocation={location.id === newLocationId}
             setNewLocationId={setNewLocationId}
-            handleSetLocation={handleSetLocation}
           />
         ))}
       </div>

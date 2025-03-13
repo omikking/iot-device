@@ -88,7 +88,7 @@ export const LevelItem = ({
       // Check if the level name is a duplicate and prevent updating if the same value exists
       const isDuplicate = levelsOptions.some(
         (level) =>
-          level.levelName === formData.levelName && level.id !== level.id,
+          level.levelName === formData.levelName && level.id !== formData.id,
       );
 
       if (isDuplicate) {

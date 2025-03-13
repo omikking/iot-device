@@ -12,6 +12,7 @@ type LevelsListComponentProps = {
   selectedLevel?: string;
   selectedSiteId?: string;
   handleSetLevel: () => void;
+  refetchSite: () => void;
 };
 
 const createLevelsMutation = graphql(`
@@ -29,6 +30,7 @@ export const LevelsList = ({
   selectedLevel,
   selectedSiteId,
   handleSetLevel,
+  refetchSite,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [, createLevelMutation] = useMutation(createLevelsMutation);
@@ -60,7 +62,10 @@ export const LevelsList = ({
 
       console.log('Mutation response:', response);
 
-      setNewLevelId(response.data?.createLevel?.id);
+      if (response.data?.createLevel) {
+        setNewLevelId(response.data?.createLevel?.id);
+        refetchSite();
+      }
     } catch (error) {
       // @TODO add toast or alert for error?
       console.error('Mutation error:', error);

@@ -16,6 +16,7 @@ type DrivesListComponentProps = {
   selectedLevel?: string;
   levelsOptions: ILevel[];
   handleSetDrive: () => void;
+  refetchSite: () => void;
 };
 
 const createDrivesMutation = graphql(`
@@ -34,6 +35,7 @@ export const DrivesList = ({
   selectedLevel,
   levelsOptions,
   handleSetDrive,
+  refetchSite,
 }: DrivesListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [, createDriveMutation] = useMutation(createDrivesMutation);
@@ -54,7 +56,6 @@ export const DrivesList = ({
       );
 
       const defaultDriveName = `New drive ${nextIndex}`;
-
       const response = await createDriveMutation({
         createDriveInput: {
           driveName: defaultDriveName,
@@ -67,7 +68,10 @@ export const DrivesList = ({
         return;
       }
 
-      setNewDriveId(response.data?.createDrive?.id);
+      if (response.data?.createDrive) {
+        setNewDriveId(response.data?.createDrive?.id);
+        refetchSite();
+      }
     } catch (error) {
       console.error('Mutation error:', error);
     }

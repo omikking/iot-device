@@ -113,7 +113,7 @@ const getMeSiteLocationDocument = graphql(`
 `);
 
 export function useSite(id: string) {
-  const [result] = useQuery<ISiteData>({
+  const [result, reExecuteQuery] = useQuery<ISiteData>({
     query: getMeSiteLocationDocument,
     variables: { id },
   });
@@ -121,5 +121,11 @@ export function useSite(id: string) {
   const { data, fetching, error } = result;
   const site = useMemo(() => data?.site, [data]);
 
-  return { site, fetching, error };
+  const refetchSite = () => {
+    if (id) {
+      reExecuteQuery({ requestPolicy: 'network-only' });
+    }
+  };
+
+  return { site, fetching, error, refetchSite };
 }

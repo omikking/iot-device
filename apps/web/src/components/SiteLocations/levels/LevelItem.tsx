@@ -127,7 +127,8 @@ export const LevelItem = ({
             </Text>
 
             <DeleteEditDropdown
-              itemSelected={index}
+              // itemSelected={index}
+              itemSelected={'1'}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
             />
@@ -135,7 +136,8 @@ export const LevelItem = ({
               modalTitle="Delete level"
               deleteButtonText="Confirm deletion"
               deleteIcon="Site"
-              itemToDelete={index}
+              // itemToDelete={index}
+              itemToDelete={'1'}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={(e) => {

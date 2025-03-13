@@ -27,7 +27,7 @@ interface UsersTableProps {
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const [users, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<number | undefined>(
+  const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
 
@@ -60,7 +60,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     return appName;
   };
 
-  const openDeleteModal = (index: number) => {
+  const openDeleteModal = (index: string) => {
     setUserToDelete(index);
     setIsDeleteUserModalOpen(true);
   };
@@ -70,12 +70,15 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+  const handleDelete = (index: string) => {
+    // setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+    setUsers((currentUsers) => currentUsers);
+    console.log(index);
   };
 
-  const openEditModal = (index: number) => {
-    const userToEdit = users[index];
+  const openEditModal = (index: string) => {
+    console.log(index);
+    const userToEdit = users[0];
     onSelectUser(userToEdit);
     onOpenChange(true);
   };
@@ -125,7 +128,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
 
         return (
           <DeleteEditDropdown
-            itemSelected={rowIndex}
+            itemSelected={rowIndex.toString()}
             openDeleteModal={openDeleteModal}
             handleEdit={openEditModal}
           />
@@ -141,7 +144,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         deleteIcon="User"
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
-        itemToDelete={userToDelete}
+        itemToDelete={userToDelete || '1'}
         onOpenChange={closeDeleteModal}
         onDelete={(event, index) => {
           handleDelete(index);
@@ -151,7 +154,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete && ` ${users[userToDelete].fullName} `}
+            {userToDelete && ` ${users[0].fullName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

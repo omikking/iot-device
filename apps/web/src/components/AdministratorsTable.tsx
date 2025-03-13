@@ -25,16 +25,17 @@ export const AdministratorsTable = ({
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
   const [administratorToDelete, setAdministratorToDelete] = useState<
-    number | undefined
+    string | undefined
   >(undefined);
 
-  const openDeleteModal = (index: number) => {
+  const openDeleteModal = (index: string) => {
     setAdministratorToDelete(index);
     setIsDeleteAdministratorModalOpen(true);
   };
 
-  const openEditModal = (index: number) => {
-    const technicianToEdit = administrators[index];
+  const openEditModal = (index: string) => {
+    console.log(index);
+    const technicianToEdit = administrators[0];
     onSelectAdministrator(technicianToEdit);
     onOpenChange(true);
   };
@@ -44,10 +45,12 @@ export const AdministratorsTable = ({
     setAdministratorToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setAdministrators((currentAdministrators) =>
-      currentAdministrators.filter((_, i) => i !== index),
-    );
+  const handleDelete = (index: string) => {
+    // setAdministrators((currentAdministrators) =>
+    //   currentAdministrators.filter((_, i) => i !== index),
+    // );
+    console.log(index);
+    setAdministrators(administrators);
   };
 
   const columns: ColumnDef<AdministratorSchema>[] = [
@@ -98,15 +101,16 @@ export const AdministratorsTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        const rowIndex = administrators.findIndex(
-          (admin) => admin.id === row.original.id,
-        );
+        // const rowIndex = administrators.find(
+        //   (admin) => admin.id === row.original.id,
+        // );
+        console.log(row);
 
         return (
           <DeleteEditDropdown
-            itemSelected={rowIndex}
+            itemSelected={'1'}
             openDeleteModal={openDeleteModal}
-            handleEdit={() => openEditModal(rowIndex)}
+            handleEdit={() => openEditModal('1')}
           />
         );
       },
@@ -120,7 +124,7 @@ export const AdministratorsTable = ({
         deleteIcon="User"
         modalTitle="Delete administrator"
         isOpen={isDeleteAdministratorModalOpen}
-        itemToDelete={administratorToDelete}
+        itemToDelete={administratorToDelete || '0'}
         onOpenChange={closeDeleteModal}
         onDelete={(event, index) => {
           handleDelete(index);
@@ -131,7 +135,7 @@ export const AdministratorsTable = ({
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
             {administratorToDelete !== undefined
-              ? ` ${administrators[administratorToDelete].fullName} `
+              ? ` ${administrators[0].fullName} `
               : ''}
           </Text>
           from the list. Are you sure you want to delete?

@@ -15,7 +15,7 @@ import {
   createCompanyFormSchema,
   updateCompanyFormSchema,
 } from './schemas/CompanyFormSchema';
-import { GetCompanyQuery } from '@/gql/graphql';
+import { Company, Plan } from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -83,7 +83,7 @@ const updateCompanyMutation = graphql(`
 `);
 
 type CompanyFormProps = {
-  company?: GetCompanyQuery['company'];
+  company?: Company;
   isNewCompany: boolean;
   setIsDeleteModalOpen: (open: boolean) => void;
 };
@@ -229,7 +229,7 @@ export const CompanyForm = ({
 
                   return (
                     <AppPlansContainer
-                      appPlan={appPlan}
+                      appPlan={appPlan as Plan}
                       key={appPlan.id}
                       isAdmin={isAdmin}
                       companyForm={companyForm}

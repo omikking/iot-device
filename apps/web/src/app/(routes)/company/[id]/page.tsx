@@ -7,6 +7,7 @@ import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Company } from '@/gql/graphql';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -45,7 +46,7 @@ export default function Page({
   const [companyData] = isNewCompany
     ? [null]
     : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
-  const company = companyData?.data?.company;
+  const company = companyData?.data?.company as Company;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 

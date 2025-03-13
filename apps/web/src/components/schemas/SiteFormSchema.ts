@@ -27,7 +27,7 @@ export const updateSiteFormSchema = z.object({
   postalCode: z
     .string()
     .min(5, { message: 'Postal code must be at least 2 characters.' }),
-  city: z.string().min(5, { message: 'City must be at least 2 characters.' }),
+  city: z.string().min(2, { message: 'City must be at least 2 characters.' }),
   country: z
     .string()
     .min(2, { message: 'City must be at least 2 characters.' }),

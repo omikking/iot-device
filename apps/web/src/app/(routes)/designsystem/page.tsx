@@ -97,7 +97,7 @@ export default function Page(): JSX.Element {
   );
   const [sites, setSites] = useState(sitesMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
+  const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
@@ -118,7 +118,7 @@ export default function Page(): JSX.Element {
     }
   };
 
-  const openDeleteModal = (index: number) => {
+  const openDeleteModal = (index: string) => {
     setSiteToDelete(index);
     setIsDeleteSiteModalOpen(true);
   };
@@ -128,8 +128,8 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setSites((sites) => sites.filter((item, i) => i !== index));
+  const handleDelete = (index: string) => {
+    setSites((sites) => sites.filter((item, i) => i.toString() !== index));
   };
 
   return (
@@ -220,6 +220,7 @@ export default function Page(): JSX.Element {
       </Button>
 
       <DeleteModalConfirmation
+        itemToDelete={'1'}
         deleteButtonText="Confirm deletion"
         modalTitle="Delete Site"
         isOpen={isDeleteModalOpen}
@@ -251,7 +252,7 @@ export default function Page(): JSX.Element {
               {site.name}
             </Text>
             <DeleteEditDropdown
-              itemSelected={index}
+              itemSelected={index.toString()}
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('edit')}
             />
@@ -262,7 +263,7 @@ export default function Page(): JSX.Element {
           deleteIcon="Site"
           modalTitle="Delete Site"
           isOpen={isDeleteSiteModalOpen}
-          itemToDelete={siteToDelete}
+          itemToDelete={siteToDelete || '1'}
           onOpenChange={closeDeleteModal}
           onDelete={(_, index) => {
             console.log('Deleting site at index:', index);
@@ -273,9 +274,7 @@ export default function Page(): JSX.Element {
           <Text variant="medium" color={'foreground'}>
             You are about to delete
             <Text variant="medium" color={'foreground'} isBold as="span">
-              {siteToDelete !== undefined
-                ? ` ${sites[siteToDelete].name} `
-                : ''}
+              {siteToDelete}
             </Text>
             from the list. Are you sure you want to delete?
           </Text>

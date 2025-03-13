@@ -16,8 +16,11 @@ import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
 import { Site } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
 
 export default function Page(): JSX.Element {
+  const { data: session } = useSession();
+
   const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
     'Pull Test',
   );
@@ -34,9 +37,11 @@ export default function Page(): JSX.Element {
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
       <GoBack />
-      <Badge variant="primary" size="large" className="absolute top-24">
-        Sites
-      </Badge>
+      {session?.company.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {session.company.name}
+        </Badge>
+      )}
       <Headline as="h1" variant="xl" color="foreground">
         Sites
       </Headline>

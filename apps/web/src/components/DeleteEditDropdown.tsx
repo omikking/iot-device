@@ -10,9 +10,9 @@ import React from 'react';
 import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 interface DeleteEditDropdownProps {
-  itemSelected: number;
-  openDeleteModal: (itemSelected: number) => void;
-  handleEdit: (itemSelected: number) => void;
+  itemSelected: string;
+  openDeleteModal: (itemSelected: string) => void;
+  handleEdit: (itemSelected: string) => void;
 }
 
 export const DeleteEditDropdown = ({

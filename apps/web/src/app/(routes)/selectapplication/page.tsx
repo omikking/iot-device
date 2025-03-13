@@ -17,7 +17,7 @@ export default function Page(): JSX.Element {
 
       {session?.company.name && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session?.company.name}
+          {session.company.name}
         </Badge>
       )}
 

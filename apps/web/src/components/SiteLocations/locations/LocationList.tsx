@@ -22,10 +22,10 @@ export const LocationsList = ({
 
   const addLocation = () => {
     locationsOptions.push({
-      id: `${locationsOptions.length + 1}`,
+      id: '',
       locationName: '',
       createdAt: undefined,
-      driveId: '',
+      driveId: selectedDriveId || '',
       updatedAt: undefined,
     });
     setLocationsOptions([...locationsOptions] as Location[]);
@@ -52,14 +52,12 @@ export const LocationsList = ({
             </Text>
           </div>
         )}
-        {locationsOptions?.map((location, index) => (
+        {locationsOptions?.map((location) => (
           <LocationItem
-            key={index}
+            key={location.id}
             location={location}
             locationsOptions={locationsOptions}
-            index={index}
             inputRef={inputRef}
-            setLocationsOptions={setLocationsOptions}
           />
         ))}
       </div>
@@ -68,7 +66,7 @@ export const LocationsList = ({
           <Button
             size={'small'}
             variant={'primary'}
-            onClick={() => addLocation()}
+            onClick={addLocation}
             disabled={
               drivesOptions.length === 0 ||
               locationsOptions.some((location) => location.locationName === '')

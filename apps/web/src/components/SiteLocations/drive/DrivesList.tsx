@@ -27,11 +27,11 @@ export const DrivesList = ({
 
   const addDrive = () => {
     drivesOptions.push({
-      id: `${drivesOptions.length + 1}`,
+      id: '',
       driveName: '',
       locations: [],
       createdAt: undefined,
-      levelId: '',
+      levelId: selectedLevelId || '',
       updatedAt: undefined,
     });
     setDrivesOptions([...drivesOptions] as Drive[]);
@@ -58,14 +58,13 @@ export const DrivesList = ({
             </Text>
           </div>
         )}
-        {drivesOptions?.map((drive, index) => (
+        {drivesOptions?.map((drive) => (
           <DriveItem
-            key={index}
+            inputRef={inputRef}
+            key={drive.id}
             drive={drive}
             drivesOptions={drivesOptions}
             selectedDriveId={selectedDriveId}
-            inputRef={inputRef}
-            index={index}
             setDrivesOptions={setDrivesOptions}
             setLocationsOptions={setLocationsOptions}
             handleSetDrive={handleSetDrive}
@@ -77,7 +76,7 @@ export const DrivesList = ({
           <Button
             size={'small'}
             variant={'primary'}
-            onClick={() => addDrive()}
+            onClick={addDrive}
             disabled={
               levelsOptions.length === 0 ||
               drivesOptions.some((drive) => drive.driveName === '')

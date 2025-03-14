@@ -69,9 +69,6 @@ export default function Page(): JSX.Element {
   const [drivesOptions, setDrivesOptions] = useState<Drive[]>([]);
   const [locationsOptions, setLocationsOptions] = useState<Location[]>([]);
 
-  console.log(selectedLevel);
-  console.log(levelsOptions);
-
   // Request all sites of company for dropdown
   const [sitesData] = useQuery({
     query: getCompanySitesNameQuery,
@@ -93,14 +90,26 @@ export default function Page(): JSX.Element {
   });
   const site = (siteData.data?.site as Site) || [];
 
-  // When the full site is fetched, set levels, drives, and locations.
+  // Update the levels, drives and locations when an update is made
   useEffect(() => {
-    if (site) {
-      if (site.levels) {
-        setLevelsOptions(site.levels);
-      }
-      setDrivesOptions([]);
-      setLocationsOptions([]);
+    console.log(site);
+    if (site?.levels) {
+      setLevelsOptions(site.levels);
+    }
+
+    if (selectedLevel && site?.levels) {
+      const level = site.levels.find((level) => level.id === selectedLevel.id);
+      level?.drives && setDrivesOptions(level.drives);
+    }
+
+    if (selectedLevel && selectedDrive) {
+      const level = site?.levels?.find(
+        (level) => level.id === selectedLevel.id,
+      );
+      const drive = level?.drives?.find(
+        (drive) => drive.id === selectedDrive.id,
+      );
+      drive?.locations && setLocationsOptions(drive.locations);
     }
   }, [site]);
 
@@ -125,8 +134,6 @@ export default function Page(): JSX.Element {
   };
 
   const handleSetLevel = (levelId?: string) => {
-    console.log(levelId);
-    console.log('set level');
     const level = levelsOptions.find((level) => level.id === levelId);
     setSelectedLevel(level);
     setSelectedDrive(undefined);
@@ -219,20 +226,18 @@ export default function Page(): JSX.Element {
         <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
-              levelsOptions={levelsOptions}
               selectedLevelId={selectedLevel?.id}
               selectedSiteId={selectedSite?.id}
+              levelsOptions={levelsOptions}
               handleSetLevel={handleSetLevel}
               setLevelsOptions={setLevelsOptions}
-              setDrivesOptions={setDrivesOptions}
-              setLocationsOptions={setLocationsOptions}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
-              drivesOptions={drivesOptions}
               selectedDriveId={selectedDrive?.id}
               selectedLevelId={selectedLevel?.id}
+              drivesOptions={drivesOptions}
               levelsOptions={levelsOptions}
               setDrivesOptions={setDrivesOptions}
               setLocationsOptions={setLocationsOptions}

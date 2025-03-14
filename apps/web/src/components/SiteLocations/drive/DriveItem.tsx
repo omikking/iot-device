@@ -1,23 +1,53 @@
 'use client';
 import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { Drive, Location } from '@/gql/graphql';
+import { useMutation } from 'urql';
+import { graphql } from '@/gql';
+
+const createDriveMutation = graphql(`
+  mutation createDrive($createDriveInput: CreateDriveInput!) {
+    createDrive(createDriveInput: $createDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const updateDriveMutation = graphql(`
+  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {
+    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const deleteDriveMutation = graphql(`
+  mutation removeDrive($id: String!) {
+    removeDrive(id: $id) {
+      id
+    }
+  }
+`);
+
 interface DriveComponentProps {
   drive: Drive;
   drivesOptions: Drive[];
-  index: number;
   selectedDriveId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetDrive: (name: string) => void;
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
   setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
+  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const DriveItem = ({
@@ -25,64 +55,29 @@ export const DriveItem = ({
   drivesOptions,
   selectedDriveId,
   inputRef,
-  index,
-  setDrivesOptions,
+  // setDrivesOptions,
   setLocationsOptions,
   handleSetDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const [, createDrive] = useMutation(createDriveMutation);
+  const [, updateDrive] = useMutation(updateDriveMutation);
+  const [, deleteDrive] = useMutation(deleteDriveMutation);
+
   const driveForm: UseFormReturn<SiteLocationsValue> =
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
         id: '',
-        name: '',
+        driveName: '',
       },
     });
 
   const handleEditDrive = () => {
     setIsEditing(true);
-
-    driveForm.setValue('name', drive.driveName);
-  };
-
-  const handleCancelDrive = (index: number) => {
-    const newDrives = [...drivesOptions];
-    newDrives[index].locations = [];
-    newDrives.splice(index, 1);
-    setDrivesOptions(newDrives);
-
-    setLocationsOptions([]);
-  };
-
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const newDriveName = formData.get('drive') as string;
-
-    const isDuplicate = drivesOptions.some(
-      (drive) => drive.driveName === newDriveName,
-    );
-
-    if (isDuplicate) {
-      alert('This drive already exists. Please enter a different drive.');
-      return;
-    }
-
-    const newDrives = [...drivesOptions];
-    newDrives[index] = {
-      ...newDrives[index],
-      driveName: formData.get('drive') as string,
-      locations: [],
-    };
-    setDrivesOptions(newDrives);
-    setIsEditing(false);
+    driveForm.setValue('driveName', drive.driveName);
   };
 
   const handleCancelEdit = () => {
@@ -90,31 +85,90 @@ export const DriveItem = ({
     driveForm.reset();
   };
 
+  const handleDriveSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
+    // @TODO fix these alerts with proper UI
+    if (!data.driveName) {
+      alert('Please enter a drive name.');
+      return;
+    }
+
+    // Checks that no other drive has the same name
+    const newDriveName = data.driveName;
+    const isDuplicate = drivesOptions.some(
+      (drive) => drive.driveName === newDriveName,
+    );
+    if (isDuplicate) {
+      alert('This drive already exists. Please enter a different drive.');
+      return;
+    }
+
+    // To create a new drive
+    if (!drive.id && newDriveName) {
+      createDrive({
+        createDriveInput: {
+          driveName: newDriveName,
+          levelId: drive.levelId || '',
+        },
+      }).then((result) => {
+        if (result.data) {
+          // drivesOptions.push(result.data.createDrive as Drive);
+          // setDrivesOptions(drivesOptions);
+          setIsEditing(false);
+        }
+      });
+    }
+
+    // To edit a drive
+    if (drive.id && newDriveName) {
+      updateDrive({
+        id: drive.id,
+        updateDriveInput: {
+          driveName: newDriveName,
+        },
+      }).then((result) => {
+        if (result.data) {
+          setIsEditing(false);
+        }
+      });
+    }
+  };
+
+  const handleDeleteDrive = () => {
+    deleteDrive({
+      id: drive.id,
+    }).then((result) => {
+      if (result.data) {
+        setIsDeleteModalOpen(false);
+      }
+    });
+    // @TODO Cannot delete drive with items in, need to fix in BE to clear it all. Will fail atm.
+    // Double check later if this is needed.
+    setLocationsOptions([]);
+  };
+
   return (
     <div
       className={`bg-main-white px-6 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
-      key={index}
+      key={drive.id}
     >
       <div
         className="py-3"
         onClick={() => !isEditing && handleSetDrive(drive.id)}
       >
         {!drive.driveName || isEditing ? (
-          <SiteLocationsForm
-            form={driveForm}
-            onSubmit={handleEditSubmit}
-            onCancel={handleCancelEdit}
-            placeholder="New drive..."
-            name="drive"
-            index={index}
+          <AddSiteLocationItemForm
             inputRef={inputRef}
+            form={driveForm}
+            type="drive"
+            onSubmit={handleDriveSubmit}
+            onCancel={handleCancelEdit}
           />
         ) : (
           <div
             className="flex flex-row w-full justify-between items-center gap-2"
-            key={index}
+            key={drive.id}
           >
-            <Text className="w-full" variant="small" color="foreground">
+            <Text variant="medium" color="foreground">
               {drive.driveName}
             </Text>
 
@@ -125,14 +179,12 @@ export const DriveItem = ({
             />
             <DeleteModalConfirmation
               modalTitle="Delete drive"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete drive"
               deleteIcon="Site"
               itemToDelete={drive.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
-              onDelete={() => {
-                handleCancelDrive(index), setIsDeleteModalOpen(false);
-              }}
+              onDelete={handleDeleteDrive}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete

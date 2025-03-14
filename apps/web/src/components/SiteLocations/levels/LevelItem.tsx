@@ -1,77 +1,79 @@
 'use client';
 import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
-import { Drive, Level, Location } from '@/gql/graphql';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { Level } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+
+const createLevelMutation = graphql(`
+  mutation createLevel($createLevelInput: CreateLevelInput!) {
+    createLevel(createLevelInput: $createLevelInput) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const updateLevelMutation = graphql(`
+  mutation updateLevel($id: String!, $updateLevelInput: UpdateLevelInput!) {
+    updateLevel(id: $id, updateLevelInput: $updateLevelInput) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const deleteLevelMutation = graphql(`
+  mutation removeLevel($id: String!) {
+    removeLevel(id: $id) {
+      id
+    }
+  }
+`);
+
 interface LevelComponentProps {
   selectedLevelId?: string;
   level: Level;
   levelsOptions: Level[];
-  index: number;
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLevel: (name: string) => void;
-  setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
-  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LevelItem = ({
   selectedLevelId,
   level,
   levelsOptions,
-  index,
   inputRef,
   handleSetLevel,
-  setLevelsOptions,
-  setDrivesOptions,
-  setLocationsOptions,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [, createLevel] = useMutation(createLevelMutation);
+  const [, updateLevel] = useMutation(updateLevelMutation);
+  const [, deleteLevel] = useMutation(deleteLevelMutation);
 
   const levelForm: UseFormReturn<SiteLocationsValue> =
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
         id: '',
-        name: '',
+        levelName: '',
       },
     });
 
   const handleEditLevel = () => {
     setIsEditing(true);
-    levelForm.setValue('name', level.levelName);
-  };
-
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    const formData = new FormData(e.currentTarget);
-    const newLevelName = formData.get('level') as string;
-
-    const isDuplicate = levelsOptions.some(
-      (level) => level.levelName === newLevelName,
-    );
-
-    if (isDuplicate) {
-      alert('This level already exists. Please enter a different level.');
-      return;
-    }
-
-    const newLevels = [...levelsOptions];
-    newLevels[index] = {
-      ...newLevels[index],
-      levelName: newLevelName,
-    };
-    setLevelsOptions(newLevels);
-    setIsEditing(false);
+    levelForm.setValue('levelName', level.levelName);
   };
 
   const handleCancelEdit = () => {
@@ -79,44 +81,89 @@ export const LevelItem = ({
     levelForm.reset();
   };
 
-  const handleCancelLevel = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    const newLevels = [...levelsOptions];
-    newLevels[index].drives = [];
-    newLevels.splice(index, 1);
+  const handleLevelSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
+    // @TODO fix these alerts with proper UI
+    if (!data.levelName) {
+      alert('Please enter a level name.');
+      return;
+    }
 
-    setLevelsOptions(newLevels);
-    setDrivesOptions([]);
-    setLocationsOptions([]);
+    // Checks that no other level has the same name
+    const newLevelName = data.levelName;
+    const isDuplicate = levelsOptions.some(
+      (level) => level.levelName === newLevelName,
+    );
+    if (isDuplicate) {
+      alert('This level already exists. Please enter a different level.');
+      return;
+    }
+
+    // To create a new level
+    if (!level.id && newLevelName) {
+      createLevel({
+        createLevelInput: {
+          levelName: newLevelName,
+          siteId: level.siteId || '',
+        },
+      }).then((result) => {
+        if (result.data) {
+          setIsEditing(false);
+        }
+      });
+    }
+
+    // To edit a level
+    if (level.id && newLevelName) {
+      updateLevel({
+        id: level.id,
+        updateLevelInput: {
+          levelName: newLevelName,
+        },
+      }).then((result) => {
+        if (result.data) {
+          setIsEditing(false);
+        }
+      });
+    }
+  };
+
+  const handleDeleteLevel = () => {
+    deleteLevel({
+      id: level.id,
+    }).then((result) => {
+      if (result.data) {
+        setIsDeleteModalOpen(false);
+      }
+    });
+    // @TODO Cannot delete level with items in, need to fix in BE to clear it all. Will fail atm.
+    // Double check later if this is needed.
+    // setDrivesOptions([]);
+    // setLocationsOptions([]);
   };
 
   return (
     <div
       className={`bg-main-white px-6 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
-      key={index}
+      key={level.id}
     >
       <div
         className="py-3"
         onClick={() => !isEditing && handleSetLevel(level.id)}
       >
         {!level.levelName || isEditing ? (
-          <SiteLocationsForm
-            form={levelForm}
-            onSubmit={handleEditSubmit}
-            onCancel={handleCancelEdit}
-            placeholder="New level..."
-            name="level"
-            index={index}
+          <AddSiteLocationItemForm
             inputRef={inputRef}
+            form={levelForm}
+            type="level"
+            onSubmit={handleLevelSubmit}
+            onCancel={handleCancelEdit}
           />
         ) : (
           <div
             className="flex flex-row w-full justify-between items-center gap-2"
-            key={index}
+            key={level.id}
           >
-            <Text className="w-full" variant="small" color="foreground">
+            <Text variant="medium" color="foreground">
               {level.levelName}
             </Text>
 
@@ -127,14 +174,12 @@ export const LevelItem = ({
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete level"
               deleteIcon="Site"
               itemToDelete={level.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
-              onDelete={(e) => {
-                handleCancelLevel(e, index), setIsDeleteModalOpen(false);
-              }}
+              onDelete={handleDeleteLevel}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete

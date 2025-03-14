@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { Drive, Level, Location } from '@/gql/graphql';
+import { Level } from '@/gql/graphql';
 
 interface LevelsListComponentProps {
   levelsOptions: Level[];
@@ -11,8 +11,6 @@ interface LevelsListComponentProps {
   selectedSiteId?: string;
   handleSetLevel: () => void;
   setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
-  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 export const LevelsList = ({
@@ -21,18 +19,16 @@ export const LevelsList = ({
   selectedSiteId,
   handleSetLevel,
   setLevelsOptions,
-  setDrivesOptions,
-  setLocationsOptions,
 }: LevelsListComponentProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addLevel = () => {
     levelsOptions.push({
-      id: `${levelsOptions.length + 1}`,
+      id: '',
       levelName: '',
       drives: [],
       createdAt: undefined,
-      siteId: '',
+      siteId: selectedSiteId || '',
       updatedAt: undefined,
     });
     setLevelsOptions([...levelsOptions] as Level[]);
@@ -43,6 +39,7 @@ export const LevelsList = ({
       inputRef.current.focus();
     }
   }, [levelsOptions]);
+
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -58,18 +55,14 @@ export const LevelsList = ({
             </Text>
           </div>
         )}
-        {levelsOptions?.map((level, index) => (
+        {levelsOptions?.map((level) => (
           <LevelItem
-            key={index}
-            selectedLevelId={selectedLevelId}
-            level={level}
-            levelsOptions={levelsOptions}
-            index={index}
             inputRef={inputRef}
+            key={level.id}
+            level={level}
+            selectedLevelId={selectedLevelId}
+            levelsOptions={levelsOptions}
             handleSetLevel={handleSetLevel}
-            setLevelsOptions={setLevelsOptions}
-            setDrivesOptions={setDrivesOptions}
-            setLocationsOptions={setLocationsOptions}
           />
         ))}
       </div>
@@ -78,7 +71,7 @@ export const LevelsList = ({
           <Button
             size={'small'}
             variant={'primary'}
-            onClick={() => addLevel()}
+            onClick={addLevel}
             disabled={levelsOptions.some((level) => level.levelName === '')}
           >
             <LucidePlus /> Add level

@@ -89,7 +89,6 @@ export default function Page(): JSX.Element {
   const companyId = params.id as string;
 
   const { hazards } = useHazardDetails(companyId);
-  console.log('hazards', hazards);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

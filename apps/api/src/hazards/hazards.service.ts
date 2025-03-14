@@ -9,7 +9,7 @@ export class HazardsService {
   async findAll(companyId: string): Promise<GraphQLTypes.BoltResult[]> {
     const boltResults = this.prisma.boltResult.findMany({
       where: {
-        OR: [{ isHazard: true }, { hazardCompletedDate: { not: null } }],
+        OR: [{ isHazard: true }, { hazardCompletedDate: { isEmpty: false } }],
         site: {
           companyId,
         },

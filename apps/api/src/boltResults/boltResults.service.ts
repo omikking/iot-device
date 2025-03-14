@@ -12,10 +12,14 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { BoltResultResponse } from './BoltResultResponse';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BoltResultsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
   async getBoltResults(
     user: ActiveUserData,
@@ -25,7 +29,9 @@ export class BoltResultsService {
     const { offset, limit } = pagination;
 
     const whereCondition: Record<string, any> = {
-      ...(user.globalRole === 'SANDVIK_TECHNICIAN' ? { userId: user.id } : {}),
+      ...(user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+        ? { userId: user.id }
+        : {}),
       ...(filters &&
         Object.fromEntries(
           Object.entries(filters).filter(

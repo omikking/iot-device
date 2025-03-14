@@ -11,12 +11,16 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { CompanyListResponse } from './companyListResponse';
+import { ConfigService } from '@nestjs/config';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
   async getCompanies(
     user: ActiveUserData,
@@ -24,17 +28,17 @@ export class CompaniesService {
     pagination?: { offset: number; limit: number },
   ): Promise<CompanyListResponse> {
     const { offset, limit } = pagination || { offset: 0, limit: 20 };
-
     const whereCondition: Partial<Record<string, any>> = {};
-
-    if (user.globalRole === 'SANDVIK_ADMIN') {
+    if (user.globalRole === this.config.get<string>('GLOBAL_ADMIN')) {
       // Admin can see all companies; filter by userId if provided
       if (userId) {
         whereCondition.userPermission = {
           some: { userId },
         };
       }
-    } else if (user.globalRole === 'SANDVIK_TECHNICIAN') {
+    } else if (
+      user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+    ) {
       // Technicians can only see companies where they have permission
       whereCondition.userPermission = {
         some: { userId: user.id },

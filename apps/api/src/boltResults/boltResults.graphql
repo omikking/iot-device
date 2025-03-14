@@ -62,7 +62,7 @@ Define the input fields to update an existing boltResult
 Optional are marked without the exclamation mark
 """
 input UpdateBoltResultInput {
-  id: String!
+  id: String
   boltNumber: Int
   boltType: String
   peakLoad: [Int!]
@@ -105,6 +105,15 @@ Mutation
 Define the mutations that can be made to the BoltResult model
 """
 type Mutation {
+  createBoltResult(createBoltResultInput: CreateBoltResultInput!): BoltResult!
+
+  updateBoltResult(
+    id: String!
+    updateBoltResultInput: UpdateBoltResultInput!
+  ): BoltResult!
+
+  removeBoltResult(id: String!): BoltResult!
+
   createBoltResults(
     createBoltResultsInput: [CreateBoltResultInput!]!
   ): [BoltResult!]!

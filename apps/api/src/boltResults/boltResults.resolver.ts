@@ -61,6 +61,30 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
+  @Mutation('createBoltResult')
+  async create(
+    @Args('createBoltResultInput')
+    createBoltResultInput: CreateBoltResultInput,
+  ): Promise<GraphQLTypes.BoltResult> {
+    return this.boltResultsService.create(createBoltResultInput);
+  }
+
+  @Mutation('updateBoltResult')
+  async update(
+    @Args('id', ParseUUIDPipe) id: string,
+    @Args('updateBoltResultInput')
+    updateBoltResultInput: UpdateBoltResultInput,
+  ): Promise<GraphQLTypes.BoltResult> {
+    console.log(id, updateBoltResultInput);
+    return this.boltResultsService.update(id, updateBoltResultInput);
+  }
+
+  @Mutation('removeBoltResult')
+  async remove(
+    @Args('id', ParseUUIDPipe) id: string,
+  ): Promise<GraphQLTypes.BoltResult> {
+    return this.boltResultsService.remove(id);
+  }
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))

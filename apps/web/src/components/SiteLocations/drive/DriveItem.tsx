@@ -111,8 +111,6 @@ export const DriveItem = ({
         },
       }).then((result) => {
         if (result.data) {
-          // drivesOptions.push(result.data.createDrive as Drive);
-          // setDrivesOptions(drivesOptions);
           setIsEditing(false);
         }
       });

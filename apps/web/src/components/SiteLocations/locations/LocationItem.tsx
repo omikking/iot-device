@@ -111,9 +111,6 @@ export const LocationItem = ({
       });
     }
 
-    console.log(location.id);
-    console.log(newLocationName);
-
     // To edit a location
     if (location.id && newLocationName) {
       updateLocation({
@@ -130,7 +127,6 @@ export const LocationItem = ({
   };
 
   const handleDeleteLocation = () => {
-    console.log(location);
     deleteLocation({
       id: location.id,
     }).then((result) => {

@@ -92,7 +92,6 @@ export default function Page(): JSX.Element {
 
   // Update the levels, drives and locations when an update is made
   useEffect(() => {
-    console.log(site);
     if (site?.levels) {
       setLevelsOptions(site.levels);
     }

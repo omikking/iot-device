@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
@@ -8,7 +8,7 @@ import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Level } from '@/gql/graphql';
+import { Drive, Level } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 
@@ -47,6 +47,8 @@ interface LevelComponentProps {
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetLevel: (level: Level) => void;
   refreshSite: () => void;
+  setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const LevelItem = ({
@@ -56,6 +58,8 @@ export const LevelItem = ({
   inputRef,
   handleSetLevel,
   refreshSite,
+  setSelectedLevel,
+  setSelectedDrive,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(!level.id);
 
@@ -80,13 +84,12 @@ export const LevelItem = ({
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
-
     if (!level.id) {
       levelsOptions.filter((emptyLevel) => emptyLevel.id !== level.id);
       refreshSite();
     }
     levelForm.reset();
+    setTimeout(() => setIsEditing(false), 50);
   };
 
   const handleLevelSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
@@ -116,7 +119,7 @@ export const LevelItem = ({
       }).then((result) => {
         if (result.data) {
           levelsOptions.length === 1 && refreshSite();
-          setIsEditing(false);
+          setTimeout(() => setIsEditing(false), 30);
         }
       });
     }
@@ -130,7 +133,7 @@ export const LevelItem = ({
         },
       }).then((result) => {
         if (result.data) {
-          setIsEditing(false);
+          setTimeout(() => setIsEditing(false), 30);
         }
       });
     }
@@ -141,18 +144,20 @@ export const LevelItem = ({
       id: level.id,
     }).then((result) => {
       if (result.data) {
-        setIsDeleteModalOpen(false);
+        setSelectedLevel(undefined);
+        setSelectedDrive(undefined);
+        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
       }
     });
   };
 
   return (
     <div
-      className={`bg-main-white px-6 cursor-pointer ${!isEditing && 'hover:ui-bg-main-white/50'} duration-100 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 cursor-pointer ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
       key={level.id}
     >
       <div className="py-3" onClick={() => !isEditing && handleSetLevel(level)}>
-        {isEditing ? (
+        {!level.id || isEditing ? (
           <AddSiteLocationItemForm
             inputRef={inputRef}
             form={levelForm}
@@ -178,7 +183,6 @@ export const LevelItem = ({
               modalTitle="Delete level"
               deleteButtonText="Delete level"
               deleteIcon="Site"
-              itemToDelete={level.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLevel}

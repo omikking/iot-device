@@ -1,9 +1,15 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  SetStateAction,
+  Dispatch,
+} from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { Level } from '@/gql/graphql';
+import { Drive, Level } from '@/gql/graphql';
 
 interface LevelsListProps {
   levelsOptions: Level[];
@@ -11,6 +17,8 @@ interface LevelsListProps {
   selectedSiteId?: string;
   handleSetLevel: () => void;
   refreshSite: () => void;
+  setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const LevelsList = ({
@@ -19,6 +27,8 @@ export const LevelsList = ({
   selectedSiteId,
   handleSetLevel,
   refreshSite,
+  setSelectedLevel,
+  setSelectedDrive,
 }: LevelsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -71,6 +81,8 @@ export const LevelsList = ({
             levelsOptions={levels}
             handleSetLevel={handleSetLevel}
             refreshSite={refreshSite}
+            setSelectedDrive={setSelectedDrive}
+            setSelectedLevel={setSelectedLevel}
           />
         ))}
       </div>

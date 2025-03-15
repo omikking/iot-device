@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
@@ -47,6 +47,7 @@ interface DriveComponentProps {
   inputRef: React.RefObject<HTMLInputElement>;
   handleSetDrive: (drive: Drive) => void;
   refreshSite: () => void;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const DriveItem = ({
@@ -56,6 +57,7 @@ export const DriveItem = ({
   inputRef,
   handleSetDrive,
   refreshSite,
+  setSelectedDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -79,13 +81,12 @@ export const DriveItem = ({
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
-
     if (!drive.id) {
       drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
       refreshSite();
     }
     driveForm.reset();
+    setTimeout(() => setIsEditing(false), 50);
   };
 
   const handleDriveSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
@@ -115,7 +116,7 @@ export const DriveItem = ({
       }).then((result) => {
         if (result.data) {
           drivesOptions.length === 1 && refreshSite();
-          setIsEditing(false);
+          setTimeout(() => setIsEditing(false), 30);
         }
       });
     }
@@ -129,8 +130,7 @@ export const DriveItem = ({
         },
       }).then((result) => {
         if (result.data) {
-          setIsEditing(false);
-          // refreshSite();
+          setTimeout(() => setIsEditing(false), 30);
         }
       });
     }
@@ -141,22 +141,19 @@ export const DriveItem = ({
       id: drive.id,
     }).then((result) => {
       if (result.data) {
-        setIsDeleteModalOpen(false);
-        // refreshSite();
+        setSelectedDrive(undefined);
+        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
       }
     });
-    // @TODO Cannot delete drive with items in, need to fix in BE to clear it all. Will fail atm.
-    // Double check later if this is needed.
-    // setLocationsOptions([]);
   };
 
   return (
     <div
-      className={`bg-main-white px-6 cursor-pointer ${!isEditing && 'hover:ui-bg-main-white/50'} duration-100 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 cursor-pointer ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
       key={drive.id}
     >
       <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
-        {isEditing ? (
+        {!drive.id || isEditing ? (
           <AddSiteLocationItemForm
             inputRef={inputRef}
             form={driveForm}
@@ -182,7 +179,6 @@ export const DriveItem = ({
               modalTitle="Delete drive"
               deleteButtonText="Delete drive"
               deleteIcon="Site"
-              itemToDelete={drive.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteDrive}

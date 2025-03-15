@@ -46,7 +46,7 @@ export const AddSiteLocationItemForm = ({
                     autoFocus
                     placeholder={`New ${type}...`}
                     ref={inputRef}
-                    className="border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !p-0 max-h-9"
+                    className="border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !p-0 max-h-9 !bg-transparent"
                   />
                 </FormControl>
               </FormItem>

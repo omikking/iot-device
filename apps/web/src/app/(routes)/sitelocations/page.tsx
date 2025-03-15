@@ -83,7 +83,6 @@ export default function Page(): JSX.Element {
     query: getFullSiteLocationsQuery,
     variables: { id: selectedSite?.id || '' },
     pause: !selectedSite?.id,
-    requestPolicy: 'cache-and-network',
   });
   const site = (siteData.data?.site as Site) || [];
 
@@ -204,6 +203,8 @@ export default function Page(): JSX.Element {
               levelsOptions={site.levels || []}
               handleSetLevel={handleSetLevel}
               refreshSite={refreshSite}
+              setSelectedLevel={setSelectedLevel}
+              setSelectedDrive={setSelectedDrive}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
@@ -214,6 +215,7 @@ export default function Page(): JSX.Element {
               levelsOptions={site.levels || []}
               handleSetDrive={handleSetDrive}
               refreshSite={refreshSite}
+              setSelectedDrive={setSelectedDrive}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">

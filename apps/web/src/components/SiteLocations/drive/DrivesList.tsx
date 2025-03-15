@@ -1,5 +1,11 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { DriveItem } from './DriveItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
@@ -12,6 +18,7 @@ interface DrivesListProps {
   levelsOptions: Level[];
   handleSetDrive: () => void;
   refreshSite: () => void;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const DrivesList = ({
@@ -21,6 +28,7 @@ export const DrivesList = ({
   levelsOptions,
   handleSetDrive,
   refreshSite,
+  setSelectedDrive,
 }: DrivesListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -73,6 +81,7 @@ export const DrivesList = ({
             selectedDriveId={selectedDriveId}
             handleSetDrive={handleSetDrive}
             refreshSite={refreshSite}
+            setSelectedDrive={setSelectedDrive}
           />
         ))}
       </div>

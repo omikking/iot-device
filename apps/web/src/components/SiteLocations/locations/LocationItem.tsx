@@ -56,7 +56,7 @@ export const LocationItem = ({
   inputRef,
   refreshSite,
 }: LocationComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [, createLocation] = useMutation(createLocationMutation);
@@ -78,8 +78,6 @@ export const LocationItem = ({
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
-
     if (!location.id) {
       locationsOptions.filter(
         (emptyLocation) => emptyLocation.id !== location.id,
@@ -87,6 +85,7 @@ export const LocationItem = ({
       refreshSite();
     }
     locationForm.reset();
+    setTimeout(() => setIsEditing(false), 50);
   };
 
   const handleLocationSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
@@ -115,8 +114,8 @@ export const LocationItem = ({
         },
       }).then((result) => {
         if (result.data) {
-          setIsEditing(false);
-          refreshSite();
+          setTimeout(() => setIsEditing(false), 30);
+          locationsOptions.length === 1 && refreshSite();
         }
       });
     }
@@ -130,8 +129,7 @@ export const LocationItem = ({
         },
       }).then((result) => {
         if (result.data) {
-          setIsEditing(false);
-          refreshSite();
+          setTimeout(() => setIsEditing(false), 30);
         }
       });
     }
@@ -142,18 +140,18 @@ export const LocationItem = ({
       id: location.id,
     }).then((result) => {
       if (result.data) {
-        setIsDeleteModalOpen(false);
+        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
       }
     });
   };
 
   return (
     <div
-      className={'bg-main-white px-6 border-2 border-transparent'}
+      className={`bg-main-white px-6 border-2 border-transparent ${isEditing && 'bg-main-white/50'}`}
       key={location.id}
     >
       <div className="py-3">
-        {!location.locationName || isEditing ? (
+        {!location.id || isEditing ? (
           <AddSiteLocationItemForm
             form={locationForm}
             onSubmit={handleLocationSubmit}
@@ -178,7 +176,6 @@ export const LocationItem = ({
               modalTitle="Delete drive"
               deleteButtonText="Delete drive"
               deleteIcon="Site"
-              itemToDelete={location.id}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLocation}

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import {
   Anchor,
   Badge,
@@ -126,108 +126,110 @@ export default function Page(): JSX.Element {
   };
 
   return (
-    <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/overview" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+    <Suspense fallback={<div>Loading...</div>}>
+      <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
+        <Text
+          variant="medium"
+          color="foreground"
+          className="absolute top-28 left-10 group"
+        >
+          <Link href="/overview" passHref legacyBehavior>
+            <Anchor color="foreground">
+              <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
+              Go back
+            </Anchor>
+          </Link>
+        </Text>
 
-      {session?.company.name && (
-        <Badge variant="primary" size="large" className="absolute top-24">
-          {session.company.name}
-        </Badge>
-      )}
+        {session?.company.name && (
+          <Badge variant="primary" size="large" className="absolute top-24">
+            {session.company.name}
+          </Badge>
+        )}
 
-      <Headline as="h1" variant="xl" color="foreground">
-        Site locations
-      </Headline>
+        <Headline as="h1" variant="xl" color="foreground">
+          Site locations
+        </Headline>
 
-      <div className="flex w-full flex-col gap-5">
-        <div className="flex items-center gap-10">
-          <Dropdown
-            id="site"
-            placeholder="Select site"
-            selectedId={site?.id}
-            options={sitesOptions}
-            onSelect={handleSetSite}
-            className="w-96"
-          />
-          <Breadcrumb>
-            <BreadcrumbList>
-              {selectedSite && (
-                <>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
-                      {selectedSite.siteName}
-                    </Text>
-                  </BreadcrumbItem>
-                </>
-              )}
-              {selectedLevel && (
-                <>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
-                      {selectedLevel.levelName}
-                    </Text>
-                  </BreadcrumbItem>
-                </>
-              )}
-              {selectedDrive && (
-                <>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
-                      {selectedDrive.driveName}
-                    </Text>
-                  </BreadcrumbItem>
-                </>
-              )}
-            </BreadcrumbList>
-          </Breadcrumb>
+        <div className="flex w-full flex-col gap-5">
+          <div className="flex items-center gap-10">
+            <Dropdown
+              id="site"
+              placeholder="Select site"
+              selectedId={site?.id}
+              options={sitesOptions}
+              onSelect={handleSetSite}
+              className="w-96"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                {selectedSite && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {selectedSite.siteName}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {selectedLevel && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {selectedLevel.levelName}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {selectedDrive && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {selectedDrive.driveName}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+          <div className="flex w-full max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
+            <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
+              <LevelsList
+                selectedLevelId={selectedLevel?.id}
+                selectedSiteId={site?.id}
+                levelsOptions={site.levels || []}
+                handleSetLevel={handleSetLevel}
+                refreshSite={refreshSite}
+                setSelectedLevel={setSelectedLevel}
+                setSelectedDrive={setSelectedDrive}
+              />
+            </div>
+            <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
+              <DrivesList
+                selectedDriveId={selectedDrive?.id}
+                selectedLevelId={selectedLevel?.id}
+                drivesOptions={drives || []}
+                levelsOptions={site.levels || []}
+                handleSetDrive={handleSetDrive}
+                refreshSite={refreshSite}
+                setSelectedDrive={setSelectedDrive}
+              />
+            </div>
+            <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
+              <LocationsList
+                selectedDriveId={selectedDrive?.id}
+                drivesOptions={drives || []}
+                locationsOptions={locations || []}
+                refreshSite={refreshSite}
+              />
+            </div>
+          </div>
         </div>
-        <div className="flex w-full max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
-          <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
-            <LevelsList
-              selectedLevelId={selectedLevel?.id}
-              selectedSiteId={site?.id}
-              levelsOptions={site.levels || []}
-              handleSetLevel={handleSetLevel}
-              refreshSite={refreshSite}
-              setSelectedLevel={setSelectedLevel}
-              setSelectedDrive={setSelectedDrive}
-            />
-          </div>
-          <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
-            <DrivesList
-              selectedDriveId={selectedDrive?.id}
-              selectedLevelId={selectedLevel?.id}
-              drivesOptions={drives || []}
-              levelsOptions={site.levels || []}
-              handleSetDrive={handleSetDrive}
-              refreshSite={refreshSite}
-              setSelectedDrive={setSelectedDrive}
-            />
-          </div>
-          <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
-            <LocationsList
-              selectedDriveId={selectedDrive?.id}
-              drivesOptions={drives || []}
-              locationsOptions={locations || []}
-              refreshSite={refreshSite}
-            />
-          </div>
-        </div>
-      </div>
-    </main>
+      </main>
+    </Suspense>
   );
 }

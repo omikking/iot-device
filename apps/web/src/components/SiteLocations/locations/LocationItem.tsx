@@ -47,12 +47,14 @@ interface LocationComponentProps {
   location: Location;
   locationsOptions: Location[];
   inputRef: React.RefObject<HTMLInputElement>;
+  refreshSite: () => void;
 }
 
 export const LocationItem = ({
   location,
   locationsOptions,
   inputRef,
+  refreshSite,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -65,8 +67,8 @@ export const LocationItem = ({
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
-        id: '',
-        locationName: '',
+        id: location.id || '',
+        locationName: location.locationName || '',
       },
     });
 
@@ -77,6 +79,13 @@ export const LocationItem = ({
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+
+    if (!location.id) {
+      locationsOptions.filter(
+        (emptyLocation) => emptyLocation.id !== location.id,
+      );
+      refreshSite();
+    }
     locationForm.reset();
   };
 
@@ -107,6 +116,7 @@ export const LocationItem = ({
       }).then((result) => {
         if (result.data) {
           setIsEditing(false);
+          refreshSite();
         }
       });
     }
@@ -121,6 +131,7 @@ export const LocationItem = ({
       }).then((result) => {
         if (result.data) {
           setIsEditing(false);
+          refreshSite();
         }
       });
     }
@@ -138,7 +149,7 @@ export const LocationItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6  'border-2 border-transparent`}
+      className={'bg-main-white px-6 border-2 border-transparent'}
       key={location.id}
     >
       <div className="py-3">

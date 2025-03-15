@@ -8,7 +8,7 @@ import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Drive, Location } from '@/gql/graphql';
+import { Drive } from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { graphql } from '@/gql';
 
@@ -45,9 +45,8 @@ interface DriveComponentProps {
   drivesOptions: Drive[];
   selectedDriveId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetDrive: (name: string) => void;
-  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
+  handleSetDrive: (drive: Drive) => void;
+  refreshSite: () => void;
 }
 
 export const DriveItem = ({
@@ -55,11 +54,10 @@ export const DriveItem = ({
   drivesOptions,
   selectedDriveId,
   inputRef,
-  // setDrivesOptions,
-  setLocationsOptions,
   handleSetDrive,
+  refreshSite,
 }: DriveComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [, createDrive] = useMutation(createDriveMutation);
@@ -70,8 +68,8 @@ export const DriveItem = ({
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
-        id: '',
-        driveName: '',
+        id: drive.id || '',
+        driveName: drive.driveName || '',
       },
     });
 
@@ -82,6 +80,11 @@ export const DriveItem = ({
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+
+    if (!drive.id) {
+      drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
+      refreshSite();
+    }
     driveForm.reset();
   };
 
@@ -111,6 +114,7 @@ export const DriveItem = ({
         },
       }).then((result) => {
         if (result.data) {
+          drivesOptions.length === 1 && refreshSite();
           setIsEditing(false);
         }
       });
@@ -126,6 +130,7 @@ export const DriveItem = ({
       }).then((result) => {
         if (result.data) {
           setIsEditing(false);
+          // refreshSite();
         }
       });
     }
@@ -137,23 +142,21 @@ export const DriveItem = ({
     }).then((result) => {
       if (result.data) {
         setIsDeleteModalOpen(false);
+        // refreshSite();
       }
     });
     // @TODO Cannot delete drive with items in, need to fix in BE to clear it all. Will fail atm.
     // Double check later if this is needed.
-    setLocationsOptions([]);
+    // setLocationsOptions([]);
   };
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 cursor-pointer ${!isEditing && 'hover:ui-bg-main-white/50'} duration-100 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'}`}
       key={drive.id}
     >
-      <div
-        className="py-3"
-        onClick={() => !isEditing && handleSetDrive(drive.id)}
-      >
-        {!drive.driveName || isEditing ? (
+      <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
+        {isEditing ? (
           <AddSiteLocationItemForm
             inputRef={inputRef}
             form={driveForm}

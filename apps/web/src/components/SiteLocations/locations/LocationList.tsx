@@ -1,41 +1,50 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Location } from '@/gql/graphql';
 
-interface LocationsListComponentProps {
+interface LocationsListProps {
   selectedDriveId?: string;
   locationsOptions: Location[];
   drivesOptions: Drive[];
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
+  refreshSite: () => void;
 }
 
 export const LocationsList = ({
   selectedDriveId,
   locationsOptions,
   drivesOptions,
-  setLocationsOptions,
-}: LocationsListComponentProps) => {
+  refreshSite,
+}: LocationsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [locations, setLocations] = useState<Location[]>([]);
+
+  useEffect(() => {
+    locationsOptions.length > 0
+      ? setLocations(locationsOptions)
+      : setLocations([]);
+  }, [locationsOptions]);
+
+  // Add a new empty location
   const addLocation = () => {
-    locationsOptions.push({
+    const newLocation: Location = {
       id: '',
       locationName: '',
-      createdAt: undefined,
       driveId: selectedDriveId || '',
+      createdAt: undefined,
       updatedAt: undefined,
-    });
-    setLocationsOptions([...locationsOptions] as Location[]);
+    };
+    setLocations((prevLocations) => [...prevLocations, newLocation]);
   };
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [locationsOptions]);
+  }, [locations]);
 
   return (
     <>
@@ -45,19 +54,20 @@ export const LocationsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {locationsOptions?.length === 0 && (
+        {locations.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available locations
             </Text>
           </div>
         )}
-        {locationsOptions?.map((location) => (
+        {locations.map((location) => (
           <LocationItem
             key={location.id}
             location={location}
-            locationsOptions={locationsOptions}
+            locationsOptions={locations}
             inputRef={inputRef}
+            refreshSite={refreshSite}
           />
         ))}
       </div>
@@ -69,7 +79,7 @@ export const LocationsList = ({
             onClick={addLocation}
             disabled={
               drivesOptions.length === 0 ||
-              locationsOptions.some((location) => location.locationName === '')
+              locations.some((location) => location.locationName === '')
             }
           >
             <LucidePlus /> Add location

@@ -1,47 +1,53 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DriveItem } from './DriveItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { Drive, Level, Location } from '@/gql/graphql';
+import { Drive, Level } from '@/gql/graphql';
 
-interface DrivesListComponentProps {
+interface DrivesListProps {
   drivesOptions: Drive[];
   selectedDriveId?: string;
   selectedLevelId?: string;
   levelsOptions: Level[];
-  setDrivesOptions: React.Dispatch<React.SetStateAction<Drive[]>>;
-  setLocationsOptions: React.Dispatch<React.SetStateAction<Location[]>>;
   handleSetDrive: () => void;
+  refreshSite: () => void;
 }
+
 export const DrivesList = ({
   drivesOptions,
   selectedDriveId,
   selectedLevelId,
   levelsOptions,
-  setDrivesOptions,
-  setLocationsOptions,
   handleSetDrive,
-}: DrivesListComponentProps) => {
+  refreshSite,
+}: DrivesListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [drives, setDrives] = useState<Drive[]>(drivesOptions);
+
+  // Add a new empty drive
   const addDrive = () => {
-    drivesOptions.push({
+    const newDrive: Drive = {
       id: '',
       driveName: '',
       locations: [],
-      createdAt: undefined,
       levelId: selectedLevelId || '',
+      createdAt: undefined,
       updatedAt: undefined,
-    });
-    setDrivesOptions([...drivesOptions] as Drive[]);
+    };
+    setDrives((prevDrives) => [...prevDrives, newDrive]);
   };
+
+  useEffect(() => {
+    drivesOptions.length > 0 ? setDrives(drivesOptions) : setDrives([]);
+  }, [drivesOptions]);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [drivesOptions]);
+  }, [drives]);
 
   return (
     <>
@@ -51,23 +57,22 @@ export const DrivesList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {drivesOptions?.length === 0 && (
+        {drives.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available drives
             </Text>
           </div>
         )}
-        {drivesOptions?.map((drive) => (
+        {drives.map((drive) => (
           <DriveItem
             inputRef={inputRef}
             key={drive.id}
             drive={drive}
-            drivesOptions={drivesOptions}
+            drivesOptions={drives}
             selectedDriveId={selectedDriveId}
-            setDrivesOptions={setDrivesOptions}
-            setLocationsOptions={setLocationsOptions}
             handleSetDrive={handleSetDrive}
+            refreshSite={refreshSite}
           />
         ))}
       </div>
@@ -79,7 +84,7 @@ export const DrivesList = ({
             onClick={addDrive}
             disabled={
               levelsOptions.length === 0 ||
-              drivesOptions.some((drive) => drive.driveName === '')
+              drives.some((drive) => drive.driveName === '')
             }
           >
             <LucidePlus /> Add drive

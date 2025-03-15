@@ -1,16 +1,16 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Level } from '@/gql/graphql';
 
-interface LevelsListComponentProps {
+interface LevelsListProps {
   levelsOptions: Level[];
   selectedLevelId?: string;
   selectedSiteId?: string;
   handleSetLevel: () => void;
-  setLevelsOptions: React.Dispatch<React.SetStateAction<Level[]>>;
+  refreshSite: () => void;
 }
 
 export const LevelsList = ({
@@ -18,27 +18,34 @@ export const LevelsList = ({
   selectedLevelId,
   selectedSiteId,
   handleSetLevel,
-  setLevelsOptions,
-}: LevelsListComponentProps) => {
+  refreshSite,
+}: LevelsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [levels, setLevels] = useState<Level[]>(levelsOptions);
+
+  // Add a new empty level
   const addLevel = () => {
-    levelsOptions.push({
+    const newLevel: Level = {
       id: '',
       levelName: '',
       drives: [],
-      createdAt: undefined,
       siteId: selectedSiteId || '',
+      createdAt: undefined,
       updatedAt: undefined,
-    });
-    setLevelsOptions([...levelsOptions] as Level[]);
+    };
+    setLevels((prevLevels) => [...prevLevels, newLevel]);
   };
+
+  useEffect(() => {
+    levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+  }, [levelsOptions]);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [levelsOptions]);
+  }, [levels]);
 
   return (
     <>
@@ -48,21 +55,22 @@ export const LevelsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {levelsOptions?.length === 0 && (
+        {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available levels
             </Text>
           </div>
         )}
-        {levelsOptions?.map((level) => (
+        {levels.map((level) => (
           <LevelItem
             inputRef={inputRef}
             key={level.id}
             level={level}
             selectedLevelId={selectedLevelId}
-            levelsOptions={levelsOptions}
+            levelsOptions={levels}
             handleSetLevel={handleSetLevel}
+            refreshSite={refreshSite}
           />
         ))}
       </div>
@@ -72,7 +80,7 @@ export const LevelsList = ({
             size={'small'}
             variant={'primary'}
             onClick={addLevel}
-            disabled={levelsOptions.some((level) => level.levelName === '')}
+            disabled={levels.some((level) => level.levelName === '')}
           >
             <LucidePlus /> Add level
           </Button>

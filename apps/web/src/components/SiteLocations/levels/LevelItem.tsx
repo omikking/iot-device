@@ -45,7 +45,8 @@ interface LevelComponentProps {
   level: Level;
   levelsOptions: Level[];
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetLevel: (name: string) => void;
+  handleSetLevel: (level: Level) => void;
+  refreshSite: () => void;
 }
 
 export const LevelItem = ({
@@ -54,8 +55,10 @@ export const LevelItem = ({
   levelsOptions,
   inputRef,
   handleSetLevel,
+  refreshSite,
 }: LevelComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(!level.id);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [, createLevel] = useMutation(createLevelMutation);
@@ -66,8 +69,8 @@ export const LevelItem = ({
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
-        id: '',
-        levelName: '',
+        id: level.id || '',
+        levelName: level.levelName || '',
       },
     });
 
@@ -78,6 +81,11 @@ export const LevelItem = ({
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+
+    if (!level.id) {
+      levelsOptions.filter((emptyLevel) => emptyLevel.id !== level.id);
+      refreshSite();
+    }
     levelForm.reset();
   };
 
@@ -107,6 +115,7 @@ export const LevelItem = ({
         },
       }).then((result) => {
         if (result.data) {
+          levelsOptions.length === 1 && refreshSite();
           setIsEditing(false);
         }
       });
@@ -135,22 +144,15 @@ export const LevelItem = ({
         setIsDeleteModalOpen(false);
       }
     });
-    // @TODO Cannot delete level with items in, need to fix in BE to clear it all. Will fail atm.
-    // Double check later if this is needed.
-    // setDrivesOptions([]);
-    // setLocationsOptions([]);
   };
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
+      className={`bg-main-white px-6 cursor-pointer ${!isEditing && 'hover:ui-bg-main-white/50'} duration-100 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
       key={level.id}
     >
-      <div
-        className="py-3"
-        onClick={() => !isEditing && handleSetLevel(level.id)}
-      >
-        {!level.levelName || isEditing ? (
+      <div className="py-3" onClick={() => !isEditing && handleSetLevel(level)}>
+        {isEditing ? (
           <AddSiteLocationItemForm
             inputRef={inputRef}
             form={levelForm}

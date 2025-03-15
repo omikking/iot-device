@@ -20,7 +20,7 @@ import { LocationsList } from '@/components/SiteLocations/locations/LocationList
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { graphql } from '@/gql';
-import { Drive, Level, Location, Site } from '@/gql/graphql';
+import { Drive, Level, Site } from '@/gql/graphql';
 import { useQuery } from 'urql';
 
 const getCompanySitesNameQuery = graphql(`
@@ -65,10 +65,6 @@ export default function Page(): JSX.Element {
   const [selectedLevel, setSelectedLevel] = useState<Level | undefined>();
   const [selectedDrive, setSelectedDrive] = useState<Drive | undefined>();
 
-  const [levelsOptions, setLevelsOptions] = useState<Level[]>([]);
-  const [drivesOptions, setDrivesOptions] = useState<Drive[]>([]);
-  const [locationsOptions, setLocationsOptions] = useState<Location[]>([]);
-
   // Request all sites of company for dropdown
   const [sitesData] = useQuery({
     query: getCompanySitesNameQuery,
@@ -83,34 +79,17 @@ export default function Page(): JSX.Element {
   }));
 
   // Request the selected full site data (level, drive, location)
-  const [siteData] = useQuery({
+  const [siteData, refreshSiteQuery] = useQuery({
     query: getFullSiteLocationsQuery,
     variables: { id: selectedSite?.id || '' },
     pause: !selectedSite?.id,
+    requestPolicy: 'cache-and-network',
   });
   const site = (siteData.data?.site as Site) || [];
 
-  // Update the levels, drives and locations when an update is made
-  useEffect(() => {
-    if (site?.levels) {
-      setLevelsOptions(site.levels);
-    }
-
-    if (selectedLevel && site?.levels) {
-      const level = site.levels.find((level) => level.id === selectedLevel.id);
-      level?.drives && setDrivesOptions(level.drives);
-    }
-
-    if (selectedLevel && selectedDrive) {
-      const level = site?.levels?.find(
-        (level) => level.id === selectedLevel.id,
-      );
-      const drive = level?.drives?.find(
-        (drive) => drive.id === selectedDrive.id,
-      );
-      drive?.locations && setLocationsOptions(drive.locations);
-    }
-  }, [site]);
+  const refreshSite = () => {
+    refreshSiteQuery({ requestPolicy: 'network-only' });
+  };
 
   // Set site from url
   const searchParams = useSearchParams();
@@ -123,33 +102,28 @@ export default function Page(): JSX.Element {
     }
   }, [siteFromUrl]);
 
+  const drives = site?.levels?.find(
+    (level) => level.id === selectedLevel?.id,
+  )?.drives;
+
+  const locations = drives?.find(
+    (drive) => drive.id === selectedDrive?.id,
+  )?.locations;
+
   const handleSetSite = (siteId?: string) => {
     const site = sites.find((site) => site.id === siteId);
     setSelectedSite(site);
     setSelectedLevel(undefined);
     setSelectedDrive(undefined);
-    setDrivesOptions([]);
-    setLocationsOptions([]);
   };
 
-  const handleSetLevel = (levelId?: string) => {
-    const level = levelsOptions.find((level) => level.id === levelId);
+  const handleSetLevel = (level?: Level) => {
     setSelectedLevel(level);
     setSelectedDrive(undefined);
-    setLocationsOptions([]);
-
-    const drives =
-      levelsOptions?.find((level) => level.id === levelId)?.drives || [];
-    setDrivesOptions(drives);
   };
 
-  const handleSetDrive = (driveId?: string) => {
-    const drive = drivesOptions.find((drive) => drive.id === driveId);
+  const handleSetDrive = (drive?: Drive) => {
     setSelectedDrive(drive);
-
-    const locations =
-      drivesOptions?.find((drive) => drive.id === driveId)?.locations || [];
-    setLocationsOptions(locations);
   };
 
   return (
@@ -182,7 +156,7 @@ export default function Page(): JSX.Element {
           <Dropdown
             id="site"
             placeholder="Select site"
-            selectedId={selectedSite?.id}
+            selectedId={site?.id}
             options={sitesOptions}
             onSelect={handleSetSite}
             className="w-96"
@@ -222,33 +196,32 @@ export default function Page(): JSX.Element {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="flex w-fll max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
+        <div className="flex w-full max-w-[1320px] h-[740px] justify-around items-center bg-neutral-1 border-2">
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LevelsList
               selectedLevelId={selectedLevel?.id}
-              selectedSiteId={selectedSite?.id}
-              levelsOptions={levelsOptions}
+              selectedSiteId={site?.id}
+              levelsOptions={site.levels || []}
               handleSetLevel={handleSetLevel}
-              setLevelsOptions={setLevelsOptions}
+              refreshSite={refreshSite}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center border-x">
             <DrivesList
               selectedDriveId={selectedDrive?.id}
               selectedLevelId={selectedLevel?.id}
-              drivesOptions={drivesOptions}
-              levelsOptions={levelsOptions}
-              setDrivesOptions={setDrivesOptions}
-              setLocationsOptions={setLocationsOptions}
+              drivesOptions={drives || []}
+              levelsOptions={site.levels || []}
               handleSetDrive={handleSetDrive}
+              refreshSite={refreshSite}
             />
           </div>
           <div className="flex flex-col min-w-72 w-full h-full justify-between items-center">
             <LocationsList
               selectedDriveId={selectedDrive?.id}
-              drivesOptions={drivesOptions}
-              locationsOptions={locationsOptions}
-              setLocationsOptions={setLocationsOptions}
+              drivesOptions={drives || []}
+              locationsOptions={locations || []}
+              refreshSite={refreshSite}
             />
           </div>
         </div>

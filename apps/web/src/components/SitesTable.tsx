@@ -71,13 +71,15 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = (siteId: string) => {
-    deleteSite({
-      id: siteId,
-    }).then((result) => {
-      // @TODO Add component later for handling error
-      console.log(result);
-    });
+  const handleDelete = () => {
+    if (siteToDelete) {
+      deleteSite({
+        id: siteToDelete.id,
+      }).then((result) => {
+        // @TODO Add component later for handling error
+        console.log(result);
+      });
+    }
   };
 
   const openEditModal = (siteId: string) => {
@@ -156,10 +158,9 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
           deleteIcon="Site"
           modalTitle="Delete site"
           isOpen={isDeleteSiteModalOpen}
-          itemToDelete={siteToDelete.id}
           onOpenChange={closeDeleteModal}
-          onDelete={(event, siteId) => {
-            handleDelete(siteId);
+          onDelete={() => {
+            handleDelete();
             closeDeleteModal();
           }}
         >

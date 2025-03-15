@@ -40,12 +40,11 @@ export const TechniciansTable = ({
     setTechnicianToDelete(undefined);
   };
 
-  const handleDelete = (index: string) => {
+  const handleDelete = () => {
     // setTechnicians((currentTechnicians) =>
     //   currentTechnicians.filter((_, i) => i !== index),
     // );
     setTechnicians((currentTechnicians) => currentTechnicians);
-    console.log(index);
   };
 
   const columns: ColumnDef<TechniciansSchema>[] = [
@@ -117,10 +116,9 @@ export const TechniciansTable = ({
         deleteIcon="User"
         modalTitle="Delete technician"
         isOpen={isDeleteTechnicianModalOpen}
-        itemToDelete={technicianToDelete || '1'}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
+        onDelete={() => {
+          handleDelete();
           closeDeleteModal();
         }}
       >

@@ -95,7 +95,7 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites, setSites] = useState(sitesMock);
+  const [sites] = useState(sitesMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
@@ -128,9 +128,9 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = (index: string) => {
-    setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  };
+  // const handleDelete = (index: string) => {
+  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
+  // };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -220,7 +220,6 @@ export default function Page(): JSX.Element {
       </Button>
 
       <DeleteModalConfirmation
-        itemToDelete={'1'}
         deleteButtonText="Confirm deletion"
         modalTitle="Delete Site"
         isOpen={isDeleteModalOpen}
@@ -263,11 +262,9 @@ export default function Page(): JSX.Element {
           deleteIcon="Site"
           modalTitle="Delete Site"
           isOpen={isDeleteSiteModalOpen}
-          itemToDelete={siteToDelete || '1'}
           onOpenChange={closeDeleteModal}
-          onDelete={(_, index) => {
-            console.log('Deleting site at index:', index);
-            handleDelete(index);
+          onDelete={() => {
+            // handleDelete();
             closeDeleteModal();
           }}
         >

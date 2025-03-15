@@ -70,10 +70,9 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (index: string) => {
+  const handleDelete = () => {
     // setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
     setUsers((currentUsers) => currentUsers);
-    console.log(index);
   };
 
   const openEditModal = (index: string) => {
@@ -144,10 +143,9 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         deleteIcon="User"
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
-        itemToDelete={userToDelete || '1'}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
+        onDelete={() => {
+          handleDelete();
           closeDeleteModal();
         }}
       >

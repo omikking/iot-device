@@ -195,6 +195,7 @@ export abstract class IQuery {
     company?: Company;
     drives: Drive[];
     drive?: Drive;
+    hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;
     locations: Location[];

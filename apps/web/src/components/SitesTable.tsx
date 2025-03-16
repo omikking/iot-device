@@ -103,8 +103,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
-                pathname: '/sitelocations',
-                query: { site: `${row.original.id}` },
+                pathname: `/sitelocations/${row.original.id}`,
               }}
             >
               <LucideMoveRight />

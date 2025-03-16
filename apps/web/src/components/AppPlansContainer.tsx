@@ -15,6 +15,12 @@ import {
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
 
+// @TODO move to utils?
+export const formattedDate = (timestamp: Date) => {
+  const date = new Date(timestamp);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+};
+
 interface AppPlansContainerProps {
   appPlan: Plan;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
@@ -26,17 +32,33 @@ export const AppPlansContainer = ({
   isAdmin,
   companyForm,
 }: AppPlansContainerProps) => {
-  // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const { applicationName, planLevel: initialPlanLevel } = appPlan;
+  const {
+    applicationName,
+    planLevel: initialPlanLevel,
+    expiringDate,
+  } = appPlan;
 
   const [activePlan, setActivePlan] = useState<PlanLevel | undefined>(
     initialPlanLevel as PlanLevel,
   );
 
-  const handlePlanChange = (plan?: PlanLevel) => {
-    setActivePlan(plan);
+  const [date, setDate] = useState<Date | undefined>(expiringDate);
+
+  const handleDateChange = (date?: Date) => {
+    // @TODO is this how we should do to update the date etc?
+    const currentPlans = companyForm.getValues('plans') || [];
+
+    const updatedPlans = currentPlans.map((plan) => {
+      if (plan.applicationName === applicationName) {
+        return { ...plan, expiringDate: date?.getTime() };
+      }
+      return plan;
+    });
+
+    companyForm.setValue('plans', updatedPlans);
+    setDate(date);
   };
 
   return (
@@ -71,7 +93,7 @@ export const AppPlansContainer = ({
         isAdmin={isAdmin}
         companyForm={companyForm}
         applicationName={applicationName}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="SILVER"
@@ -79,7 +101,7 @@ export const AppPlansContainer = ({
         isAdmin={isAdmin}
         companyForm={companyForm}
         applicationName={applicationName}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
       <AppPlan
         plan="BRONZE"
@@ -87,24 +109,27 @@ export const AppPlansContainer = ({
         isAdmin={isAdmin}
         companyForm={companyForm}
         applicationName={applicationName}
-        onPlanChange={handlePlanChange}
+        onPlanChange={setActivePlan}
       />
 
-      {/* @TODO Updating calendar not working atm. Fix it. */}
       {/* Calendar */}
       {activePlan && (
         <div className="py-5 px-6 border-b border-neutral-2">
-          {user === 'Client' && (
+          {user === 'Client' && date && (
             <Badge variant="primary">
               <LucideCalendar size="14" />
-              Your plan expires 2025-08-10
+              Your plan expires {formattedDate(date)}
             </Badge>
           )}
 
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              <SingleDateCalendar className="mt-2" />
+              <SingleDateCalendar
+                className="mt-2"
+                selectedDate={date}
+                onDateChange={handleDateChange}
+              />
             </>
           )}
         </div>

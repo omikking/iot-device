@@ -636,7 +636,10 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar className="w-96" />
+                      <SingleDateCalendar
+                        className="w-96"
+                        onDateChange={() => console.log('date change')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -651,7 +654,11 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar disabled className="w-96" />
+                      <SingleDateCalendar
+                        disabled
+                        className="w-96"
+                        onDateChange={() => console.log('date change')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

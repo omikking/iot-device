@@ -43,10 +43,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Step to clear the Next.js cache 
-      - name: Clear Next.js cache
-        run: rm -rf .next
-
       - name: Generate Prisma Client in API
         run: pnpm --filter api prisma:generate
 

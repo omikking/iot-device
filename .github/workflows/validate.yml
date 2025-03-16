@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Step to clear the Next.js cache
+      # Step to clear the Next.js cache 
       - name: Clear Next.js cache
         run: rm -rf .next
 

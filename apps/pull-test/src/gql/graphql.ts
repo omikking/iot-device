@@ -553,6 +553,7 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
+  hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
   location: Location;
@@ -599,6 +600,15 @@ export type QueryCompanyArgs = {
  */
 export type QueryDriveArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryHazardsArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 

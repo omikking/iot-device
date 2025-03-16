@@ -1,147 +1,192 @@
 'use client';
-import React, { useState } from 'react';
-import { SiteLocationsForm } from '../SiteLocationsForm';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { IDriveMock, ILocationMock } from '@/app/(routes)/sitelocations/page';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { Drive } from '@/gql/graphql';
+import { useMutation } from 'urql';
+import { graphql } from '@/gql';
+
+const createDriveMutation = graphql(`
+  mutation createDrive($createDriveInput: CreateDriveInput!) {
+    createDrive(createDriveInput: $createDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const updateDriveMutation = graphql(`
+  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {
+    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const deleteDriveMutation = graphql(`
+  mutation removeDrive($id: String!) {
+    removeDrive(id: $id) {
+      id
+    }
+  }
+`);
+
 interface DriveComponentProps {
-  drive: IDriveMock;
-  drivesOptionsMock: IDriveMock[];
-  index: number;
-  selectedDrive?: string;
+  drive: Drive;
+  drivesOptions: Drive[];
+  selectedDriveId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetDrive: (name: string) => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
+  handleSetDrive: (drive: Drive) => void;
+  refreshSite: () => void;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const DriveItem = ({
   drive,
-  drivesOptionsMock,
-  selectedDrive,
+  drivesOptions,
+  selectedDriveId,
   inputRef,
-  index,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
   handleSetDrive,
+  refreshSite,
+  setSelectedDrive,
 }: DriveComponentProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [, createDrive] = useMutation(createDriveMutation);
+  const [, updateDrive] = useMutation(updateDriveMutation);
+  const [, deleteDrive] = useMutation(deleteDriveMutation);
 
   const driveForm: UseFormReturn<SiteLocationsValue> =
     useForm<SiteLocationsValue>({
       resolver: zodResolver(siteLocationsSchema),
       defaultValues: {
-        id: '',
-        name: '',
+        id: drive.id || '',
+        driveName: drive.driveName || '',
       },
     });
 
   const handleEditDrive = () => {
     setIsEditing(true);
-
-    driveForm.setValue('name', drive.name);
+    driveForm.setValue('driveName', drive.driveName);
   };
 
-  const handleCancelDrive = (index: number) => {
-    const newDrives = [...drivesOptionsMock];
-    newDrives[index].locations = [];
-    newDrives.splice(index, 1);
-    setDrivesOptionsMock(newDrives);
-
-    setLocationsOptionsMock([]);
+  const handleCancelEdit = () => {
+    if (!drive.id) {
+      drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
+      refreshSite();
+    }
+    driveForm.reset();
+    setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
+  const handleDriveSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
+    // @TODO fix these alerts with proper UI
+    if (!data.driveName) {
+      alert('Please enter a drive name.');
+      return;
+    }
 
-    const formData = new FormData(e.currentTarget);
-    const newDriveName = formData.get('drive') as string;
-
-    const isDuplicate = drivesOptionsMock.some(
-      (drive) => drive.name === newDriveName,
+    // Checks that no other drive has the same name
+    const newDriveName = data.driveName;
+    const isDuplicate = drivesOptions.some(
+      (drive) => drive.driveName === newDriveName,
     );
-
     if (isDuplicate) {
       alert('This drive already exists. Please enter a different drive.');
       return;
     }
 
-    const newDrives = [...drivesOptionsMock];
-    newDrives[index] = {
-      ...newDrives[index],
-      name: formData.get('drive') as string,
-      locations: [],
-    };
-    setDrivesOptionsMock(newDrives);
-    setIsEditing(false);
+    // To create a new drive
+    if (!drive.id && newDriveName) {
+      createDrive({
+        createDriveInput: {
+          driveName: newDriveName,
+          levelId: drive.levelId || '',
+        },
+      }).then((result) => {
+        if (result.data) {
+          drivesOptions.length === 1 && refreshSite();
+          setTimeout(() => setIsEditing(false), 30);
+        }
+      });
+    }
+
+    // To edit a drive
+    if (drive.id && newDriveName) {
+      updateDrive({
+        id: drive.id,
+        updateDriveInput: {
+          driveName: newDriveName,
+        },
+      }).then((result) => {
+        if (result.data) {
+          setTimeout(() => setIsEditing(false), 30);
+        }
+      });
+    }
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    driveForm.reset();
+  const handleDeleteDrive = () => {
+    deleteDrive({
+      id: drive.id,
+    }).then((result) => {
+      if (result.data) {
+        setSelectedDrive(undefined);
+        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
+      }
+    });
   };
 
   return (
     <div
-      className={`bg-main-white px-6 ${selectedDrive === drive.name ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'}`}
-      key={index}
+      className={`bg-main-white px-6 cursor-pointer ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
+      key={drive.id}
     >
-      <div
-        className="py-3"
-        onClick={() => !isEditing && handleSetDrive(drive.name)}
-      >
-        {!drive.name || isEditing ? (
-          <SiteLocationsForm
-            form={driveForm}
-            onSubmit={handleEditSubmit}
-            onCancel={handleCancelEdit}
-            placeholder="New drive..."
-            name="drive"
-            index={index}
+      <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
+        {!drive.id || isEditing ? (
+          <AddSiteLocationItemForm
             inputRef={inputRef}
+            form={driveForm}
+            type="drive"
+            onSubmit={handleDriveSubmit}
+            onCancel={handleCancelEdit}
           />
         ) : (
           <div
             className="flex flex-row w-full justify-between items-center gap-2"
-            key={index}
+            key={drive.id}
           >
-            <Text className="w-full" variant="small" color="foreground">
-              {drive.name}
+            <Text variant="medium" color="foreground">
+              {drive.driveName}
             </Text>
 
             <DeleteEditDropdown
-              // itemSelected={index}
-              itemSelected={'1'}
+              itemSelected={drive.id}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
             />
             <DeleteModalConfirmation
               modalTitle="Delete drive"
-              deleteButtonText="Confirm deletion"
+              deleteButtonText="Delete drive"
               deleteIcon="Site"
-              // itemToDelete={index}
-              itemToDelete={'1'}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
-              onDelete={() => {
-                handleCancelDrive(index), setIsDeleteModalOpen(false);
-              }}
+              onDelete={handleDeleteDrive}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${drive.name} `}
+                  {` ${drive.driveName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

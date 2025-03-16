@@ -1,51 +1,62 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  SetStateAction,
+  Dispatch,
+} from 'react';
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
-import {
-  IDriveMock,
-  ILevelMock,
-  ILocationMock,
-} from '@/app/(routes)/sitelocations/page';
 import { LucidePlus } from 'lucide-react';
+import { Drive, Level } from '@/gql/graphql';
 
-// @TODO have to fix why im getting warning
-interface LevelsListComponentProps {
-  levelsOptionsMock: ILevelMock[];
-  selectedLevel?: string;
-  selectedSite?: string;
+interface LevelsListProps {
+  levelsOptions: Level[];
+  selectedLevelId?: string;
+  selectedSiteId?: string;
   handleSetLevel: () => void;
-  setLevelsOptionsMock: React.Dispatch<React.SetStateAction<ILevelMock[]>>;
-  setDrivesOptionsMock: React.Dispatch<React.SetStateAction<IDriveMock[]>>;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
+  refreshSite: () => void;
+  setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const LevelsList = ({
-  levelsOptionsMock,
-  selectedLevel,
-  selectedSite,
+  levelsOptions,
+  selectedLevelId,
+  selectedSiteId,
   handleSetLevel,
-  setLevelsOptionsMock,
-  setDrivesOptionsMock,
-  setLocationsOptionsMock,
-}: LevelsListComponentProps) => {
+  refreshSite,
+  setSelectedLevel,
+  setSelectedDrive,
+}: LevelsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [levels, setLevels] = useState<Level[]>(levelsOptions);
+
+  // Add a new empty level
   const addLevel = () => {
-    levelsOptionsMock.push({
-      id: `${levelsOptionsMock.length + 1}`,
-      name: '',
+    const newLevel: Level = {
+      id: '',
+      levelName: '',
       drives: [],
-    });
-    setLevelsOptionsMock([...levelsOptionsMock] as ILevelMock[]);
+      siteId: selectedSiteId || '',
+      createdAt: undefined,
+      updatedAt: undefined,
+    };
+    setLevels((prevLevels) => [...prevLevels, newLevel]);
   };
+
+  useEffect(() => {
+    levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+  }, [levelsOptions]);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [levelsOptionsMock]);
+  }, [levels]);
+
   return (
     <>
       <div className="flex flex-row w-full p-6">
@@ -54,35 +65,34 @@ export const LevelsList = ({
         </Headline>
       </div>
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
-        {levelsOptionsMock?.length === 0 && (
+        {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
               Select site to view available levels
             </Text>
           </div>
         )}
-        {levelsOptionsMock?.map((level, index) => (
+        {levels.map((level) => (
           <LevelItem
-            key={index}
-            selectedLevel={selectedLevel}
-            level={level}
-            levelsOptionsMock={levelsOptionsMock}
-            index={index}
             inputRef={inputRef}
+            key={level.id}
+            level={level}
+            selectedLevelId={selectedLevelId}
+            levelsOptions={levels}
             handleSetLevel={handleSetLevel}
-            setLevelsOptionsMock={setLevelsOptionsMock}
-            setDrivesOptionsMock={setDrivesOptionsMock}
-            setLocationsOptionsMock={setLocationsOptionsMock}
+            refreshSite={refreshSite}
+            setSelectedDrive={setSelectedDrive}
+            setSelectedLevel={setSelectedLevel}
           />
         ))}
       </div>
       <div className="flex justify-end w-full p-3">
-        {selectedSite ? (
+        {selectedSiteId ? (
           <Button
             size={'small'}
             variant={'primary'}
-            onClick={() => addLevel()}
-            disabled={levelsOptionsMock.some((level) => level.name === '')}
+            onClick={addLevel}
+            disabled={levels.some((level) => level.levelName === '')}
           >
             <LucidePlus /> Add level
           </Button>

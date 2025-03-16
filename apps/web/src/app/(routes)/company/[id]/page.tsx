@@ -72,7 +72,6 @@ export default function Page({
           deleteButtonText="Delete company"
           modalTitle="Delete company"
           modalText="Confirm inactivation"
-          itemToDelete={'1'}
           isOpen={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
           onDelete={() => {

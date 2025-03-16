@@ -14,7 +14,7 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createSiteFormSchema,
@@ -109,7 +109,9 @@ export const AddOrEditSiteModal = ({
     }, 1700);
   };
 
-  const onSubmit = (data: CreateSiteFormValues | UpdateSiteFormValues) => {
+  const onSubmit: SubmitHandler<CreateSiteFormValues | UpdateSiteFormValues> = (
+    data,
+  ) => {
     setIsLoading(true);
 
     if (site) {

@@ -21,11 +21,7 @@ interface DeleteModalConfirmationProps {
   modalText?: string;
   deleteButtonText?: string;
   children: React.ReactNode;
-  itemToDelete: string;
-  onDelete: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    itemToDelete: string,
-  ) => void;
+  onDelete: () => void;
   isOpen?: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -36,7 +32,6 @@ export const DeleteModalConfirmation = ({
   deleteButtonText,
   children,
   modalText,
-  itemToDelete,
   onDelete,
   isOpen,
   onOpenChange,
@@ -70,13 +65,7 @@ export const DeleteModalConfirmation = ({
           {children}
         </div>
         <ModalFooter className="ui-px-10 ui-py-6">
-          <Button
-            variant="destructive"
-            size={'large'}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              onDelete(e, itemToDelete), onOpenChange(false);
-            }}
-          >
+          <Button variant="destructive" size={'large'} onClick={onDelete}>
             <LucideTrash2 />
             {deleteButtonText || 'Confirm deletion'}
           </Button>

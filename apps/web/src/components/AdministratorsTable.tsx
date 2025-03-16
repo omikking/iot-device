@@ -45,11 +45,7 @@ export const AdministratorsTable = ({
     setAdministratorToDelete(undefined);
   };
 
-  const handleDelete = (index: string) => {
-    // setAdministrators((currentAdministrators) =>
-    //   currentAdministrators.filter((_, i) => i !== index),
-    // );
-    console.log(index);
+  const handleDelete = () => {
     setAdministrators(administrators);
   };
 
@@ -124,10 +120,9 @@ export const AdministratorsTable = ({
         deleteIcon="User"
         modalTitle="Delete administrator"
         isOpen={isDeleteAdministratorModalOpen}
-        itemToDelete={administratorToDelete || '0'}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
+        onDelete={() => {
+          handleDelete();
           closeDeleteModal();
         }}
       >

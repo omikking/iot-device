@@ -133,6 +133,7 @@ export const CompanyForm = ({
     console.log('submit');
     console.log(data);
     console.log(companyForm.getValues());
+    // @TODO fix, not working currently. Does updating a plan update the companyForm data or is it missing?
 
     if (company) {
       updateCompany({
@@ -224,7 +225,7 @@ export const CompanyForm = ({
                     applicationName: planType.applicationName,
                     planLevel: '',
                     companyId: company?.id || '',
-                    expiringDate: '',
+                    expiringDate: null,
                   };
 
                   return (

@@ -30,7 +30,11 @@ type IHazardProps = {
   userId: string;
 };
 
-export const BoltCommentBadge = ({ fullBoltData }: IHazardProps) => {
+export const BoltCommentBadge = ({
+  image,
+  comment,
+  isHazard,
+}: IHazardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { image, comment, isHazard } = fullBoltData;
   return (

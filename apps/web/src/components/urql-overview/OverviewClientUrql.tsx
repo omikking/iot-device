@@ -39,7 +39,7 @@ type IPlan = {
   companyId: string;
   applicationName: string;
   planLevel: string;
-  expiringDate: string;
+  expiringDate: number;
 };
 
 export type ICompany = {

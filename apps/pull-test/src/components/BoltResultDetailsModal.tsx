@@ -62,13 +62,8 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const {
-    image,
-    isHazard,
-    peakLoad,
-    peakDisplacement,
-    // author //  Author doesnt exist shall we keep it?
-  } = (fullBoltData as IHazard) || {};
+  const { image, isHazard, peakLoad, peakDisplacement } =
+    (fullBoltData as IHazard) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 
@@ -152,11 +147,6 @@ export const BoltResultDetailsModal = ({
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
-                {/* {author && (
-                  <Text variant="small" color="foreground">
-                    Author: {author}
-                  </Text>
-                )} */}
               </div>
             )}
           </div>

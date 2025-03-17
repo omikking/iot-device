@@ -25,7 +25,6 @@ import { useLocationDetails } from './urql-reportedhazards/LocationFetchUrql';
 interface HazardCardProps {
   dateTitle: Date;
   isHazard?: boolean;
-  author?: string;
   boltDescription?: string;
   boltInfoItems: {
     title: string;

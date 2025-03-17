@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
-type IHazardProps = {
+type IHazard = {
   abortReason?: string;
   boltNumber: number;
   boltType: string;
@@ -28,6 +28,57 @@ type IHazardProps = {
   siteId: string;
   updatedAt: Date;
   userId: string;
+};
+
+const generateBoltSpecifications = (
+  boltData: IHazard,
+  names: {
+    siteName?: string;
+    levelName?: string;
+    driveName?: string;
+    locationName?: string;
+  },
+) => {
+  return [
+    {
+      title: 'Site',
+      text: names.siteName || 'N/A',
+    },
+    {
+      title: 'Bolt',
+      text: boltData.boltNumber?.toString() || 'N/A',
+    },
+    {
+      title: 'Bolt type',
+      text: boltData.boltType || 'N/A',
+    },
+    {
+      title: 'Level',
+      text: names.levelName || 'N/A',
+    },
+    {
+      title: 'Drive',
+      text: names.driveName || 'N/A',
+    },
+    {
+      title: 'Location',
+      text: names.locationName || 'N/A',
+    },
+    {
+      title: 'Position in ring',
+      text: boltData.positionInRing.replaceAll('_', '-') || 'N/A',
+    },
+    {
+      title: 'Result',
+      text: capitalizeFirstLetter(boltData.result) || 'N/A',
+    },
+    {
+      title: 'Abort Reason',
+      text:
+        capitalizeFirstLetter(boltData.abortReason).replaceAll('_', ' ') ||
+        'N/A',
+    },
+  ];
 };
 
 export const BoltCommentBadge = ({
@@ -50,7 +101,7 @@ export const BoltCommentBadge = ({
   siteId,
   updatedAt,
   userId,
-}: IHazardProps) => {
+}: IHazard) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fullBoltData = {
     abortReason,
@@ -98,6 +149,7 @@ export const BoltCommentBadge = ({
       <BoltResultDetailsModal
         modalTitle={`Bolt ${boltNumber}`}
         fullBoltData={fullBoltData}
+        boltInfoItems={generateBoltSpecifications(fullBoltData, {})}
         onClose={() => setIsModalOpen(false)}
       />
     </Modal>

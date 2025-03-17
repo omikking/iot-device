@@ -37,7 +37,27 @@ export const BoltCommentBadge = ({
   boltNumber,
 }: IHazardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const fullBoltData = { image, comment, isHazard };
+  const fullBoltData = {
+    image,
+    comment,
+    isHazard,
+    boltNumber,
+    id,
+    userId,
+    siteId,
+    levelId,
+    locationId,
+    driveId,
+    positionInRing,
+    boltType,
+    result,
+    peakDisplacement,
+    peakLoad,
+    createdAt,
+    updatedAt,
+    hazardCompletedDate,
+    abortReason,
+  };
 
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>

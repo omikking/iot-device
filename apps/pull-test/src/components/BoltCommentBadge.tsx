@@ -7,12 +7,30 @@ import {
   LucideMessageSquareWarning,
 } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-import { BoltResultSchema } from '@/app/mock/mock';
-interface BoltCommentBadgeProps {
-  fullBoltData: BoltResultSchema;
-}
 
-export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
+type IHazardProps = {
+  abortReason?: string;
+  boltNumber: number;
+  boltType: string;
+  comment?: string;
+  createdAt: Date;
+  driveId: string;
+  hazardCompletedDate: Date[];
+  id: string;
+  image?: string;
+  isHazard: boolean;
+  levelId: string;
+  locationId: string;
+  peakDisplacement: number[];
+  peakLoad: number[];
+  positionInRing: string;
+  result: string;
+  siteId: string;
+  updatedAt: Date;
+  userId: string;
+};
+
+export const BoltCommentBadge = ({ fullBoltData }: IHazardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { image, comment, isHazard } = fullBoltData;
   return (

@@ -30,6 +30,11 @@ type IHazard = {
   userId: string;
 };
 
+const capitalizeFirstLetter = (text: string | null | undefined): string => {
+  if (!text) return 'N/A';
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
 const generateBoltSpecifications = (
   boltData: IHazard,
   names: {

@@ -34,8 +34,10 @@ export const BoltCommentBadge = ({
   image,
   comment,
   isHazard,
+  boltNumber,
 }: IHazardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const fullBoltData = { image, comment, isHazard };
 
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -59,7 +61,7 @@ export const BoltCommentBadge = ({
       )}
 
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${fullBoltData.boltNumber}`}
+        modalTitle={`Bolt ${boltNumber}`}
         fullBoltData={fullBoltData}
         onClose={() => setIsModalOpen(false)}
       />

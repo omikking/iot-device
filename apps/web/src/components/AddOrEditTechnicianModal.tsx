@@ -23,6 +23,7 @@ import {
 } from '@gsp/ui';
 import {
   TechnicianFormValues,
+  TechnicianFormValuesWithId,
   technicianFormSchema,
 } from './schemas/TechnicianFormSchema';
 import { useForm } from 'react-hook-form';
@@ -30,16 +31,20 @@ import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
+import { useMutation } from 'urql';
+import { editTechnician } from './urql-technicians/TechnicianClientUrql';
 
 interface AddOrEditTechnicianModalProps {
   onOpenChange: (open: boolean) => void;
-  technician?: TechnicianFormValues;
+  technician?: TechnicianFormValuesWithId;
 }
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
   technician,
 }: AddOrEditTechnicianModalProps) => {
+  const [, handleEditTechnician] = useMutation(editTechnician);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -47,38 +52,54 @@ export const AddOrEditTechnicianModal = ({
     resolver: zodResolver(technicianFormSchema),
     defaultValues: {
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      isGlobal: false,
+      isGlobalVisibility: 'false',
     },
   });
 
   const resetFormValues = () => {
     form.reset({
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      isGlobal: false,
+      isGlobalVisibility: 'false',
     });
   };
 
   const onSubmit = async (data: TechnicianFormValues) => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Technician added:', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
+    try {
+      const updatedFormData = {
+        ...data,
+        isGlobalVisibility: JSON.parse(data.isGlobalVisibility.toLowerCase()),
+      };
+      if (technician) {
+        const result = await handleEditTechnician({
+          id: technician.id,
+          updateUserInput: updatedFormData,
+        });
+        console.log('result:', result);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setIsSuccessful(true);
+        setIsLoading(false);
+        setTimeout(() => {
+          onOpenChange(false);
+        }, 1500);
 
-    setTimeout(() => {
-      onOpenChange(false);
-    }, 1500);
-    setTimeout(() => {
-      setIsSuccessful(false);
-      resetFormValues();
-    }, 1700);
+        setTimeout(() => {
+          setIsSuccessful(false);
+          resetFormValues();
+        }, 1700);
+      } else {
+        console.error('Technician not found.');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setIsLoading(false);
+    }
   };
 
   const handleModalClose = () => {
@@ -130,7 +151,7 @@ export const AddOrEditTechnicianModal = ({
                 />
                 <FormField
                   control={form.control}
-                  name="company"
+                  name="workPlace"
                   disabled={isSuccessful}
                   render={({ field }) => {
                     return (
@@ -217,7 +238,7 @@ export const AddOrEditTechnicianModal = ({
 
                 <FormField
                   control={form.control}
-                  name="isGlobal"
+                  name="isGlobalVisibility"
                   render={({ field }) => (
                     <FormItem className="pt-4">
                       <FormControl>

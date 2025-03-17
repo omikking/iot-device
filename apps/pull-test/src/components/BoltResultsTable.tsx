@@ -1,15 +1,36 @@
 'use client';
 import type { ColumnDef } from '@gsp/ui';
-import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
 
 interface BoltResultsTableProps {
-  boltResults?: BoltResultSchema[];
+  boltResults?: IBoltResultSchema[];
   site?: string;
 }
+
+type IBoltResultSchema = {
+  abortReason?: string;
+  boltNumber: number;
+  boltType: string;
+  comment?: string;
+  createdAt: Date;
+  driveId: string;
+  hazardCompletedDate: Date[];
+  id: string;
+  image?: string;
+  isHazard: boolean;
+  levelId: string;
+  locationId: string;
+  peakDisplacement: number[];
+  peakLoad: number[];
+  positionInRing: string;
+  result: string;
+  siteId: string;
+  updatedAt: Date;
+  userId: string;
+};
 
 const getBadge = (
   result: 'Pass' | 'Fail' | 'Abort',
@@ -31,7 +52,7 @@ export const BoltResultsTable = ({
   boltResults,
   site,
 }: BoltResultsTableProps) => {
-  const columns: ColumnDef<BoltResultSchema>[] = [
+  const columns: ColumnDef<IBoltResultSchema>[] = [
     {
       accessorKey: 'boltNumber',
       meta: { headerClassName: 'w-36' },

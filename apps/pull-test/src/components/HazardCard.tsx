@@ -30,10 +30,10 @@ interface HazardCardProps {
     title: string;
     text: string;
   }[];
-  fullBoltData?: IHazard;
+  fullBoltData?: IBoltResultSchema;
 }
 
-type IHazard = {
+type IBoltResultSchema = {
   abortReason?: string;
   boltNumber: number;
   boltType: string;

@@ -17,7 +17,7 @@ import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
-type IHazard = {
+type IBoltResultSchema = {
   abortReason?: string;
   boltNumber: number;
   boltType: string;
@@ -41,7 +41,7 @@ type IHazard = {
 
 type BoltResultDetailsModalProps = {
   modalTitle: string;
-  fullBoltData?: IHazard;
+  fullBoltData?: IBoltResultSchema;
   onClose?: () => void;
   isHazardCompletable?: boolean;
   boltInfoItems: {
@@ -63,7 +63,7 @@ export const BoltResultDetailsModal = ({
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const { image, isHazard, peakLoad, peakDisplacement } =
-    (fullBoltData as IHazard) || {};
+    (fullBoltData as IBoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 

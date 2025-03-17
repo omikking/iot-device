@@ -8,7 +8,11 @@ import {
 } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
-type IHazard = {
+type BoltCommentBadgeProps = {
+  fullBoltData: IBoltResultSchema;
+};
+
+type IBoltResultSchema = {
   abortReason?: string;
   boltNumber: number;
   boltType: string;
@@ -36,7 +40,7 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
 };
 
 const generateBoltSpecifications = (
-  boltData: IHazard,
+  boltData: IBoltResultSchema,
   names: {
     siteName?: string;
     levelName?: string;
@@ -86,49 +90,9 @@ const generateBoltSpecifications = (
   ];
 };
 
-export const BoltCommentBadge = ({
-  abortReason,
-  boltNumber,
-  boltType,
-  comment,
-  createdAt,
-  driveId,
-  hazardCompletedDate,
-  id,
-  image,
-  isHazard,
-  levelId,
-  locationId,
-  peakDisplacement,
-  peakLoad,
-  positionInRing,
-  result,
-  siteId,
-  updatedAt,
-  userId,
-}: IHazard) => {
+export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const fullBoltData = {
-    abortReason,
-    boltNumber,
-    boltType,
-    comment,
-    createdAt,
-    driveId,
-    hazardCompletedDate,
-    id,
-    image,
-    isHazard,
-    levelId,
-    locationId,
-    peakDisplacement,
-    peakLoad,
-    positionInRing,
-    result,
-    siteId,
-    updatedAt,
-    userId,
-  };
+  const { boltNumber, image, comment, isHazard } = fullBoltData;
 
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>

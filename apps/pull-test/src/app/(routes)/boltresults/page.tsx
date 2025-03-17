@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
-import { BoltResultsTable } from '@/components/BoltResultsTable';
+// import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
@@ -48,6 +48,8 @@ export default function Page(): JSX.Element {
     BoltResultSchema[] | undefined
   >([]);
 
+  // TODO we have updated boltResults to use real data instead of mock data. Therefor we need to ,,,,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterBoltResults = (
     level?: string,
     drive?: string,
@@ -88,8 +90,8 @@ export default function Page(): JSX.Element {
       );
     });
   };
-
-  const filteredResults = filterBoltResults(level, drive, location, dateRange);
+  // TODO fix this in a different task
+  // const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
     // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
@@ -197,7 +199,7 @@ export default function Page(): JSX.Element {
           onFilterChange={setFilterState}
         />
         <TabsContent value="table">
-          <BoltResultsTable site={site} boltResults={filteredResults} />
+          {/* <BoltResultsTable site={site} boltResults={filteredResults} /> */}
         </TabsContent>
         <TabsContent value="graphs">
           <BoltResultsGraphView />

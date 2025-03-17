@@ -6,7 +6,7 @@ import { HazardCard } from '@/components/HazardCard';
 import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 import { useHazardDetails } from '@/components/urql-reportedhazards/HazardsFetchUrql';
 
-type IHazard = {
+type IBoltResultSchema = {
   abortReason?: string;
   boltNumber: number;
   boltType: string;
@@ -34,7 +34,7 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
 };
 
 const generateBoltSpecifications = (
-  boltData: IHazard,
+  boltData: IBoltResultSchema,
   names: {
     siteName?: string;
     levelName?: string;

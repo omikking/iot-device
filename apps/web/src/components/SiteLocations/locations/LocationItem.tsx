@@ -36,7 +36,7 @@ const updateLocationMutation = graphql(`
 `);
 
 const deleteLocationMutation = graphql(`
-  mutation removeLocation($id: String!) {
+  mutation deleteLocation($id: String!) {
     removeLocation(id: $id) {
       id
     }

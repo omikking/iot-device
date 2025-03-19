@@ -30,7 +30,7 @@ import { useMutation } from 'urql';
 import { useSession } from 'next-auth/react';
 
 const createSiteMutation = graphql(`
-  mutation CreateSite($createSiteInput: CreateSiteInput!) {
+  mutation createSite($createSiteInput: CreateSiteInput!) {
     createSite(createSiteInput: $createSiteInput) {
       id
       siteName
@@ -44,7 +44,7 @@ const createSiteMutation = graphql(`
 `);
 
 const updateSiteMutation = graphql(`
-  mutation UpdateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {
+  mutation updateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {
     updateSite(id: $id, updateSiteInput: $updateSiteInput) {
       id
       siteName

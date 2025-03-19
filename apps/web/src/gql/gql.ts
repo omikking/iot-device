@@ -33,6 +33,9 @@ const documents = {
     "\n  query getCompanySites {\n    sites {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.GetCompanySitesDocument,
     "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.DeleteSiteDocument,
     "\n  query getSites {\n    sites {\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.GetSitesDocument,
+
+    "\n  mutation RemoveUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n": types.RemoveUserDocument,
+    "\n  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n    }\n  }\n": types.UpdateUserDocument,
     "\n  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {\n    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {\n      id\n      driveName\n    }\n  }\n": types.UpdateDriveDocument,
     "\n  mutation updateLevel($id: String!, $updateLevelInput: UpdateLevelInput!) {\n    updateLevel(id: $id, updateLevelInput: $updateLevelInput) {\n      id\n      levelName\n    }\n  }\n": types.UpdateLevelDocument,
     "\n  mutation updateLocation(\n    $id: String!\n    $updateLocationInput: UpdateLocationInput!\n  ) {\n    updateLocation(id: $id, updateLocationInput: $updateLocationInput) {\n      id\n      locationName\n    }\n  }\n": types.UpdateLocationDocument,
@@ -133,6 +136,13 @@ export function graphql(source: "\n  query getSites {\n    sites {\n      siteNa
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+
+export function graphql(source: "\n  mutation RemoveUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation RemoveUser($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n    }\n  }\n"];
+
 export function graphql(source: "\n  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {\n    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {\n      id\n      driveName\n    }\n  }\n"): (typeof documents)["\n  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {\n    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {\n      id\n      driveName\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -150,6 +160,7 @@ export function graphql(source: "\n  query getMeSitesLocations {\n    sites {\n 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n"];
+
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

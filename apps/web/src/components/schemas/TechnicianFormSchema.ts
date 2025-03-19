@@ -5,7 +5,7 @@ export const technicianFormSchema = z.object({
     .string()
     .min(3, { message: 'Full name must be at least 3 characters.' })
     .max(50, { message: 'Full name must be at most 50 characters.' }),
-  company: z
+  workPlace: z
     .string()
     .min(3, { message: 'Company must be at least 3 characters.' }),
   email: z
@@ -16,7 +16,10 @@ export const technicianFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers' }),
-  isGlobal: z.boolean(),
+  isGlobalVisibility: z.string(),
 });
 
 export type TechnicianFormValues = z.infer<typeof technicianFormSchema>;
+export type TechnicianFormValuesWithId = TechnicianFormValues & {
+  id: string;
+};

@@ -56,18 +56,18 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
   });
   const sites = (sitesData.data?.company.sites as Site[]) || [];
 
-  const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
+  const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
   const [, deleteSite] = useMutation(deleteSiteMutation);
 
   const openDeleteModal = (siteId: string) => {
     const siteToDelete = sites?.find((site) => site.id === siteId);
     setSiteToDelete(siteToDelete);
-    setIsDeleteSiteModalOpen(true);
+    setDeleteSiteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
-    setIsDeleteSiteModalOpen(false);
+    setDeleteSiteModalOpen(false);
     setSiteToDelete(undefined);
   };
 
@@ -75,9 +75,8 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
     if (siteToDelete) {
       deleteSite({
         id: siteToDelete.id,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
+      }).then(() => {
+        closeDeleteModal();
       });
     }
   };
@@ -158,10 +157,7 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
           modalTitle="Delete site"
           isOpen={isDeleteSiteModalOpen}
           onOpenChange={closeDeleteModal}
-          onDelete={() => {
-            handleDelete();
-            closeDeleteModal();
-          }}
+          onDelete={handleDelete}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

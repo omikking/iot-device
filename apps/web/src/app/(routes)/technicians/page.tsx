@@ -5,14 +5,14 @@ import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal'
 import { TechniciansTable } from '@/components/TechniciansTable';
 import { GoBack } from '@/components/GoBack';
 import { useState } from 'react';
-import { TechniciansSchema } from '@/app/mock/mock';
+import { User } from '@/gql/graphql';
 
 export default function Page(): JSX.Element {
-  const [openTechModal, setOpenTechModal] = useState<boolean>(false);
   // selectedTechnician is used to pass the selected technician to the modal
   const [selectedTechnician, setSelectedTechnician] = useState<
-    TechniciansSchema | undefined
+    User | undefined
   >(undefined);
+  const [openTechModal, setOpenTechModal] = useState<boolean>(false);
 
   // handle the opening and closing of the modal, but also reset the selected technician when the modal is closed
   const handleModalClose = (open: boolean) => {

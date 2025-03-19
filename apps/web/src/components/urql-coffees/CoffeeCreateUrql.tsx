@@ -22,7 +22,7 @@ import {
 } from '@gsp/ui';
 
 const createCoffeeMutation = graphql(`
-  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {
+  mutation createCoffee($createCoffeeInput: CreateCoffeeInput!) {
     createCoffee(createCoffeeInput: $createCoffeeInput) {
       id
       name

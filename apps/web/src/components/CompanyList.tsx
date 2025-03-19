@@ -5,7 +5,7 @@ import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
-const getCompanies = graphql(`
+const getCompaniesQuery = graphql(`
   query getCompanies {
     companies {
       id
@@ -15,7 +15,7 @@ const getCompanies = graphql(`
 `);
 
 export const CompanyList = () => {
-  const [{ data }] = useQuery({ query: getCompanies });
+  const [{ data }] = useQuery({ query: getCompaniesQuery });
   const companies = data?.companies;
 
   return (

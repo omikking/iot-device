@@ -33,7 +33,7 @@ const updateDriveMutation = graphql(`
 `);
 
 const deleteDriveMutation = graphql(`
-  mutation removeDrive($id: String!) {
+  mutation deleteDrive($id: String!) {
     removeDrive(id: $id) {
       id
     }

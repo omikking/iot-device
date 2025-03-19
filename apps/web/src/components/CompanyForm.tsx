@@ -30,7 +30,7 @@ const allPlans = [
 ];
 
 const createCompanyMutation = graphql(`
-  mutation CreateCompany($createCompanyInput: CreateCompanyInput!) {
+  mutation createCompany($createCompanyInput: CreateCompanyInput!) {
     createCompany(createCompanyInput: $createCompanyInput) {
       id
       name
@@ -55,7 +55,7 @@ const createCompanyMutation = graphql(`
 `);
 
 const updateCompanyMutation = graphql(`
-  mutation UpdateCompany(
+  mutation updateCompany(
     $id: String!
     $updateCompanyInput: UpdateCompanyInput!
   ) {

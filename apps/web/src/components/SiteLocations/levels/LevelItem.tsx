@@ -33,7 +33,7 @@ const updateLevelMutation = graphql(`
 `);
 
 const deleteLevelMutation = graphql(`
-  mutation removeLevel($id: String!) {
+  mutation deleteLevel($id: String!) {
     removeLevel(id: $id) {
       id
     }

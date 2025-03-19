@@ -120,7 +120,7 @@ export const AppPlansContainer = ({
       shouldTouch: true,
     });
   };
-  const handleDateChange = (date: Date | undefined) => {
+  const handleDateChange = (date: Date) => {
     console.log(date);
     const currentPlans = companyForm.getValues('plans') || [];
     const updatedPlans = currentPlans.map((plan) => {

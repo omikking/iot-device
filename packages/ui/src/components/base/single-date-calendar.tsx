@@ -12,10 +12,10 @@ import { Text } from './text';
 
 interface SingleDateCalendarProps {
   disabled?: boolean;
-  onDateChange?: (date: Date | undefined) => void;
-  date?: Date | undefined,
-  setDate?: ((date: Date | undefined) => void);
-  className: string
+  onDateChange?: (date: Date) => void;
+  date?: Date;
+  setDate?: (date: Date) => void;
+  className: string;
 }
 
 export const SingleDateCalendar = ({
@@ -29,7 +29,7 @@ export const SingleDateCalendar = ({
 
   const formattedDate =
     date && `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    
+
   return (
     <div className={cn('ui-relative ui-border-none', className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -62,8 +62,11 @@ export const SingleDateCalendar = ({
             mode="single"
             selected={date}
             onSelect={(e) => {
-              setDate?.(e);
-              onDateChange?.(e);
+              if (e) {
+                setDate?.(e);
+                onDateChange?.(e);
+              }
+
               setTimeout(() => {
                 setIsOpen(false);
               }, 150);

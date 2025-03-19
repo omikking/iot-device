@@ -127,7 +127,7 @@ export const AppPlansContainer = ({
       if (plan.applicationName === applicationName) {
         return {
           ...plan,
-          expiringDate: format(Date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+          expiringDate: format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
         };
       }
       return plan;

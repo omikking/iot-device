@@ -14,34 +14,13 @@ import {
 } from '@gsp/ui';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
-type IBoltResultSchema = {
-  abortReason?: string;
-  boltNumber: number;
-  boltType: string;
-  comment?: string;
-  createdAt: Date;
-  driveId: string;
-  hazardCompletedDate: Date[];
-  id: string;
-  image?: string;
-  isHazard: boolean;
-  levelId: string;
-  locationId: string;
-  peakDisplacement: number[];
-  peakLoad: number[];
-  positionInRing: string;
-  result: string;
-  siteId: string;
-  updatedAt: Date;
-  userId: string;
-};
-
 type BoltResultDetailsModalProps = {
   modalTitle: string;
-  fullBoltData?: IBoltResultSchema;
+  fullBoltData?: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
   boltInfoItems: {
@@ -63,7 +42,7 @@ export const BoltResultDetailsModal = ({
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const { image, isHazard, peakLoad, peakDisplacement } =
-    (fullBoltData as IBoltResultSchema) || {};
+    (fullBoltData as BoltResult) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 

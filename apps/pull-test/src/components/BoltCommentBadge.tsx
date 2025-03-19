@@ -6,32 +6,11 @@ import {
   LucideMessageSquareText,
   LucideMessageSquareWarning,
 } from 'lucide-react';
+import { BoltResult } from '@/gql/graphql';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
 type BoltCommentBadgeProps = {
-  fullBoltData: IBoltResultSchema;
-};
-
-type IBoltResultSchema = {
-  abortReason?: string;
-  boltNumber: number;
-  boltType: string;
-  comment?: string;
-  createdAt: Date;
-  driveId: string;
-  hazardCompletedDate: Date[];
-  id: string;
-  image?: string;
-  isHazard: boolean;
-  levelId: string;
-  locationId: string;
-  peakDisplacement: number[];
-  peakLoad: number[];
-  positionInRing: string;
-  result: string;
-  siteId: string;
-  updatedAt: Date;
-  userId: string;
+  fullBoltData: BoltResult;
 };
 
 const capitalizeFirstLetter = (text: string | null | undefined): string => {
@@ -40,7 +19,7 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
 };
 
 const generateBoltSpecifications = (
-  boltData: IBoltResultSchema,
+  boltData: BoltResult,
   names: {
     siteName?: string;
     levelName?: string;

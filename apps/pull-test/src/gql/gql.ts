@@ -14,15 +14,13 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
+    "\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n": types.GetHazardDetailsDocument,
     "\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n": types.GetMeSiteLocationDocument,
+    "\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n": types.GetLevelDetailsDocument,
+    "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n": types.GetDriveDetailsDocument,
+    "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n": types.GetLocationDetailsDocument,
     "\n  mutation CreateCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
-    "\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyDetailsDocument,
-    "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n": types.GetDriveDetailsDocument,
-    "\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n": types.GetHazardDetailsDocument,
-    "\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n": types.GetLevelDetailsDocument,
-    "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n": types.GetLocationDetailsDocument,
-    "\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n": types.GetBoltResultsDocument,
 };
 
 /**
@@ -42,7 +40,23 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n"): (typeof documents)["\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n"): (typeof documents)["\n  query getMeSiteLocation($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n"): (typeof documents)["\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n"): (typeof documents)["\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n"): (typeof documents)["\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -51,30 +65,6 @@ export function graphql(source: "\n  mutation CreateCoffee($createCoffeeInput: C
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n"): (typeof documents)["\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanyDetails($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n"): (typeof documents)["\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n"): (typeof documents)["\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n"): (typeof documents)["\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n"): (typeof documents)["\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n"): (typeof documents)["\n  query getBoltResults {\n    boltResults {\n      id\n      createdAt\n      updatedAt\n      boltNumber\n      boltType\n      peakLoad\n      peakDisplacement\n      positionInRing\n      result\n      isHazard\n      hazardCompletedDate\n      abortReason\n      comment\n      image\n      siteId\n      levelId\n      driveId\n      locationId\n      userId\n      # companyId\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

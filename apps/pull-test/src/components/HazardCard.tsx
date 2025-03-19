@@ -17,12 +17,10 @@ import {
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-import { useLevelDetails } from './urql-reportedhazards/LevelFetchUrql';
-import { useDriveDetails } from './urql-reportedhazards/DriveFetchUrql';
-import { useLocationDetails } from './urql-reportedhazards/LocationFetchUrql';
 
-interface HazardCardProps {
+type HazardCardProps = {
   dateTitle: Date;
   isHazard?: boolean;
   boltDescription?: string;
@@ -30,35 +28,41 @@ interface HazardCardProps {
     title: string;
     text: string;
   }[];
-  fullBoltData?: IBoltResultSchema;
-}
-
-type IBoltResultSchema = {
-  abortReason?: string;
-  boltNumber: number;
-  boltType: string;
-  comment?: string;
-  createdAt: Date;
-  driveId: string;
-  hazardCompletedDate: Date[];
-  id: string;
-  image?: string;
-  isHazard: boolean;
-  levelId: string;
-  locationId: string;
-  peakDisplacement: number[];
-  peakLoad: number[];
-  positionInRing: string;
-  result: string;
-  siteId: string;
-  updatedAt: Date;
-  userId: string;
+  fullBoltData?: BoltResult;
 };
 
 const getMeSitesLocationDocument = graphql(`
   query getMeSiteLocation($id: String!) {
     site(id: $id) {
       siteName
+    }
+  }
+`);
+
+const getLevelDetails = graphql(`
+  query getLevelDetails($id: String!) {
+    level(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const getDriveDetails = graphql(`
+  query getDriveDetails($id: String!) {
+    drive(id: $id) {
+      id
+      driveName
+    }
+  }
+`);
+
+const getLocationDetails = graphql(`
+  query getLocationDetails($id: String!) {
+    location(id: $id) {
+      id
+      locationName
     }
   }
 `);
@@ -86,18 +90,35 @@ export const HazardCard = ({
     pause: !fullBoltData?.siteId, // avoid running query if siteId is undefined
   });
 
-  const { level } = useLevelDetails(fullBoltData?.levelId ?? '');
-  const { drive } = useDriveDetails(fullBoltData?.driveId ?? '');
-  const { location } = useLocationDetails(fullBoltData?.locationId ?? '');
+  // Level Query
+  const [{ data: levelData }] = useQuery({
+    query: getLevelDetails,
+    variables: { id: fullBoltData?.levelId ?? '' },
+    pause: !fullBoltData?.levelId,
+  });
+
+  // Drive Query
+  const [{ data: driveData }] = useQuery({
+    query: getDriveDetails,
+    variables: { id: fullBoltData?.driveId ?? '' },
+    pause: !fullBoltData?.driveId,
+  });
+
+  // Location Query
+  const [{ data: locationData }] = useQuery({
+    query: getLocationDetails,
+    variables: { id: fullBoltData?.locationId ?? '' },
+    pause: !fullBoltData?.locationId,
+  });
 
   // Update the boltInfoItems with names from fetched data
   useEffect(() => {
     if (!fullBoltData) return;
 
     const siteName = siteData?.site?.siteName || 'N/A';
-    const levelName = level?.levelName || 'N/A';
-    const driveName = drive?.driveName || 'N/A';
-    const locationName = location?.locationName || 'N/A';
+    const levelName = levelData?.level?.levelName || 'N/A';
+    const driveName = driveData?.drive?.driveName || 'N/A';
+    const locationName = locationData?.location?.locationName || 'N/A';
 
     // Create a copy of the original boltInfoItems
     const updatedItems = [...boltInfoItems];
@@ -114,7 +135,14 @@ export const HazardCard = ({
         item.text = locationName;
       }
     });
-  }, [boltInfoItems, siteData, level, drive, location, fullBoltData]);
+  }, [
+    boltInfoItems,
+    siteData,
+    levelData,
+    driveData,
+    locationData,
+    fullBoltData,
+  ]);
 
   const siteName = siteData?.site?.siteName || 'N/A';
 

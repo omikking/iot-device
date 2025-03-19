@@ -1,11 +1,4 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
-// import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { BoltSelection } from '@/components/BoltSelection';
-import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { GoBack } from '@/components/GoBack';
 import {
   Button,
   Headline,
@@ -23,6 +16,12 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
+import { useEffect, useState } from 'react';
+import { GoBack } from '@/components/GoBack';
+import { BoltSelection } from '@/components/BoltSelection';
+import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 
 export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);

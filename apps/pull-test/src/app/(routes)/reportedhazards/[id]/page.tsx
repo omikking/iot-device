@@ -1,32 +1,38 @@
 'use client';
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
-import { useHazardDetails } from '@/components/urql-reportedhazards/HazardsFetchUrql';
+import { useSession } from 'next-auth/react';
 
-type IBoltResultSchema = {
-  abortReason?: string;
-  boltNumber: number;
-  boltType: string;
-  comment?: string;
-  createdAt: Date;
-  driveId: string;
-  hazardCompletedDate: Date[];
-  id: string;
-  image?: string;
-  isHazard: boolean;
-  levelId: string;
-  locationId: string;
-  peakDisplacement: number[];
-  peakLoad: number[];
-  positionInRing: string;
-  result: string;
-  siteId: string;
-  updatedAt: Date;
-  userId: string;
-};
+const getHazardDetails = graphql(`
+  query getHazardDetails($id: String!) {
+    hazards(companyId: $id) {
+      abortReason
+      boltNumber
+      boltType
+      comment
+      createdAt
+      driveId
+      hazardCompletedDate
+      id
+      image
+      isHazard
+      levelId
+      locationId
+      peakDisplacement
+      peakLoad
+      positionInRing
+      result
+      siteId
+      updatedAt
+      userId
+    }
+  }
+`);
 
 const capitalizeFirstLetter = (text: string | null | undefined): string => {
   if (!text) return 'N/A';
@@ -34,7 +40,7 @@ const capitalizeFirstLetter = (text: string | null | undefined): string => {
 };
 
 const generateBoltSpecifications = (
-  boltData: IBoltResultSchema,
+  boltData: BoltResult,
   names: {
     siteName?: string;
     levelName?: string;
@@ -84,11 +90,22 @@ const generateBoltSpecifications = (
   ];
 };
 
-export default function Page(): JSX.Element {
-  const params = useParams();
-  const companyId = params.id as string;
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
+  //@TODO switch to session and remove page[id], but first fix page session for pull-test not working atm
+  const { data: session } = useSession();
+  console.log('SESSION', session?.company);
 
-  const { hazards } = useHazardDetails(companyId);
+  const [hazardData] = useQuery({
+    query: getHazardDetails,
+    variables: { id: params.id },
+    pause: !params.id,
+  });
+
+  const hazards = (hazardData.data?.hazards as BoltResult[]) || [];
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -125,7 +142,7 @@ export default function Page(): JSX.Element {
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
                   boltInfoItems={generateBoltSpecifications(boltResult, {})}
-                  boltDescription={boltResult.comment}
+                  boltDescription={boltResult.comment ?? undefined}
                 />
               ),
           )}
@@ -143,7 +160,7 @@ export default function Page(): JSX.Element {
                   fullBoltData={boltResult}
                   dateTitle={boltResult.createdAt}
                   boltInfoItems={generateBoltSpecifications(boltResult, {})}
-                  boltDescription={boltResult.comment}
+                  boltDescription={boltResult.comment ?? undefined}
                 />
               ),
           )}
@@ -159,7 +176,7 @@ export default function Page(): JSX.Element {
               fullBoltData={boltResult}
               dateTitle={boltResult.createdAt}
               boltInfoItems={generateBoltSpecifications(boltResult, {})}
-              boltDescription={boltResult.comment}
+              boltDescription={boltResult.comment ?? undefined}
             />
           ))}
         </TabsContent>

@@ -1,33 +1,11 @@
 import React, { useState } from 'react';
-// import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResult } from '@/gql/graphql';
 import { Badge, Modal, ModalTrigger } from '@gsp/ui';
 import { LucideScanSearch, LucideSquareStack } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
 type MultiReadBadgeProps = {
-  fullBoltData: IBoltResultSchema;
-};
-
-type IBoltResultSchema = {
-  abortReason?: string;
-  boltNumber: number;
-  boltType: string;
-  comment?: string;
-  createdAt: Date;
-  driveId: string;
-  hazardCompletedDate: Date[];
-  id: string;
-  image?: string;
-  isHazard: boolean;
-  levelId: string;
-  locationId: string;
-  peakDisplacement: number[];
-  peakLoad: number[];
-  positionInRing: string;
-  result: string;
-  siteId: string;
-  updatedAt: Date;
-  userId: string;
+  fullBoltData: BoltResult;
 };
 
 export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {

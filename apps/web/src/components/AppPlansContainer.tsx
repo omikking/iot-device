@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { AppPlan } from '@/components/AppPlan';
+import { format } from 'date-fns';
 import { UseFormReturn } from 'react-hook-form';
 import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
@@ -29,7 +30,7 @@ interface AppPlansContainerProps {
     id: string;
     applicationName: string;
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
-    expiringDate: number;
+    expiringDate: string;
   };
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;
@@ -44,9 +45,9 @@ export const AppPlansContainer = ({
   isAdmin,
   companyForm,
 }: AppPlansContainerProps) => {
-  const [date, setDate] = useState<Date|undefined>()
-  const [selected, setSelected] = useState<string>()
-  
+  const [date, setDate] = useState<Date | undefined>();
+  const [selected, setSelected] = useState<string>();
+
   const { applicationName } = appPlan;
   // const [activePlan, setActivePlan] = useState<
   //   'GOLD' | 'SILVER' | 'BRONZE' | undefined
@@ -61,11 +62,13 @@ export const AppPlansContainer = ({
     const currentPlan = currentPlans.find(
       (p) => p.applicationName === applicationName,
     );
-    const date = currentPlan?.expiringDate || ''
-    const formattedDate = currentPlan?.expiringDate ? new Date(date) : undefined 
-    setDate(formattedDate)
-    const dateString = new Date(date).toDateString()
-    setSelected(dateString)
+    const date = currentPlan?.expiringDate || '';
+    const formattedDate = currentPlan?.expiringDate
+      ? new Date(date)
+      : undefined;
+    setDate(formattedDate);
+    const dateString = new Date(date).toDateString();
+    setSelected(dateString);
     return isValidPlanLevel(currentPlan?.planLevel)
       ? currentPlan.planLevel
       : undefined;
@@ -93,7 +96,9 @@ export const AppPlansContainer = ({
       if (existingPlanIndex >= 0) {
         // Update existing plan
         updatedPlans = currentPlans.map((p, index) =>
-          index === existingPlanIndex ? { ...p, planLevel: plan, expiringDate: p.expiringDate } : p,
+          index === existingPlanIndex
+            ? { ...p, planLevel: plan, expiringDate: p.expiringDate }
+            : p,
         );
       } else {
         // Add new plan
@@ -116,11 +121,14 @@ export const AppPlansContainer = ({
     });
   };
   const handleDateChange = (date: Date | undefined) => {
-    console.log(date)
+    console.log(date);
     const currentPlans = companyForm.getValues('plans') || [];
     const updatedPlans = currentPlans.map((plan) => {
       if (plan.applicationName === applicationName) {
-        return { ...plan, expiringDate: date?.getTime()};
+        return {
+          ...plan,
+          expiringDate: format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+        };
       }
       return plan;
     });
@@ -197,7 +205,12 @@ export const AppPlansContainer = ({
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              <SingleDateCalendar date={date} setDate={setDate} onDateChange={handleDateChange} className="mt-2" />
+              <SingleDateCalendar
+                date={date}
+                setDate={setDate}
+                onDateChange={handleDateChange}
+                className="mt-2"
+              />
             </>
           )}
         </div>

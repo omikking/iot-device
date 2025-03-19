@@ -15,6 +15,7 @@ import {
 } from '@/components/schemas/CompanyFormSchema';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 import { GoBack } from '@/components/GoBack';
 // import { AdminForm } from '@/components/AdminForm';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -99,7 +100,10 @@ export default function Page({
           id: plan.id,
           applicationName: plan.applicationName,
           planLevel: plan.planLevel,
-          expiringDate: plan.expiringDate,
+          expiringDate: format(
+            new Date(plan.expiringDate),
+            "yyyy-MM-dd'T'00:00:00:000'Z",
+          ),
         })),
       });
     }
@@ -252,7 +256,7 @@ export default function Page({
                     applicationName: planType.applicationName,
                     planLevel: undefined,
                     companyId: company?.id,
-                    expiringDate: 0,
+                    expiringDate: '',
                   };
 
                   return (

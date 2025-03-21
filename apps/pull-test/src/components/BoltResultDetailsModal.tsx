@@ -14,21 +14,26 @@ import {
 } from '@gsp/ui';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 
-interface BoltResultDetailsModalProps {
+type BoltResultDetailsModalProps = {
   modalTitle: string;
-  fullBoltData?: BoltResultSchema;
+  fullBoltData?: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
-}
+  boltInfoItems: {
+    title: string;
+    text: string;
+  }[];
+};
 
 export const BoltResultDetailsModal = ({
   modalTitle,
   isHazardCompletable = false,
   fullBoltData,
+  boltInfoItems,
   onClose,
 }: BoltResultDetailsModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,8 +41,8 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const { image, isHazard, peakLoad, peakDisplacement, author } =
-    (fullBoltData as BoltResultSchema) || {};
+  const { image, isHazard, peakLoad, peakDisplacement } =
+    (fullBoltData as BoltResult) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 
@@ -93,7 +98,8 @@ export const BoltResultDetailsModal = ({
         <div className="p-10 flex gap-10 flex-grow">
           {image && (
             <Image
-              src={image}
+              // src={image || '/images/placeholder.png'}
+              src={'/images/placeholder.png'}
               alt="Attached bolt result image"
               width={390}
               height={280}
@@ -120,11 +126,6 @@ export const BoltResultDetailsModal = ({
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
-                {author && (
-                  <Text variant="small" color="foreground">
-                    Author: {author}
-                  </Text>
-                )}
               </div>
             )}
           </div>
@@ -141,7 +142,7 @@ export const BoltResultDetailsModal = ({
             Bolt specifications
           </Headline>
           <div className="flex flex-wrap">
-            {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
+            {[...boltInfoItems.slice(1)].map((boltSpec, index) => (
               <Specification
                 key={index}
                 title={boltSpec.title}
@@ -149,7 +150,7 @@ export const BoltResultDetailsModal = ({
                 className="w-1/2"
               />
             ))}
-            {boltSpecifications.length % 2 === 0 && (
+            {boltInfoItems.length % 2 === 0 && (
               <Specification title="" text="" className="w-1/2" />
             )}
           </div>

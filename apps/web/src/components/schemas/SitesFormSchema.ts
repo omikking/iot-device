@@ -5,11 +5,17 @@ export const siteFormSchema = z.object({
   address: z
     .string()
     .min(3, { message: 'Address must be at least 3 characters.' }),
+
   // unsure of this one
-  // totalSiteLocations: z.number().int().min(1, { message: 'Total site locations must be at least 1.' }),
+  //totalSiteLocations: z.number().int().min(1, { message: 'Total site locations must be at least 1.' }),
   passCriteria: z
     .string()
     .min(3, { message: 'Pass criteria must be at least 3 characters.' }),
+  postalCode: z
+    .string()
+    .min(3, { message: 'Postal Code must be at least 3 characters.' }),
+  city: z.string().min(3, { message: 'city must be at least 3 characters.' }),
+  country: z.string().min(3, { message: 'country be at least 3 characters.' }),
 });
 
 export type SiteFormValues = z.infer<typeof siteFormSchema>;

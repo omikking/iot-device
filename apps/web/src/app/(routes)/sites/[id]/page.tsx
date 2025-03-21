@@ -23,6 +23,9 @@ type ISite = {
   siteName: string;
   address: string;
   passCriteria: string;
+  postalCode: string;
+  city: string;
+  country: string;
 };
 
 export default function Page(): JSX.Element {
@@ -30,9 +33,9 @@ export default function Page(): JSX.Element {
     'Pull Test',
   );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
-  const [selectedSite, setSelectedSite] = useState<
-    ISite | undefined
-  >(undefined);
+  const [selectedSite, setSelectedSite] = useState<ISite | undefined>(
+    undefined,
+  );
 
   const handleModalToggle = (open: boolean) => {
     setOpenSiteModal(open);
@@ -42,10 +45,8 @@ export default function Page(): JSX.Element {
   };
 
   const params = useParams();
-  
-    const companyId = Array.isArray(params.id)
-      ? params.id[0]
-      : params.id;
+
+  const companyId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">

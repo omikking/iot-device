@@ -7,12 +7,16 @@ export type ISite = {
   siteName: string;
   address: string;
   passCriteria: string;
+  postalCode: string;
+  city: string;
+  country: string;
 };
 
 type ISites = {
   sites: ISite[];
 };
 
+//Added id in query for passing it in remove query
 const getSitesQuery = graphql(`
   query getCompanySites {
     sites {

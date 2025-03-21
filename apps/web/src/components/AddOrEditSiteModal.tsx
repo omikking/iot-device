@@ -24,7 +24,7 @@ import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
 import { graphql } from '@/gql';
 
-const createSite = graphql(`
+const createSiteQuery = graphql(`
   mutation CreateSite($createSiteInput: CreateSiteInput!) {
     createSite(createSiteInput: $createSiteInput) {
       id
@@ -38,7 +38,7 @@ const createSite = graphql(`
   }
 `);
 
-const updateSite = graphql(`
+const updateSiteQuery = graphql(`
   mutation UpdateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {
     updateSite(id: $id, updateSiteInput: $updateSiteInput) {
       id
@@ -63,6 +63,9 @@ type ISite = {
   siteName: string;
   address: string;
   passCriteria: string;
+  postalCode: string;
+  city: string;
+  country: string;
 };
 
 export const AddOrEditSiteModal = ({
@@ -80,9 +83,12 @@ export const AddOrEditSiteModal = ({
   const form = useForm<SiteFormValues>({
     resolver: zodResolver(siteFormSchema),
     defaultValues: {
-      name: site?.siteName ?? '',
-      address: site?.address ?? '',
-      passCriteria: site?.passCriteria ?? '',
+      name: '',
+      address: '',
+      passCriteria: '',
+      postalCode: '',
+      city: '',
+      country: '',
     },
   });
 
@@ -91,19 +97,24 @@ export const AddOrEditSiteModal = ({
       name: '',
       address: '',
       passCriteria: '',
+      postalCode: '',
+      city: '',
+      country: '',
     });
   };
-
   useEffect(() => {
     if (site) {
       form.setValue('name', site.siteName);
       form.setValue('address', site.address);
       form.setValue('passCriteria', site.passCriteria);
+      form.setValue('postalCode', site.postalCode);
+      form.setValue('city', site.city);
+      form.setValue('country', site.country);
     }
   }, [site, form]);
 
-  const [, createSiteResult] = useMutation(createSite);
-  const [, updateSiteResult] = useMutation(updateSite);
+  const [, createSite] = useMutation(createSiteQuery);
+  const [, updateSite] = useMutation(updateSiteQuery);
 
   const onSubmit = async (data: SiteFormValues) => {
     setIsLoading(true);
@@ -112,15 +123,15 @@ export const AddOrEditSiteModal = ({
       siteName: data.name,
       address: data.address,
       passCriteria: undefined,
-      postalCode: '133713',
-      city: 'Göteborg',
-      country: 'Sweden',
+      postalCode: data.postalCode,
+      city: data.city,
+      country: data.country,
       companyId: siteId,
     };
 
     if (site) {
       try {
-        const response = await updateSiteResult({
+        const response = await updateSite({
           id: site.id,
           updateSiteInput: input,
         });
@@ -133,7 +144,7 @@ export const AddOrEditSiteModal = ({
       }
     } else {
       try {
-        const response = await createSiteResult({ createSiteInput: input });
+        const response = await createSite({ createSiteInput: input });
         if (response.data) {
           setIsSuccessful(true);
           setTimeout(() => onOpenChange(false), 1500);
@@ -152,52 +163,106 @@ export const AddOrEditSiteModal = ({
   };
 
   return (
-    <ModalContent onCloseAutoFocus={resetFormValues}>
+    <ModalContent
+      onCloseAutoFocus={resetFormValues}
+      className="max-h-[90vh] overflow-hidden"
+    >
       <ModalHeader>
         <ModalTitle>{site ? 'Edit' : 'Add'} Site</ModalTitle>
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex flex-col px-10 p-10">
+            <div className="flex flex-col px-10 p-10 max-h-[60vh] overflow-x-auto">
               <div className="flex flex-row justify-between pb-10">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>* Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Fill in name..."
-                            className="w-96"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in name..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <FormField
                   control={form.control}
                   name="address"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>* Address</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Fill in address..."
-                            className="w-96"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in address..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex flex-row justify-between pb-10">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* City</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in city..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in country..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex flex-row justify-between pb-10">
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* Postal Code</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in postal code..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
               <Headline as="h3" color="foreground" variant="small" isBold>
@@ -207,21 +272,19 @@ export const AddOrEditSiteModal = ({
                 <FormField
                   control={form.control}
                   name="passCriteria"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>* Pass Criteria</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Fill in pass criteria..."
-                            className="w-96"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>* Pass Criteria</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Fill in pass criteria..."
+                          className="w-96"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
             </div>
@@ -237,7 +300,6 @@ export const AddOrEditSiteModal = ({
                 ) : (
                   <LucidePlus />
                 )}
-
                 {site ? 'Save changes' : 'Add site'}
               </Button>
             </ModalFooter>

@@ -1,7 +1,7 @@
+'use client';
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { adminsMock } from '@/app/mock/mock';
-import { CompanyFormValues } from '@/components/schemas/CompanyFormSchema';
 import {
   Dropdown,
   FormControl,
@@ -10,21 +10,29 @@ import {
   FormLabel,
   FormMessage,
 } from '@gsp/ui';
+import {
+  CreateCompanyFormValues,
+  UpdateCompanyFormValues,
+} from './schemas/CompanyFormSchema';
 
 interface AdminFormProps {
-  companyForm: UseFormReturn<CompanyFormValues>;
+  isNewCompany: boolean;
+  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
-export const AdminForm = ({ companyForm }: AdminFormProps) => {
+export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
 
+  // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
+  // Leave it for now, and will be worked on later.
+
   return (
     <FormField
       control={companyForm.control}
-      name="assignSandvikAdministrator"
-      render={() => {
+      name="userPermissions"
+      render={({ field }) => {
         return (
           <FormItem className="w-96">
             <FormLabel>Assigned Sandvik administrator</FormLabel>
@@ -34,7 +42,18 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
                 options={adminsMock}
-                onSelect={(e) => setAdministrator(e)}
+                onSelect={(e) => {
+                  setAdministrator(e);
+                  field.onChange([
+                    // @TODO Fix
+                    isNewCompany
+                      ? { userId: '87506bef-5283-44d8-ab42-a668ea616975' }
+                      : {
+                          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+                          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+                        },
+                  ]);
+                }}
               />
             </FormControl>
             <FormMessage />

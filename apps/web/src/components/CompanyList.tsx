@@ -1,12 +1,26 @@
+'use client';
 import Link from 'next/link';
-import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
-import { companiesMock } from '@/app/mock/mock';
 import { Button, Text } from '@gsp/ui';
+import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+
+const getCompaniesQuery = graphql(`
+  query getCompanies {
+    companies {
+      id
+      name
+    }
+  }
+`);
 
 export const CompanyList = () => {
+  const [{ data }] = useQuery({ query: getCompaniesQuery });
+  const companies = data?.companies;
+
   return (
     <>
-      {companiesMock.map((company) => (
+      {companies?.map((company) => (
         <div
           key={company.id}
           className="w-full flex justify-between items-center px-6 py-4 bg-main-white"
@@ -16,7 +30,7 @@ export const CompanyList = () => {
           </Text>
           <div className="flex gap-4">
             <Button size="small" variant="primary" asChild>
-              <Link href="/company">
+              <Link href={`/company/${company.id}`}>
                 <LucideMoveRight />
                 Administrate
               </Link>

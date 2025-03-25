@@ -5,47 +5,86 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { techniciansMock, TechniciansSchema } from '@/app/mock/mock';
+import { graphql } from '@/gql';
+import { useMutation, useQuery } from 'urql';
+import { User } from '@/gql/graphql';
+
+const getTechniciansQuery = graphql(`
+  query getTechnicians {
+    users(roles: "SANDVIK_TECHNICIAN") {
+      id
+      fullName
+      email
+      workPlace
+      isGlobalVisibility
+      phoneNumber
+      globalRole
+    }
+  }
+`);
+
+const deleteTechnicianMutation = graphql(`
+  mutation deleteTechnician($id: String!) {
+    removeUser(id: $id) {
+      id
+    }
+  }
+`);
 
 interface TechniciansTableProps {
   onOpenChange: (open: boolean) => void;
-  onSelectTechnician: (technician: TechniciansSchema) => void;
+  onSelectTechnician: (technician?: User) => void;
 }
+
 export const TechniciansTable = ({
   onOpenChange,
   onSelectTechnician,
 }: TechniciansTableProps) => {
-  const [technicians, setTechnicians] = useState(techniciansMock);
-  const [isDeleteTechnicianModalOpen, setIsDeleteTechnicianModalOpen] =
+  const [isDeleteTechnicianModalOpen, setDeleteTechnicianModalOpen] =
     useState(false);
   const [technicianToDelete, setTechnicianToDelete] = useState<
-    number | undefined
+    User | undefined
   >(undefined);
 
-  const openDeleteModal = (index: number) => {
-    setTechnicianToDelete(index);
-    setIsDeleteTechnicianModalOpen(true);
+  const [techniciansData] = useQuery({
+    query: getTechniciansQuery,
+  });
+  const technicians = (techniciansData.data?.users as User[]) || [];
+
+  const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
+
+  const openDeleteModal = (technicianId: string) => {
+    const technicianToDelete = technicians?.find(
+      (technician) => technician.id === technicianId,
+    );
+    setTechnicianToDelete(technicianToDelete);
+    setDeleteTechnicianModalOpen(true);
   };
 
-  // get the index of the technician to edit and pass it to the modal
-  const openEditModal = (index: number) => {
-    const technicianToEdit = technicians[index];
+  const closeDeleteModal = () => {
+    setDeleteTechnicianModalOpen(false);
+    setTechnicianToDelete(undefined);
+  };
+
+  const handleDelete = () => {
+    if (technicianToDelete) {
+      deleteTechnician({
+        id: technicianToDelete.id,
+      }).then(() => {
+        closeDeleteModal();
+      });
+    }
+  };
+
+  const openEditModal = (technicianId: string) => {
+    const technicianToEdit = technicians?.find(
+      (technician) => technician.id === technicianId,
+    );
     onSelectTechnician(technicianToEdit);
     onOpenChange(true);
   };
 
-  const closeDeleteModal = () => {
-    setIsDeleteTechnicianModalOpen(false);
-    setTechnicianToDelete(undefined);
-  };
-
-  const handleDelete = (index: number) => {
-    setTechnicians((currentTechnicians) =>
-      currentTechnicians.filter((_, i) => i !== index),
-    );
-  };
-
-  const columns: ColumnDef<TechniciansSchema>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'fullName',
       header: 'Full name',
@@ -58,24 +97,24 @@ export const TechniciansTable = ({
       },
     },
     {
-      accessorKey: 'company',
+      accessorKey: 'workPlace',
       header: 'Company',
       meta: {
         headerClassName: 'w-44',
       },
     },
     {
-      accessorKey: 'isGlobal',
+      accessorKey: 'isGlobalVisibility',
       header: 'Visible globally',
       cell: ({ row }) => (
         <>
-          {row.getValue('isGlobal') && (
+          {row.getValue('isGlobalVisibility') && (
             <Badge variant="success">
               <LucideView />
               Visible
             </Badge>
           )}
-          {!row.getValue('isGlobal') && (
+          {!row.getValue('isGlobalVisibility') && (
             <Badge variant="neutral">
               <LucideEyeOff />
               Private
@@ -92,17 +131,17 @@ export const TechniciansTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        const rowIndex = technicians.findIndex(
-          (tech) => tech.id === row.original.id,
+        const technician = technicians.find(
+          (technician) => technician.id === row.original.id,
         );
-
         return (
-          <DeleteEditDropdown
-            itemSelected={rowIndex}
-            openDeleteModal={openDeleteModal}
-            // when the edit button is clicked, the index of the technician is passed to the modal
-            handleEdit={openEditModal}
-          />
+          technician && (
+            <DeleteEditDropdown
+              itemSelected={technician.id}
+              openDeleteModal={openDeleteModal}
+              handleEdit={openEditModal}
+            />
+          )
         );
       },
     },
@@ -110,37 +149,36 @@ export const TechniciansTable = ({
 
   return (
     <>
-      <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        deleteIcon="User"
-        modalTitle="Delete technician"
-        isOpen={isDeleteTechnicianModalOpen}
-        itemToDelete={technicianToDelete}
-        onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
-          closeDeleteModal();
-        }}
-      >
-        <Text variant="medium" color={'foreground'}>
-          You are about to delete
-          <Text variant="medium" color={'foreground'} isBold as="span">
-            {technicianToDelete !== undefined
-              ? ` ${technicians[technicianToDelete].fullName} `
-              : ''}
+      {technicianToDelete && (
+        <DeleteModalConfirmation
+          deleteButtonText="Confirm deletion"
+          deleteIcon="User"
+          modalTitle="Delete technician"
+          isOpen={isDeleteTechnicianModalOpen}
+          onOpenChange={closeDeleteModal}
+          onDelete={handleDelete}
+        >
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} isBold as="span">
+              {` ${technicianToDelete.fullName} `}
+            </Text>
+            from the list. Are you sure you want to delete?
           </Text>
-          from the list. Are you sure you want to delete?
-        </Text>
-      </DeleteModalConfirmation>
+        </DeleteModalConfirmation>
+      )}
 
       <DataTable
         columns={columns}
         data={technicians}
         noResultMessage="There are no technicians added yet."
       />
-      <Badge variant="neutral" className="self-start">
-        {technicians.length} total
-      </Badge>
+
+      {technicians?.length > 0 && (
+        <Badge variant="neutral" className="self-start">
+          {technicians.length} total
+        </Badge>
+      )}
     </>
   );
 };

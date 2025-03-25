@@ -85,7 +85,7 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length > 0) {
+      if (plans && plans.length >= 0) {
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
             companyId: createdCompany.id,

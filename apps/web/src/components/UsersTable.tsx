@@ -2,20 +2,37 @@
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { UserSchema, usersMock } from '@/app/mock/mock';
+import { Application, UserSchema, usersMock } from '@/app/mock/mock';
 import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
-export const UsersTable = () => {
+// @TODO create a utils folder and add these kind of functions there
+export const formatAppName = (appName: string): string => {
+  const appNames: Record<string, string> = {
+    PULL_TEST: 'Pull Test',
+    ULTRABOLTS: 'Ultrabolts',
+    XCYCLOPS: 'xCyclops',
+    PULL_TEST_OPERATOR: 'Pull Test Operator',
+  };
+
+  return appNames[appName] || appName;
+};
+
+interface UsersTableProps {
+  onOpenChange: (open: boolean) => void;
+  onSelectUser: (user: UserSchema) => void;
+}
+
+export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const [users, setUsers] = useState(usersMock);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<number | undefined>(
+  const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
 
   const getBadge = (
-    role: 'User' | 'Technician' | 'Admin',
+    role: UserSchema['userPermissions']['role'],
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
@@ -30,7 +47,20 @@ export const UsersTable = () => {
     }
   };
 
-  const openDeleteModal = (index: number) => {
+  const getAppShortening = (appAccessValue: Application[]) => {
+    // @TODO hardcoded application count 4, we should get a dynamic number later to avoid bug
+    if (appAccessValue.length === 4) {
+      return <Badge variant="primary">All Apps</Badge>;
+    }
+
+    const appName = appAccessValue
+      .map((app: string) => formatAppName(app) || app)
+      .join(', ');
+
+    return appName;
+  };
+
+  const openDeleteModal = (index: string) => {
     setUserToDelete(index);
     setIsDeleteUserModalOpen(true);
   };
@@ -40,8 +70,16 @@ export const UsersTable = () => {
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+  const handleDelete = () => {
+    // setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
+    setUsers((currentUsers) => currentUsers);
+  };
+
+  const openEditModal = (index: string) => {
+    console.log(index);
+    const userToEdit = users[0];
+    onSelectUser(userToEdit);
+    onOpenChange(true);
   };
 
   const columns: ColumnDef<UserSchema>[] = [
@@ -54,17 +92,25 @@ export const UsersTable = () => {
       header: 'Email',
     },
     {
-      accessorKey: 'appAccess',
+      id: 'appAccess',
       header: 'App access',
+      accessorFn: (row) => row.userPermissions.appAccess,
+      cell: ({ row }) => {
+        const appAccessValue = row.getValue('appAccess') as Application[];
+        return getAppShortening(appAccessValue);
+      },
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'userPermissions.role',
       header: 'Role',
       cell: ({ row }) => {
+        const role = row.original.userPermissions.role;
+        const { variant, icon } = getBadge(role);
+
         return (
-          <Badge variant={getBadge(row.getValue('role')).variant}>
-            {getBadge(row.getValue('role')).icon}
-            {row.getValue('role')}
+          <Badge variant={variant}>
+            {icon}
+            {role}
           </Badge>
         );
       },
@@ -80,13 +126,11 @@ export const UsersTable = () => {
         const rowIndex = users.findIndex((user) => user.id === row.original.id);
 
         return (
-          <>
-            <DeleteEditDropdown
-              itemSelected={rowIndex}
-              openDeleteModal={openDeleteModal}
-              handleEdit={() => console.log('Edit')}
-            />
-          </>
+          <DeleteEditDropdown
+            itemSelected={rowIndex.toString()}
+            openDeleteModal={openDeleteModal}
+            handleEdit={openEditModal}
+          />
         );
       },
     },
@@ -99,17 +143,16 @@ export const UsersTable = () => {
         deleteIcon="User"
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
-        itemToDelete={userToDelete}
         onOpenChange={closeDeleteModal}
-        onDelete={(event, index) => {
-          handleDelete(index);
+        onDelete={() => {
+          handleDelete();
           closeDeleteModal();
         }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete && ` ${users[userToDelete].fullName} `}
+            {userToDelete && ` ${users[0].fullName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

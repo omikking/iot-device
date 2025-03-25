@@ -95,9 +95,9 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites, setSites] = useState(sitesMock);
+  const [sites] = useState(sitesMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [siteToDelete, setSiteToDelete] = useState<number | undefined>(
+  const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
@@ -118,7 +118,7 @@ export default function Page(): JSX.Element {
     }
   };
 
-  const openDeleteModal = (index: number) => {
+  const openDeleteModal = (index: string) => {
     setSiteToDelete(index);
     setIsDeleteSiteModalOpen(true);
   };
@@ -128,9 +128,9 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = (index: number) => {
-    setSites((sites) => sites.filter((item, i) => i !== index));
-  };
+  // const handleDelete = (index: string) => {
+  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
+  // };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -251,7 +251,7 @@ export default function Page(): JSX.Element {
               {site.name}
             </Text>
             <DeleteEditDropdown
-              itemSelected={index}
+              itemSelected={index.toString()}
               openDeleteModal={openDeleteModal}
               handleEdit={() => console.log('edit')}
             />
@@ -262,20 +262,16 @@ export default function Page(): JSX.Element {
           deleteIcon="Site"
           modalTitle="Delete Site"
           isOpen={isDeleteSiteModalOpen}
-          itemToDelete={siteToDelete}
           onOpenChange={closeDeleteModal}
-          onDelete={(_, index) => {
-            console.log('Deleting site at index:', index);
-            handleDelete(index);
+          onDelete={() => {
+            // handleDelete();
             closeDeleteModal();
           }}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete
             <Text variant="medium" color={'foreground'} isBold as="span">
-              {siteToDelete !== undefined
-                ? ` ${sites[siteToDelete].name} `
-                : ''}
+              {siteToDelete}
             </Text>
             from the list. Are you sure you want to delete?
           </Text>
@@ -640,7 +636,10 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar className="w-96" />
+                      <SingleDateCalendar
+                        className="w-96"
+                        onDateChange={() => console.log('date change')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -655,7 +654,11 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar disabled className="w-96" />
+                      <SingleDateCalendar
+                        disabled
+                        className="w-96"
+                        onDateChange={() => console.log('date change')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -828,25 +831,29 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.fullName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.appAccess}</TableCell>
-                <TableCell>
-                  <Badge variant={getBadge(user.role).variant}>
-                    {getBadge(user.role).icon}
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="outline" size="small">
-                    <LucideEllipsis />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {usersMock.map((user) => {
+              const role = user.userPermissions.role;
+              const { variant, icon } = getBadge(role);
+              return (
+                <TableRow key={user.id}>
+                  <TableCell>{user.fullName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.userPermissions.appAccess}</TableCell>
+                  <TableCell>
+                    <Badge variant={variant}>
+                      {icon}
+                      {role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="small">
+                      <LucideEllipsis />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
         <Badge variant="neutral" className="self-start">

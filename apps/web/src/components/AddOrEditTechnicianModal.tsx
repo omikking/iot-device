@@ -22,18 +22,37 @@ import {
   Text,
 } from '@gsp/ui';
 import {
-  TechnicianFormValues,
-  technicianFormSchema,
+  UpdateTechnicianFormValues,
+  updateTechnicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
+import { User } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+
+// @TODO make the create user query later when BE is advanced.
+
+const updateTechnicianMutation = graphql(`
+  mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {
+    updateUser(id: $id, updateUserInput: $updateUserInput) {
+      id
+      email
+      fullName
+      workPlace
+      phoneNumber
+      globalRole
+      isGlobalVisibility
+    }
+  }
+`);
 
 interface AddOrEditTechnicianModalProps {
   onOpenChange: (open: boolean) => void;
-  technician?: TechnicianFormValues;
+  technician?: User;
 }
 
 export const AddOrEditTechnicianModal = ({
@@ -43,35 +62,34 @@ export const AddOrEditTechnicianModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const form = useForm<TechnicianFormValues>({
-    resolver: zodResolver(technicianFormSchema),
+  const [, updateTechnician] = useMutation<UpdateTechnicianFormValues>(
+    updateTechnicianMutation,
+  );
+
+  const form = useForm<UpdateTechnicianFormValues>({
+    resolver: zodResolver(updateTechnicianFormSchema),
     defaultValues: {
-      fullName: '',
-      company: '',
-      email: '',
-      phoneNumber: '',
-      isGlobal: false,
+      fullName: technician?.fullName || '',
+      workPlace: technician?.workPlace || '',
+      email: technician?.email || '',
+      phoneNumber: technician?.phoneNumber || '',
+      isGlobalVisibility: technician?.isGlobalVisibility || false,
     },
   });
 
   const resetFormValues = () => {
     form.reset({
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      isGlobal: false,
+      isGlobalVisibility: false,
     });
   };
 
-  const onSubmit = async (data: TechnicianFormValues) => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Technician added:', data);
+  const onSuccessfulSubmit = () => {
     setIsSuccessful(true);
     setIsLoading(false);
-
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
@@ -81,23 +99,37 @@ export const AddOrEditTechnicianModal = ({
     }, 1700);
   };
 
-  const handleModalClose = () => {
-    resetFormValues();
-    onOpenChange(false);
+  const onSubmit: SubmitHandler<UpdateTechnicianFormValues> = (data) => {
+    setIsLoading(true);
+
+    if (technician) {
+      updateTechnician({
+        id: technician.id,
+        updateUserInput: data,
+      }).then((result) => {
+        if (result.data) {
+          onSuccessfulSubmit();
+        }
+      });
+    }
+
+    if (!technician) {
+      // fix later for create technician flow
+    }
   };
 
   useEffect(() => {
     if (technician) {
-      form.reset(technician);
-    }
-
-    if (!technician) {
-      handleModalClose();
+      form.reset({
+        ...technician,
+        phoneNumber: technician.phoneNumber || '',
+        isGlobalVisibility: technician.isGlobalVisibility || false,
+      });
     }
   }, [technician, form]);
 
   return (
-    <ModalContent className="sm:max-w-[425px]">
+    <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
         <ModalTitle>
           {technician ? 'Edit technician' : 'Add technician'}
@@ -130,7 +162,7 @@ export const AddOrEditTechnicianModal = ({
                 />
                 <FormField
                   control={form.control}
-                  name="company"
+                  name="workPlace"
                   disabled={isSuccessful}
                   render={({ field }) => {
                     return (
@@ -217,7 +249,7 @@ export const AddOrEditTechnicianModal = ({
 
                 <FormField
                   control={form.control}
-                  name="isGlobal"
+                  name="isGlobalVisibility"
                   render={({ field }) => (
                     <FormItem className="pt-4">
                       <FormControl>

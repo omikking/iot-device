@@ -11,19 +11,31 @@ import { Calendar } from './calendar';
 import { Text } from './text';
 
 interface SingleDateCalendarProps {
+  selectedDate?: Date;
   disabled?: boolean;
+  onDateChange: (date?: Date) => void;
 }
 
+// @TODO move to utils?
+export const formattedDate = (timestamp: Date) => {
+  const date = new Date(timestamp);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+};
+
 export const SingleDateCalendar = ({
+  selectedDate,
   disabled,
+  onDateChange,
   className,
 }: React.HTMLAttributes<HTMLDivElement> & SingleDateCalendarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [date, setDate] = React.useState<Date | undefined>(selectedDate);
 
-  const [date, setDate] = React.useState<Date>();
-
-  const formattedDate =
-    date && `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const handleDateChange = (selectedDate?: Date) => {
+    setDate(selectedDate);
+    onDateChange(selectedDate);
+    setIsOpen(false);
+  };
 
   return (
     <div className={cn('ui-relative ui-border-none', className)}>
@@ -41,7 +53,7 @@ export const SingleDateCalendar = ({
               variant="medium"
               color={disabled || !date ? 'muted' : 'foreground'}
             >
-              {formattedDate || 'Select date'}
+              {date ? formattedDate(date) : 'Select date'}
             </Text>
 
             <LucideCalendar
@@ -56,12 +68,7 @@ export const SingleDateCalendar = ({
             initialFocus
             mode="single"
             selected={date}
-            onSelect={(e) => {
-              setDate(e);
-              setTimeout(() => {
-                setIsOpen(false);
-              }, 150);
-            }}
+            onSelect={handleDateChange}
             className={className}
           />
         </PopoverContent>

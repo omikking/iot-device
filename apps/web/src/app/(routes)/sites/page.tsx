@@ -1,5 +1,4 @@
 'use client';
-import { GoBack } from '@/components/GoBack';
 import {
   Badge,
   Button,
@@ -11,22 +10,38 @@ import {
   TabsList,
   TabsTrigger,
 } from '@gsp/ui';
-import { SitesTable } from '@/components/SitesTable';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
-import { AddSiteModal } from '@/components/AddSiteModal';
+import { GoBack } from '@/components/GoBack';
+import { SitesTable } from '@/components/SitesTable';
+import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
+import { Site } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
 
 export default function Page(): JSX.Element {
-  const [app, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
+  const { data: session } = useSession();
+
+  const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
     'Pull Test',
   );
+  const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
+  const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
+
+  const handleModalToggle = (open: boolean) => {
+    setOpenSiteModal(open);
+    if (!open) {
+      setSelectedSite(undefined);
+    }
+  };
 
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
       <GoBack />
-      <Badge variant="primary" size="large" className="absolute top-24">
-        Sites
-      </Badge>
+      {session?.company.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {session.company.name}
+        </Badge>
+      )}
       <Headline as="h1" variant="xl" color="foreground">
         Sites
       </Headline>
@@ -49,27 +64,39 @@ export default function Page(): JSX.Element {
               </TabsTrigger>
             </TabsList>
 
-            <Modal>
+            <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
               <ModalTrigger asChild>
                 <Button variant="primary" size="large">
                   <LucidePlus />
                   Add site
                 </Button>
               </ModalTrigger>
-              <AddSiteModal appSelected={app} />
+              <AddOrEditSiteModal
+                onOpenChange={handleModalToggle}
+                site={selectedSite}
+              />
             </Modal>
           </div>
 
           <TabsContent value="pullTest">
-            <SitesTable />
+            <SitesTable
+              onOpenChange={handleModalToggle}
+              onSelectSite={setSelectedSite}
+            />
           </TabsContent>
 
           <TabsContent value="xCyclops">
-            <SitesTable />
+            <SitesTable
+              onOpenChange={handleModalToggle}
+              onSelectSite={setSelectedSite}
+            />
           </TabsContent>
 
           <TabsContent value="ultrabolts">
-            <SitesTable />
+            <SitesTable
+              onOpenChange={handleModalToggle}
+              onSelectSite={setSelectedSite}
+            />
           </TabsContent>
         </Tabs>
       </div>

@@ -24,9 +24,11 @@ module.exports = {
     'no-restricted-syntax': [
       'error',
       {
-        selector: 'ImportDeclaration[source.value=/graphql-types/] > ImportSpecifier',
-        message: 'Named imports are not allowed for "graphql-types" imports. Use "import * as GraphQLTypes [...]" instead.'
-      }
-    ]
+        selector:
+          'ImportDeclaration[source.value=/graphql-types/] > ImportSpecifier',
+        message:
+          'Named imports are not allowed for "graphql-types" imports. Use "import * as GraphQLTypes [...]" instead.',
+      },
+    ],
   },
 };

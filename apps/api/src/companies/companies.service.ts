@@ -137,7 +137,7 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length > 0) {
+      if (plans && plans.length >= 0) {
         // Delete plans that are not in the request
         const plansToKeepId = plans.map((plan) => plan.id);
         await prisma.plan.deleteMany({

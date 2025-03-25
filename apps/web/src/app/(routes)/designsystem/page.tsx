@@ -655,7 +655,7 @@ export default function Page(): JSX.Element {
                   <FormItem>
                     <FormLabel>Disabled single calendar</FormLabel>
                     <FormControl>
-                      <SingleDateCalendar disabled className="w-96" />
+                      <SingleDateCalendar disabled={true} className="w-96" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

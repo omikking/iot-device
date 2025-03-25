@@ -3,7 +3,7 @@ import {
   LucideCircleCheckBig,
   LucideSparkles,
 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { AppPlan } from '@/components/AppPlan';
 import { UseFormReturn } from 'react-hook-form';
 import { UpdateCompanyFormValues } from './schemas/CompanyFormSchema';
@@ -29,6 +29,7 @@ interface AppPlansContainerProps {
     id: string;
     applicationName: string;
     planLevel?: 'GOLD' | 'SILVER' | 'BRONZE';
+    expiringDate: number;
   };
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues>;
@@ -43,7 +44,9 @@ export const AppPlansContainer = ({
   isAdmin,
   companyForm,
 }: AppPlansContainerProps) => {
-  // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date|undefined>()
+  const [selected, setSelected] = useState<string>()
+  
   const { applicationName } = appPlan;
   // const [activePlan, setActivePlan] = useState<
   //   'GOLD' | 'SILVER' | 'BRONZE' | undefined
@@ -58,6 +61,11 @@ export const AppPlansContainer = ({
     const currentPlan = currentPlans.find(
       (p) => p.applicationName === applicationName,
     );
+    const date = currentPlan?.expiringDate || ''
+    const formattedDate = currentPlan?.expiringDate ? new Date(date) : undefined 
+    setDate(formattedDate)
+    const dateString = new Date(date).toDateString()
+    setSelected(dateString)
     return isValidPlanLevel(currentPlan?.planLevel)
       ? currentPlan.planLevel
       : undefined;
@@ -85,7 +93,7 @@ export const AppPlansContainer = ({
       if (existingPlanIndex >= 0) {
         // Update existing plan
         updatedPlans = currentPlans.map((p, index) =>
-          index === existingPlanIndex ? { ...p, planLevel: plan } : p,
+          index === existingPlanIndex ? { ...p, planLevel: plan, expiringDate: p.expiringDate } : p,
         );
       } else {
         // Add new plan
@@ -107,7 +115,21 @@ export const AppPlansContainer = ({
       shouldTouch: true,
     });
   };
-
+  const handleDateChange = (date: Date | undefined) => {
+    console.log(date)
+    const currentPlans = companyForm.getValues('plans') || [];
+    const updatedPlans = currentPlans.map((plan) => {
+      if (plan.applicationName === applicationName) {
+        return { ...plan, expiringDate: date?.getTime()};
+      }
+      return plan;
+    });
+    companyForm.setValue('plans', updatedPlans, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
   return (
     <div
       key={appPlan.id}
@@ -168,14 +190,14 @@ export const AppPlansContainer = ({
           {user === 'Client' && (
             <Badge variant="primary">
               <LucideCalendar size="14" />
-              Your plan expires 2025-08-10
+              Your plan expires on {selected}
             </Badge>
           )}
 
           {user === 'Superadmin' && (
             <>
               <FormLabel>Expiring date</FormLabel>
-              <SingleDateCalendar className="mt-2" />
+              <SingleDateCalendar date={date} setDate={setDate} onDateChange={handleDateChange} className="mt-2" />
             </>
           )}
         </div>

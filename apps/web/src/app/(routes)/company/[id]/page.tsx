@@ -44,7 +44,7 @@ export default function Page({
 
   // Does not call if it's new company flow.
   const [companyData] = isNewCompany
-    ? undefined
+    ? []
     : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
   const company = companyData?.data?.company as Company;
 

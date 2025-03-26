@@ -1,6 +1,5 @@
 import {
   Button,
-  Dropdown,
   Form,
   FormControl,
   FormField,
@@ -18,16 +17,14 @@ import {
   administratorFormSchema,
   AdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
-import { LucidePlus, LucideSquarePen } from 'lucide-react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { GetAdminsQuery } from '@/gql/graphql';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { optionAdministratorRoleMock } from '@/app/mock/mock';
-import { graphql } from '@/gql';
-// import { User } from '@/gql/graphql';
-import { useMutation } from 'urql';
-import { GetAdminsQuery } from '@/gql/graphql';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { LucidePlus, LucideSquarePen } from 'lucide-react';
 
 type AddOrEditAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -65,13 +62,6 @@ export const AddOrEditAdministratorModal = ({
       workPlace: administrator?.workPlace || '',
       email: administrator?.email || '',
       phoneNumber: administrator?.phoneNumber || '',
-      globalRole: administrator?.globalRole || '',
-      isGlobalVisibility: administrator?.isGlobalVisibility || false,
-      // userPermissions:
-      //   administrator?.userPermissions?.map((userPermission) => ({
-      //     newUserId: userPermission.id,
-      //     oldUserId: userPermission.id,
-      //   })) || [],
     },
   });
 
@@ -102,7 +92,7 @@ export const AddOrEditAdministratorModal = ({
     if (administrator) {
       updateUser({
         id: administrator.id,
-        updateUser: data,
+        updateUserInput: data,
       }).then((result) => {
         // @TODO Add component later for handling error
         console.log(result);
@@ -112,29 +102,6 @@ export const AddOrEditAdministratorModal = ({
       });
     }
   };
-
-  // const onSubmit = async (data: AdministratorFormValues) => {
-  //   setIsLoading(true);
-  //   // Simulate API call
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   console.log('Administrator added:', data);
-  //   setIsSuccessful(true);
-  //   setIsLoading(false);
-
-  //   setTimeout(() => {
-  //     onOpenChange(false);
-  //   }, 1500);
-  //   setTimeout(() => {
-  //     setIsSuccessful(false);
-  //     resetFormValues();
-  //   }, 1700);
-  // };
-
-  // useEffect(() => {
-  //   if (administrator) {
-  //     form.reset({});
-  //   }
-  // }, [administrator, form]);
 
   useEffect(() => {
     if (administrator) {
@@ -165,113 +132,94 @@ export const AddOrEditAdministratorModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
-              <div className="flex flex-row flex-wrap justify-between gap-8">
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Full name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter full name"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="workPlace"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter company"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter email"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Phone number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter phone number"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                {/* Should this be displayed? */}
-                {/* <FormField
-                  control={form.control}
-                  name="globalRole"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-96">
-                        <FormLabel>Role</FormLabel>
-                        <FormControl>
-                          <Dropdown
-                            id="globalRole"
-                            placeholder="Select role..."
-                            selectedId={field.value}
-                            options={optionAdministratorRoleMock}
-                            onSelect={field.onChange}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                /> */}
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-row justify-between">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Full name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter full name"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="workPlace"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Company</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter company"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="flex flex-row justify-between">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter email"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Phone number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter phone number"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
               </div>
             </div>
-            <ModalFooter className="px-10 py-6">
+            <ModalFooter className="px-10 pt-14 pb-6">
               <Button
                 type="submit"
                 size="large"

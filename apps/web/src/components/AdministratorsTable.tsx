@@ -121,7 +121,7 @@ export const AdministratorsTable = ({
       ),
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'globalRole',
       header: 'Role',
       cell: () => (
         <>
@@ -156,18 +156,26 @@ export const AdministratorsTable = ({
         //   (admin) => admin.id === row.original.id,
         // );
 
-        const admin = administrators.find(
-          (admin) => admin.id === row.original.id,
-        );
+        // const admin = administrators.find(
+        //   (admin) => admin.id === row.original.id,
+        // );
+
+        // return (
+        //   admin && (
+        //     <DeleteEditDropdown
+        //       itemSelected={admin.id}
+        //       openDeleteModal={openDeleteModal}
+        //       handleEdit={openEditModal}
+        //     />
+        //   )
+        // );
 
         return (
-          admin && (
-            <DeleteEditDropdown
-              itemSelected={admin.id}
-              openDeleteModal={openDeleteModal}
-              handleEdit={openEditModal}
-            />
-          )
+          <DeleteEditDropdown
+            itemSelected={row.original.id}
+            openDeleteModal={openDeleteModal}
+            handleEdit={openEditModal}
+          />
         );
       },
     },

@@ -130,9 +130,27 @@ export const AddOrEditAdministratorModal = ({
   //   }, 1700);
   // };
 
+  // useEffect(() => {
+  //   if (administrator) {
+  //     form.reset({});
+  //   }
+  // }, [administrator, form]);
+
   useEffect(() => {
     if (administrator) {
-      form.reset({});
+      form.reset({
+        fullName: administrator.fullName || '',
+        email: administrator.email || '',
+        workPlace: administrator.workPlace || '',
+        phoneNumber: administrator.phoneNumber || '',
+      });
+    } else {
+      form.reset({
+        fullName: '',
+        email: '',
+        workPlace: '',
+        phoneNumber: '',
+      });
     }
   }, [administrator, form]);
 
@@ -228,7 +246,8 @@ export const AddOrEditAdministratorModal = ({
                     );
                   }}
                 />
-                <FormField
+                {/* Should this be displayed? */}
+                {/* <FormField
                   control={form.control}
                   name="globalRole"
                   render={({ field }) => {
@@ -249,7 +268,7 @@ export const AddOrEditAdministratorModal = ({
                       </FormItem>
                     );
                   }}
-                />
+                /> */}
               </div>
             </div>
             <ModalFooter className="px-10 py-6">

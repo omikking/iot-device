@@ -1,104 +1,144 @@
-import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SiteLocationsForm } from '../SiteLocationsForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { ILocationMock } from '@/app/(routes)/sitelocations/[id]/page';
-import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { ILocation } from '@/components/urql-siteslocations/SitesLocationsUrql';
 import { SiteLocationsValue } from '@/components/SiteLocations/SiteLocationsForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/SiteLocationsForm';
+import { LocationUpdateUrql } from '@/components/urql-siteslocations/LocationUpdateUrql';
 
-interface LocationComponentProps {
-  location: ILocationMock;
+type LocationComponentProps = {
   index: number;
-  locationsOptionsMock: ILocationMock[];
+  location: ILocation;
+  locationsOptions: ILocation[];
   inputRef: React.RefObject<HTMLInputElement>;
+  isNewLocation?: boolean;
+  setNewLocationId?: (id: string | undefined) => void;
   handleSetLocation: (name: string) => void;
-  setLocationsOptionsMock: React.Dispatch<
-    React.SetStateAction<ILocationMock[]>
-  >;
-}
+};
+
+const deleteLocationsMutation = graphql(`
+  mutation removeLocation($id: String!) {
+    removeLocation(id: $id) {
+      id
+      locationName
+      driveId
+    }
+  }
+`);
 
 export const LocationItem = ({
   location,
   index,
-  locationsOptionsMock,
+  locationsOptions,
   inputRef,
-  setLocationsOptionsMock,
+  isNewLocation,
+  setNewLocationId,
   handleSetLocation,
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteLocationMutation] = useMutation(deleteLocationsMutation);
+  const { updateLocation } = LocationUpdateUrql();
 
-  const locationForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: '',
-        name: '',
-      },
-    });
+  const form = useForm<SiteLocationsValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: location.id,
+      locationName: location.locationName,
+    },
+  });
+
+  const deleteLocation = async (id: string) => {
+    try {
+      const response = await deleteLocationMutation({ id });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      console.log('Mutation response:', response);
+    } catch (error) {
+      console.error('Error deleting location:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isNewLocation) {
+      setIsEditing(true);
+    }
+  }, [isNewLocation]);
+
+  useEffect(() => {
+    if (isNewLocation && isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isNewLocation, isEditing]);
+
+  const handleSubmit: SubmitHandler<SiteLocationsValue> = async (formData) => {
+    try {
+      const isDuplicate = locationsOptions.some(
+        (location) =>
+          location.locationName === formData.locationName &&
+          location.id !== location.id,
+      );
+
+      if (isDuplicate) {
+        alert(
+          'This location already exists. Please enter a different location.',
+        );
+        return;
+      }
+
+      const result = await updateLocation(location.id, {
+        locationName: formData.locationName || '',
+      });
+
+      console.log('update result: ', result);
+
+      if (result) {
+        setIsEditing(false);
+        if (isNewLocation) {
+          setNewLocationId && setNewLocationId(undefined);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating location:', error);
+    }
+  };
 
   const handleEditLocation = () => {
     setIsEditing(true);
-    locationForm.setValue('name', location.name);
+    form.setValue('locationName', location.locationName);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    locationForm.reset();
+    form.reset();
   };
 
   const handleCancelLocation = (index: number) => {
-    const newLocations = [...locationsOptionsMock];
+    const newLocations = [...locationsOptions];
     newLocations.splice(index, 1);
-    setLocationsOptionsMock(newLocations);
-  };
-
-  const handleEditSubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-    index: number,
-  ) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const newLocationName = formData.get('location') as string;
-
-    const isDuplicate = locationsOptionsMock.some(
-      (location) => location.name === newLocationName,
-    );
-
-    if (isDuplicate) {
-      alert('This location already exists. Please enter a different location.');
-      return;
-    }
-
-    const newLocations = [...locationsOptionsMock];
-    newLocations[index] = {
-      ...newLocations[index],
-      name: newLocationName,
-    };
-    setLocationsOptionsMock(newLocations);
-    setIsEditing(false);
   };
 
   return (
-    <div
-      className={`bg-main-white px-6  'border-2 border-transparent`}
-      key={index}
-    >
+    <div className="bg-main-white px-6 border-2 border-transparent" key={index}>
       <div
         className="py-3"
-        onClick={() => !isEditing && handleSetLocation(location.name)}
+        onClick={() => !isEditing && handleSetLocation(location.locationName)}
       >
-        {!location.name || isEditing ? (
+        {!location.locationName || isEditing ? (
           <SiteLocationsForm
-            form={locationForm}
-            onSubmit={handleEditSubmit}
+            form={form}
+            onSubmit={handleSubmit}
             onCancel={handleCancelEdit}
-            placeholder="New location..."
-            name="location"
+            type="location"
             index={index}
             inputRef={inputRef}
           />
@@ -108,28 +148,31 @@ export const LocationItem = ({
             key={index}
           >
             <Text className="w-full" variant="small" color="foreground">
-              {location.name}
+              {location.locationName}
             </Text>
+
             <DeleteEditDropdown
               itemSelected={index}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete drive"
-              deleteButtonText="Confirm deletion"
+              modalTitle="Delete location"
+              deleteButtonText="Delete location"
               deleteIcon="Site"
               itemToDelete={index}
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={() => {
-                handleCancelLocation(index), setIsDeleteModalOpen(false);
+                handleCancelLocation(index),
+                  setIsDeleteModalOpen(false),
+                  deleteLocation(location.id);
               }}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${location.name} `}
+                  {` ${location.locationName} `}
                 </Text>
                 from the list. Are you sure you want to delete?
               </Text>

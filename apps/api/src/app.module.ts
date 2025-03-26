@@ -15,6 +15,7 @@ import { DrivesModule } from './drives/drives.module';
 import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
 import { EnumModule } from './enums/enum.module';
+import { HazardsModule } from './hazards/hazards.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { EnumModule } from './enums/enum.module';
     LocationsModule,
     BoltResultsModule,
     EnumModule,
+    HazardsModule,
   ],
   providers: [DateScalar],
 })

@@ -239,6 +239,7 @@ export abstract class IQuery {
     getBoltTypes?: Nullable<BoltType[]>;
     getRingPosition?: Nullable<RingPosition[]>;
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
+    hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;
     locations: Location[];

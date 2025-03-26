@@ -6,6 +6,7 @@ import { UpdateCompanyInput } from './dto/update-company.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+
 import { CompanyListResponse } from './companyListResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';

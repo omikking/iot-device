@@ -38,6 +38,7 @@ export const CreateAppPlansContainer = ({
   companyForm,
 }: AppPlansContainerProps) => {
   // @TODO const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date|undefined>()
   const { applicationName, planLevel: initialActivePlan } = appPlan;
   const [activePlan, setActivePlan] = useState<
     'GOLD' | 'SILVER' | 'BRONZE' | undefined
@@ -124,7 +125,8 @@ export const CreateAppPlansContainer = ({
               <FormLabel>Expiring date</FormLabel>
               {/* @TODO Do we want to have it as disabled or invisible when plan is not selected? */}
               {/* <SingleDateCalendar disabled={activePlan} className="mt-2" /> */}
-              <SingleDateCalendar className="mt-2" />
+              {/* <SingleDateCalendar className="mt-2" /> */}
+              <SingleDateCalendar date={date} setDate={setDate} className="mt-2" />
             </>
           )}
         </div>

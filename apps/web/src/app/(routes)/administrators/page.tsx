@@ -5,13 +5,14 @@ import { GoBack } from '@/components/GoBack';
 import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
 import { AdministratorsTable } from '@/components/AdministratorsTable';
-import { AdministratorSchema } from '@/app/mock/mock';
+// import { User } from '@/gql/graphql';
+import { GetAdminsQuery } from '@/gql/graphql';
 
 export default function Page(): JSX.Element {
   const [openAdministratorsModal, setOpenAdministratorsModal] =
     useState<boolean>(false);
   const [selectedAdministrator, setSelectedAdministrator] = useState<
-    AdministratorSchema | undefined
+    GetAdminsQuery['users'][0] | undefined
   >(undefined);
 
   const handleToggleModal = (open: boolean) => {
@@ -38,7 +39,8 @@ export default function Page(): JSX.Element {
             </Button>
           </ModalTrigger>
           <AddOrEditAdministratorModal
-            onOpenChange={setOpenAdministratorsModal}
+            // onOpenChange={setOpenAdministratorsModal}
+            onOpenChange={handleToggleModal}
             administrator={selectedAdministrator}
           />
         </Modal>

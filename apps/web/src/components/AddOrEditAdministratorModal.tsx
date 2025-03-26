@@ -20,15 +20,32 @@ import {
 } from './schemas/AdministratorFormSchema';
 import { useEffect, useState } from 'react';
 import { LucidePlus, LucideSquarePen } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { optionAdministratorRoleMock } from '@/app/mock/mock';
+import { graphql } from '@/gql';
+// import { User } from '@/gql/graphql';
+import { useMutation } from 'urql';
+import { GetAdminsQuery } from '@/gql/graphql';
 
-interface AddOrEditAdministratorModalProps {
+type AddOrEditAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
-  administrator?: AdministratorFormValues;
-}
+  administrator?: GetAdminsQuery['users'][0];
+};
+
+const updateAdministratorsMutation = graphql(`
+  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {
+    updateUser(id: $id, updateUserInput: $updateUserInput) {
+      email
+      fullName
+      workPlace
+      phoneNumber
+      globalRole
+      isGlobalVisibility
+    }
+  }
+`);
 
 export const AddOrEditAdministratorModal = ({
   onOpenChange,
@@ -37,35 +54,41 @@ export const AddOrEditAdministratorModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
+  const [, updateUser] = useMutation<AdministratorFormValues>(
+    updateAdministratorsMutation,
+  );
+
   const form = useForm<AdministratorFormValues>({
     resolver: zodResolver(administratorFormSchema),
     defaultValues: {
-      fullName: '',
-      company: '',
-      email: '',
-      phoneNumber: '',
-      role: '',
+      fullName: administrator?.fullName || '',
+      workPlace: administrator?.workPlace || '',
+      email: administrator?.email || '',
+      phoneNumber: administrator?.phoneNumber || '',
+      globalRole: administrator?.globalRole || '',
+      isGlobalVisibility: administrator?.isGlobalVisibility || false,
+      // userPermissions:
+      //   administrator?.userPermissions?.map((userPermission) => ({
+      //     newUserId: userPermission.id,
+      //     oldUserId: userPermission.id,
+      //   })) || [],
     },
   });
 
   const resetFormValues = () => {
     form.reset({
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      role: '',
+      globalRole: '',
+      isGlobalVisibility: false,
     });
   };
 
-  const onSubmit = async (data: AdministratorFormValues) => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Administrator added:', data);
+  const onSuccessfulSubmit = () => {
     setIsSuccessful(true);
     setIsLoading(false);
-
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
@@ -75,9 +98,41 @@ export const AddOrEditAdministratorModal = ({
     }, 1700);
   };
 
+  const onSubmit: SubmitHandler<AdministratorFormValues> = (data) => {
+    if (administrator) {
+      updateUser({
+        id: administrator.id,
+        updateUser: data,
+      }).then((result) => {
+        // @TODO Add component later for handling error
+        console.log(result);
+        if (result.data) {
+          onSuccessfulSubmit();
+        }
+      });
+    }
+  };
+
+  // const onSubmit = async (data: AdministratorFormValues) => {
+  //   setIsLoading(true);
+  //   // Simulate API call
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   console.log('Administrator added:', data);
+  //   setIsSuccessful(true);
+  //   setIsLoading(false);
+
+  //   setTimeout(() => {
+  //     onOpenChange(false);
+  //   }, 1500);
+  //   setTimeout(() => {
+  //     setIsSuccessful(false);
+  //     resetFormValues();
+  //   }, 1700);
+  // };
+
   useEffect(() => {
     if (administrator) {
-      form.reset(administrator);
+      form.reset({});
     }
   }, [administrator, form]);
 
@@ -115,7 +170,7 @@ export const AddOrEditAdministratorModal = ({
                 />
                 <FormField
                   control={form.control}
-                  name="company"
+                  name="workPlace"
                   disabled={isSuccessful}
                   render={({ field }) => {
                     return (
@@ -175,14 +230,14 @@ export const AddOrEditAdministratorModal = ({
                 />
                 <FormField
                   control={form.control}
-                  name="role"
+                  name="globalRole"
                   render={({ field }) => {
                     return (
                       <FormItem className="w-96">
                         <FormLabel>Role</FormLabel>
                         <FormControl>
                           <Dropdown
-                            id="role"
+                            id="globalRole"
                             placeholder="Select role..."
                             selectedId={field.value}
                             options={optionAdministratorRoleMock}

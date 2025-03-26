@@ -9,15 +9,53 @@ import {
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { CompanyListResponse } from './companyListResponse';
+import { ConfigService } from '@nestjs/config';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
-  findAll(): Promise<Company[]> {
-    return this.prisma.company.findMany();
+  async getCompanies(
+    user: ActiveUserData,
+    userId?: string,
+    pagination?: { offset: number; limit: number },
+  ): Promise<CompanyListResponse> {
+    const { offset, limit } = pagination || { offset: 0, limit: 20 };
+    const whereCondition: Partial<Record<string, any>> = {};
+    if (user.globalRole === this.config.get<string>('GLOBAL_ADMIN')) {
+      // Admin can see all companies; filter by userId if provided
+      if (userId) {
+        whereCondition.userPermission = {
+          some: { userId },
+        };
+      }
+    } else if (
+      user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+    ) {
+      // Technicians can only see companies where they have permission
+      whereCondition.userPermission = {
+        some: { userId: user.id },
+      };
+    }
+
+    const totalRecords = await this.prisma.company.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.company.findMany({
+      where: whereCondition,
+      skip: offset,
+      take: limit,
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<Company> {
@@ -137,7 +175,7 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length >= 0) {
+      if (plans && plans.length > 0) {
         // Delete plans that are not in the request
         const plansToKeepId = plans.map((plan) => plan.id);
         await prisma.plan.deleteMany({

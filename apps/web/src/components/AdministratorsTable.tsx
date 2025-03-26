@@ -104,6 +104,7 @@ export const AdministratorsTable = ({
 
         return (
           <DeleteEditDropdown
+            // @TODO Temporary hardcoded, replace later like SiteTable is handling it using item id.
             itemSelected={'1'}
             openDeleteModal={openDeleteModal}
             handleEdit={() => openEditModal('1')}

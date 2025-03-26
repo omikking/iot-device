@@ -71,8 +71,6 @@ export const AddOrEditAdministratorModal = ({
       workPlace: '',
       email: '',
       phoneNumber: '',
-      globalRole: '',
-      isGlobalVisibility: false,
     });
   };
 

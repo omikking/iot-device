@@ -125,18 +125,6 @@ export const AdministratorsTable = ({
       header: 'Role',
       cell: () => (
         <>
-          {/* TODO find a better solution */}
-          {/* {row.getValue('role') === 'Sandvik admin' ? (
-            <Badge variant="primary">
-              <LucideUserCog />
-              Sandvik admin
-            </Badge>
-          ) : (
-            <Badge variant="attention">
-              <LucideUserCog />
-              Supah admin
-            </Badge>
-          )} */}
           <Badge variant="primary">
             <LucideUserCog />
             Sandvik admin
@@ -152,24 +140,6 @@ export const AdministratorsTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        // const rowIndex = administrators.find(
-        //   (admin) => admin.id === row.original.id,
-        // );
-
-        // const admin = administrators.find(
-        //   (admin) => admin.id === row.original.id,
-        // );
-
-        // return (
-        //   admin && (
-        //     <DeleteEditDropdown
-        //       itemSelected={admin.id}
-        //       openDeleteModal={openDeleteModal}
-        //       handleEdit={openEditModal}
-        //     />
-        //   )
-        // );
-
         return (
           <DeleteEditDropdown
             itemSelected={row.original.id}
@@ -190,10 +160,6 @@ export const AdministratorsTable = ({
           modalTitle="Delete administrator"
           isOpen={isDeleteAdministratorModalOpen}
           onOpenChange={closeDeleteModal}
-          // onDelete={() => {
-          //   handleDelete();
-          //   closeDeleteModal();
-          // }}
           onDelete={handleDelete}
         >
           <Text variant="medium" color={'foreground'}>

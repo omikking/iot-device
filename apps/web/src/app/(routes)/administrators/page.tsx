@@ -2,11 +2,10 @@
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
-import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
-import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
-import { AdministratorsTable } from '@/components/AdministratorsTable';
-// import { User } from '@/gql/graphql';
 import { GetAdminsQuery } from '@/gql/graphql';
+import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
+import { AdministratorsTable } from '@/components/AdministratorsTable';
+import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
 
 export default function Page(): JSX.Element {
   const [openAdministratorsModal, setOpenAdministratorsModal] =
@@ -39,7 +38,6 @@ export default function Page(): JSX.Element {
             </Button>
           </ModalTrigger>
           <AddOrEditAdministratorModal
-            // onOpenChange={setOpenAdministratorsModal}
             onOpenChange={handleToggleModal}
             administrator={selectedAdministrator}
           />

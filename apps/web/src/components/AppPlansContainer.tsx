@@ -36,29 +36,37 @@ export const AppPlansContainer = ({
 
   const {
     applicationName,
-    planLevel: initialPlanLevel,
     expiringDate,
+    planLevel: initialPlanLevel,
   } = appPlan;
 
-  const [activePlan, setActivePlan] = useState<PlanLevel | undefined>(
+  const [activePlanLevel, setActivePlanLevel] = useState<PlanLevel | undefined>(
     initialPlanLevel as PlanLevel,
   );
 
   const [date, setDate] = useState<Date | undefined>(expiringDate);
 
   const handleDateChange = (date?: Date) => {
-    // @TODO is this how we should do to update the date etc?
     const currentPlans = companyForm.getValues('plans') || [];
 
     const updatedPlans = currentPlans.map((plan) => {
       if (plan.applicationName === applicationName) {
-        return { ...plan, expiringDate: date?.getTime() };
+        return {
+          ...appPlan,
+          planLevel: activePlanLevel,
+          expiringDate: date?.getTime() || 0,
+        };
       }
       return plan;
     });
 
-    companyForm.setValue('plans', updatedPlans);
-    setDate(date);
+    companyForm.setValue('plans', updatedPlans, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+
+    setDate(date?.getTime() || 0);
   };
 
   return (
@@ -71,14 +79,14 @@ export const AppPlansContainer = ({
           {formatAppName(applicationName)}
         </Headline>
 
-        {user === 'Superadmin' && activePlan && (
+        {user === 'Superadmin' && activePlanLevel && (
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
           </Badge>
         )}
 
-        {user === 'Client' && !activePlan && (
+        {user === 'Client' && !activePlanLevel && (
           <Badge variant="primary">
             <LucideSparkles size="14" />
             Available plans
@@ -86,34 +94,37 @@ export const AppPlansContainer = ({
         )}
       </div>
 
-      {/* Plans */}
+      {/* Plan levels */}
       <AppPlan
-        plan="GOLD"
-        activePlan={activePlan}
-        isAdmin={isAdmin}
+        planLevel="GOLD"
         companyForm={companyForm}
-        applicationName={applicationName}
-        onPlanChange={setActivePlan}
+        appPlan={appPlan}
+        expiringDate={date}
+        activePlanLevel={activePlanLevel}
+        onPlanLevelChange={setActivePlanLevel}
+        isAdmin={isAdmin}
       />
       <AppPlan
-        plan="SILVER"
-        activePlan={activePlan}
-        isAdmin={isAdmin}
+        planLevel="SILVER"
         companyForm={companyForm}
-        applicationName={applicationName}
-        onPlanChange={setActivePlan}
+        appPlan={appPlan}
+        expiringDate={date}
+        activePlanLevel={activePlanLevel}
+        onPlanLevelChange={setActivePlanLevel}
+        isAdmin={isAdmin}
       />
       <AppPlan
-        plan="BRONZE"
-        activePlan={activePlan}
-        isAdmin={isAdmin}
+        planLevel="BRONZE"
         companyForm={companyForm}
-        applicationName={applicationName}
-        onPlanChange={setActivePlan}
+        appPlan={appPlan}
+        expiringDate={date}
+        activePlanLevel={activePlanLevel}
+        onPlanLevelChange={setActivePlanLevel}
+        isAdmin={isAdmin}
       />
 
       {/* Calendar */}
-      {activePlan && (
+      {activePlanLevel && (
         <div className="py-5 px-6 border-b border-neutral-2">
           {user === 'Client' && date && (
             <Badge variant="primary">
@@ -127,7 +138,7 @@ export const AppPlansContainer = ({
               <FormLabel>Expiring date</FormLabel>
               <SingleDateCalendar
                 className="mt-2"
-                selectedDate={date}
+                selectedDate={expiringDate}
                 onDateChange={handleDateChange}
               />
             </>

@@ -137,25 +137,39 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length > 0) {
-        // Delete plans that are not in the request
-        const plansToKeepId = plans.map((plan) => plan.id);
-        await prisma.plan.deleteMany({
-          where: {
-            companyId: id,
-            NOT: {
-              id: { in: plansToKeepId },
+      if (plans) {
+        // Delete all plans that are not in the request
+        const plansToKeepId = plans
+          .map((plan) => plan.id)
+          .filter((id): id is string => !id !== null && id !== undefined);
+
+        if (plansToKeepId.length > 0) {
+          await prisma.plan.deleteMany({
+            where: {
+              companyId: id,
+              NOT: {
+                id: { in: plansToKeepId },
+              },
             },
-          },
-        });
+          });
+        } else {
+          // Handle case when no plans are left to keep
+          await prisma.plan.deleteMany({
+            where: { companyId: id },
+          });
+        }
 
         // Update existing plans or create new
         for (const plan of plans) {
-          const existingPlan = await prisma.plan.findUnique({
-            where: { id: plan.id },
-          });
+          let existingPlan;
 
-          if (existingPlan) {
+          if (plan?.id) {
+            existingPlan = await prisma.plan.findUnique({
+              where: { id: plan.id },
+            });
+          }
+
+          if (existingPlan && plan?.id) {
             // Update plan if it already exists
             await prisma.plan.update({
               where: { id: plan.id },
@@ -177,7 +191,6 @@ export class CompaniesService {
           }
         }
       }
-
       return updatedCompany;
     });
 

@@ -95,7 +95,7 @@ UpdatePlanInput
 Define the input fields to update the plans
 """
 input UpdatePlanInput {
-  id: String!
+  id: String
   applicationName: String!
   planLevel: String
   expiringDate: DateTime

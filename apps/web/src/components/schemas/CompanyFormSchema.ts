@@ -11,10 +11,10 @@ export const updateCompanyFormSchema = z.object({
   plans: z
     .array(
       z.object({
-        id: z.string(),
+        id: z.string().optional(),
         applicationName: z.string(),
-        planLevel: z.string().optional(),
-        expiringDate: z.number().optional(),
+        planLevel: z.string(),
+        expiringDate: z.number() || 0,
       }),
     )
     .optional(),
@@ -39,18 +39,19 @@ export const createCompanyFormSchema = z.object({
   plans: z
     .array(
       z.object({
-        id: z.string(),
         applicationName: z.string(),
         planLevel: z.string(),
-        expiringDate: z.number().optional(),
+        expiringDate: z.number() || 0,
       }),
     )
     .optional(),
-  userPermissions: z.array(
-    z.object({
-      userId: z.string(),
-    }),
-  ),
+  userPermissions: z
+    .array(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 export type UpdateCompanyFormValues = z.infer<typeof updateCompanyFormSchema>;

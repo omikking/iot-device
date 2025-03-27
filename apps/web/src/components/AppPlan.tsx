@@ -22,30 +22,32 @@ export const capitalizeFirstLetter = (word: string) => {
 };
 
 interface AppPlanProps {
-  plan: PlanLevel;
-  applicationName: string;
+  appPlan: Plan;
+  planLevel: PlanLevel;
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-  activePlan?: PlanLevel;
-  onPlanChange: (plan?: PlanLevel) => void;
+  activePlanLevel?: PlanLevel;
+  expiringDate?: Date;
+  onPlanLevelChange: (planLevel?: PlanLevel) => void;
 }
 
 export const AppPlan = ({
-  plan,
-  activePlan,
+  appPlan,
+  planLevel,
+  activePlanLevel,
   isAdmin,
   companyForm,
-  applicationName,
-  onPlanChange,
+  expiringDate,
+  onPlanLevelChange,
 }: AppPlanProps) => {
   const userRole = isAdmin ? 'Superadmin' : 'Client';
-  const isPlanActive = plan === activePlan;
+  const isPlanActive = planLevel === activePlanLevel;
 
-  // @TODO see if we could fix the field typing.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlePlanChange = (isChecked: boolean, field: any) => {
-    const newPlan = isChecked ? plan : undefined;
-    const currentPlans = field.value || [];
+  const { applicationName } = appPlan;
+
+  const handlePlanChange = (isChecked: boolean) => {
+    const newPlanLevel = isChecked ? planLevel : undefined;
+    const currentPlans = companyForm.getValues('plans') || [];
     let updatedPlans;
 
     const existingPlan = currentPlans.findIndex(
@@ -55,16 +57,20 @@ export const AppPlan = ({
     if (isChecked) {
       // Update existing plan
       if (existingPlan >= 0) {
-        updatedPlans = currentPlans.map((planItem: Plan, i: number) =>
-          i === existingPlan ? { ...planItem, planLevel: plan } : planItem,
-        );
+        updatedPlans = currentPlans.map((planItem) => {
+          if (planItem.applicationName === applicationName) {
+            return { ...appPlan, planLevel, expiringDate };
+          }
+          return planItem;
+        });
         // Add new plan
       } else {
         updatedPlans = [
           ...currentPlans,
           {
-            applicationName,
-            planLevel: plan,
+            ...appPlan,
+            planLevel,
+            expiringDate,
           },
         ];
       }
@@ -75,11 +81,15 @@ export const AppPlan = ({
       );
     }
 
-    field.onChange(updatedPlans);
-    onPlanChange(newPlan);
+    onPlanLevelChange(newPlanLevel);
+
+    companyForm.setValue('plans', updatedPlans, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
-  // @TODO Updating app not working atm. Fix it.
   return (
     <div
       className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
@@ -89,23 +99,21 @@ export const AppPlan = ({
       <FormField
         control={companyForm.control}
         name="plans"
-        render={({ field }) => (
+        render={() => (
           <FormItem className="flex w-full justify-between items-center">
             <FormLabel
               className="flex items-center"
               variant="medium"
               color="foreground"
             >
-              {capitalizeFirstLetter(plan)}
+              {capitalizeFirstLetter(planLevel)}
             </FormLabel>
 
             {userRole === 'Superadmin' && (
               <FormControl>
                 <Switch
-                  checked={activePlan === plan}
-                  onCheckedChange={(isChecked) =>
-                    handlePlanChange(isChecked, field)
-                  }
+                  checked={activePlanLevel === planLevel}
+                  onCheckedChange={handlePlanChange}
                 />
               </FormControl>
             )}

@@ -164,7 +164,7 @@ export const Menu = () => {
               variant="outline"
               size="large"
               tabIndex={-1}
-              onClick={signOut}
+              onClick={() => signOut()}
             >
               <LucideLogOut />
               Logout

@@ -120,12 +120,11 @@ export const CompanyForm = ({
       postalCode: company?.postalCode || '',
       plans: company?.plans || [],
       // @TODO update this later when BE is fixed.
-      userPermissions: !company
-        ? [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }]
-        : company?.users?.map(() => ({
-            newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-            oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-          })),
+      // Replace with [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }] to create company, make sure to have an admin with this id
+      userPermissions: company?.users?.map(() => ({
+        newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+        oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+      })),
     },
   });
 
@@ -161,15 +160,12 @@ export const CompanyForm = ({
       companyForm.reset({
         ...company,
         plans: company.plans || [],
-
         // @TODO update this later when BE is fixed.
         // Temporary. Make sure to have a user with this id and is sandvik_admin
-        userPermissions: !company
-          ? [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }]
-          : company?.users?.map(() => ({
-              newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-              oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-            })),
+        userPermissions: company?.users?.map(() => ({
+          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+        })),
       });
     }
   }, [company]);
@@ -233,7 +229,7 @@ export const CompanyForm = ({
                   return (
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
-                      key={appPlan.id || planType.applicationName}
+                      key={existingPlan?.id || appPlan.applicationName}
                       isAdmin={isAdmin}
                       companyForm={companyForm}
                     />

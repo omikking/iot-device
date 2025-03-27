@@ -27,7 +27,7 @@ interface AppPlanProps {
   isAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   activePlanLevel?: PlanLevel;
-  expiringDate?: Date;
+  expiringDate?: Date | number;
   onPlanLevelChange: (planLevel?: PlanLevel) => void;
 }
 
@@ -51,7 +51,7 @@ export const AppPlan = ({
     let updatedPlans;
 
     const existingPlan = currentPlans.findIndex(
-      (planItem: Plan) => planItem.applicationName === applicationName,
+      (planItem) => planItem.applicationName === applicationName,
     );
 
     if (isChecked) {
@@ -77,13 +77,13 @@ export const AppPlan = ({
       // If switch is unchecked, remove plan
     } else {
       updatedPlans = currentPlans.filter(
-        (planItem: Plan) => planItem.applicationName !== applicationName,
+        (planItem) => planItem.applicationName !== applicationName,
       );
     }
 
     onPlanLevelChange(newPlanLevel);
 
-    companyForm.setValue('plans', updatedPlans, {
+    companyForm.setValue('plans', updatedPlans as Plan[], {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,

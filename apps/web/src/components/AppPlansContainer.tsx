@@ -16,7 +16,7 @@ import {
 } from './schemas/CompanyFormSchema';
 
 // @TODO move to utils?
-export const formattedDate = (timestamp: Date) => {
+export const formattedDate = (timestamp: Date | number) => {
   const date = new Date(timestamp);
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
@@ -38,16 +38,16 @@ export const AppPlansContainer = ({
     applicationName,
     expiringDate,
     planLevel: initialPlanLevel,
-  } = appPlan;
+  } = appPlan as Plan;
 
   const [activePlanLevel, setActivePlanLevel] = useState<PlanLevel | undefined>(
     initialPlanLevel as PlanLevel,
   );
 
-  const [date, setDate] = useState<Date | undefined>(expiringDate);
+  const [date, setDate] = useState<Date | number | undefined>(expiringDate);
 
   const handleDateChange = (date?: Date) => {
-    const currentPlans = companyForm.getValues('plans') || [];
+    const currentPlans = (companyForm.getValues('plans') as Plan[]) || [];
 
     const updatedPlans = currentPlans.map((plan) => {
       if (plan.applicationName === applicationName) {
@@ -60,7 +60,7 @@ export const AppPlansContainer = ({
       return plan;
     });
 
-    companyForm.setValue('plans', updatedPlans, {
+    companyForm.setValue('plans', updatedPlans as Plan[], {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,

@@ -14,7 +14,7 @@ export const updateCompanyFormSchema = z.object({
         id: z.string().optional(),
         applicationName: z.string(),
         planLevel: z.string(),
-        expiringDate: z.number() || 0,
+        expiringDate: z.number().optional(),
       }),
     )
     .optional(),
@@ -41,7 +41,7 @@ export const createCompanyFormSchema = z.object({
       z.object({
         applicationName: z.string(),
         planLevel: z.string(),
-        expiringDate: z.number() || 0,
+        expiringDate: z.number().optional(),
       }),
     )
     .optional(),

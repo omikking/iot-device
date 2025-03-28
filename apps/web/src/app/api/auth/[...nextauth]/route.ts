@@ -97,7 +97,7 @@ const authOptions: NextAuthOptions = {
       // TODO: Backend integration
       session.company = {
         id: (process.env.TEMP_COMPANY_ID as UUID) || '404',
-        name: 'Default Company Name',
+        name: 'X-Men(test)',
       };
       return session;
     },

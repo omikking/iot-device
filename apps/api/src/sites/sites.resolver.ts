@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateSiteInput } from './dto/create-site.input';
 import { UpdateSiteInput } from './dto/update-site.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
+@UseGuards(JwtGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 

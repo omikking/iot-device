@@ -95,7 +95,7 @@ UpdatePlanInput
 Define the input fields to update the plans
 """
 input UpdatePlanInput {
-  id: String
+  id: String!
   applicationName: String!
   planLevel: String
   expiringDate: DateTime
@@ -114,8 +114,13 @@ input UpdateAdminPermissionInput {
 Query
 Define the queries that can be made to the Company model
 """
+type CompanyListResponse {
+  totalRecords: Int!
+  results: [Company!]!
+}
+
 type Query {
-  companies: [Company!]!
+  companies(offset: Int, limit: Int, userId: String): CompanyListResponse!
   company(id: String!): Company!
 }
 

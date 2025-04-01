@@ -9,15 +9,75 @@ import {
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
-
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { CompanyListResponse } from './companyListResponse';
+import { ConfigService } from '@nestjs/config';
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
-  findAll(): Promise<Company[]> {
-    return this.prisma.company.findMany();
+  async getCompanies(
+    user: ActiveUserData,
+    userId?: string,
+    pagination?: { offset: number; limit: number },
+  ): Promise<CompanyListResponse> {
+    const { offset, limit } = pagination || { offset: 0, limit: 20 };
+    const whereCondition: Partial<Record<string, any>> = {};
+
+    let targetUserRole: string | null = null;
+
+    if (userId) {
+      // Fetch the globalRole of the provided userId
+      const targetUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { globalRole: true },
+      });
+
+      if (!targetUser) {
+        throw new Error('User not found.');
+      }
+
+      targetUserRole = targetUser.globalRole;
+
+      // Case 1: userId is explicitly provided
+      if (targetUserRole === this.config.get<string>('GLOBAL_ADMIN')) {
+        // Admin can fetch companies for any user
+        whereCondition.userPermission = {
+          some: { userId },
+        };
+      } else if (
+        targetUserRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+      ) {
+        // Technicians are not allowed to fetch other users' companies
+        throw new Error(
+          "You do not have permission to access other users' company lists.",
+        );
+      } else {
+        throw new Error('Unauthorized access.');
+      }
+    } else {
+      // Case 2: userId is not provided, use authenticated user's ID
+      whereCondition.userPermission = {
+        some: { userId: user.id },
+      };
+    }
+
+    const totalRecords = await this.prisma.company.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.company.findMany({
+      where: whereCondition,
+      skip: offset,
+      take: limit,
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<Company> {

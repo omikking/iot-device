@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateCompanyInput } from './dto/create-company.input';
 import { UpdateCompanyInput } from './dto/update-company.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
+@UseGuards(JwtGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 

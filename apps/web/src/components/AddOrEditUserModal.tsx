@@ -18,16 +18,16 @@ import {
   Switch,
   Text,
 } from '@gsp/ui';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import React, { useEffect, useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
-import { technicians } from '@/app/mock/mock';
-import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
-import { SuccessMessage } from './SuccessMessage';
-import { User, UserPermission } from '@/gql/graphql';
 import { graphql } from '@/gql';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
+import { SuccessMessage } from './SuccessMessage';
+import React, { useEffect, useState } from 'react';
+import { User, UserPermission } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, set, useForm } from 'react-hook-form';
+import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
+import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
+import { UpdateUserPermissionFormValues } from './schemas/UserPermissionFormSchema';
 
 type AddOrEditUserModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -50,6 +50,38 @@ const updateCompanyUserMutation = graphql(`
         role
         appsAccess
       }
+    }
+  }
+`);
+
+const getTechniciansQuery = graphql(`
+  query getTechnicians {
+    users(roles: "SANDVIK_TECHNICIAN") {
+      id
+      fullName
+      email
+      workPlace
+      isGlobalVisibility
+      phoneNumber
+      globalRole
+    }
+  }
+`);
+
+const updateUserPermissionsMutation = graphql(`
+  mutation updateUserPermission(
+    $id: String!
+    $updateUserPermissionInput: UpdateUserPermissionInput!
+  ) {
+    updateUserPermission(
+      id: $id
+      updateUserPermissionInput: $updateUserPermissionInput
+    ) {
+      id
+      userId
+      role
+      appsAccess
+      companyId
     }
   }
 `);
@@ -87,6 +119,14 @@ export const AddOrEditUserModal = ({
   const [, updateCompanyUser] = useMutation<UserFormValues>(
     updateCompanyUserMutation,
   );
+  const [, updateUserPermission] = useMutation<UpdateUserPermissionFormValues>(
+    updateUserPermissionsMutation,
+  );
+
+  const [{ data: techniciansData }] = useQuery({
+    query: getTechniciansQuery,
+  });
+  const technicians = (techniciansData?.users as User[]) || [];
 
   const [role, setRole] = useState<string>(
     user?.userPermissions?.[0]?.role || 'User',
@@ -125,11 +165,6 @@ export const AddOrEditUserModal = ({
     });
   };
 
-  const getTechnicianIdByEmail = (email: string) => {
-    const technician = technicians.find((tech) => tech.email === email);
-    return technician?.userId || '';
-  };
-
   const onSuccessfulSubmit = () => {
     setIsSuccessful(true);
     setIsLoading(false);
@@ -142,37 +177,30 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
-  // const onSubmit = async (data: UserFormValues) => {
-  //   setIsLoading(true);
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   // Simulate API call
-  //   console.log('User added', data);
-  //   setIsSuccessful(true);
-  //   setIsLoading(false);
-
-  //   setTimeout(() => {
-  //     onOpenChange(false);
-  //   }, 1500);
-  //   setTimeout(() => {
-  //     setIsSuccessful(false);
-  //     resetFormValues();
-  //   }, 1700);
-  // };
-
   const onSubmit: SubmitHandler<UserFormValues> = (data) => {
     setIsLoading(true);
-
     if (user) {
       const updateUserInput = {
         email: data.email,
-        role: data.userPermissions[0].role,
-        appsAccess: data.userPermissions[0].appsAccess,
       };
+
+      updateUserPermission({
+        id: user.userPermissions?.[0]?.id,
+        updateUserPermissionInput: {
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+        },
+      }).then((result) => {
+        if (result.data) {
+          console.log('Permission update successful');
+        }
+      });
 
       updateCompanyUser({
         id: user.id,
         updateUserInput,
       }).then((result) => {
+        console.log('data', data);
         console.log(result);
         if (result.data) {
           onSuccessfulSubmit();
@@ -188,7 +216,7 @@ export const AddOrEditUserModal = ({
 
     if (e !== 'Technician') {
       form.setValue('email', '');
-      form.setValue('technician', undefined);
+      // form.setValue('technician', undefined);
       setSelectedTechnician('');
     }
   };
@@ -229,18 +257,29 @@ export const AddOrEditUserModal = ({
     ].every((app) => appAccess.includes(app as Application));
     setGlobalAccess(allAppsSelected);
   }, [form.watch('userPermissions.0.appsAccess')]);
+
   useEffect(() => {
     if (user) {
       const userRole = user.userPermissions?.[0]?.role || 'User';
       setRole(userRole as UserPermission['role']);
 
-      if (userRole === 'Technician') {
-        const technicianId = getTechnicianIdByEmail(user.email);
-        setSelectedTechnician(technicianId);
+      if (userRole === 'SANDVIK_TECHNICIAN') {
+        const foundTechnician = technicians.find(
+          (tech) => tech.email === user.email,
+        );
+        if (foundTechnician) {
+          console.log(
+            'Found technician:',
+            foundTechnician.fullName,
+            foundTechnician.id,
+          );
+          setSelectedTechnician(foundTechnician.id);
+        }
       }
 
       form.reset({
-        ...user,
+        // ...user,
+        email: user.email || '',
         userPermissions: [
           {
             ...user.userPermissions?.[0],
@@ -252,7 +291,16 @@ export const AddOrEditUserModal = ({
         ],
       });
     }
-  }, [user]);
+  }, [user, technicians]);
+
+  // transform technicians to dropdown options
+  const technicianDropdownOptions = technicians.map(
+    ({ id, fullName, workPlace }) => ({
+      id,
+      // name: `${fullName} (${user?.workPlace})`,
+      name: workPlace ? `${fullName} (${workPlace})` : fullName,
+    }),
+  );
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
@@ -283,9 +331,7 @@ export const AddOrEditUserModal = ({
                             badgeIcon
                             options={roles}
                             onSelect={(e) => {
-                              handleSelectRole(
-                                e as User['userPermissions']['role'],
-                              );
+                              handleSelectRole(e as UserPermission['role']);
                             }}
                           />
                         </FormControl>
@@ -318,7 +364,7 @@ export const AddOrEditUserModal = ({
                 {role === 'SANDVIK_TECHNICIAN' && (
                   <FormField
                     control={form.control}
-                    name="technician"
+                    name="email"
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -328,14 +374,19 @@ export const AddOrEditUserModal = ({
                               id="technician"
                               className="w-96"
                               placeholder="Select technician"
-                              selectedId={
-                                selectedTechnician ||
-                                getTechnicianIdByEmail(field.value || '')
-                              }
-                              options={technicians}
+                              selectedId={selectedTechnician}
+                              options={technicianDropdownOptions}
                               onSelect={(e) => {
-                                form.setValue('technician', e);
-                                setSelectedTechnician(e ?? '');
+                                if (e) {
+                                  setSelectedTechnician(e);
+
+                                  const selectedTech = technicians.find(
+                                    (tech) => tech.id === e,
+                                  );
+                                  if (selectedTech) {
+                                    form.setValue('email', selectedTech.email);
+                                  }
+                                }
                               }}
                             />
                           </FormControl>

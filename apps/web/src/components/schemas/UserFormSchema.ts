@@ -8,9 +8,6 @@ export type UserFormValues = {
     {
       userId: string;
       role: string;
-      // appsAccess: [
-      //   'PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS',
-      // ];
       appsAccess: Array<
         'PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS'
       >;
@@ -32,7 +29,7 @@ export const userFormSchema = z
         userId: z.string().optional(),
         role: z.enum([
           'COMPANY_USER',
-          'SANDVIK_TECHINICIAN',
+          'SANDVIK_TECHNICIAN',
           'SANDVIK_ADMIN',
           'COMPANY_ADMIN',
         ]),
@@ -43,9 +40,8 @@ export const userFormSchema = z
     ),
   })
   .superRefine((data, ctx) => {
-    // const { role } = data.userPermissions;
     const { role } = data.userPermissions[0];
-    if (role === 'SANDVIK_TECHINICIAN') {
+    if (role === 'SANDVIK_TECHNICIAN') {
       if (!data.technician) {
         ctx.addIssue({
           path: ['technician'],
@@ -54,7 +50,7 @@ export const userFormSchema = z
         });
       }
     }
-    if (role === 'COMPANY_USER') {
+    if (role !== 'SANDVIK_TECHNICIAN') {
       if (!data.email) {
         ctx.addIssue({
           path: ['email'],

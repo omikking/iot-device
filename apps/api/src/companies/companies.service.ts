@@ -28,40 +28,17 @@ export class CompaniesService {
   ): Promise<CompanyListResponse> {
     const { offset, limit } = pagination || { offset: 0, limit: 20 };
     const whereCondition: Partial<Record<string, any>> = {};
-
-    let targetUserRole: string | null = null;
-
-    if (userId) {
-      // Fetch the globalRole of the provided userId
-      const targetUser = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { globalRole: true },
-      });
-
-      if (!targetUser) {
-        throw new Error('User not found.');
-      }
-
-      targetUserRole = targetUser.globalRole;
-
-      // Case 1: userId is explicitly provided
-      if (targetUserRole === this.config.get<string>('GLOBAL_ADMIN')) {
-        // Admin can fetch companies for any user
+    if (user.globalRole === this.config.get<string>('GLOBAL_ADMIN')) {
+      // Admin can see all companies; filter by userId if provided
+      if (userId) {
         whereCondition.userPermission = {
           some: { userId },
         };
-      } else if (
-        targetUserRole === this.config.get<string>('GLOBAL_TECHNICIAN')
-      ) {
-        // Technicians are not allowed to fetch other users' companies
-        throw new Error(
-          "You do not have permission to access other users' company lists.",
-        );
-      } else {
-        throw new Error('Unauthorized access.');
       }
-    } else {
-      // Case 2: userId is not provided, use authenticated user's ID
+    } else if (
+      user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+    ) {
+      // Technicians can only see companies where they have permission
       whereCondition.userPermission = {
         some: { userId: user.id },
       };

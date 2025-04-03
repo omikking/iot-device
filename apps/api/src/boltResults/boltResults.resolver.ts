@@ -4,8 +4,11 @@ import { CreateBoltResultInput } from './dto/create-boltResult.input';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { BoltResultsService } from './boltResults.service';
+import { UseGuards } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
+@UseGuards(JwtGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 

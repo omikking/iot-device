@@ -1,5 +1,4 @@
 import { z } from 'zod';
-// import { UserPermission } from '@/gql/graphql';
 
 export type UserFormValues = {
   email?: string;

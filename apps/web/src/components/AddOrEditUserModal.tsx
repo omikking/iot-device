@@ -216,7 +216,7 @@ export const AddOrEditUserModal = ({
 
     if (e !== 'Technician') {
       form.setValue('email', '');
-      // form.setValue('technician', undefined);
+      form.setValue('technician', undefined);
       setSelectedTechnician('');
     }
   };
@@ -344,6 +344,7 @@ export const AddOrEditUserModal = ({
                   <FormField
                     control={form.control}
                     name="email"
+                    disabled={true}
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -364,7 +365,7 @@ export const AddOrEditUserModal = ({
                 {role === 'SANDVIK_TECHNICIAN' && (
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="technician"
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -384,7 +385,11 @@ export const AddOrEditUserModal = ({
                                     (tech) => tech.id === e,
                                   );
                                   if (selectedTech) {
-                                    form.setValue('email', selectedTech.email);
+                                    console.log(selectedTech.email);
+                                    form.setValue(
+                                      'technician',
+                                      selectedTech.email,
+                                    );
                                   }
                                 }
                               }}

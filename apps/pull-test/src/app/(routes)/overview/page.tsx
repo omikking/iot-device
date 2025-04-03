@@ -46,9 +46,7 @@ export default function Page(): JSX.Element {
     variables: { id: companyId },
     pause: !companyId,
   });
-
-  console.log('Fetching: ', fetching);
-
+  
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />

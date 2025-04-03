@@ -41,13 +41,11 @@ export default function Page(): JSX.Element {
   const { data: session } = useSession();
   const companyId = session?.company?.id || '';
 
-  const [{ data: hazardData, fetching }] = useQuery({
+  const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
     pause: !companyId,
   });
-
-  console.log('Fetching: ', fetching);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

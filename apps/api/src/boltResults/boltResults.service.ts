@@ -5,6 +5,7 @@ import {
   PullTestAbortReason,
   BoltType,
   RingPosition,
+  GlobalRole,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
@@ -12,16 +13,12 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { BoltResultResponse } from './BoltResultResponse';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BoltResultsService {
-  constructor(
-    private readonly config: ConfigService,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async getBoltResults(
+  async findMany(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
     filters?: Partial<Record<string, string | boolean>>,
@@ -29,7 +26,7 @@ export class BoltResultsService {
     const { offset, limit } = pagination;
 
     const whereCondition: Record<string, any> = {
-      ...(user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
+      ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
         ? { userId: user.id }
         : {}),
       ...(filters &&
@@ -45,8 +42,8 @@ export class BoltResultsService {
     });
 
     const results = await this.prisma.boltResult.findMany({
-      skip: Number(offset), // Ensure it's a number
-      take: Number(limit), // Ensure it's a number
+      skip: Number(offset),
+      take: Number(limit),
       where: whereCondition,
     });
     return { totalRecords, results };

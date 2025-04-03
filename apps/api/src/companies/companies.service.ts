@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   Application,
   Company,
+  GlobalRole,
   PlanLevel,
   PrismaClient,
   Role,
@@ -11,34 +12,30 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { CompanyListResponse } from './companyListResponse';
-import { ConfigService } from '@nestjs/config';
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
-  constructor(
-    private readonly config: ConfigService,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async getCompanies(
+  async findAll(
     user: ActiveUserData,
+    pagination: { offset: number; limit: number },
     userId?: string,
-    pagination?: { offset: number; limit: number },
   ): Promise<CompanyListResponse> {
-    const { offset, limit } = pagination || { offset: 0, limit: 20 };
+    const { offset, limit } = pagination;
     const whereCondition: Partial<Record<string, any>> = {};
-    if (user.globalRole === this.config.get<string>('GLOBAL_ADMIN')) {
-      // Admin can see all companies; filter by userId if provided
+
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      // If SANDVIK_ADMIN, get all companies
       if (userId) {
+        // Filter by userId if provided
         whereCondition.userPermission = {
           some: { userId },
         };
       }
-    } else if (
-      user.globalRole === this.config.get<string>('GLOBAL_TECHNICIAN')
-    ) {
-      // Technicians can only see companies where they have permission
+    } else {
+      // If not SANDVIK_ADMIN, only get companies where they have permission
       whereCondition.userPermission = {
         some: { userId: user.id },
       };
@@ -50,8 +47,8 @@ export class CompaniesService {
 
     const results = await this.prisma.company.findMany({
       where: whereCondition,
-      skip: offset,
-      take: limit,
+      skip: Number(offset),
+      take: Number(limit),
     });
 
     return { totalRecords, results };

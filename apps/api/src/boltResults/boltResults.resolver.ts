@@ -12,7 +12,6 @@ import {
 import { BoltResultsService } from './boltResults.service';
 
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { ConfigService } from '@nestjs/config';
 import { BoltResultResponse } from './BoltResultResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
@@ -21,13 +20,10 @@ import { BoltResult } from '@prisma/client';
 @Resolver()
 @UseGuards(JwtGuard)
 export class BoltResultsResolver {
-  constructor(
-    private readonly config: ConfigService,
-    private readonly boltResultsService: BoltResultsService,
-  ) {}
+  constructor(private readonly boltResultsService: BoltResultsService) {}
 
   @Query(() => BoltResultResponse, { name: 'boltResults' })
-  async getBoltResults(
+  async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
@@ -41,8 +37,8 @@ export class BoltResultsResolver {
     isHazard?: boolean,
   ): Promise<BoltResultResponse> {
     const pagination = {
-      offset: Number(offset ?? this.config.get<number>('DEFAULT_SKIP') ?? 0),
-      limit: Number(limit ?? this.config.get<number>('DEFAULT_TAKE') ?? 20),
+      offset: Number(offset ?? 0),
+      limit: Number(limit ?? 20),
     };
     const filters: Partial<Record<string, string | boolean>> = {
       siteId,
@@ -53,7 +49,7 @@ export class BoltResultsResolver {
       isHazard,
     };
 
-    return this.boltResultsService.getBoltResults(user, pagination, filters);
+    return this.boltResultsService.findMany(user, pagination, filters);
   }
 
   @Query('boltResult')

@@ -6,7 +6,6 @@ import { UpdateCompanyInput } from './dto/update-company.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { ConfigService } from '@nestjs/config';
 import { CompanyListResponse } from './companyListResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
@@ -14,24 +13,21 @@ import { ActiveUser } from 'src/auth/decorators';
 @Resolver()
 @UseGuards(JwtGuard)
 export class CompaniesResolver {
-  constructor(
-    private readonly config: ConfigService,
-    private readonly companiesService: CompaniesService,
-  ) {}
+  constructor(private readonly companiesService: CompaniesService) {}
 
   @Query(() => CompanyListResponse, { name: 'companies' })
-  async getCompanies(
+  async findAll(
     @ActiveUser() user: ActiveUserData,
     @Args('userId', { type: () => String, nullable: true }) userId?: string,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
   ): Promise<CompanyListResponse> {
     const pagination = {
-      offset: Number(offset ?? this.config.get<number>('DEFAULT_SKIP') ?? 0),
-      limit: Number(limit ?? this.config.get<number>('DEFAULT_TAKE') ?? 20),
+      offset: Number(offset ?? 0),
+      limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.getCompanies(user, userId, pagination);
+    return this.companiesService.findAll(user, pagination, userId);
   }
 
   @Query('company')

@@ -774,7 +774,7 @@ export type UpdateLocationInput = {
 export type UpdatePlanInput = {
   applicationName: Scalars['String']['input'];
   expiringDate?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
   planLevel?: InputMaybe<Scalars['String']['input']>;
 };
 

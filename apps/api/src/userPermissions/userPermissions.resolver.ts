@@ -4,8 +4,11 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { CreateUserPermissionInput } from './dto/create-userPermissions.input';
 import { UpdateUserPermissionInput } from './dto/update-userPermissions.input';
 import { ParseUUIDPipe } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Resolver()
+@UseGuards(JwtGuard)
 export class UserPermissionsResolver {
   constructor(
     private readonly userPermissionsService: UserPermissionsService,

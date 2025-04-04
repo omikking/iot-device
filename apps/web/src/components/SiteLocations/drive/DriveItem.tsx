@@ -82,6 +82,7 @@ export const DriveItem = ({
 
   const handleCancelEdit = () => {
     if (!drive.id) {
+      // @TODO a bug here, check it and solve.
       drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
       refreshSite();
     }

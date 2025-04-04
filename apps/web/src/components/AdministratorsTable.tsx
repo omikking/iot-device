@@ -122,12 +122,10 @@ export const AdministratorsTable = ({
       accessorKey: 'globalRole',
       header: 'Role',
       cell: () => (
-        <>
-          <Badge variant="primary">
-            <LucideUserCog />
-            Sandvik admin
-          </Badge>
-        </>
+        <Badge variant="primary">
+          <LucideUserCog />
+          Sandvik admin
+        </Badge>
       ),
     },
     {

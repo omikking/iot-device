@@ -18,13 +18,11 @@ import {
   LucidePlus,
   LucideSettings,
 } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 
 export const Menu = () => {
   // @TODO fix colors on icons
-  const { data: session } = useSession();
-  console.log(session);
 
   return (
     <MenuWrapper>

@@ -92,7 +92,7 @@ export const AddOrEditAdministratorModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
-              <div className="flex flex-row flex-wrap justify-between gap-8">
+              <div className="">
                 <FormField
                   control={form.control}
                   name="fullName"

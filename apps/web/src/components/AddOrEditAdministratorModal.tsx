@@ -14,8 +14,8 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 import {
-  administratorFormSchema,
-  AdministratorFormValues,
+  updateAdministratorFormSchema,
+  UpdateAdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
@@ -39,7 +39,6 @@ const updateAdministratorsMutation = graphql(`
       workPlace
       phoneNumber
       globalRole
-      isGlobalVisibility
     }
   }
 `);
@@ -51,12 +50,12 @@ export const AddOrEditAdministratorModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [, updateUser] = useMutation<AdministratorFormValues>(
+  const [, updateUser] = useMutation<UpdateAdministratorFormValues>(
     updateAdministratorsMutation,
   );
 
-  const form = useForm<AdministratorFormValues>({
-    resolver: zodResolver(administratorFormSchema),
+  const form = useForm<UpdateAdministratorFormValues>({
+    resolver: zodResolver(updateAdministratorFormSchema),
     defaultValues: {
       fullName: administrator?.fullName || '',
       workPlace: administrator?.workPlace || '',
@@ -86,7 +85,7 @@ export const AddOrEditAdministratorModal = ({
     }, 1700);
   };
 
-  const onSubmit: SubmitHandler<AdministratorFormValues> = (data) => {
+  const onSubmit: SubmitHandler<UpdateAdministratorFormValues> = (data) => {
     if (administrator) {
       updateUser({
         id: administrator.id,
@@ -108,13 +107,6 @@ export const AddOrEditAdministratorModal = ({
         email: administrator.email || '',
         workPlace: administrator.workPlace || '',
         phoneNumber: administrator.phoneNumber || '',
-      });
-    } else {
-      form.reset({
-        fullName: '',
-        email: '',
-        workPlace: '',
-        phoneNumber: '',
       });
     }
   }, [administrator, form]);

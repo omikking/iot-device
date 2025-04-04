@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const administratorFormSchema = z.object({
+export const updateAdministratorFormSchema = z.object({
   fullName: z
     .string()
     .min(3, { message: 'Full name must be at least 3 characters.' })
@@ -16,16 +16,8 @@ export const administratorFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers.' }),
-  // globalRole: z.string().min(4, { message: 'Select a role.' }),
-  // isGlobalVisibility: z.boolean(),
-  // userPermissions: z
-  //   .array(
-  //     z.object({
-  //       newUserId: z.string().optional(),
-  //       oldUserId: z.string().optional(),
-  //     }),
-  //   )
-  //   .optional(),
 });
 
-export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;
+export type UpdateAdministratorFormValues = z.infer<
+  typeof updateAdministratorFormSchema
+>;

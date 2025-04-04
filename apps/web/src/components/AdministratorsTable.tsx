@@ -15,12 +15,12 @@ import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
 import { useSession } from 'next-auth/react';
 
+type Administrator = GetAdminsQuery['users'][0];
+
 type AdministratorsTableProps = {
   onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator?: GetAdminsQuery['users'][0]) => void;
+  onSelectAdministrator: (administrator?: Administrator) => void;
 };
-
-type Administrator = GetAdminsQuery['users'][0];
 
 const getAdminsQuery = graphql(`
   query getAdmins {
@@ -31,7 +31,6 @@ const getAdminsQuery = graphql(`
       workPlace
       phoneNumber
       globalRole
-      isGlobalVisibility
     }
   }
 `);
@@ -45,7 +44,6 @@ const deleteAdminMutation = graphql(`
       workPlace
       phoneNumber
       globalRole
-      isGlobalVisibility
     }
   }
 `);

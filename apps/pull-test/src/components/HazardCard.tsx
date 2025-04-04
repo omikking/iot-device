@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   LucideAlertTriangle,
   LucideCircleCheckBig,
@@ -15,20 +14,57 @@ import {
   Specification,
 } from '@gsp/ui';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { useState } from 'react';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
+import { BoltResult } from '@/gql/graphql';
+import React, { useEffect, useState } from 'react';
 
-interface HazardCardProps {
+type HazardCardProps = {
   dateTitle: Date;
   isHazard?: boolean;
-  author?: string;
   boltDescription?: string;
   boltInfoItems: {
     title: string;
     text: string;
   }[];
-  fullBoltData?: BoltResultSchema;
-}
+  fullBoltData?: BoltResult;
+};
+
+const getMeSitesLocationDocument = graphql(`
+  query getMeSiteLocation($id: String!) {
+    site(id: $id) {
+      siteName
+    }
+  }
+`);
+
+const getLevelDetails = graphql(`
+  query getLevelDetails($id: String!) {
+    level(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const getDriveDetails = graphql(`
+  query getDriveDetails($id: String!) {
+    drive(id: $id) {
+      id
+      driveName
+    }
+  }
+`);
+
+const getLocationDetails = graphql(`
+  query getLocationDetails($id: String!) {
+    location(id: $id) {
+      id
+      locationName
+    }
+  }
+`);
 
 export const HazardCard = ({
   dateTitle,
@@ -46,6 +82,68 @@ export const HazardCard = ({
 
     return `${year}-${month}-${day}`;
   };
+
+  const [{ data: siteData }] = useQuery({
+    query: getMeSitesLocationDocument,
+    variables: { id: fullBoltData?.siteId || '' },
+    pause: !fullBoltData?.siteId, // avoid running query if siteId is undefined
+  });
+
+  // Level Query
+  const [{ data: levelData }] = useQuery({
+    query: getLevelDetails,
+    variables: { id: fullBoltData?.levelId ?? '' },
+    pause: !fullBoltData?.levelId,
+  });
+
+  // Drive Query
+  const [{ data: driveData }] = useQuery({
+    query: getDriveDetails,
+    variables: { id: fullBoltData?.driveId ?? '' },
+    pause: !fullBoltData?.driveId,
+  });
+
+  // Location Query
+  const [{ data: locationData }] = useQuery({
+    query: getLocationDetails,
+    variables: { id: fullBoltData?.locationId ?? '' },
+    pause: !fullBoltData?.locationId,
+  });
+
+  // Update the boltInfoItems with names from fetched data
+  useEffect(() => {
+    if (!fullBoltData) return;
+
+    const siteName = siteData?.site?.siteName || 'N/A';
+    const levelName = levelData?.level?.levelName || 'N/A';
+    const driveName = driveData?.drive?.driveName || 'N/A';
+    const locationName = locationData?.location?.locationName || 'N/A';
+
+    // Create a copy of the original boltInfoItems
+    const updatedItems = [...boltInfoItems];
+
+    // Update the values
+    updatedItems.forEach((item) => {
+      if (item.title === 'Site') {
+        item.text = siteName;
+      } else if (item.title === 'Level') {
+        item.text = levelName;
+      } else if (item.title === 'Drive') {
+        item.text = driveName;
+      } else if (item.title === 'Location') {
+        item.text = locationName;
+      }
+    });
+  }, [
+    boltInfoItems,
+    siteData,
+    levelData,
+    driveData,
+    locationData,
+    fullBoltData,
+  ]);
+
+  const siteName = siteData?.site?.siteName || 'N/A';
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
@@ -68,13 +166,20 @@ export const HazardCard = ({
               boltInfoItems.length - 2,
               boltInfoItems.length - 1,
             ),
-          ].map((boltSpec, i) => (
-            <Specification
-              key={i}
-              title={boltSpec.title}
-              text={boltSpec.text}
-            />
-          ))}
+          ].map((boltSpec, i) => {
+            if (boltSpec.title === 'Site') {
+              return (
+                <Specification key={i} title={boltSpec.title} text={siteName} />
+              );
+            }
+            return (
+              <Specification
+                key={i}
+                title={boltSpec.title}
+                text={boltSpec.text}
+              />
+            );
+          })}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
@@ -101,6 +206,7 @@ export const HazardCard = ({
             isHazardCompletable
             modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
             fullBoltData={fullBoltData}
+            boltInfoItems={boltInfoItems}
             onClose={() => setIsModalOpen(false)}
           />
         </Modal>

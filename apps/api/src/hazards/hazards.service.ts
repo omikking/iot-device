@@ -10,6 +10,7 @@ export class HazardsService {
     const boltResults = this.prisma.boltResult.findMany({
       where: {
         isHazard: true,
+        OR: [{ isHazard: true }, { hazardCompletedDate: { isEmpty: false } }],
         site: {
           companyId,
         },

@@ -22,32 +22,34 @@ import Link from 'next/link';
 
 export default function Page() {
   const [step, setStep] = useState(1);
-  // const [error, setError] = useState('');
 
   const getSchemaForStep = (step: number) => {
-    if (step === 1) {
-      return z.object({
-        email: z.string().email({ message: 'Invalid email address' }),
-      });
-    } else if (step === 2) {
-      return z.object({
-        email: z.string(),
-        code: z.string().min(6, { message: 'Code must be 6 characters' }),
-      });
-    } else {
-      return z
-        .object({
-          email: z.string(),
-          code: z.string(),
-          newPassword: z
-            .string()
-            .min(8, { message: 'Password must be at least 8 characters' }),
-          confirmPassword: z.string(),
-        })
-        .refine((data) => data.newPassword === data.confirmPassword, {
-          message: 'Passwords must match',
-          path: ['confirmPassword'],
+    switch (step) {
+      case 1:
+        return z.object({
+          email: z.string().email({ message: 'Invalid email address' }),
         });
+      case 2:
+        return z.object({
+          email: z.string(),
+          code: z.string().min(6, { message: 'Code must be 6 characters' }),
+        });
+      case 3:
+        return z
+          .object({
+            email: z.string(),
+            code: z.string(),
+            newPassword: z
+              .string()
+              .min(8, { message: 'Password must be at least 8 characters' }),
+            confirmPassword: z.string(),
+          })
+          .refine((data) => data.newPassword === data.confirmPassword, {
+            message: 'Passwords must match',
+            path: ['confirmPassword'],
+          });
+      default:
+        throw new Error('Invalid step value');
     }
   };
 
@@ -62,33 +64,22 @@ export default function Page() {
   });
 
   const onSubmit = async () => {
-    if (step === 1) {
-      // TODO Integrate BE for sending verification code
-      setStep(2);
-    } else if (step === 2) {
-      //TODO Integrate BE for verifying code
-      setStep(3);
-    } else {
-      console.log('Resetting password...');
-      alert('Password Reset Successful');
-    }
-  };
-
-  const getButtonLabel = () => {
     switch (step) {
       case 1:
-        return 'Send Code';
+        // TODO Integrate BE for sending verification code
+        setStep(2);
+        break;
       case 2:
-        return 'Verify Code';
+        // TODO Integrate BE for verifying code
+        setStep(3);
+        break;
       case 3:
-        return (
-          <>
-            <CircleCheckBig />
-            Confirm
-          </>
-        );
+        console.log('Resetting password...');
+        alert('Password Reset Successful');
+        break;
       default:
-        return 'Next';
+        console.log('Unknown step');
+        break;
     }
   };
 
@@ -96,7 +87,7 @@ export default function Page() {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
 
-      <Headline as="h3" variant="xl" color="foreground">
+      <Headline as="h1" variant="xl" color="foreground">
         Forgot Password
       </Headline>
 
@@ -105,12 +96,6 @@ export default function Page() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-md flex flex-col gap-6"
         >
-          {/* {error && (
-            <Text variant="xs" color="destructive">
-              {error}
-            </Text>
-          )} */}
-
           {step === 1 && (
             <>
               <div className="flex flex-col justify-center items-center px-14 text-center">
@@ -137,6 +122,9 @@ export default function Page() {
                   </FormItem>
                 )}
               />
+              <Button variant="primary" size="large" isWide type="submit">
+                Send Code
+              </Button>
             </>
           )}
 
@@ -147,7 +135,7 @@ export default function Page() {
                   Enter the verification code.
                 </Text>
                 <span className="flex">
-                  <Text variant="small" color="destructive">
+                  <Text variant="small" color="destructive" className="mr-1">
                     <Link
                       href="/api/auth/reset-password"
                       passHref
@@ -158,7 +146,6 @@ export default function Page() {
                       </Anchor>
                     </Link>
                   </Text>
-                  &nbsp;
                   <Text variant="small" color="foreground">
                     code if you didn't receive it.
                   </Text>
@@ -182,6 +169,9 @@ export default function Page() {
                   </FormItem>
                 )}
               />
+              <Button variant="primary" size="large" isWide type="submit">
+                Verify Code
+              </Button>
             </>
           )}
 
@@ -223,12 +213,14 @@ export default function Page() {
                   </FormItem>
                 )}
               />
+              <Button variant="primary" size="large" isWide type="submit">
+                <>
+                  <CircleCheckBig />
+                  Confirm
+                </>
+              </Button>
             </>
           )}
-
-          <Button variant="primary" size="large" isWide type="submit">
-            {getButtonLabel()}
-          </Button>
         </form>
       </Form>
     </main>

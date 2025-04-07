@@ -213,11 +213,9 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">
-                <>
-                  <CircleCheckBig />
-                  Confirm
-                </>
+              <Button variant="primary" size="large" isWide type="submit">               
+                <CircleCheckBig />
+                Confirm
               </Button>
             </>
           )}

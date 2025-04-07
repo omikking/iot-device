@@ -14,25 +14,16 @@ import {
 } from '@gsp/ui';
 import { useSession } from 'next-auth/react';
 import {
-  SetupAccountFormValues,
   SetupAccountFormWithConfirmValues,
-  setupAccountFormSchema,
   setupAccountFormWithConfirmSchema,
 } from '@/components/schemas/SetupAccountFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LucideUserRoundCog } from 'lucide-react';
 
-// type SetupAccountFormProps = {
-//   userForm: SetupAccountFormReturn<SetupAccountFormValues>
-// }
-
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
-
-  // const setupForm = useForm<SetupAccountFormValues>({
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
-    // resolver: zodResolver(setupAccountFormSchema),
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
     defaultValues: {
       fullName: '',
@@ -43,9 +34,9 @@ export default function Page(): JSX.Element {
     },
   });
 
-  // const onSubmit = async (data: SetupAccountFormValues) => {
   const onSubmit = async (data: SetupAccountFormWithConfirmValues) => {
     console.log('Data from setup form: ', data);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...submissionData } = data;
     console.log('Data from setup form: ', submissionData);
   };
@@ -57,7 +48,11 @@ export default function Page(): JSX.Element {
       </Headline>
       <div className="flex flex-col gap-1 items-center">
         <Headline as="h4" variant="small" color="foreground">
-          You're invited to join Garpenberg AB as an administrator.
+          You're invited to join
+          <Headline variant="medium" color={'foreground'} as="span" isBold>
+            {` ${session?.company?.name} `}
+          </Headline>
+          as an administrator.
         </Headline>
 
         <Text color={'foreground'} variant={'medium'}>
@@ -160,16 +155,6 @@ export default function Page(): JSX.Element {
                   );
                 }}
               />
-              {/* <FormItem>
-                <FormLabel>Confirm password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Fill in your password..."
-                    className="w-96"
-                  />
-                </FormControl>
-              </FormItem> */}
               <FormField
                 control={setupForm.control}
                 name="confirmPassword"
@@ -191,17 +176,17 @@ export default function Page(): JSX.Element {
                 }}
               />
             </div>
-            <hr className="w-full my-8 mx-auto border-neutral-2" />
-            <div className="flex justify-center">
-              <Button
-                className="min-w-96"
-                type="submit"
-                variant="primary"
-                size="large"
-              >
-                <LucideUserRoundCog /> Sign up
-              </Button>
-            </div>
+          </div>
+          <hr className="w-[120%] mb-10 mt-14 border-neutral-2 -ml-[10%]" />
+          <div className="flex justify-center">
+            <Button
+              className="min-w-[400px]"
+              type="submit"
+              variant="primary"
+              size="large"
+            >
+              <LucideUserRoundCog /> Sign up
+            </Button>
           </div>
         </form>
       </Form>

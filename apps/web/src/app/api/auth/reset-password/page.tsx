@@ -99,7 +99,7 @@ export default function Page() {
           {step === 1 && (
             <>
               <div className="flex flex-col justify-center items-center px-14 text-center">
-                <Text variant="small" color="foreground">
+                <Text variant="medium" color="foreground">
                   Enter your email and we will send you a link to reset your
                   password.
                 </Text>

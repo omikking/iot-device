@@ -9,7 +9,7 @@ export default function NotFound() {
         404
       </Headline>
       <div className="flex flex-col items-center justify-center gap-4 w-[1000px] pt-10 border-t border-t-neutral-2">
-        <Headline as="h4" variant={'medium'} color={'foreground'}>
+        <Headline as="h2" variant={'medium'} color={'foreground'}>
           Oops! Page not found.
         </Headline>
         <Text color={'foreground'} variant={'medium'}>

@@ -131,7 +131,7 @@ export default function Page() {
           {step === 2 && (
             <>
               <div className="flex flex-col justify-center items-center">
-                <Text variant="small" color="foreground">
+                <Text variant="medium" color="foreground">
                   Enter the verification code.
                 </Text>
                 <span className="flex">

@@ -11,7 +11,6 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { CompanyListResponse } from './companyListResponse';
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -21,21 +20,11 @@ export class CompaniesService {
   async findAll(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
-    userId?: string,
-  ): Promise<CompanyListResponse> {
+  ): Promise<GraphQLTypes.CompanyListResponse> {
     const { offset, limit } = pagination;
     const whereCondition: Partial<Record<string, any>> = {};
 
-    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
-      // If SANDVIK_ADMIN, get all companies
-      if (userId) {
-        // Filter by userId if provided
-        whereCondition.userPermission = {
-          some: { userId },
-        };
-      }
-    } else {
-      // If not SANDVIK_ADMIN, only get companies where they have permission
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
       whereCondition.userPermission = {
         some: { userId: user.id },
       };

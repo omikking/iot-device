@@ -77,14 +77,18 @@ input UpdateBoltResultInput {
 }
 
 """
-Query
-Define the queries that can be made to the BoltResult model
+BoltResultResponse
+Response structure for paginated list of bolt results
 """
 type BoltResultResponse {
   totalRecords: Int!
   results: [BoltResult!]!
 }
 
+"""
+Query
+Define the queries that can be made to the BoltResult model
+"""
 type Query {
   boltResults(
     offset: Int

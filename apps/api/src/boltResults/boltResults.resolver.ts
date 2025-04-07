@@ -12,7 +12,6 @@ import {
 import { BoltResultsService } from './boltResults.service';
 
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { BoltResultResponse } from './BoltResultResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { BoltResult } from '@prisma/client';
@@ -22,7 +21,7 @@ import { BoltResult } from '@prisma/client';
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => BoltResultResponse, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.BoltResultResponse, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -35,7 +34,7 @@ export class BoltResultsResolver {
     @Args('result', { type: () => String, nullable: true }) result?: string,
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
-  ): Promise<BoltResultResponse> {
+  ): Promise<GraphQLTypes.BoltResultResponse> {
     const pagination = {
       offset: Number(offset ?? 0),
       limit: Number(limit ?? 20),

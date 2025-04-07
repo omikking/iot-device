@@ -11,7 +11,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { BoltResultResponse } from './BoltResultResponse';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class BoltResultsService {
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
     filters?: Partial<Record<string, string | boolean>>,
-  ): Promise<BoltResultResponse> {
+  ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
 
     const whereCondition: Record<string, any> = {

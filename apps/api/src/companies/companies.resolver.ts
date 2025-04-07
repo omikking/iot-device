@@ -6,7 +6,6 @@ import { UpdateCompanyInput } from './dto/update-company.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { CompanyListResponse } from './companyListResponse';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 
@@ -15,19 +14,18 @@ import { ActiveUser } from 'src/auth/decorators';
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 
-  @Query(() => CompanyListResponse, { name: 'companies' })
+  @Query(() => GraphQLTypes.CompanyListResponse, { name: 'companies' })
   async findAll(
     @ActiveUser() user: ActiveUserData,
-    @Args('userId', { type: () => String, nullable: true }) userId?: string,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
-  ): Promise<CompanyListResponse> {
+  ): Promise<GraphQLTypes.CompanyListResponse> {
     const pagination = {
       offset: Number(offset ?? 0),
       limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.findAll(user, pagination, userId);
+    return this.companiesService.findAll(user, pagination);
   }
 
   @Query('company')

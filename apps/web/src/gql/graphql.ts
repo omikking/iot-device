@@ -46,8 +46,8 @@ export type BoltResult = {
 };
 
 /**
- * Query
- * Define the queries that can be made to the BoltResult model
+ * BoltResultResponse
+ * Response structure for paginated list of bolt results
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
@@ -96,8 +96,8 @@ export type Company = {
 };
 
 /**
- * Query
- * Define the queries that can be made to the Company model
+ * CompanyListResponse
+ * Response structure for paginated list of companies
  */
 export type CompanyListResponse = {
   __typename?: 'CompanyListResponse';

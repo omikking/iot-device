@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-export const administratorFormSchema = z.object({
+export const updateAdministratorFormSchema = z.object({
   fullName: z
     .string()
     .min(3, { message: 'Full name must be at least 3 characters.' })
     .max(50, { message: 'Full name must be at most 50 characters.' }),
-  company: z
+  workPlace: z
     .string()
-    .min(3, { message: 'Company must be at least 3 characters.' }),
+    .min(3, { message: 'Workplace must be at least 3 characters.' }),
   email: z
     .string()
     .email({ message: 'Email must be a valid email address.' })
@@ -16,7 +16,8 @@ export const administratorFormSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, { message: 'Phone number must be at least 10 numbers.' }),
-  role: z.string().min(10, { message: 'Select a role.' }),
 });
 
-export type AdministratorFormValues = z.infer<typeof administratorFormSchema>;
+export type UpdateAdministratorFormValues = z.infer<
+  typeof updateAdministratorFormSchema
+>;

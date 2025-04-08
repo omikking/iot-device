@@ -130,7 +130,7 @@ export default function SignIn() {
 
                 <Text variant="small" color="foreground">
                   {/* @TODO update link */}
-                  <Link href="/overview" passHref legacyBehavior>
+                  <Link href="/api/auth/reset-password" passHref legacyBehavior>
                     <Anchor isUnderline color="foreground">
                       Click here to reset.
                     </Anchor>

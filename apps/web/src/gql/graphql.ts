@@ -46,6 +46,21 @@ export type BoltResult = {
 };
 
 /**
+ * BoltResultResponse
+ * Response structure for paginated list of bolt results
+ */
+export type BoltResultResponse = {
+  __typename?: 'BoltResultResponse';
+  results: Array<BoltResult>;
+  totalRecords: Scalars['Int']['output'];
+};
+
+export enum BoltType {
+  Md47 = 'MD47',
+  Mdx47 = 'MDX47'
+}
+
+/**
  * Coffee model
  * Define the Coffee model and its fields
  */
@@ -78,6 +93,16 @@ export type Company = {
   sites?: Maybe<Array<Site>>;
   updatedAt: Scalars['DateTime']['output'];
   users?: Maybe<Array<User>>;
+};
+
+/**
+ * CompanyListResponse
+ * Response structure for paginated list of companies
+ */
+export type CompanyListResponse = {
+  __typename?: 'CompanyListResponse';
+  results: Array<Company>;
+  totalRecords: Scalars['Int']['output'];
 };
 
 /**
@@ -254,6 +279,7 @@ export type Location = {
 export type Mutation = {
   __typename?: 'Mutation';
   createBoltResult: BoltResult;
+  createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
@@ -262,6 +288,7 @@ export type Mutation = {
   createSite: Site;
   createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
+  removeBoltResults: Array<BoltResult>;
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
@@ -271,6 +298,7 @@ export type Mutation = {
   removeUser: User;
   removeUserPermission: UserPermission;
   updateBoltResult: BoltResult;
+  updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
   updateCompany: Company;
   updateDrive: Drive;
@@ -288,6 +316,15 @@ export type Mutation = {
  */
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateBoltResultsArgs = {
+  createBoltResultsInput: Array<CreateBoltResultInput>;
 };
 
 
@@ -360,6 +397,15 @@ export type MutationCreateUserPermissionArgs = {
  */
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveBoltResultsArgs = {
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -442,6 +488,15 @@ export type MutationRemoveUserPermissionArgs = {
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateBoltResultsArgs = {
+  updateBoltResultsInput: Array<UpdateBoltResultInput>;
 };
 
 
@@ -539,6 +594,11 @@ export type Plan = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum PullTestAbortReason {
+  NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
+  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
+}
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -546,13 +606,18 @@ export type Plan = {
 export type Query = {
   __typename?: 'Query';
   boltResult: BoltResult;
-  boltResults: Array<BoltResult>;
+  boltResults: BoltResultResponse;
   coffee: Coffee;
   coffees: Array<Coffee>;
-  companies: Array<Company>;
+  companies: CompanyListResponse;
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
+  getBoltTypes?: Maybe<Array<BoltType>>;
+  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getResults: Array<Result>;
+  getRingPosition?: Maybe<Array<RingPosition>>;
+  getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -580,8 +645,35 @@ export type QueryBoltResultArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
+export type QueryBoltResultsArgs = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  isHazard?: InputMaybe<Scalars['Boolean']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  result?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryCompaniesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -665,6 +757,29 @@ export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export enum Result {
+  Abort = 'ABORT',
+  Fail = 'FAIL',
+  Pass = 'PASS'
+}
+
+export enum RingPosition {
+  CenterBacks = 'CENTER_BACKS',
+  LhBacks = 'LH_BACKS',
+  LhShoulder = 'LH_SHOULDER',
+  LhWallUpper = 'LH_WALL_UPPER',
+  RhBacks = 'RH_BACKS',
+  RhShoulder = 'RH_SHOULDER',
+  RhWallUpper = 'RH_WALL_UPPER'
+}
+
+export enum Role {
+  CompanyAdmin = 'COMPANY_ADMIN',
+  CompanyUser = 'COMPANY_USER',
+  SandvikAdmin = 'SANDVIK_ADMIN',
+  SandvikTechnician = 'SANDVIK_TECHNICIAN'
+}
+
 /**
  * Site model
  * Define the Site model and its fields
@@ -704,6 +819,7 @@ export type UpdateBoltResultInput = {
   boltType?: InputMaybe<Scalars['String']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
   hazardCompletedDate?: InputMaybe<Array<Scalars['DateTime']['input']>>;
+  id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;
@@ -931,7 +1047,7 @@ export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { 
 export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: string, name: string }> };
+export type GetCompaniesQuery = { __typename?: 'Query', companies: { __typename?: 'CompanyListResponse', results: Array<{ __typename?: 'Company', id: string, name: string }> } };
 
 export type CreateDriveMutationVariables = Exact<{
   createDriveInput: CreateDriveInput;
@@ -1049,7 +1165,7 @@ export const GetAdminsDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const DeleteAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"workPlace"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}}]}}]}}]} as unknown as DocumentNode<DeleteAdminMutation, DeleteAdminMutationVariables>;
 export const CreateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCompanyMutation, CreateCompanyMutationVariables>;
 export const UpdateCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateCompanyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateCompanyInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateCompanyInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
-export const GetCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
+export const GetCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
 export const CreateDriveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createDrive"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createDriveInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateDriveInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDrive"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createDriveInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createDriveInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}},{"kind":"Field","name":{"kind":"Name","value":"levelId"}}]}}]}}]} as unknown as DocumentNode<CreateDriveMutation, CreateDriveMutationVariables>;
 export const UpdateDriveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDrive"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateDriveInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateDriveInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDrive"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateDriveInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateDriveInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}},{"kind":"Field","name":{"kind":"Name","value":"levelId"}}]}}]}}]} as unknown as DocumentNode<UpdateDriveMutation, UpdateDriveMutationVariables>;
 export const DeleteDriveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteDrive"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeDrive"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteDriveMutation, DeleteDriveMutationVariables>;

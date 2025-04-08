@@ -18,15 +18,12 @@ import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
 import React, { useEffect, useState } from 'react';
+import { generateBoltSpecifications } from '@/libs/utils';
 
 type HazardCardProps = {
   dateTitle: Date;
   isHazard?: boolean;
   boltDescription?: string;
-  boltInfoItems: {
-    title: string;
-    text: string;
-  }[];
   fullBoltData?: BoltResult;
 };
 
@@ -71,7 +68,6 @@ export const HazardCard = ({
   isHazard,
   boltDescription,
   fullBoltData,
-  boltInfoItems,
 }: HazardCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -86,7 +82,7 @@ export const HazardCard = ({
   const [{ data: siteData }] = useQuery({
     query: getMeSitesLocationDocument,
     variables: { id: fullBoltData?.siteId || '' },
-    pause: !fullBoltData?.siteId, // avoid running query if siteId is undefined
+    pause: !fullBoltData?.siteId,
   });
 
   // Level Query
@@ -119,29 +115,21 @@ export const HazardCard = ({
     const driveName = driveData?.drive?.driveName || 'N/A';
     const locationName = locationData?.location?.locationName || 'N/A';
 
-    // Create a copy of the original boltInfoItems
-    const updatedItems = [...boltInfoItems];
+    const updatedItems = [...generateBoltSpecifications(fullBoltData, {})];
 
-    // Update the values
+    const itemTextValue: Record<string, string> = {
+      Site: siteName,
+      Level: levelName,
+      Drive: driveName,
+      Location: locationName,
+    };
+
     updatedItems.forEach((item) => {
-      if (item.title === 'Site') {
-        item.text = siteName;
-      } else if (item.title === 'Level') {
-        item.text = levelName;
-      } else if (item.title === 'Drive') {
-        item.text = driveName;
-      } else if (item.title === 'Location') {
-        item.text = locationName;
+      if (item.title in itemTextValue) {
+        item.text = itemTextValue[item.title];
       }
     });
-  }, [
-    boltInfoItems,
-    siteData,
-    levelData,
-    driveData,
-    locationData,
-    fullBoltData,
-  ]);
+  }, [siteData, levelData, driveData, locationData, fullBoltData]);
 
   const siteName = siteData?.site?.siteName || 'N/A';
 
@@ -160,26 +148,48 @@ export const HazardCard = ({
       </div>
       <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
-          {[
-            ...boltInfoItems.slice(0, 2),
-            ...boltInfoItems.slice(
-              boltInfoItems.length - 2,
-              boltInfoItems.length - 1,
-            ),
-          ].map((boltSpec, i) => {
-            if (boltSpec.title === 'Site') {
+          {fullBoltData &&
+            (() => {
+              const allSpecs = generateBoltSpecifications(fullBoltData, {});
+              // Get first two and last two items
+              const selectedSpecs = [
+                ...allSpecs.slice(0, 2),
+                ...allSpecs.slice(-2, -1),
+              ];
+
+              return selectedSpecs.map((boltSpec, i) => (
+                <Specification
+                  key={i}
+                  title={boltSpec.title}
+                  text={boltSpec.title === 'Site' ? siteName : boltSpec.text}
+                />
+              ));
+            })()}
+          {/* {fullBoltData &&
+            [
+              ...generateBoltSpecifications(fullBoltData, {}).slice(0, 2),
+              ...generateBoltSpecifications(fullBoltData, {}).slice(
+                generateBoltSpecifications(fullBoltData, {}).length - 2,
+                generateBoltSpecifications(fullBoltData, {}).length - 1,
+              ),
+            ].map((boltSpec, i) => {
+              if (boltSpec.title === 'Site') {
+                return (
+                  <Specification
+                    key={i}
+                    title={boltSpec.title}
+                    text={siteName}
+                  />
+                );
+              }
               return (
-                <Specification key={i} title={boltSpec.title} text={siteName} />
+                <Specification
+                  key={i}
+                  title={boltSpec.title}
+                  text={boltSpec.text}
+                />
               );
-            }
-            return (
-              <Specification
-                key={i}
-                title={boltSpec.title}
-                text={boltSpec.text}
-              />
-            );
-          })}
+            })} */}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
@@ -206,7 +216,6 @@ export const HazardCard = ({
             isHazardCompletable
             modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
             fullBoltData={fullBoltData}
-            boltInfoItems={boltInfoItems}
             onClose={() => setIsModalOpen(false)}
           />
         </Modal>

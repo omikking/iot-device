@@ -12,27 +12,9 @@ import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
 const getHazardDetails = graphql(`
-  query getHazardDetails($id: String!) {
+  query getHazardId($id: String!) {
     hazards(companyId: $id) {
-      abortReason
-      boltNumber
-      boltType
-      comment
-      createdAt
-      driveId
-      hazardCompletedDate
       id
-      image
-      isHazard
-      levelId
-      locationId
-      peakDisplacement
-      peakLoad
-      positionInRing
-      result
-      siteId
-      updatedAt
-      userId
     }
   }
 `);
@@ -41,13 +23,11 @@ export default function Page(): JSX.Element {
   const { data: session } = useSession();
   const companyId = session?.company?.id || '';
 
-  const [{ data: hazardData, fetching }] = useQuery({
+  const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
     pause: !companyId,
   });
-
-  console.log('Fetching: ', fetching);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

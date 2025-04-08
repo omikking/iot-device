@@ -15,8 +15,6 @@ export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
       <ModalTrigger>
         <Badge variant="neutral">
           <LucideSquareStack />
-          {/* @TODO be able to use from the tailwind config */}
-          {/* <LucideScanSearch color="text-orange-primary" /> */}
           <LucideScanSearch className="text-orange-primary" />
         </Badge>
       </ModalTrigger>
@@ -24,11 +22,6 @@ export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
         modalTitle={`Bolt ${fullBoltData.boltNumber}`}
         fullBoltData={fullBoltData}
         onClose={() => setIsModalOpen(false)}
-        boltInfoItems={[
-          { title: 'Bolt Type', text: fullBoltData.boltType },
-          { title: 'Position', text: fullBoltData.positionInRing },
-          { title: 'Result', text: fullBoltData.result },
-        ]}
       />
     </Modal>
   );

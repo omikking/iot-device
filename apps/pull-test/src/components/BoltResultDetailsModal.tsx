@@ -13,33 +13,93 @@ import {
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { generateBoltSpecifications } from '@/libs/utils';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
 
 type BoltResultDetailsModalProps = {
   modalTitle: string;
   fullBoltData?: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
-  boltInfoItems: {
-    title: string;
-    text: string;
-  }[];
 };
+
+const getLevelDetails = graphql(`
+  query getLevelDetails($id: String!) {
+    level(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const getDriveDetails = graphql(`
+  query getDriveDetails($id: String!) {
+    drive(id: $id) {
+      id
+      driveName
+    }
+  }
+`);
+
+const getLocationDetails = graphql(`
+  query getLocationDetails($id: String!) {
+    location(id: $id) {
+      id
+      locationName
+    }
+  }
+`);
 
 export const BoltResultDetailsModal = ({
   modalTitle,
   isHazardCompletable = false,
   fullBoltData,
-  boltInfoItems,
   onClose,
 }: BoltResultDetailsModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  // Level Query
+  const [{ data: levelData }] = useQuery({
+    query: getLevelDetails,
+    variables: { id: fullBoltData?.levelId ?? '' },
+    pause: !fullBoltData?.levelId,
+  });
+
+  // Drive Query
+  const [{ data: driveData }] = useQuery({
+    query: getDriveDetails,
+    variables: { id: fullBoltData?.driveId ?? '' },
+    pause: !fullBoltData?.driveId,
+  });
+
+  // Location Query
+  const [{ data: locationData }] = useQuery({
+    query: getLocationDetails,
+    variables: { id: fullBoltData?.locationId ?? '' },
+    pause: !fullBoltData?.locationId,
+  });
+
+  const levelName = levelData?.level?.levelName || 'N/A';
+  const driveName = driveData?.drive?.driveName || 'N/A';
+  const locationName = locationData?.location?.locationName || 'N/A';
+
+  console.log('Level data', levelData);
+  console.log('FullboltLevel');
+
+  const siteInfo = {
+    levelName: levelName,
+    driveName: driveName,
+    locationName: locationName,
+  };
 
   const { image, isHazard, peakLoad, peakDisplacement } =
     (fullBoltData as BoltResult) || {};
@@ -76,6 +136,8 @@ export const BoltResultDetailsModal = ({
     setIsConfirmed(false);
     setIsLoading(false);
   };
+
+  useEffect(() => {}, [levelData, driveData, locationData, fullBoltData]);
 
   return (
     <ModalContent
@@ -141,19 +203,29 @@ export const BoltResultDetailsModal = ({
           >
             Bolt specifications
           </Headline>
-          <div className="flex flex-wrap">
-            {[...boltInfoItems.slice(1)].map((boltSpec, index) => (
-              <Specification
-                key={index}
-                title={boltSpec.title}
-                text={boltSpec.text}
-                className="w-1/2"
-              />
-            ))}
-            {boltInfoItems.length % 2 === 0 && (
-              <Specification title="" text="" className="w-1/2" />
-            )}
-          </div>
+
+          {fullBoltData && (
+            <>
+              <div className="flex flex-wrap">
+                {[
+                  ...generateBoltSpecifications(fullBoltData, siteInfo).slice(
+                    1,
+                  ),
+                ].map((boltSpec, index) => (
+                  <Specification
+                    key={index}
+                    title={boltSpec.title}
+                    text={boltSpec.text}
+                    className="w-1/2"
+                  />
+                ))}
+                {generateBoltSpecifications(fullBoltData, siteInfo).length %
+                  2 ===
+                  0 && <Specification title="" text="" className="w-1/2" />}
+              </div>
+            </>
+          )}
+
           {/* BOLT RESULTS */}
           <div>
             <Headline

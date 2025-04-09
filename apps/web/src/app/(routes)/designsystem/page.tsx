@@ -41,6 +41,9 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  Alert,
+  AlertDescription,
+  AlertTitle,
 } from '@gsp/ui';
 
 import {
@@ -895,6 +898,26 @@ export default function Page(): JSX.Element {
         </Tabs>
       </div>
       <hr className="w-full border-neutral-2" />
+      <Headline variant="large" as="h1" color="foreground">
+        Alerts 🦄
+      </Headline>
+      <Alert variant="error">
+        <AlertTitle>Failed to sign in</AlertTitle>
+        <AlertDescription>Your email or password is wrong</AlertDescription>
+      </Alert>
+      <Alert variant="info">
+        <AlertTitle>Info</AlertTitle>
+        <AlertDescription>
+          View some information here, lorem ipsum
+        </AlertDescription>
+      </Alert>
+      <Alert variant="warning">
+        <AlertTitle>Warning</AlertTitle>
+        <AlertDescription>Your email or password is wrong</AlertDescription>
+      </Alert>
+      <Alert variant="success">
+        <AlertTitle>Successfully signed in</AlertTitle>
+      </Alert>
     </main>
   );
 }

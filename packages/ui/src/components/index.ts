@@ -27,6 +27,7 @@ export * from './base/menu-overlay';
 export * from './base/loading-spinner';
 export * from './base/breadcrumb';
 export * from './base/tooltip';
+export * from './base/alert';
 
 export * from './shared-custom/navigation-card';
 export * from './shared-custom/content-holder';

@@ -71,6 +71,31 @@ const config: Pick<
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+
+      letterSpacing: {
+        tight: '0%',
+      },
+
+      fontSize: {
+        base: '16px',
+        sm: '14px',
+        lg: '18px',
+        xl: '20px',
+        '2xl': '24px',
+        '3xl': '30px',
+        '4xl': '36px',
+      },
+      lineHeight: {
+        tight: '100%',
+        14: '14px',
+        16: '16px',
+        18: '18px',
+        20: '20px',
+      },
+      fontWeight: {
+        normal: '400',
+        thin: '50',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

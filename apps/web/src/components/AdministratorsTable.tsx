@@ -13,14 +13,9 @@ import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
+// import { useSession } from 'next-auth/react';
 
 type Administrator = GetAdminsQuery['users'][0];
-
-type AdministratorsTableProps = {
-  onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator?: Administrator) => void;
-};
 
 const getAdminsQuery = graphql(`
   query getAdmins {
@@ -48,16 +43,12 @@ const deleteAdminMutation = graphql(`
   }
 `);
 
-export const AdministratorsTable = ({
-  onOpenChange,
-  onSelectAdministrator,
-}: AdministratorsTableProps) => {
-  const { data: session } = useSession();
+export const AdministratorsTable = () => {
+  // const { data: session } = useSession();
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,
-    pause: !session?.company?.id,
+    // pause: !session?.company?.id,
   });
-
   const administrators =
     (administratorsData?.users as GetAdminsQuery['users']) || [];
 
@@ -73,14 +64,6 @@ export const AdministratorsTable = ({
     const adminToDelete = administrators?.find((admin) => admin.id === adminId);
     setAdministratorToDelete(adminToDelete);
     setIsDeleteAdministratorModalOpen(true);
-  };
-
-  const openEditModal = (adminId: string) => {
-    const adminToEdit = administrators?.find((admin) => admin.id === adminId);
-    if (adminToEdit) {
-      onSelectAdministrator(adminToEdit);
-      onOpenChange(true);
-    }
   };
 
   const closeDeleteModal = () => {
@@ -140,7 +123,6 @@ export const AdministratorsTable = ({
           <DeleteEditDropdown
             itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
-            handleEdit={openEditModal}
           />
         );
       },

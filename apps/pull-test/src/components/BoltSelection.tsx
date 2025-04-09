@@ -9,7 +9,8 @@ import {
   RangeCalendar,
 } from '@gsp/ui';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
-import { sitesMock } from '@/app/mock/mock';
+import { useQuery } from 'urql';
+import { useMemo } from 'react';
 
 // @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
@@ -46,6 +47,93 @@ export const BoltSelection = ({
   onSetDateRange,
   onFilterChange,
 }: BoltSelectionProps) => {
+  const SitesQurey = `
+  query {
+  boltResults {
+    site {
+      id
+      siteName
+      address
+      postalCode
+      city
+      country
+      companyId
+      createdAt
+      updatedAt
+      levels {
+        id
+        levelName
+        drives {
+          id
+          driveName
+          locations {
+            id
+            locationName
+          }
+        }
+      }
+    }
+  }
+}
+
+`;
+  const [{ data: SitesQureyResponse }] = useQuery({
+    query: SitesQurey,
+  });
+
+  const siteNames = useMemo(() => {
+    return SitesQureyResponse?.boltResults
+      .map((item: { site: { id: string; siteName: string } }) => ({
+        id: item.site.id,
+        name: item.site.siteName,
+      }))
+      .reduce(
+        (acc: { id: string }[], current: { id: string }) => {
+          if (!acc.some((site) => site.id === current.id)) {
+            acc.push(current);
+          }
+          return acc;
+        },
+        [] as { id: string }[],
+      );
+  }, [SitesQureyResponse]);
+
+  const levelsOptionsMock = useMemo(() => {
+    return SitesQureyResponse?.boltResults
+      ?.find(
+        (boltSites: { name: string | undefined }) => boltSites.name === site,
+      )
+      ?.site.levels?.map(
+        (elem: { id: unknown; levelName: string; drives: string }) => ({
+          id: elem.id,
+          name: elem.levelName,
+          drives: elem.drives,
+        }),
+      );
+  }, [SitesQureyResponse, site]);
+
+  const drivesOptionsMock = useMemo(() => {
+    const levelData = levelsOptionsMock?.find(
+      (boltLevels: { name: string | undefined }) => boltLevels.name === level,
+    );
+    return levelData?.drives?.map(
+      (elem: { id: string; driveName: string; locations: string }) => ({
+        id: elem.id,
+        name: elem.driveName,
+        location: elem.locations,
+      }),
+    );
+  }, [levelsOptionsMock, level]);
+
+  const locationsOptionsMock = useMemo(() => {
+    return drivesOptionsMock
+      ?.find((elem: { name: string | undefined }) => elem.name === drive)
+      ?.location?.map((elem: { locationName: unknown; id: string }) => ({
+        name: elem.locationName,
+        id: elem.id,
+      }));
+  }, [drivesOptionsMock, drive]);
+
   const handleSetSite = (site?: string) => {
     onSetSite(site);
     onSetDateRange({
@@ -68,20 +156,6 @@ export const BoltSelection = ({
     onSetLocation(undefined);
   };
 
-  // Finds available levels on the selected site
-  const levelsOptionsMock = sitesMock.find(
-    (boltSites) => boltSites.name === site,
-  )?.levels;
-
-  // Finds available levels on the selected site
-  const drivesOptionsMock = levelsOptionsMock?.find(
-    (boltLevels) => boltLevels.name === level,
-  )?.drives;
-
-  const locationsOptionsMock = drivesOptionsMock?.find(
-    (boltDrives) => boltDrives.name === drive,
-  )?.locations;
-
   return (
     <ContentHolder variant="filter">
       <BoltResultsFilter
@@ -96,7 +170,7 @@ export const BoltSelection = ({
           isResettable
           placeholder="Select site"
           selectedId={site}
-          options={sitesMock as DropdownItem[]}
+          options={siteNames as DropdownItem[]}
           onSelect={handleSetSite}
           className="w-56"
         />

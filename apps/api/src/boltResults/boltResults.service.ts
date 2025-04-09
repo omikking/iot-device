@@ -16,7 +16,59 @@ import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 @Injectable()
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
+  async findAll(): Promise<BoltResult[]> {
+    try {
+      const result = await this.prisma.boltResult.findMany({
+        include: {
+          location: {
+            select: {
+              id: true,
+              locationName: true,
+            },
+          },
+          drive: {
+            select: {
+              id: true,
+              driveName: true,
+            },
+          },
+          level: {
+            select: {
+              id: true,
+              levelName: true,
+            },
+          },
+          site: {
+            select: {
+              id: true,
+              siteName: true,
+              address: true,
+              postalCode: true,
+              city: true,
+              country: true,
+              companyId: true,
+              createdAt: true,
+              updatedAt: true,
+              level: {
+                select: {
+                  drive: {
+                    select: {
+                      location: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
 
+      return result;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      throw error;
+    }
+  }
   async findMany(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },

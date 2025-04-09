@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
+import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
@@ -23,6 +23,7 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
+import { useQuery } from 'urql';
 
 export default function Page(): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
@@ -34,6 +35,36 @@ export default function Page(): JSX.Element {
     from: undefined,
     to: undefined,
   });
+  const boltResultQuery = `
+  query {
+  boltResults {
+    id
+    boltNumber
+    boltType
+    peakLoad
+    peakDisplacement
+    positionInRing
+    result
+    isHazard
+    createdAt
+    updatedAt
+     level {
+      levelName  
+    }
+		 
+		location {
+			locationName 
+		}
+			drive {
+			driveName 
+		}
+      site {
+      id
+      siteName
+    }
+  }
+  }
+`;
 
   const [filterState, setFilterState] = useState({
     pass: false,
@@ -42,6 +73,9 @@ export default function Page(): JSX.Element {
     withComment: false,
     withImage: false,
     reportedHazard: false,
+  });
+  const [{ data, fetching, error }] = useQuery({
+    query: boltResultQuery,
   });
 
   const [boltResults, setBoltResults] = useState<
@@ -55,9 +89,11 @@ export default function Page(): JSX.Element {
     dateRange?: DateRange,
   ): BoltResultSchema[] | undefined => {
     return boltResults?.filter((bolt) => {
-      const matchLevel = level ? bolt.level === level : true;
-      const matchDrive = drive ? bolt.drive === drive : true;
-      const matchLocation = location ? bolt.location === location : true;
+      const matchLevel = level ? bolt.level.levelName === level : true;
+      const matchDrive = drive ? bolt.drive.driveName === drive : true;
+      const matchLocation = location
+        ? bolt.location.locationName === location
+        : true;
 
       // Date range filtering
       const matchDateRange =
@@ -69,9 +105,9 @@ export default function Page(): JSX.Element {
       // Filtering
       const matchResult =
         (!filterState.pass && !filterState.fail && !filterState.abort) ||
-        (filterState.pass && bolt.result === 'Pass') ||
-        (filterState.fail && bolt.result === 'Fail') ||
-        (filterState.abort && bolt.result === 'Abort');
+        (filterState.pass && bolt.result === 'PASS') ||
+        (filterState.fail && bolt.result === 'FAIL') ||
+        (filterState.abort && bolt.result === 'ABORT');
 
       const matchComment =
         (!filterState.withComment || bolt.comment) &&
@@ -92,10 +128,23 @@ export default function Page(): JSX.Element {
   const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
+    if (data?.boltResults) {
+      setBoltResults(data.boltResults);
+    } else {
+      setBoltResults([]);
+    }
+  }, [data]);
+
+  useEffect(() => {
     // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
-    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
+    const filteredBoltResult = data?.boltResults?.filter(
+      (bolts: { site: { id: string | undefined } }) => bolts.site.id === site,
+    );
+    site ? setBoltResults(filteredBoltResult) : setBoltResults(undefined);
   }, [site]);
 
+  if (fetching) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />

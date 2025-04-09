@@ -33,6 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         id: prismaUser.id,
         email: prismaUser.email,
         fullName: prismaUser.fullName,
+        globalRole: prismaUser.globalRole,
       };
 
       return activeUser;

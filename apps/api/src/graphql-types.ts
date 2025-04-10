@@ -8,6 +8,39 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum Role {
+    COMPANY_USER = "COMPANY_USER",
+    COMPANY_ADMIN = "COMPANY_ADMIN",
+    SANDVIK_ADMIN = "SANDVIK_ADMIN",
+    SANDVIK_TECHNICIAN = "SANDVIK_TECHNICIAN"
+}
+
+export enum Result {
+    PASS = "PASS",
+    FAIL = "FAIL",
+    ABORT = "ABORT"
+}
+
+export enum BoltType {
+    MD47 = "MD47",
+    MDX47 = "MDX47"
+}
+
+export enum RingPosition {
+    RH_BACKS = "RH_BACKS",
+    RH_SHOULDER = "RH_SHOULDER",
+    RH_WALL_UPPER = "RH_WALL_UPPER",
+    LH_BACKS = "LH_BACKS",
+    LH_SHOULDER = "LH_SHOULDER",
+    LH_WALL_UPPER = "LH_WALL_UPPER",
+    CENTER_BACKS = "CENTER_BACKS"
+}
+
+export enum PullTestAbortReason {
+    NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
+    TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
+}
+
 export class CreateBoltResultInput {
     boltNumber: number;
     boltType: string;
@@ -27,6 +60,7 @@ export class CreateBoltResultInput {
 }
 
 export class UpdateBoltResultInput {
+    id?: Nullable<string>;
     boltNumber?: Nullable<number>;
     boltType?: Nullable<string>;
     peakLoad?: Nullable<number[]>;
@@ -186,15 +220,25 @@ export class BoltResult {
     userId: string;
 }
 
+export class BoltResultResponse {
+    totalRecords: number;
+    results: BoltResult[];
+}
+
 export abstract class IQuery {
-    boltResults: BoltResult[];
+    boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
     coffee?: Coffee;
-    companies: Company[];
+    companies?: CompanyListResponse;
     company?: Company;
     drives: Drive[];
     drive?: Drive;
+    getRoles: Role[];
+    getResults: Result[];
+    getBoltTypes?: Nullable<BoltType[]>;
+    getRingPosition?: Nullable<RingPosition[]>;
+    getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
     hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;
@@ -212,6 +256,9 @@ export abstract class IMutation {
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
+    createBoltResults?: BoltResult[];
+    updateBoltResults?: BoltResult[];
+    removeBoltResults?: BoltResult[];
     createCoffee?: Coffee;
     updateCoffee?: Coffee;
     removeCoffee?: Coffee;
@@ -275,6 +322,11 @@ export class Plan {
     applicationName: string;
     planLevel: string;
     expiringDate?: Nullable<DateTime>;
+}
+
+export class CompanyListResponse {
+    totalRecords: number;
+    results: Company[];
 }
 
 export class Drive {

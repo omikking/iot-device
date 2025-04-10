@@ -3,21 +3,44 @@ import { Injectable } from '@nestjs/common';
 import {
   Application,
   Company,
+  GlobalRole,
   PlanLevel,
   PrismaClient,
   Role,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
-
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Company[]> {
-    return this.prisma.company.findMany();
+  async findAll(
+    user: ActiveUserData,
+    pagination: { offset: number; limit: number },
+  ): Promise<GraphQLTypes.CompanyListResponse> {
+    const { offset, limit } = pagination;
+    const whereCondition: Partial<Record<string, any>> = {};
+
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      whereCondition.userPermission = {
+        some: { userId: user.id },
+      };
+    }
+
+    const totalRecords = await this.prisma.company.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.company.findMany({
+      where: whereCondition,
+      skip: Number(offset),
+      take: Number(limit),
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<Company> {

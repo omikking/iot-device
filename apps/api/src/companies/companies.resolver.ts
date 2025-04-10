@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
 import { CompaniesService } from './companies.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CreateCompanyInput } from './dto/create-company.input';
@@ -6,15 +6,26 @@ import { UpdateCompanyInput } from './dto/update-company.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { ActiveUser } from 'src/auth/decorators';
 
 @Resolver()
 @UseGuards(JwtGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 
-  @Query('companies')
-  async findAll(): Promise<GraphQLTypes.Company[]> {
-    return this.companiesService.findAll();
+  @Query(() => GraphQLTypes.CompanyListResponse, { name: 'companies' })
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+    @Args('offset', { type: () => Int, nullable: true }) offset?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
+  ): Promise<GraphQLTypes.CompanyListResponse> {
+    const pagination = {
+      offset: Number(offset ?? 0),
+      limit: Number(limit ?? 20),
+    };
+
+    return this.companiesService.findAll(user, pagination);
   }
 
   @Query('company')

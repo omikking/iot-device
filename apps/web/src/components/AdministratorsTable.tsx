@@ -75,14 +75,6 @@ export const AdministratorsTable = ({
     setIsDeleteAdministratorModalOpen(true);
   };
 
-  const openEditModal = (adminId: string) => {
-    const adminToEdit = administrators?.find((admin) => admin.id === adminId);
-    if (adminToEdit) {
-      onSelectAdministrator(adminToEdit);
-      onOpenChange(true);
-    }
-  };
-
   const closeDeleteModal = () => {
     setIsDeleteAdministratorModalOpen(false);
     setAdministratorToDelete(undefined);
@@ -100,7 +92,7 @@ export const AdministratorsTable = ({
 
   const columns: ColumnDef<Administrator>[] = [
     {
-      accessorKey: 'fullName',
+      accessorKey: 'Full name',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Name" />
       ),
@@ -140,7 +132,6 @@ export const AdministratorsTable = ({
           <DeleteEditDropdown
             itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
-            handleEdit={openEditModal}
           />
         );
       },

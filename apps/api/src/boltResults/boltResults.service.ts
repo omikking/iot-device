@@ -45,7 +45,18 @@ export class BoltResultsService {
       take: Number(limit),
       where: whereCondition,
     });
-    return { totalRecords, results };
+
+    const failed = results.filter((r) => r.result === 'FAIL').length;
+    const hazard = results.filter((r) => r.isHazard === true).length;
+    const passed = results.filter((r) => r.result === 'PASS').length;
+    const successRate = totalRecords > 0 ? (passed / totalRecords) * 100 : 0;
+    return {
+      totalRecords,
+      failed,
+      hazard,
+      successRate: parseInt(successRate.toString(), 10),
+      results,
+    };
   }
 
   async findOne(id: string): Promise<BoltResult> {

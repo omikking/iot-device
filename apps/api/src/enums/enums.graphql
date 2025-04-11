@@ -31,10 +31,16 @@ enum PullTestAbortReason {
   TEST_STOPPED_INSTALL_ANGLE
 }
 
+type EnumOption {
+  key: String!
+  value: String!
+}
+
 type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
   getRingPosition: [RingPosition!]
   getPullTestAbortReason: [PullTestAbortReason!]
+  getRingListPositions: [EnumOption!]!
 }

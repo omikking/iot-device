@@ -13,7 +13,7 @@ import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
-// import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 type Administrator = GetAdminsQuery['users'][0];
 
@@ -44,10 +44,10 @@ const deleteAdminMutation = graphql(`
 `);
 
 export const AdministratorsTable = () => {
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,
-    // pause: !session?.company?.id,
+    pause: !session?.company?.id,
   });
   const administrators =
     (administratorsData?.users as GetAdminsQuery['users']) || [];

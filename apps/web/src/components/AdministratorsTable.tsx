@@ -17,11 +17,6 @@ import { useSession } from 'next-auth/react';
 
 type Administrator = GetAdminsQuery['users'][0];
 
-type AdministratorsTableProps = {
-  onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator?: Administrator) => void;
-};
-
 const getAdminsQuery = graphql(`
   query getAdmins {
     users(roles: "SANDVIK_ADMIN") {
@@ -48,10 +43,7 @@ const deleteAdminMutation = graphql(`
   }
 `);
 
-export const AdministratorsTable = ({
-  onOpenChange,
-  onSelectAdministrator,
-}: AdministratorsTableProps) => {
+export const AdministratorsTable = () => {
   const { data: session } = useSession();
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,

@@ -139,29 +139,27 @@ export const AddOrEditTechnicianModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex gap-2 justify-between px-10 pt-10">
-              <div className="flex flex-row flex-wrap justify-between gap-8">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter email"
-                            {...field}
-                            className="w-96"
-                            disabled={technician ? true : false}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={isSuccessful}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter email"
+                          {...field}
+                          className="w-96"
+                          disabled={technician ? true : false}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
 
               <div className="pt-2">
                 <div className="flex flex-row items-center gap-2">

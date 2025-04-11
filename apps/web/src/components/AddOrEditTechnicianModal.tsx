@@ -153,6 +153,7 @@ export const AddOrEditTechnicianModal = ({
                             placeholder="Enter email"
                             {...field}
                             className="w-96"
+                            disabled={technician ? true : false}
                           />
                         </FormControl>
                         <FormMessage />

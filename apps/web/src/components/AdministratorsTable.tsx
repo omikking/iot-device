@@ -92,9 +92,9 @@ export const AdministratorsTable = ({
 
   const columns: ColumnDef<Administrator>[] = [
     {
-      accessorKey: 'Full name',
+      accessorKey: 'fullName',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Name" />
+        <TableHeadWithSorting column={column} header="Full name" />
       ),
     },
     {

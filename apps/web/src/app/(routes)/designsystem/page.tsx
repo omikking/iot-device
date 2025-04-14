@@ -41,9 +41,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  Alert,
-  AlertDescription,
-  AlertTitle,
+  showAlertToast,
+  Toaster,
 } from '@gsp/ui';
 
 import {
@@ -161,9 +160,7 @@ export default function Page(): JSX.Element {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-
       <hr className="w-full border-neutral-2" />
-
       <Headline variant="xl" as="h1" color="foreground">
         Breadcrumb 🦄
       </Headline>
@@ -190,13 +187,10 @@ export default function Page(): JSX.Element {
           </BreadcrumbLink>
         </BreadcrumbList>
       </Breadcrumb>
-
       <hr className="w-full border-neutral-2" />
-
       <Headline variant="large" as="h1" color="foreground">
         Success Modal Confirmation 🦄
       </Headline>
-
       <Modal open={openTechModal} onOpenChange={setOpenTechModal}>
         <ModalTrigger asChild>
           <Button variant="primary" size="large">
@@ -206,13 +200,10 @@ export default function Page(): JSX.Element {
         </ModalTrigger>
         <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
       </Modal>
-
       <hr className="w-full border-neutral-2" />
-
       <Headline variant="large" as="h1" color="foreground">
         Delete Modal Confirmation 🦄
       </Headline>
-
       <Button
         variant="destructive"
         size="large"
@@ -221,7 +212,6 @@ export default function Page(): JSX.Element {
         <LucideTrash2 />
         Delete item
       </Button>
-
       <DeleteModalConfirmation
         deleteButtonText="Confirm deletion"
         modalTitle="Delete Site"
@@ -243,7 +233,6 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Dropdown Delete 🦄
       </Headline>
-
       <div>
         {sites.map((site, index) => (
           <div
@@ -280,7 +269,6 @@ export default function Page(): JSX.Element {
           </Text>
         </DeleteModalConfirmation>
       </div>
-
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
         Buttons 🦄
@@ -901,23 +889,58 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Alerts 🦄
       </Headline>
-      <Alert variant="error">
-        <AlertTitle>Failed to sign in</AlertTitle>
-        <AlertDescription>Your email or password is wrong</AlertDescription>
-      </Alert>
-      <Alert variant="info">
-        <AlertTitle>Info</AlertTitle>
-        <AlertDescription>
-          View some information here, lorem ipsum
-        </AlertDescription>
-      </Alert>
-      <Alert variant="warning">
-        <AlertTitle>Warning</AlertTitle>
-        <AlertDescription>Your email or password is wrong</AlertDescription>
-      </Alert>
-      <Alert variant="success">
-        <AlertTitle>Successfully signed in</AlertTitle>
-      </Alert>
+      <Toaster duration={500000} />
+      <Button
+        onClick={() =>
+          showAlertToast({
+            title: 'Failed to sign in',
+            description: 'Your email or password is wrong',
+            variant: 'error',
+          })
+        }
+        size="large"
+        variant="outline"
+      >
+        Show error Alert
+      </Button>
+      <Button
+        size="large"
+        variant="outline"
+        onClick={() =>
+          showAlertToast({
+            title: 'Info',
+            description: 'View some information here, lorem ipsum',
+            variant: 'info',
+          })
+        }
+      >
+        Show info Alert
+      </Button>
+      <Button
+        size="large"
+        variant="outline"
+        onClick={() =>
+          showAlertToast({
+            title: 'Warning',
+            description: 'Your email or password is wrong',
+            variant: 'warning',
+          })
+        }
+      >
+        Show Warning Alert
+      </Button>
+      <Button
+        size="large"
+        variant="outline"
+        onClick={() =>
+          showAlertToast({
+            title: 'Successfully signed in',
+            variant: 'success',
+          })
+        }
+      >
+        Show success Alert
+      </Button>
     </main>
   );
 }

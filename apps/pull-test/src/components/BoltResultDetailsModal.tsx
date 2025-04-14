@@ -239,13 +239,10 @@ export const BoltResultDetailsModal = ({
                 size="large"
                 variant="primary"
                 disabled={isConfirmed}
+                isLoading={isLoading}
                 onClick={isCompleted ? hazardConfirmed : completeHazard}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
-                  <LucideCircleCheckBig />
-                )}
+                {!isLoading && <LucideCircleCheckBig />}
                 Complete
               </Button>
             )}

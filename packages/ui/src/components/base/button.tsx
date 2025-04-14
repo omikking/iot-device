@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-
+import { LoadingSpinner } from './loading-spinner';
 import { cn } from '../../lib/utils';
 
 const buttonVariants = cva(
@@ -40,11 +40,21 @@ export interface ButtonProps
     Required<Pick<VariantProps<typeof buttonVariants>, 'variant' | 'size'>> {
   isWide?: boolean;
   asChild?: boolean;
+  isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, isWide, asChild = false, children, ...props },
+    {
+      className,
+      variant,
+      size,
+      isWide,
+      asChild = false,
+      isLoading,
+      children,
+      ...props
+    },
     ref,
   ) => {
     const Component = asChild ? Slot : 'button';
@@ -54,7 +64,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {children}
+        <>
+          {isLoading && <LoadingSpinner />}
+          {children}
+        </>
       </Component>
     );
   },

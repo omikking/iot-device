@@ -215,23 +215,16 @@ export const AddOrEditAdministratorModal = ({
                 size="large"
                 variant="primary"
                 disabled={isLoading}
+                isLoading={isLoading}
               >
                 {administrator ? (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucideSquarePen />
-                    )}
+                    {!isLoading && <LucideSquarePen />}
                     Edit administrator
                   </>
                 ) : (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucidePlus />
-                    )}
+                    {!isLoading && <LucidePlus />}
                     Add administrator
                   </>
                 )}

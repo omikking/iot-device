@@ -1,29 +1,33 @@
 import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
-import Providers from '@/components/Providers';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { NavBar } from '@/components/NavBar';
-import { UrqlWrapper } from '@/libs/UrqlClient';
+import NextAuthProvider from '@/libs/NextAuthProvider';
+import UrqlProvider from '@/libs/UrqlProvider';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
   description: 'For all your ground support needs.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}): JSX.Element {
+}>) {
+  const session = await getServerSession(authOptions);
+  console.log('session server', session);
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <UrqlWrapper>
-          <Providers>
+        <NextAuthProvider session={session}>
+          <UrqlProvider>
             <NavBar />
             {children}
-          </Providers>
-        </UrqlWrapper>
+          </UrqlProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

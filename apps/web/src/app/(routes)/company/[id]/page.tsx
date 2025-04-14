@@ -69,8 +69,8 @@ export default function Page({
       {company && (
         <DeleteModalConfirmation
           deleteIcon="Company"
-          deleteButtonText="Delete company"
-          modalTitle="Delete company"
+          deleteButtonText="Inactivate company"
+          modalTitle="Inactivate company"
           modalText="Confirm inactivation"
           isOpen={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
@@ -85,12 +85,12 @@ export default function Page({
                 {` ${company?.name}. `}
               </Text>
               <Text variant="medium" color={'foreground'} as="span">
-                Are you sure you want to inactivate?
+                Are you sure about this action?
               </Text>
             </Text>
             <Text color={'foreground'} variant={'medium'}>
-              The company data will not be deleted and is recoverable. The
-              company will become inactive.
+              The company will become inactive. The company data will not be
+              deleted and is recoverable.
             </Text>
           </div>
         </DeleteModalConfirmation>

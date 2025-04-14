@@ -34,7 +34,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       },
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return {
       ...token,

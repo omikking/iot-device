@@ -1,23 +1,41 @@
 'use client';
+import { useQuery } from 'urql';
 import { Badge, Headline, NavigationCard } from '@gsp/ui';
 import { GoBack } from '@/components/GoBack';
 import { SandvikLogo } from 'public/SandvikLogo';
-
 import Link from 'next/link';
 import { LucideCircuitBoard } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { graphql } from '@/gql';
 
-export default function Page(): JSX.Element {
-  const { data: session } = useSession();
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
+  const [companyResult] = useQuery({
+    query: getCompanyName,
+    variables: { id: params.id },
+  });
+
+  const companyName = companyResult.data?.company?.name;
 
   return (
     //@TODO  Fix this min-h-[calc(100vh-65px)] add that value in tailwind-config as minPageHeight or something like that
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-1 overflow-y-auto">
       <GoBack />
 
-      {session?.company.name && (
+      {companyName && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session.company.name}
+          {companyName}
         </Badge>
       )}
 

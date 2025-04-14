@@ -2,10 +2,10 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { NavBar } from '@/components/NavBar';
-import NextAuthProvider from '@/libs/NextAuthProvider';
-import UrqlProvider from '@/libs/UrqlProvider';
+import { authOptions } from '@/libs/authOptions';
+import NextAuthProvider from '@/libs/providers/NextAuthProvider';
+import UrqlProvider from '@/libs/providers/UrqlProvider';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',

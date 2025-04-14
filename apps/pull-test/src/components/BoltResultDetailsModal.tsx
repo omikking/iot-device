@@ -9,7 +9,6 @@ import {
   Badge,
   Headline,
   ModalClose,
-  LoadingSpinner,
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';

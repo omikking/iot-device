@@ -1,5 +1,3 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-
 export enum RingListPositions {
   LH_Backs = 'LH_Backs',
   Center_Backs = 'Center_Backs',
@@ -42,16 +40,7 @@ export const RingListPositionLabels: Record<RingListPositions, string> = {
   [RingListPositions.RH_Wall_Lower]: 'R/H Wall Lower',
 };
 
-@ObjectType()
-export class EnumOption {
-  @Field()
-  key: string;
-
-  @Field()
-  value: string;
-}
-
-export const getRingListPositionOptions = (): EnumOption[] => {
+export const getRingListPositionOptions = () => {
   return Object.entries(RingListPositionLabels).map(([key, value]) => ({
     key,
     value,

@@ -8,36 +8,20 @@ import {
 } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { EnumOption, getRingListPositionOptions } from './RingListPositions';
+import { getRingListPositionOptions } from './RingListPositions';
 
-@Resolver()
+@Resolver('Enums')
 @UseGuards(JwtGuard)
 export class EnumResolver {
-  @Query(() => [Role])
-  getRoles(): Role[] {
-    return Object.values(Role);
-  }
-
-  @Query(() => [Result])
-  getResults(): Result[] {
-    return Object.values(Result);
-  }
-
-  @Query(() => [BoltType])
-  getBoltTypes(): BoltType[] {
-    return Object.values(BoltType);
-  }
-  @Query(() => [RingPosition])
-  getRingPosition(): RingPosition[] {
-    return Object.values(RingPosition);
-  }
-
-  @Query(() => [PullTestAbortReason])
-  getPullTestAbortReason(): PullTestAbortReason[] {
-    return Object.values(PullTestAbortReason);
-  }
-  @Query(() => [EnumOption])
-  getRingListPositions(): EnumOption[] {
-    return getRingListPositionOptions();
+  @Query('enums')
+  enums() {
+    return {
+      roles: Object.values(Role),
+      results: Object.values(Result),
+      boltTypes: Object.values(BoltType),
+      ringPosition: Object.values(RingPosition),
+      pullTestAbortReason: Object.values(PullTestAbortReason),
+      ringListPositions: getRingListPositionOptions(),
+    };
   }
 }

@@ -31,16 +31,38 @@ enum PullTestAbortReason {
   TEST_STOPPED_INSTALL_ANGLE
 }
 
+enum RingListPositions {
+  LH_Backs
+  Center_Backs
+  RH_Backs
+  LH_Face_High
+  LH_Face_Low
+  RH_Face_High
+  RH_Face_Low
+  LH_Shoulder
+  LH_Wall_Upper
+  LH_Wall_Center
+  LH_Wall_Lower
+  RH_Shoulder
+  RH_Wall_Upper
+  RH_Wall_Center
+  RH_Wall_Lower
+}
+
 type EnumOption {
   key: String!
   value: String!
 }
 
+type Enums {
+  roles: [String!]!
+  results: [String!]!
+  boltTypes: [String!]!
+  ringPosition: [String!]!
+  pullTestAbortReason: [String!]!
+  ringListPositions: [EnumOption!]!
+}
+
 type Query {
-  getRoles: [Role!]!
-  getResults: [Result!]!
-  getBoltTypes: [BoltType!]
-  getRingPosition: [RingPosition!]
-  getPullTestAbortReason: [PullTestAbortReason!]
-  getRingListPositions: [EnumOption!]!
+  enums: Enums!
 }

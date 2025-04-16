@@ -11,8 +11,8 @@ import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 interface DeleteEditDropdownProps {
   itemSelected: string;
-  openDeleteModal: (itemSelected: string) => void;
-  handleEdit: (itemSelected: string) => void;
+  openDeleteModal?: (itemSelected: string) => void;
+  handleEdit?: (itemSelected: string) => void;
 }
 
 export const DeleteEditDropdown = ({
@@ -28,18 +28,22 @@ export const DeleteEditDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-4">
-        <DropdownMenuItem onSelect={() => handleEdit(itemSelected)}>
-          <LucideSquarePen />
-          <Text color={'foreground'} variant={'medium'}>
-            Edit
-          </Text>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openDeleteModal(itemSelected)}>
-          <LucideTrash2 className="text-error" />
-          <Text color={'destructive'} variant={'medium'}>
-            Delete
-          </Text>
-        </DropdownMenuItem>
+        {handleEdit && (
+          <DropdownMenuItem onSelect={() => handleEdit(itemSelected)}>
+            <LucideSquarePen />
+            <Text color={'foreground'} variant={'medium'}>
+              Edit
+            </Text>
+          </DropdownMenuItem>
+        )}
+        {openDeleteModal && (
+          <DropdownMenuItem onClick={() => openDeleteModal(itemSelected)}>
+            <LucideTrash2 className="text-error" />
+            <Text color={'destructive'} variant={'medium'}>
+              Delete
+            </Text>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

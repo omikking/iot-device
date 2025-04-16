@@ -42,11 +42,7 @@ export default function Page(): JSX.Element {
             administrator={selectedAdministrator}
           />
         </Modal>
-
-        <AdministratorsTable
-          onOpenChange={handleToggleModal}
-          onSelectAdministrator={setSelectedAdministrator}
-        />
+        <AdministratorsTable />
       </div>
     </main>
   );

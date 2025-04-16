@@ -58,6 +58,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const Component = asChild ? Slot : 'button';
+    const childProps = asChild
+      ? { className: cn(buttonVariants({ variant, size, isWide }), className) }
+      : {};
+
     return (
       <Component
         className={cn(buttonVariants({ variant, size, isWide }), className)}
@@ -66,12 +70,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <>
           {isLoading && <LoadingSpinner />}
-          {children}
+          {React.isValidElement(children) && asChild
+            ? React.cloneElement(children as React.ReactElement, childProps)
+            : children}
         </>
       </Component>
     );
   },
 );
+
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };

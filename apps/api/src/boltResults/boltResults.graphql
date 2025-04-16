@@ -31,10 +31,6 @@ type BoltResult {
   driveId: String!
   locationId: String!
   userId: String!
-  location: Location!
-  drive: Drive!
-  level: Level!
-  site: Site
 }
 
 """
@@ -65,19 +61,8 @@ UpdateBoltResultInput
 Define the input fields to update an existing boltResult
 Optional are marked without the exclamation mark
 """
-type Site {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  siteName: String!
-  address: String!
-  postalCode: String!
-  city: String!
-  country: String!
-
-  companyId: String!
-}
 input UpdateBoltResultInput {
+  id: String
   boltNumber: Int
   boltType: String
   peakLoad: [Int!]
@@ -92,11 +77,30 @@ input UpdateBoltResultInput {
 }
 
 """
+BoltResultResponse
+Response structure for paginated list of bolt results
+"""
+type BoltResultResponse {
+  totalRecords: Int!
+  results: [BoltResult!]!
+}
+
+"""
 Query
 Define the queries that can be made to the BoltResult model
 """
 type Query {
-  boltResults: [BoltResult!]!
+  boltResults(
+    offset: Int
+    limit: Int
+    siteId: String
+    levelId: String
+    driveId: String
+    locationId: String
+    result: String
+    isHazard: Boolean
+  ): BoltResultResponse!
+
   boltResult(id: String!): BoltResult!
 }
 
@@ -106,9 +110,21 @@ Define the mutations that can be made to the BoltResult model
 """
 type Mutation {
   createBoltResult(createBoltResultInput: CreateBoltResultInput!): BoltResult!
+
   updateBoltResult(
     id: String!
     updateBoltResultInput: UpdateBoltResultInput!
   ): BoltResult!
+
   removeBoltResult(id: String!): BoltResult!
+
+  createBoltResults(
+    createBoltResultsInput: [CreateBoltResultInput!]!
+  ): [BoltResult!]!
+
+  updateBoltResults(
+    updateBoltResultsInput: [UpdateBoltResultInput!]!
+  ): [BoltResult!]!
+
+  removeBoltResults(ids: [String!]!): [BoltResult!]!
 }

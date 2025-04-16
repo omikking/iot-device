@@ -1,11 +1,5 @@
 import { Resolver, Query } from '@nestjs/graphql';
-import {
-  Role,
-  Result,
-  BoltType,
-  RingPosition,
-  PullTestAbortReason,
-} from '@prisma/client';
+import { Role, Result, BoltType, PullTestAbortReason } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { getRingListPositionOptions } from './RingListPositions';
@@ -19,9 +13,8 @@ export class EnumResolver {
       roles: Object.values(Role),
       results: Object.values(Result),
       boltTypes: Object.values(BoltType),
-      ringPosition: Object.values(RingPosition),
+      ringPosition: getRingListPositionOptions(),
       pullTestAbortReason: Object.values(PullTestAbortReason),
-      ringListPositions: getRingListPositionOptions(),
     };
   }
 }

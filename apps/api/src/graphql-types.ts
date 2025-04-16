@@ -26,22 +26,12 @@ export enum BoltType {
     MDX47 = "MDX47"
 }
 
-export enum RingPosition {
-    RH_BACKS = "RH_BACKS",
-    RH_SHOULDER = "RH_SHOULDER",
-    RH_WALL_UPPER = "RH_WALL_UPPER",
-    LH_BACKS = "LH_BACKS",
-    LH_SHOULDER = "LH_SHOULDER",
-    LH_WALL_UPPER = "LH_WALL_UPPER",
-    CENTER_BACKS = "CENTER_BACKS"
-}
-
 export enum PullTestAbortReason {
     NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
     TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
 }
 
-export enum RingListPositions {
+export enum RingPosition {
     LH_Backs = "LH_Backs",
     Center_Backs = "Center_Backs",
     RH_Backs = "RH_Backs",
@@ -365,9 +355,8 @@ export class Enums {
     roles: string[];
     results: string[];
     boltTypes: string[];
-    ringPosition: string[];
+    ringPosition: EnumOption[];
     pullTestAbortReason: string[];
-    ringListPositions: EnumOption[];
 }
 
 export class Level {

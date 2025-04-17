@@ -167,46 +167,47 @@ export const BoltResultDetailsModal = ({
           isCompleted || isConfirmed ? 'hidden' : 'block'
         }`}
       >
-        <div className="pt-5 px-10 flex gap-10 flex-grow">
-          {image && (
-            <Image
-              // src={image || '/images/placeholder.png'}
-              src={'/images/placeholder.png'}
-              alt="Attached bolt result image"
-              width={390}
-              height={280}
-              className="rounded-md h-72 pt-5"
-            />
-          )}
-          <div className="flex flex-col w-1/2 ">
-            {boltResult.comment && (
-              <div className="flex flex-col flex-grow pt-5">
-                <Text variant="small" color="foreground">
-                  Comment
-                </Text>
-                <Textarea
-                  value={boltResult.comment}
-                  className="mt-2 flex-grow"
-                  disabled
-                  readOnly
-                />
-              </div>
+        {(image || boltResult.comment || isHazard) && (
+          <div className="px-10 pb-10 flex gap-10 flex-grow">
+            {image && (
+              <Image
+                src={'/capybara.jpg'}
+                alt="Attached bolt result image"
+                width={390}
+                height={280}
+                className="rounded-md h-72 mt-10"
+              />
             )}
-            {isHazard && (
-              <div className="flex pt-5 gap-4 items-center">
-                <Badge variant={'attention'}>
-                  <LucideTriangleAlert />
-                  Reported hazard
-                </Badge>
-                <Text variant="small" color="foreground">
-                  Reported by: {nameData?.user?.fullName || 'N/A'}
-                </Text>
-              </div>
-            )}
+            <div className="flex flex-col w-1/2 ">
+              {boltResult.comment && (
+                <div className="flex flex-col flex-grow pt-10">
+                  <Text variant="small" color="foreground">
+                    Comment
+                  </Text>
+                  <Textarea
+                    value={boltResult.comment}
+                    className="mt-2 flex-grow"
+                    disabled
+                    readOnly
+                  />
+                </div>
+              )}
+              {isHazard && (
+                <div className="flex pt-5 gap-4 items-center">
+                  <Badge variant={'attention'}>
+                    <LucideTriangleAlert />
+                    Reported hazard
+                  </Badge>
+                  <Text variant="small" color="foreground">
+                    Reported by: {nameData?.user?.fullName || 'N/A'}
+                  </Text>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="px-10 pb-10">
+        <div className="px-10 pb-10 pt-5">
           <Headline
             className="pb-4"
             variant="small"

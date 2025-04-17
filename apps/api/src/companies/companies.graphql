@@ -111,11 +111,20 @@ input UpdateAdminPermissionInput {
 }
 
 """
+CompanyListResponse
+Response structure for paginated list of companies
+"""
+type CompanyListResponse {
+  totalRecords: Int!
+  results: [Company!]!
+}
+
+"""
 Query
 Define the queries that can be made to the Company model
 """
 type Query {
-  companies: [Company!]!
+  companies(offset: Int, limit: Int, userId: String): CompanyListResponse!
   company(id: String!): Company!
 }
 

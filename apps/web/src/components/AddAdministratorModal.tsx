@@ -122,30 +122,26 @@ export const AddAdministratorModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-row justify-between">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    disabled={isSuccessful}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter email"
-                              {...field}
-                              className="w-96"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={isSuccessful}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter email"
+                          {...field}
+                          className="w-96"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </div>
             <ModalFooter className="px-10 pt-14 pb-6">
               <Button

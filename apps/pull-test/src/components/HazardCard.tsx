@@ -165,31 +165,6 @@ export const HazardCard = ({
                 />
               ));
             })()}
-          {/* {fullBoltData &&
-            [
-              ...generateBoltSpecifications(fullBoltData, {}).slice(0, 2),
-              ...generateBoltSpecifications(fullBoltData, {}).slice(
-                generateBoltSpecifications(fullBoltData, {}).length - 2,
-                generateBoltSpecifications(fullBoltData, {}).length - 1,
-              ),
-            ].map((boltSpec, i) => {
-              if (boltSpec.title === 'Site') {
-                return (
-                  <Specification
-                    key={i}
-                    title={boltSpec.title}
-                    text={siteName}
-                  />
-                );
-              }
-              return (
-                <Specification
-                  key={i}
-                  title={boltSpec.title}
-                  text={boltSpec.text}
-                />
-              );
-            })} */}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">

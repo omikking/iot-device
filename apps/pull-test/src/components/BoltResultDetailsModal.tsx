@@ -56,6 +56,14 @@ const getLocationDetails = graphql(`
   }
 `);
 
+const getNameDetails = graphql(`
+  query getNameDetails($id: String!) {
+    user(id: $id) {
+      fullName
+    }
+  }
+`);
+
 export const BoltResultDetailsModal = ({
   modalTitle,
   isHazardCompletable = false,
@@ -86,6 +94,13 @@ export const BoltResultDetailsModal = ({
     query: getLocationDetails,
     variables: { id: boltResult?.locationId ?? '' },
     pause: !boltResult?.locationId,
+  });
+
+  // Name Query
+  const [{ data: nameData }] = useQuery({
+    query: getNameDetails,
+    variables: { id: boltResult?.userId ?? '' },
+    pause: !boltResult?.userId,
   });
 
   const levelName = levelData?.level?.levelName || 'N/A';
@@ -178,11 +193,14 @@ export const BoltResultDetailsModal = ({
               </div>
             )}
             {isHazard && (
-              <div className="flex justify-between pt-5">
+              <div className="flex pt-5 gap-4 items-center">
                 <Badge variant={'attention'}>
                   <LucideTriangleAlert />
                   Reported hazard
                 </Badge>
+                <Text variant="small" color="foreground">
+                  Reported by: {nameData?.user?.fullName || 'N/A'}
+                </Text>
               </div>
             )}
           </div>

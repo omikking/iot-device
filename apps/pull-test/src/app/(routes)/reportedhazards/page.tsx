@@ -43,8 +43,8 @@ export default function Page(): JSX.Element {
     variables: { id: companyId },
     pause: !companyId,
   });
-
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <Headline
@@ -74,13 +74,7 @@ export default function Page(): JSX.Element {
           {hazards.map(
             (boltResult, index) =>
               boltResult.isHazard && (
-                <HazardCard
-                  key={index}
-                  isHazard={boltResult.isHazard}
-                  fullBoltData={boltResult}
-                  dateTitle={boltResult.createdAt}
-                  boltDescription={boltResult.comment ?? undefined}
-                />
+                <HazardCard key={index} boltResult={boltResult} />
               ),
           )}
         </TabsContent>
@@ -91,13 +85,7 @@ export default function Page(): JSX.Element {
           {hazards.map(
             (boltResult, index) =>
               !boltResult.isHazard && (
-                <HazardCard
-                  key={index}
-                  isHazard={boltResult.isHazard}
-                  fullBoltData={boltResult}
-                  dateTitle={boltResult.createdAt}
-                  boltDescription={boltResult.comment ?? undefined}
-                />
+                <HazardCard key={index} boltResult={boltResult} />
               ),
           )}
         </TabsContent>
@@ -106,13 +94,7 @@ export default function Page(): JSX.Element {
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.map((boltResult, index) => (
-            <HazardCard
-              key={index}
-              isHazard={boltResult.isHazard}
-              fullBoltData={boltResult}
-              dateTitle={boltResult.createdAt}
-              boltDescription={boltResult.comment ?? undefined}
-            />
+            <HazardCard key={index} boltResult={boltResult} />
           ))}
         </TabsContent>
       </Tabs>

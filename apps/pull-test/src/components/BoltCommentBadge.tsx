@@ -10,12 +10,12 @@ import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { BoltResult } from '@/gql/graphql';
 
 type BoltCommentBadgeProps = {
-  fullBoltData: BoltResult;
+  boltResult: BoltResult;
 };
 
-export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
+export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { boltNumber, image, comment, isHazard } = fullBoltData;
+  const { boltNumber, image, comment, isHazard } = boltResult;
 
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -40,7 +40,7 @@ export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
 
       <BoltResultDetailsModal
         modalTitle={`Bolt ${boltNumber}`}
-        fullBoltData={fullBoltData}
+        boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />
     </Modal>

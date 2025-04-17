@@ -51,7 +51,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakLoad } = row.original;
         if (peakLoad.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakLoad.length === 1) {
           return peakLoad[0];
@@ -79,7 +79,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
         if (peakDisplacement.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakDisplacement.length === 1) {
           return peakDisplacement[0];
@@ -119,7 +119,7 @@ export const BoltResultsTable = ({
       accessorKey: 'comment',
       header: 'Comment',
       cell: ({ row }) => {
-        return <BoltCommentBadge fullBoltData={row.original} />;
+        return <BoltCommentBadge boltResult={row.original} />;
       },
     },
     {

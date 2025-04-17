@@ -17,14 +17,11 @@ import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
 
 type HazardCardProps = {
-  dateTitle: Date;
-  isHazard?: boolean;
-  boltDescription?: string;
-  fullBoltData?: BoltResult;
+  boltResult: BoltResult;
 };
 
 const getMeSitesLocationDocument = graphql(`
@@ -35,40 +32,8 @@ const getMeSitesLocationDocument = graphql(`
   }
 `);
 
-const getLevelDetails = graphql(`
-  query getLevelDetails($id: String!) {
-    level(id: $id) {
-      id
-      levelName
-      siteId
-    }
-  }
-`);
-
-const getDriveDetails = graphql(`
-  query getDriveDetails($id: String!) {
-    drive(id: $id) {
-      id
-      driveName
-    }
-  }
-`);
-
-const getLocationDetails = graphql(`
-  query getLocationDetails($id: String!) {
-    location(id: $id) {
-      id
-      locationName
-    }
-  }
-`);
-
-export const HazardCard = ({
-  dateTitle,
-  isHazard,
-  boltDescription,
-  fullBoltData,
-}: HazardCardProps) => {
+export const HazardCard = ({ boltResult }: HazardCardProps) => {
+  const { isHazard, comment, createdAt }: Partial<BoltResult> = boltResult;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -81,55 +46,9 @@ export const HazardCard = ({
 
   const [{ data: siteData }] = useQuery({
     query: getMeSitesLocationDocument,
-    variables: { id: fullBoltData?.siteId || '' },
-    pause: !fullBoltData?.siteId,
+    variables: { id: boltResult?.siteId || '' },
+    pause: !boltResult?.siteId,
   });
-
-  // Level Query
-  const [{ data: levelData }] = useQuery({
-    query: getLevelDetails,
-    variables: { id: fullBoltData?.levelId ?? '' },
-    pause: !fullBoltData?.levelId,
-  });
-
-  // Drive Query
-  const [{ data: driveData }] = useQuery({
-    query: getDriveDetails,
-    variables: { id: fullBoltData?.driveId ?? '' },
-    pause: !fullBoltData?.driveId,
-  });
-
-  // Location Query
-  const [{ data: locationData }] = useQuery({
-    query: getLocationDetails,
-    variables: { id: fullBoltData?.locationId ?? '' },
-    pause: !fullBoltData?.locationId,
-  });
-
-  // Update the boltInfoItems with names from fetched data
-  useEffect(() => {
-    if (!fullBoltData) return;
-
-    const siteName = siteData?.site?.siteName || 'N/A';
-    const levelName = levelData?.level?.levelName || 'N/A';
-    const driveName = driveData?.drive?.driveName || 'N/A';
-    const locationName = locationData?.location?.locationName || 'N/A';
-
-    const updatedItems = [...generateBoltSpecifications(fullBoltData, {})];
-
-    const itemTextValue: Record<string, string> = {
-      Site: siteName,
-      Level: levelName,
-      Drive: driveName,
-      Location: locationName,
-    };
-
-    updatedItems.forEach((item) => {
-      if (item.title in itemTextValue) {
-        item.text = itemTextValue[item.title];
-      }
-    });
-  }, [siteData, levelData, driveData, locationData, fullBoltData]);
 
   const siteName = siteData?.site?.siteName || 'N/A';
 
@@ -137,7 +56,7 @@ export const HazardCard = ({
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
       <div className="flex flex-row border-b border-neutral-2 p-6 items-center justify-between">
         <Headline variant="small" as="h3" color="foreground" isBold>
-          {formatDate(new Date(dateTitle))}
+          {formatDate(new Date(createdAt))}
         </Headline>
         {isHazard && (
           <Badge variant="attention">
@@ -148,9 +67,9 @@ export const HazardCard = ({
       </div>
       <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
-          {fullBoltData &&
+          {boltResult &&
             (() => {
-              const allSpecs = generateBoltSpecifications(fullBoltData, {});
+              const allSpecs = generateBoltSpecifications(boltResult, {});
               // Get first two and last two items
               const selectedSpecs = [
                 ...allSpecs.slice(0, 2),
@@ -170,7 +89,7 @@ export const HazardCard = ({
           <Text variant="small" color="foreground">
             Description
           </Text>
-          <Textarea value={boltDescription} className="flex-grow" disabled />
+          <Textarea value={comment || ''} className="flex-grow" disabled />
         </div>
       </div>
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
@@ -189,8 +108,8 @@ export const HazardCard = ({
           </ModalTrigger>
           <BoltResultDetailsModal
             isHazardCompletable
-            modalTitle={`Bolt ${fullBoltData?.boltNumber}`}
-            fullBoltData={fullBoltData}
+            modalTitle={`Bolt ${boltResult?.boltNumber}`}
+            boltResult={boltResult}
             onClose={() => setIsModalOpen(false)}
           />
         </Modal>

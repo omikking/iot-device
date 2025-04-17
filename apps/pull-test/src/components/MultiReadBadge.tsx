@@ -5,10 +5,10 @@ import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { LucideScanSearch, LucideSquareStack } from 'lucide-react';
 
 type MultiReadBadgeProps = {
-  fullBoltData: BoltResult;
+  boltResult: BoltResult;
 };
 
-export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
+export const MultiReadBadge = ({ boltResult }: MultiReadBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -19,8 +19,8 @@ export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
         </Badge>
       </ModalTrigger>
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${fullBoltData.boltNumber}`}
-        fullBoltData={fullBoltData}
+        modalTitle={`Bolt ${boltResult.boltNumber}`}
+        boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />
     </Modal>

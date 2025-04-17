@@ -23,7 +23,7 @@ import { useQuery } from 'urql';
 
 type BoltResultDetailsModalProps = {
   modalTitle: string;
-  fullBoltData?: BoltResult;
+  boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
 };
@@ -59,7 +59,7 @@ const getLocationDetails = graphql(`
 export const BoltResultDetailsModal = ({
   modalTitle,
   isHazardCompletable = false,
-  fullBoltData,
+  boltResult,
   onClose,
 }: BoltResultDetailsModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -70,30 +70,27 @@ export const BoltResultDetailsModal = ({
   // Level Query
   const [{ data: levelData }] = useQuery({
     query: getLevelDetails,
-    variables: { id: fullBoltData?.levelId ?? '' },
-    pause: !fullBoltData?.levelId,
+    variables: { id: boltResult?.levelId ?? '' },
+    pause: !boltResult?.levelId,
   });
 
   // Drive Query
   const [{ data: driveData }] = useQuery({
     query: getDriveDetails,
-    variables: { id: fullBoltData?.driveId ?? '' },
-    pause: !fullBoltData?.driveId,
+    variables: { id: boltResult?.driveId ?? '' },
+    pause: !boltResult?.driveId,
   });
 
   // Location Query
   const [{ data: locationData }] = useQuery({
     query: getLocationDetails,
-    variables: { id: fullBoltData?.locationId ?? '' },
-    pause: !fullBoltData?.locationId,
+    variables: { id: boltResult?.locationId ?? '' },
+    pause: !boltResult?.locationId,
   });
 
   const levelName = levelData?.level?.levelName || 'N/A';
   const driveName = driveData?.drive?.driveName || 'N/A';
   const locationName = locationData?.location?.locationName || 'N/A';
-
-  console.log('Level data', levelData);
-  console.log('FullboltLevel');
 
   const siteInfo = {
     levelName: levelName,
@@ -102,7 +99,7 @@ export const BoltResultDetailsModal = ({
   };
 
   const { image, isHazard, peakLoad, peakDisplacement } =
-    (fullBoltData as BoltResult) || {};
+    (boltResult as BoltResult) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
   const boltDescription = 'Test description';
 
@@ -137,7 +134,7 @@ export const BoltResultDetailsModal = ({
     setIsLoading(false);
   };
 
-  useEffect(() => {}, [levelData, driveData, locationData, fullBoltData]);
+  useEffect(() => {}, [levelData, driveData, locationData, boltResult]);
 
   return (
     <ModalContent
@@ -204,13 +201,11 @@ export const BoltResultDetailsModal = ({
             Bolt specifications
           </Headline>
 
-          {fullBoltData && (
+          {boltResult && (
             <>
               <div className="flex flex-wrap">
                 {[
-                  ...generateBoltSpecifications(fullBoltData, siteInfo).slice(
-                    1,
-                  ),
+                  ...generateBoltSpecifications(boltResult, siteInfo).slice(1),
                 ].map((boltSpec, index) => (
                   <Specification
                     key={index}
@@ -219,8 +214,7 @@ export const BoltResultDetailsModal = ({
                     className="w-1/2"
                   />
                 ))}
-                {generateBoltSpecifications(fullBoltData, siteInfo).length %
-                  2 ===
+                {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
                   0 && <Specification title="" text="" className="w-1/2" />}
               </div>
             </>

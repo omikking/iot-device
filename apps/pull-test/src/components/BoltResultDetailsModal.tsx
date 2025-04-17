@@ -100,8 +100,6 @@ export const BoltResultDetailsModal = ({
 
   const { image, isHazard, peakLoad, peakDisplacement } =
     (boltResult as BoltResult) || {};
-  // @TODO Just hardcoded for now, update later. Image should be here as well most likely
-  const boltDescription = 'Test description';
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
@@ -154,7 +152,7 @@ export const BoltResultDetailsModal = ({
           isCompleted || isConfirmed ? 'hidden' : 'block'
         }`}
       >
-        <div className="p-10 flex gap-10 flex-grow">
+        <div className="pt-5 px-10 flex gap-10 flex-grow">
           {image && (
             <Image
               // src={image || '/images/placeholder.png'}
@@ -162,17 +160,17 @@ export const BoltResultDetailsModal = ({
               alt="Attached bolt result image"
               width={390}
               height={280}
-              className="rounded-md h-72"
+              className="rounded-md h-72 pt-5"
             />
           )}
           <div className="flex flex-col w-1/2 ">
-            {boltDescription && (
-              <div className="flex flex-col flex-grow">
+            {boltResult.comment && (
+              <div className="flex flex-col flex-grow pt-5">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
-                  value={boltDescription}
+                  value={boltResult.comment}
                   className="mt-2 flex-grow"
                   disabled
                   readOnly

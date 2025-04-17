@@ -9,7 +9,6 @@ export class HazardsService {
   async findAll(companyId: string): Promise<GraphQLTypes.BoltResult[]> {
     const boltResults = this.prisma.boltResult.findMany({
       where: {
-        isHazard: true,
         OR: [{ isHazard: true }, { hazardCompletedDate: { isEmpty: false } }],
         site: {
           companyId,

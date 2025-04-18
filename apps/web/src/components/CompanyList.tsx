@@ -8,15 +8,17 @@ import { useQuery } from 'urql';
 const getCompaniesQuery = graphql(`
   query getCompanies {
     companies {
-      id
-      name
+      results {
+        id
+        name
+      }
     }
   }
 `);
 
 export const CompanyList = () => {
   const [{ data }] = useQuery({ query: getCompaniesQuery });
-  const companies = data?.companies;
+  const companies = data?.companies?.results;
 
   return (
     <>

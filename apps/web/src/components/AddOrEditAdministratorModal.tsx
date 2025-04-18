@@ -1,6 +1,5 @@
 import {
   Button,
-  Dropdown,
   Form,
   FormControl,
   FormField,
@@ -15,20 +14,34 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 import {
-  administratorFormSchema,
-  AdministratorFormValues,
+  updateAdministratorFormSchema,
+  UpdateAdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
-import { LucidePlus, LucideSquarePen } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { GetAdminsQuery } from '@/gql/graphql';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { optionAdministratorRoleMock } from '@/app/mock/mock';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { LucidePlus, LucideSquarePen } from 'lucide-react';
 
-interface AddOrEditAdministratorModalProps {
+type AddOrEditAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
-  administrator?: AdministratorFormValues;
-}
+  administrator?: GetAdminsQuery['users'][0];
+};
+
+const updateAdministratorsMutation = graphql(`
+  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {
+    updateUser(id: $id, updateUserInput: $updateUserInput) {
+      email
+      fullName
+      workPlace
+      phoneNumber
+      globalRole
+    }
+  }
+`);
 
 export const AddOrEditAdministratorModal = ({
   onOpenChange,
@@ -37,35 +50,32 @@ export const AddOrEditAdministratorModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const form = useForm<AdministratorFormValues>({
-    resolver: zodResolver(administratorFormSchema),
+  const [, updateUser] = useMutation<UpdateAdministratorFormValues>(
+    updateAdministratorsMutation,
+  );
+
+  const form = useForm<UpdateAdministratorFormValues>({
+    resolver: zodResolver(updateAdministratorFormSchema),
     defaultValues: {
-      fullName: '',
-      company: '',
-      email: '',
-      phoneNumber: '',
-      role: '',
+      fullName: administrator?.fullName || '',
+      workPlace: administrator?.workPlace || '',
+      email: administrator?.email || '',
+      phoneNumber: administrator?.phoneNumber || '',
     },
   });
 
   const resetFormValues = () => {
     form.reset({
       fullName: '',
-      company: '',
+      workPlace: '',
       email: '',
       phoneNumber: '',
-      role: '',
     });
   };
 
-  const onSubmit = async (data: AdministratorFormValues) => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Administrator added:', data);
+  const onSuccessfulSubmit = () => {
     setIsSuccessful(true);
     setIsLoading(false);
-
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
@@ -75,9 +85,29 @@ export const AddOrEditAdministratorModal = ({
     }, 1700);
   };
 
+  const onSubmit: SubmitHandler<UpdateAdministratorFormValues> = (data) => {
+    if (administrator) {
+      updateUser({
+        id: administrator.id,
+        updateUserInput: data,
+      }).then((result) => {
+        // @TODO Add component later for handling error
+        console.log(result);
+        if (result.data) {
+          onSuccessfulSubmit();
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     if (administrator) {
-      form.reset(administrator);
+      form.reset({
+        fullName: administrator.fullName || '',
+        email: administrator.email || '',
+        workPlace: administrator.workPlace || '',
+        phoneNumber: administrator.phoneNumber || '',
+      });
     }
   }, [administrator, form]);
 
@@ -92,112 +122,94 @@ export const AddOrEditAdministratorModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
-              <div className="">
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Full name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter full name"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="company"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter company"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter email"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Phone number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter phone number"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-96">
-                        <FormLabel>Role</FormLabel>
-                        <FormControl>
-                          <Dropdown
-                            id="role"
-                            placeholder="Select role..."
-                            selectedId={field.value}
-                            options={optionAdministratorRoleMock}
-                            onSelect={field.onChange}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-row justify-between">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Full name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter full name"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="workPlace"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Company</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter company"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="flex flex-row justify-between">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter email"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    disabled={isSuccessful}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Phone number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter phone number"
+                              {...field}
+                              className="w-96"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
               </div>
             </div>
-            <ModalFooter className="px-10 py-6">
+            <ModalFooter className="px-10 pt-14 pb-6">
               <Button
                 type="submit"
                 size="large"

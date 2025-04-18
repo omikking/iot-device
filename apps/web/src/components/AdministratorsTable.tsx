@@ -9,35 +9,62 @@ import {
 } from '@gsp/ui';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { AdministratorSchema, administratorsMock } from '@/app/mock/mock';
 import { LucideUserCog } from 'lucide-react';
+import { GetAdminsQuery } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useMutation, useQuery } from 'urql';
+import { useSession } from 'next-auth/react';
 
-type AdministratorsTableProps = {
-  onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator: AdministratorSchema) => void;
-};
+type Administrator = GetAdminsQuery['users'][0];
 
-export const AdministratorsTable = ({
-  onOpenChange,
-  onSelectAdministrator,
-}: AdministratorsTableProps) => {
-  const [administrators, setAdministrators] = useState(administratorsMock);
+const getAdminsQuery = graphql(`
+  query getAdmins {
+    users(roles: "SANDVIK_ADMIN") {
+      id
+      email
+      fullName
+      workPlace
+      phoneNumber
+      globalRole
+    }
+  }
+`);
+
+const deleteAdminMutation = graphql(`
+  mutation deleteAdmin($id: String!) {
+    removeUser(id: $id) {
+      id
+      email
+      fullName
+      workPlace
+      phoneNumber
+      globalRole
+    }
+  }
+`);
+
+export const AdministratorsTable = () => {
+  const { data: session } = useSession();
+  const [{ data: administratorsData }] = useQuery({
+    query: getAdminsQuery,
+    pause: !session?.company?.id,
+  });
+
+  const administrators =
+    (administratorsData?.users as GetAdminsQuery['users']) || [];
+
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
+
   const [administratorToDelete, setAdministratorToDelete] = useState<
-    string | undefined
+    Administrator | undefined
   >(undefined);
+  const [, deleteAdmin] = useMutation(deleteAdminMutation);
 
-  const openDeleteModal = (index: string) => {
-    setAdministratorToDelete(index);
+  const openDeleteModal = (adminId: string) => {
+    const adminToDelete = administrators?.find((admin) => admin.id === adminId);
+    setAdministratorToDelete(adminToDelete);
     setIsDeleteAdministratorModalOpen(true);
-  };
-
-  const openEditModal = (index: string) => {
-    console.log(index);
-    const technicianToEdit = administrators[0];
-    onSelectAdministrator(technicianToEdit);
-    onOpenChange(true);
   };
 
   const closeDeleteModal = () => {
@@ -46,14 +73,20 @@ export const AdministratorsTable = ({
   };
 
   const handleDelete = () => {
-    setAdministrators(administrators);
+    if (administratorToDelete) {
+      deleteAdmin({
+        id: administratorToDelete.id,
+      }).then(() => {
+        closeDeleteModal();
+      });
+    }
   };
 
-  const columns: ColumnDef<AdministratorSchema>[] = [
+  const columns: ColumnDef<Administrator>[] = [
     {
       accessorKey: 'fullName',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Name" />
+        <TableHeadWithSorting column={column} header="Full name" />
       ),
     },
     {
@@ -64,29 +97,19 @@ export const AdministratorsTable = ({
       },
     },
     {
-      accessorKey: 'company',
+      accessorKey: 'workPlace',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Company" />
       ),
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'globalRole',
       header: 'Role',
-      cell: ({ row }) => (
-        <>
-          {/* TODO find a better solution */}
-          {row.getValue('role') === 'Sandvik admin' ? (
-            <Badge variant="primary">
-              <LucideUserCog />
-              Sandvik admin
-            </Badge>
-          ) : (
-            <Badge variant="attention">
-              <LucideUserCog />
-              Supah admin
-            </Badge>
-          )}
-        </>
+      cell: () => (
+        <Badge variant="primary">
+          <LucideUserCog />
+          Sandvik admin
+        </Badge>
       ),
     },
     {
@@ -97,17 +120,10 @@ export const AdministratorsTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        // const rowIndex = administrators.find(
-        //   (admin) => admin.id === row.original.id,
-        // );
-        console.log(row);
-
         return (
           <DeleteEditDropdown
-            // @TODO Temporary hardcoded, replace later like SiteTable is handling it using item id.
-            itemSelected={'1'}
+            itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
-            handleEdit={() => openEditModal('1')}
           />
         );
       },
@@ -116,36 +132,35 @@ export const AdministratorsTable = ({
 
   return (
     <>
-      <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        deleteIcon="User"
-        modalTitle="Delete administrator"
-        isOpen={isDeleteAdministratorModalOpen}
-        onOpenChange={closeDeleteModal}
-        onDelete={() => {
-          handleDelete();
-          closeDeleteModal();
-        }}
-      >
-        <Text variant="medium" color={'foreground'}>
-          You are about to delete
-          <Text variant="medium" color={'foreground'} isBold as="span">
-            {administratorToDelete !== undefined
-              ? ` ${administrators[0].fullName} `
-              : ''}
+      {administratorToDelete && (
+        <DeleteModalConfirmation
+          deleteButtonText="Confirm deletion"
+          deleteIcon="User"
+          modalTitle="Delete administrator"
+          isOpen={isDeleteAdministratorModalOpen}
+          onOpenChange={closeDeleteModal}
+          onDelete={handleDelete}
+        >
+          <Text variant="medium" color={'foreground'}>
+            You are about to delete
+            <Text variant="medium" color={'foreground'} isBold as="span">
+              {` ${administratorToDelete?.fullName} `}
+            </Text>
+            from the list. Are you sure you want to delete?
           </Text>
-          from the list. Are you sure you want to delete?
-        </Text>
-      </DeleteModalConfirmation>
+        </DeleteModalConfirmation>
+      )}
 
       <DataTable
         columns={columns}
         data={administrators}
         noResultMessage="There are no administrators added yet."
       />
-      <Badge variant="neutral" className="self-start">
-        {administrators.length} total
-      </Badge>
+      {administrators?.length > 0 && (
+        <Badge variant="neutral" className="self-start">
+          {administrators.length} total
+        </Badge>
+      )}
     </>
   );
 };

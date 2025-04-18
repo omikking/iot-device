@@ -3,21 +3,44 @@ import { Injectable } from '@nestjs/common';
 import {
   Application,
   Company,
+  GlobalRole,
   PlanLevel,
   PrismaClient,
   Role,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
-
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 const prisma = new PrismaClient();
 
 @Injectable()
 export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Company[]> {
-    return this.prisma.company.findMany();
+  async findAll(
+    user: ActiveUserData,
+    pagination: { offset: number; limit: number },
+  ): Promise<GraphQLTypes.CompanyListResponse> {
+    const { offset, limit } = pagination;
+    const whereCondition: Partial<Record<string, any>> = {};
+
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      whereCondition.userPermission = {
+        some: { userId: user.id },
+      };
+    }
+
+    const totalRecords = await this.prisma.company.count({
+      where: whereCondition,
+    });
+
+    const results = await this.prisma.company.findMany({
+      where: whereCondition,
+      skip: Number(offset),
+      take: Number(limit),
+    });
+
+    return { totalRecords, results };
   }
 
   async findOne(id: string): Promise<Company> {
@@ -137,25 +160,39 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length > 0) {
-        // Delete plans that are not in the request
-        const plansToKeepId = plans.map((plan) => plan.id);
-        await prisma.plan.deleteMany({
-          where: {
-            companyId: id,
-            NOT: {
-              id: { in: plansToKeepId },
+      if (plans) {
+        // Delete all plans that are not in the request
+        const plansToKeepId = plans
+          .map((plan) => plan.id)
+          .filter((id): id is string => !id !== null && id !== undefined);
+
+        if (plansToKeepId.length > 0) {
+          await prisma.plan.deleteMany({
+            where: {
+              companyId: id,
+              NOT: {
+                id: { in: plansToKeepId },
+              },
             },
-          },
-        });
+          });
+        } else {
+          // Handle case when no plans are left to keep
+          await prisma.plan.deleteMany({
+            where: { companyId: id },
+          });
+        }
 
         // Update existing plans or create new
         for (const plan of plans) {
-          const existingPlan = await prisma.plan.findUnique({
-            where: { id: plan.id },
-          });
+          let existingPlan;
 
-          if (existingPlan) {
+          if (plan?.id) {
+            existingPlan = await prisma.plan.findUnique({
+              where: { id: plan.id },
+            });
+          }
+
+          if (existingPlan && plan?.id) {
             // Update plan if it already exists
             await prisma.plan.update({
               where: { id: plan.id },
@@ -177,7 +214,6 @@ export class CompaniesService {
           }
         }
       }
-
       return updatedCompany;
     });
 

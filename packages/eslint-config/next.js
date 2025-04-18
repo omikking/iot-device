@@ -1,6 +1,6 @@
 const { resolve } = require("node:path");
-
 const project = resolve(process.cwd(), "tsconfig.json");
+const isProduction = process.env.NODE_ENV === "production";
 
 /*
  * This is a custom ESLint configuration for use with
@@ -58,12 +58,13 @@ module.exports = {
   rules: {
     "import/no-default-export": "off",
   },
-  // This is to get rid of the unused vars error in .d.ts files
   overrides: [
     {
-      files: "*.d.ts",
+      files: "*.tsx",
       rules: {
+        // Note: docs state you must disable the base rule as it can report incorrect errors
         "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": isProduction ? "error" : "warn",
       },
     }
   ]

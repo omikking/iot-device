@@ -1,0 +1,40 @@
+enum Role {
+  COMPANY_USER
+  COMPANY_ADMIN
+  SANDVIK_ADMIN
+  SANDVIK_TECHNICIAN
+}
+
+enum Result {
+  PASS
+  FAIL
+  ABORT
+}
+
+enum BoltType {
+  MD47
+  MDX47
+}
+
+enum RingPosition {
+  RH_BACKS
+  RH_SHOULDER
+  RH_WALL_UPPER
+  LH_BACKS
+  LH_SHOULDER
+  LH_WALL_UPPER
+  CENTER_BACKS
+}
+
+enum PullTestAbortReason {
+  NOT_TESTED_VOID_CAVITY
+  TEST_STOPPED_INSTALL_ANGLE
+}
+
+type Query {
+  getRoles: [Role!]!
+  getResults: [Result!]!
+  getBoltTypes: [BoltType!]
+  getRingPosition: [RingPosition!]
+  getPullTestAbortReason: [PullTestAbortReason!]
+}

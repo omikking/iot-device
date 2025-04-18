@@ -119,28 +119,27 @@ export const CompanyForm = ({
       address: company?.address || '',
       postalCode: company?.postalCode || '',
       plans: company?.plans || [],
-      userPermissions:
-        company?.users?.map((user) => ({
-          newUserId: user.id,
-          oldUserId: user.id,
-        })) || [],
+      // @TODO update this later when BE is fixed.
+      // Replace with [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }] to create company, make sure to have an admin with this id
+      userPermissions: company?.users?.map(() => ({
+        newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+        oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+      })),
     },
   });
 
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
-    console.log('submit');
+    console.log('Submit');
     console.log(data);
-    console.log(companyForm.getValues());
-    // @TODO fix, not working currently. Does updating a plan update the companyForm data or is it missing?
 
     if (company) {
       updateCompany({
         id: company.id,
         updateCompanyInput: data,
       }).then((result) => {
-        // @TODO Add component later for handling error
+        // @TODO Add component later for handling success & error
         console.log(result);
       });
     }
@@ -149,7 +148,7 @@ export const CompanyForm = ({
       createCompany({
         createCompanyInput: data,
       }).then((result) => {
-        // @TODO Add component later for handling error
+        // @TODO Add component later for handling success & error
         console.log(result);
       });
     }
@@ -161,11 +160,12 @@ export const CompanyForm = ({
       companyForm.reset({
         ...company,
         plans: company.plans || [],
-        userPermissions:
-          company?.users?.map((user) => ({
-            newUserId: user.id,
-            oldUserId: user.id,
-          })) || [],
+        // @TODO update this later when BE is fixed.
+        // Temporary. Make sure to have a user with this id and is sandvik_admin
+        userPermissions: company?.users?.map(() => ({
+          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
+        })),
       });
     }
   }, [company]);
@@ -221,17 +221,15 @@ export const CompanyForm = ({
                   );
 
                   const appPlan = existingPlan || {
-                    id: planType.applicationName,
                     applicationName: planType.applicationName,
                     planLevel: '',
-                    companyId: company?.id || '',
-                    expiringDate: null,
+                    expiringDate: 0,
                   };
 
                   return (
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
-                      key={appPlan.id}
+                      key={existingPlan?.id || appPlan.applicationName}
                       isAdmin={isAdmin}
                       companyForm={companyForm}
                     />

@@ -17,11 +17,6 @@ import { useSession } from 'next-auth/react';
 
 type Administrator = GetAdminsQuery['users'][0];
 
-type AdministratorsTableProps = {
-  onOpenChange: (open: boolean) => void;
-  onSelectAdministrator: (administrator?: Administrator) => void;
-};
-
 const getAdminsQuery = graphql(`
   query getAdmins {
     users(roles: "SANDVIK_ADMIN") {
@@ -48,10 +43,7 @@ const deleteAdminMutation = graphql(`
   }
 `);
 
-export const AdministratorsTable = ({
-  onOpenChange,
-  onSelectAdministrator,
-}: AdministratorsTableProps) => {
+export const AdministratorsTable = () => {
   const { data: session } = useSession();
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,
@@ -75,14 +67,6 @@ export const AdministratorsTable = ({
     setIsDeleteAdministratorModalOpen(true);
   };
 
-  const openEditModal = (adminId: string) => {
-    const adminToEdit = administrators?.find((admin) => admin.id === adminId);
-    if (adminToEdit) {
-      onSelectAdministrator(adminToEdit);
-      onOpenChange(true);
-    }
-  };
-
   const closeDeleteModal = () => {
     setIsDeleteAdministratorModalOpen(false);
     setAdministratorToDelete(undefined);
@@ -102,7 +86,7 @@ export const AdministratorsTable = ({
     {
       accessorKey: 'fullName',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Name" />
+        <TableHeadWithSorting column={column} header="Full name" />
       ),
     },
     {
@@ -140,7 +124,6 @@ export const AdministratorsTable = ({
           <DeleteEditDropdown
             itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
-            handleEdit={openEditModal}
           />
         );
       },

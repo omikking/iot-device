@@ -5,9 +5,11 @@ import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
 import { BoltResult } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
+import { BoltResultSchema } from '@/app/mock/mock';
 
 type BoltResultsTableProps = {
-  boltResults?: BoltResult[];
+  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
+  boltResults?: BoltResult[] | BoltResultSchema[];
   site?: string;
 };
 
@@ -142,7 +144,8 @@ export const BoltResultsTable = ({
     <>
       <DataTable
         columns={columns}
-        data={boltResults || []}
+        // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
+        data={(boltResults as BoltResult[]) || []}
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'

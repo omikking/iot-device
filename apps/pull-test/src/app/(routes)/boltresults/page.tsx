@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-// import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
-// import { BoltResultsTable } from '@/components/BoltResultsTable';
+import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
+import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
@@ -44,56 +44,56 @@ export default function Page(): JSX.Element {
     reportedHazard: false,
   });
 
-  // const [boltResults, setBoltResults] = useState<
-  //   BoltResultSchema[] | undefined
-  // >([]);
+  const [boltResults, setBoltResults] = useState<
+    BoltResultSchema[] | undefined
+  >([]);
 
-  // const filterBoltResults = (
-  //   level?: string,
-  //   drive?: string,
-  //   location?: string,
-  //   dateRange?: DateRange,
-  // ): BoltResultSchema[] | undefined => {
-  //   return boltResults?.filter((bolt) => {
-  //     const matchLevel = level ? bolt.level === level : true;
-  //     const matchDrive = drive ? bolt.drive === drive : true;
-  //     const matchLocation = location ? bolt.location === location : true;
+  const filterBoltResults = (
+    level?: string,
+    drive?: string,
+    location?: string,
+    dateRange?: DateRange,
+  ): BoltResultSchema[] | undefined => {
+    return boltResults?.filter((bolt) => {
+      const matchLevel = level ? bolt.level === level : true;
+      const matchDrive = drive ? bolt.drive === drive : true;
+      const matchLocation = location ? bolt.location === location : true;
 
-  //     // Date range filtering
-  //     const matchDateRange =
-  //       dateRange?.from && dateRange?.to
-  //         ? bolt.createdDate >= dateRange.from &&
-  //           bolt.createdDate <= dateRange.to
-  //         : true;
+      // Date range filtering
+      const matchDateRange =
+        dateRange?.from && dateRange?.to
+          ? bolt.createdDate >= dateRange.from &&
+            bolt.createdDate <= dateRange.to
+          : true;
 
-  //     // Filtering
-  //     const matchResult =
-  //       (!filterState.pass && !filterState.fail && !filterState.abort) ||
-  //       (filterState.pass && bolt.result === 'Pass') ||
-  //       (filterState.fail && bolt.result === 'Fail') ||
-  //       (filterState.abort && bolt.result === 'Abort');
+      // Filtering
+      const matchResult =
+        (!filterState.pass && !filterState.fail && !filterState.abort) ||
+        (filterState.pass && bolt.result === 'Pass') ||
+        (filterState.fail && bolt.result === 'Fail') ||
+        (filterState.abort && bolt.result === 'Abort');
 
-  //     const matchComment =
-  //       (!filterState.withComment || bolt.comment) &&
-  //       (!filterState.withImage || bolt.image) &&
-  //       (!filterState.reportedHazard || bolt.isHazard);
+      const matchComment =
+        (!filterState.withComment || bolt.comment) &&
+        (!filterState.withImage || bolt.image) &&
+        (!filterState.reportedHazard || bolt.isHazard);
 
-  //     return (
-  //       matchLocation &&
-  //       matchDrive &&
-  //       matchLevel &&
-  //       matchDateRange &&
-  //       matchResult &&
-  //       matchComment
-  //     );
-  //   });
-  // };
+      return (
+        matchLocation &&
+        matchDrive &&
+        matchLevel &&
+        matchDateRange &&
+        matchResult &&
+        matchComment
+      );
+    });
+  };
 
-  // const filteredResults = filterBoltResults(level, drive, location, dateRange);
+  const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
     // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
-    // site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
+    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
   }, [site]);
 
   return (
@@ -197,7 +197,7 @@ export default function Page(): JSX.Element {
           onFilterChange={setFilterState}
         />
         <TabsContent value="table">
-          {/* <BoltResultsTable site={site} boltResults={filteredResults} /> */}
+          <BoltResultsTable site={site} boltResults={filteredResults} />
         </TabsContent>
         <TabsContent value="graphs">
           <BoltResultsGraphView />

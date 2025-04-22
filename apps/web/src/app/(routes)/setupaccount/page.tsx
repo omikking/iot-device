@@ -16,12 +16,11 @@ import {
   SetupAccountFormWithConfirmValues,
   setupAccountFormWithConfirmSchema,
 } from '@/components/schemas/SetupAccountFormSchema';
+import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { useForm } from 'react-hook-form';
-import { useSession } from 'next-auth/react';
 import { LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from 'urql';
 
 const getUserWithPermissionsQuery = graphql(`
   query getUserWithPermissions($id: String!) {
@@ -41,8 +40,6 @@ const getUserWithPermissionsQuery = graphql(`
 `);
 
 export default function Page(): JSX.Element {
-  const { data: session } = useSession();
-
   //Values that will be passed somehow, hardcoded for now
   const tempTestId = '87506bef-5283-44d8-ab42-a668ea616975';
   const companyId = '316a80e7-a02d-4098-bd65-fb770aad2a4f';

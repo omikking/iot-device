@@ -15,7 +15,7 @@ type BoltCommentBadgeProps = {
 
 export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { boltNumber, image, comment, isHazard } = boltResult;
+  const { image, comment, isHazard } = boltResult;
 
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -39,7 +39,6 @@ export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
       )}
 
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${boltNumber}`}
         boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />

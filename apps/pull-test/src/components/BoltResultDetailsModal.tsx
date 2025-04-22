@@ -22,7 +22,6 @@ import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
 type BoltResultDetailsModalProps = {
-  modalTitle: string;
   boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
@@ -65,7 +64,6 @@ const getNameDetails = graphql(`
 `);
 
 export const BoltResultDetailsModal = ({
-  modalTitle,
   isHazardCompletable = false,
   boltResult,
   onClose,
@@ -158,7 +156,9 @@ export const BoltResultDetailsModal = ({
       }`}
     >
       <ModalHeader>
-        <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
+        <ModalTitle>
+          {isCompleted ? 'Complete hazard' : `Bolt ${boltResult?.boltNumber}`}
+        </ModalTitle>
       </ModalHeader>
 
       {/* First View */}

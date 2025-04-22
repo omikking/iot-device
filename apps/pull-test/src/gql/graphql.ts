@@ -46,21 +46,6 @@ export type BoltResult = {
 };
 
 /**
- * BoltResultResponse
- * Response structure for paginated list of bolt results
- */
-export type BoltResultResponse = {
-  __typename?: 'BoltResultResponse';
-  results: Array<BoltResult>;
-  totalRecords: Scalars['Int']['output'];
-};
-
-export enum BoltType {
-  Md47 = 'MD47',
-  Mdx47 = 'MDX47'
-}
-
-/**
  * Coffee model
  * Define the Coffee model and its fields
  */
@@ -93,16 +78,6 @@ export type Company = {
   sites?: Maybe<Array<Site>>;
   updatedAt: Scalars['DateTime']['output'];
   users?: Maybe<Array<User>>;
-};
-
-/**
- * CompanyListResponse
- * Response structure for paginated list of companies
- */
-export type CompanyListResponse = {
-  __typename?: 'CompanyListResponse';
-  results: Array<Company>;
-  totalRecords: Scalars['Int']['output'];
 };
 
 /**
@@ -279,7 +254,6 @@ export type Location = {
 export type Mutation = {
   __typename?: 'Mutation';
   createBoltResult: BoltResult;
-  createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
@@ -288,7 +262,6 @@ export type Mutation = {
   createSite: Site;
   createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
-  removeBoltResults: Array<BoltResult>;
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
@@ -298,7 +271,6 @@ export type Mutation = {
   removeUser: User;
   removeUserPermission: UserPermission;
   updateBoltResult: BoltResult;
-  updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
   updateCompany: Company;
   updateDrive: Drive;
@@ -316,15 +288,6 @@ export type Mutation = {
  */
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
-export type MutationCreateBoltResultsArgs = {
-  createBoltResultsInput: Array<CreateBoltResultInput>;
 };
 
 
@@ -397,15 +360,6 @@ export type MutationCreateUserPermissionArgs = {
  */
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
-export type MutationRemoveBoltResultsArgs = {
-  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -488,15 +442,6 @@ export type MutationRemoveUserPermissionArgs = {
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
-export type MutationUpdateBoltResultsArgs = {
-  updateBoltResultsInput: Array<UpdateBoltResultInput>;
 };
 
 
@@ -594,11 +539,6 @@ export type Plan = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export enum PullTestAbortReason {
-  NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
-  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
-}
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -606,18 +546,13 @@ export enum PullTestAbortReason {
 export type Query = {
   __typename?: 'Query';
   boltResult: BoltResult;
-  boltResults: BoltResultResponse;
+  boltResults: Array<BoltResult>;
   coffee: Coffee;
   coffees: Array<Coffee>;
-  companies: CompanyListResponse;
+  companies: Array<Company>;
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
-  getBoltTypes?: Maybe<Array<BoltType>>;
-  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
-  getResults: Array<Result>;
-  getRingPosition?: Maybe<Array<RingPosition>>;
-  getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -645,35 +580,8 @@ export type QueryBoltResultArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
-export type QueryBoltResultsArgs = {
-  driveId?: InputMaybe<Scalars['String']['input']>;
-  isHazard?: InputMaybe<Scalars['Boolean']['input']>;
-  levelId?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  locationId?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  result?: InputMaybe<Scalars['String']['input']>;
-  siteId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/**
- * Query
- * Define the queries that can be made to the User model
- */
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-/**
- * Query
- * Define the queries that can be made to the User model
- */
-export type QueryCompaniesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -757,29 +665,6 @@ export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
-export enum Result {
-  Abort = 'ABORT',
-  Fail = 'FAIL',
-  Pass = 'PASS'
-}
-
-export enum RingPosition {
-  CenterBacks = 'CENTER_BACKS',
-  LhBacks = 'LH_BACKS',
-  LhShoulder = 'LH_SHOULDER',
-  LhWallUpper = 'LH_WALL_UPPER',
-  RhBacks = 'RH_BACKS',
-  RhShoulder = 'RH_SHOULDER',
-  RhWallUpper = 'RH_WALL_UPPER'
-}
-
-export enum Role {
-  CompanyAdmin = 'COMPANY_ADMIN',
-  CompanyUser = 'COMPANY_USER',
-  SandvikAdmin = 'SANDVIK_ADMIN',
-  SandvikTechnician = 'SANDVIK_TECHNICIAN'
-}
-
 /**
  * Site model
  * Define the Site model and its fields
@@ -819,7 +704,6 @@ export type UpdateBoltResultInput = {
   boltType?: InputMaybe<Scalars['String']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;
   hazardCompletedDate?: InputMaybe<Array<Scalars['DateTime']['input']>>;
-  id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;

@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
-import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 
 const getCompaniesQuery = graphql(`
   query getCompanies {

@@ -12,17 +12,99 @@ import {
   Input,
   Text,
 } from '@gsp/ui';
-import { useSession } from 'next-auth/react';
 import {
   SetupAccountFormWithConfirmValues,
   setupAccountFormWithConfirmSchema,
 } from '@/components/schemas/SetupAccountFormSchema';
+import { graphql } from '@/gql';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from 'next-auth/react';
 import { LucideUserRoundCog } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from 'urql';
+
+const getUserWithPermissionsQuery = graphql(`
+  query getUserWithPermissions($id: String!) {
+    user(id: $id) {
+      id
+      email
+      fullName
+      workPlace
+      phoneNumber
+      userPermissions {
+        id
+        role
+        companyId
+      }
+    }
+  }
+`);
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
+
+  //Values that will be passed somehow, hardcoded for now
+  const tempTestId = '87506bef-5283-44d8-ab42-a668ea616975';
+  const companyId = '316a80e7-a02d-4098-bd65-fb770aad2a4f';
+
+  const [{ data: userData }] = useQuery({
+    query: getUserWithPermissionsQuery,
+    variables: { id: tempTestId },
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const companyPermission = userData?.user?.userPermissions?.find(
+    (permission) => permission.companyId === companyId,
+  );
+
+  const userRole = companyPermission?.role;
+
+  const invitationRoleTitle = () => {
+    switch (userRole) {
+      case 'SANDVIK_ADMIN':
+        return (
+          <Headline as="h4" variant="small" color="foreground">
+            You're invited to join
+            <Headline variant="medium" color={'foreground'} as="span" isBold>
+              {` Ground Support Platform `}
+            </Headline>
+            as an administrator.
+          </Headline>
+        );
+      case 'SANDVIK_TECHNICIAN':
+        return (
+          <Headline as="h4" variant="small" color="foreground">
+            You're invited to join
+            <Headline variant="medium" color={'foreground'} as="span" isBold>
+              {` Ground Support Platform `}
+            </Headline>
+            as a technician.
+          </Headline>
+        );
+      case 'COMPANY_ADMIN':
+        return (
+          <Headline as="h4" variant="small" color="foreground">
+            You're invited to join
+            <Headline variant="medium" color={'foreground'} as="span" isBold>
+              {` ${userData?.user?.workPlace} `}
+            </Headline>
+            as an administrator.
+          </Headline>
+        );
+      case 'COMPANY_USER':
+        return (
+          <Headline as="h4" variant="small" color="foreground">
+            You're invited to join
+            <Headline variant="medium" color={'foreground'} as="span" isBold>
+              {` ${userData?.user?.workPlace}. `}
+            </Headline>
+          </Headline>
+        );
+      default:
+        return '';
+    }
+  };
+
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
     defaultValues: {
@@ -41,19 +123,22 @@ export default function Page(): JSX.Element {
     console.log('Data from setup form: ', submissionData);
   };
 
+  const formValues = setupForm.watch();
+
+  const isAnyFieldEmty =
+    !formValues.fullName ||
+    !formValues.workPlace ||
+    !formValues.phoneNumber ||
+    !formValues.password ||
+    !formValues.confirmPassword;
+
   return (
-    <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-10 bg-neutral-1">
+    <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-16 bg-neutral-1">
       <Headline as="h1" variant="xl" color="foreground">
         Setup Account
       </Headline>
-      <div className="flex flex-col gap-1 items-center">
-        <Headline as="h4" variant="small" color="foreground">
-          You're invited to join
-          <Headline variant="medium" color={'foreground'} as="span" isBold>
-            {` ${session?.company?.name} `}
-          </Headline>
-          as an administrator.
-        </Headline>
+      <div className="flex flex-col gap-3 items-center">
+        {invitationRoleTitle()}
 
         <Text color={'foreground'} variant={'medium'}>
           Please complete your account setup to get started.
@@ -62,7 +147,7 @@ export default function Page(): JSX.Element {
       <Form {...setupForm}>
         <form onSubmit={setupForm.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-8">
-            <div className="flex flex-row flex-wrap justify-between gap-8">
+            <div className="flex flex-row flex-wrap justify-between gap-12">
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
@@ -177,13 +262,14 @@ export default function Page(): JSX.Element {
               />
             </div>
           </div>
-          <hr className="w-[120%] mb-10 mt-14 border-neutral-2 -ml-[10%]" />
+          <hr className="w-[120%] mb-12 mt-16 border-neutral-2 -ml-[10%]" />
           <div className="flex justify-center">
             <Button
               className="min-w-[400px]"
               type="submit"
               variant="primary"
               size="large"
+              disabled={isAnyFieldEmty}
             >
               <LucideUserRoundCog /> Sign up
             </Button>

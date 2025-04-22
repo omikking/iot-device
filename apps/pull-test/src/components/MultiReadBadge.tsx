@@ -19,7 +19,6 @@ export const MultiReadBadge = ({ boltResult }: MultiReadBadgeProps) => {
         </Badge>
       </ModalTrigger>
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${boltResult.boltNumber}`}
         boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />

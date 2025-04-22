@@ -33,7 +33,7 @@ const getMeSitesLocationDocument = graphql(`
 `);
 
 export const HazardCard = ({ boltResult }: HazardCardProps) => {
-  const { isHazard, comment, createdAt }: Partial<BoltResult> = boltResult;
+  const { isHazard, comment, createdAt } = boltResult;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -108,7 +108,6 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
           </ModalTrigger>
           <BoltResultDetailsModal
             isHazardCompletable
-            modalTitle={`Bolt ${boltResult?.boltNumber}`}
             boltResult={boltResult}
             onClose={() => setIsModalOpen(false)}
           />

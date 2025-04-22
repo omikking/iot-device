@@ -13,7 +13,7 @@ import {
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
@@ -76,29 +76,25 @@ export const BoltResultDetailsModal = ({
   // Level Query
   const [{ data: levelData }] = useQuery({
     query: getLevelDetails,
-    variables: { id: boltResult?.levelId ?? '' },
-    pause: !boltResult?.levelId,
+    variables: { id: boltResult?.levelId },
   });
 
   // Drive Query
   const [{ data: driveData }] = useQuery({
     query: getDriveDetails,
-    variables: { id: boltResult?.driveId ?? '' },
-    pause: !boltResult?.driveId,
+    variables: { id: boltResult?.driveId },
   });
 
   // Location Query
   const [{ data: locationData }] = useQuery({
     query: getLocationDetails,
-    variables: { id: boltResult?.locationId ?? '' },
-    pause: !boltResult?.locationId,
+    variables: { id: boltResult?.locationId },
   });
 
   // Name Query
   const [{ data: nameData }] = useQuery({
     query: getNameDetails,
-    variables: { id: boltResult?.userId ?? '' },
-    pause: !boltResult?.userId,
+    variables: { id: boltResult?.userId },
   });
 
   const levelName = levelData?.level?.levelName || 'N/A';
@@ -144,8 +140,6 @@ export const BoltResultDetailsModal = ({
     setIsConfirmed(false);
     setIsLoading(false);
   };
-
-  useEffect(() => {}, [levelData, driveData, locationData, boltResult]);
 
   return (
     <ModalContent

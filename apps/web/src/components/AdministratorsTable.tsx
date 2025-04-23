@@ -85,7 +85,7 @@ export const AdministratorsTable = () => {
     {
       accessorKey: 'fullName',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Name" />
+        <TableHeadWithSorting column={column} header="Full name" />
       ),
     },
     {

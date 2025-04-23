@@ -174,7 +174,7 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
-  const onSubmit: SubmitHandler<UserFormValues> = (data) => {
+  const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
     try {
       setIsLoading(true);
       if (user) {
@@ -182,26 +182,28 @@ export const AddOrEditUserModal = ({
           email: data.email,
         };
 
-        updateUserPermission({
+        const permissionResult = await updateUserPermission({
           id: user.userPermissions?.[0]?.id,
           updateUserPermissionInput: {
             role: data.userPermissions[0].role,
             appsAccess: data.userPermissions[0].appsAccess,
           },
-        }).then((result) => {
-          if (result.data) {
-            console.log('Permission update successful');
-          }
         });
 
-        updateCompanyUser({
+        if (!permissionResult.data) {
+          throw new Error('Permission update failed');
+        }
+
+        const userResult = await updateCompanyUser({
           id: user.id,
           updateUserInput,
-        }).then((result) => {
-          if (result.data) {
-            onSuccessfulSubmit();
-          }
         });
+
+        if (!userResult.data) {
+          throw new Error('User update failed');
+        }
+
+        onSuccessfulSubmit();
       }
     } catch (error) {
       console.log('Update failed: ', error);

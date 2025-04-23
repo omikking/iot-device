@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import {
   Button,
   Form,
@@ -23,9 +23,17 @@ import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignIn() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [error, setError] = useState('');
 
-  const router = useRouter();
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
+      router.push(callbackUrl);
+    }
+  }, [status, router, searchParams]);
 
   const formSchema = z.object({
     emailAddress: z
@@ -52,14 +60,8 @@ export default function SignIn() {
       password: values.password,
       redirect: false,
     });
-
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      router.push('/overview');
-    }
+    result?.error && setError(result.error);
   };
-  const { data: session, status } = useSession();
 
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);

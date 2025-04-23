@@ -55,15 +55,12 @@ const updateCompanyUserMutation = graphql(`
 `);
 
 const getTechniciansQuery = graphql(`
-  query getTechnicians {
+  query getTechniciansByRole {
     users(roles: "SANDVIK_TECHNICIAN") {
       id
       fullName
       email
       workPlace
-      isGlobalVisibility
-      phoneNumber
-      globalRole
     }
   }
 `);
@@ -178,34 +175,38 @@ export const AddOrEditUserModal = ({
   };
 
   const onSubmit: SubmitHandler<UserFormValues> = (data) => {
-    setIsLoading(true);
-    if (user) {
-      const updateUserInput = {
-        email: data.email,
-      };
+    try {
+      setIsLoading(true);
+      if (user) {
+        const updateUserInput = {
+          email: data.email,
+        };
 
-      updateUserPermission({
-        id: user.userPermissions?.[0]?.id,
-        updateUserPermissionInput: {
-          role: data.userPermissions[0].role,
-          appsAccess: data.userPermissions[0].appsAccess,
-        },
-      }).then((result) => {
-        if (result.data) {
-          console.log('Permission update successful');
-        }
-      });
+        updateUserPermission({
+          id: user.userPermissions?.[0]?.id,
+          updateUserPermissionInput: {
+            role: data.userPermissions[0].role,
+            appsAccess: data.userPermissions[0].appsAccess,
+          },
+        }).then((result) => {
+          if (result.data) {
+            console.log('Permission update successful');
+          }
+        });
 
-      updateCompanyUser({
-        id: user.id,
-        updateUserInput,
-      }).then((result) => {
-        console.log('data', data);
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+        updateCompanyUser({
+          id: user.id,
+          updateUserInput,
+        }).then((result) => {
+          if (result.data) {
+            onSuccessfulSubmit();
+          }
+        });
+      }
+    } catch (error) {
+      console.log('Update failed: ', error);
+      setIsLoading(false);
+      setIsSuccessful(false);
     }
   };
 
@@ -268,11 +269,6 @@ export const AddOrEditUserModal = ({
           (tech) => tech.email === user.email,
         );
         if (foundTechnician) {
-          console.log(
-            'Found technician:',
-            foundTechnician.fullName,
-            foundTechnician.id,
-          );
           setSelectedTechnician(foundTechnician.id);
         }
       }
@@ -344,7 +340,6 @@ export const AddOrEditUserModal = ({
                   <FormField
                     control={form.control}
                     name="email"
-                    disabled={true}
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -353,6 +348,7 @@ export const AddOrEditUserModal = ({
                             <Input
                               placeholder="Fill in email..."
                               className="w-96"
+                              disabled={true}
                               {...field}
                             />
                           </FormControl>
@@ -385,7 +381,6 @@ export const AddOrEditUserModal = ({
                                     (tech) => tech.id === e,
                                   );
                                   if (selectedTech) {
-                                    console.log(selectedTech.email);
                                     form.setValue(
                                       'technician',
                                       selectedTech.email,

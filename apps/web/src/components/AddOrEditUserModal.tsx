@@ -214,11 +214,9 @@ export const AddOrEditUserModal = ({
 
   const handleSelectRole = (e: UserPermission['role']) => {
     form.setValue('userPermissions.0.role', e);
-    form.setValue('email', '');
     setRole(e);
 
-    if (e !== 'Technician') {
-      form.setValue('email', '');
+    if (e !== 'SANDVIK_TECHNICIAN') {
       form.setValue('technician', undefined);
       setSelectedTechnician('');
     }

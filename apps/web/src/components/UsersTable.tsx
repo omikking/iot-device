@@ -190,6 +190,8 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     },
   ];
 
+  console.log('userToDelete', userToDelete);
+
   return (
     <>
       <DeleteModalConfirmation
@@ -206,7 +208,8 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete && ` ${users[0].fullName} `}
+            {userToDelete !== undefined &&
+              ` ${users[parseInt(userToDelete)].fullName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

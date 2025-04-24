@@ -8,7 +8,7 @@ import { Application } from '@/app/mock/mock';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
-import { useQuery } from 'urql';
+import { useQuery, useMutation } from 'urql';
 import { useSession } from 'next-auth/react';
 
 type UsersTableProps = {
@@ -61,18 +61,34 @@ const getCompanyUserQuery = graphql(`
   }
 `);
 
+const deleteUserPermissionMutation = graphql(`
+  mutation deleteUserPermission($id: String!) {
+    removeUserPermission(id: $id) {
+      id
+      userId
+      companyId
+      role
+      appsAccess
+    }
+  }
+`);
+
 export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   const { data: session } = useSession();
 
   const [{ data: companyData }] = useQuery({
     query: getCompanyUserQuery,
-    variables: { id: session?.company?.id },
-    pause: !session?.company?.id,
+    variables: { id: session?.company?.id || '' },
   });
 
   const users = (companyData?.company?.users as User[]) || [];
 
+  const [deleteUserPermissionResult, executeDeleteMutation] = useMutation(
+    deleteUserPermissionMutation,
+  );
+
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
+  // Redo this to a number and instead of using parseInt everywhere
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
@@ -121,8 +137,24 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setUserToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    // setUsers((currentUsers) => currentUsers);
+  const handleDelete = (index: string | undefined) => {
+    if (index) {
+      const userPermissionToDelete = users[
+        parseInt(index)
+      ].userPermissions?.find(
+        (userPerm) =>
+          userPerm.userId === users[parseInt(index)].id &&
+          userPerm.companyId === session?.company?.id,
+      );
+
+      if (userPermissionToDelete) {
+        executeDeleteMutation({
+          id: userPermissionToDelete.id,
+        }).catch((error) => {
+          console.log('error deleting userPerm', error);
+        });
+      }
+    }
   };
 
   const openEditModal = (index: string) => {
@@ -190,8 +222,6 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     },
   ];
 
-  console.log('userToDelete', userToDelete);
-
   return (
     <>
       <DeleteModalConfirmation
@@ -201,7 +231,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         isOpen={isDeleteUserModalOpen}
         onOpenChange={closeDeleteModal}
         onDelete={() => {
-          handleDelete();
+          handleDelete(userToDelete);
           closeDeleteModal();
         }}
       >

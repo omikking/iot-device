@@ -27,7 +27,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, set, useForm } from 'react-hook-form';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
-import { UpdateUserPermissionFormValues } from './schemas/UserPermissionFormSchema';
+import {
+  CreateUserPermissionFormValues,
+  UpdateUserPermissionFormValues,
+} from './schemas/UserPermissionFormSchema';
+import { useSession } from 'next-auth/react';
 
 type AddOrEditUserModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -54,6 +58,23 @@ const updateCompanyUserMutation = graphql(`
   }
 `);
 
+const getAllUsersQuery = graphql(`
+  query getAllUsers {
+    users {
+      id
+      email
+      fullName
+      workPlace
+      userPermissions {
+        id
+        role
+        appsAccess
+        companyId
+      }
+    }
+  }
+`);
+
 const getTechniciansQuery = graphql(`
   query getTechniciansByRole {
     users(roles: "SANDVIK_TECHNICIAN") {
@@ -61,6 +82,21 @@ const getTechniciansQuery = graphql(`
       fullName
       email
       workPlace
+    }
+  }
+`);
+
+const createUserPermissionsMutation = graphql(`
+  mutation createUserPermission(
+    $createUserPermissionInput: CreateUserPermissionInput!
+  ) {
+    createUserPermission(
+      createUserPermissionInput: $createUserPermissionInput
+    ) {
+      userId
+      role
+      appsAccess
+      companyId
     }
   }
 `);
@@ -110,12 +146,21 @@ export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
-  // Use gql isLoading instead of useState
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [, updateCompanyUser] = useMutation<UserFormValues>(
     updateCompanyUserMutation,
   );
+
+  const [{ data: allUsers, fetching, error }] = useQuery({
+    query: getAllUsersQuery,
+  });
+
+  const [, createUserPermission] = useMutation<CreateUserPermissionFormValues>(
+    createUserPermissionsMutation,
+  );
+
   const [, updateUserPermission] = useMutation<UpdateUserPermissionFormValues>(
     updateUserPermissionsMutation,
   );
@@ -174,10 +219,13 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
+  console.log('role', role);
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
+    console.log('DATA', data);
     try {
       setIsLoading(true);
       if (user) {
+        //@TODO remove this check since we are not updating the email
         const updateUserInput = {
           email: data.email,
         };
@@ -204,9 +252,44 @@ export const AddOrEditUserModal = ({
         }
 
         onSuccessfulSubmit();
+      } else {
+        let userId;
+
+        if (role === 'SANDVIK_TECHNICIAN') {
+          const selectedTech = technicians.find(
+            (tech) => tech.id === selectedTechnician,
+          );
+          if (!selectedTech) {
+            throw new Error('No technician selected');
+          }
+
+          userId = selectedTech.id;
+        } else {
+          const foundUser = allUsers?.users?.find(
+            (user) => user.email === data.email,
+          );
+          if (!foundUser) {
+            throw new Error('User not found');
+          }
+          userId = foundUser.id;
+        }
+
+        const userResult = await createUserPermission({
+          createUserPermissionInput: {
+            role: data.userPermissions[0].role,
+            appsAccess: data.userPermissions[0].appsAccess,
+            userId: userId,
+            companyId: session?.company.id,
+          },
+        });
+        console.log('userResult', userResult);
+        if (!userResult.data) {
+          throw new Error('User creation failed');
+        }
+        onSuccessfulSubmit();
       }
     } catch (error) {
-      console.log('Update failed: ', error);
+      //@TODO add toast error here.
       setIsLoading(false);
       setIsSuccessful(false);
     }
@@ -274,7 +357,6 @@ export const AddOrEditUserModal = ({
       }
 
       form.reset({
-        // ...user,
         email: user.email || '',
         userPermissions: [
           {
@@ -289,11 +371,9 @@ export const AddOrEditUserModal = ({
     }
   }, [user, technicians]);
 
-  // transform technicians to dropdown options
   const technicianDropdownOptions = technicians.map(
     ({ id, fullName, workPlace }) => ({
       id,
-      // name: `${fullName} (${user?.workPlace})`,
       name: workPlace ? `${fullName} (${workPlace})` : fullName,
     }),
   );
@@ -341,6 +421,17 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="email"
                     render={({ field }) => {
+                      //@TODO remove this check since we are not updating the email
+                      // const findUser = field.value
+                      //   ? allUsers?.users?.find(
+                      //       (user) => user.email === field.value,
+                      //     )
+                      //   : undefined;
+
+                      // const foundUser = findUser ? findUser.email : field.value;
+
+                      // console.log('findUser', findUser);
+
                       return (
                         <FormItem>
                           <FormLabel>* Email</FormLabel>
@@ -348,8 +439,9 @@ export const AddOrEditUserModal = ({
                             <Input
                               placeholder="Fill in email..."
                               className="w-96"
-                              disabled={true}
+                              disabled={user ? true : false}
                               {...field}
+                              // value={foundUser || ''}
                             />
                           </FormControl>
                           <FormMessage />
@@ -373,6 +465,7 @@ export const AddOrEditUserModal = ({
                               placeholder="Select technician"
                               selectedId={selectedTechnician}
                               options={technicianDropdownOptions}
+                              disabled={user ? true : false}
                               onSelect={(e) => {
                                 if (e) {
                                   setSelectedTechnician(e);
@@ -432,10 +525,6 @@ export const AddOrEditUserModal = ({
                       return (
                         <FormItem>
                           <FormControl>
-                            {/* <Switch
-                              checked={field.value?.includes('PULL_TEST')}
-                              onCheckedChange={handleAppAccess('PULL_TEST')}
-                            /> */}
                             <Switch
                               checked={
                                 Array.isArray(field.value) &&

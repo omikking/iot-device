@@ -138,93 +138,33 @@ export const AddOrEditTechnicianModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="px-10 pt-10">
-              <div className="flex flex-row flex-wrap justify-between gap-8">
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Full name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter full name"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="workPlace"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Company</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter company"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter email"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  disabled={isSuccessful}
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Phone number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter phone number"
-                            {...field}
-                            className="w-96"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <div className="pt-10">
+            <div className="flex gap-2 justify-between px-10 pt-10">
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={isSuccessful}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter email"
+                          {...field}
+                          className="w-96"
+                          disabled={technician ? true : false}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <div className="pt-2">
                 <div className="flex flex-row items-center gap-2">
                   <Headline as="h3" color="foreground" variant="small" isBold>
-                    Make this technician visible globally?
+                    Make technician visible globally?
                   </Headline>
                   <TooltipProvider>
                     <Tooltip delayDuration={100}>
@@ -251,7 +191,7 @@ export const AddOrEditTechnicianModal = ({
                   control={form.control}
                   name="isGlobalVisibility"
                   render={({ field }) => (
-                    <FormItem className="pt-4">
+                    <FormItem className="pt-1">
                       <FormControl>
                         <RadioGroup
                           value={String(field.value)}
@@ -277,6 +217,7 @@ export const AddOrEditTechnicianModal = ({
                 />
               </div>
             </div>
+
             <ModalFooter className="ui-px-10 ui-py-6">
               <Button
                 type="submit"

@@ -26,7 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucidePlus, LucideSquarePen } from 'lucide-react';
 
-type AddOrEditAdministratorModalProps = {
+type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
   administrator?: GetAdminsQuery['users'][0];
 };
@@ -43,10 +43,10 @@ const updateAdministratorsMutation = graphql(`
   }
 `);
 
-export const AddOrEditAdministratorModal = ({
+export const AddAdministratorModal = ({
   onOpenChange,
   administrator,
-}: AddOrEditAdministratorModalProps) => {
+}: AddAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -122,92 +122,26 @@ export const AddOrEditAdministratorModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="px-10 pt-10">
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-row justify-between">
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    disabled={isSuccessful}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Full name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter full name"
-                              {...field}
-                              className="w-96"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="workPlace"
-                    disabled={isSuccessful}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Company</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter company"
-                              {...field}
-                              className="w-96"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div className="flex flex-row justify-between">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    disabled={isSuccessful}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter email"
-                              {...field}
-                              className="w-96"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    disabled={isSuccessful}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Phone number</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter phone number"
-                              {...field}
-                              className="w-96"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={isSuccessful}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter email"
+                          {...field}
+                          className="w-96"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </div>
             <ModalFooter className="px-10 pt-14 pb-6">
               <Button

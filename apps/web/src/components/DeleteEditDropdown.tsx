@@ -8,13 +8,13 @@ import {
 } from '@gsp/ui';
 import React from 'react';
 import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
-
+ 
 interface DeleteEditDropdownProps {
   itemSelected: string;
   openDeleteModal?: (itemSelected: string) => void;
   handleEdit?: (itemSelected: string) => void;
 }
-
+ 
 export const DeleteEditDropdown = ({
   itemSelected,
   openDeleteModal,

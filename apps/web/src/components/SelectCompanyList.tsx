@@ -24,12 +24,10 @@ export const SelectCompanyList: React.FC<SelectCompanyListProps> = ({
             {company.name}
           </Text>
           <div className="flex gap-4">
-            <Button size="small" variant="primary" asChild>
-              <Link href={`/selectapplication`}>
-                <LucideMoveRight />
-                Select
-              </Link>
-            </Button>
+            <Button size="small" variant="primary" asChild />
+            <Link href={`/selectapplication`}>
+              <LucideMoveRight />
+            </Link>
           </div>
         </div>
       ))}

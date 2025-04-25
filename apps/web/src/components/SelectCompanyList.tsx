@@ -2,31 +2,17 @@
 import Link from 'next/link';
 import { Button, Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
 
-const getAllCompaniesQuery = graphql(`
-  query GetAllCompanies($offset: Int, $limit: Int) {
-    companies(offset: $offset, limit: $limit) {
-      totalRecords
-      results {
-        id
-        name
-      }
-    }
-  }
-`);
-
-export const SelectCompanyList = () => {
-  const [{ data }] = useQuery({
-    query: getAllCompaniesQuery,
-    variables: {
-      offset: 0,
-      limit: 10,
-    },
-  });
-  const companies = data?.companies?.results;
-
+interface Company {
+  id: string;
+  name: string;
+}
+interface SelectCompanyListProps {
+  companies: Company[];
+}
+export const SelectCompanyList: React.FC<SelectCompanyListProps> = ({
+  companies,
+}) => {
   return (
     <>
       {companies?.map((company) => (

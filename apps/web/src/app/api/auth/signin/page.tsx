@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   Button,
   Form,
@@ -23,17 +23,9 @@ import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignIn() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
-      router.push(callbackUrl);
-    }
-  }, [status, router, searchParams]);
+  const router = useRouter();
 
   const formSchema = z.object({
     emailAddress: z
@@ -60,8 +52,14 @@ export default function SignIn() {
       password: values.password,
       redirect: false,
     });
-    result?.error && setError(result.error);
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push('/selectcompany');
+    }
   };
+  const { data: session, status } = useSession();
 
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);

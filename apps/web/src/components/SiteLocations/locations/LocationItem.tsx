@@ -173,19 +173,19 @@ export const LocationItem = ({
               handleEdit={handleEditLocation}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete drive"
-              deleteButtonText="Delete drive"
+              modalTitle="Delete location"
+              deleteButtonText="Delete location"
               deleteIcon="Site"
               isOpen={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLocation}
             >
               <Text variant="medium" color={'foreground'}>
-                You are about to delete
+                You are about to delete location{' '}
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${location.locationName} `}
-                </Text>
-                from the list. Are you sure you want to delete?
+                </Text>{' '}
+                from your list. Are you sure you want to delete?
               </Text>
             </DeleteModalConfirmation>
           </div>

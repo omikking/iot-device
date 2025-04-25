@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { adminsMock } from '@/app/mock/mock';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { useSession } from 'next-auth/react';
 import {
   Dropdown,
   FormControl,
@@ -20,11 +22,33 @@ interface AdminFormProps {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
+const getAdminsQuery = graphql(`
+  query GetUsers($roles: [String]!) {
+    users(roles: $roles) {
+      id
+      fullName
+    }
+  }
+`);
+
 export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
+  const { data: session } = useSession();
   const [administrator, setAdministrator] = useState<string | undefined>(
     undefined,
   );
 
+  const [{ data: adminsData }] = useQuery({
+    query: getAdminsQuery,
+    variables: {
+      roles: ['SANDVIK_ADMIN'],
+    },
+    pause: !session?.company?.id,
+  });
+  const admins =
+    adminsData?.users?.map((user) => ({
+      id: user.id,
+      name: user.fullName,
+    })) ?? [];
   // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
   // Leave it for now, and will be worked on later.
 
@@ -41,7 +65,7 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
                 id="person"
                 placeholder="Select Sandvik administrator"
                 selectedId={administrator}
-                options={adminsMock}
+                options={admins}
                 onSelect={(e) => {
                   setAdministrator(e);
                   field.onChange([

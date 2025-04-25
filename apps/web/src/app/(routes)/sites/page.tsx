@@ -7,8 +7,6 @@ import {
   ModalTrigger,
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@gsp/ui';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
@@ -21,9 +19,9 @@ import { useSession } from 'next-auth/react';
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
 
-  const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
-    'Pull Test',
-  );
+  // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
+  //   'Pull Test',
+  // );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -49,6 +47,20 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
           <div className="w-full flex flex-row justify-end items-center pb-4">
+            {/* <TabsList>
+              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
+                Pull Test
+              </TabsTrigger>
+              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
+                xCyclops
+              </TabsTrigger>
+              <TabsTrigger
+                value="ultrabolts"
+                onClick={() => setApp('Ultrabolts')}
+              >
+                Ultrabolts
+              </TabsTrigger>
+            </TabsList> */}
 
             <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
               <ModalTrigger asChild>

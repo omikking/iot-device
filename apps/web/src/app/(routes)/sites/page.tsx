@@ -48,21 +48,7 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
-          <div className="w-full flex flex-row justify-between items-center pb-4">
-            <TabsList>
-              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
-                Pull Test
-              </TabsTrigger>
-              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
-                xCyclops
-              </TabsTrigger>
-              <TabsTrigger
-                value="ultrabolts"
-                onClick={() => setApp('Ultrabolts')}
-              >
-                Ultrabolts
-              </TabsTrigger>
-            </TabsList>
+          <div className="w-full flex flex-row justify-end items-center pb-4">
 
             <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
               <ModalTrigger asChild>

@@ -44,9 +44,7 @@ export default function Page(): JSX.Element {
     reportedHazard: false,
   });
 
-  const [boltResults, setBoltResults] = useState<
-    BoltResultSchema[] | undefined
-  >([]);
+  const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
 
   const filterBoltResults = (
     level?: string,
@@ -93,7 +91,7 @@ export default function Page(): JSX.Element {
 
   useEffect(() => {
     // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
-    site ? setBoltResults(boltResultsMock) : setBoltResults(undefined);
+    site ? setBoltResults(boltResultsMock) : setBoltResults([]);
   }, [site]);
 
   return (
@@ -172,9 +170,13 @@ export default function Page(): JSX.Element {
           </div>
           <Modal>
             <ModalTrigger asChild>
-              <Button variant="primary" size="large">
+              <Button
+                disabled={!filteredResults?.length}
+                variant="primary"
+                size="large"
+              >
                 <LucideFileDown />
-                Export PDF
+                View PDF
               </Button>
             </ModalTrigger>
             {/* @TODO Modal goes here /> */}

@@ -24,12 +24,11 @@ import { User } from '@/gql/graphql';
 import { LucideCheckCircle } from 'lucide-react';
 
 type AccountSettingsFormProps = {
-  // user: UserAccountFormValues;
   user: User;
 };
 
-const updateUserMutation = graphql(`
-  mutation updateUser($id: String!, $updateUserInput: UpdateUserInput!) {
+const updateAccountUserMutation = graphql(`
+  mutation updateAccountUser($id: String!, $updateUserInput: UpdateUserInput!) {
     updateUser(id: $id, updateUserInput: $updateUserInput) {
       id
       email
@@ -47,7 +46,9 @@ export default function AccountSettingsForm({
   user,
 }: AccountSettingsFormProps): JSX.Element {
   const { data: session } = useSession();
-  const [, updateUser] = useMutation<UserAccountFormValues>(updateUserMutation);
+  const [, updateAccountUser] = useMutation<UserAccountFormValues>(
+    updateAccountUserMutation,
+  );
 
   const settingsForm = useForm<UserAccountFormValues>({
     resolver: zodResolver(accountSettingsFormSchema),
@@ -66,167 +67,181 @@ export default function AccountSettingsForm({
     console.log('Data', data);
   };
 
+  const formValues = settingsForm.getValues();
+
+  const areAllFieldsEmpty =
+    !formValues.email &&
+    !formValues.fullName &&
+    !formValues.workPlace &&
+    !formValues.phoneNumber &&
+    !formValues.oldPassword &&
+    !formValues.newPassword &&
+    !formValues.confirmPassword;
+
   return (
-    <>
-      <Form {...settingsForm}>
-        <form onSubmit={settingsForm.handleSubmit(onSubmit)}>
-          <div className="w-full mt-4 mb-12 flex flex-col gap-16">
-            <ContentHolder variant="general" headlineText="Account settings">
-              <FormField
-                control={settingsForm.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your email..."
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={settingsForm.control}
-                name="fullName"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Full name</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your full name..."
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={settingsForm.control}
-                name="workPlace"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Workplace</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your workplace..."
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={settingsForm.control}
-                name="phoneNumber"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Phone number</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your phone number..."
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </ContentHolder>
-            <ContentHolder variant="general" headlineText="Password">
-              <FormField
-                control={settingsForm.control}
-                name="oldPassword"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Old password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your old password..."
-                          type="password"
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={settingsForm.control}
-                name="newPassword"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>New password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter your new password..."
-                          type="password"
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={settingsForm.control}
-                name="confirmPassword"
-                render={({ field }) => {
-                  return (
-                    <FormItem className=" ">
-                      <FormLabel>Confirm password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Confirm your password..."
-                          type="password"
-                          className="min-w-[400px]"
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </ContentHolder>
-          </div>
-          <div className="flex justify-end">
-            <Button variant="primary" size="large" type="submit">
-              <LucideCheckCircle />
-              Save changes
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </>
+    <Form {...settingsForm}>
+      <form onSubmit={settingsForm.handleSubmit(onSubmit)}>
+        <div className="w-full mt-4 mb-12 flex flex-col gap-16">
+          <ContentHolder variant="general" headlineText="Account settings">
+            <FormField
+              control={settingsForm.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your email..."
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={settingsForm.control}
+              name="fullName"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Full name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your full name..."
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={settingsForm.control}
+              name="workPlace"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Workplace</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your workplace..."
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={settingsForm.control}
+              name="phoneNumber"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Phone number</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your phone number..."
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </ContentHolder>
+          <ContentHolder variant="general" headlineText="Password">
+            <FormField
+              control={settingsForm.control}
+              name="oldPassword"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Old password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your old password..."
+                        type="password"
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={settingsForm.control}
+              name="newPassword"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>New password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter your new password..."
+                        type="password"
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={settingsForm.control}
+              name="confirmPassword"
+              render={({ field }) => {
+                return (
+                  <FormItem className=" ">
+                    <FormLabel>Confirm password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Confirm your password..."
+                        type="password"
+                        className="min-w-[400px]"
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </ContentHolder>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            size="large"
+            type="submit"
+            disabled={areAllFieldsEmpty}
+          >
+            <LucideCheckCircle />
+            Save changes
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

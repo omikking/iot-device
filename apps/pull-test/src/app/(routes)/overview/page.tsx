@@ -14,8 +14,6 @@ export default function Page(): JSX.Element {
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
-      <GoBack />
-
       {session?.company.name && (
         <Badge variant="primary" size="large" className="absolute top-24">
           {session?.company.name}
@@ -59,8 +57,6 @@ export default function Page(): JSX.Element {
           </NavigationCard>
         </Link>
       </div>
-
-      <hr className="w-full border-neutral-2 mb-4" />
     </main>
   );
 }

@@ -1,5 +1,4 @@
 'use client';
-import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,

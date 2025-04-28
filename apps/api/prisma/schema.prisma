@@ -53,21 +53,21 @@ enum BoltType {
 }
 
 enum RingPosition {
-  LH_Backs
-  Center_Backs
-  RH_Backs
-  LH_Face_High
-  LH_Face_Low
-  RH_Face_High
-  RH_Face_Low
-  LH_Shoulder
-  LH_Wall_Upper
-  LH_Wall_Center
-  LH_Wall_Lower
-  RH_Shoulder
-  RH_Wall_Upper
-  RH_Wall_Center
-  RH_Wall_Lower
+  LH_BACKS
+  CENTER_BACKS
+  RH_BACKS
+  LH_FACE_HIGH
+  LH_FACE_LOW
+  RH_FACE_HIGH
+  RH_FACE_LOW
+  LH_SHOULDER
+  LH_WALL_UPPER
+  LH_WALL_CENTER
+  LH_WALL_LOWER
+  RH_SHOULDER
+  RH_WALL_UPPER
+  RH_WALL_CENTER
+  RH_WALL_LOWER
 }
 
 model RefreshTokenId {

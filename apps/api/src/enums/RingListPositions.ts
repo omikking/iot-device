@@ -1,48 +1,29 @@
-export enum RingListPositions {
-  LH_Backs = 'LH_Backs',
-  Center_Backs = 'Center_Backs',
-  RH_Backs = 'RH_Backs',
+import { RingPosition } from '@prisma/client';
 
-  LH_Face_High = 'LH_Face_High',
-  LH_Face_Low = 'LH_Face_Low',
-  RH_Face_High = 'RH_Face_High',
-  RH_Face_Low = 'RH_Face_Low',
+export const RingListPositionLabels: Record<RingPosition, string> = {
+  [RingPosition.LH_BACKS]: 'L/H Backs',
+  [RingPosition.CENTER_BACKS]: 'Center Backs',
+  [RingPosition.RH_BACKS]: 'R/H Backs',
 
-  LH_Shoulder = 'LH_Shoulder',
-  LH_Wall_Upper = 'LH_Wall_Upper',
-  LH_Wall_Center = 'LH_Wall_Center',
-  LH_Wall_Lower = 'LH_Wall_Lower',
+  [RingPosition.LH_FACE_HIGH]: 'L/H Face High',
+  [RingPosition.LH_FACE_LOW]: 'L/H Face Low',
+  [RingPosition.RH_FACE_HIGH]: 'R/H Face High',
+  [RingPosition.RH_FACE_LOW]: 'R/H Face Low',
 
-  RH_Shoulder = 'RH_Shoulder',
-  RH_Wall_Upper = 'RH_Wall_Upper',
-  RH_Wall_Center = 'RH_Wall_Center',
-  RH_Wall_Lower = 'RH_Wall_Lower',
-}
+  [RingPosition.LH_SHOULDER]: 'L/H Shoulder',
+  [RingPosition.LH_WALL_UPPER]: 'L/H Wall Upper',
+  [RingPosition.LH_WALL_CENTER]: 'L/H Wall Center',
+  [RingPosition.LH_WALL_LOWER]: 'L/H Wall Lower',
 
-export const RingListPositionLabels: Record<RingListPositions, string> = {
-  [RingListPositions.LH_Backs]: 'L/H Backs',
-  [RingListPositions.Center_Backs]: 'Center Backs',
-  [RingListPositions.RH_Backs]: 'R/H Backs',
-
-  [RingListPositions.LH_Face_High]: 'L/H Face High',
-  [RingListPositions.LH_Face_Low]: 'L/H Face Low',
-  [RingListPositions.RH_Face_High]: 'R/H Face High',
-  [RingListPositions.RH_Face_Low]: 'R/H Face Low',
-
-  [RingListPositions.LH_Shoulder]: 'L/H Shoulder',
-  [RingListPositions.LH_Wall_Upper]: 'L/H Wall Upper',
-  [RingListPositions.LH_Wall_Center]: 'L/H Wall Center',
-  [RingListPositions.LH_Wall_Lower]: 'L/H Wall Lower',
-
-  [RingListPositions.RH_Shoulder]: 'R/H Shoulder',
-  [RingListPositions.RH_Wall_Upper]: 'R/H Wall Upper',
-  [RingListPositions.RH_Wall_Center]: 'R/H Wall Center',
-  [RingListPositions.RH_Wall_Lower]: 'R/H Wall Lower',
+  [RingPosition.RH_SHOULDER]: 'R/H Shoulder',
+  [RingPosition.RH_WALL_UPPER]: 'R/H Wall Upper',
+  [RingPosition.RH_WALL_CENTER]: 'R/H Wall Center',
+  [RingPosition.RH_WALL_LOWER]: 'R/H Wall Lower',
 };
 
 export const getRingListPositionOptions = () => {
   return Object.entries(RingListPositionLabels).map(([key, value]) => ({
-    key,
+    key: key as RingPosition,
     value,
   }));
 };

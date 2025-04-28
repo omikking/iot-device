@@ -23,11 +23,12 @@ const documents = {
     "\n  mutation createSite($createSiteInput: CreateSiteInput!) {\n    createSite(createSiteInput: $createSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.CreateSiteDocument,
     "\n  mutation updateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {\n    updateSite(id: $id, updateSiteInput: $updateSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.UpdateSiteDocument,
     "\n  mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n      isGlobalVisibility\n    }\n  }\n": types.UpdateTechnicianDocument,
+    "\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n": types.GetUsersDocument,
     "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetAdminsDocument,
     "\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.DeleteAdminDocument,
     "\n  mutation createCompany($createCompanyInput: CreateCompanyInput!) {\n    createCompany(createCompanyInput: $createCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n": types.CreateCompanyDocument,
     "\n  mutation updateCompany(\n    $id: String!\n    $updateCompanyInput: UpdateCompanyInput!\n  ) {\n    updateCompany(id: $id, updateCompanyInput: $updateCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n": types.UpdateCompanyDocument,
-    "\n  query getCompanies {\n    companies {\n      id\n      name\n    }\n  }\n": types.GetCompaniesDocument,
+    "\n  query getCompanies {\n    companies {\n      results {\n        id\n        name\n      }\n    }\n  }\n": types.GetCompaniesDocument,
     "\n  mutation createDrive($createDriveInput: CreateDriveInput!) {\n    createDrive(createDriveInput: $createDriveInput) {\n      id\n      driveName\n      levelId\n    }\n  }\n": types.CreateDriveDocument,
     "\n  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {\n    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {\n      id\n      driveName\n      levelId\n    }\n  }\n": types.UpdateDriveDocument,
     "\n  mutation deleteDrive($id: String!) {\n    removeDrive(id: $id) {\n      id\n    }\n  }\n": types.DeleteDriveDocument,
@@ -98,6 +99,10 @@ export function graphql(source: "\n  mutation updateTechnician($id: String!, $up
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n"): (typeof documents)["\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -114,7 +119,7 @@ export function graphql(source: "\n  mutation updateCompany(\n    $id: String!\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getCompanies {\n    companies {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanies {\n    companies {\n      id\n      name\n    }\n  }\n"];
+export function graphql(source: "\n  query getCompanies {\n    companies {\n      results {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompanies {\n    companies {\n      results {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

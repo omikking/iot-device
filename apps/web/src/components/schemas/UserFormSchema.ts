@@ -22,16 +22,19 @@ export const userFormSchema = z
       .min(2, { message: 'Email must be at least 2 characters.' })
       .max(50, { message: 'Email must be at most 50 characters.' })
       .optional(),
-    technician: z.string().optional(),
+    technician: z.string({ message: 'dawawdaw' }).optional(),
     userPermissions: z.array(
       z.object({
         userId: z.string().optional(),
-        role: z.enum([
-          'COMPANY_USER',
-          'SANDVIK_TECHNICIAN',
-          'SANDVIK_ADMIN',
-          'COMPANY_ADMIN',
-        ]),
+        role: z.enum(
+          [
+            'COMPANY_USER',
+            'SANDVIK_TECHNICIAN',
+            'SANDVIK_ADMIN',
+            'COMPANY_ADMIN',
+          ],
+          { message: 'Role must be selected.' },
+        ),
         appsAccess: z.array(
           z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
         ),

@@ -176,14 +176,15 @@ export const AddOrEditUserModal = ({
 
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
+  const [selectedTechEmail, setSelectedTechEmail] = useState<string>('');
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
       email: user?.email || '',
+      technician: selectedTechEmail || undefined,
       userPermissions: [
         {
-          userId: user?.userPermissions?.[0]?.userId || '',
           role: user?.userPermissions?.[0]?.role || 'User',
           appsAccess: (user?.userPermissions?.[0]?.appsAccess || []).map(
             (app) => app as Application,
@@ -219,7 +220,6 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
-  console.log('role', role);
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
     console.log('DATA', data);
     try {
@@ -300,7 +300,7 @@ export const AddOrEditUserModal = ({
     setRole(e);
 
     if (e !== 'SANDVIK_TECHNICIAN') {
-      form.setValue('technician', undefined);
+      // form.setValue('technician', undefined);
       setSelectedTechnician('');
     }
   };
@@ -353,6 +353,7 @@ export const AddOrEditUserModal = ({
         );
         if (foundTechnician) {
           setSelectedTechnician(foundTechnician.id);
+          setSelectedTechEmail(foundTechnician.email);
         }
       }
 
@@ -388,6 +389,11 @@ export const AddOrEditUserModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
+            {/* <form
+            onSubmit={(e) => {
+              e.preventDefault(), console.log('FORM', form.getValues());
+            }}
+          > */}
             <div className="flex px-10 gap-10">
               <div className="flex flex-col gap-8">
                 <FormField
@@ -421,17 +427,6 @@ export const AddOrEditUserModal = ({
                     control={form.control}
                     name="email"
                     render={({ field }) => {
-                      //@TODO remove this check since we are not updating the email
-                      // const findUser = field.value
-                      //   ? allUsers?.users?.find(
-                      //       (user) => user.email === field.value,
-                      //     )
-                      //   : undefined;
-
-                      // const foundUser = findUser ? findUser.email : field.value;
-
-                      // console.log('findUser', findUser);
-
                       return (
                         <FormItem>
                           <FormLabel>* Email</FormLabel>
@@ -441,7 +436,6 @@ export const AddOrEditUserModal = ({
                               className="w-96"
                               disabled={user ? true : false}
                               {...field}
-                              // value={foundUser || ''}
                             />
                           </FormControl>
                           <FormMessage />
@@ -453,14 +447,14 @@ export const AddOrEditUserModal = ({
                 {role === 'SANDVIK_TECHNICIAN' && (
                   <FormField
                     control={form.control}
-                    name="technician"
+                    name="email"
                     render={({ field }) => {
                       return (
                         <FormItem>
                           <FormLabel>* Technician</FormLabel>
                           <FormControl>
                             <Dropdown
-                              id="technician"
+                              id="email"
                               className="w-96"
                               placeholder="Select technician"
                               selectedId={selectedTechnician}
@@ -474,13 +468,16 @@ export const AddOrEditUserModal = ({
                                     (tech) => tech.id === e,
                                   );
                                   if (selectedTech) {
+                                    console.log('selectedTech', selectedTech);
+                                    form.setValue('email', selectedTech.email);
                                     form.setValue(
                                       'technician',
-                                      selectedTech.email,
+                                      selectedTech.fullName,
                                     );
                                   }
                                 }
                               }}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />

@@ -180,7 +180,8 @@ export const AddOrEditUserModal = ({
     user?.userPermissions?.[0]?.role || 'User',
   );
 
-  const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
+  //@TODO rename to fullAccess
+  const [isFullAccess, setFullAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
   const [selectedTechEmail, setSelectedTechEmail] = useState<string>('');
 
@@ -312,7 +313,7 @@ export const AddOrEditUserModal = ({
   };
 
   const handleGlobalAccess = (checked: boolean) => {
-    setGlobalAccess(checked);
+    setFullAccess(checked);
     if (checked) {
       form.setValue('userPermissions.0.appsAccess', [
         'PULL_TEST',
@@ -345,7 +346,7 @@ export const AddOrEditUserModal = ({
       'ULTRABOLTS',
       'XCYCLOPS',
     ].every((app) => appAccess.includes(app as Application));
-    setGlobalAccess(allAppsSelected);
+    setFullAccess(allAppsSelected);
   }, [form.watch('userPermissions.0.appsAccess')]);
 
   useEffect(() => {
@@ -474,7 +475,6 @@ export const AddOrEditUserModal = ({
                                     (tech) => tech.id === e,
                                   );
                                   if (selectedTech) {
-                                    console.log('selectedTech', selectedTech);
                                     form.setValue('email', selectedTech.email);
                                     form.setValue(
                                       'technician',
@@ -508,118 +508,146 @@ export const AddOrEditUserModal = ({
                     </Headline>
                   </div>
                   <Switch
-                    checked={isGlobalAccess}
+                    checked={isFullAccess}
                     onCheckedChange={handleGlobalAccess}
                   />
                 </div>
-                <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                  <Text
-                    color={'foreground'}
-                    variant={'medium'}
-                    className="flex flex-grow"
-                  >
-                    Pull Test
-                  </Text>
 
-                  <FormField
-                    control={form.control}
-                    name="userPermissions.0.appsAccess"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Switch
-                              checked={
-                                Array.isArray(field.value) &&
-                                field.value.includes('PULL_TEST')
-                              }
-                              onCheckedChange={handleAppsAccess('PULL_TEST')}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                  <Text
-                    color={'foreground'}
-                    variant={'medium'}
-                    className="flex flex-grow"
-                  >
-                    Pull Test Operator
-                  </Text>
-                  <FormField
-                    control={form.control}
-                    name="userPermissions.0.appsAccess"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Switch
-                              checked={field.value?.includes(
-                                'PULL_TEST_OPERATOR',
-                              )}
-                              onCheckedChange={handleAppsAccess(
-                                'PULL_TEST_OPERATOR',
-                              )}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                  <Text
-                    color={'foreground'}
-                    variant={'medium'}
-                    className="flex flex-grow"
-                  >
-                    Ultrabolts
-                  </Text>
-                  <FormField
-                    control={form.control}
-                    name="userPermissions.0.appsAccess"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Switch
-                              checked={field.value?.includes('ULTRABOLTS')}
-                              onCheckedChange={handleAppsAccess('ULTRABOLTS')}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div className="flex items-center px-6 py-3 border-b border-neutral-1">
-                  <Text
-                    color={'foreground'}
-                    variant={'medium'}
-                    className="flex flex-grow"
-                  >
-                    xCyclops
-                  </Text>
-                  <FormField
-                    control={form.control}
-                    name="userPermissions.0.appsAccess"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Switch
-                              checked={field.value?.includes('XCYCLOPS')}
-                              onCheckedChange={handleAppsAccess('XCYCLOPS')}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
+                {isFullAccess ? (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <Text
+                      color={'foreground'}
+                      variant={'medium'}
+                      className="px-6 py-3 border-neutral-2"
+                    >
+                      The administrator will have
+                      <Text
+                        variant="medium"
+                        color={'foreground'}
+                        isBold
+                        as="span"
+                      >
+                        {` full access `}
+                      </Text>
+                      to manage the company and all its applications.
+                    </Text>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
+                      <Text
+                        color={'foreground'}
+                        variant={'medium'}
+                        className="flex flex-grow"
+                      >
+                        Pull Test
+                      </Text>
+
+                      <FormField
+                        control={form.control}
+                        name="userPermissions.0.appsAccess"
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormControl>
+                                <Switch
+                                  checked={
+                                    Array.isArray(field.value) &&
+                                    field.value.includes('PULL_TEST')
+                                  }
+                                  onCheckedChange={handleAppsAccess(
+                                    'PULL_TEST',
+                                  )}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
+                      <Text
+                        color={'foreground'}
+                        variant={'medium'}
+                        className="flex flex-grow"
+                      >
+                        Pull Test Operator
+                      </Text>
+                      <FormField
+                        control={form.control}
+                        name="userPermissions.0.appsAccess"
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value?.includes(
+                                    'PULL_TEST_OPERATOR',
+                                  )}
+                                  onCheckedChange={handleAppsAccess(
+                                    'PULL_TEST_OPERATOR',
+                                  )}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
+                      <Text
+                        color={'foreground'}
+                        variant={'medium'}
+                        className="flex flex-grow"
+                      >
+                        Ultrabolts
+                      </Text>
+                      <FormField
+                        control={form.control}
+                        name="userPermissions.0.appsAccess"
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value?.includes('ULTRABOLTS')}
+                                  onCheckedChange={handleAppsAccess(
+                                    'ULTRABOLTS',
+                                  )}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center px-6 py-3 border-b border-neutral-1">
+                      <Text
+                        color={'foreground'}
+                        variant={'medium'}
+                        className="flex flex-grow"
+                      >
+                        xCyclops
+                      </Text>
+                      <FormField
+                        control={form.control}
+                        name="userPermissions.0.appsAccess"
+                        render={({ field }) => {
+                          return (
+                            <FormItem>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value?.includes('XCYCLOPS')}
+                                  onCheckedChange={handleAppsAccess('XCYCLOPS')}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <ModalFooter className="px-10 pt-8 pb-6">

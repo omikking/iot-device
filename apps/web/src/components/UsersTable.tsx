@@ -49,6 +49,7 @@ const getCompanyUserQuery = graphql(`
         fullName
         workPlace
         phoneNumber
+        globalRole
         userPermissions {
           id
           userId

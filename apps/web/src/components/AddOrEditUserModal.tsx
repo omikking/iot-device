@@ -65,6 +65,7 @@ const getAllUsersQuery = graphql(`
       email
       fullName
       workPlace
+      globalRole
       userPermissions {
         id
         role
@@ -119,17 +120,13 @@ const updateUserPermissionsMutation = graphql(`
   }
 `);
 
-export const roles: DropdownItem[] = [
+export const getRoles = (user?: User): DropdownItem[] => [
   {
     id: 'COMPANY_USER',
     name: 'User',
     background: 'neutral',
   },
-  {
-    id: 'SANDVIK_TECHNICIAN',
-    name: 'Sandvik technician',
-    background: 'neutral',
-  },
+
   {
     id: 'SANDVIK_ADMIN',
     name: 'Sandvik admin',
@@ -140,6 +137,15 @@ export const roles: DropdownItem[] = [
     name: 'Company admin',
     background: 'primary',
   },
+  ...(!user || user?.globalRole === 'SANDVIK_TECHNICIAN'
+    ? [
+        {
+          id: 'SANDVIK_TECHNICIAN',
+          name: 'Sandvik technician',
+          background: 'neutral' as const,
+        },
+      ]
+    : []),
 ];
 
 export const AddOrEditUserModal = ({
@@ -411,7 +417,7 @@ export const AddOrEditUserModal = ({
                             selectedId={role}
                             isBadge
                             badgeIcon
-                            options={roles}
+                            options={getRoles(user as User)}
                             onSelect={(e) => {
                               handleSelectRole(e as UserPermission['role']);
                             }}

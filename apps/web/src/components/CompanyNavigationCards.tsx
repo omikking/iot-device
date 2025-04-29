@@ -7,8 +7,10 @@ import {
   LucideUsers,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export const CompanyNavigationCards = () => {
+  const { id: companyId } = useParams();
   return (
     <>
       <div className="flex gap-8">
@@ -18,7 +20,7 @@ export const CompanyNavigationCards = () => {
           </Headline>
           <LucideUsers />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/users">
+            <Link href={`/users/${companyId}`}>
               <LucideMoveRight />
               View users
             </Link>
@@ -31,7 +33,7 @@ export const CompanyNavigationCards = () => {
           </Headline>
           <LucideMountain />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/sites">
+            <Link href={`/sites/${companyId}`}>
               <LucideMoveRight />
               View sites
             </Link>
@@ -44,7 +46,7 @@ export const CompanyNavigationCards = () => {
           </Headline>
           <LucidePyramid />
           <Button variant="secondary" size="small" asChild>
-            <Link href="/sitelocations/all">
+            <Link href={`/sitelocations/${companyId}`}>
               <LucideMoveRight />
               View site locations
             </Link>

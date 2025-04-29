@@ -41,10 +41,6 @@ const updateTechnicianMutation = graphql(`
     updateUser(id: $id, updateUserInput: $updateUserInput) {
       id
       email
-      fullName
-      workPlace
-      phoneNumber
-      globalRole
       isGlobalVisibility
     }
   }
@@ -69,20 +65,14 @@ export const AddOrEditTechnicianModal = ({
   const form = useForm<UpdateTechnicianFormValues>({
     resolver: zodResolver(updateTechnicianFormSchema),
     defaultValues: {
-      fullName: technician?.fullName || '',
-      workPlace: technician?.workPlace || '',
       email: technician?.email || '',
-      phoneNumber: technician?.phoneNumber || '',
       isGlobalVisibility: technician?.isGlobalVisibility || false,
     },
   });
 
   const resetFormValues = () => {
     form.reset({
-      fullName: '',
-      workPlace: '',
       email: '',
-      phoneNumber: '',
       isGlobalVisibility: false,
     });
   };
@@ -122,7 +112,6 @@ export const AddOrEditTechnicianModal = ({
     if (technician) {
       form.reset({
         ...technician,
-        phoneNumber: technician.phoneNumber || '',
         isGlobalVisibility: technician.isGlobalVisibility || false,
       });
     }
@@ -195,7 +184,9 @@ export const AddOrEditTechnicianModal = ({
                       <FormControl>
                         <RadioGroup
                           value={String(field.value)}
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value === 'true');
+                          }}
                         >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>

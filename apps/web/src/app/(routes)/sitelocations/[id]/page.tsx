@@ -1,7 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
+import { Drive, Level, Site } from '@/gql/graphql';
 import {
-  Anchor,
   Badge,
   Dropdown,
   Headline,
@@ -12,14 +15,10 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
-import Link from 'next/link';
-import { LucideMoveLeft } from 'lucide-react';
+import { GoBack } from '@/components/GoBack';
 import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
 import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
 import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
-import { graphql } from '@/gql';
-import { Drive, Level, Site } from '@/gql/graphql';
-import { useQuery } from 'urql';
 
 const getCompanySitesNameQuery = graphql(`
   query getCompanySitesNames($id: String!) {
@@ -62,6 +61,7 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
+  const searchParams = useSearchParams();
   const [selectedSite, setSelectedSite] = useState<Site | undefined>();
   const [selectedLevel, setSelectedLevel] = useState<Level | undefined>();
   const [selectedDrive, setSelectedDrive] = useState<Drive | undefined>();
@@ -92,14 +92,15 @@ export default function Page({
     refreshSiteQuery({ requestPolicy: 'network-only' });
   };
 
-  // Set site from url
-  const siteFromUrl = sites.find((site) => site.id === params.id);
-
+  // Set site from URL query param if it exists
   useEffect(() => {
-    if (siteFromUrl) {
-      setSelectedSite(siteFromUrl);
+    const siteIdFromQuery = searchParams.get('siteId');
+    const matchingSite = sites.find((site) => site.id === siteIdFromQuery);
+
+    if (siteIdFromQuery && matchingSite) {
+      setSelectedSite(matchingSite);
     }
-  }, [siteFromUrl]);
+  }, [sites, searchParams]);
 
   const drives = site?.levels?.find(
     (level) => level.id === selectedLevel?.id,
@@ -127,18 +128,7 @@ export default function Page({
 
   return (
     <main className="min-h-[calc(100vh-64px)] max-w-[1320px] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
-      <Text
-        variant="medium"
-        color="foreground"
-        className="absolute top-28 left-10 group"
-      >
-        <Link href="/overview" passHref legacyBehavior>
-          <Anchor color="foreground">
-            <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
-            Go back
-          </Anchor>
-        </Link>
-      </Text>
+      <GoBack />
 
       {companyName && (
         <Badge variant="primary" size="large" className="absolute top-24">

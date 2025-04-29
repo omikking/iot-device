@@ -19,6 +19,7 @@ import { useSession } from 'next-auth/react';
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
 
+  // Commented out since not in MVP
   // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
   //   'Pull Test',
   // );
@@ -47,6 +48,7 @@ export default function Page(): JSX.Element {
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
           <div className="w-full flex flex-row justify-end items-center pb-4">
+            {/* // Commented out since not in MVP */}
             {/* <TabsList>
               <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
                 Pull Test

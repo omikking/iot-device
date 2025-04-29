@@ -24,7 +24,7 @@ export default function Page(): JSX.Element | null {
     query: getAllCompaniesQuery,
     variables: {
       offset: 0,
-      limit: 10,
+      limit: 100,
     },
   });
 
@@ -32,7 +32,7 @@ export default function Page(): JSX.Element | null {
 
   useEffect(() => {
     if (companies.length === 1) {
-      router.push('/selectapplication');
+      router.push(`/selectapplication/${companies[0].id}`);
     }
   }, [companies]);
 

@@ -40,7 +40,7 @@ export class UsersService {
         workPlace: updateUserInput?.workPlace || undefined,
         phoneNumber: updateUserInput?.phoneNumber || undefined,
         globalRole: (updateUserInput?.globalRole as GlobalRole) || undefined,
-        isGlobalVisibility: updateUserInput?.isGlobalVisibility || undefined,
+        isGlobalVisibility: updateUserInput?.isGlobalVisibility ?? undefined,
       },
     });
 

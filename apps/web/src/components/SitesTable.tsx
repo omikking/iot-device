@@ -115,20 +115,16 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
       },
     },
     {
-      accessorKey: 'address',
+      accessorKey: 'fullAddress',
       header: 'Address',
-    },
-    {
-      accessorKey: 'city',
-      header: 'City',
-    },
-    {
-      accessorKey: 'country',
-      header: 'Country',
-    },
-    {
-      accessorKey: 'postalCode',
-      header: 'Postal code',
+      cell: ({ row }) => {
+        const { address, city, postalCode, country } = row.original;
+        return (
+          <Text variant="medium" color="foreground">
+            {address}, {city} {postalCode}, {country}
+          </Text>
+        );
+      },
     },
     {
       accessorKey: 'settings',

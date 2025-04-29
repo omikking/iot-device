@@ -39,11 +39,12 @@ export const AppPlansContainer = ({
     expiringDate,
     planLevel: initialPlanLevel,
   } = appPlan as Plan;
+
   const [activePlanLevel, setActivePlanLevel] = useState<PlanLevel | undefined>(
     initialPlanLevel as PlanLevel,
   );
 
-  const [date, setDate] = useState<Date | number>(expiringDate);
+  const [date, setDate] = useState<Date | number | undefined>(expiringDate);
 
   const handleDateChange = (date?: Date) => {
     const currentPlans = (companyForm.getValues('plans') as Plan[]) || [];
@@ -124,28 +125,25 @@ export const AppPlansContainer = ({
 
       {/* Calendar */}
       {activePlanLevel && (
-        <>
-          {/* For Superadmin, always show */}
+        <div className="py-5 px-6 border-b border-neutral-2">
+          {user === 'Client' && date && (
+            <Badge variant="primary">
+              <LucideCalendar size="14" />
+              Your plan expires {formattedDate(date)}
+            </Badge>
+          )}
+
           {user === 'Superadmin' && (
-            <div className="py-5 px-6 border-b border-neutral-2">
+            <>
               <FormLabel>Expiring date</FormLabel>
               <SingleDateCalendar
                 className="mt-2"
                 selectedDate={expiringDate}
                 onDateChange={handleDateChange}
               />
-            </div>
+            </>
           )}
-
-          {user === 'Client' && date !== 0 && date !== null && (
-            <div className="py-5 px-6 border-b border-neutral-2">
-              <Badge variant="primary">
-                <LucideCalendar size="14" />
-                Your plan expires {formattedDate(date)}
-              </Badge>
-            </div>
-          )}
-        </>
+        </div>
       )}
     </div>
   );

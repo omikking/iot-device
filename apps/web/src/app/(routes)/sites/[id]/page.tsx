@@ -101,6 +101,7 @@ export default function Page({
 
           <TabsContent value="pullTest">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />
@@ -108,6 +109,7 @@ export default function Page({
 
           <TabsContent value="xCyclops">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />
@@ -115,6 +117,7 @@ export default function Page({
 
           <TabsContent value="ultrabolts">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />

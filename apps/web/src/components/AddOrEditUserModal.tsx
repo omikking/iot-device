@@ -176,8 +176,8 @@ export const AddOrEditUserModal = ({
   });
   const technicians = (techniciansData?.users as User[]) || [];
 
-  const [role, setRole] = useState<string>(
-    user?.userPermissions?.[0]?.role || 'User',
+  const [role, setRole] = useState<string | undefined>(
+    user?.userPermissions?.[0]?.role || undefined,
   );
 
   //@TODO rename to fullAccess
@@ -192,7 +192,7 @@ export const AddOrEditUserModal = ({
       technician: selectedTechEmail || undefined,
       userPermissions: [
         {
-          role: user?.userPermissions?.[0]?.role || 'User',
+          role: user?.userPermissions?.[0]?.role,
           appsAccess: (user?.userPermissions?.[0]?.appsAccess || []).map(
             (app) => app as Application,
           ),
@@ -202,13 +202,13 @@ export const AddOrEditUserModal = ({
   });
 
   const resetFormValues = () => {
-    setRole('User');
+    setRole(undefined);
     setSelectedTechnician('');
     form.reset({
       email: '',
       userPermissions: [
         {
-          role: 'User',
+          role: undefined,
           appsAccess: [],
         },
       ],
@@ -351,7 +351,7 @@ export const AddOrEditUserModal = ({
 
   useEffect(() => {
     if (user) {
-      const userRole = user.userPermissions?.[0]?.role || 'User';
+      const userRole = user.userPermissions?.[0]?.role || undefined;
       setRole(userRole as UserPermission['role']);
 
       if (userRole === 'SANDVIK_TECHNICIAN') {
@@ -385,6 +385,8 @@ export const AddOrEditUserModal = ({
       name: workPlace ? `${fullName} (${workPlace})` : fullName,
     }),
   );
+
+  console.log('role', role);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
@@ -514,11 +516,12 @@ export const AddOrEditUserModal = ({
                 </div>
 
                 {isFullAccess ? (
-                  <div className="flex flex-col items-center justify-center h-full">
+                  //@TODO find a way to remove hardcoded width
+                  <div className="flex items-center justify-center h-full max-w-[390px] px-6 py-3">
                     <Text
                       color={'foreground'}
                       variant={'medium'}
-                      className="px-6 py-3 border-neutral-2"
+                      className="text-start "
                     >
                       The administrator will have
                       <Text

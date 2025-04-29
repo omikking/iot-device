@@ -122,7 +122,7 @@ export const BoltResultDetailsModal = ({
                 </Badge>
                 {author && (
                   <Text variant="small" color="foreground">
-                    Author: {author}
+                    Reported by: {author}
                   </Text>
                 )}
               </div>
@@ -170,21 +170,7 @@ export const BoltResultDetailsModal = ({
             />
           </div>
         </div>
-        {/* Bolt plot */}
-        <div className="px-10">
-          <Headline
-            className="pb-4"
-            variant="small"
-            as="h3"
-            color="foreground"
-            isBold
-          >
-            Bolt plot Graph
-          </Headline>
-          <Text variant="small" color="foreground">
-            Graph will be shown here. Incoming feature...
-          </Text>
-        </div>
+       
       </div>
       {isCompleted && (
         <div className="relative h-[250px]">

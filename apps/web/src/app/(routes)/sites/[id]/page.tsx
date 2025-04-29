@@ -7,8 +7,6 @@ import {
   ModalTrigger,
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@gsp/ui';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
@@ -42,9 +40,10 @@ export default function Page({
 
   const companyName = data?.company?.name;
 
-  const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
-    'Pull Test',
-  );
+  // Commented out since not in MVP
+  // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
+  //   'Pull Test',
+  // );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -69,8 +68,9 @@ export default function Page({
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
-          <div className="w-full flex flex-row justify-between items-center pb-4">
-            <TabsList>
+          <div className="w-full flex flex-row justify-end items-center pb-4">
+            {/* // Commented out since not in MVP */}
+            {/* <TabsList>
               <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
                 Pull Test
               </TabsTrigger>
@@ -83,7 +83,7 @@ export default function Page({
               >
                 Ultrabolts
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
 
             <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
               <ModalTrigger asChild>

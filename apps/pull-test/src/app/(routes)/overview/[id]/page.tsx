@@ -1,5 +1,4 @@
 'use client';
-import { GoBack } from '@/components/GoBack';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,
@@ -35,8 +34,6 @@ export default function Page({
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
-      <GoBack />
-
       {companyName && (
         <Badge variant="primary" size="large" className="absolute top-24">
           {companyName}
@@ -80,8 +77,6 @@ export default function Page({
           </NavigationCard>
         </Link>
       </div>
-
-      <hr className="w-full border-neutral-2 mb-4" />
     </main>
   );
 }

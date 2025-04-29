@@ -41,7 +41,7 @@ export const SelectCompanyList: React.FC<SelectCompanyListProps> = ({
         {companies.map((company) => (
           <li key={company.id} className="mb-2">
             <Link
-              href={`/selectapplication`}
+              href={`/selectapplication/${company.id}`}
               className="w-full flex justify-between items-center ui-border ui-border-gold-3 hover:ui-border-gold-primary focus:ui-border-gold-primary focus:outline-none focus:ring-1 focus:ring-gold-primary ui-transition-all ease-in-out duration-200 ui-px-6 ui-py-6 bg-main-white"
               aria-label={`Select ${company.name}`}
             >

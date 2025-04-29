@@ -5,17 +5,38 @@ import {
   LucideMoveRight,
   LucideTriangleAlert,
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
 
-export default function Page(): JSX.Element {
-  const { data: session } = useSession();
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
+  const companyId = params.id;
+
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
+
+  const companyName = data?.company?.name;
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
-      {session?.company.name && (
+      {companyName && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session?.company.name}
+          {companyName}
         </Badge>
       )}
 
@@ -24,7 +45,7 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">
-        <Link href="/boltresults">
+        <Link href={`/boltresults/${companyId}`}>
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Bolt results
@@ -36,7 +57,7 @@ export default function Page(): JSX.Element {
             </Button>
           </NavigationCard>
         </Link>
-        <Link href="/reportedhazards">
+        <Link href={`/reportedhazards/${companyId}`}>
           <NavigationCard className="relative">
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"

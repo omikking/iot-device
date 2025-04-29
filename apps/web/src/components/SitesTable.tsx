@@ -1,15 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
-import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import { Site } from '@/gql/graphql';
-import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
+import { graphql } from '@/gql';
+import { Site } from '@/gql/graphql';
+import type { ColumnDef } from '@gsp/ui';
+import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 const getCompanySitesQuery = graphql(`
   query getCompanySites($id: String!) {
@@ -42,17 +41,19 @@ const deleteSiteMutation = graphql(`
 `);
 
 type SitesTableProps = {
+  companyId: string;
   onOpenChange: (isOpen: boolean) => void;
   onSelectSite: (site?: Site) => void;
 };
 
-export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
-  const { data: session } = useSession();
-
+export const SitesTable = ({
+  companyId,
+  onOpenChange,
+  onSelectSite,
+}: SitesTableProps) => {
   const [sitesData] = useQuery({
     query: getCompanySitesQuery,
-    variables: { id: session?.company?.id || '' },
-    pause: !session?.company?.id,
+    variables: { id: companyId || '' },
   });
   const sites = (sitesData.data?.company.sites as Site[]) || [];
 
@@ -102,7 +103,8 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
-                pathname: `/sitelocations/${row.original.id}`,
+                pathname: `/sitelocations/${companyId}`,
+                query: { siteId: row.original.id },
               }}
             >
               <LucideMoveRight />
@@ -115,20 +117,16 @@ export const SitesTable = ({ onOpenChange, onSelectSite }: SitesTableProps) => {
       },
     },
     {
-      accessorKey: 'address',
+      accessorKey: 'fullAddress',
       header: 'Address',
-    },
-    {
-      accessorKey: 'city',
-      header: 'City',
-    },
-    {
-      accessorKey: 'country',
-      header: 'Country',
-    },
-    {
-      accessorKey: 'postalCode',
-      header: 'Postal code',
+      cell: ({ row }) => {
+        const { address, city, postalCode, country } = row.original;
+        return (
+          <Text variant="medium" color="foreground">
+            {address}, {city} {postalCode}, {country}
+          </Text>
+        );
+      },
     },
     {
       accessorKey: 'settings',

@@ -1,22 +1,10 @@
 'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 import { Headline } from '@gsp/ui';
 import { SelectCompanyList } from '@/components/SelectCompanyList';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-interface Company {
-  id: string;
-  name: string;
-}
-
-interface GetAllCompaniesResponse {
-  companies: {
-    totalRecords: number;
-    results: Company[];
-  };
-}
 
 const getAllCompaniesQuery = graphql(`
   query GetAllCompanies($offset: Int, $limit: Int) {
@@ -32,7 +20,7 @@ const getAllCompaniesQuery = graphql(`
 
 export default function Page(): JSX.Element | null {
   const router = useRouter();
-  const [{ data, fetching }] = useQuery<GetAllCompaniesResponse>({
+  const [{ data, fetching }] = useQuery({
     query: getAllCompaniesQuery,
     variables: {
       offset: 0,

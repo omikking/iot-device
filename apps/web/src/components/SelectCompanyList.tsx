@@ -2,14 +2,10 @@
 import Link from 'next/link';
 import { Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
-
-interface Company {
-  id: string;
-  name: string;
-}
+import { GetAllCompaniesQuery } from '@/gql/graphql';
 
 interface SelectCompanyListProps {
-  companies: Company[];
+  companies: GetAllCompaniesQuery['companies']['results'];
 }
 
 export const SelectCompanyList: React.FC<SelectCompanyListProps> = ({

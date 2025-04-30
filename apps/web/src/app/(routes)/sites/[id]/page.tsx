@@ -7,8 +7,6 @@ import {
   ModalTrigger,
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@gsp/ui';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
@@ -16,14 +14,36 @@ import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
 import { Site } from '@/gql/graphql';
-import { useSession } from 'next-auth/react';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
 
-export default function Page(): JSX.Element {
-  const { data: session } = useSession();
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
 
-  const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
-    'Pull Test',
-  );
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
+  const companyId = params.id;
+
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
+
+  const companyName = data?.company?.name;
+
+  // Commented out since not in MVP
+  // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
+  //   'Pull Test',
+  // );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -37,9 +57,9 @@ export default function Page(): JSX.Element {
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-28 gap-16 bg-main-white">
       <GoBack />
-      {session?.company.name && (
+      {companyName && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session.company.name}
+          {companyName}
         </Badge>
       )}
       <Headline as="h1" variant="xl" color="foreground">
@@ -48,8 +68,9 @@ export default function Page(): JSX.Element {
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
-          <div className="w-full flex flex-row justify-between items-center pb-4">
-            <TabsList>
+          <div className="w-full flex flex-row justify-end items-center pb-4">
+            {/* // Commented out since not in MVP */}
+            {/* <TabsList>
               <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
                 Pull Test
               </TabsTrigger>
@@ -62,7 +83,7 @@ export default function Page(): JSX.Element {
               >
                 Ultrabolts
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
 
             <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
               <ModalTrigger asChild>
@@ -80,6 +101,7 @@ export default function Page(): JSX.Element {
 
           <TabsContent value="pullTest">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />
@@ -87,6 +109,7 @@ export default function Page(): JSX.Element {
 
           <TabsContent value="xCyclops">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />
@@ -94,6 +117,7 @@ export default function Page(): JSX.Element {
 
           <TabsContent value="ultrabolts">
             <SitesTable
+              companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
             />

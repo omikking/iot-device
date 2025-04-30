@@ -15,6 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query getHazardId($id: String!) {\n    hazards(companyId: $id) {\n      id\n    }\n  }\n": types.GetHazardIdDocument,
+    "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query getHazardDetails($id: String!) {\n    hazards(companyId: $id) {\n      abortReason\n      boltNumber\n      boltType\n      comment\n      createdAt\n      driveId\n      hazardCompletedDate\n      id\n      image\n      isHazard\n      levelId\n      locationId\n      peakDisplacement\n      peakLoad\n      positionInRing\n      result\n      siteId\n      updatedAt\n      userId\n    }\n  }\n": types.GetHazardDetailsDocument,
     "\n  query getLevelDetails($id: String!) {\n    level(id: $id) {\n      id\n      levelName\n      siteId\n    }\n  }\n": types.GetLevelDetailsDocument,
     "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n": types.GetDriveDetailsDocument,
@@ -43,6 +44,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getHazardId($id: String!) {\n    hazards(companyId: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  query getHazardId($id: String!) {\n    hazards(companyId: $id) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

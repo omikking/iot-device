@@ -43,11 +43,15 @@ declare module 'next-auth' {
       fullName: string;
     };
     // TODO: Backend integration
-    company: {
-      id: UUID;
-      name: string;
-    };
+    company: Companies[];
     accessToken: string;
     error: string?;
   }
+}
+
+
+export type CompanyIds = Companies[];
+type Companies = {
+  name: string;
+  company: { id: string; name: string };
 }

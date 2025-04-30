@@ -55,11 +55,30 @@ export class AuthService {
 
   async signin(dto: SigninDto) {
     const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
+      where: { email: dto.email },
+      select: {
+        id: true,
+        email: true,
+        hash: true,
+        fullName: true,
+        globalRole: true,
+        createdAt: true,
+        updatedAt: true,
+        workPlace: true,
+        phoneNumber: true,
+        isGlobalVisibility: true,
+        userRole: {
+          select: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
-
     if (!user) throw new ForbiddenException('Credentials incorrect');
 
     const passwordMatch = await argon.verify(user.hash, dto.password);
@@ -78,7 +97,8 @@ export class AuthService {
     return {
       tokens: tokens,
       userData: userResponse,
-    } as SignInResponseDto;
+      companyIds: user.userRole,
+    } as unknown as SignInResponseDto;
   }
 
   async refreshTokens(dto: RefreshTokenDto) {

@@ -43,4 +43,9 @@ export class TokensDto {
 export class SignInResponseDto {
   tokens: TokensDto;
   userData: ActiveUserData;
+  company: Companies[];
+}
+
+interface Companies {
+  company: { id: string; name: string };
 }

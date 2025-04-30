@@ -1,9 +1,9 @@
-import type { Session, User } from 'next-auth';
+import type { Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
-import { UUID } from 'crypto';
+import { CompanyIds } from '@/types/next-auth';
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!response.ok) throw new Error('Failed to sign in');
 
-        const user = (await response.json()) as User;
+        const user = (await response.json());
         return user;
       },
     }),
@@ -93,11 +93,8 @@ export const authOptions: NextAuthOptions = {
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;
+      session.company = token.companyIds as CompanyIds;
       // TODO: Backend integration
-      session.company = {
-        id: (process.env.TEMP_COMPANY_ID as UUID) || '404',
-        name: 'Default Company Name',
-      };
       return session;
     },
   },

@@ -181,7 +181,9 @@ export const AddOrEditUserModal = ({
   );
 
   const [isFullAccess, setFullAccess] = useState<boolean>(false);
-  const [selectedTechnician, setSelectedTechnician] = useState<string>('');
+  const [selectedTechnician, setSelectedTechnician] = useState<
+    string | undefined
+  >('');
   const [selectedTechEmail, setSelectedTechEmail] = useState<string>('');
 
   const form = useForm<UserFormValues>({
@@ -202,7 +204,7 @@ export const AddOrEditUserModal = ({
 
   const resetFormValues = () => {
     setRole(undefined);
-    setSelectedTechnician('');
+    // setSelectedTechnician(undefined);
     form.reset({
       email: '',
       userPermissions: [
@@ -227,11 +229,9 @@ export const AddOrEditUserModal = ({
   };
 
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
-    console.log('DATA', data);
     try {
       setIsLoading(true);
       if (user) {
-        //@TODO remove this check since we are not updating the email
         const updateUserInput = {
           email: data.email,
         };
@@ -288,7 +288,6 @@ export const AddOrEditUserModal = ({
             companyId: session?.company.id,
           },
         });
-        console.log('userResult', userResult);
         if (!userResult.data) {
           throw new Error('User creation failed');
         }
@@ -305,9 +304,8 @@ export const AddOrEditUserModal = ({
     form.setValue('userPermissions.0.role', e);
     setRole(e);
 
-    if (e !== 'SANDVIK_TECHNICIAN') {
-      // form.setValue('technician', undefined);
-      setSelectedTechnician('');
+    if (e === 'SANDVIK_TECHNICIAN') {
+      form.setValue('technician', user?.email || undefined);
     }
   };
 
@@ -392,8 +390,6 @@ export const AddOrEditUserModal = ({
     !formValues.userPermissions[0]?.appsAccess.length ||
     !role;
 
-  console.log('AWOIDHAWD', formValues.userPermissions[0].appsAccess.length);
-
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
@@ -404,11 +400,6 @@ export const AddOrEditUserModal = ({
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            {/* <form
-            onSubmit={(e) => {
-              e.preventDefault(), console.log('FORM', form.getValues());
-            }}
-          > */}
             <div className="flex px-10 gap-10">
               <div className="flex flex-col gap-8">
                 <FormField
@@ -478,7 +469,6 @@ export const AddOrEditUserModal = ({
                               onSelect={(e) => {
                                 if (e) {
                                   setSelectedTechnician(e);
-
                                   const selectedTech = technicians.find(
                                     (tech) => tech.id === e,
                                   );

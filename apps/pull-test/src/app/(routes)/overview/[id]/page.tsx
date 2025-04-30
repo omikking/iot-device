@@ -9,8 +9,8 @@ import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
-const getHazardDetails = graphql(`
-  query getHazardId($id: String!) {
+const getHazardsIdQuery = graphql(`
+  query getHazardsId($id: String!) {
     hazards(companyId: $id) {
       id
     }
@@ -40,7 +40,7 @@ export default function Page({
   const companyName = data?.company?.name;
 
   const [{ data: hazardData }] = useQuery({
-    query: getHazardDetails,
+    query: getHazardsIdQuery,
     variables: { id: companyId },
     pause: !companyId,
   });

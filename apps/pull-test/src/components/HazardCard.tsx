@@ -24,8 +24,8 @@ type HazardCardProps = {
   boltResult: BoltResult;
 };
 
-const getMeSitesLocationDocument = graphql(`
-  query getMeSiteLocation($id: String!) {
+const getSiteNameQuery = graphql(`
+  query getSiteName($id: String!) {
     site(id: $id) {
       siteName
     }
@@ -45,7 +45,7 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
   };
 
   const [{ data: siteData }] = useQuery({
-    query: getMeSitesLocationDocument,
+    query: getSiteNameQuery,
     variables: { id: boltResult?.siteId || '' },
     pause: !boltResult?.siteId,
   });

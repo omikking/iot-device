@@ -18,7 +18,15 @@ const getCompaniesQuery = graphql(`
 
 export const CompanyList = () => {
   const [{ data }] = useQuery({ query: getCompaniesQuery });
-  const companies = data?.companies?.results;
+  const companies = data?.companies?.results || [];
+
+  if (companies?.length === 0) {
+    return (
+      <Text variant="medium" color="muted">
+        No companies found.
+      </Text>
+    );
+  }
 
   return (
     <>
@@ -38,7 +46,7 @@ export const CompanyList = () => {
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href={`/selectapplication/${company.id}`}>
+              <Link href="/selectapplication">
                 <LucideLayoutGrid />
                 View Apps
               </Link>

@@ -180,7 +180,6 @@ export const AddOrEditUserModal = ({
     user?.userPermissions?.[0]?.role || undefined,
   );
 
-  //@TODO rename to fullAccess
   const [isFullAccess, setFullAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
   const [selectedTechEmail, setSelectedTechEmail] = useState<string>('');
@@ -386,7 +385,14 @@ export const AddOrEditUserModal = ({
     }),
   );
 
-  console.log('role', role);
+  const formValues = form.watch();
+
+  const isAnyFieldEmpty =
+    !formValues.email ||
+    !formValues.userPermissions[0]?.appsAccess.length ||
+    !role;
+
+  console.log('AWOIDHAWD', formValues.userPermissions[0].appsAccess.length);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
@@ -658,7 +664,8 @@ export const AddOrEditUserModal = ({
                 type="submit"
                 variant="primary"
                 size="large"
-                disabled={isLoading}
+                // disabled={isLoading}
+                disabled={isAnyFieldEmpty}
               >
                 {isLoading ? (
                   <LoadingSpinner className="animate-spin" size={24} />

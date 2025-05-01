@@ -44,6 +44,13 @@ type Application =
   | 'ULTRABOLTS'
   | 'XCYCLOPS';
 
+const ALL_APPLICATIONS: Application[] = [
+  'PULL_TEST',
+  'PULL_TEST_OPERATOR',
+  'ULTRABOLTS',
+  'XCYCLOPS',
+];
+
 const updateCompanyUserMutation = graphql(`
   mutation updateCompanyUser($id: String!, $updateUserInput: UpdateUserInput!) {
     updateUser(id: $id, updateUserInput: $updateUserInput) {
@@ -159,7 +166,7 @@ export const AddOrEditUserModal = ({
     updateCompanyUserMutation,
   );
 
-  const [{ data: allUsers, fetching, error }] = useQuery({
+  const [{ data: allUsers }] = useQuery({
     query: getAllUsersQuery,
   });
 
@@ -184,13 +191,12 @@ export const AddOrEditUserModal = ({
   const [selectedTechnician, setSelectedTechnician] = useState<
     string | undefined
   >('');
-  const [selectedTechEmail, setSelectedTechEmail] = useState<string>('');
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
       email: user?.email || '',
-      technician: selectedTechEmail || undefined,
+      technician: undefined,
       userPermissions: [
         {
           role: user?.userPermissions?.[0]?.role,
@@ -204,9 +210,9 @@ export const AddOrEditUserModal = ({
 
   const resetFormValues = () => {
     setRole(undefined);
-    // setSelectedTechnician(undefined);
     form.reset({
       email: '',
+      technician: undefined,
       userPermissions: [
         {
           role: undefined,
@@ -231,6 +237,7 @@ export const AddOrEditUserModal = ({
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
     try {
       setIsLoading(true);
+      // if there is a user then we are in EDIT MODE otherwise we are in ADD MODE
       if (user) {
         const updateUserInput = {
           email: data.email,
@@ -312,16 +319,13 @@ export const AddOrEditUserModal = ({
   const handleGlobalAccess = (checked: boolean) => {
     setFullAccess(checked);
     if (checked) {
-      form.setValue('userPermissions.0.appsAccess', [
-        'PULL_TEST',
-        'PULL_TEST_OPERATOR',
-        'XCYCLOPS',
-        'ULTRABOLTS',
-      ] as ('PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS')[]);
+      form.setValue('userPermissions.0.appsAccess', ALL_APPLICATIONS);
     } else {
       form.setValue('userPermissions.0.appsAccess', []);
     }
   };
+
+  const watchedAppsAccess = form.watch('userPermissions.0.appsAccess');
 
   const handleAppsAccess = (app: Application) => (checked: boolean) => {
     const apps = form.getValues('userPermissions.0.appsAccess') || [];
@@ -335,20 +339,20 @@ export const AddOrEditUserModal = ({
     }
   };
 
+  const watchAppAccess = form.watch('userPermissions.0.appsAccess');
+
   useEffect(() => {
-    const appAccess = form.watch('userPermissions.0.appsAccess') || [];
-    const allAppsSelected = [
-      'PULL_TEST',
-      'PULL_TEST_OPERATOR',
-      'ULTRABOLTS',
-      'XCYCLOPS',
-    ].every((app) => appAccess.includes(app as Application));
+    const appAccess = watchAppAccess || [];
+    const allAppsSelected = ALL_APPLICATIONS.every((app) =>
+      appAccess.includes(app as Application),
+    );
     setFullAccess(allAppsSelected);
-  }, [form.watch('userPermissions.0.appsAccess')]);
+  }, [watchAppAccess]);
 
   useEffect(() => {
     if (user) {
       const userRole = user.userPermissions?.[0]?.role || undefined;
+      let techEmailForForm: string | undefined = undefined;
       setRole(userRole as UserPermission['role']);
 
       if (userRole === 'SANDVIK_TECHNICIAN') {
@@ -357,12 +361,14 @@ export const AddOrEditUserModal = ({
         );
         if (foundTechnician) {
           setSelectedTechnician(foundTechnician.id);
-          setSelectedTechEmail(foundTechnician.email);
+          techEmailForForm = foundTechnician.email;
         }
       }
 
       form.reset({
         email: user.email || '',
+        technician:
+          userRole === 'SANDVIK_TECHNICIAN' ? techEmailForForm : undefined,
         userPermissions: [
           {
             ...user.userPermissions?.[0],
@@ -460,7 +466,7 @@ export const AddOrEditUserModal = ({
                           <FormLabel>* Technician</FormLabel>
                           <FormControl>
                             <Dropdown
-                              id="email"
+                              id="technician"
                               className="w-96"
                               placeholder="Select technician"
                               selectedId={selectedTechnician}
@@ -476,7 +482,7 @@ export const AddOrEditUserModal = ({
                                     form.setValue('email', selectedTech.email);
                                     form.setValue(
                                       'technician',
-                                      selectedTech.fullName,
+                                      selectedTech.email,
                                     );
                                   }
                                 }
@@ -654,7 +660,6 @@ export const AddOrEditUserModal = ({
                 type="submit"
                 variant="primary"
                 size="large"
-                // disabled={isLoading}
                 disabled={isAnyFieldEmpty}
               >
                 {isLoading ? (

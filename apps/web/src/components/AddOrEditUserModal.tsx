@@ -24,7 +24,7 @@ import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { User, UserPermission } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SubmitHandler, set, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
 import {
@@ -324,8 +324,6 @@ export const AddOrEditUserModal = ({
       form.setValue('userPermissions.0.appsAccess', []);
     }
   };
-
-  const watchedAppsAccess = form.watch('userPermissions.0.appsAccess');
 
   const handleAppsAccess = (app: Application) => (checked: boolean) => {
     const apps = form.getValues('userPermissions.0.appsAccess') || [];

@@ -84,9 +84,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
 
   const users = (companyData?.company?.users as User[]) || [];
 
-  const [deleteUserPermissionResult, executeDeleteMutation] = useMutation(
-    deleteUserPermissionMutation,
-  );
+  const [, executeDeleteMutation] = useMutation(deleteUserPermissionMutation);
 
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   // Redo this to a number and instead of using parseInt everywhere

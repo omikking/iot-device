@@ -188,11 +188,19 @@ export const LevelItem = ({
               onDelete={handleDeleteLevel}
             >
               <Text variant="medium" color={'foreground'}>
-                You are about to delete
+                You are about to delete level
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${level.levelName} `}
                 </Text>
-                from the list. Are you sure you want to delete?
+                from your list. This action will also delete all the{' '}
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  drives
+                </Text>{' '}
+                and{' '}
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  locations
+                </Text>{' '}
+                connected to this level. Are you sure you want to delete?
               </Text>
             </DeleteModalConfirmation>
           </div>

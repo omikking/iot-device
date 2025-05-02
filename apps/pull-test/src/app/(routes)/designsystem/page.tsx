@@ -3,7 +3,7 @@
 import { BoltResultsFilter } from '@/components/BoltResultsFilter';
 import { Headline } from '@gsp/ui';
 import { HazardCard } from '@/components/HazardCard';
-import { hazardCardMock } from '@/app/mock/mock';
+import { mockBoltResult } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
@@ -33,16 +33,10 @@ export default function Page(): JSX.Element {
         Hazard card 🦄
       </Headline>
       <div className="flex flex-row flex-wrap justify-center gap-12">
-        {hazardCardMock.map(
+        {mockBoltResult.map(
           (hazardCard, index) =>
             hazardCard.isHazard && (
-              <HazardCard
-                key={index}
-                dateTitle={new Date('2024-09-05T10:30:00')}
-                isHazard={hazardCard.isHazard}
-                boltInfoItems={hazardCard.boltSpecifications}
-                boltDescription={hazardCard.boltDescription}
-              />
+              <HazardCard key={index} boltResult={hazardCard} />
             ),
         )}
       </div>

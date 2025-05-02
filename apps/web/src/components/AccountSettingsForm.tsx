@@ -45,7 +45,10 @@ const updateAccountUserMutation = graphql(`
 export default function AccountSettingsForm({
   user,
 }: AccountSettingsFormProps): JSX.Element {
+  //Will beu used later, so disabling eslint for now
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: session } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, updateAccountUser] = useMutation<UserAccountFormValues>(
     updateAccountUserMutation,
   );

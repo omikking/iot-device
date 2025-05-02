@@ -12,17 +12,17 @@ interface BoltResultsTableProps {
 }
 
 const getBadge = (
-  result: 'Pass' | 'Fail' | 'Abort',
+  result: 'PASS' | 'FAIL' | 'ABORT',
 ): {
   variant: 'success' | 'destructive' | 'warning';
   icon: React.ReactNode;
 } => {
   switch (result) {
-    case 'Pass':
+    case 'PASS':
       return { variant: 'success', icon: <LucideCheckCircle /> };
-    case 'Fail':
+    case 'FAIL':
       return { variant: 'destructive', icon: <LucideXCircle /> };
-    case 'Abort':
+    case 'ABORT':
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
 };
@@ -102,17 +102,21 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'level',
       header: 'Level',
+      cell: ({ row }) => row.original.level.levelName
     },
     {
       accessorKey: 'drive',
       header: 'Drive',
+      cell: ({ row }) => row.original.drive.driveName
+
     },
     {
       accessorKey: 'location',
       header: 'Location',
+      cell: ({ row }) => row.original.location.locationName
     },
     {
-      accessorKey: 'ring',
+      accessorKey: 'positionInRing',
       header: 'Position in ring',
     },
     {
@@ -129,8 +133,8 @@ export const BoltResultsTable = ({
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
-          <Badge variant={getBadge(row.getValue('result')).variant}>
-            {getBadge(row.getValue('result')).icon}
+          <Badge variant={getBadge(row?.getValue('result'))?.variant}>
+            {getBadge(row?.getValue('result'))?.icon}
             {row.getValue('result')}
           </Badge>
         </div>

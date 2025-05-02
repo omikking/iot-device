@@ -1,5 +1,5 @@
 'use client';
-
+import { useMemo } from 'react';
 import {
   ContentHolder,
   DateRange,
@@ -30,6 +30,7 @@ interface BoltSelectionProps {
   onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
+  boltResults: BoltResultSchema[];
 }
 
 export const BoltSelection = ({
@@ -45,6 +46,7 @@ export const BoltSelection = ({
   onSetLocation,
   onSetDateRange,
   onFilterChange,
+  boltResults,
 }: BoltSelectionProps) => {
   const handleSetSite = (site?: string) => {
     onSetSite(site);
@@ -81,6 +83,18 @@ export const BoltSelection = ({
   const locationsOptionsMock = drivesOptionsMock?.find(
     (boltDrives) => boltDrives.name === drive,
   )?.locations;
+  const uniqueSites = useMemo(() => {
+    const uniqueSitesMap = new Map();
+    boltResults.forEach(bolts => {
+      uniqueSitesMap.set(bolts.siteId, {
+        id: bolts.siteId,
+        name: bolts.site.siteName
+      });
+    });
+    return [...uniqueSitesMap.values()];
+  }, [boltResults]);
+
+
 
   return (
     <ContentHolder variant="filter">
@@ -96,7 +110,7 @@ export const BoltSelection = ({
           isResettable
           placeholder="Select site"
           selectedId={site}
-          options={sitesMock as DropdownItem[]}
+          options={uniqueSites as DropdownItem[]}
           onSelect={handleSetSite}
           className="w-56"
         />

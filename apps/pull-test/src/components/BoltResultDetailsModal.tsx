@@ -39,7 +39,7 @@ export const BoltResultDetailsModal = ({
   const { image, isHazard, peakLoad, peakDisplacement, author } =
     (fullBoltData as BoltResultSchema) || {};
   // @TODO Just hardcoded for now, update later. Image should be here as well most likely
-  const boltDescription = 'Test description';
+
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
@@ -76,9 +76,8 @@ export const BoltResultDetailsModal = ({
     <ModalContent
       onEscapeKeyDown={resetConfirmation}
       onPointerDownOutside={resetConfirmation}
-      className={`overflow-y-auto w-96 ${
-        isCompleted || isConfirmed ? 'h-[450px]' : ''
-      }`}
+      className={`overflow-y-auto w-96 ${isCompleted || isConfirmed ? 'h-[450px]' : ''
+        }`}
     >
       <ModalHeader>
         <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
@@ -86,9 +85,8 @@ export const BoltResultDetailsModal = ({
 
       {/* First View */}
       <div
-        className={`transition-all duration-500 ${
-          isCompleted || isConfirmed ? 'hidden' : 'block'
-        }`}
+        className={`transition-all duration-500 ${isCompleted || isConfirmed ? 'hidden' : 'block'
+          }`}
       >
         <div className="p-10 flex gap-10 flex-grow">
           {image && (
@@ -101,13 +99,13 @@ export const BoltResultDetailsModal = ({
             />
           )}
           <div className="flex flex-col w-1/2 ">
-            {boltDescription && (
+            {fullBoltData?.comment && (
               <div className="flex flex-col flex-grow">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
-                  value={boltDescription}
+                  value={fullBoltData?.comment}
                   className="mt-2 flex-grow"
                   disabled
                   readOnly
@@ -170,15 +168,14 @@ export const BoltResultDetailsModal = ({
             />
           </div>
         </div>
-       
+
       </div>
       {isCompleted && (
         <div className="relative h-[250px]">
           {/* Second View */}
           <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-              isCompleted && !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isCompleted && !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
           >
             <div className="flex flex-col items-center justify-center gap-6 p-4">
               <div className="flex gap-4">
@@ -199,11 +196,10 @@ export const BoltResultDetailsModal = ({
           </div>
           {/* Third View */}
           <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-              isConfirmed && !isSuccessful
-                ? 'opacity-100 translate-y-[-10px] z-10'
-                : 'opacity-0 translate-y-0 z-0'
-            }`}
+            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isConfirmed && !isSuccessful
+              ? 'opacity-100 translate-y-[-10px] z-10'
+              : 'opacity-0 translate-y-0 z-0'
+              }`}
           >
             <div className="flex flex-col items-center justify-center gap-6 p-4">
               <div className="flex gap-4">

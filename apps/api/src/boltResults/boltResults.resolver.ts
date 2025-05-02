@@ -21,7 +21,7 @@ import { BoltResult } from '@prisma/client';
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => GraphQLTypes.BoltResultResponse, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.boltResultExtend, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -47,7 +47,6 @@ export class BoltResultsResolver {
       result,
       isHazard,
     };
-
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 

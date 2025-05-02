@@ -220,9 +220,15 @@ export class BoltResult {
     userId: string;
 }
 
+ export class boltResultExtend extends BoltResult {
+    site: { siteName: string};
+    level: { levelName:  string};
+    drive: { driveName:  string};
+    location : {locationName : string}
+}
 export class BoltResultResponse {
     totalRecords: number;
-    results: BoltResult[];
+    results: boltResultExtend[];
 }
 
 export abstract class IQuery {

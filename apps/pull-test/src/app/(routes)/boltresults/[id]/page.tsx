@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { BoltResultSchema, boltResultsMock } from '@/app/mock/mock';
+import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
+import { gql, useQuery } from 'urql';
 import {
   Button,
   Headline,
@@ -25,6 +26,59 @@ import {
 } from '@gsp/ui';
 
 export default function Page(): JSX.Element {
+
+  const boltResultQuery = gql`
+  query GetBoltResult(
+    $offset: Int,
+    $limit: Int,
+    $siteId: String,
+    $levelId: String,
+    $driveId: String,
+    $locationId: String,
+    $result: String,
+    $isHazard: Boolean
+  ) {
+    boltResults(
+      offset: $offset,
+      limit: $limit,
+      siteId: $siteId,
+      levelId: $levelId,
+      driveId: $driveId,
+      locationId: $locationId,
+      result: $result,
+      isHazard: $isHazard
+    ) {
+      totalRecords
+      results {
+        id
+        createdAt
+        updatedAt
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        positionInRing
+        result
+        isHazard
+        hazardCompletedDate
+        abortReason
+        comment
+        image
+        siteId
+        levelId
+        driveId
+        locationId
+        userId
+        site { siteName}
+			  drive {driveName}
+        location {locationName}
+      	level { levelName}
+      }
+    }
+  }
+`;
+
+
   const [site, setSite] = useState<string | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
@@ -53,23 +107,23 @@ export default function Page(): JSX.Element {
     dateRange?: DateRange,
   ): BoltResultSchema[] | undefined => {
     return boltResults?.filter((bolt) => {
-      const matchLevel = level ? bolt.level === level : true;
-      const matchDrive = drive ? bolt.drive === drive : true;
-      const matchLocation = location ? bolt.location === location : true;
+      const matchLevel = level ? bolt.level.levelName === level : true;
+      const matchDrive = drive ? bolt.drive.driveName === drive : true;
+      const matchLocation = location ? bolt.location.locationName === location : true;
 
       // Date range filtering
       const matchDateRange =
         dateRange?.from && dateRange?.to
           ? bolt.createdDate >= dateRange.from &&
-            bolt.createdDate <= dateRange.to
+          bolt.createdDate <= dateRange.to
           : true;
 
       // Filtering
       const matchResult =
         (!filterState.pass && !filterState.fail && !filterState.abort) ||
-        (filterState.pass && bolt.result === 'Pass') ||
-        (filterState.fail && bolt.result === 'Fail') ||
-        (filterState.abort && bolt.result === 'Abort');
+        (filterState.pass && bolt.result === 'PASS') ||
+        (filterState.fail && bolt.result === 'FAIL') ||
+        (filterState.abort && bolt.result === 'ABORT');
 
       const matchComment =
         (!filterState.withComment || bolt.comment) &&
@@ -87,13 +141,28 @@ export default function Page(): JSX.Element {
     });
   };
 
+  const [{ data, fetching, error }] = useQuery({
+    query: boltResultQuery,
+    variables: {
+      offset: 0,
+      limit: 10,
+    },
+  });
+
   const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
-    // @TODO each time site gets updated, make a request to the BE to fetch and set them as below
-    site ? setBoltResults(boltResultsMock) : setBoltResults([]);
-  }, [site]);
+    if (data?.boltResults.results) {
+      setBoltResults(data.boltResults.results)
+    } else {
+      setBoltResults([]);
+    }
 
+    // console.log(data?.boltResults?.results, "data.boltResults.results")
+  }, [data]);
+
+  if (fetching) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -197,6 +266,7 @@ export default function Page(): JSX.Element {
           onSetLocation={setLocation}
           onSetDateRange={setDateRange}
           onFilterChange={setFilterState}
+          boltResults={boltResults}
         />
         <TabsContent value="table">
           <BoltResultsTable site={site} boltResults={filteredResults} />

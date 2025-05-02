@@ -44,7 +44,30 @@ export class BoltResultsService {
       skip: Number(offset),
       take: Number(limit),
       where: whereCondition,
+      include: {
+        site: {
+          select: {
+            siteName: true,
+          },
+        },
+        level: {
+          select: {
+            levelName: true,
+          },
+        },
+        drive: {
+          select: {
+            driveName: true,
+          },
+        },
+        location: {
+          select: {
+            locationName: true,
+          },
+        },
+      },
     });
+
     return { totalRecords, results };
   }
 

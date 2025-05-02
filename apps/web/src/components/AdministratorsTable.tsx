@@ -49,7 +49,6 @@ export const AdministratorsTable = () => {
     query: getAdminsQuery,
     pause: !session?.company?.id,
   });
-
   const administrators =
     (administratorsData?.users as GetAdminsQuery['users']) || [];
 

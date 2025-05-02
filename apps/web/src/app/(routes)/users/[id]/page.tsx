@@ -5,12 +5,13 @@ import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { useSession } from 'next-auth/react';
 import { User } from '@/gql/graphql';
 
-export default function Page(): JSX.Element {
-  const { data: session } = useSession();
-
+export default function Page({
+  params,
+}: {
+  params: { id: string; name: string };
+}): JSX.Element {
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
@@ -25,9 +26,9 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      {session?.company.name && (
+      {params.name && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session.company.name}
+          {params.name}
         </Badge>
       )}
 

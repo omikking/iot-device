@@ -5,7 +5,7 @@ import { GoBack } from '@/components/GoBack';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { Button, Headline, Modal, ModalTrigger } from '@gsp/ui';
 import { AdministratorsTable } from '@/components/AdministratorsTable';
-import { AddOrEditAdministratorModal } from '@/components/AddOrEditAdministratorModal';
+import { AddAdministratorModal } from '@/components/AddAdministratorModal';
 
 export default function Page(): JSX.Element {
   const [openAdministratorsModal, setOpenAdministratorsModal] =
@@ -37,11 +37,12 @@ export default function Page(): JSX.Element {
               Add administrator
             </Button>
           </ModalTrigger>
-          <AddOrEditAdministratorModal
+          <AddAdministratorModal
             onOpenChange={handleToggleModal}
             administrator={selectedAdministrator}
           />
         </Modal>
+
         <AdministratorsTable />
       </div>
     </main>

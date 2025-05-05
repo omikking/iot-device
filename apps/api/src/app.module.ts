@@ -16,6 +16,8 @@ import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
 import { HazardsModule } from './hazards/hazards.module';
 import { EnumModule } from './enums/enum.module';
+import { EmailModule } from './email/email.module';
+import { InvitationModule } from './invitation/invitation.module';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { EnumModule } from './enums/enum.module';
     BoltResultsModule,
     HazardsModule,
     EnumModule,
+    EmailModule,
+    InvitationModule,
   ],
   providers: [DateScalar],
 })

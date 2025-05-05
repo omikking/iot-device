@@ -9,7 +9,46 @@ import {
   RangeCalendar,
 } from '@gsp/ui';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
-import { sitesMock } from '@/app/mock/mock';
+import { BoltResultSchema } from '@/app/mock/mock';
+import { gql } from 'urql';
+import { useQuery } from 'urql';
+
+export const GET_SITES = gql`
+  query GetSites {
+    sites {
+      id
+      siteName
+    }
+  }
+`;
+
+export const GET_LEVELS = gql`
+  query GetLevels($siteId: ID!) {
+    levels(siteId: $siteId) {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_DRIVES = gql`
+  query GetDrives($levelId: ID!) {
+    drives(levelId: $levelId) {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_LOCATIONS = gql`
+  query GetLocations($driveId: ID!) {
+    locations(driveId: $driveId) {
+      id
+      name
+    }
+  }
+`;
+
 
 // @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
@@ -59,6 +98,37 @@ export const BoltSelection = ({
     onSetLocation(undefined);
   };
 
+  const [{ data, fetching, error }] = useQuery({
+    query: GET_SITES,
+  });
+
+  const siteOptions = useMemo(() => {
+    if (fetching || error || !data?.sites) return [];
+    return data.sites.map((site: { id: string; siteName: string }) => ({
+      id: site.id,
+      name: site.siteName,
+    }));
+  }, [data, fetching, error]);
+
+  const [{ data: levelsData }] = useQuery({
+    query: GET_LEVELS,
+    variables: { siteId: site },
+    pause: !site || !dateRange,
+  });
+
+  const [{ data: drivesData }] = useQuery({
+    query: GET_DRIVES,
+    variables: { levelId: level },
+    pause: !level,
+  });
+
+  const [{ data: locationsData }] = useQuery({
+    query: GET_LOCATIONS,
+    variables: { driveId: drive },
+    pause: !drive,
+  });
+
+
   const handleSetLevel = (level?: string) => {
     onSetLevel(level);
     onSetDrive(undefined);
@@ -71,19 +141,31 @@ export const BoltSelection = ({
   };
 
   // Finds available levels on the selected site
-  const levelsOptionsMock = sitesMock.find(
-    (boltSites) => boltSites.name === site,
-  )?.levels;
+  const levelsOptionsMock = useMemo(() => {
+    return levelsData?.levels?.map((level: { id: string; name: string }) => ({
+      id: level.id,
+      name: level.name,
+    })) || [];
+  }, [levelsData]);
+
 
   // Finds available levels on the selected site
-  const drivesOptionsMock = levelsOptionsMock?.find(
-    (boltLevels) => boltLevels.name === level,
-  )?.drives;
+  const drivesOptionsMock = useMemo(() => {
+    return drivesData?.drives?.map((drive: { id: string; name: string }) => ({
+      id: drive.id,
+      name: drive.name,
+    })) || [];
+  }, [drivesData]);
 
-  const locationsOptionsMock = drivesOptionsMock?.find(
-    (boltDrives) => boltDrives.name === drive,
-  )?.locations;
-  const uniqueSites = useMemo(() => {
+
+  const locationsOptionsMock = useMemo(() => {
+    return locationsData?.locations?.map((location: { id: string; name: string }) => ({
+      id: location.id,
+      name: location.name,
+    })) || [];
+  }, [locationsData]);
+
+  /*const uniqueSites = useMemo(() => {
     const uniqueSitesMap = new Map();
     boltResults.forEach(bolts => {
       uniqueSitesMap.set(bolts.siteId, {
@@ -92,7 +174,7 @@ export const BoltSelection = ({
       });
     });
     return [...uniqueSitesMap.values()];
-  }, [boltResults]);
+  }, [boltResults]);*/
 
 
 
@@ -110,7 +192,7 @@ export const BoltSelection = ({
           isResettable
           placeholder="Select site"
           selectedId={site}
-          options={uniqueSites as DropdownItem[]}
+          options={siteOptions as DropdownItem[]}
           onSelect={handleSetSite}
           className="w-56"
         />
@@ -131,7 +213,7 @@ export const BoltSelection = ({
         <Dropdown
           id="level"
           isResettable
-          disabled={!levelsOptionsMock}
+          disabled={!site || !dateRange || !levelsOptionsMock}
           placeholder="Select level"
           selectedId={level}
           options={levelsOptionsMock as DropdownItem[]}
@@ -145,7 +227,7 @@ export const BoltSelection = ({
         <Dropdown
           id="drive"
           isResettable
-          disabled={!drivesOptionsMock}
+          disabled={!level || !drivesOptionsMock}
           placeholder="Select drive"
           selectedId={drive}
           options={drivesOptionsMock as DropdownItem[]}
@@ -159,7 +241,7 @@ export const BoltSelection = ({
         <Dropdown
           id="location"
           isResettable
-          disabled={!locationsOptionsMock}
+          disabled={!drive || !locationsOptionsMock}
           placeholder="Select location"
           selectedId={location}
           options={locationsOptionsMock as DropdownItem[]}

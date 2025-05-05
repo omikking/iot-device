@@ -88,9 +88,11 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       switch (icon) {
         case 'user':
           return <LucideUser />;
-        case 'technician':
+        case 'sandvik technician':
           return <LucidePickaxe />;
-        case 'admin':
+        case 'sandvik admin':
+          return <LucideKey />;
+        case 'company admin':
           return <LucideKey />;
         default:
           return null;

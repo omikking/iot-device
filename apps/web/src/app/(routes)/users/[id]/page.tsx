@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
-import { UserSchema } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
+import { User } from '@/gql/graphql';
 
 export default function Page({
   params,
@@ -13,9 +13,7 @@ export default function Page({
   params: { id: string; name: string };
 }): JSX.Element {
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
-    undefined,
-  );
+  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
   const handleModalClose = (open: boolean) => {
     setOpenUserModal(open);

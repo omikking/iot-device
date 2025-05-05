@@ -88,6 +88,7 @@ model Company {
   plan           Plan[]
   site           Site[]
   userPermission UserPermission[]
+  Invitation     Invitation[]
 
   @@map("companies")
 }
@@ -125,6 +126,25 @@ model User {
   boltResult BoltResult[] // @TODO Check if this can be removed. - We just need to give every BoltResult a userId, is this the correct way?
 
   @@map("users")
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  role       Role
+  appsAccess Application[]
+
+  @@map("invitations")
 }
 
 model UserPermission {

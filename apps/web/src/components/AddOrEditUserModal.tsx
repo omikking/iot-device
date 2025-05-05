@@ -42,6 +42,21 @@ export const AddOrEditUserModal = ({
   const [isGlobalAccess, setGlobalAccess] = useState<boolean>(false);
   const [selectedTechnician, setSelectedTechnician] = useState<string>('');
 
+  // Inside component or outside? hmm
+  const createInvitationMutation = graphql(`
+    mutation CreateInvitation($input: CreateInvitationInput!) {
+      createInvitation(input: $input) {
+        invitationId
+        userId
+        isNewUser
+      }
+    }
+  `);
+
+  const [createInvitationResult, createInvitation] = useMutation(
+    createInvitationMutation,
+  );
+
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -74,19 +89,47 @@ export const AddOrEditUserModal = ({
 
   const onSubmit = async (data: UserFormValues) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Simulate API call
-    console.log('User added', data);
-    setIsSuccessful(true);
-    setIsLoading(false);
 
-    setTimeout(() => {
-      onOpenChange(false);
-    }, 1500);
-    setTimeout(() => {
-      setIsSuccessful(false);
-      resetFormValues();
-    }, 1700);
+    try {
+      // Get current company ID from context/state or from props
+      const companyId = '...'; // Should be determined from your application state
+
+      const result = await createInvitation({
+        input: {
+          email: data.email,
+          companyId,
+          role: data.userPermissions.role,
+          appsAccess: data.userPermissions.appAccess,
+        },
+      });
+
+      if (result.data?.createInvitation) {
+        setIsSuccessful(true);
+
+        if (result.data.createInvitation.isNewUser) {
+          setSuccessMessage('Invitation email has been sent to the user.');
+        } else {
+          setSuccessMessage(
+            'User already exists and has been given access to this company.',
+          );
+        }
+      } else if (result.error) {
+        setErrorMessage('Failed to send invitation: ' + result.error.message);
+      }
+    } catch (error) {
+      setErrorMessage('An unexpected error occurred.');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 1500);
+      setTimeout(() => {
+        setIsSuccessful(false);
+        resetFormValues();
+      }, 1700);
+    }
   };
 
   const handleSelectRole = (e: UserSchema['userPermissions']['role']) => {

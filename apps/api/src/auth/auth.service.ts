@@ -149,6 +149,25 @@ export class AuthService {
     };
   }
 
+  async completeInvitationSignup(
+    token: string,
+    userData: {
+      fullName: string;
+      password: string;
+      workPlace: string;
+      phoneNumber?: string;
+    },
+  ) {
+    // This will delegate to the invitation service
+    const user = await this.invitationService.completeInvitation(
+      token,
+      userData,
+    );
+
+    // Generate tokens for immediate login
+    return this.generateTokens(user);
+  }
+
   private async signToken<T>(
     userId: string,
     globalRole: string,

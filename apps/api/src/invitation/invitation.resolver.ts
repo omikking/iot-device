@@ -34,7 +34,7 @@ export class InvitationResolver {
       fullName: input.fullName,
       password: input.password,
       workPlace: input.workPlace,
-      phoneNumber: input.phoneNumber,
+      phoneNumber: input.phoneNumber || undefined,
     });
   }
 }

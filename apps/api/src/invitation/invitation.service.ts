@@ -32,6 +32,10 @@ export class InvitationService {
       select: { name: true },
     });
 
+    if (!company) {
+      throw new Error('Company not found');
+    }
+
     if (existingUser) {
       // If user exists, just add permission for the company
       await this.prisma.userPermission.create({
@@ -102,6 +106,10 @@ export class InvitationService {
     }
 
     const invitation = validation.invitation;
+
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
 
     // Hash password - using the service you already have in AuthService
     const hash = await this.hashPassword(userData.password);

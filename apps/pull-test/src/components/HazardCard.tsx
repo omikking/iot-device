@@ -19,6 +19,7 @@ import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
+import { HazardCompleteModal } from './HazardCompleteModal';
 
 type HazardCardProps = {
   boltResult: BoltResult;
@@ -35,6 +36,7 @@ const getSiteNameQuery = graphql(`
 export const HazardCard = ({ boltResult }: HazardCardProps) => {
   const { isHazard, comment, createdAt } = boltResult;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -51,6 +53,16 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
   });
 
   const siteName = siteData?.site?.siteName || 'N/A';
+
+  const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleHazardCompleted = () => {
+    setIsConfirmationModalOpen(false);
+    // Optionally refresh data or update UI as needed
+  };
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
@@ -94,10 +106,25 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
       </div>
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
         {isHazard && (
-          <Button variant="primary" size="small">
-            <LucideCircleCheckBig />
-            Complete
-          </Button>
+          <Modal
+            open={isConfirmationModalOpen}
+            onOpenChange={setIsConfirmationModalOpen}
+          >
+            <ModalTrigger asChild>
+              <Button
+                variant="primary"
+                size="small"
+                onClick={handleCompleteClick}
+              >
+                <LucideCircleCheckBig />
+                Complete
+              </Button>
+            </ModalTrigger>
+            <HazardCompleteModal
+              boltResult={boltResult}
+              onClose={handleHazardCompleted}
+            />
+          </Modal>
         )}
         <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
           <ModalTrigger asChild>

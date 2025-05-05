@@ -8,6 +8,8 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { BoltResult } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
@@ -31,7 +33,9 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const companyId = params.id;
+  // const companyId = params.id;
+  const { data: session } = useSession();
+  const companyId = session?.company?.id || '';
 
   const [{ data }] = useQuery({
     query: getCompanyName,

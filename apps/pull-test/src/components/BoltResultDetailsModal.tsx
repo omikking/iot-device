@@ -19,7 +19,7 @@ import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import { generateBoltSpecifications } from '@/libs/utils';
 import { graphql } from '@/gql';
-import { useQuery } from 'urql';
+import { useMutation, useQuery } from 'urql';
 
 type BoltResultDetailsModalProps = {
   boltResult: BoltResult;
@@ -63,6 +63,18 @@ const getNameDetails = graphql(`
   }
 `);
 
+const updateHazard = graphql(`
+  mutation updateBoltResult(
+    $id: String!
+    $updateBoltResultInput: UpdateBoltResultInput!
+  ) {
+    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {
+      isHazard
+      hazardCompletedDate
+    }
+  }
+`);
+
 export const BoltResultDetailsModal = ({
   isHazardCompletable = false,
   boltResult,
@@ -97,6 +109,8 @@ export const BoltResultDetailsModal = ({
     variables: { id: boltResult?.userId },
   });
 
+  const [, updateReportedHazard] = useMutation(updateHazard);
+
   const levelName = levelData?.level?.levelName || 'N/A';
   const driveName = driveData?.drive?.driveName || 'N/A';
   const locationName = locationData?.location?.locationName || 'N/A';
@@ -118,6 +132,15 @@ export const BoltResultDetailsModal = ({
   const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
     setIsLoading(true);
+
+    updateReportedHazard({
+      id: boltResult.id,
+      updateBoltResultInput: {
+        isHazard: false,
+        hazardCompletedDate: [new Date().toISOString()],
+      },
+    });
+
     setTimeout(() => {
       !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
       setIsLoading(false);
@@ -140,6 +163,8 @@ export const BoltResultDetailsModal = ({
     setIsConfirmed(false);
     setIsLoading(false);
   };
+
+  console.log('bölten', boltResult.id);
 
   return (
     <ModalContent

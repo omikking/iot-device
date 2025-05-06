@@ -17,6 +17,9 @@ const documents = {
     "\n  query GetBoltResult(\n    $offset: Int,\n    $limit: Int,\n    $siteId: String,\n    $levelId: String,\n    $driveId: String,\n    $locationId: String,\n    $result: String,\n    $isHazard: Boolean\n  ) {\n    boltResults(\n      offset: $offset,\n      limit: $limit,\n      siteId: $siteId,\n      levelId: $levelId,\n      driveId: $driveId,\n      locationId: $locationId,\n      result: $result,\n      isHazard: $isHazard\n    ) {\n      totalRecords\n      results {\n        id\n        createdAt\n        updatedAt\n        boltNumber\n        boltType\n        peakLoad\n        peakDisplacement\n        positionInRing\n        result\n        isHazard\n        hazardCompletedDate\n        abortReason\n        comment\n        image\n        siteId\n        levelId\n        driveId\n        locationId\n        userId\n        site { siteName}\n\t\t\t  drive {driveName}\n        location {locationName}\n      \tlevel { levelName}\n      }\n    }\n  }\n": types.GetBoltResultDocument,
     "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query GetSites {\n    sites {\n      id\n      siteName\n    }\n  }\n": types.GetSitesDocument,
+    "\n  query GetLevels {\n    levels {\n\t\tid\n\t\tupdatedAt\n\t\tlevelName\n\t\tsiteId\n\n\t}\n  }\n": types.GetLevelsDocument,
+    "\n  query GetDrives {\n    drives {\n\t\tid\n\t\tupdatedAt\n\t\tdriveName\n\t\tlevelId\n\t}\n  }\n": types.GetDrivesDocument,
+    "\n  query GetLocations {\n    locations {\n    id,\n\t\tupdatedAt,\n    locationName,\n\t\tdriveId,\n  }\n  }\n": types.GetLocationsDocument,
     "\n  mutation createCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
 };
@@ -47,6 +50,18 @@ export function graphql(source: "\n  query getCompanyName($id: String!) {\n    c
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetSites {\n    sites {\n      id\n      siteName\n    }\n  }\n"): (typeof documents)["\n  query GetSites {\n    sites {\n      id\n      siteName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetLevels {\n    levels {\n\t\tid\n\t\tupdatedAt\n\t\tlevelName\n\t\tsiteId\n\n\t}\n  }\n"): (typeof documents)["\n  query GetLevels {\n    levels {\n\t\tid\n\t\tupdatedAt\n\t\tlevelName\n\t\tsiteId\n\n\t}\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetDrives {\n    drives {\n\t\tid\n\t\tupdatedAt\n\t\tdriveName\n\t\tlevelId\n\t}\n  }\n"): (typeof documents)["\n  query GetDrives {\n    drives {\n\t\tid\n\t\tupdatedAt\n\t\tdriveName\n\t\tlevelId\n\t}\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetLocations {\n    locations {\n    id,\n\t\tupdatedAt,\n    locationName,\n\t\tdriveId,\n  }\n  }\n"): (typeof documents)["\n  query GetLocations {\n    locations {\n    id,\n\t\tupdatedAt,\n    locationName,\n\t\tdriveId,\n  }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

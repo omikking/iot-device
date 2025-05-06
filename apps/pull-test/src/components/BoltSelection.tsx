@@ -23,29 +23,36 @@ export const GET_SITES = gql`
 `;
 
 export const GET_LEVELS = gql`
-  query GetLevels($siteId: ID!) {
-    levels(siteId: $siteId) {
-      id
-      name
-    }
+  query GetLevels {
+    levels {
+		id
+		updatedAt
+		levelName
+		siteId
+
+	}
   }
 `;
 
 export const GET_DRIVES = gql`
-  query GetDrives($levelId: ID!) {
-    drives(levelId: $levelId) {
-      id
-      name
-    }
+  query GetDrives {
+    drives {
+		id
+		updatedAt
+		driveName
+		levelId
+	}
   }
 `;
 
 export const GET_LOCATIONS = gql`
-  query GetLocations($driveId: ID!) {
-    locations(driveId: $driveId) {
-      id
-      name
-    }
+  query GetLocations {
+    locations {
+    id,
+		updatedAt,
+    locationName,
+		driveId,
+  }
   }
 `;
 
@@ -85,7 +92,7 @@ export const BoltSelection = ({
   onSetLocation,
   onSetDateRange,
   onFilterChange,
-  boltResults,
+  //boltResults,
 }: BoltSelectionProps) => {
   const handleSetSite = (site?: string) => {
     onSetSite(site);
@@ -142,26 +149,26 @@ export const BoltSelection = ({
 
   // Finds available levels on the selected site
   const levelsOptionsMock = useMemo(() => {
-    return levelsData?.levels?.map((level: { id: string; name: string }) => ({
+    return levelsData?.levels?.map((level: { id: string; levelName: string }) => ({
       id: level.id,
-      name: level.name,
+      name: level.levelName,
     })) || [];
   }, [levelsData]);
 
 
   // Finds available levels on the selected site
   const drivesOptionsMock = useMemo(() => {
-    return drivesData?.drives?.map((drive: { id: string; name: string }) => ({
+    return drivesData?.drives?.map((drive: { id: string; driveName: string }) => ({
       id: drive.id,
-      name: drive.name,
+      name: drive.driveName,
     })) || [];
   }, [drivesData]);
 
 
   const locationsOptionsMock = useMemo(() => {
-    return locationsData?.locations?.map((location: { id: string; name: string }) => ({
+    return locationsData?.locations?.map((location: { id: string; locationName: string }) => ({
       id: location.id,
-      name: location.name,
+      name: location.locationName,
     })) || [];
   }, [locationsData]);
 

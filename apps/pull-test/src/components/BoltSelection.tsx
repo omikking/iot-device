@@ -92,7 +92,6 @@ export const BoltSelection = ({
   onSetLocation,
   onSetDateRange,
   onFilterChange,
-  //boltResults,
 }: BoltSelectionProps) => {
   const handleSetSite = (site?: string) => {
     onSetSite(site);
@@ -171,18 +170,6 @@ export const BoltSelection = ({
       name: location.locationName,
     })) || [];
   }, [locationsData]);
-
-  /*const uniqueSites = useMemo(() => {
-    const uniqueSitesMap = new Map();
-    boltResults.forEach(bolts => {
-      uniqueSitesMap.set(bolts.siteId, {
-        id: bolts.siteId,
-        name: bolts.site.siteName
-      });
-    });
-    return [...uniqueSitesMap.values()];
-  }, [boltResults]);*/
-
 
 
   return (

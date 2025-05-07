@@ -11,7 +11,7 @@ export const createUserPermissionFormSchema = z.object({
     ]),
   ),
   role: z.enum([Role.CompanyUser, Role.SandvikTechnician, Role.CompanyAdmin]),
-  userId: z.string(),
+  userEmail: z.string().email(),
   companyId: z.string(),
 });
 

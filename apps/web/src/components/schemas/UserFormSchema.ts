@@ -1,19 +1,15 @@
 import { z } from 'zod';
 import { Application, Role } from '@/gql/graphql';
 
+// TODO we should not use this?
 export type UserFormValues = {
   email?: string;
   technician?: string;
   userPermissions: [
     {
-      userId: string;
+      userId?: string;
       role: string;
-      appsAccess: Array<
-        | Application.PullTest
-        | Application.PullTestOperator
-        | Application.Ultrabolts
-        | Application.Xcyclops
-      >;
+      appsAccess: Application[];
     },
   ];
 };

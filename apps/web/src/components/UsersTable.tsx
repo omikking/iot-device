@@ -1,17 +1,23 @@
 'use client';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-import { User, UserPermission } from '@/gql/graphql';
+import {
+  Application,
+  GetCompanyUsersQuery,
+  Role,
+  User,
+  UserPermission,
+} from '@/gql/graphql';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Application } from '@/app/mock/mock';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
-import { useQuery, useMutation } from 'urql';
-import { useSession } from 'next-auth/react';
+import { useMutation } from 'urql';
+import { useParams } from 'next/navigation';
 
 type UsersTableProps = {
+  companyData?: GetCompanyUsersQuery;
   onOpenChange: (open: boolean) => void;
   onSelectUser: (user: User) => void;
 };
@@ -30,68 +36,40 @@ export const formatAppName = (appName: string): string => {
 
 export const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
-    SANDVIK_TECHNICIAN: 'Sandvik technician',
-    SANDVIK_ADMIN: 'Sandvik admin',
-    COMPANY_ADMIN: 'Company admin',
+    SANDVIK_TECHNICIAN: 'Technician',
+    COMPANY_ADMIN: 'Admin',
     COMPANY_USER: 'User',
   };
 
   return roleNames[role] || role;
 };
 
-const getCompanyUserQuery = graphql(`
-  query getCompanyUser($id: String!) {
-    company(id: $id) {
-      id
-      users {
-        id
-        email
-        fullName
-        workPlace
-        phoneNumber
-        globalRole
-        userPermissions {
-          id
-          userId
-          companyId
-          role
-          appsAccess
-        }
-      }
-    }
-  }
-`);
-
 const deleteUserPermissionMutation = graphql(`
   mutation deleteUserPermission($id: String!) {
     removeUserPermission(id: $id) {
       id
-      userId
-      companyId
-      role
-      appsAccess
     }
   }
 `);
 
-export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
-  const { data: session } = useSession();
-
-  const [{ data: companyData }] = useQuery({
-    query: getCompanyUserQuery,
-    variables: { id: session?.company?.id || '' },
-  });
-
-  const users = (companyData?.company?.users as User[]) || [];
-
-  const [, executeDeleteMutation] = useMutation(deleteUserPermissionMutation);
+export const UsersTable = ({
+  companyData,
+  onOpenChange,
+  onSelectUser,
+}: UsersTableProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+  const users = (companyData?.company.users as User[]) || [];
 
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-  // Redo this to a number and instead of using parseInt everywhere
+
+  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
+
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
 
+  // TODO Move to utils
   const getBadge = (
     userPermissions?: UserPermission,
   ): {
@@ -100,13 +78,11 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   } => {
     const role = userPermissions?.role || 'User';
     switch (role) {
-      case 'COMPANY_USER':
+      case Role.CompanyUser:
         return { variant: 'neutral', icon: <LucideUser /> };
-      case 'SANDVIK_TECHNICIAN':
+      case Role.SandvikTechnician:
         return { variant: 'neutral', icon: <LucidePickaxe /> };
-      case 'SANDVIK_ADMIN':
-        return { variant: 'primary', icon: <LucideKey /> };
-      case 'COMPANY_ADMIN':
+      case Role.CompanyAdmin:
         return { variant: 'primary', icon: <LucideKey /> };
       default:
         return { variant: 'neutral', icon: <LucideUser /> };
@@ -114,8 +90,9 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   };
 
   const getAppShortening = (appAccessValue: Application[]) => {
-    // @TODO hardcoded application count 4, we should get a dynamic number later to avoid bug
-    if (appAccessValue.length === 4) {
+    const applicationsCount = Object.keys(Application).length;
+
+    if (appAccessValue.length === applicationsCount) {
       return <Badge variant="primary">All Apps</Badge>;
     }
 
@@ -143,13 +120,14 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       ].userPermissions?.find(
         (userPerm) =>
           userPerm.userId === users[parseInt(index)].id &&
-          userPerm.companyId === session?.company?.id,
+          userPerm.companyId === companyId,
       );
 
       if (userPermissionToDelete) {
-        executeDeleteMutation({
+        deleteUser({
           id: userPermissionToDelete.id,
         }).catch((error) => {
+          // TODO add toaster
           console.log('error deleting userPerm', error);
         });
       }
@@ -249,7 +227,7 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         data={users}
         noResultMessage="There are no users added yet."
       />
-      {users.length && (
+      {users.length > 0 && (
         <Badge variant="neutral" className="self-start">
           {users.length} total
         </Badge>

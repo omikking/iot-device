@@ -6,6 +6,31 @@ import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 import { User } from '@/gql/graphql';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
+
+const getCompanyUsersQuery = graphql(`
+  query getCompanyUsers($id: String!) {
+    company(id: $id) {
+      id
+      users {
+        id
+        email
+        fullName
+        workPlace
+        phoneNumber
+        globalRole
+        userPermissions {
+          id
+          userId
+          companyId
+          role
+          appsAccess
+        }
+      }
+    }
+  }
+`);
 
 export default function Page({
   params,
@@ -14,6 +39,18 @@ export default function Page({
 }): JSX.Element {
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+
+  const companyId = params.id;
+
+  const [{ data: companyData }, executeQuery] = useQuery({
+    query: getCompanyUsersQuery,
+    variables: { id: companyId || '' },
+    pause: !companyId,
+  });
+
+  const refetchUsers = () => {
+    executeQuery({ requestPolicy: 'network-only' });
+  };
 
   const handleModalClose = (open: boolean) => {
     setOpenUserModal(open);
@@ -47,9 +84,11 @@ export default function Page({
           <AddOrEditUserModal
             onOpenChange={handleModalClose}
             user={selectedUser}
+            onUserAdded={refetchUsers}
           />
         </Modal>
         <UsersTable
+          companyData={companyData}
           onOpenChange={handleModalClose}
           onSelectUser={setSelectedUser}
         />

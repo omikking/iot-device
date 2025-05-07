@@ -192,7 +192,7 @@ export class UpdateSiteInput {
 }
 
 export class CreateUserPermissionInput {
-    userId: string;
+    userEmail: string;
     role: string;
     appsAccess: string[];
     companyId: string;

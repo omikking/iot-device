@@ -31,44 +31,13 @@ import {
   CreateUserPermissionFormValues,
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
-import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 type AddOrEditUserModalProps = {
-  onOpenChange: (open: boolean) => void;
   user?: User;
+  onOpenChange: (open: boolean) => void;
+  onUserAdded: () => void;
 };
-
-const updateCompanyUserMutation = graphql(`
-  mutation updateCompanyUser($id: String!, $updateUserInput: UpdateUserInput!) {
-    updateUser(id: $id, updateUserInput: $updateUserInput) {
-      id
-      email
-      userPermissions {
-        id
-        role
-        appsAccess
-      }
-    }
-  }
-`);
-
-const getAllUsersQuery = graphql(`
-  query getAllUsers {
-    users {
-      id
-      email
-      fullName
-      workPlace
-      globalRole
-      userPermissions {
-        id
-        role
-        appsAccess
-        companyId
-      }
-    }
-  }
-`);
 
 const getTechniciansQuery = graphql(`
   query getTechniciansByRole {
@@ -88,6 +57,7 @@ const createUserPermissionsMutation = graphql(`
     createUserPermission(
       createUserPermissionInput: $createUserPermissionInput
     ) {
+      id
       userId
       role
       appsAccess
@@ -140,22 +110,25 @@ export const getRoles = (user?: User): DropdownItem[] => [
 ];
 
 export const AddOrEditUserModal = ({
-  onOpenChange,
   user,
+  onOpenChange,
+  onUserAdded,
 }: AddOrEditUserModalProps) => {
-  const allApplications = Object.values(Application);
+  const params = useParams();
+  const companyId = params.id as string;
 
+  const allApplications = Object.values(Application);
   const permission = user?.userPermissions?.[0];
 
-  const { data: session } = useSession();
-
-  const [, updateCompanyUser] = useMutation<UserFormValues>(
-    updateCompanyUserMutation,
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
+  const [isFullAccess, setFullAccess] = useState<boolean>(false);
+  const [role, setRole] = useState<string | undefined>(
+    permission?.role || undefined,
   );
-
-  const [{ data: allUsers }] = useQuery({
-    query: getAllUsersQuery,
-  });
+  const [selectedTechnician, setSelectedTechnician] = useState<
+    User | undefined
+  >();
 
   const [, createUserPermission] = useMutation<CreateUserPermissionFormValues>(
     createUserPermissionsMutation,
@@ -169,16 +142,6 @@ export const AddOrEditUserModal = ({
     query: getTechniciansQuery,
   });
   const technicians = (techniciansData?.users as User[]) || [];
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isFullAccess, setFullAccess] = useState<boolean>(false);
-  const [role, setRole] = useState<string | undefined>(
-    permission?.role || undefined,
-  );
-  const [selectedTechnician, setSelectedTechnician] = useState<
-    string | undefined
-  >('');
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -198,7 +161,7 @@ export const AddOrEditUserModal = ({
 
   const resetFormValues = () => {
     setRole(undefined);
-    setSelectedTechnician('');
+    setSelectedTechnician(undefined);
     form.reset({
       email: '',
       technician: undefined,
@@ -228,10 +191,6 @@ export const AddOrEditUserModal = ({
       setIsLoading(true);
       // If there is a user then we are in EDIT MODE otherwise we are in ADD MODE
       if (user) {
-        const updateUserInput = {
-          email: data.email,
-        };
-
         const permissionResult = await updateUserPermission({
           id: permission?.id,
           updateUserPermissionInput: {
@@ -240,58 +199,28 @@ export const AddOrEditUserModal = ({
           },
         });
 
-        // TODO change to use toaster component
+        // TODO change to use toaster on all errors
         if (!permissionResult.data) {
           throw new Error('Permission update failed');
         }
-
-        const userResult = await updateCompanyUser({
-          id: user.id,
-          updateUserInput,
-        });
-
-        if (!userResult.data) {
-          throw new Error('User update failed');
-        }
-
         onSuccessfulSubmit();
+        onUserAdded();
       } else {
-        let userId;
-
-        if (role === Role.SandvikTechnician) {
-          const selectedTech = technicians.find(
-            (tech) => tech.id === selectedTechnician,
-          );
-          if (!selectedTech) {
-            throw new Error('No technician selected');
-          }
-
-          userId = selectedTech.id;
-        } else {
-          const foundUser = allUsers?.users?.find(
-            (user) => user.email === data.email,
-          );
-          if (!foundUser) {
-            throw new Error('User not found');
-          }
-          userId = foundUser.id;
-        }
-
-        const userResult = await createUserPermission({
+        const createdUser = await createUserPermission({
           createUserPermissionInput: {
+            userEmail: data.email,
             role: data.userPermissions[0].role,
             appsAccess: data.userPermissions[0].appsAccess,
-            userId: userId,
-            companyId: session?.company.id,
+            companyId: companyId,
           },
         });
-        if (!userResult.data) {
+        if (!createdUser.data) {
           throw new Error('User creation failed');
         }
         onSuccessfulSubmit();
+        onUserAdded();
       }
     } catch (error) {
-      //@TODO add toast error here.
       setIsLoading(false);
       setIsSuccessful(false);
     }
@@ -318,7 +247,7 @@ export const AddOrEditUserModal = ({
     if (e !== Role.SandvikTechnician && !user) {
       form.setValue('email', undefined);
       form.setValue('technician', undefined);
-      setSelectedTechnician('');
+      setSelectedTechnician(undefined);
     }
   };
 
@@ -356,8 +285,6 @@ export const AddOrEditUserModal = ({
   useEffect(() => {
     if (user) {
       const userRole = permission?.role;
-      let techEmailForForm: string | undefined;
-
       setRole(permission?.role);
 
       if (userRole === Role.SandvikTechnician) {
@@ -365,15 +292,14 @@ export const AddOrEditUserModal = ({
           (tech) => tech.email === user.email,
         );
         if (foundTechnician) {
-          setSelectedTechnician(foundTechnician.id);
-          techEmailForForm = foundTechnician.email;
+          setSelectedTechnician(foundTechnician);
         }
       }
 
       form.reset({
         email: user.email || '',
         technician:
-          userRole === Role.SandvikTechnician ? techEmailForForm : undefined,
+          userRole === Role.SandvikTechnician ? user.email : undefined,
         userPermissions: [
           {
             ...permission,
@@ -478,16 +404,16 @@ export const AddOrEditUserModal = ({
                               id="technician"
                               className="w-96"
                               placeholder="Select technician"
-                              selectedId={selectedTechnician}
+                              selectedId={selectedTechnician?.id}
                               options={technicianDropdownOptions}
                               disabled={!!user}
-                              onSelect={(e) => {
-                                if (e) {
-                                  setSelectedTechnician(e);
+                              onSelect={(technicianId) => {
+                                if (technicianId) {
                                   const selectedTech = technicians.find(
-                                    (tech) => tech.id === e,
+                                    (tech) => tech.id === technicianId,
                                   );
                                   if (selectedTech) {
+                                    setSelectedTechnician(selectedTech);
                                     form.setValue('email', selectedTech.email);
                                     form.setValue(
                                       'technician',

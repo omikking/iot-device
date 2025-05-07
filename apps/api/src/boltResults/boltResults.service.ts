@@ -106,7 +106,7 @@ export class BoltResultsService {
         result: (updateBoltResultInput?.result as Result) || undefined,
         isHazard: updateBoltResultInput?.isHazard ?? undefined,
         hazardCompletedDate:
-          updateBoltResultInput?.hazardCompletedDate || undefined,
+          updateBoltResultInput?.hazardCompletedDate ?? undefined,
         abortReason:
           (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
           undefined,

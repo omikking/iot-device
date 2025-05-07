@@ -133,13 +133,21 @@ export const BoltResultDetailsModal = ({
     event?.preventDefault();
     setIsLoading(true);
 
-    updateReportedHazard({
-      id: boltResult.id,
-      updateBoltResultInput: {
-        isHazard: false,
-        hazardCompletedDate: [new Date().toISOString()],
-      },
-    });
+    const currentHazardDates = Array.isArray(boltResult.hazardCompletedDate)
+      ? boltResult.hazardCompletedDate
+      : [];
+
+    try {
+      updateReportedHazard({
+        id: boltResult.id,
+        updateBoltResultInput: {
+          isHazard: false,
+          hazardCompletedDate: [...currentHazardDates, Date.now()],
+        },
+      });
+    } catch (error) {
+      console.error('Error updating hazard:', error);
+    }
 
     setTimeout(() => {
       !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
@@ -164,8 +172,6 @@ export const BoltResultDetailsModal = ({
     setIsLoading(false);
   };
 
-  console.log('bölten', boltResult.id);
-
   return (
     <ModalContent
       onEscapeKeyDown={resetConfirmation}
@@ -187,7 +193,7 @@ export const BoltResultDetailsModal = ({
         }`}
       >
         {(image || boltResult.comment || isHazard) && (
-          <div className="px-10 pb-10 flex gap-10 flex-grow">
+          <div className="flex flex-grow pb-5 px-10 gap-10">
             {image && (
               <Image
                 src={'/capybara.jpg'}
@@ -211,22 +217,31 @@ export const BoltResultDetailsModal = ({
                   />
                 </div>
               )}
-              {isHazard && (
-                <div className="flex pt-5 gap-4 items-center">
-                  <Badge variant={'attention'}>
-                    <LucideTriangleAlert />
-                    Reported hazard
-                  </Badge>
-                  <Text variant="small" color="foreground">
-                    Reported by: {nameData?.user?.fullName || 'N/A'}
-                  </Text>
-                </div>
-              )}
+              <div className="flex pt-5 gap-4 items-center">
+                {isHazard && (
+                  <>
+                    <Badge variant={'attention'}>
+                      <LucideTriangleAlert />
+                      Reported hazard
+                    </Badge>
+                    <Text variant="small" color="foreground">
+                      Reported by: {nameData?.user?.fullName || 'N/A'}
+                    </Text>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
-
-        <div className="px-10 pb-10 pt-5">
+        {!isHazard && (
+          <div className="px-10">
+            <Badge variant="success">
+              <LucideCircleCheckBig />
+              Completed
+            </Badge>
+          </div>
+        )}
+        <div className="px-10 pt-10">
           <Headline
             className="pb-4"
             variant="small"

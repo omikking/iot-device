@@ -57,6 +57,7 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
   const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setIsConfirmationModalOpen(true);
+    console.log('BÖÖÖLT', boltResult);
   };
 
   const handleHazardCompleted = () => {

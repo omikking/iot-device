@@ -37,22 +37,32 @@ export const HazardCompleteModal = ({
   onClose,
 }: HazardCompleteModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [, updateReportedHazard] = useMutation(updateHazard);
 
-  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const hazardConfirmed = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     event?.preventDefault();
     setIsLoading(true);
     console.log('Confirming hazard completion');
 
-    updateReportedHazard({
-      id: boltResult.id,
-      updateBoltResultInput: {
-        isHazard: false,
-        hazardCompletedDate: [new Date().toISOString()],
-      },
-    });
+    const currentHazardDates = Array.isArray(boltResult.hazardCompletedDate)
+      ? boltResult.hazardCompletedDate
+      : [];
+    console.log('Bolt result current hazardCompletedDate:', currentHazardDates);
+
+    try {
+      await updateReportedHazard({
+        id: boltResult.id,
+        updateBoltResultInput: {
+          isHazard: false,
+          hazardCompletedDate: [...currentHazardDates, Date.now()],
+        },
+      });
+    } catch (error) {
+      console.error('Error updating hazard:', error);
+    }
 
     setTimeout(() => {
       setIsConfirmed(true);
@@ -98,7 +108,6 @@ export const HazardCompleteModal = ({
             </Text>
           </div>
         </div>
-
         {/* Success View */}
         <div
           className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${

@@ -7,14 +7,16 @@ import {
   LucideMessageSquareWarning,
 } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
-import { BoltResultSchema } from '@/app/mock/mock';
-interface BoltCommentBadgeProps {
-  fullBoltData: BoltResultSchema;
-}
+import { BoltResult } from '@/gql/graphql';
 
-export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
+type BoltCommentBadgeProps = {
+  boltResult: BoltResult;
+};
+
+export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { image, comment, isHazard } = fullBoltData;
+  const { image, comment, isHazard } = boltResult;
+
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
       {image || comment || isHazard ? (
@@ -37,8 +39,7 @@ export const BoltCommentBadge = ({ fullBoltData }: BoltCommentBadgeProps) => {
       )}
 
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${fullBoltData.boltNumber}`}
-        fullBoltData={fullBoltData}
+        boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />
     </Modal>

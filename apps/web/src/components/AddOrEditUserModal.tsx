@@ -22,7 +22,7 @@ import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
 import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
-import { User, UserPermission } from '@/gql/graphql';
+import { User, UserPermission, Application, Role } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
@@ -37,19 +37,6 @@ type AddOrEditUserModalProps = {
   onOpenChange: (open: boolean) => void;
   user?: User;
 };
-
-type Application =
-  | 'PULL_TEST'
-  | 'PULL_TEST_OPERATOR'
-  | 'ULTRABOLTS'
-  | 'XCYCLOPS';
-
-const ALL_APPLICATIONS: Application[] = [
-  'PULL_TEST',
-  'PULL_TEST_OPERATOR',
-  'ULTRABOLTS',
-  'XCYCLOPS',
-];
 
 const updateCompanyUserMutation = graphql(`
   mutation updateCompanyUser($id: String!, $updateUserInput: UpdateUserInput!) {
@@ -129,39 +116,39 @@ const updateUserPermissionsMutation = graphql(`
 
 export const getRoles = (user?: User): DropdownItem[] => [
   {
-    id: 'COMPANY_USER',
+    id: Role.CompanyUser,
     name: 'User',
+    iconLabel: 'company user',
     background: 'neutral',
   },
-
-  {
-    id: 'SANDVIK_ADMIN',
-    name: 'Sandvik admin',
-    background: 'primary',
-  },
-  {
-    id: 'COMPANY_ADMIN',
-    name: 'Company admin',
-    background: 'primary',
-  },
-  ...(!user || user?.globalRole === 'SANDVIK_TECHNICIAN'
+  ...(!user || user?.globalRole === Role.SandvikTechnician
     ? [
         {
-          id: 'SANDVIK_TECHNICIAN',
-          name: 'Sandvik technician',
+          id: Role.SandvikTechnician,
+          name: 'Technician',
+          iconLabel: 'sandvik technician',
           background: 'neutral' as const,
         },
       ]
     : []),
+  {
+    id: Role.CompanyAdmin,
+    name: 'Admin',
+    iconLabel: 'company admin',
+    background: 'primary',
+  },
 ];
 
 export const AddOrEditUserModal = ({
   onOpenChange,
   user,
 }: AddOrEditUserModalProps) => {
+  const allApplications = Object.values(Application);
+
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+
   const [, updateCompanyUser] = useMutation<UserFormValues>(
     updateCompanyUserMutation,
   );
@@ -183,6 +170,7 @@ export const AddOrEditUserModal = ({
   });
   const technicians = (techniciansData?.users as User[]) || [];
 
+  // TODO should not be [0], but the one where the companyId matches the userPermission.companyId.
   const [role, setRole] = useState<string | undefined>(
     user?.userPermissions?.[0]?.role || undefined,
   );
@@ -210,6 +198,7 @@ export const AddOrEditUserModal = ({
 
   const resetFormValues = () => {
     setRole(undefined);
+    setSelectedTechnician('');
     form.reset({
       email: '',
       technician: undefined,
@@ -268,7 +257,7 @@ export const AddOrEditUserModal = ({
       } else {
         let userId;
 
-        if (role === 'SANDVIK_TECHNICIAN') {
+        if (role === Role.SandvikTechnician) {
           const selectedTech = technicians.find(
             (tech) => tech.id === selectedTechnician,
           );
@@ -311,15 +300,21 @@ export const AddOrEditUserModal = ({
     form.setValue('userPermissions.0.role', e);
     setRole(e);
 
-    if (e === 'SANDVIK_TECHNICIAN') {
+    if (e === Role.SandvikTechnician) {
       form.setValue('technician', user?.email || undefined);
+    }
+
+    if (e !== Role.SandvikTechnician) {
+      form.setValue('email', undefined);
+      form.setValue('technician', undefined);
+      setSelectedTechnician('');
     }
   };
 
   const handleGlobalAccess = (checked: boolean) => {
     setFullAccess(checked);
     if (checked) {
-      form.setValue('userPermissions.0.appsAccess', ALL_APPLICATIONS);
+      form.setValue('userPermissions.0.appsAccess', allApplications);
     } else {
       form.setValue('userPermissions.0.appsAccess', []);
     }
@@ -341,7 +336,7 @@ export const AddOrEditUserModal = ({
 
   useEffect(() => {
     const appAccess = watchAppAccess || [];
-    const allAppsSelected = ALL_APPLICATIONS.every((app) =>
+    const allAppsSelected = allApplications.every((app) =>
       appAccess.includes(app as Application),
     );
     setFullAccess(allAppsSelected);
@@ -353,7 +348,7 @@ export const AddOrEditUserModal = ({
       let techEmailForForm: string | undefined = undefined;
       setRole(userRole as UserPermission['role']);
 
-      if (userRole === 'SANDVIK_TECHNICIAN') {
+      if (userRole === Role.SandvikTechnician) {
         const foundTechnician = technicians.find(
           (tech) => tech.email === user.email,
         );
@@ -366,7 +361,7 @@ export const AddOrEditUserModal = ({
       form.reset({
         email: user.email || '',
         technician:
-          userRole === 'SANDVIK_TECHNICIAN' ? techEmailForForm : undefined,
+          userRole === Role.SandvikTechnician ? techEmailForForm : undefined,
         userPermissions: [
           {
             ...user.userPermissions?.[0],
@@ -412,7 +407,7 @@ export const AddOrEditUserModal = ({
                   render={() => {
                     return (
                       <FormItem>
-                        <FormLabel>* Role</FormLabel>
+                        <FormLabel>Role</FormLabel>
                         <FormControl>
                           <Dropdown
                             id="role"
@@ -421,6 +416,10 @@ export const AddOrEditUserModal = ({
                             selectedId={role}
                             isBadge
                             badgeIcon
+                            disabled={
+                              user?.userPermissions?.[0]?.role ===
+                              Role.SandvikTechnician
+                            }
                             options={getRoles(user as User)}
                             onSelect={(e) => {
                               handleSelectRole(e as UserPermission['role']);
@@ -432,19 +431,19 @@ export const AddOrEditUserModal = ({
                     );
                   }}
                 />
-                {!(role === 'SANDVIK_TECHNICIAN') && (
+                {!(role === Role.SandvikTechnician) && (
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>* Email</FormLabel>
+                          <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Fill in email..."
                               className="w-96"
-                              disabled={user ? true : false}
+                              disabled={!!user}
                               {...field}
                             />
                           </FormControl>
@@ -454,14 +453,14 @@ export const AddOrEditUserModal = ({
                     }}
                   />
                 )}
-                {role === 'SANDVIK_TECHNICIAN' && (
+                {role === Role.SandvikTechnician && (
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormLabel>* Technician</FormLabel>
+                          <FormLabel>Technician</FormLabel>
                           <FormControl>
                             <Dropdown
                               id="technician"
@@ -469,7 +468,7 @@ export const AddOrEditUserModal = ({
                               placeholder="Select technician"
                               selectedId={selectedTechnician}
                               options={technicianDropdownOptions}
-                              disabled={user ? true : false}
+                              disabled={!!user}
                               onSelect={(e) => {
                                 if (e) {
                                   setSelectedTechnician(e);
@@ -556,10 +555,10 @@ export const AddOrEditUserModal = ({
                                 <Switch
                                   checked={
                                     Array.isArray(field.value) &&
-                                    field.value.includes('PULL_TEST')
+                                    field.value.includes(Application.PullTest)
                                   }
                                   onCheckedChange={handleAppsAccess(
-                                    'PULL_TEST',
+                                    Application.PullTest,
                                   )}
                                 />
                               </FormControl>
@@ -585,10 +584,10 @@ export const AddOrEditUserModal = ({
                               <FormControl>
                                 <Switch
                                   checked={field.value?.includes(
-                                    'PULL_TEST_OPERATOR',
+                                    Application.PullTestOperator,
                                   )}
                                   onCheckedChange={handleAppsAccess(
-                                    'PULL_TEST_OPERATOR',
+                                    Application.PullTestOperator,
                                   )}
                                 />
                               </FormControl>
@@ -613,9 +612,11 @@ export const AddOrEditUserModal = ({
                             <FormItem>
                               <FormControl>
                                 <Switch
-                                  checked={field.value?.includes('ULTRABOLTS')}
+                                  checked={field.value?.includes(
+                                    Application.Ultrabolts,
+                                  )}
                                   onCheckedChange={handleAppsAccess(
-                                    'ULTRABOLTS',
+                                    Application.Ultrabolts,
                                   )}
                                 />
                               </FormControl>
@@ -640,8 +641,12 @@ export const AddOrEditUserModal = ({
                             <FormItem>
                               <FormControl>
                                 <Switch
-                                  checked={field.value?.includes('XCYCLOPS')}
-                                  onCheckedChange={handleAppsAccess('XCYCLOPS')}
+                                  checked={field.value?.includes(
+                                    Application.Xcyclops,
+                                  )}
+                                  onCheckedChange={handleAppsAccess(
+                                    Application.Xcyclops,
+                                  )}
                                 />
                               </FormControl>
                             </FormItem>

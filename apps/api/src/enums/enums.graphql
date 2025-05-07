@@ -31,10 +31,26 @@ enum PullTestAbortReason {
   TEST_STOPPED_INSTALL_ANGLE
 }
 
+enum Application {
+  PULL_TEST
+  PULL_TEST_OPERATOR
+  XCYCLOPS
+  ULTRABOLTS
+}
+
+enum PlanLevel {
+  GOLD
+  SILVER
+  BRONZE
+  INACTIVE
+}
+
 type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
   getRingPosition: [RingPosition!]
   getPullTestAbortReason: [PullTestAbortReason!]
+  getApplication: [Application!]
+  getPlanLevel: [PlanLevel!]
 }

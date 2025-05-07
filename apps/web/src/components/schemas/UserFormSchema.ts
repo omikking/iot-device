@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Application, Role } from '@/gql/graphql';
 
 export type UserFormValues = {
   email?: string;
@@ -8,7 +9,10 @@ export type UserFormValues = {
       userId: string;
       role: string;
       appsAccess: Array<
-        'PULL_TEST' | 'PULL_TEST_OPERATOR' | 'ULTRABOLTS' | 'XCYCLOPS'
+        | Application.PullTest
+        | Application.PullTestOperator
+        | Application.Ultrabolts
+        | Application.Xcyclops
       >;
     },
   ];
@@ -27,23 +31,23 @@ export const userFormSchema = z
       z.object({
         userId: z.string().optional(),
         role: z.enum(
-          [
-            'COMPANY_USER',
-            'SANDVIK_TECHNICIAN',
-            'SANDVIK_ADMIN',
-            'COMPANY_ADMIN',
-          ],
+          [Role.CompanyUser, Role.CompanyAdmin, Role.SandvikTechnician],
           { message: 'Role must be selected.' },
         ),
         appsAccess: z.array(
-          z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
+          z.enum([
+            Application.PullTest,
+            Application.PullTestOperator,
+            Application.Ultrabolts,
+            Application.Xcyclops,
+          ]),
         ),
       }),
     ),
   })
   .superRefine((data, ctx) => {
     const { role } = data.userPermissions[0];
-    if (role === 'SANDVIK_TECHNICIAN') {
+    if (role === Role.SandvikTechnician) {
       if (!data.technician) {
         ctx.addIssue({
           path: ['technician'],
@@ -52,7 +56,7 @@ export const userFormSchema = z
         });
       }
     }
-    if (role !== 'SANDVIK_TECHNICIAN') {
+    if (role !== Role.SandvikTechnician) {
       if (!data.email) {
         ctx.addIssue({
           path: ['email'],

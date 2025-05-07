@@ -1,4 +1,4 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver, Context } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Company } from './interface/company-data';
 import { User } from './interface/user-data';
@@ -10,21 +10,30 @@ export class CompanyUsersResolver {
   @ResolveField('users')
   async getUsersWithPermissionsOfCompany(
     @Parent() company: Company,
+    @Context() context: any,
   ): Promise<User[]> {
-    const userPermissions = await this.prisma.userPermission.findMany({
-      where: {
-        companyId: company.id,
-      },
-      include: {
-        user: true,
-      },
-    });
+    context.companyId = company.id;
 
-    const users = userPermissions.map((permission) => {
-      return {
-        ...permission.user,
-        userPermission: [permission],
-      };
+    // Get users with their permissions for this company only
+    const userIds = await this.prisma.userPermission
+      .findMany({
+        where: {
+          companyId: company.id,
+        },
+        select: {
+          userId: true,
+        },
+      })
+      .then((permissions) =>
+        permissions.map((permission) => permission.userId),
+      );
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: userIds,
+        },
+      },
     });
 
     return users;

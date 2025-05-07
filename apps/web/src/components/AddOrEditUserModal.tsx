@@ -25,7 +25,7 @@ import React, { useEffect, useState } from 'react';
 import { User, UserPermission, Application, Role } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { LucideLayoutGrid, LucidePlus } from 'lucide-react';
+import { LucideEdit, LucideLayoutGrid, LucidePlus } from 'lucide-react';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
 import {
   CreateUserPermissionFormValues,
@@ -145,9 +145,9 @@ export const AddOrEditUserModal = ({
 }: AddOrEditUserModalProps) => {
   const allApplications = Object.values(Application);
 
+  const permission = user?.userPermissions?.[0];
+
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccessful, setIsSuccessful] = useState(false);
 
   const [, updateCompanyUser] = useMutation<UserFormValues>(
     updateCompanyUserMutation,
@@ -170,12 +170,12 @@ export const AddOrEditUserModal = ({
   });
   const technicians = (techniciansData?.users as User[]) || [];
 
-  // TODO should not be [0], but the one where the companyId matches the userPermission.companyId.
-  const [role, setRole] = useState<string | undefined>(
-    user?.userPermissions?.[0]?.role || undefined,
-  );
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const [isFullAccess, setFullAccess] = useState<boolean>(false);
+  const [role, setRole] = useState<string | undefined>(
+    permission?.role || undefined,
+  );
   const [selectedTechnician, setSelectedTechnician] = useState<
     string | undefined
   >('');
@@ -187,8 +187,8 @@ export const AddOrEditUserModal = ({
       technician: undefined,
       userPermissions: [
         {
-          role: user?.userPermissions?.[0]?.role,
-          appsAccess: (user?.userPermissions?.[0]?.appsAccess || []).map(
+          role: permission?.role,
+          appsAccess: (permission?.appsAccess || []).map(
             (app) => app as Application,
           ),
         },
@@ -226,20 +226,21 @@ export const AddOrEditUserModal = ({
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
     try {
       setIsLoading(true);
-      // if there is a user then we are in EDIT MODE otherwise we are in ADD MODE
+      // If there is a user then we are in EDIT MODE otherwise we are in ADD MODE
       if (user) {
         const updateUserInput = {
           email: data.email,
         };
 
         const permissionResult = await updateUserPermission({
-          id: user.userPermissions?.[0]?.id,
+          id: permission?.id,
           updateUserPermissionInput: {
             role: data.userPermissions[0].role,
             appsAccess: data.userPermissions[0].appsAccess,
           },
         });
 
+        // TODO change to use toaster component
         if (!permissionResult.data) {
           throw new Error('Permission update failed');
         }
@@ -297,14 +298,24 @@ export const AddOrEditUserModal = ({
   };
 
   const handleSelectRole = (e: UserPermission['role']) => {
+    if (isFullAccess) {
+      setFullAccess(false);
+      form.setValue('userPermissions.0.appsAccess', []);
+    }
     form.setValue('userPermissions.0.role', e);
     setRole(e);
+
+    if (e === Role.CompanyAdmin) {
+      setFullAccess(true);
+      form.setValue('userPermissions.0.appsAccess', allApplications);
+    }
 
     if (e === Role.SandvikTechnician) {
       form.setValue('technician', user?.email || undefined);
     }
 
-    if (e !== Role.SandvikTechnician) {
+    // Resets technician & email on ADD move if role changes
+    if (e !== Role.SandvikTechnician && !user) {
       form.setValue('email', undefined);
       form.setValue('technician', undefined);
       setSelectedTechnician('');
@@ -344,9 +355,10 @@ export const AddOrEditUserModal = ({
 
   useEffect(() => {
     if (user) {
-      const userRole = user.userPermissions?.[0]?.role || undefined;
-      let techEmailForForm: string | undefined = undefined;
-      setRole(userRole as UserPermission['role']);
+      const userRole = permission?.role;
+      let techEmailForForm: string | undefined;
+
+      setRole(permission?.role);
 
       if (userRole === Role.SandvikTechnician) {
         const foundTechnician = technicians.find(
@@ -364,9 +376,9 @@ export const AddOrEditUserModal = ({
           userRole === Role.SandvikTechnician ? techEmailForForm : undefined,
         userPermissions: [
           {
-            ...user.userPermissions?.[0],
+            ...permission,
             role: userRole,
-            appsAccess: user.userPermissions?.[0]?.appsAccess?.map(
+            appsAccess: permission?.appsAccess?.map(
               (access) => (access as Application) || [],
             ),
           },
@@ -514,14 +526,9 @@ export const AddOrEditUserModal = ({
                   />
                 </div>
 
-                {isFullAccess ? (
-                  //@TODO find a way to remove hardcoded width
+                {role === Role.CompanyAdmin ? (
                   <div className="flex items-center justify-center h-full max-w-[390px] px-6 py-3">
-                    <Text
-                      color={'foreground'}
-                      variant={'medium'}
-                      className="text-start "
-                    >
+                    <Text color={'foreground'} variant={'medium'}>
                       The administrator will have
                       <Text
                         variant="medium"
@@ -667,11 +674,13 @@ export const AddOrEditUserModal = ({
               >
                 {isLoading ? (
                   <LoadingSpinner className="animate-spin" size={24} />
+                ) : user ? (
+                  <LucideEdit />
                 ) : (
                   <LucidePlus />
                 )}
 
-                {user ? 'Save changes' : 'Add user'}
+                {user ? 'Edit user' : 'Add user'}
               </Button>
             </ModalFooter>
           </form>

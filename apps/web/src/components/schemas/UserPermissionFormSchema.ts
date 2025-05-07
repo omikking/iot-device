@@ -1,29 +1,30 @@
+import { Application, Role } from '@/gql/graphql';
 import { z } from 'zod';
 
 export const createUserPermissionFormSchema = z.object({
   appsAccess: z.array(
-    z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
+    z.enum([
+      Application.PullTest,
+      Application.PullTestOperator,
+      Application.Ultrabolts,
+      Application.Xcyclops,
+    ]),
   ),
-  role: z.enum([
-    'COMPANY_USER',
-    'SANDVIK_TECHNICIAN',
-    'SANDVIK_ADMIN',
-    'COMPANY_ADMIN',
-  ]),
+  role: z.enum([Role.CompanyUser, Role.SandvikTechnician, Role.CompanyAdmin]),
   userId: z.string(),
   companyId: z.string(),
 });
 
 export const updateUserPermissionFormSchema = z.object({
   appsAccess: z.array(
-    z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
+    z.enum([
+      Application.PullTest,
+      Application.PullTestOperator,
+      Application.Ultrabolts,
+      Application.Xcyclops,
+    ]),
   ),
-  role: z.enum([
-    'COMPANY_USER',
-    'SANDVIK_TECHNICIAN',
-    'SANDVIK_ADMIN',
-    'COMPANY_ADMIN',
-  ]),
+  role: z.enum([Role.CompanyUser, Role.SandvikTechnician, Role.CompanyAdmin]),
 });
 
 export type UpdateUserPermissionFormValues = z.infer<

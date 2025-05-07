@@ -45,12 +45,10 @@ export const HazardCompleteModal = ({
   ) => {
     event?.preventDefault();
     setIsLoading(true);
-    console.log('Confirming hazard completion');
 
     const currentHazardDates = Array.isArray(boltResult.hazardCompletedDate)
       ? boltResult.hazardCompletedDate
       : [];
-    console.log('Bolt result current hazardCompletedDate:', currentHazardDates);
 
     try {
       await updateReportedHazard({

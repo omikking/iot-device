@@ -145,24 +145,21 @@ export const BoltResultDetailsModal = ({
           hazardCompletedDate: [...currentHazardDates, Date.now()],
         },
       });
+      setIsSuccessful(true);
     } catch (error) {
-      console.error('Error updating hazard:', error);
+      setIsSuccessful(false);
+      //TODO Set an error toast here
     }
+    console.log('isSuccessful', isSuccessful);
+    setIsConfirmed(true);
+    setIsLoading(false);
 
     setTimeout(() => {
-      !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
-      setIsLoading(false);
-
-      if (isCompleted) {
-        setTimeout(() => {
-          onClose?.();
-
-          setTimeout(() => {
-            resetConfirmation();
-          }, 200);
-        }, 1000);
-      }
-    }, 1000);
+      onClose?.();
+      setTimeout(() => {
+        resetConfirmation();
+      }, 200);
+    }, 2000);
   };
 
   const resetConfirmation = () => {
@@ -242,6 +239,36 @@ export const BoltResultDetailsModal = ({
           </div>
         )}
         <div className="px-10 pt-10">
+          {!boltResult?.isHazard && (
+            <>
+              <Headline
+                className="pb-4"
+                variant="small"
+                as="h3"
+                color="foreground"
+                isBold
+              >
+                Hazard completion history
+              </Headline>
+              <div className="pb-10">
+                {boltResult?.hazardCompletedDate?.map((date, index) => {
+                  const dateString = new Date(date).toISOString().split('T')[0];
+                  return (
+                    <div key={index} className="flex flex-wrap">
+                      <Specification
+                        key={index}
+                        title={'Date'}
+                        text={dateString}
+                        className="w-1/2"
+                      />
+                      <Specification title={''} text={''} className="w-1/2" />
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
           <Headline
             className="pb-4"
             variant="small"
@@ -317,7 +344,7 @@ export const BoltResultDetailsModal = ({
           {/* Third View */}
           <div
             className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-              isConfirmed && !isSuccessful
+              isConfirmed && isSuccessful
                 ? 'opacity-100 translate-y-[-10px] z-10'
                 : 'opacity-0 translate-y-0 z-0'
             }`}

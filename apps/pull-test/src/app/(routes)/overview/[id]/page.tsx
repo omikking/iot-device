@@ -1,5 +1,4 @@
 'use client';
-import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,
   LucideMoveRight,
@@ -8,13 +7,14 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { BoltResult } from '@/gql/graphql';
 import { useSession } from 'next-auth/react';
+import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
     hazards(companyId: $id) {
       id
+      isHazard
     }
   }
 `);
@@ -28,12 +28,7 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page({
-  params,
-}: {
-  params: { id: string };
-}): JSX.Element {
-  // const companyId = params.id;
+export default function Page(): JSX.Element {
   const { data: session } = useSession();
   const companyId = session?.company?.id || '';
 
@@ -48,6 +43,12 @@ export default function Page({
     variables: { id: companyId },
     pause: !companyId,
   });
+
+  const activeHazards = hazardData?.hazards?.filter(
+    (hazard) => hazard.isHazard === true,
+  );
+
+  const totalActiveHazards = activeHazards?.length ?? 0;
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -81,7 +82,7 @@ export default function Page({
               variant="neutral"
               size="small"
             >
-              {`${hazardData?.hazards?.length ?? 0} active`}
+              {`${totalActiveHazards} active`}
             </Badge>
             <Headline as="h3" variant="medium" color="foreground">
               Hazards

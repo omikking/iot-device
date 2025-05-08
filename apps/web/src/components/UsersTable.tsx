@@ -117,29 +117,27 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (userId?: string) => {
-    if (userId) {
-      const userToDelete = users.find((user) => user.id === userId);
+  const handleDelete = (userId: string) => {
+    const userToDelete = users.find((user) => user.id === userId);
 
-      if (userToDelete) {
-        const userPermissionToDelete = userToDelete.userPermissions?.find(
-          (userPerm) => userPerm.companyId === companyId,
-        );
+    if (userToDelete) {
+      const userPermissionToDelete = userToDelete.userPermissions?.find(
+        (userPerm) => userPerm.companyId === companyId,
+      );
 
-        if (userPermissionToDelete) {
-          deleteUser({
-            id: userPermissionToDelete.id,
-          }).catch((error) => {
-            // TODO add toaster
-            console.log('error deleting user permission', error);
-          });
-        }
+      if (userPermissionToDelete) {
+        deleteUser({
+          id: userPermissionToDelete.id,
+        }).catch((error) => {
+          // TODO add toaster
+          console.log('error deleting user permission', error);
+        });
       }
     }
   };
 
-  const openEditModal = (index: string) => {
-    const userToEdit = users[parseInt(index)];
+  const openEditModal = (userId: string) => {
+    const userToEdit = users.find((user) => user.id === userId);
     onSelectUser(userToEdit);
     onOpenChange(true);
   };

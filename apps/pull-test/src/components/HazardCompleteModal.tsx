@@ -51,6 +51,7 @@ export const HazardCompleteModal = ({
       : [];
 
     try {
+      // we are here
       await updateReportedHazard({
         id: boltResult.id,
         updateBoltResultInput: {

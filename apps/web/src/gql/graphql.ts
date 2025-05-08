@@ -653,7 +653,7 @@ export type QueryBoltResultsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   locationId?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  result?: InputMaybe<Scalars['String']['input']>;
+  result?: InputMaybe<Array<Scalars['String']['input']>>;
   siteId?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   withComment?: InputMaybe<Scalars['Boolean']['input']>;

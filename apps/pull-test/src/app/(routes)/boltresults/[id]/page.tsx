@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
@@ -28,62 +28,62 @@ import {
 export default function Page(): JSX.Element {
 
   const boltResultQuery = gql`
- query GetBoltResult(
-  $offset: Int,
-  $limit: Int,
-  $siteId: String,
-  $levelId: String,
-  $driveId: String,
-  $locationId: String,
-  $result: String,
-  $isHazard: Boolean,
-  $withImage: Boolean,
-  $withComment: Boolean, 
-	$startDate: DateTime,
-  $endDate: DateTime
-) {
-  boltResults(
-    offset: $offset,
-    limit: $limit,
-    siteId: $siteId,
-    levelId: $levelId,
-    driveId: $driveId,
-    locationId: $locationId,
-    result: $result,
-    isHazard: $isHazard,
-    withImage: $withImage,
-    withComment: $withComment,
-    startDate: $startDate, 
-    endDate: $endDate      
-  ) {
-    totalRecords
-    results {
-      id
-      createdAt
-      updatedAt
-      boltNumber
-      boltType
-      peakLoad
-      peakDisplacement
-      positionInRing
-      result
-      isHazard
-      hazardCompletedDate
-      abortReason
-      comment
-      image
-      siteId
-      levelId
-      driveId
-      locationId
-      userId
-      site { siteName }
-      drive { driveName }
-      location { locationName }
-      level { levelName }
-    }
-  }
-}
+        query GetBoltResult(
+          $offset: Int,
+          $limit: Int,
+          $siteId: String,
+          $levelId: String,
+          $driveId: String,
+          $locationId: String,
+          $result: [String!],
+          $isHazard: Boolean,
+          $withImage: Boolean,
+          $withComment: Boolean,
+          $startDate: DateTime,
+          $endDate: DateTime
+        ) {
+          boltResults(
+            offset: $offset,
+            limit: $limit,
+            siteId: $siteId,
+            levelId: $levelId,
+            driveId: $driveId,
+            locationId: $locationId,
+            result: $result,  
+            isHazard: $isHazard,
+            withImage: $withImage,
+            withComment: $withComment,
+            startDate: $startDate,
+            endDate: $endDate
+          ) {
+            totalRecords
+            results {
+              id
+              createdAt
+              updatedAt
+              boltNumber
+              boltType
+              peakLoad
+              peakDisplacement
+              positionInRing
+              result
+              isHazard
+              hazardCompletedDate
+              abortReason
+              comment
+              image
+              siteId
+              levelId
+              driveId
+              locationId
+              userId
+              site { siteName }
+              drive { driveName }
+              location { locationName }
+              level { levelName }
+            }
+        }
+      }
 `;
 
 
@@ -106,6 +106,21 @@ export default function Page(): JSX.Element {
     reportedHazard: false,
   });
   const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
+  const result = useMemo(() => {
+    const {
+      withComment,
+      withImage,
+      reportedHazard,
+      ...rest
+    } = filterState
+
+    return Object.entries(rest)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => key.toUpperCase());
+  }, [filterState]);
+
+
+  console.log(result, "resultresultresult")
 
   const [{ data }] = useQuery({
     query: boltResultQuery,
@@ -118,9 +133,11 @@ export default function Page(): JSX.Element {
       withImage: filterState.withImage ? true : undefined,
       withComment: filterState.withComment ? true : undefined,
       startDate: dateRange?.from,
-      endDate: dateRange?.to
+      endDate: dateRange?.to,
+      result: result,
     },
   });
+
 
   useEffect(() => {
     if (data?.boltResults.results) {

@@ -17,7 +17,7 @@ interface BoltResultFilters {
   levelId?: string;
   driveId?: string;
   locationId?: string;
-  result?: string;
+  result?: string[];
   isHazard?: boolean;
   withImage?: boolean;
   withComment?: boolean;
@@ -28,60 +28,6 @@ interface BoltResultFilters {
 @Injectable()
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
-
-  // async findMany(
-  //   user: ActiveUserData,
-  //   pagination: { offset: number; limit: number },
-  //   filters?: Partial<Record<string, string | boolean>>,
-  // ): Promise<GraphQLTypes.BoltResultResponse> {
-  //   const { offset, limit } = pagination;
-
-  //   const whereCondition: Record<string, any> = {
-  //     ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
-  //       ? { userId: user.id }
-  //       : {}),
-  //     ...(filters &&
-  //       Object.fromEntries(
-  //         Object.entries(filters).filter(
-  //           ([, value]) => value !== undefined && value !== null,
-  //         ),
-  //       )),
-  //   };
-
-  //   const totalRecords = await this.prisma.boltResult.count({
-  //     where: whereCondition,
-  //   });
-
-  //   const results = await this.prisma.boltResult.findMany({
-  //     skip: Number(offset),
-  //     take: Number(limit),
-  //     where: whereCondition,
-  //     include: {
-  //       site: {
-  //         select: {
-  //           siteName: true,
-  //         },
-  //       },
-  //       level: {
-  //         select: {
-  //           levelName: true,
-  //         },
-  //       },
-  //       drive: {
-  //         select: {
-  //           driveName: true,
-  //         },
-  //       },
-  //       location: {
-  //         select: {
-  //           locationName: true,
-  //         },
-  //       },
-  //     },
-  //   });
-
-  //   return { totalRecords, results };
-  // }
 
   async findMany(
     user: ActiveUserData,
@@ -111,7 +57,7 @@ export class BoltResultsService {
       ...(levelId ? { levelId } : {}),
       ...(driveId ? { driveId } : {}),
       ...(locationId ? { locationId } : {}),
-      ...(result ? { result } : {}),
+      ...(result && result.length ? { result: { in: result } } : {}),
       ...(typeof isHazard === 'boolean' ? { isHazard } : {}),
       ...(withImage === true ? { imageUrl: { not: null } } : {}),
       ...(withComment === true ? { comment: { not: null } } : {}),

@@ -220,7 +220,7 @@ export class BoltResult {
     userId: string;
 }
 
- export class boltResultExtend extends BoltResult {
+ export class BoltResultExtend extends BoltResult {
     site: { siteName: string};
     level: { levelName:  string};
     drive: { driveName:  string};
@@ -228,7 +228,7 @@ export class BoltResult {
 }
 export class BoltResultResponse {
     totalRecords: number;
-    results: boltResultExtend[];
+    results: BoltResultExtend[];
 }
 
 export abstract class IQuery {

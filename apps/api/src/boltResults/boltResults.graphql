@@ -118,7 +118,7 @@ type Query {
     levelId: String
     driveId: String
     locationId: String
-    result: String
+    result: [String!]
     isHazard: Boolean,
     withImage : Boolean,
     withComment : Boolean,

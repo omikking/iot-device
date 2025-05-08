@@ -15,13 +15,24 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { BoltResult } from '@prisma/client';
-
+interface BoltResultFilters {
+  siteId?: string;
+  levelId?: string;
+  driveId?: string;
+  locationId?: string;
+  result?: string[];
+  isHazard?: boolean;
+  withImage?: boolean;
+  withComment?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}
 @Resolver()
 @UseGuards(JwtGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => GraphQLTypes.boltResultExtend, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.BoltResultExtend, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -31,7 +42,7 @@ export class BoltResultsResolver {
     @Args('driveId', { type: () => String, nullable: true }) driveId?: string,
     @Args('locationId', { type: () => String, nullable: true })
     locationId?: string,
-    @Args('result', { type: () => String, nullable: true }) result?: string,
+    @Args('result', { type: () => [String] }) result?: string[],
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
     @Args('withComment', { type: () => Boolean, nullable: true })
@@ -39,15 +50,15 @@ export class BoltResultsResolver {
     @Args('withImage', { type: () => Boolean, nullable: true })
     withImage?: boolean,
     @Args('startDate', { type: () => Date })
-    startDate?: string,
+    startDate?: Date,
     @Args('endDate', { type: () => Date })
-    endDate?: string,
+    endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const pagination = {
       offset: Number(offset ?? 0),
       limit: Number(limit ?? 20),
     };
-    const filters: Partial<Record<string, string | boolean | Date>> = {
+    const filters: BoltResultFilters = {
       siteId,
       levelId,
       driveId,

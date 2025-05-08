@@ -116,7 +116,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 

@@ -86,7 +86,7 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateAdminPermissionInput!]
+  sandvikAdminUserId: String
   plans: [UpdatePlanInput!]
 }
 

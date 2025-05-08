@@ -226,7 +226,7 @@ export type CreateUserPermissionInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
   role: Scalars['String']['input'];
-  userId: Scalars['String']['input'];
+  userEmail: Scalars['String']['input'];
 };
 
 /**

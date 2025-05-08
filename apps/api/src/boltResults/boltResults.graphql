@@ -119,7 +119,11 @@ type Query {
     driveId: String
     locationId: String
     result: String
-    isHazard: Boolean
+    isHazard: Boolean,
+    withImage : Boolean,
+    withComment : Boolean,
+    startDate: DateTime
+    endDate: DateTime 
   ): BoltResultResponse!
 
   boltResult(id: String!): BoltResult!

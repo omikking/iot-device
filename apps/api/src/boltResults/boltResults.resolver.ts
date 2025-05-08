@@ -34,18 +34,30 @@ export class BoltResultsResolver {
     @Args('result', { type: () => String, nullable: true }) result?: string,
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
+    @Args('withComment', { type: () => Boolean, nullable: true })
+    withComment?: boolean,
+    @Args('withImage', { type: () => Boolean, nullable: true })
+    withImage?: boolean,
+    @Args('startDate', { type: () => Date })
+    startDate?: string,
+    @Args('endDate', { type: () => Date })
+    endDate?: string,
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const pagination = {
       offset: Number(offset ?? 0),
       limit: Number(limit ?? 20),
     };
-    const filters: Partial<Record<string, string | boolean>> = {
+    const filters: Partial<Record<string, string | boolean | Date>> = {
       siteId,
       levelId,
       driveId,
       locationId,
       result,
       isHazard,
+      withImage,
+      withComment,
+      startDate,
+      endDate,
     };
     return this.boltResultsService.findMany(user, pagination, filters);
   }

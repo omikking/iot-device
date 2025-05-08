@@ -12,28 +12,117 @@ import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
+interface BoltResultFilters {
+  siteId?: string;
+  levelId?: string;
+  driveId?: string;
+  locationId?: string;
+  result?: string;
+  isHazard?: boolean;
+  withImage?: boolean;
+  withComment?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}
 
 @Injectable()
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
+  // async findMany(
+  //   user: ActiveUserData,
+  //   pagination: { offset: number; limit: number },
+  //   filters?: Partial<Record<string, string | boolean>>,
+  // ): Promise<GraphQLTypes.BoltResultResponse> {
+  //   const { offset, limit } = pagination;
+
+  //   const whereCondition: Record<string, any> = {
+  //     ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
+  //       ? { userId: user.id }
+  //       : {}),
+  //     ...(filters &&
+  //       Object.fromEntries(
+  //         Object.entries(filters).filter(
+  //           ([, value]) => value !== undefined && value !== null,
+  //         ),
+  //       )),
+  //   };
+
+  //   const totalRecords = await this.prisma.boltResult.count({
+  //     where: whereCondition,
+  //   });
+
+  //   const results = await this.prisma.boltResult.findMany({
+  //     skip: Number(offset),
+  //     take: Number(limit),
+  //     where: whereCondition,
+  //     include: {
+  //       site: {
+  //         select: {
+  //           siteName: true,
+  //         },
+  //       },
+  //       level: {
+  //         select: {
+  //           levelName: true,
+  //         },
+  //       },
+  //       drive: {
+  //         select: {
+  //           driveName: true,
+  //         },
+  //       },
+  //       location: {
+  //         select: {
+  //           locationName: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   return { totalRecords, results };
+  // }
+
   async findMany(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
-    filters?: Partial<Record<string, string | boolean>>,
+    filters?: BoltResultFilters,
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
+
+    const {
+      siteId,
+      levelId,
+      driveId,
+      locationId,
+      result,
+      isHazard,
+      withImage,
+      withComment,
+      startDate,
+      endDate,
+    } = filters || {};
 
     const whereCondition: Record<string, any> = {
       ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
         ? { userId: user.id }
         : {}),
-      ...(filters &&
-        Object.fromEntries(
-          Object.entries(filters).filter(
-            ([, value]) => value !== undefined && value !== null,
-          ),
-        )),
+      ...(siteId ? { siteId } : {}),
+      ...(levelId ? { levelId } : {}),
+      ...(driveId ? { driveId } : {}),
+      ...(locationId ? { locationId } : {}),
+      ...(result ? { result } : {}),
+      ...(typeof isHazard === 'boolean' ? { isHazard } : {}),
+      ...(withImage === true ? { imageUrl: { not: null } } : {}),
+      ...(withComment === true ? { comment: { not: null } } : {}),
+      ...(startDate && endDate
+        ? {
+            createdAt: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
+          }
+        : {}),
     };
 
     const totalRecords = await this.prisma.boltResult.count({
@@ -41,30 +130,14 @@ export class BoltResultsService {
     });
 
     const results = await this.prisma.boltResult.findMany({
-      skip: Number(offset),
-      take: Number(limit),
+      skip: offset,
+      take: limit,
       where: whereCondition,
       include: {
-        site: {
-          select: {
-            siteName: true,
-          },
-        },
-        level: {
-          select: {
-            levelName: true,
-          },
-        },
-        drive: {
-          select: {
-            driveName: true,
-          },
-        },
-        location: {
-          select: {
-            locationName: true,
-          },
-        },
+        site: { select: { siteName: true } },
+        level: { select: { levelName: true } },
+        drive: { select: { driveName: true } },
+        location: { select: { locationName: true } },
       },
     });
 

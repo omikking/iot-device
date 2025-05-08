@@ -28,54 +28,62 @@ import {
 export default function Page(): JSX.Element {
 
   const boltResultQuery = gql`
-  query GetBoltResult(
-    $offset: Int,
-    $limit: Int,
-    $siteId: String,
-    $levelId: String,
-    $driveId: String,
-    $locationId: String,
-    $result: String,
-    $isHazard: Boolean
+ query GetBoltResult(
+  $offset: Int,
+  $limit: Int,
+  $siteId: String,
+  $levelId: String,
+  $driveId: String,
+  $locationId: String,
+  $result: String,
+  $isHazard: Boolean,
+  $withImage: Boolean,
+  $withComment: Boolean, 
+	$startDate: DateTime,
+  $endDate: DateTime
+) {
+  boltResults(
+    offset: $offset,
+    limit: $limit,
+    siteId: $siteId,
+    levelId: $levelId,
+    driveId: $driveId,
+    locationId: $locationId,
+    result: $result,
+    isHazard: $isHazard,
+    withImage: $withImage,
+    withComment: $withComment,
+    startDate: $startDate, 
+    endDate: $endDate      
   ) {
-    boltResults(
-      offset: $offset,
-      limit: $limit,
-      siteId: $siteId,
-      levelId: $levelId,
-      driveId: $driveId,
-      locationId: $locationId,
-      result: $result,
-      isHazard: $isHazard
-    ) {
-      totalRecords
-      results {
-        id
-        createdAt
-        updatedAt
-        boltNumber
-        boltType
-        peakLoad
-        peakDisplacement
-        positionInRing
-        result
-        isHazard
-        hazardCompletedDate
-        abortReason
-        comment
-        image
-        siteId
-        levelId
-        driveId
-        locationId
-        userId
-        site { siteName}
-			  drive {driveName}
-        location {locationName}
-      	level { levelName}
-      }
+    totalRecords
+    results {
+      id
+      createdAt
+      updatedAt
+      boltNumber
+      boltType
+      peakLoad
+      peakDisplacement
+      positionInRing
+      result
+      isHazard
+      hazardCompletedDate
+      abortReason
+      comment
+      image
+      siteId
+      levelId
+      driveId
+      locationId
+      userId
+      site { siteName }
+      drive { driveName }
+      location { locationName }
+      level { levelName }
     }
   }
+}
 `;
 
 
@@ -97,59 +105,22 @@ export default function Page(): JSX.Element {
     withImage: false,
     reportedHazard: false,
   });
-
   const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
 
-  const filterBoltResults = (
-    level?: string,
-    drive?: string,
-    location?: string,
-    dateRange?: DateRange,
-  ): BoltResultSchema[] | undefined => {
-    return boltResults?.filter((bolt) => {
-      const matchLevel = level ? bolt.level.levelName === level : true;
-      const matchDrive = drive ? bolt.drive.driveName === drive : true;
-      const matchLocation = location ? bolt.location.locationName === location : true;
-
-      // Date range filtering
-      const matchDateRange =
-        dateRange?.from && dateRange?.to
-          ? bolt.createdDate >= dateRange.from &&
-          bolt.createdDate <= dateRange.to
-          : true;
-
-      // Filtering
-      const matchResult =
-        (!filterState.pass && !filterState.fail && !filterState.abort) ||
-        (filterState.pass && bolt.result === 'PASS') ||
-        (filterState.fail && bolt.result === 'FAIL') ||
-        (filterState.abort && bolt.result === 'ABORT');
-
-      const matchComment =
-        (!filterState.withComment || bolt.comment) &&
-        (!filterState.withImage || bolt.image) &&
-        (!filterState.reportedHazard || bolt.isHazard);
-
-      return (
-        matchLocation &&
-        matchDrive &&
-        matchLevel &&
-        matchDateRange &&
-        matchResult &&
-        matchComment
-      );
-    });
-  };
-
-  const [{ data, fetching, error }] = useQuery({
+  const [{ data }] = useQuery({
     query: boltResultQuery,
     variables: {
-      offset: 0,
-      limit: 10,
+      siteId: site,
+      levelId: level,
+      driveId: drive,
+      locationId: location,
+      isHazard: filterState.reportedHazard ? true : undefined,
+      withImage: filterState.withImage ? true : undefined,
+      withComment: filterState.withComment ? true : undefined,
+      startDate: dateRange?.from,
+      endDate: dateRange?.to
     },
   });
-
-  const filteredResults = filterBoltResults(level, drive, location, dateRange);
 
   useEffect(() => {
     if (data?.boltResults.results) {
@@ -158,11 +129,8 @@ export default function Page(): JSX.Element {
       setBoltResults([]);
     }
 
-    // console.log(data?.boltResults?.results, "data.boltResults.results")
   }, [data]);
 
-  if (fetching) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -240,7 +208,7 @@ export default function Page(): JSX.Element {
           <Modal>
             <ModalTrigger asChild>
               <Button
-                disabled={!filteredResults?.length}
+                disabled={!boltResults?.length}
                 variant="primary"
                 size="large"
               >
@@ -269,7 +237,7 @@ export default function Page(): JSX.Element {
           boltResults={boltResults}
         />
         <TabsContent value="table">
-          <BoltResultsTable site={site} boltResults={filteredResults} />
+          <BoltResultsTable site={site} boltResults={boltResults} />
         </TabsContent>
         <TabsContent value="graphs">
           <BoltResultsGraphView />

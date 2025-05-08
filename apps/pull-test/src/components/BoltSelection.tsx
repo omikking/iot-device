@@ -118,20 +118,20 @@ export const BoltSelection = ({
 
   const [{ data: levelsData }] = useQuery({
     query: GET_LEVELS,
-    variables: { siteId: site },
-    pause: !site || !dateRange,
+    // variables: { siteId: site },
+    // pause: !site || !dateRange,
   });
 
   const [{ data: drivesData }] = useQuery({
     query: GET_DRIVES,
-    variables: { levelId: level },
-    pause: !level,
+    // variables: { levelId: level },
+    // pause: !level,
   });
 
   const [{ data: locationsData }] = useQuery({
     query: GET_LOCATIONS,
-    variables: { driveId: drive },
-    pause: !drive,
+    // variables: { driveId: drive },
+    // pause: !drive,
   });
 
 
@@ -197,7 +197,7 @@ export const BoltSelection = ({
         <RangeCalendar
           selected={dateRange}
           onSelect={onSetDateRange as SetRangeDateType}
-          disabled={!site}
+          // disabled={!site}
           className="w-72"
         />
       </div>
@@ -207,7 +207,7 @@ export const BoltSelection = ({
         <Dropdown
           id="level"
           isResettable
-          disabled={!site || !dateRange || !levelsOptionsMock}
+          // disabled={!site || !dateRange || !levelsOptionsMock}
           placeholder="Select level"
           selectedId={level}
           options={levelsOptionsMock as DropdownItem[]}
@@ -221,7 +221,7 @@ export const BoltSelection = ({
         <Dropdown
           id="drive"
           isResettable
-          disabled={!level || !drivesOptionsMock}
+          // disabled={!level || !drivesOptionsMock}
           placeholder="Select drive"
           selectedId={drive}
           options={drivesOptionsMock as DropdownItem[]}
@@ -235,7 +235,7 @@ export const BoltSelection = ({
         <Dropdown
           id="location"
           isResettable
-          disabled={!drive || !locationsOptionsMock}
+          // disabled={!drive || !locationsOptionsMock}
           placeholder="Select location"
           selectedId={location}
           options={locationsOptionsMock as DropdownItem[]}

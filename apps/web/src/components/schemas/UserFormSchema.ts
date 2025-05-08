@@ -1,14 +1,13 @@
 import { z } from 'zod';
 import { Application, Role } from '@/gql/graphql';
 
-// TODO we should not use this?
 export type UserFormValues = {
   email?: string;
   technician?: string;
   userPermissions: [
     {
       userId?: string;
-      role: string;
+      role: Role.CompanyAdmin | Role.CompanyUser | Role.SandvikTechnician;
       appsAccess: Application[];
     },
   ];
@@ -22,7 +21,7 @@ export const userFormSchema = z
       .min(2, { message: 'Email must be at least 2 characters.' })
       .max(50, { message: 'Email must be at most 50 characters.' })
       .optional(),
-    technician: z.string({ message: 'dawawdaw' }).optional(),
+    technician: z.string().optional(),
     userPermissions: z.array(
       z.object({
         userId: z.string().optional(),

@@ -69,6 +69,10 @@ export const UsersTable = ({
     undefined,
   );
 
+  const userToDeleteName = users.find(
+    (user) => user.id === userToDelete,
+  )?.fullName;
+
   // TODO Move to utils
   const getBadge = (
     userPermissions?: UserPermission,
@@ -113,23 +117,23 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (index: string | undefined) => {
-    if (index) {
-      const userPermissionToDelete = users[
-        parseInt(index)
-      ].userPermissions?.find(
-        (userPerm) =>
-          userPerm.userId === users[parseInt(index)].id &&
-          userPerm.companyId === companyId,
-      );
+  const handleDelete = (userId?: string) => {
+    if (userId) {
+      const userToDelete = users.find((user) => user.id === userId);
 
-      if (userPermissionToDelete) {
-        deleteUser({
-          id: userPermissionToDelete.id,
-        }).catch((error) => {
-          // TODO add toaster
-          console.log('error deleting userPerm', error);
-        });
+      if (userToDelete) {
+        const userPermissionToDelete = userToDelete.userPermissions?.find(
+          (userPerm) => userPerm.companyId === companyId,
+        );
+
+        if (userPermissionToDelete) {
+          deleteUser({
+            id: userPermissionToDelete.id,
+          }).catch((error) => {
+            // TODO add toaster
+            console.log('error deleting user permission', error);
+          });
+        }
       }
     }
   };
@@ -186,11 +190,9 @@ export const UsersTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        const rowIndex = users.findIndex((user) => user.id === row.original.id);
-
         return (
           <DeleteEditDropdown
-            itemSelected={rowIndex.toString()}
+            itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
             handleEdit={openEditModal}
           />
@@ -202,7 +204,7 @@ export const UsersTable = ({
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
+        deleteButtonText="Delete user"
         deleteIcon="User"
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
@@ -215,8 +217,7 @@ export const UsersTable = ({
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete !== undefined &&
-              ` ${users[parseInt(userToDelete)].fullName} `}
+            {` ${userToDeleteName} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

@@ -9,19 +9,28 @@ import {
   Text,
   Headline,
   LoadingSpinner,
+  Alert,
 } from '@gsp/ui';
-import { LucideCircleCheckBig } from 'lucide-react';
+import { LucideCircleCheckBig, LucideAlertTriangle } from 'lucide-react';
 import { BoltResult } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+
+// Types for component state management
+type HazardCompletionState =
+  | { status: 'confirming' }
+  | { status: 'processing' }
+  | { status: 'success' }
+  | { status: 'error'; message: string };
 
 type HazardCompleteModalProps = {
   boltResult: BoltResult;
   onClose: () => void;
 };
 
-const updateHazard = graphql(`
-  mutation updatedHazard(
+// GraphQL mutation
+const updateHazardMutation = graphql(`
+  mutation updateHazard(
     $id: String!
     $updateBoltResultInput: UpdateBoltResultInput!
   ) {
@@ -36,41 +45,56 @@ export const HazardCompleteModal = ({
   boltResult,
   onClose,
 }: HazardCompleteModalProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [, updateReportedHazard] = useMutation(updateHazard);
+  // Single state for the whole completion flow
+  const [state, setState] = useState<HazardCompletionState>({
+    status: 'confirming',
+  });
+  const [, updateHazard] = useMutation(updateHazardMutation);
 
-  const hazardConfirmed = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event?.preventDefault();
-    setIsLoading(true);
+  // Handle completion confirmation
+  const handleConfirm = async () => {
+    setState({ status: 'processing' });
 
     const currentHazardDates = Array.isArray(boltResult.hazardCompletedDate)
       ? boltResult.hazardCompletedDate
       : [];
 
     try {
-      await updateReportedHazard({
+      const result = await updateHazard({
         id: boltResult.id,
         updateBoltResultInput: {
           isHazard: false,
           hazardCompletedDate: [...currentHazardDates, Date.now()],
         },
       });
-    } catch (error) {
-      console.error('Error updating hazard:', error);
-    }
 
-    setTimeout(() => {
-      setIsConfirmed(true);
-      setIsLoading(false);
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
 
+      setState({ status: 'success' });
+
+      // Close the modal after showing success for a moment
       setTimeout(() => {
-        onClose?.();
-      }, 1000);
-    }, 1000);
+        onClose();
+      }, 1500);
+    } catch (error) {
+      setState({
+        status: 'error',
+        message:
+          error instanceof Error ? error.message : 'Failed to complete hazard',
+      });
+    }
   };
+
+  // Reset to confirmation view
+  const handleReset = () => {
+    setState({ status: 'confirming' });
+  };
+
+  // Determine if buttons should be disabled
+  const isProcessing = state.status === 'processing';
+  const isCompleted = state.status === 'success';
 
   return (
     <ModalContent
@@ -82,13 +106,9 @@ export const HazardCompleteModal = ({
         <ModalTitle>Complete hazard</ModalTitle>
       </ModalHeader>
 
-      <div className="relative h-[250px]">
+      <div className="relative h-[280px] flex items-center justify-center">
         {/* Confirmation View */}
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-            !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
-        >
+        {state.status === 'confirming' && (
           <div className="flex flex-col items-center justify-center gap-6 p-4">
             <div className="flex gap-4">
               <LucideCircleCheckBig size={30} className="text-success" />
@@ -105,15 +125,20 @@ export const HazardCompleteModal = ({
               want to complete it?
             </Text>
           </div>
-        </div>
+        )}
+
+        {/* Processing View (Loader) */}
+        {state.status === 'processing' && (
+          <div className="flex flex-col items-center justify-center gap-6 p-4">
+            <LoadingSpinner size={48} className="animate-spin text-primary" />
+            <Text className="text-center" color="foreground" variant="medium">
+              Processing...
+            </Text>
+          </div>
+        )}
+
         {/* Success View */}
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-            isConfirmed
-              ? 'opacity-100 translate-y-[-10px] z-10'
-              : 'opacity-0 translate-y-0 z-0'
-          }`}
-        >
+        {state.status === 'success' && (
           <div className="flex flex-col items-center justify-center gap-6 p-4">
             <div className="flex gap-4">
               <LucideCircleCheckBig size={30} className="text-success" />
@@ -121,28 +146,56 @@ export const HazardCompleteModal = ({
                 Hazard completed
               </Headline>
             </div>
+            <Text className="text-center" color="foreground" variant="medium">
+              The hazard has been successfully marked as completed.
+            </Text>
           </div>
-        </div>
+        )}
+
+        {/* Error View */}
+        {state.status === 'error' && (
+          <div className="flex flex-col items-center justify-center gap-6 p-4">
+            <Alert variant="error">
+              <LucideAlertTriangle className="h-4 w-4" />
+              <Text className="text-center" color="foreground" variant="medium">
+                {state.message}
+              </Text>
+            </Alert>
+            <Text className="text-center" color="foreground" variant="medium">
+              Please try again or contact support if the problem persists.
+            </Text>
+          </div>
+        )}
       </div>
 
       <ModalFooter className="px-10 pb-5 pt-8">
         <ModalClose asChild>
           <div className="flex justify-end items-end gap-5">
-            <Button
-              size="large"
-              variant="primary"
-              disabled={isConfirmed}
-              onClick={hazardConfirmed}
-            >
-              {isLoading ? (
-                <LoadingSpinner className="animate-spin" size={24} />
-              ) : (
+            {state.status === 'confirming' && (
+              <Button
+                size="large"
+                variant="primary"
+                onClick={handleConfirm}
+                disabled={isProcessing}
+              >
                 <LucideCircleCheckBig />
-              )}
-              Complete
-            </Button>
-            <Button variant="outline" size="large" onClick={onClose}>
-              {isConfirmed ? 'Close' : 'Cancel'}
+                Complete
+              </Button>
+            )}
+
+            {state.status === 'error' && (
+              <Button size="large" variant="primary" onClick={handleReset}>
+                Try Again
+              </Button>
+            )}
+
+            <Button
+              variant="outline"
+              size="large"
+              onClick={onClose}
+              disabled={isProcessing}
+            >
+              {isCompleted ? 'Close' : 'Cancel'}
             </Button>
           </div>
         </ModalClose>

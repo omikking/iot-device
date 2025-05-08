@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   LucideAlertTriangle,
   LucideCircleCheckBig,
@@ -17,14 +18,11 @@ import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import React, { useState } from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
 import { HazardCompleteModal } from './HazardCompleteModal';
+import { formatDate } from '@/utils/dateUtils';
 
-type HazardCardProps = {
-  boltResult: BoltResult;
-};
-
+// GraphQL query to get site name
 const getSiteNameQuery = graphql(`
   query getSiteName($id: String!) {
     site(id: $id) {
@@ -33,19 +31,18 @@ const getSiteNameQuery = graphql(`
   }
 `);
 
+type HazardCardProps = {
+  boltResult: BoltResult;
+};
+
 export const HazardCard = ({ boltResult }: HazardCardProps) => {
   const { isHazard, comment, createdAt } = boltResult;
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+  // Modal visibility states
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 
-    return `${year}-${month}-${day}`;
-  };
-
+  // Fetch site data
   const [{ data: siteData }] = useQuery({
     query: getSiteNameQuery,
     variables: { id: boltResult?.siteId || '' },
@@ -54,20 +51,26 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
 
   const siteName = siteData?.site?.siteName || 'N/A';
 
-  const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setIsConfirmationModalOpen(true);
+  // Generate specifications for card display
+  const allSpecs = generateBoltSpecifications(boltResult, { siteName });
+  // Get first two specs and the second-to-last spec
+  const displaySpecs = [...allSpecs.slice(0, 2), ...allSpecs.slice(-2, -1)];
+
+  // Handlers for modal operations
+  const openCompleteModal = () => {
+    setIsCompleteModalOpen(true);
   };
 
   const handleHazardCompleted = () => {
-    setIsConfirmationModalOpen(false);
+    setIsCompleteModalOpen(false);
   };
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
+      {/* Card Header */}
       <div className="flex flex-row border-b border-neutral-2 p-6 items-center justify-between">
         <Headline variant="small" as="h3" color="foreground" isBold>
-          {formatDate(new Date(createdAt))}
+          {formatDate(createdAt)}
         </Headline>
         {isHazard && (
           <Badge variant="attention">
@@ -76,26 +79,21 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
           </Badge>
         )}
       </div>
-      <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
-        <div className="pt-6 flex-grow">
-          {boltResult &&
-            (() => {
-              const allSpecs = generateBoltSpecifications(boltResult, {});
-              // Get first two and last two items
-              const selectedSpecs = [
-                ...allSpecs.slice(0, 2),
-                ...allSpecs.slice(-2, -1),
-              ];
 
-              return selectedSpecs.map((boltSpec, i) => (
-                <Specification
-                  key={i}
-                  title={boltSpec.title}
-                  text={boltSpec.title === 'Site' ? siteName : boltSpec.text}
-                />
-              ));
-            })()}
+      {/* Card Content */}
+      <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
+        {/* Specifications */}
+        <div className="pt-6 flex-grow">
+          {displaySpecs.map((spec, i) => (
+            <Specification
+              key={i}
+              title={spec.title}
+              text={spec.title === 'Site' ? siteName : spec.text}
+            />
+          ))}
         </div>
+
+        {/* Description */}
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
           <Text variant="small" color="foreground">
             Description
@@ -103,42 +101,45 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
           <Textarea value={comment || ''} className="flex-grow" disabled />
         </div>
       </div>
+
+      {/* Card Actions */}
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
+        {/* Complete Hazard Button */}
         {isHazard && (
-          <Modal
-            open={isConfirmationModalOpen}
-            onOpenChange={setIsConfirmationModalOpen}
-          >
-            <ModalTrigger asChild>
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handleCompleteClick}
-              >
-                <LucideCircleCheckBig />
-                Complete
-              </Button>
-            </ModalTrigger>
-            <HazardCompleteModal
-              boltResult={boltResult}
-              onClose={handleHazardCompleted}
-            />
-          </Modal>
+          <Button variant="primary" size="small" onClick={openCompleteModal}>
+            <LucideCircleCheckBig />
+            Complete
+          </Button>
         )}
-        <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <ModalTrigger asChild>
-            <Button variant="outline" size="small">
-              <LucideClipboardList />
-              View more
-            </Button>
-          </ModalTrigger>
-          <BoltResultDetailsModal
-            isHazardCompletable
-            boltResult={boltResult}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </Modal>
+
+        {/* View Details Button */}
+        <Button
+          variant="outline"
+          size="small"
+          onClick={() => setIsDetailsModalOpen(true)}
+        >
+          <LucideClipboardList />
+          View more
+        </Button>
       </div>
+
+      {/* Hazard Complete Modal */}
+      <Modal open={isCompleteModalOpen} onOpenChange={setIsCompleteModalOpen}>
+        <HazardCompleteModal
+          boltResult={boltResult}
+          onClose={handleHazardCompleted}
+        />
+      </Modal>
+
+      {/* Bolt Details Modal */}
+      <Modal open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <BoltResultDetailsModal
+          boltResult={boltResult}
+          onClose={() => setIsDetailsModalOpen(false)}
+          onCompleteRequest={openCompleteModal}
+          isHazardCompletable={isHazard}
+        />
+      </Modal>
     </div>
   );
 };

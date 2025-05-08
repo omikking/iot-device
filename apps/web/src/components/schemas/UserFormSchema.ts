@@ -7,7 +7,7 @@ export type UserFormValues = {
   userPermissions: [
     {
       userId?: string;
-      role: Role.CompanyAdmin | Role.CompanyUser | Role.SandvikTechnician;
+      role: string;
       appsAccess: Application[];
     },
   ];

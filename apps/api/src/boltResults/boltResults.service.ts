@@ -43,14 +43,14 @@ export class BoltResultsService {
     });
 
     // Count failed
-    const failed = await this.prisma.boltResult.count({
+    const failedCount = await this.prisma.boltResult.count({
       where: {
         ...baseWhere,
         result: 'FAIL',
       },
     });
 
-    const hazard = await this.prisma.boltResult.count({
+    const hazardCount = await this.prisma.boltResult.count({
       where: {
         ...baseWhere,
         isHazard: true,
@@ -73,8 +73,8 @@ export class BoltResultsService {
 
     return {
       totalRecords,
-      failed,
-      hazard,
+      failedCount,
+      hazardCount,
       successRate: Math.floor(successRate),
       results,
     };

@@ -2,20 +2,33 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
   /** Date custom scalar type */
-  DateTime: { input: any; output: any; }
+  DateTime: { input: any; output: any };
 };
 
 /**
@@ -51,8 +64,8 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  failed: Scalars['Int']['output'];
-  hazard: Scalars['Int']['output'];
+  failedCount: Scalars['Int']['output'];
+  hazardCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
   successRate: Scalars['Int']['output'];
   totalRecords: Scalars['Int']['output'];
@@ -60,7 +73,7 @@ export type BoltResultResponse = {
 
 export enum BoltType {
   Md47 = 'MD47',
-  Mdx47 = 'MDX47'
+  Mdx47 = 'MDX47',
 }
 
 /**
@@ -327,7 +340,6 @@ export type Mutation = {
   updateUserPermission: UserPermission;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -335,7 +347,6 @@ export type Mutation = {
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
 };
-
 
 /**
  * Mutation
@@ -345,7 +356,6 @@ export type MutationCreateBoltResultsArgs = {
   createBoltResultsInput: Array<CreateBoltResultInput>;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -353,7 +363,6 @@ export type MutationCreateBoltResultsArgs = {
 export type MutationCreateCoffeeArgs = {
   createCoffeeInput: CreateCoffeeInput;
 };
-
 
 /**
  * Mutation
@@ -363,7 +372,6 @@ export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -371,7 +379,6 @@ export type MutationCreateCompanyArgs = {
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
 };
-
 
 /**
  * Mutation
@@ -381,7 +388,6 @@ export type MutationCreateLevelArgs = {
   createLevelInput: CreateLevelInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -389,7 +395,6 @@ export type MutationCreateLevelArgs = {
 export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
 };
-
 
 /**
  * Mutation
@@ -399,7 +404,6 @@ export type MutationCreateSiteArgs = {
   createSiteInput: CreateSiteInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -407,7 +411,6 @@ export type MutationCreateSiteArgs = {
 export type MutationCreateUserPermissionArgs = {
   createUserPermissionInput: CreateUserPermissionInput;
 };
-
 
 /**
  * Mutation
@@ -417,7 +420,6 @@ export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -425,7 +427,6 @@ export type MutationRemoveBoltResultArgs = {
 export type MutationRemoveBoltResultsArgs = {
   ids: Array<Scalars['String']['input']>;
 };
-
 
 /**
  * Mutation
@@ -435,7 +436,6 @@ export type MutationRemoveCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -443,7 +443,6 @@ export type MutationRemoveCoffeeArgs = {
 export type MutationRemoveCompanyArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -453,7 +452,6 @@ export type MutationRemoveDriveArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -461,7 +459,6 @@ export type MutationRemoveDriveArgs = {
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -471,7 +468,6 @@ export type MutationRemoveLocationArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -479,7 +475,6 @@ export type MutationRemoveLocationArgs = {
 export type MutationRemoveSiteArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -489,7 +484,6 @@ export type MutationRemoveUserArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -497,7 +491,6 @@ export type MutationRemoveUserArgs = {
 export type MutationRemoveUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Mutation
@@ -508,7 +501,6 @@ export type MutationUpdateBoltResultArgs = {
   updateBoltResultInput: UpdateBoltResultInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -516,7 +508,6 @@ export type MutationUpdateBoltResultArgs = {
 export type MutationUpdateBoltResultsArgs = {
   updateBoltResultsInput: Array<UpdateBoltResultInput>;
 };
-
 
 /**
  * Mutation
@@ -527,7 +518,6 @@ export type MutationUpdateCoffeeArgs = {
   updateCoffeeInput: UpdateCoffeeInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -536,7 +526,6 @@ export type MutationUpdateCompanyArgs = {
   id: Scalars['String']['input'];
   updateCompanyInput: UpdateCompanyInput;
 };
-
 
 /**
  * Mutation
@@ -547,7 +536,6 @@ export type MutationUpdateDriveArgs = {
   updateDriveInput: UpdateDriveInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -556,7 +544,6 @@ export type MutationUpdateLevelArgs = {
   id: Scalars['String']['input'];
   updateLevelInput: UpdateLevelInput;
 };
-
 
 /**
  * Mutation
@@ -567,7 +554,6 @@ export type MutationUpdateLocationArgs = {
   updateLocationInput: UpdateLocationInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -577,7 +563,6 @@ export type MutationUpdateSiteArgs = {
   updateSiteInput: UpdateSiteInput;
 };
 
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -586,7 +571,6 @@ export type MutationUpdateUserArgs = {
   id: Scalars['String']['input'];
   updateUserInput: UpdateUserInput;
 };
-
 
 /**
  * Mutation
@@ -614,7 +598,7 @@ export type Plan = {
 
 export enum PullTestAbortReason {
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
-  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
+  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE',
 }
 
 /**
@@ -645,7 +629,6 @@ export type Query = {
   users: Array<User>;
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -653,7 +636,6 @@ export type Query = {
 export type QueryBoltResultArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -670,7 +652,6 @@ export type QueryBoltResultsArgs = {
   siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -678,7 +659,6 @@ export type QueryBoltResultsArgs = {
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 /**
  * Query
@@ -690,7 +670,6 @@ export type QueryCompaniesArgs = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -698,7 +677,6 @@ export type QueryCompaniesArgs = {
 export type QueryCompanyArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -708,7 +686,6 @@ export type QueryDriveArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -716,7 +693,6 @@ export type QueryDriveArgs = {
 export type QueryHazardsArgs = {
   companyId: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -726,7 +702,6 @@ export type QueryLevelArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -734,7 +709,6 @@ export type QueryLevelArgs = {
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -744,7 +718,6 @@ export type QuerySiteArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -753,7 +726,6 @@ export type QueryUserArgs = {
   id: Scalars['String']['input'];
 };
 
-
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -761,7 +733,6 @@ export type QueryUserArgs = {
 export type QueryUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
-
 
 /**
  * Query
@@ -774,7 +745,7 @@ export type QueryUsersArgs = {
 export enum Result {
   Abort = 'ABORT',
   Fail = 'FAIL',
-  Pass = 'PASS'
+  Pass = 'PASS',
 }
 
 export enum RingPosition {
@@ -792,14 +763,14 @@ export enum RingPosition {
   RhShoulder = 'RH_Shoulder',
   RhWallCenter = 'RH_Wall_Center',
   RhWallLower = 'RH_Wall_Lower',
-  RhWallUpper = 'RH_Wall_Upper'
+  RhWallUpper = 'RH_Wall_Upper',
 }
 
 export enum Role {
   CompanyAdmin = 'COMPANY_ADMIN',
   CompanyUser = 'COMPANY_USER',
   SandvikAdmin = 'SANDVIK_ADMIN',
-  SandvikTechnician = 'SANDVIK_TECHNICIAN'
+  SandvikTechnician = 'SANDVIK_TECHNICIAN',
 }
 
 /**
@@ -991,14 +962,120 @@ export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
 }>;
 
+export type CreateCoffeeMutation = {
+  __typename?: 'Mutation';
+  createCoffee: {
+    __typename?: 'Coffee';
+    id: string;
+    name: string;
+    brand: string;
+    flavors?: Array<{ __typename?: 'Flavor'; id: string; name: string }> | null;
+  };
+};
 
-export type CreateCoffeeMutation = { __typename?: 'Mutation', createCoffee: { __typename?: 'Coffee', id: string, name: string, brand: string, flavors?: Array<{ __typename?: 'Flavor', id: string, name: string }> | null } };
+export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMeCoffeesQuery = {
+  __typename?: 'Query';
+  coffees: Array<{
+    __typename?: 'Coffee';
+    id: string;
+    name: string;
+    brand: string;
+  }>;
+};
 
-
-export type GetMeCoffeesQuery = { __typename?: 'Query', coffees: Array<{ __typename?: 'Coffee', id: string, name: string, brand: string }> };
-
-
-export const CreateCoffeeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCoffee"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCoffeeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCoffee"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCoffeeInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"flavors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCoffeeMutation, CreateCoffeeMutationVariables>;
-export const GetMeCoffeesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCoffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"coffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}}]}}]}}]} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;
+export const CreateCoffeeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'createCoffee' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'createCoffeeInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateCoffeeInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCoffee' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'createCoffeeInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'createCoffeeInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'flavors' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateCoffeeMutation,
+  CreateCoffeeMutationVariables
+>;
+export const GetMeCoffeesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getMeCoffees' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'coffees' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;

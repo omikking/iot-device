@@ -230,8 +230,8 @@ export class BoltResult {
 
 export class BoltResultResponse {
     totalRecords: number;
-    failed: number;
-    hazard: number;
+    failedCount : number;
+    hazardCount: number;
     successRate: number;
     results: BoltResult[];
 }

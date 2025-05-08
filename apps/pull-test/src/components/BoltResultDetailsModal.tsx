@@ -13,7 +13,7 @@ import {
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
@@ -109,6 +109,7 @@ export const BoltResultDetailsModal = ({
     variables: { id: boltResult?.userId },
   });
 
+  // const [, updateReportedHazard] = useMutation(updateHazard);
   const [, updateReportedHazard] = useMutation(updateHazard);
 
   const levelName = levelData?.level?.levelName || 'N/A';
@@ -129,7 +130,9 @@ export const BoltResultDetailsModal = ({
     setIsCompleted(true);
   };
 
-  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const hazardConfirmed = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     event?.preventDefault();
     setIsLoading(true);
 
@@ -137,32 +140,36 @@ export const BoltResultDetailsModal = ({
       ? boltResult.hazardCompletedDate
       : [];
 
-    try {
-      updateReportedHazard({
-        id: boltResult.id,
-        updateBoltResultInput: {
-          isHazard: false,
-          hazardCompletedDate: [...currentHazardDates, Date.now()],
-        },
-      });
-      setIsSuccessful(true);
-    } catch (error) {
-      setIsSuccessful(false);
-      //TODO Set an error toast here
-    }
-    console.log('isSuccessful', isSuccessful);
-    setIsConfirmed(true);
-    setIsLoading(false);
+    setTimeout(async () => {
+      try {
+        setTimeout(async () => {
+          await updateReportedHazard({
+            id: boltResult.id,
+            updateBoltResultInput: {
+              isHazard: false,
+              hazardCompletedDate: [...currentHazardDates, Date.now()],
+            },
+          });
+        }, 1000);
+        setIsSuccessful(true);
+        setIsConfirmed(true);
+      } catch (error) {
+        setIsSuccessful(false);
+        //TODO Set an error toast here
+      }
+      setIsLoading(false);
 
-    setTimeout(() => {
-      onClose?.();
-      setTimeout(() => {
-        resetConfirmation();
-      }, 200);
-    }, 2000);
+      if (isCompleted) {
+        setTimeout(() => {
+          onClose?.();
+          resetConfirmation();
+        }, 2000);
+      }
+    }, 1000);
   };
 
   const resetConfirmation = () => {
+    console.log('resetConfirmation called');
     setIsCompleted(false);
     setIsSuccessful(false);
     setIsConfirmed(false);

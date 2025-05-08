@@ -61,7 +61,6 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
 
   const handleHazardCompleted = () => {
     setIsConfirmationModalOpen(false);
-    // Optionally refresh data or update UI as needed
   };
 
   return (

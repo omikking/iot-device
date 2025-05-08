@@ -9,6 +9,14 @@ import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
+const getHazardsIdQuery = graphql(`
+  query getHazardsId($id: String!) {
+    hazards(companyId: $id) {
+      id
+    }
+  }
+`);
+
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
     company(id: $id) {
@@ -29,8 +37,13 @@ export default function Page({
     query: getCompanyName,
     variables: { id: companyId },
   });
-
   const companyName = data?.company?.name;
+
+  const [{ data: hazardData }] = useQuery({
+    query: getHazardsIdQuery,
+    variables: { id: companyId },
+    pause: !companyId,
+  });
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -64,7 +77,7 @@ export default function Page({
               variant="neutral"
               size="small"
             >
-              5 active
+              {`${hazardData?.hazards?.length ?? 0} active`}
             </Badge>
             <Headline as="h3" variant="medium" color="foreground">
               Hazards

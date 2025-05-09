@@ -122,11 +122,13 @@ export const BoltResultDetailsModal = ({
   const handleCompleteHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setCurrentView('confirmation');
+    console.log('1');
   };
 
   const handleConfirmHazard = async (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
+    console.log('2');
     event.preventDefault();
     setIsLoading(true);
 
@@ -142,19 +144,23 @@ export const BoltResultDetailsModal = ({
           hazardCompletedDate: [...currentHazardDates, Date.now()],
         },
       });
+      console.log('3');
 
       setCurrentView('success');
 
       // Auto-close after successful completion
       setTimeout(() => {
         onClose?.();
+        setCurrentView('details');
+        console.log('4');
         // Don't call resetModal here - it's not needed and can cause race conditions
-      }, 3000);
+      }, 1000);
     } catch (error) {
       // We could add a toast notification here for errors
       console.error('Failed to update hazard status:', error);
     } finally {
       setIsLoading(false);
+      console.log('5');
     }
   };
 
@@ -341,9 +347,11 @@ export const BoltResultDetailsModal = ({
       </ModalHeader>
 
       {/* Modal content based on current view */}
-      {currentView === 'details' && renderDetailsView()}
-      {currentView === 'confirmation' && renderConfirmationView()}
-      {currentView === 'success' && renderSuccessView()}
+      <div className="transition-all duration-500">
+        {currentView === 'details' && renderDetailsView()}
+        {currentView === 'confirmation' && renderConfirmationView()}
+        {currentView === 'success' && renderSuccessView()}
+      </div>
 
       <ModalFooter className="px-10 pb-5 pt-8">
         {currentView === 'success' ? (

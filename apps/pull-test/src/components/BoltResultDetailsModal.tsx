@@ -13,21 +13,58 @@ import {
 } from '@gsp/ui';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { generateBoltSpecifications } from '@/libs/utils';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
 
-interface BoltResultDetailsModalProps {
-  modalTitle: string;
-  fullBoltData?: BoltResultSchema;
+type BoltResultDetailsModalProps = {
+  boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
-}
+};
+
+const getLevelDetails = graphql(`
+  query getLevelDetails($id: String!) {
+    level(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const getDriveDetails = graphql(`
+  query getDriveDetails($id: String!) {
+    drive(id: $id) {
+      id
+      driveName
+    }
+  }
+`);
+
+const getLocationDetails = graphql(`
+  query getLocationDetails($id: String!) {
+    location(id: $id) {
+      id
+      locationName
+    }
+  }
+`);
+
+const getNameDetails = graphql(`
+  query getNameDetails($id: String!) {
+    user(id: $id) {
+      fullName
+    }
+  }
+`);
 
 export const BoltResultDetailsModal = ({
-  modalTitle,
   isHazardCompletable = false,
-  fullBoltData,
+  boltResult,
   onClose,
 }: BoltResultDetailsModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,10 +72,42 @@ export const BoltResultDetailsModal = ({
   const [isSuccessful, setIsSuccessful] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const { image, isHazard, peakLoad, peakDisplacement, author } =
-    (fullBoltData as BoltResultSchema) || {};
-  // @TODO Just hardcoded for now, update later. Image should be here as well most likely
-  const boltDescription = 'Test description';
+  // Level Query
+  const [{ data: levelData }] = useQuery({
+    query: getLevelDetails,
+    variables: { id: boltResult?.levelId },
+  });
+
+  // Drive Query
+  const [{ data: driveData }] = useQuery({
+    query: getDriveDetails,
+    variables: { id: boltResult?.driveId },
+  });
+
+  // Location Query
+  const [{ data: locationData }] = useQuery({
+    query: getLocationDetails,
+    variables: { id: boltResult?.locationId },
+  });
+
+  // Name Query
+  const [{ data: nameData }] = useQuery({
+    query: getNameDetails,
+    variables: { id: boltResult?.userId },
+  });
+
+  const levelName = levelData?.level?.levelName || 'N/A';
+  const driveName = driveData?.drive?.driveName || 'N/A';
+  const locationName = locationData?.location?.locationName || 'N/A';
+
+  const siteInfo = {
+    levelName: levelName,
+    driveName: driveName,
+    locationName: locationName,
+  };
+
+  const { image, isHazard, peakLoad, peakDisplacement } =
+    (boltResult as BoltResult) || {};
 
   const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
@@ -80,7 +149,9 @@ export const BoltResultDetailsModal = ({
       }`}
     >
       <ModalHeader>
-        <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
+        <ModalTitle>
+          {isCompleted ? 'Complete hazard' : `Bolt ${boltResult?.boltNumber}`}
+        </ModalTitle>
       </ModalHeader>
 
       {/* First View */}
@@ -89,47 +160,47 @@ export const BoltResultDetailsModal = ({
           isCompleted || isConfirmed ? 'hidden' : 'block'
         }`}
       >
-        <div className="p-10 flex gap-10 flex-grow">
-          {image && (
-            <Image
-              src={image}
-              alt="Attached bolt result image"
-              width={390}
-              height={280}
-              className="rounded-md h-72"
-            />
-          )}
-          <div className="flex flex-col w-1/2 ">
-            {boltDescription && (
-              <div className="flex flex-col flex-grow">
-                <Text variant="small" color="foreground">
-                  Comment
-                </Text>
-                <Textarea
-                  value={boltDescription}
-                  className="mt-2 flex-grow"
-                  disabled
-                  readOnly
-                />
-              </div>
+        {(image || boltResult.comment || isHazard) && (
+          <div className="px-10 pb-10 flex gap-10 flex-grow">
+            {image && (
+              <Image
+                src={'/capybara.jpg'}
+                alt="Attached bolt result image"
+                width={390}
+                height={280}
+                className="rounded-md h-72 mt-10"
+              />
             )}
-            {isHazard && (
-              <div className="flex justify-between pt-5">
-                <Badge variant={'attention'}>
-                  <LucideTriangleAlert />
-                  Reported hazard
-                </Badge>
-                {author && (
+            <div className="flex flex-col w-1/2 ">
+              {boltResult.comment && (
+                <div className="flex flex-col flex-grow pt-10">
                   <Text variant="small" color="foreground">
-                    Reported by: {author}
+                    Comment
                   </Text>
-                )}
-              </div>
-            )}
+                  <Textarea
+                    value={boltResult.comment}
+                    className="mt-2 flex-grow"
+                    disabled
+                    readOnly
+                  />
+                </div>
+              )}
+              {isHazard && (
+                <div className="flex pt-5 gap-4 items-center">
+                  <Badge variant={'attention'}>
+                    <LucideTriangleAlert />
+                    Reported hazard
+                  </Badge>
+                  <Text variant="small" color="foreground">
+                    Reported by: {nameData?.user?.fullName || 'N/A'}
+                  </Text>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="px-10 pb-10">
+        <div className="px-10 pb-10 pt-5">
           <Headline
             className="pb-4"
             variant="small"
@@ -139,19 +210,26 @@ export const BoltResultDetailsModal = ({
           >
             Bolt specifications
           </Headline>
-          <div className="flex flex-wrap">
-            {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
-              <Specification
-                key={index}
-                title={boltSpec.title}
-                text={boltSpec.text}
-                className="w-1/2"
-              />
-            ))}
-            {boltSpecifications.length % 2 === 0 && (
-              <Specification title="" text="" className="w-1/2" />
-            )}
-          </div>
+
+          {boltResult && (
+            <>
+              <div className="flex flex-wrap">
+                {[
+                  ...generateBoltSpecifications(boltResult, siteInfo).slice(1),
+                ].map((boltSpec, index) => (
+                  <Specification
+                    key={index}
+                    title={boltSpec.title}
+                    text={boltSpec.text}
+                    className="w-1/2"
+                  />
+                ))}
+                {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
+                  0 && <Specification title="" text="" className="w-1/2" />}
+              </div>
+            </>
+          )}
+
           {/* BOLT RESULTS */}
           <div>
             <Headline
@@ -169,7 +247,6 @@ export const BoltResultDetailsModal = ({
             />
           </div>
         </div>
-       
       </div>
       {isCompleted && (
         <div className="relative h-[250px]">

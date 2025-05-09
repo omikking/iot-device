@@ -1,4 +1,3 @@
-
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -94,7 +93,7 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateAdminPermissionInput[];
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<CreatePlanInput[]>;
 }
 
@@ -119,6 +118,7 @@ export class UpdateCompanyInput {
     sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
+  
 
 export class UpdatePlanInput {
     id?: Nullable<string>;

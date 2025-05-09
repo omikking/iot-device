@@ -1,11 +1,4 @@
-import {
-  ArrayMaxSize,
-  ArrayNotEmpty,
-  IsArray,
-  IsEmail,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsArray, IsEmail, IsString, Length } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
@@ -37,10 +30,8 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @IsEmail()
   companyContactEmail: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMaxSize(1)
-  userPermissions: GraphQLTypes.CreateAdminPermissionInput[];
+  @IsString()
+  sandvikAdminUserId: string;
 
   @IsArray()
   plans: GraphQLTypes.CreatePlanInput[];

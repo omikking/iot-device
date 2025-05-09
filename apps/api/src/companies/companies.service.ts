@@ -54,9 +54,29 @@ export class CompaniesService {
   async create(
     createCompanyInput: GraphQLTypes.CreateCompanyInput,
   ): Promise<Company> {
-    const { plans, ...companyData } = createCompanyInput;
+    const { plans, sandvikAdminUserId, ...companyData } = createCompanyInput;
 
     const company = await prisma.$transaction(async (prisma) => {
+      // Step 1: Validate admin user
+      if (!sandvikAdminUserId) {
+        throw new UserInputError('sandvikAdminUserId is required');
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: sandvikAdminUserId as string },
+        select: { globalRole: true },
+      });
+
+      if (!user) {
+        throw new UserInputError(`User ${sandvikAdminUserId} does not exist`);
+      }
+
+      if (user.globalRole !== Role.SANDVIK_ADMIN) {
+        throw new UserInputError(
+          `User ${sandvikAdminUserId} does not have global role SANDVIK_ADMIN`,
+        );
+      }
+
+      // Step 2: Create company with admin userPermission
       const createdCompany = await prisma.company.create({
         data: {
           name: companyData.name,
@@ -66,49 +86,23 @@ export class CompaniesService {
           city: companyData.city,
           country: companyData.country,
           companyContactEmail: companyData.companyContactEmail,
-
           userPermission: {
-            create: await Promise.all(
-              companyData.userPermissions?.map(async (userPermission) => {
-                const user = await prisma.user.findUnique({
-                  where: { id: userPermission.userId },
-                  select: { globalRole: true },
-                });
-
-                if (!user) {
-                  throw new UserInputError(
-                    `User ${userPermission.userId} does not exist`,
-                  );
-                }
-
-                // Check that user has globalRole Sandvik_ADMIN
-                if (user.globalRole !== Role.SANDVIK_ADMIN) {
-                  throw new UserInputError(
-                    `User ${userPermission.userId} does not have global role as SANDVIK_ADMIN`,
-                  );
-                }
-
-                return {
-                  user: {
-                    connect: {
-                      id: userPermission.userId,
-                    },
-                  },
-                  role: Role.SANDVIK_ADMIN,
-                  appsAccess: [
-                    Application.PULL_TEST,
-                    Application.PULL_TEST_OPERATOR,
-                    Application.ULTRABOLTS,
-                    Application.XCYCLOPS,
-                  ],
-                };
-              }),
-            ),
+            create: {
+              user: { connect: { id: sandvikAdminUserId } },
+              role: Role.SANDVIK_ADMIN,
+              appsAccess: [
+                Application.PULL_TEST,
+                Application.PULL_TEST_OPERATOR,
+                Application.ULTRABOLTS,
+                Application.XCYCLOPS,
+              ],
+            },
           },
         },
       });
 
-      if (plans && plans.length >= 0) {
+      // Step 3: Create plans if provided
+      if (plans && plans.length > 0) {
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
             companyId: createdCompany.id,
@@ -125,6 +119,7 @@ export class CompaniesService {
     if (!company) {
       throw new UserInputError('Failed to create the company and plans');
     }
+
     return company;
   }
 
@@ -150,12 +145,23 @@ export class CompaniesService {
       });
 
       // Step 2: Update SANDVIK_ADMIN userPermission
-      if (sandvikAdminUserId) {
+      const existingSandvikAdmins = await prisma.userPermission.findMany({
+        where: {
+          companyId: id,
+          role: 'SANDVIK_ADMIN',
+        },
+      });
+
+      const isAlreadyAdmin = existingSandvikAdmins?.some(
+        (perm) => perm.userId === sandvikAdminUserId,
+      );
+
+      if (!isAlreadyAdmin) {
         // Remove previous SANDVIK_ADMINs for this company
         await prisma.userPermission.deleteMany({
           where: {
             companyId: id,
-            role: 'SANDVIK_ADMIN',
+            role: Role.SANDVIK_ADMIN,
           },
         });
 
@@ -163,9 +169,14 @@ export class CompaniesService {
         await prisma.userPermission.create({
           data: {
             companyId: id,
-            userId: sandvikAdminUserId,
-            role: 'SANDVIK_ADMIN',
-            appsAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+            userId: sandvikAdminUserId as string,
+            role: Role.SANDVIK_ADMIN,
+            appsAccess: [
+              Application.PULL_TEST,
+              Application.PULL_TEST_OPERATOR,
+              Application.ULTRABOLTS,
+              Application.XCYCLOPS,
+            ],
           },
         });
       }

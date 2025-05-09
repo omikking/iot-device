@@ -7,7 +7,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  LoadingSpinner,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -259,12 +258,9 @@ export const AddOrEditSiteModal = ({
                 variant="primary"
                 size="large"
                 disabled={isLoading}
+                isLoading={isLoading}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
-                  <LucidePlus />
-                )}
+                {!isLoading && <LucidePlus />}
 
                 {site ? 'Save changes' : 'Add site'}
               </Button>

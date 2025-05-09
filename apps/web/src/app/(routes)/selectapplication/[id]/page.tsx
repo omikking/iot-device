@@ -53,7 +53,7 @@ export default function Page({
               <SandvikLogo />
             </NavigationCard>
           </Link>
-          <Link href="http://localhost:3000/designsystem">
+          {/* <Link href="http://localhost:3000/designsystem">
             <NavigationCard size={'medium'}>
               <Headline as="h3" variant="medium" color="foreground">
                 Ultrabolts
@@ -68,7 +68,7 @@ export default function Page({
               </Headline>
               <SandvikLogo />
             </NavigationCard>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

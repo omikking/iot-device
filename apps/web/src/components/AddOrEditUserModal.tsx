@@ -9,7 +9,6 @@ import {
   FormMessage,
   Headline,
   Input,
-  LoadingSpinner,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -385,12 +384,9 @@ export const AddOrEditUserModal = ({
                 variant="primary"
                 size="large"
                 disabled={isLoading}
+                isLoading
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
-                  <LucidePlus />
-                )}
+                {!isLoading && <LucidePlus />}
 
                 {user ? 'Save changes' : 'Add user'}
               </Button>

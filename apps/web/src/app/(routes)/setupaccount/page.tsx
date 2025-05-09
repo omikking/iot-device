@@ -54,53 +54,58 @@ export default function Page(): JSX.Element {
     (permission) => permission.companyId === companyId,
   );
 
-  const userRole = companyPermission?.role;
+  // const userRole = companyPermission?.role;
+  const userRole = 'COMPANY_USER' as string;
 
-  const invitationRoleTitle = () => {
-    switch (userRole) {
-      case 'SANDVIK_ADMIN':
-        return (
-          <Headline as="h4" variant="small" color="foreground">
-            You're invited to join
-            <Headline variant="medium" color={'foreground'} as="span" isBold>
-              {` Ground Support Platform `}
-            </Headline>
+  let invitationRoleTitle: JSX.Element | string;
+
+  switch (userRole) {
+    case 'SANDVIK_ADMIN':
+      invitationRoleTitle = (
+        <Headline as="h4" variant="small" color="foreground">
+          You're invited to join
+          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+            {` Ground Support Platform `}
             as an administrator.
-          </Headline>
-        );
-      case 'SANDVIK_TECHNICIAN':
-        return (
-          <Headline as="h4" variant="small" color="foreground">
-            You're invited to join
-            <Headline variant="medium" color={'foreground'} as="span" isBold>
-              {` Ground Support Platform `}
-            </Headline>
-            as a technician.
-          </Headline>
-        );
-      case 'COMPANY_ADMIN':
-        return (
-          <Headline as="h4" variant="small" color="foreground">
-            You're invited to join
-            <Headline variant="medium" color={'foreground'} as="span" isBold>
-              {` ${userData?.user?.workPlace} `}
-            </Headline>
-            as an administrator.
-          </Headline>
-        );
-      case 'COMPANY_USER':
-        return (
-          <Headline as="h4" variant="small" color="foreground">
-            You're invited to join
-            <Headline variant="medium" color={'foreground'} as="span" isBold>
-              {` ${userData?.user?.workPlace}. `}
-            </Headline>
-          </Headline>
-        );
-      default:
-        return '';
-    }
-  };
+          </Text>
+        </Headline>
+      );
+      break;
+    case 'SANDVIK_TECHNICIAN':
+      invitationRoleTitle = (
+        <Headline as="h4" variant="small" color="foreground">
+          You're invited to join
+          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+            {` Ground Support Platform `}
+          </Text>
+          as a technician.
+        </Headline>
+      );
+      break;
+    case 'COMPANY_ADMIN':
+      invitationRoleTitle = (
+        <Headline as="h4" variant="small" color="foreground">
+          You're invited to join
+          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+            {` ${userData?.user?.workPlace} `}
+          </Text>
+          as an administrator.
+        </Headline>
+      );
+      break;
+    case 'COMPANY_USER':
+      invitationRoleTitle = (
+        <Headline as="h4" variant="small" color="foreground">
+          You're invited to join
+          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+            {` ${userData?.user?.workPlace}. `}
+          </Text>
+        </Headline>
+      );
+      break;
+    default:
+      invitationRoleTitle = '';
+  }
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -135,7 +140,7 @@ export default function Page(): JSX.Element {
         Setup Account
       </Headline>
       <div className="flex flex-col gap-3 items-center">
-        {invitationRoleTitle()}
+        {invitationRoleTitle}
 
         <Text color={'foreground'} variant={'medium'}>
           Please complete your account setup to get started.
@@ -260,12 +265,12 @@ export default function Page(): JSX.Element {
             </div>
           </div>
           <hr className="w-[120%] mb-12 mt-16 border-neutral-2 -ml-[10%]" />
-          <div className="flex justify-center">
+          <div className="flex flex-col mx-auto max-w-[400px]">
             <Button
-              className="min-w-[400px]"
               type="submit"
               variant="primary"
               size="large"
+              isWide
               disabled={isAnyFieldEmty}
             >
               <LucideUserRoundCog /> Sign up

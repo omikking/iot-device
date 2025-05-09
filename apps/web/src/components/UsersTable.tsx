@@ -138,8 +138,10 @@ export const UsersTable = ({
 
   const openEditModal = (userId: string) => {
     const userToEdit = users.find((user) => user.id === userId);
-    onSelectUser(userToEdit);
-    onOpenChange(true);
+    if (userToEdit) {
+      onSelectUser(userToEdit);
+      onOpenChange(true);
+    }
   };
 
   const columns: ColumnDef<User>[] = [
@@ -208,7 +210,9 @@ export const UsersTable = ({
         isOpen={isDeleteUserModalOpen}
         onOpenChange={closeDeleteModal}
         onDelete={() => {
-          handleDelete(userToDelete);
+          if (userToDelete) {
+            handleDelete(userToDelete);
+          }
           closeDeleteModal();
         }}
       >

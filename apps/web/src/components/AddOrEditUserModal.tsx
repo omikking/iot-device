@@ -596,7 +596,7 @@ export const AddOrEditUserModal = ({
                 type="submit"
                 variant="primary"
                 size="large"
-                disabled={isAnyFieldEmpty}
+                disabled={isAnyFieldEmpty || isLoading}
               >
                 {isLoading ? (
                   <LoadingSpinner className="animate-spin" size={24} />
@@ -605,7 +605,6 @@ export const AddOrEditUserModal = ({
                 ) : (
                   <LucidePlus />
                 )}
-
                 {user ? 'Edit user' : 'Add user'}
               </Button>
             </ModalFooter>

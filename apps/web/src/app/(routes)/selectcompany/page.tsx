@@ -20,7 +20,7 @@ const getAllCompaniesQuery = graphql(`
 
 export default function Page(): JSX.Element | null {
   const router = useRouter();
-  const [{ data, fetching }] = useQuery({
+  const [{ data, loading }] = useQuery({
     query: getAllCompaniesQuery,
     variables: {
       offset: 0,
@@ -36,7 +36,7 @@ export default function Page(): JSX.Element | null {
     }
   }, [companies]);
 
-  if (fetching || companies.length === 1) {
+  if (loading || companies.length === 1) {
     return null;
   }
 

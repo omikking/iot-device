@@ -14,7 +14,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
       {!companies?.length ? (
         <section
           aria-labelledby="no-companies-heading"
-          className="w-full flex flex-col items-center justify-center gap-4 border px-6 py-12 bg-main-white"
+          className="w-full flex flex-col items-center justify-center gap-4 border pl-6 pr-8 py-12 bg-main-white"
           role="region"
         >
           <LucideSearchX
@@ -31,8 +31,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
             No companies found
           </Headline>
           <Text variant="small" color="foreground" className="text-center">
-            Either no companies exist or you do not have permission to view any
-            companies.
+            You do not have permission to view any companies.
           </Text>
         </section>
       ) : (
@@ -42,7 +41,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
               <li key={company.id} className="mb-2">
                 <Link
                   href={`/selectapplication/${company.id}`}
-                  className="w-full flex justify-between items-center border border-gold-3 hover:border-gold-primary focus:border-gold-primary focus:outline-none focus:ring-1 focus:ring-gold-primary transition-all ease-in-out duration-200 px-6 py-6 bg-main-white"
+                  className="group w-full flex justify-between items-center border border-gold-3 hover:border-gold-primary focus:border-gold-primary focus:outline-none focus:ring-1 focus:ring-gold-primary transition-all ease-in-out duration-200 px-6 py-6 bg-main-white"
                   aria-label={`Select ${company.name}`}
                 >
                   <Text variant="medium" color="foreground">
@@ -50,7 +49,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
                   </Text>
                   <LucideMoveRight
                     aria-hidden="true"
-                    className="flex-shrink-0"
+                    className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5"
                   />
                 </Link>
               </li>

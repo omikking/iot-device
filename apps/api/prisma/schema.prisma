@@ -230,7 +230,7 @@ model BoltResult {
   comment             String?
   image               String? // base64
 
-  site   Site   @relation(fields: [siteId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId String
 
   level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)

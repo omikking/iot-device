@@ -119,7 +119,7 @@ export const CompanyForm = ({
       address: company?.address || '',
       postalCode: company?.postalCode || '',
       plans: company?.plans || [],
-      sandvikAdminUserId: company?.sandvikAdminUserId || ''
+      sandvikAdminUserId: company?.sandvikAdminUserId || '',
     },
   });
 
@@ -164,7 +164,11 @@ export const CompanyForm = ({
       <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
 
       <Form {...companyForm}>
-        <form onSubmit={companyForm.handleSubmit(onSubmit, (errors)=>console.log(errors))}>
+        <form
+          onSubmit={companyForm.handleSubmit(onSubmit, (errors) =>
+            console.log(errors),
+          )}
+        >
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
             <CompanyDetailsForm companyForm={companyForm} />
@@ -236,12 +240,7 @@ export const CompanyForm = ({
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && (
-                <AdminForm
-                  isNewCompany={isNewCompany}
-                  companyForm={companyForm}
-                />
-              )}
+              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
               {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
               )}

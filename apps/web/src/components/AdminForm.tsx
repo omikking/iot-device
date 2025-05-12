@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
@@ -18,7 +17,6 @@ import {
 } from './schemas/CompanyFormSchema';
 
 interface AdminFormProps {
-  isNewCompany: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
 }
 
@@ -31,7 +29,7 @@ const getAdminsQuery = graphql(`
   }
 `);
 
-export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
+export const AdminForm = ({ companyForm }: AdminFormProps) => {
   const { data: session } = useSession();
 
   const [{ data: adminsData }] = useQuery({

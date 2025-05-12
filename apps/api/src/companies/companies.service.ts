@@ -43,12 +43,29 @@ export class CompaniesService {
     return { totalRecords, results };
   }
 
-  async findOne(id: string): Promise<Company> {
-    const company = await this.prisma.company.findUnique({ where: { id } });
+  async findOne(
+    id: string,
+  ): Promise<Company & { sandvikAdminUserId?: string }> {
+    const company = await this.prisma.company.findUnique({
+      where: { id },
+      include: {
+        userPermission: {
+          where: { role: Role.SANDVIK_ADMIN },
+          select: { userId: true },
+        },
+      },
+    });
+
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
     }
-    return company;
+
+    const sandvikAdminUserId = company.userPermission[0]?.userId;
+
+    return {
+      ...company,
+      sandvikAdminUserId,
+    };
   }
 
   async create(

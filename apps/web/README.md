@@ -52,3 +52,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 - cd into apps/web
 - type: pnpm run graphql-types
+- to have it watching: pnpm run graphql-types --watch

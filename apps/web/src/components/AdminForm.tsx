@@ -42,7 +42,7 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
     variables: {
       roles: ['SANDVIK_ADMIN'],
     },
-    pause: !session?.company?.id,
+    pause: !session?.company[0]?.company?.id,
   });
   const admins =
     adminsData?.users?.map((user) => ({

@@ -36,7 +36,7 @@ const getHazardDetails = graphql(`
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
+  const companyId = session?.company[0].company.id || '';
 
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,

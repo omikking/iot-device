@@ -81,7 +81,7 @@ export const AddOrEditSiteModal = ({
       postalCode: site?.postalCode || '',
       city: site?.city || '',
       country: site?.country || '',
-      companyId: site?.companyId || session?.company.id,
+      companyId: site?.companyId || session?.company[0].company.id,
     },
   });
 
@@ -92,7 +92,7 @@ export const AddOrEditSiteModal = ({
       postalCode: '',
       city: '',
       country: '',
-      companyId: session?.company.id,
+      companyId: session?.company[0].company.id,
     });
   };
 

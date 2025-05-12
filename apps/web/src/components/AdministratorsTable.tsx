@@ -47,7 +47,7 @@ export const AdministratorsTable = () => {
   const { data: session } = useSession();
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,
-    pause: !session?.company?.id,
+    pause: !session?.company[0]?.company?.id,
   });
   const administrators =
     (administratorsData?.users as GetAdminsQuery['users']) || [];

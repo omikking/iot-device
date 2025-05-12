@@ -18,6 +18,7 @@ import { Badge } from './badge';
 export interface DropdownItem {
   id: string;
   name: string;
+  iconLabel?: string;
   background?: 'primary' | 'neutral';
 }
 
@@ -84,13 +85,16 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       }
     }, [selectedId, options]);
 
-    const iconHandler = (icon: string) => {
-      switch (icon) {
-        case 'user':
+    // @TODO move to utils
+    const iconHandler = (iconLabel: string) => {
+      switch (iconLabel) {
+        case 'company user':
           return <LucideUser />;
-        case 'technician':
+        case 'company admin':
+          return <LucideKey />;
+        case 'sandvik technician':
           return <LucidePickaxe />;
-        case 'admin':
+        case 'sandvik admin':
           return <LucideKey />;
         default:
           return null;
@@ -119,7 +123,8 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                   size="small"
                   className="ui-mr-2"
                 >
-                  {iconHandler(selectedItem.name.toLowerCase())}
+                  {selectedItem.iconLabel &&
+                    iconHandler(selectedItem.iconLabel.toLowerCase())}
                   {selectedItem?.name}
                 </Badge>
               ) : (
@@ -185,8 +190,8 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                         size="small"
                         className="ui-mr-2"
                       >
-                        {badgeIcon
-                          ? iconHandler(item.name.toLowerCase())
+                        {badgeIcon && item?.iconLabel
+                          ? iconHandler(item.iconLabel.toLowerCase())
                           : null}
                         {item.name}
                       </Badge>

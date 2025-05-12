@@ -1,12 +1,21 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { useSession } from 'next-auth/react';
-import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
+import {
+  Headline,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Modal,
+} from '@gsp/ui';
+import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
+import { HazardCompleteModal } from '@/components/HazardCompleteModal';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -37,6 +46,10 @@ const getHazardDetails = graphql(`
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
   const companyId = session?.company?.id || '';
+  const [modalHazardId, setModalHazardId] = useState<string | null>(null);
+  const [confirmationModalHazardId, setConfirmationModalHazardId] = useState<
+    string | null
+  >(null);
 
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
@@ -44,6 +57,26 @@ export default function Page(): JSX.Element {
     pause: !companyId,
   });
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
+
+  const handleOpenDetailsModal = (hazardId: string) => {
+    setModalHazardId(hazardId);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setModalHazardId(null);
+  };
+
+  const handleOpenConfirmationModal = (hazardId: string) => {
+    setConfirmationModalHazardId(hazardId);
+  };
+  const handleCloseConfirmationModal = () => {
+    setConfirmationModalHazardId(null);
+  };
+
+  const selectedHazardForModal = hazards.find((h) => h.id === modalHazardId);
+  const selectedHazardForConfirmationModal = hazards.find(
+    (h) => h.id === confirmationModalHazardId,
+  );
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -72,9 +105,16 @@ export default function Page(): JSX.Element {
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.map(
-            (boltResult, index) =>
+            (boltResult) =>
               boltResult.isHazard && (
-                <HazardCard key={index} boltResult={boltResult} />
+                <HazardCard
+                  key={boltResult.id}
+                  boltResult={boltResult}
+                  onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+                  onCompleteClick={() =>
+                    handleOpenConfirmationModal(boltResult.id)
+                  }
+                />
               ),
           )}
         </TabsContent>
@@ -83,9 +123,13 @@ export default function Page(): JSX.Element {
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.map(
-            (boltResult, index) =>
+            (boltResult) =>
               !boltResult.isHazard && (
-                <HazardCard key={index} boltResult={boltResult} />
+                <HazardCard
+                  key={boltResult.id}
+                  boltResult={boltResult}
+                  onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+                />
               ),
           )}
         </TabsContent>
@@ -93,11 +137,45 @@ export default function Page(): JSX.Element {
           value="view all"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazards.map((boltResult, index) => (
-            <HazardCard key={index} boltResult={boltResult} />
+          {hazards.map((boltResult) => (
+            <HazardCard
+              key={boltResult.id}
+              boltResult={boltResult}
+              onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+            />
           ))}
         </TabsContent>
       </Tabs>
+
+      {selectedHazardForModal && (
+        <Modal
+          open={!!modalHazardId}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) handleCloseDetailsModal();
+          }}
+        >
+          <BoltResultDetailsModal
+            boltResult={selectedHazardForModal}
+            onClose={handleCloseDetailsModal}
+            isHazardCompletable
+          />
+        </Modal>
+      )}
+      {selectedHazardForConfirmationModal && (
+        <Modal
+          open={!!confirmationModalHazardId}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) handleCloseConfirmationModal();
+          }}
+        >
+          <HazardCompleteModal
+            boltResult={selectedHazardForConfirmationModal}
+            onClose={() => {
+              handleCloseConfirmationModal();
+            }}
+          />
+        </Modal>
+      )}
     </main>
   );
 }

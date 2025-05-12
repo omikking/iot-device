@@ -9,20 +9,22 @@ import {
   Badge,
   Button,
   Textarea,
-  Modal,
-  ModalTrigger,
+  // Modal,
+  // ModalTrigger,
   Specification,
 } from '@gsp/ui';
-import { BoltResultDetailsModal } from './BoltResultDetailsModal';
+// import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import React, { useState } from 'react';
+import React from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
-import { HazardCompleteModal } from './HazardCompleteModal';
+// import { HazardCompleteModal } from './HazardCompleteModal';
 
 type HazardCardProps = {
   boltResult: BoltResult;
+  onViewMore: (hazardId: string) => void;
+  onCompleteClick?: (hazardId: string) => void;
 };
 
 const getSiteNameQuery = graphql(`
@@ -33,10 +35,14 @@ const getSiteNameQuery = graphql(`
   }
 `);
 
-export const HazardCard = ({ boltResult }: HazardCardProps) => {
+export const HazardCard = ({
+  boltResult,
+  onViewMore,
+  onCompleteClick,
+}: HazardCardProps) => {
   const { isHazard, comment, createdAt } = boltResult;
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -54,14 +60,14 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
 
   const siteName = siteData?.site?.siteName || 'N/A';
 
-  const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setIsConfirmationModalOpen(true);
-  };
+  // const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   event.preventDefault();
+  //   setIsConfirmationModalOpen(true);
+  // };
 
-  const handleHazardCompleted = () => {
-    setIsConfirmationModalOpen(false);
-  };
+  // const handleHazardCompleted = () => {
+  //   setIsConfirmationModalOpen(false);
+  // };
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">
@@ -81,7 +87,7 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
           {boltResult &&
             (() => {
               const allSpecs = generateBoltSpecifications(boltResult, {});
-              // Get first two and last two items
+
               const selectedSpecs = [
                 ...allSpecs.slice(0, 2),
                 ...allSpecs.slice(-2, -1),
@@ -104,40 +110,27 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
         </div>
       </div>
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
-        {isHazard && (
-          <Modal
-            open={isConfirmationModalOpen}
-            onOpenChange={setIsConfirmationModalOpen}
+        {isHazard && onCompleteClick && (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={(e) => {
+              e.preventDefault();
+              onCompleteClick(boltResult.id);
+            }}
           >
-            <ModalTrigger asChild>
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handleCompleteClick}
-              >
-                <LucideCircleCheckBig />
-                Complete
-              </Button>
-            </ModalTrigger>
-            <HazardCompleteModal
-              boltResult={boltResult}
-              onClose={handleHazardCompleted}
-            />
-          </Modal>
+            <LucideCircleCheckBig />
+            Complete
+          </Button>
         )}
-        <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <ModalTrigger asChild>
-            <Button variant="outline" size="small">
-              <LucideClipboardList />
-              View more
-            </Button>
-          </ModalTrigger>
-          <BoltResultDetailsModal
-            isHazardCompletable
-            boltResult={boltResult}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </Modal>
+        <Button
+          variant="outline"
+          size="small"
+          onClick={() => onViewMore(boltResult.id)}
+        >
+          <LucideClipboardList />
+          View more
+        </Button>
       </div>
     </div>
   );

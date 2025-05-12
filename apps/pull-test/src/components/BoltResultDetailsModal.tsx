@@ -13,7 +13,7 @@ import {
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
@@ -86,6 +86,10 @@ export const BoltResultDetailsModal = ({
 }: BoltResultDetailsModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentView, setCurrentView] = useState<ModalView>('details');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Refs for controlling animation
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Queries for related data
   const [{ data: levelData }] = useQuery({
@@ -119,16 +123,31 @@ export const BoltResultDetailsModal = ({
 
   const { image, isHazard, peakLoad, peakDisplacement } = boltResult || {};
 
+  const handleViewTransition = (nextView: ModalView) => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    // Apply exit animation
+    if (contentRef.current) {
+      contentRef.current.classList.remove('animate-fade-in');
+      contentRef.current.classList.add('animate-fade-out');
+    }
+    // Wait for animation to complete before changing view
+    setTimeout(() => {
+      setCurrentView(nextView);
+      setIsTransitioning(false);
+    }, 300);
+  };
+
   const handleCompleteHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setCurrentView('confirmation');
-    console.log('1');
+    handleViewTransition('confirmation');
   };
 
   const handleConfirmHazard = async (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    console.log('2');
     event.preventDefault();
     setIsLoading(true);
 
@@ -144,33 +163,38 @@ export const BoltResultDetailsModal = ({
           hazardCompletedDate: [...currentHazardDates, Date.now()],
         },
       });
-      console.log('3');
 
-      setCurrentView('success');
-
-      // Auto-close after successful completion
+      handleViewTransition('success');
       setTimeout(() => {
+        // Reset to details view for next time modal opens
         onClose?.();
-        setCurrentView('details');
-        console.log('4');
-        // Don't call resetModal here - it's not needed and can cause race conditions
-      }, 1000);
+        setTimeout(() => {
+          setCurrentView('details');
+        }, 300);
+      }, 1200);
     } catch (error) {
-      // We could add a toast notification here for errors
+      //@TODO Toast error message
       console.error('Failed to update hazard status:', error);
     } finally {
       setIsLoading(false);
-      console.log('5');
     }
   };
 
   const resetModal = () => {
-    setCurrentView('details');
+    handleViewTransition('details');
     setIsLoading(false);
   };
 
+  // Apply animation classes when view changes
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.classList.remove('animate-fade-out');
+      contentRef.current.classList.add('animate-fade-in');
+    }
+  }, [currentView]);
+
   const renderDetailsView = () => (
-    <div className="transition-all duration-500">
+    <div className="flex flex-col">
       {/* Image, Comment and Hazard Status */}
       {(image || boltResult.comment || isHazard) && (
         <div className="flex flex-grow pb-5 px-10 gap-10">
@@ -338,6 +362,38 @@ export const BoltResultDetailsModal = ({
         currentView !== 'details' ? 'h-[450px]' : ''
       }`}
     >
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.2s ease-in-out forwards;
+        }
+
+        .animate-fade-out {
+          animation: fadeOut 0.3s ease-in-out forwards;
+        }
+      `}</style>
+
       <ModalHeader>
         <ModalTitle>
           {currentView === 'details'
@@ -346,8 +402,8 @@ export const BoltResultDetailsModal = ({
         </ModalTitle>
       </ModalHeader>
 
-      {/* Modal content based on current view */}
-      <div className="transition-all duration-500">
+      {/* Modal content based on current view with animation */}
+      <div ref={contentRef} className="animate-fade-in">
         {currentView === 'details' && renderDetailsView()}
         {currentView === 'confirmation' && renderConfirmationView()}
         {currentView === 'success' && renderSuccessView()}
@@ -370,6 +426,7 @@ export const BoltResultDetailsModal = ({
                   size="large"
                   variant="primary"
                   onClick={handleCompleteHazard}
+                  disabled={isTransitioning}
                 >
                   <LucideCircleCheckBig />
                   Complete
@@ -380,7 +437,7 @@ export const BoltResultDetailsModal = ({
                 <Button
                   size="large"
                   variant="primary"
-                  disabled={isLoading}
+                  disabled={isLoading || isTransitioning}
                   onClick={handleConfirmHazard}
                 >
                   {isLoading ? (
@@ -396,6 +453,7 @@ export const BoltResultDetailsModal = ({
                 variant="outline"
                 size="large"
                 onClick={currentView !== 'details' ? resetModal : undefined}
+                disabled={isTransitioning}
               >
                 Cancel
               </Button>

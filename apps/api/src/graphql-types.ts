@@ -41,6 +41,20 @@ export enum PullTestAbortReason {
     TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
 }
 
+export enum Application {
+    PULL_TEST = "PULL_TEST",
+    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
+    XCYCLOPS = "XCYCLOPS",
+    ULTRABOLTS = "ULTRABOLTS"
+}
+
+export enum PlanLevel {
+    GOLD = "GOLD",
+    SILVER = "SILVER",
+    BRONZE = "BRONZE",
+    INACTIVE = "INACTIVE"
+}
+
 export class CreateBoltResultInput {
     boltNumber: number;
     boltType: string;
@@ -178,7 +192,7 @@ export class UpdateSiteInput {
 }
 
 export class CreateUserPermissionInput {
-    userId: string;
+    userEmail: string;
     role: string;
     appsAccess: string[];
     companyId: string;
@@ -245,6 +259,8 @@ export abstract class IQuery {
     getBoltTypes?: Nullable<BoltType[]>;
     getRingPosition?: Nullable<RingPosition[]>;
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
+    getApplication?: Nullable<Application[]>;
+    getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;

@@ -108,14 +108,17 @@ export default function Page(): JSX.Element {
   const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
   const result = useMemo(() => {
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       withComment,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       withImage,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       reportedHazard,
       ...rest
     } = filterState
 
     return Object.entries(rest)
-      .filter(([_, value]) => value === true)
+      .filter(([, value]) => value === true)
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
 

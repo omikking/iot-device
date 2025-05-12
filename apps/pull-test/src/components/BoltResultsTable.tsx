@@ -1,15 +1,17 @@
 'use client';
 import type { ColumnDef } from '@gsp/ui';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { BoltCommentBadge } from './BoltCommentBadge';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
+import { BoltResult } from '@/gql/graphql';
+import { BoltCommentBadge } from './BoltCommentBadge';
+import { BoltResultSchema } from '@/app/mock/mock';
 
-interface BoltResultsTableProps {
-  boltResults?: BoltResultSchema[];
+type BoltResultsTableProps = {
+  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
+  boltResults?: BoltResult[] | BoltResultSchema[];
   site?: string;
-}
+};
 
 const getBadge = (
   result: 'PASS' | 'FAIL' | 'ABORT',
@@ -31,7 +33,7 @@ export const BoltResultsTable = ({
   boltResults,
   site,
 }: BoltResultsTableProps) => {
-  const columns: ColumnDef<BoltResultSchema>[] = [
+  const columns: ColumnDef<BoltResult>[] = [
     {
       accessorKey: 'boltNumber',
       meta: { headerClassName: 'w-36' },
@@ -51,7 +53,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakLoad } = row.original;
         if (peakLoad.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakLoad.length === 1) {
           return peakLoad[0];
@@ -79,7 +81,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
         if (peakDisplacement.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakDisplacement.length === 1) {
           return peakDisplacement[0];
@@ -102,18 +104,18 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'level',
       header: 'Level',
-      cell: ({ row }) => row.original.level.levelName
+      cell: ({ row }) => row.original.level?.levelName
     },
     {
       accessorKey: 'drive',
       header: 'Drive',
-      cell: ({ row }) => row.original.drive.driveName
+      cell: ({ row }) => row.original.drive?.driveName
 
     },
     {
       accessorKey: 'location',
       header: 'Location',
-      cell: ({ row }) => row.original.location.locationName
+      cell: ({ row }) => row.original.location?.locationName
     },
     {
       accessorKey: 'positionInRing',
@@ -123,7 +125,7 @@ export const BoltResultsTable = ({
       accessorKey: 'comment',
       header: 'Comment',
       cell: ({ row }) => {
-        return <BoltCommentBadge fullBoltData={row.original} />;
+        return <BoltCommentBadge boltResult={row.original} />;
       },
     },
     {
@@ -146,7 +148,8 @@ export const BoltResultsTable = ({
     <>
       <DataTable
         columns={columns}
-        data={boltResults || []}
+        // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
+        data={(boltResults as BoltResult[]) || []}
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'

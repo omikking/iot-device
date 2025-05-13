@@ -14,7 +14,6 @@ import {
   FormMessage,
   RadioGroupItem,
   RadioGroup,
-  LoadingSpinner,
   TooltipProvider,
   Tooltip,
   TooltipContent,
@@ -215,23 +214,16 @@ export const AddOrEditTechnicianModal = ({
                 size="large"
                 variant="primary"
                 disabled={isLoading}
+                isLoading={isLoading}
               >
                 {technician ? (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucideSquarePen />
-                    )}
+                    {!isLoading && <LucideSquarePen />}
                     Edit technician
                   </>
                 ) : (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucidePlus />
-                    )}
+                    {!isLoading && <LucidePlus />}
                     Add technician
                   </>
                 )}

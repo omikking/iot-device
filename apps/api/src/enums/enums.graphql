@@ -10,27 +10,6 @@ enum Result {
   FAIL
   ABORT
 }
-
-enum BoltType {
-  MD47
-  MDX47
-}
-
-enum RingPosition {
-  RH_BACKS
-  RH_SHOULDER
-  RH_WALL_UPPER
-  LH_BACKS
-  LH_SHOULDER
-  LH_WALL_UPPER
-  CENTER_BACKS
-}
-
-enum PullTestAbortReason {
-  NOT_TESTED_VOID_CAVITY
-  TEST_STOPPED_INSTALL_ANGLE
-}
-
 enum Application {
   PULL_TEST
   PULL_TEST_OPERATOR
@@ -45,12 +24,49 @@ enum PlanLevel {
   INACTIVE
 }
 
+enum BoltType {
+  MD47
+  MDX47
+}
+
+enum PullTestAbortReason {
+  NOT_TESTED_VOID_CAVITY
+  TEST_STOPPED_INSTALL_ANGLE
+}
+
+enum RingPosition {
+  LH_Backs
+  Center_Backs
+  RH_Backs
+  LH_Face_High
+  LH_Face_Low
+  RH_Face_High
+  RH_Face_Low
+  LH_Shoulder
+  LH_Wall_Upper
+  LH_Wall_Center
+  LH_Wall_Lower
+  RH_Shoulder
+  RH_Wall_Upper
+  RH_Wall_Center
+  RH_Wall_Lower
+}
+
+type EnumOption {
+  key: String!
+  value: String!
+}
+
+type Enums {
+  roles: [String!]!
+  results: [String!]!
+  boltTypes: [String!]!
+  ringPosition: [EnumOption!]!
+  pullTestAbortReason: [String!]!
+  getApplication: [String!]
+  getPlanLevel: [String!]
+}
+
 type Query {
-  getRoles: [Role!]!
-  getResults: [Result!]!
-  getBoltTypes: [BoltType!]
-  getRingPosition: [RingPosition!]
-  getPullTestAbortReason: [PullTestAbortReason!]
-  getApplication: [Application!]
-  getPlanLevel: [PlanLevel!]
+  enums: Enums!
 }

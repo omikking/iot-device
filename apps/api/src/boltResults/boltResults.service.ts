@@ -24,7 +24,8 @@ export class BoltResultsService {
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
 
-    const whereCondition: Record<string, any> = {
+    // Build reusable base condition
+    const baseWhere: Record<string, any> = {
       ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
         ? { userId: user.id }
         : {}),
@@ -36,18 +37,48 @@ export class BoltResultsService {
         )),
     };
 
+    // Total records count
     const totalRecords = await this.prisma.boltResult.count({
-      where: whereCondition,
+      where: baseWhere,
     });
+
+    // Count failed
+    const failedCount = await this.prisma.boltResult.count({
+      where: {
+        ...baseWhere,
+        result: 'FAIL',
+      },
+    });
+
+    const hazardCount = await this.prisma.boltResult.count({
+      where: {
+        ...baseWhere,
+        isHazard: true,
+      },
+    });
+    // Count passed
+    const passed = await this.prisma.boltResult.count({
+      where: {
+        ...baseWhere,
+        result: 'PASS',
+      },
+    });
+    const successRate = totalRecords > 0 ? (passed / totalRecords) * 100 : 0;
 
     const results = await this.prisma.boltResult.findMany({
-      skip: Number(offset),
-      take: Number(limit),
-      where: whereCondition,
+      where: baseWhere,
+      skip: offset,
+      take: limit,
     });
-    return { totalRecords, results };
-  }
 
+    return {
+      totalRecords,
+      failedCount,
+      hazardCount,
+      successRate: Math.floor(successRate),
+      results,
+    };
+  }
   async findOne(id: string): Promise<BoltResult> {
     const boltResult = await this.prisma.boltResult.findUnique({
       where: { id },

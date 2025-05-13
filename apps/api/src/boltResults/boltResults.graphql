@@ -82,6 +82,9 @@ Response structure for paginated list of bolt results
 """
 type BoltResultResponse {
   totalRecords: Int!
+  failedCount: Int!
+  hazardCount: Int!
+  successRate: Int!
   results: [BoltResult!]!
 }
 

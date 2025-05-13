@@ -25,9 +25,32 @@ export class UserPermissionsService {
   async create(
     createUserPermissionInput: GraphQLTypes.CreateUserPermissionInput,
   ): Promise<UserPermission> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: createUserPermissionInput.userEmail },
+    });
+
+    if (!user) {
+      throw new UserInputError(
+        `User with email ${createUserPermissionInput.userEmail} will be invited to setup account, wont work now, tbd later...`,
+      );
+    }
+
+    const existingUserPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId: user?.id,
+        companyId: createUserPermissionInput.companyId,
+      },
+    });
+
+    if (existingUserPermission) {
+      throw new UserInputError(
+        `User already has permissions for this company. Please edit existing permissions instead.`,
+      );
+    }
+
     const createdUserPermission = await this.prisma.userPermission.create({
       data: {
-        userId: createUserPermissionInput.userId,
+        userId: user.id,
         role: createUserPermissionInput.role as Role,
         appsAccess: createUserPermissionInput.appsAccess as Application[],
         companyId: createUserPermissionInput.companyId,

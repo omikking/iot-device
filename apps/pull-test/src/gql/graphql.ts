@@ -2,40 +2,27 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** Date custom scalar type */
-  DateTime: { input: any; output: any };
+  DateTime: { input: any; output: any; }
 };
 
 export enum Application {
   PullTest = 'PULL_TEST',
   PullTestOperator = 'PULL_TEST_OPERATOR',
   Ultrabolts = 'ULTRABOLTS',
-  Xcyclops = 'XCYCLOPS',
+  Xcyclops = 'XCYCLOPS'
 }
 
 /**
@@ -77,7 +64,7 @@ export type BoltResultResponse = {
 
 export enum BoltType {
   Md47 = 'MD47',
-  Mdx47 = 'MDX47',
+  Mdx47 = 'MDX47'
 }
 
 /**
@@ -329,6 +316,7 @@ export type Mutation = {
   updateUserPermission: UserPermission;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -336,6 +324,7 @@ export type Mutation = {
 export type MutationCreateBoltResultArgs = {
   createBoltResultInput: CreateBoltResultInput;
 };
+
 
 /**
  * Mutation
@@ -345,6 +334,7 @@ export type MutationCreateBoltResultsArgs = {
   createBoltResultsInput: Array<CreateBoltResultInput>;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -352,6 +342,7 @@ export type MutationCreateBoltResultsArgs = {
 export type MutationCreateCoffeeArgs = {
   createCoffeeInput: CreateCoffeeInput;
 };
+
 
 /**
  * Mutation
@@ -361,6 +352,7 @@ export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -368,6 +360,7 @@ export type MutationCreateCompanyArgs = {
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
 };
+
 
 /**
  * Mutation
@@ -377,6 +370,7 @@ export type MutationCreateLevelArgs = {
   createLevelInput: CreateLevelInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -384,6 +378,7 @@ export type MutationCreateLevelArgs = {
 export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
 };
+
 
 /**
  * Mutation
@@ -393,6 +388,7 @@ export type MutationCreateSiteArgs = {
   createSiteInput: CreateSiteInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -400,6 +396,7 @@ export type MutationCreateSiteArgs = {
 export type MutationCreateUserPermissionArgs = {
   createUserPermissionInput: CreateUserPermissionInput;
 };
+
 
 /**
  * Mutation
@@ -409,6 +406,7 @@ export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -416,6 +414,7 @@ export type MutationRemoveBoltResultArgs = {
 export type MutationRemoveBoltResultsArgs = {
   ids: Array<Scalars['String']['input']>;
 };
+
 
 /**
  * Mutation
@@ -425,6 +424,7 @@ export type MutationRemoveCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -432,6 +432,7 @@ export type MutationRemoveCoffeeArgs = {
 export type MutationRemoveCompanyArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Mutation
@@ -441,6 +442,7 @@ export type MutationRemoveDriveArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -448,6 +450,7 @@ export type MutationRemoveDriveArgs = {
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Mutation
@@ -457,6 +460,7 @@ export type MutationRemoveLocationArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -464,6 +468,7 @@ export type MutationRemoveLocationArgs = {
 export type MutationRemoveSiteArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Mutation
@@ -473,6 +478,7 @@ export type MutationRemoveUserArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -480,6 +486,7 @@ export type MutationRemoveUserArgs = {
 export type MutationRemoveUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Mutation
@@ -490,6 +497,7 @@ export type MutationUpdateBoltResultArgs = {
   updateBoltResultInput: UpdateBoltResultInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -497,6 +505,7 @@ export type MutationUpdateBoltResultArgs = {
 export type MutationUpdateBoltResultsArgs = {
   updateBoltResultsInput: Array<UpdateBoltResultInput>;
 };
+
 
 /**
  * Mutation
@@ -507,6 +516,7 @@ export type MutationUpdateCoffeeArgs = {
   updateCoffeeInput: UpdateCoffeeInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -515,6 +525,7 @@ export type MutationUpdateCompanyArgs = {
   id: Scalars['String']['input'];
   updateCompanyInput: UpdateCompanyInput;
 };
+
 
 /**
  * Mutation
@@ -525,6 +536,7 @@ export type MutationUpdateDriveArgs = {
   updateDriveInput: UpdateDriveInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -533,6 +545,7 @@ export type MutationUpdateLevelArgs = {
   id: Scalars['String']['input'];
   updateLevelInput: UpdateLevelInput;
 };
+
 
 /**
  * Mutation
@@ -543,6 +556,7 @@ export type MutationUpdateLocationArgs = {
   updateLocationInput: UpdateLocationInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -552,6 +566,7 @@ export type MutationUpdateSiteArgs = {
   updateSiteInput: UpdateSiteInput;
 };
 
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -560,6 +575,7 @@ export type MutationUpdateUserArgs = {
   id: Scalars['String']['input'];
   updateUserInput: UpdateUserInput;
 };
+
 
 /**
  * Mutation
@@ -589,12 +605,12 @@ export enum PlanLevel {
   Bronze = 'BRONZE',
   Gold = 'GOLD',
   Inactive = 'INACTIVE',
-  Silver = 'SILVER',
+  Silver = 'SILVER'
 }
 
 export enum PullTestAbortReason {
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
-  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE',
+  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
 }
 
 /**
@@ -631,6 +647,7 @@ export type Query = {
   users: Array<User>;
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -638,6 +655,7 @@ export type Query = {
 export type QueryBoltResultArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Query
@@ -654,6 +672,7 @@ export type QueryBoltResultsArgs = {
   siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -661,6 +680,7 @@ export type QueryBoltResultsArgs = {
 export type QueryCoffeeArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 /**
  * Query
@@ -672,6 +692,7 @@ export type QueryCompaniesArgs = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -679,6 +700,7 @@ export type QueryCompaniesArgs = {
 export type QueryCompanyArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Query
@@ -688,6 +710,7 @@ export type QueryDriveArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -695,6 +718,7 @@ export type QueryDriveArgs = {
 export type QueryHazardsArgs = {
   companyId: Scalars['String']['input'];
 };
+
 
 /**
  * Query
@@ -704,6 +728,7 @@ export type QueryLevelArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -711,6 +736,7 @@ export type QueryLevelArgs = {
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Query
@@ -720,6 +746,7 @@ export type QuerySiteArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -728,6 +755,7 @@ export type QueryUserArgs = {
   id: Scalars['String']['input'];
 };
 
+
 /**
  * Query
  * Define the queries that can be made to the User model
@@ -735,6 +763,7 @@ export type QueryUserArgs = {
 export type QueryUserPermissionArgs = {
   id: Scalars['String']['input'];
 };
+
 
 /**
  * Query
@@ -747,7 +776,7 @@ export type QueryUsersArgs = {
 export enum Result {
   Abort = 'ABORT',
   Fail = 'FAIL',
-  Pass = 'PASS',
+  Pass = 'PASS'
 }
 
 export enum RingPosition {
@@ -757,14 +786,14 @@ export enum RingPosition {
   LhWallUpper = 'LH_WALL_UPPER',
   RhBacks = 'RH_BACKS',
   RhShoulder = 'RH_SHOULDER',
-  RhWallUpper = 'RH_WALL_UPPER',
+  RhWallUpper = 'RH_WALL_UPPER'
 }
 
 export enum Role {
   CompanyAdmin = 'COMPANY_ADMIN',
   CompanyUser = 'COMPANY_USER',
   SandvikAdmin = 'SANDVIK_ADMIN',
-  SandvikTechnician = 'SANDVIK_TECHNICIAN',
+  SandvikTechnician = 'SANDVIK_TECHNICIAN'
 }
 
 /**
@@ -956,649 +985,78 @@ export type GetHazardsIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetHazardsIdQuery = {
-  __typename?: 'Query';
-  hazards?: Array<{ __typename?: 'BoltResult'; id: string }> | null;
-};
+
+export type GetHazardsIdQuery = { __typename?: 'Query', hazards?: Array<{ __typename?: 'BoltResult', id: string }> | null };
 
 export type GetCompanyNameQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetCompanyNameQuery = {
-  __typename?: 'Query';
-  company: { __typename?: 'Company'; id: string; name: string };
-};
+
+export type GetCompanyNameQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, name: string } };
 
 export type GetHazardDetailsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetHazardDetailsQuery = {
-  __typename?: 'Query';
-  hazards?: Array<{
-    __typename?: 'BoltResult';
-    abortReason?: string | null;
-    boltNumber: number;
-    boltType: string;
-    comment?: string | null;
-    createdAt: any;
-    driveId: string;
-    hazardCompletedDate?: Array<any> | null;
-    id: string;
-    image?: string | null;
-    isHazard: boolean;
-    levelId: string;
-    locationId: string;
-    peakDisplacement: Array<number>;
-    peakLoad: Array<number>;
-    positionInRing: string;
-    result: string;
-    siteId: string;
-    updatedAt: any;
-    userId: string;
-  }> | null;
-};
+
+export type GetHazardDetailsQuery = { __typename?: 'Query', hazards?: Array<{ __typename?: 'BoltResult', abortReason?: string | null, boltNumber: number, boltType: string, comment?: string | null, createdAt: any, driveId: string, hazardCompletedDate?: Array<any> | null, id: string, image?: string | null, isHazard: boolean, levelId: string, locationId: string, peakDisplacement: Array<number>, peakLoad: Array<number>, positionInRing: string, result: string, siteId: string, updatedAt: any, userId: string }> | null };
 
 export type GetLevelDetailsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetLevelDetailsQuery = {
-  __typename?: 'Query';
-  level: {
-    __typename?: 'Level';
-    id: string;
-    levelName: string;
-    siteId: string;
-  };
-};
+
+export type GetLevelDetailsQuery = { __typename?: 'Query', level: { __typename?: 'Level', id: string, levelName: string, siteId: string } };
 
 export type GetDriveDetailsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetDriveDetailsQuery = {
-  __typename?: 'Query';
-  drive: { __typename?: 'Drive'; id: string; driveName: string };
-};
+
+export type GetDriveDetailsQuery = { __typename?: 'Query', drive: { __typename?: 'Drive', id: string, driveName: string } };
 
 export type GetLocationDetailsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetLocationDetailsQuery = {
-  __typename?: 'Query';
-  location: { __typename?: 'Location'; id: string; locationName: string };
-};
+
+export type GetLocationDetailsQuery = { __typename?: 'Query', location: { __typename?: 'Location', id: string, locationName: string } };
 
 export type GetNameDetailsQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetNameDetailsQuery = {
-  __typename?: 'Query';
-  user: { __typename?: 'User'; fullName: string };
-};
+
+export type GetNameDetailsQuery = { __typename?: 'Query', user: { __typename?: 'User', fullName: string } };
 
 export type GetSiteNameQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetSiteNameQuery = {
-  __typename?: 'Query';
-  site: { __typename?: 'Site'; siteName: string };
-};
+
+export type GetSiteNameQuery = { __typename?: 'Query', site: { __typename?: 'Site', siteName: string } };
 
 export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
 }>;
 
-export type CreateCoffeeMutation = {
-  __typename?: 'Mutation';
-  createCoffee: {
-    __typename?: 'Coffee';
-    id: string;
-    name: string;
-    brand: string;
-    flavors?: Array<{ __typename?: 'Flavor'; id: string; name: string }> | null;
-  };
-};
 
-export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never }>;
+export type CreateCoffeeMutation = { __typename?: 'Mutation', createCoffee: { __typename?: 'Coffee', id: string, name: string, brand: string, flavors?: Array<{ __typename?: 'Flavor', id: string, name: string }> | null } };
 
-export type GetMeCoffeesQuery = {
-  __typename?: 'Query';
-  coffees: Array<{
-    __typename?: 'Coffee';
-    id: string;
-    name: string;
-    brand: string;
-  }>;
-};
+export type GetMeCoffeesQueryVariables = Exact<{ [key: string]: never; }>;
 
-export const GetHazardsIdDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getHazardsId' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'hazards' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'companyId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetHazardsIdQuery, GetHazardsIdQueryVariables>;
-export const GetCompanyNameDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getCompanyName' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'company' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetCompanyNameQuery, GetCompanyNameQueryVariables>;
-export const GetHazardDetailsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getHazardDetails' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'hazards' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'companyId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'abortReason' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'boltNumber' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'boltType' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'comment' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'driveId' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'hazardCompletedDate' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'isHazard' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'levelId' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'locationId' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'peakDisplacement' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'peakLoad' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'positionInRing' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'siteId' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetHazardDetailsQuery,
-  GetHazardDetailsQueryVariables
->;
-export const GetLevelDetailsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getLevelDetails' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'level' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'levelName' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'siteId' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetLevelDetailsQuery,
-  GetLevelDetailsQueryVariables
->;
-export const GetDriveDetailsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getDriveDetails' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'drive' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'driveName' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetDriveDetailsQuery,
-  GetDriveDetailsQueryVariables
->;
-export const GetLocationDetailsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getLocationDetails' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'location' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'locationName' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetLocationDetailsQuery,
-  GetLocationDetailsQueryVariables
->;
-export const GetNameDetailsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getNameDetails' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'user' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetNameDetailsQuery, GetNameDetailsQueryVariables>;
-export const GetSiteNameDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getSiteName' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'site' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'siteName' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetSiteNameQuery, GetSiteNameQueryVariables>;
-export const CreateCoffeeDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'createCoffee' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'createCoffeeInput' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'CreateCoffeeInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createCoffee' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'createCoffeeInput' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'createCoffeeInput' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'flavors' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateCoffeeMutation,
-  CreateCoffeeMutationVariables
->;
-export const GetMeCoffeesDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getMeCoffees' },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'coffees' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'brand' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;
+
+export type GetMeCoffeesQuery = { __typename?: 'Query', coffees: Array<{ __typename?: 'Coffee', id: string, name: string, brand: string }> };
+
+
+export const GetHazardsIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getHazardsId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hazards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetHazardsIdQuery, GetHazardsIdQueryVariables>;
+export const GetCompanyNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanyName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetCompanyNameQuery, GetCompanyNameQueryVariables>;
+export const GetHazardDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getHazardDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hazards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"abortReason"}},{"kind":"Field","name":{"kind":"Name","value":"boltNumber"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"driveId"}},{"kind":"Field","name":{"kind":"Name","value":"hazardCompletedDate"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"isHazard"}},{"kind":"Field","name":{"kind":"Name","value":"levelId"}},{"kind":"Field","name":{"kind":"Name","value":"locationId"}},{"kind":"Field","name":{"kind":"Name","value":"peakDisplacement"}},{"kind":"Field","name":{"kind":"Name","value":"peakLoad"}},{"kind":"Field","name":{"kind":"Name","value":"positionInRing"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"siteId"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}}]}}]} as unknown as DocumentNode<GetHazardDetailsQuery, GetHazardDetailsQueryVariables>;
+export const GetLevelDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLevelDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}},{"kind":"Field","name":{"kind":"Name","value":"siteId"}}]}}]}}]} as unknown as DocumentNode<GetLevelDetailsQuery, GetLevelDetailsQueryVariables>;
+export const GetDriveDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getDriveDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"drive"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}}]}}]} as unknown as DocumentNode<GetDriveDetailsQuery, GetDriveDetailsQueryVariables>;
+export const GetLocationDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLocationDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]} as unknown as DocumentNode<GetLocationDetailsQuery, GetLocationDetailsQueryVariables>;
+export const GetNameDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getNameDetails"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fullName"}}]}}]}}]} as unknown as DocumentNode<GetNameDetailsQuery, GetNameDetailsQueryVariables>;
+export const GetSiteNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getSiteName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"site"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}}]}}]} as unknown as DocumentNode<GetSiteNameQuery, GetSiteNameQueryVariables>;
+export const CreateCoffeeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCoffee"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCoffeeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCoffee"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createCoffeeInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createCoffeeInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"flavors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCoffeeMutation, CreateCoffeeMutationVariables>;
+export const GetMeCoffeesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getMeCoffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"coffees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}}]}}]}}]} as unknown as DocumentNode<GetMeCoffeesQuery, GetMeCoffeesQueryVariables>;

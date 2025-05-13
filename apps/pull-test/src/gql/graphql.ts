@@ -31,6 +31,13 @@ export type Scalars = {
   DateTime: { input: any; output: any };
 };
 
+export enum Application {
+  PullTest = 'PULL_TEST',
+  PullTestOperator = 'PULL_TEST_OPERATOR',
+  Ultrabolts = 'ULTRABOLTS',
+  Xcyclops = 'XCYCLOPS',
+}
+
 /**
  * BoltResult model
  * Define the BoltResult model and its fields
@@ -64,10 +71,7 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  failedCount: Scalars['Int']['output'];
-  hazardCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
-  successRate: Scalars['Int']['output'];
   totalRecords: Scalars['Int']['output'];
 };
 
@@ -235,7 +239,7 @@ export type CreateUserPermissionInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
   role: Scalars['String']['input'];
-  userId: Scalars['String']['input'];
+  userEmail: Scalars['String']['input'];
 };
 
 /**
@@ -251,21 +255,6 @@ export type Drive = {
   levelId: Scalars['String']['output'];
   locations?: Maybe<Array<Location>>;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type EnumOption = {
-  __typename?: 'EnumOption';
-  key: Scalars['String']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type Enums = {
-  __typename?: 'Enums';
-  boltTypes: Array<Scalars['String']['output']>;
-  pullTestAbortReason: Array<Scalars['String']['output']>;
-  results: Array<Scalars['String']['output']>;
-  ringPosition: Array<EnumOption>;
-  roles: Array<Scalars['String']['output']>;
 };
 
 export type Flavor = {
@@ -596,6 +585,13 @@ export type Plan = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum PlanLevel {
+  Bronze = 'BRONZE',
+  Gold = 'GOLD',
+  Inactive = 'INACTIVE',
+  Silver = 'SILVER',
+}
+
 export enum PullTestAbortReason {
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
   TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE',
@@ -615,7 +611,13 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
-  enums: Enums;
+  getApplication?: Maybe<Array<Application>>;
+  getBoltTypes?: Maybe<Array<BoltType>>;
+  getPlanLevel?: Maybe<Array<PlanLevel>>;
+  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getResults: Array<Result>;
+  getRingPosition?: Maybe<Array<RingPosition>>;
+  getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -749,21 +751,13 @@ export enum Result {
 }
 
 export enum RingPosition {
-  CenterBacks = 'Center_Backs',
-  LhBacks = 'LH_Backs',
-  LhFaceHigh = 'LH_Face_High',
-  LhFaceLow = 'LH_Face_Low',
-  LhShoulder = 'LH_Shoulder',
-  LhWallCenter = 'LH_Wall_Center',
-  LhWallLower = 'LH_Wall_Lower',
-  LhWallUpper = 'LH_Wall_Upper',
-  RhBacks = 'RH_Backs',
-  RhFaceHigh = 'RH_Face_High',
-  RhFaceLow = 'RH_Face_Low',
-  RhShoulder = 'RH_Shoulder',
-  RhWallCenter = 'RH_Wall_Center',
-  RhWallLower = 'RH_Wall_Lower',
-  RhWallUpper = 'RH_Wall_Upper',
+  CenterBacks = 'CENTER_BACKS',
+  LhBacks = 'LH_BACKS',
+  LhShoulder = 'LH_SHOULDER',
+  LhWallUpper = 'LH_WALL_UPPER',
+  RhBacks = 'RH_BACKS',
+  RhShoulder = 'RH_SHOULDER',
+  RhWallUpper = 'RH_WALL_UPPER',
 }
 
 export enum Role {
@@ -958,6 +952,104 @@ export type UserPermission = {
   userId: Scalars['String']['output'];
 };
 
+export type GetHazardsIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetHazardsIdQuery = {
+  __typename?: 'Query';
+  hazards?: Array<{ __typename?: 'BoltResult'; id: string }> | null;
+};
+
+export type GetCompanyNameQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetCompanyNameQuery = {
+  __typename?: 'Query';
+  company: { __typename?: 'Company'; id: string; name: string };
+};
+
+export type GetHazardDetailsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetHazardDetailsQuery = {
+  __typename?: 'Query';
+  hazards?: Array<{
+    __typename?: 'BoltResult';
+    abortReason?: string | null;
+    boltNumber: number;
+    boltType: string;
+    comment?: string | null;
+    createdAt: any;
+    driveId: string;
+    hazardCompletedDate?: Array<any> | null;
+    id: string;
+    image?: string | null;
+    isHazard: boolean;
+    levelId: string;
+    locationId: string;
+    peakDisplacement: Array<number>;
+    peakLoad: Array<number>;
+    positionInRing: string;
+    result: string;
+    siteId: string;
+    updatedAt: any;
+    userId: string;
+  }> | null;
+};
+
+export type GetLevelDetailsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetLevelDetailsQuery = {
+  __typename?: 'Query';
+  level: {
+    __typename?: 'Level';
+    id: string;
+    levelName: string;
+    siteId: string;
+  };
+};
+
+export type GetDriveDetailsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetDriveDetailsQuery = {
+  __typename?: 'Query';
+  drive: { __typename?: 'Drive'; id: string; driveName: string };
+};
+
+export type GetLocationDetailsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetLocationDetailsQuery = {
+  __typename?: 'Query';
+  location: { __typename?: 'Location'; id: string; locationName: string };
+};
+
+export type GetNameDetailsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetNameDetailsQuery = {
+  __typename?: 'Query';
+  user: { __typename?: 'User'; fullName: string };
+};
+
+export type GetSiteNameQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetSiteNameQuery = {
+  __typename?: 'Query';
+  site: { __typename?: 'Site'; siteName: string };
+};
+
 export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
 }>;
@@ -985,6 +1077,437 @@ export type GetMeCoffeesQuery = {
   }>;
 };
 
+export const GetHazardsIdDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getHazardsId' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'hazards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'companyId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetHazardsIdQuery, GetHazardsIdQueryVariables>;
+export const GetCompanyNameDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCompanyName' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'company' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompanyNameQuery, GetCompanyNameQueryVariables>;
+export const GetHazardDetailsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getHazardDetails' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'hazards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'companyId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'abortReason' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'boltNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'boltType' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'comment' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'driveId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'hazardCompletedDate' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isHazard' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'levelId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'locationId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'peakDisplacement' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'peakLoad' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'positionInRing' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'result' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetHazardDetailsQuery,
+  GetHazardDetailsQueryVariables
+>;
+export const GetLevelDetailsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getLevelDetails' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'level' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'levelName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'siteId' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetLevelDetailsQuery,
+  GetLevelDetailsQueryVariables
+>;
+export const GetDriveDetailsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getDriveDetails' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'drive' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'driveName' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetDriveDetailsQuery,
+  GetDriveDetailsQueryVariables
+>;
+export const GetLocationDetailsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getLocationDetails' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'location' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'locationName' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetLocationDetailsQuery,
+  GetLocationDetailsQueryVariables
+>;
+export const GetNameDetailsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getNameDetails' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'user' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetNameDetailsQuery, GetNameDetailsQueryVariables>;
+export const GetSiteNameDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getSiteName' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'site' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'siteName' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetSiteNameQuery, GetSiteNameQueryVariables>;
 export const CreateCoffeeDocument = {
   kind: 'Document',
   definitions: [

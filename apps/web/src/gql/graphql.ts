@@ -31,6 +31,13 @@ export type Scalars = {
   DateTime: { input: any; output: any };
 };
 
+export enum Application {
+  PullTest = 'PULL_TEST',
+  PullTestOperator = 'PULL_TEST_OPERATOR',
+  Ultrabolts = 'ULTRABOLTS',
+  Xcyclops = 'XCYCLOPS',
+}
+
 /**
  * BoltResult model
  * Define the BoltResult model and its fields
@@ -64,10 +71,7 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  failedCount: Scalars['Int']['output'];
-  hazardCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
-  successRate: Scalars['Int']['output'];
   totalRecords: Scalars['Int']['output'];
 };
 
@@ -235,7 +239,7 @@ export type CreateUserPermissionInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
   role: Scalars['String']['input'];
-  userId: Scalars['String']['input'];
+  userEmail: Scalars['String']['input'];
 };
 
 /**
@@ -251,21 +255,6 @@ export type Drive = {
   levelId: Scalars['String']['output'];
   locations?: Maybe<Array<Location>>;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type EnumOption = {
-  __typename?: 'EnumOption';
-  key: Scalars['String']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type Enums = {
-  __typename?: 'Enums';
-  boltTypes: Array<Scalars['String']['output']>;
-  pullTestAbortReason: Array<Scalars['String']['output']>;
-  results: Array<Scalars['String']['output']>;
-  ringPosition: Array<EnumOption>;
-  roles: Array<Scalars['String']['output']>;
 };
 
 export type Flavor = {
@@ -596,6 +585,13 @@ export type Plan = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum PlanLevel {
+  Bronze = 'BRONZE',
+  Gold = 'GOLD',
+  Inactive = 'INACTIVE',
+  Silver = 'SILVER',
+}
+
 export enum PullTestAbortReason {
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
   TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE',
@@ -615,7 +611,13 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
-  enums: Enums;
+  getApplication?: Maybe<Array<Application>>;
+  getBoltTypes?: Maybe<Array<BoltType>>;
+  getPlanLevel?: Maybe<Array<PlanLevel>>;
+  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getResults: Array<Result>;
+  getRingPosition?: Maybe<Array<RingPosition>>;
+  getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -749,21 +751,13 @@ export enum Result {
 }
 
 export enum RingPosition {
-  CenterBacks = 'Center_Backs',
-  LhBacks = 'LH_Backs',
-  LhFaceHigh = 'LH_Face_High',
-  LhFaceLow = 'LH_Face_Low',
-  LhShoulder = 'LH_Shoulder',
-  LhWallCenter = 'LH_Wall_Center',
-  LhWallLower = 'LH_Wall_Lower',
-  LhWallUpper = 'LH_Wall_Upper',
-  RhBacks = 'RH_Backs',
-  RhFaceHigh = 'RH_Face_High',
-  RhFaceLow = 'RH_Face_Low',
-  RhShoulder = 'RH_Shoulder',
-  RhWallCenter = 'RH_Wall_Center',
-  RhWallLower = 'RH_Wall_Lower',
-  RhWallUpper = 'RH_Wall_Upper',
+  CenterBacks = 'CENTER_BACKS',
+  LhBacks = 'LH_BACKS',
+  LhShoulder = 'LH_SHOULDER',
+  LhWallUpper = 'LH_WALL_UPPER',
+  RhBacks = 'RH_BACKS',
+  RhShoulder = 'RH_SHOULDER',
+  RhWallUpper = 'RH_WALL_UPPER',
 }
 
 export enum Role {
@@ -958,6 +952,22 @@ export type UserPermission = {
   userId: Scalars['String']['output'];
 };
 
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetUserQuery = {
+  __typename?: 'Query';
+  user: {
+    __typename?: 'User';
+    id: string;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: string | null;
+  };
+};
+
 export type GetCompanyQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -986,6 +996,29 @@ export type GetCompanyQuery = {
   };
 };
 
+export type GetCompanyNameQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetCompanyNameQuery = {
+  __typename?: 'Query';
+  company: { __typename?: 'Company'; id: string; name: string };
+};
+
+export type GetAllCompaniesQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type GetAllCompaniesQuery = {
+  __typename?: 'Query';
+  companies: {
+    __typename?: 'CompanyListResponse';
+    totalRecords: number;
+    results: Array<{ __typename?: 'Company'; id: string; name: string }>;
+  };
+};
+
 export type GetCompanySitesNamesQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -994,6 +1027,7 @@ export type GetCompanySitesNamesQuery = {
   __typename?: 'Query';
   company: {
     __typename?: 'Company';
+    name: string;
     sites?: Array<{ __typename?: 'Site'; id: string; siteName: string }> | null;
   };
 };
@@ -1026,6 +1060,52 @@ export type GetFullSiteLocationsQuery = {
         }> | null;
       }> | null;
     }> | null;
+  };
+};
+
+export type GetCompanyUsersQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetCompanyUsersQuery = {
+  __typename?: 'Query';
+  company: {
+    __typename?: 'Company';
+    id: string;
+    users?: Array<{
+      __typename?: 'User';
+      id: string;
+      email: string;
+      fullName: string;
+      workPlace: string;
+      phoneNumber?: string | null;
+      globalRole?: string | null;
+      userPermissions?: Array<{
+        __typename?: 'UserPermission';
+        id: string;
+        userId: string;
+        companyId: string;
+        role: string;
+        appsAccess: Array<string>;
+      }> | null;
+    }> | null;
+  };
+};
+
+export type UpdateAccountUserMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  updateUserInput: UpdateUserInput;
+}>;
+
+export type UpdateAccountUserMutation = {
+  __typename?: 'Mutation';
+  updateUser: {
+    __typename?: 'User';
+    id: string;
+    email: string;
+    fullName: string;
+    workPlace: string;
+    phoneNumber?: string | null;
   };
 };
 
@@ -1094,11 +1174,55 @@ export type UpdateTechnicianMutation = {
     __typename?: 'User';
     id: string;
     email: string;
-    fullName: string;
-    workPlace: string;
-    phoneNumber?: string | null;
-    globalRole?: string | null;
     isGlobalVisibility?: boolean | null;
+  };
+};
+
+export type GetTechniciansByRoleQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetTechniciansByRoleQuery = {
+  __typename?: 'Query';
+  users: Array<{
+    __typename?: 'User';
+    id: string;
+    fullName: string;
+    email: string;
+    workPlace: string;
+  }>;
+};
+
+export type CreateUserPermissionMutationVariables = Exact<{
+  createUserPermissionInput: CreateUserPermissionInput;
+}>;
+
+export type CreateUserPermissionMutation = {
+  __typename?: 'Mutation';
+  createUserPermission: {
+    __typename?: 'UserPermission';
+    id: string;
+    userId: string;
+    role: string;
+    appsAccess: Array<string>;
+    companyId: string;
+  };
+};
+
+export type UpdateUserPermissionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  updateUserPermissionInput: UpdateUserPermissionInput;
+}>;
+
+export type UpdateUserPermissionMutation = {
+  __typename?: 'Mutation';
+  updateUserPermission: {
+    __typename?: 'UserPermission';
+    id: string;
+    userId: string;
+    role: string;
+    appsAccess: Array<string>;
+    companyId: string;
   };
 };
 
@@ -1388,6 +1512,15 @@ export type DeleteTechnicianMutation = {
   removeUser: { __typename?: 'User'; id: string };
 };
 
+export type DeleteUserPermissionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type DeleteUserPermissionMutation = {
+  __typename?: 'Mutation';
+  removeUserPermission: { __typename?: 'UserPermission'; id: string };
+};
+
 export type CreateCoffeeMutationVariables = Exact<{
   createCoffeeInput: CreateCoffeeInput;
 }>;
@@ -1415,6 +1548,58 @@ export type GetMeCoffeesQuery = {
   }>;
 };
 
+export const GetUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'user' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
 export const GetCompanyDocument = {
   kind: 'Document',
   definitions: [
@@ -1513,6 +1698,133 @@ export const GetCompanyDocument = {
     },
   ],
 } as unknown as DocumentNode<GetCompanyQuery, GetCompanyQueryVariables>;
+export const GetCompanyNameDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCompanyName' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'company' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompanyNameQuery, GetCompanyNameQueryVariables>;
+export const GetAllCompaniesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetAllCompanies' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'offset' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'limit' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'companies' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'offset' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'offset' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'limit' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'limit' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalRecords' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'results' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetAllCompaniesQuery,
+  GetAllCompaniesQueryVariables
+>;
 export const GetCompanySitesNamesDocument = {
   kind: 'Document',
   definitions: [
@@ -1552,6 +1864,7 @@ export const GetCompanySitesNamesDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'sites' },
@@ -1691,6 +2004,190 @@ export const GetFullSiteLocationsDocument = {
 } as unknown as DocumentNode<
   GetFullSiteLocationsQuery,
   GetFullSiteLocationsQueryVariables
+>;
+export const GetCompanyUsersDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getCompanyUsers' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'company' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'users' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fullName' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'workPlace' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'phoneNumber' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'globalRole' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'userPermissions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'userId' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'companyId' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'role' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'appsAccess' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetCompanyUsersQuery,
+  GetCompanyUsersQueryVariables
+>;
+export const UpdateAccountUserDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'updateAccountUser' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'updateUserInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateUserInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateUser' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'updateUserInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'updateUserInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateAccountUserMutation,
+  UpdateAccountUserMutationVariables
 >;
 export const UpdateUserDocument = {
   kind: 'Document',
@@ -1962,10 +2459,6 @@ export const UpdateTechnicianDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'globalRole' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'isGlobalVisibility' },
@@ -1980,6 +2473,183 @@ export const UpdateTechnicianDocument = {
 } as unknown as DocumentNode<
   UpdateTechnicianMutation,
   UpdateTechnicianMutationVariables
+>;
+export const GetTechniciansByRoleDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'getTechniciansByRole' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'users' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'roles' },
+                value: {
+                  kind: 'StringValue',
+                  value: 'SANDVIK_TECHNICIAN',
+                  block: false,
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'workPlace' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetTechniciansByRoleQuery,
+  GetTechniciansByRoleQueryVariables
+>;
+export const CreateUserPermissionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'createUserPermission' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'createUserPermissionInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateUserPermissionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createUserPermission' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'createUserPermissionInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'createUserPermissionInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'role' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'appsAccess' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateUserPermissionMutation,
+  CreateUserPermissionMutationVariables
+>;
+export const UpdateUserPermissionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'updateUserPermission' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'updateUserPermissionInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateUserPermissionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateUserPermission' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'updateUserPermissionInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'updateUserPermissionInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'role' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'appsAccess' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateUserPermissionMutation,
+  UpdateUserPermissionMutationVariables
 >;
 export const GetUsersDocument = {
   kind: 'Document',
@@ -3148,6 +3818,57 @@ export const DeleteTechnicianDocument = {
 } as unknown as DocumentNode<
   DeleteTechnicianMutation,
   DeleteTechnicianMutationVariables
+>;
+export const DeleteUserPermissionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'deleteUserPermission' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'removeUserPermission' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteUserPermissionMutation,
+  DeleteUserPermissionMutationVariables
 >;
 export const CreateCoffeeDocument = {
   kind: 'Document',

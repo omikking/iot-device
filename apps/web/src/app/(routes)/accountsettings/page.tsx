@@ -30,16 +30,6 @@ export default function Page({
 
   const user = getUser?.user as User;
 
-  // if (!user) {
-  //   return (
-  //     <div>
-  //       <Text color={'foreground'} variant={'medium'}>
-  //         User not found
-  //       </Text>
-  //     </div>
-  //   );
-  // }
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline as="h1" variant="xl" color="foreground">

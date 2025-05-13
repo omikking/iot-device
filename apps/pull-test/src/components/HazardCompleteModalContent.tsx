@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Text, Headline, LoadingSpinner } from '@gsp/ui';
-import { LucideCircleCheckBig } from 'lucide-react';
-import { BoltResult } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { BoltResult } from '@/gql/graphql';
+import { LucideCircleCheckBig } from 'lucide-react';
 import styles from './BoltResultDetailsModal.module.css';
+import React, { useState, useRef, useEffect } from 'react';
+import { Button, Text, Headline, LoadingSpinner } from '@gsp/ui';
 
 type HazardCompleteModalContentProps = {
   boltResult: BoltResult;
@@ -94,6 +94,7 @@ export const HazardCompleteModalContent = ({
         }, 1200);
       }
     } catch (error) {
+      // TODO add error toaster
       console.error('Error updating hazard:', error);
     } finally {
       setIsLoading(false);

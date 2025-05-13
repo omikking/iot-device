@@ -1,11 +1,4 @@
 'use client';
-import React, { useState } from 'react';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
-import { BoltResult } from '@/gql/graphql';
-import { GoBack } from '@/components/GoBack';
-import { HazardCard } from '@/components/HazardCard';
-import { useSession } from 'next-auth/react';
 import {
   Headline,
   Tabs,
@@ -14,8 +7,15 @@ import {
   TabsTrigger,
   Modal,
 } from '@gsp/ui';
-import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import React, { useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
+import { GoBack } from '@/components/GoBack';
+import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';
+import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -46,10 +46,12 @@ const getHazardDetails = graphql(`
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
   const companyId = session?.company?.id || '';
-  const [modalHazardId, setModalHazardId] = useState<string | null>(null);
+  const [modalHazardId, setModalHazardId] = useState<string | undefined>(
+    undefined,
+  );
   const [confirmationModalHazardId, setConfirmationModalHazardId] = useState<
-    string | null
-  >(null);
+    string | undefined
+  >(undefined);
 
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
@@ -63,14 +65,14 @@ export default function Page(): JSX.Element {
   };
 
   const handleCloseDetailsModal = () => {
-    setModalHazardId(null);
+    setModalHazardId(undefined);
   };
 
   const handleOpenConfirmationModal = (hazardId: string) => {
     setConfirmationModalHazardId(hazardId);
   };
   const handleCloseConfirmationModal = () => {
-    setConfirmationModalHazardId(null);
+    setConfirmationModalHazardId(undefined);
   };
 
   const selectedHazardForModal = hazards.find((h) => h.id === modalHazardId);

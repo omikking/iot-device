@@ -2,8 +2,8 @@
 
 import { BoltResultsFilter } from '@/components/BoltResultsFilter';
 import { Headline } from '@gsp/ui';
-import { HazardCard } from '@/components/HazardCard';
-import { mockBoltResult } from '@/app/mock/mock';
+// import { HazardCard } from '@/components/HazardCard';
+// import { mockBoltResult } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
   // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
@@ -32,14 +32,14 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Hazard card 🦄
       </Headline>
-      <div className="flex flex-row flex-wrap justify-center gap-12">
+      {/* <div className="flex flex-row flex-wrap justify-center gap-12">
         {mockBoltResult.map(
           (hazardCard, index) =>
             hazardCard.isHazard && (
               <HazardCard key={index} boltResult={hazardCard} />
             ),
         )}
-      </div>
+      </div> */}
 
       <hr className="w-full border-neutral-2" />
     </main>

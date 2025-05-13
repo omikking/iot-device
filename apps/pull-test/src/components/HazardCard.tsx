@@ -1,25 +1,21 @@
 import {
-  LucideAlertTriangle,
-  LucideCircleCheckBig,
-  LucideClipboardList,
-} from 'lucide-react';
-import {
   Headline,
   Text,
   Badge,
   Button,
   Textarea,
-  // Modal,
-  // ModalTrigger,
   Specification,
 } from '@gsp/ui';
-// import { BoltResultDetailsModal } from './BoltResultDetailsModal';
+import {
+  LucideAlertTriangle,
+  LucideCircleCheckBig,
+  LucideClipboardList,
+} from 'lucide-react';
+import React from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import React from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
-// import { HazardCompleteModal } from './HazardCompleteModal';
 
 type HazardCardProps = {
   boltResult: BoltResult;
@@ -41,8 +37,6 @@ export const HazardCard = ({
   onCompleteClick,
 }: HazardCardProps) => {
   const { isHazard, comment, createdAt, hazardCompletedDate } = boltResult;
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -59,15 +53,6 @@ export const HazardCard = ({
   });
 
   const siteName = siteData?.site?.siteName || 'N/A';
-
-  // const handleCompleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   event.preventDefault();
-  //   setIsConfirmationModalOpen(true);
-  // };
-
-  // const handleHazardCompleted = () => {
-  //   setIsConfirmationModalOpen(false);
-  // };
 
   return (
     <div className="w-[49%] max-w-[644px] flex flex-col border-2 border-neutral-2">

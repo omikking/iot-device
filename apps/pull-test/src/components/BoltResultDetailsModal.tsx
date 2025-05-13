@@ -12,15 +12,15 @@ import {
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
-import React, { useState, useRef, useEffect } from 'react';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
+import styles from './BoltResultDetailsModal.module.css';
+import { generateBoltSpecifications } from '@/libs/utils';
+import React, { useState, useRef, useEffect } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
-import { generateBoltSpecifications } from '@/libs/utils';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
 import { HazardCompleteModalContent } from './HazardCompleteModalContent';
-import styles from './BoltResultDetailsModal.module.css';
 
 type BoltResultDetailsModalProps = {
   boltResult: BoltResult;
@@ -301,12 +301,10 @@ export const BoltResultDetailsModal = ({
             boltResult={boltResult}
             onClose={resetModal}
             onSuccess={() => {
+              onClose?.();
               setTimeout(() => {
-                onClose?.();
-                setTimeout(() => {
-                  setCurrentView('details');
-                }, 300);
-              }, 1200);
+                setCurrentView('details');
+              }, 300);
             }}
             initialView={
               currentView === 'confirmation' ? 'confirmation' : 'success'

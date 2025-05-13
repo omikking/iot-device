@@ -9,7 +9,6 @@ import {
   Badge,
   Headline,
   ModalClose,
-  LoadingSpinner,
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
@@ -19,7 +18,9 @@ import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import { generateBoltSpecifications } from '@/libs/utils';
 import { graphql } from '@/gql';
-import { useMutation, useQuery } from 'urql';
+import { useQuery } from 'urql';
+import { HazardCompleteModalContent } from './HazardCompleteModalContent';
+import styles from './BoltResultDetailsModal.module.css';
 
 type BoltResultDetailsModalProps = {
   boltResult: BoltResult;
@@ -64,18 +65,6 @@ const getNameDetails = graphql(`
   }
 `);
 
-const updateHazard = graphql(`
-  mutation updateBoltResult(
-    $id: String!
-    $updateBoltResultInput: UpdateBoltResultInput!
-  ) {
-    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {
-      isHazard
-      hazardCompletedDate
-    }
-  }
-`);
-
 // Modal view states
 type ModalView = 'details' | 'confirmation' | 'success';
 
@@ -84,7 +73,6 @@ export const BoltResultDetailsModal = ({
   boltResult,
   onClose,
 }: BoltResultDetailsModalProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [currentView, setCurrentView] = useState<ModalView>('details');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -112,8 +100,6 @@ export const BoltResultDetailsModal = ({
     variables: { id: boltResult?.userId },
   });
 
-  const [, updateReportedHazard] = useMutation(updateHazard);
-
   // Prepare site info for specs
   const siteInfo = {
     levelName: levelData?.level?.levelName || 'N/A',
@@ -130,8 +116,8 @@ export const BoltResultDetailsModal = ({
 
     // Apply exit animation
     if (contentRef.current) {
-      contentRef.current.classList.remove('animate-fade-in');
-      contentRef.current.classList.add('animate-fade-out');
+      contentRef.current.classList.remove(styles.animateFadeIn);
+      contentRef.current.classList.add(styles.animateFadeOut);
     }
     // Wait for animation to complete before changing view
     setTimeout(() => {
@@ -145,51 +131,15 @@ export const BoltResultDetailsModal = ({
     handleViewTransition('confirmation');
   };
 
-  const handleConfirmHazard = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    event.preventDefault();
-    setIsLoading(true);
-
-    const currentHazardDates = Array.isArray(boltResult.hazardCompletedDate)
-      ? boltResult.hazardCompletedDate
-      : [];
-
-    try {
-      await updateReportedHazard({
-        id: boltResult.id,
-        updateBoltResultInput: {
-          isHazard: false,
-          hazardCompletedDate: [...currentHazardDates, Date.now()],
-        },
-      });
-
-      handleViewTransition('success');
-      setTimeout(() => {
-        // Reset to details view for next time modal opens
-        onClose?.();
-        setTimeout(() => {
-          setCurrentView('details');
-        }, 300);
-      }, 1200);
-    } catch (error) {
-      //@TODO Toast error message
-      console.error('Failed to update hazard status:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const resetModal = () => {
     handleViewTransition('details');
-    setIsLoading(false);
   };
 
   // Apply animation classes when view changes
   useEffect(() => {
     if (contentRef.current) {
-      contentRef.current.classList.remove('animate-fade-out');
-      contentRef.current.classList.add('animate-fade-in');
+      contentRef.current.classList.remove(styles.animateFadeOut);
+      contentRef.current.classList.add(styles.animateFadeIn);
     }
   }, [currentView]);
 
@@ -327,33 +277,6 @@ export const BoltResultDetailsModal = ({
     </div>
   );
 
-  const renderConfirmationView = () => (
-    <div className="flex flex-col items-center justify-center gap-6 p-4 h-[250px]">
-      <div className="flex gap-4">
-        <LucideCircleCheckBig size={30} className="text-success" />
-        <Headline as="h3" color="foreground" variant="small" isBold>
-          Confirm hazard completion
-        </Headline>
-      </div>
-
-      <Text className="text-center w-2/3" color="foreground" variant="medium">
-        You are about to complete the selected hazard. Are you sure you want to
-        complete it?
-      </Text>
-    </div>
-  );
-
-  const renderSuccessView = () => (
-    <div className="flex flex-col items-center justify-center gap-6 p-4 h-[250px]">
-      <div className="flex gap-4">
-        <LucideCircleCheckBig size={30} className="text-success" />
-        <Headline as="h3" color="foreground" variant="small" isBold>
-          Hazard completed
-        </Headline>
-      </div>
-    </div>
-  );
-
   return (
     <ModalContent
       onEscapeKeyDown={currentView !== 'success' ? resetModal : undefined}
@@ -362,38 +285,6 @@ export const BoltResultDetailsModal = ({
         currentView !== 'details' ? 'h-[450px]' : ''
       }`}
     >
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fadeOut {
-          from {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          to {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fadeIn 0.2s ease-in-out forwards;
-        }
-
-        .animate-fade-out {
-          animation: fadeOut 0.3s ease-in-out forwards;
-        }
-      `}</style>
-
       <ModalHeader>
         <ModalTitle>
           {currentView === 'details'
@@ -403,25 +294,32 @@ export const BoltResultDetailsModal = ({
       </ModalHeader>
 
       {/* Modal content based on current view with animation */}
-      <div ref={contentRef} className="animate-fade-in">
+      <div ref={contentRef} className={styles.animateFadeIn}>
         {currentView === 'details' && renderDetailsView()}
-        {currentView === 'confirmation' && renderConfirmationView()}
-        {currentView === 'success' && renderSuccessView()}
+        {currentView !== 'details' && (
+          <HazardCompleteModalContent
+            boltResult={boltResult}
+            onClose={resetModal}
+            onSuccess={() => {
+              setTimeout(() => {
+                onClose?.();
+                setTimeout(() => {
+                  setCurrentView('details');
+                }, 300);
+              }, 1200);
+            }}
+            initialView={
+              currentView === 'confirmation' ? 'confirmation' : 'success'
+            }
+          />
+        )}
       </div>
 
-      <ModalFooter className="px-10 pb-5 pt-8">
-        {currentView === 'success' ? (
-          // No close trigger wrapper in success view
-          <div className="flex justify-end items-end gap-5">
-            <Button variant="outline" size="large" onClick={onClose}>
-              Close
-            </Button>
-          </div>
-        ) : (
-          // Use ModalClose wrapper for non-success views
+      {currentView === 'details' && (
+        <ModalFooter className="px-10 pb-5 pt-8">
           <ModalClose asChild>
             <div className="flex justify-end items-end gap-5">
-              {isHazard && isHazardCompletable && currentView === 'details' && (
+              {isHazard && isHazardCompletable && (
                 <Button
                   size="large"
                   variant="primary"
@@ -432,35 +330,18 @@ export const BoltResultDetailsModal = ({
                   Complete
                 </Button>
               )}
-
-              {currentView === 'confirmation' && (
-                <Button
-                  size="large"
-                  variant="primary"
-                  disabled={isLoading || isTransitioning}
-                  onClick={handleConfirmHazard}
-                >
-                  {isLoading ? (
-                    <LoadingSpinner className="animate-spin" size={24} />
-                  ) : (
-                    <LucideCircleCheckBig />
-                  )}
-                  Complete
-                </Button>
-              )}
-
               <Button
                 variant="outline"
                 size="large"
-                onClick={currentView !== 'details' ? resetModal : undefined}
+                onClick={onClose}
                 disabled={isTransitioning}
               >
-                Cancel
+                Close
               </Button>
             </div>
           </ModalClose>
-        )}
-      </ModalFooter>
+        </ModalFooter>
+      )}
     </ModalContent>
   );
 };

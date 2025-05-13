@@ -21,7 +21,6 @@ const documents = {
     "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n": types.GetDriveDetailsDocument,
     "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n": types.GetLocationDetailsDocument,
     "\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n": types.GetNameDetailsDocument,
-    "\n  mutation updateBoltResult(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n": types.UpdateBoltResultDocument,
     "\n  query getSiteName($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n": types.GetSiteNameDocument,
     "\n  mutation updatedHazard(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n": types.UpdatedHazardDocument,
     "\n  mutation createCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
@@ -70,10 +69,6 @@ export function graphql(source: "\n  query getLocationDetails($id: String!) {\n 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n"): (typeof documents)["\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation updateBoltResult(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n"): (typeof documents)["\n  mutation updateBoltResult(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

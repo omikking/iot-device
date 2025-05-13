@@ -40,7 +40,7 @@ export const HazardCard = ({
   onViewMore,
   onCompleteClick,
 }: HazardCardProps) => {
-  const { isHazard, comment, createdAt } = boltResult;
+  const { isHazard, comment, createdAt, hazardCompletedDate } = boltResult;
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
@@ -79,6 +79,12 @@ export const HazardCard = ({
           <Badge variant="attention">
             <LucideAlertTriangle />
             Hazard
+          </Badge>
+        )}
+        {!isHazard && hazardCompletedDate?.length && (
+          <Badge variant="success">
+            <LucideCircleCheckBig />
+            Completed
           </Badge>
         )}
       </div>

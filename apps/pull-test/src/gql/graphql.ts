@@ -18,6 +18,13 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export enum Application {
+  PullTest = 'PULL_TEST',
+  PullTestOperator = 'PULL_TEST_OPERATOR',
+  Ultrabolts = 'ULTRABOLTS',
+  Xcyclops = 'XCYCLOPS'
+}
+
 /**
  * BoltResult model
  * Define the BoltResult model and its fields
@@ -219,7 +226,7 @@ export type CreateUserPermissionInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
   role: Scalars['String']['input'];
-  userId: Scalars['String']['input'];
+  userEmail: Scalars['String']['input'];
 };
 
 /**
@@ -594,6 +601,13 @@ export type Plan = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum PlanLevel {
+  Bronze = 'BRONZE',
+  Gold = 'GOLD',
+  Inactive = 'INACTIVE',
+  Silver = 'SILVER'
+}
+
 export enum PullTestAbortReason {
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
   TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
@@ -613,7 +627,9 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
+  getApplication?: Maybe<Array<Application>>;
   getBoltTypes?: Maybe<Array<BoltType>>;
+  getPlanLevel?: Maybe<Array<PlanLevel>>;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
   getResults: Array<Result>;
   getRingPosition?: Maybe<Array<RingPosition>>;

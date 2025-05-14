@@ -8,7 +8,7 @@ import {
   Badge,
   Dropdown,
   Headline,
-  Text,
+  Typography,
   DropdownItem,
   Breadcrumb,
   BreadcrumbList,
@@ -156,9 +156,9 @@ export default function Page({
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
+                    <Typography variant="medium" color="foreground">
                       {selectedSite.siteName}
-                    </Text>
+                    </Typography>
                   </BreadcrumbItem>
                 </>
               )}
@@ -166,9 +166,9 @@ export default function Page({
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
+                    <Typography variant="medium" color="foreground">
                       {selectedLevel.levelName}
-                    </Text>
+                    </Typography>
                   </BreadcrumbItem>
                 </>
               )}
@@ -176,9 +176,9 @@ export default function Page({
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <Text variant="medium" color="foreground">
+                    <Typography variant="medium" color="foreground">
                       {selectedDrive.driveName}
-                    </Text>
+                    </Typography>
                   </BreadcrumbItem>
                 </>
               )}

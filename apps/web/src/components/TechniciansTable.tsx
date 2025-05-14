@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Typography } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
@@ -158,13 +158,13 @@ export const TechniciansTable = ({
           onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
         >
-          <Text variant="medium" color={'foreground'}>
+          <Typography variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
+            <Typography variant="medium" color={'foreground'} isBold as="span">
               {` ${technicianToDelete.fullName} `}
-            </Text>
+            </Typography>
             from the list. Are you sure you want to delete?
-          </Text>
+          </Typography>
         </DeleteModalConfirmation>
       )}
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text } from '../base/text';
+import { Typography } from '../base/typography';
 import { cn } from '../../lib/utils';
 import { Badge } from '../base/badge';
 import { LucideCheckCircle, LucideSearchX, LucideXCircle } from 'lucide-react';
@@ -34,18 +34,18 @@ const Specification = ({ title, text, className }: SpecificationProps) => {
         className,
       )}
     >
-      <Text className="ui-w-32" variant="small" color="muted">
+      <Typography className="ui-w-32" variant="small" color="muted">
         {title}
-      </Text>
+      </Typography>
       {text === 'Pass' || text === 'Fail' || text === 'Abort' ? (
         <Badge variant={getBadge(text as 'Pass' | 'Fail' | 'Abort').variant}>
           {getBadge(text as 'Pass' | 'Fail' | 'Abort').icon}
           {text}
         </Badge>
       ) : (
-        <Text className="ui-max-w-32" variant="small" color="foreground">
+        <Typography className="ui-max-w-32" variant="small" color="foreground">
           {text}
-        </Text>
+        </Typography>
       )}
     </div>
   );

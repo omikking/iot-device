@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalTitle,
   Textarea,
-  Text,
+  Typography,
   Badge,
   Headline,
   ModalClose,
@@ -174,9 +174,9 @@ export const BoltResultDetailsModal = ({
             <div className="flex flex-col w-1/2 ">
               {boltResult.comment && (
                 <div className="flex flex-col flex-grow pt-10">
-                  <Text variant="small" color="foreground">
+                  <Typography variant="small" color="foreground">
                     Comment
-                  </Text>
+                  </Typography>
                   <Textarea
                     value={boltResult.comment}
                     className="mt-2 flex-grow"
@@ -191,9 +191,9 @@ export const BoltResultDetailsModal = ({
                     <LucideTriangleAlert />
                     Reported hazard
                   </Badge>
-                  <Text variant="small" color="foreground">
+                  <Typography variant="small" color="foreground">
                     Reported by: {nameData?.user?.fullName || 'N/A'}
-                  </Text>
+                  </Typography>
                 </div>
               )}
             </div>
@@ -263,14 +263,14 @@ export const BoltResultDetailsModal = ({
                   Confirm hazard completion
                 </Headline>
               </div>
-              <Text
+              <Typography
                 className="text-center w-2/3"
                 color="foreground"
                 variant="medium"
               >
                 You are about to complete the selected hazard. Are you sure you
                 want to complete it?
-              </Text>
+              </Typography>
             </div>
           </div>
           {/* Third View */}

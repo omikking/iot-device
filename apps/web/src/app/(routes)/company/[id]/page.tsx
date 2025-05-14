@@ -1,5 +1,5 @@
 'use client';
-import { Text, Headline } from '@gsp/ui';
+import { Typography, Headline } from '@gsp/ui';
 import { useState } from 'react';
 import { GoBack } from '@/components/GoBack';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -79,19 +79,24 @@ export default function Page({
           }}
         >
           <div className="flex flex-col gap-4">
-            <Text variant="medium" color={'foreground'} as="span">
+            <Typography variant="medium" color={'foreground'} as="span">
               You are about to inactivate
-              <Text variant="medium" color={'foreground'} as="span" isBold>
+              <Typography
+                variant="medium"
+                color={'foreground'}
+                as="span"
+                isBold
+              >
                 {` ${company?.name}. `}
-              </Text>
-              <Text variant="medium" color={'foreground'} as="span">
+              </Typography>
+              <Typography variant="medium" color={'foreground'} as="span">
                 Are you sure about this action?
-              </Text>
-            </Text>
-            <Text color={'foreground'} variant={'medium'}>
+              </Typography>
+            </Typography>
+            <Typography color={'foreground'} variant={'medium'}>
               The company will become inactive. The company data will not be
               deleted and is recoverable.
-            </Text>
+            </Typography>
           </div>
         </DeleteModalConfirmation>
       )}

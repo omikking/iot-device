@@ -12,7 +12,7 @@ import {
 import { cn } from '../../lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Button } from './button';
-import { Text } from './text';
+import { Typography } from './typography';
 import { Badge } from './badge';
 
 export interface DropdownItem {
@@ -128,14 +128,14 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                   {selectedItem?.name}
                 </Badge>
               ) : (
-                <Text
+                <Typography
                   variant="medium"
                   color={
                     disabled || !selectedItem?.name ? 'muted' : 'foreground'
                   }
                 >
                   {selectedItem?.name || placeholder}
-                </Text>
+                </Typography>
               )}
               <LucideChevronDown
                 size="22"
@@ -196,9 +196,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                         {item.name}
                       </Badge>
                     ) : (
-                      <Text variant="medium" color="foreground">
+                      <Typography variant="medium" color="foreground">
                         {item.name}
-                      </Text>
+                      </Typography>
                     )}
                   </li>
                 ))}
@@ -207,9 +207,9 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                     aria-hidden="true"
                     className={cn(dropdownItemStyling, 'ui-bg-neutral-1')}
                   >
-                    <Text variant="medium" color="muted">
+                    <Typography variant="medium" color="muted">
                       No available options to select
-                    </Text>
+                    </Typography>
                   </li>
                 )}
               </ul>

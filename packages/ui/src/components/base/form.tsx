@@ -14,7 +14,7 @@ import {
 import { LucideXCircle } from 'lucide-react';
 
 import { cn } from '../../lib/utils';
-import { Text } from './text';
+import { Typography } from './typography';
 import { Label } from './label';
 
 const Form = FormProvider;
@@ -165,9 +165,14 @@ const FormMessage = React.forwardRef<
   return (
     <div className="ui-flex ui-items-center ui-gap-1.5">
       <LucideXCircle size="14" className="ui-stroke-error" />
-      <Text variant="small" color="destructive" id={formMessageId} ref={ref}>
+      <Typography
+        variant="small"
+        color="destructive"
+        id={formMessageId}
+        ref={ref}
+      >
         {body}
-      </Text>
+      </Typography>
     </div>
   );
 });

@@ -1,5 +1,5 @@
 import {
-  Text,
+  Typography,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -8,13 +8,13 @@ import {
 } from '@gsp/ui';
 import React from 'react';
 import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
- 
+
 interface DeleteEditDropdownProps {
   itemSelected: string;
   openDeleteModal?: (itemSelected: string) => void;
   handleEdit?: (itemSelected: string) => void;
 }
- 
+
 export const DeleteEditDropdown = ({
   itemSelected,
   openDeleteModal,
@@ -31,17 +31,17 @@ export const DeleteEditDropdown = ({
         {handleEdit && (
           <DropdownMenuItem onSelect={() => handleEdit(itemSelected)}>
             <LucideSquarePen />
-            <Text color={'foreground'} variant={'medium'}>
+            <Typography color={'foreground'} variant={'medium'}>
               Edit
-            </Text>
+            </Typography>
           </DropdownMenuItem>
         )}
         {openDeleteModal && (
           <DropdownMenuItem onClick={() => openDeleteModal(itemSelected)}>
             <LucideTrash2 className="text-error" />
-            <Text color={'destructive'} variant={'medium'}>
+            <Typography color={'destructive'} variant={'medium'}>
               Delete
-            </Text>
+            </Typography>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

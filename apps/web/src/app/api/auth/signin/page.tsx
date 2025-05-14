@@ -13,7 +13,7 @@ import {
   Headline,
   Input,
   Anchor,
-  Text,
+  Typography,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -77,9 +77,9 @@ export default function SignIn() {
       <div className="min-w-96 h-96 flex flex-col items-center">
         {/* @TODO fix better displaying of this error later */}
         {error && (
-          <Text variant="xs" color="destructive">
+          <Typography variant="xs" color="destructive">
             {error}
-          </Text>
+          </Typography>
         )}
         <Form {...form}>
           <form
@@ -127,18 +127,18 @@ export default function SignIn() {
                 }}
               />
               <div className="flex items-center gap-2 pt-4 pb-2">
-                <Text variant="small" color="foreground">
+                <Typography variant="small" color="foreground">
                   Forgot your password? {/* Will lead to a reset page later */}
-                </Text>
+                </Typography>
 
-                <Text variant="small" color="foreground">
+                <Typography variant="small" color="foreground">
                   {/* @TODO update link */}
                   <Link href="/api/auth/reset-password" passHref legacyBehavior>
                     <Anchor isUnderline color="foreground">
                       Click here to reset.
                     </Anchor>
                   </Link>
-                </Text>
+                </Typography>
               </div>
             </div>
             <Button variant="primary" size="large" isWide type="submit">

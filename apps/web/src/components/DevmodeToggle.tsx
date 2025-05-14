@@ -1,5 +1,5 @@
 'use client';
-import { Text, Button, Headline } from '@gsp/ui';
+import { Typography, Button, Headline } from '@gsp/ui';
 
 type DevmodeToggleProps = {
   user: 'Superadmin' | 'Client';
@@ -17,12 +17,12 @@ export const DevmodeToggle = ({
       <Headline as="h2" variant="medium" color="foreground">
         Dev mode
       </Headline>
-      <Text variant="medium" color="foreground">
+      <Typography variant="medium" color="foreground">
         Toggle user type
-      </Text>
-      <Text variant="medium" color="foreground">
+      </Typography>
+      <Typography variant="medium" color="foreground">
         Current user: {user}
-      </Text>
+      </Typography>
       <Button
         variant="secondary"
         size="small"

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
-import { Button, Headline, Text } from '@gsp/ui';
+import { Button, Headline, Typography } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Location } from '@/gql/graphql';
 
@@ -56,9 +56,9 @@ export const LocationsList = ({
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
         {locations.length === 0 && (
           <div className="flex h-full justify-center items-center">
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               Select site to view available locations
-            </Text>
+            </Typography>
           </div>
         )}
         {locations.map((location) => (

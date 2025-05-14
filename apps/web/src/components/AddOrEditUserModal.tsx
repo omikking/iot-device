@@ -16,7 +16,7 @@ import {
   ModalHeader,
   ModalTitle,
   Switch,
-  Text,
+  Typography,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
@@ -454,29 +454,29 @@ export const AddOrEditUserModal = ({
 
                 {role === Role.CompanyAdmin ? (
                   <div className="flex items-center justify-center h-full max-w-[390px] px-6 py-3">
-                    <Text color={'foreground'} variant={'medium'}>
+                    <Typography color={'foreground'} variant={'medium'}>
                       The administrator will have
-                      <Text
+                      <Typography
                         variant="medium"
                         color={'foreground'}
                         isBold
                         as="span"
                       >
                         {` full access `}
-                      </Text>
+                      </Typography>
                       to manage the company and all its applications.
-                    </Text>
+                    </Typography>
                   </div>
                 ) : (
                   <>
                     <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
+                      <Typography
                         color={'foreground'}
                         variant={'medium'}
                         className="flex flex-grow"
                       >
                         Pull Test
-                      </Text>
+                      </Typography>
 
                       <FormField
                         control={form.control}
@@ -501,13 +501,13 @@ export const AddOrEditUserModal = ({
                       />
                     </div>
                     <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
+                      <Typography
                         color={'foreground'}
                         variant={'medium'}
                         className="flex flex-grow"
                       >
                         Pull Test Operator
-                      </Text>
+                      </Typography>
                       <FormField
                         control={form.control}
                         name="userPermissions.0.appsAccess"
@@ -530,13 +530,13 @@ export const AddOrEditUserModal = ({
                       />
                     </div>
                     <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
+                      <Typography
                         color={'foreground'}
                         variant={'medium'}
                         className="flex flex-grow"
                       >
                         Ultrabolts
-                      </Text>
+                      </Typography>
                       <FormField
                         control={form.control}
                         name="userPermissions.0.appsAccess"
@@ -559,13 +559,13 @@ export const AddOrEditUserModal = ({
                       />
                     </div>
                     <div className="flex items-center px-6 py-3 border-b border-neutral-1">
-                      <Text
+                      <Typography
                         color={'foreground'}
                         variant={'medium'}
                         className="flex flex-grow"
                       >
                         xCyclops
-                      </Text>
+                      </Typography>
                       <FormField
                         control={form.control}
                         name="userPermissions.0.appsAccess"

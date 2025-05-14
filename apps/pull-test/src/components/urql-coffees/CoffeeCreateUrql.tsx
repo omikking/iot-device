@@ -18,7 +18,7 @@ import {
   FormMessage,
   Headline,
   Input,
-  Text,
+  Typography,
 } from '@gsp/ui';
 
 const createCoffeeMutation = graphql(`
@@ -127,14 +127,14 @@ export function CoffeeCreateUrql() {
         </form>
       </Form>
       {result.error && (
-        <Text variant="medium" color="destructive">
+        <Typography variant="medium" color="destructive">
           Error: {result.error.message}
-        </Text>
+        </Typography>
       )}
       {result.data && (
-        <Text variant="medium" color="foreground">
+        <Typography variant="medium" color="foreground">
           Coffee created successfully!
-        </Text>
+        </Typography>
       )}
     </div>
   );

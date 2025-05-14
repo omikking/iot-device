@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckCircle, Info, TriangleAlert, CircleX } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { Text } from './text';
+import { Typography } from './typography';
 
 const iconSize = 18;
 
@@ -61,7 +61,7 @@ interface AlertTextProps extends React.HTMLAttributes<HTMLElement> {
 
 const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTextProps>(
   ({ className, children }, ref) => (
-    <Text
+    <Typography
       variant="medium"
       className={cn(className)}
       ref={ref}
@@ -69,14 +69,14 @@ const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTextProps>(
       color={null}
     >
       {children}
-    </Text>
+    </Typography>
   ),
 );
 AlertTitle.displayName = 'AlertTitle';
 
 const AlertDescription = React.forwardRef<HTMLParagraphElement, AlertTextProps>(
   ({ className, children }, ref) => (
-    <Text
+    <Typography
       variant="small"
       className={cn(className)}
       ref={ref}
@@ -84,7 +84,7 @@ const AlertDescription = React.forwardRef<HTMLParagraphElement, AlertTextProps>(
       color={null}
     >
       {children}
-    </Text>
+    </Typography>
   ),
 );
 AlertDescription.displayName = 'AlertDescription';

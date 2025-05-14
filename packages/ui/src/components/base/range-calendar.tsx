@@ -10,7 +10,7 @@ import { buttonStyling } from './dropdown';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar } from './calendar';
 import { Button } from './button';
-import { Text } from './text';
+import { Typography } from './typography';
 
 export type DateRange = DateRangeProps;
 
@@ -67,14 +67,14 @@ export const RangeCalendar = ({
             disabled={disabled}
             className={buttonStyling}
           >
-            <Text
+            <Typography
               variant="medium"
               color={
                 disabled || !date?.from || !date?.to ? 'muted' : 'foreground'
               }
             >
               {getRangeFormat()}
-            </Text>
+            </Typography>
 
             <LucideCalendar
               size="18"

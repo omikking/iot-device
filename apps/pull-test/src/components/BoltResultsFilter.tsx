@@ -5,7 +5,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Text,
+  Typography,
 } from '@gsp/ui';
 import {
   LucideXCircle,
@@ -82,9 +82,9 @@ export const BoltResultsFilter = ({
       )}
       <PopoverContent align="start" className="mt-1.5">
         <div className="space-y-2 bg-neutral-1 px-4 py-3">
-          <Text variant="small" color="foreground">
+          <Typography variant="small" color="foreground">
             Results
-          </Text>
+          </Typography>
         </div>
         <div className="flex flex-row px-4 py-3 gap-3 items-center m">
           <Checkbox
@@ -119,9 +119,9 @@ export const BoltResultsFilter = ({
         </div>
 
         <div className="space-y-2 bg-neutral-1 px-4 py-3">
-          <Text variant="small" color="foreground">
+          <Typography variant="small" color="foreground">
             Comment
-          </Text>
+          </Typography>
         </div>
         <div className="flex flex-col gap-6 p-4">
           <div className="flex flex-row items-center gap-3">
@@ -129,27 +129,27 @@ export const BoltResultsFilter = ({
               checked={filters.withComment}
               onCheckedChange={() => handleFilterChange('withComment')}
             />
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               With comment
-            </Text>
+            </Typography>
           </div>
           <div className="flex flex-row items-center gap-3">
             <Checkbox
               checked={filters.withImage}
               onCheckedChange={() => handleFilterChange('withImage')}
             />
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               With image
-            </Text>
+            </Typography>
           </div>
           <div className="flex flex-row items-center gap-3">
             <Checkbox
               checked={filters.reportedHazard}
               onCheckedChange={() => handleFilterChange('reportedHazard')}
             />
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               Reported hazard
-            </Text>
+            </Typography>
           </div>
         </div>
 

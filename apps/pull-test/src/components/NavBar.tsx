@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useSession } from 'next-auth/react';
-import { Headline, Text } from '@gsp/ui';
+import { Headline, Typography } from '@gsp/ui';
 import { LucideUser } from 'lucide-react';
 import { SandvikLogo } from 'public/SandvikLogo';
 import { Menu } from './Menu';
@@ -30,16 +30,16 @@ export const NavBar = () => {
           {status === 'authenticated' && (
             <div className="flex items-center gap-2">
               <div className="border border-gold-3 px-5 py-1.5">
-                <Text variant="medium" color="foreground">
+                <Typography variant="medium" color="foreground">
                   {session.company.name}
-                </Text>
+                </Typography>
               </div>
 
               <div className="flex items-center gap-1 border border-gold-3 px-5 py-1.5">
                 <LucideUser size="16" className="mr-2" />
-                <Text variant="medium" color="foreground">
+                <Typography variant="medium" color="foreground">
                   {session.user.fullName}
-                </Text>
+                </Typography>
               </div>
             </div>
           )}

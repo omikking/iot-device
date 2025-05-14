@@ -1,7 +1,7 @@
 'use client';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { Text } from '@gsp/ui';
+import { Typography } from '@gsp/ui';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -170,9 +170,9 @@ export const LevelItem = ({
             className="flex flex-row w-full justify-between items-center gap-2"
             key={level.id}
           >
-            <Text variant="medium" color="foreground">
+            <Typography variant="medium" color="foreground">
               {level.levelName}
-            </Text>
+            </Typography>
 
             <DeleteEditDropdown
               itemSelected={level.id}
@@ -187,21 +187,36 @@ export const LevelItem = ({
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLevel}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Typography variant="medium" color={'foreground'}>
                 You are about to delete level
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   {` ${level.levelName} `}
-                </Text>
+                </Typography>
                 from your list. This action will also delete all the{' '}
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   drives
-                </Text>{' '}
+                </Typography>{' '}
                 and{' '}
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   locations
-                </Text>{' '}
+                </Typography>{' '}
                 connected to this level. Are you sure you want to delete?
-              </Text>
+              </Typography>
             </DeleteModalConfirmation>
           </div>
         )}

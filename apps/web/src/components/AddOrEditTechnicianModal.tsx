@@ -18,7 +18,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  Text,
+  Typography,
 } from '@gsp/ui';
 import {
   UpdateTechnicianFormValues,
@@ -160,7 +160,7 @@ export const AddOrEditTechnicianModal = ({
                         <LucideCircleHelp className="text-orange-primary" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <Text
+                        <Typography
                           color={'foreground'}
                           variant={'small'}
                           className="w-72"
@@ -169,7 +169,7 @@ export const AddOrEditTechnicianModal = ({
                           able to assign this technician on them. If it’s
                           private, only the administrator will be able to assign
                           this technician.
-                        </Text>
+                        </Typography>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

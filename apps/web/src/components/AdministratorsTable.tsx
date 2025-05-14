@@ -5,7 +5,7 @@ import {
   ColumnDef,
   DataTable,
   TableHeadWithSorting,
-  Text,
+  Typography,
 } from '@gsp/ui';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
@@ -140,13 +140,13 @@ export const AdministratorsTable = () => {
           onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
         >
-          <Text variant="medium" color={'foreground'}>
+          <Typography variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
+            <Typography variant="medium" color={'foreground'} isBold as="span">
               {` ${administratorToDelete?.fullName} `}
-            </Text>
+            </Typography>
             from the list. Are you sure you want to delete?
-          </Text>
+          </Typography>
         </DeleteModalConfirmation>
       )}
 

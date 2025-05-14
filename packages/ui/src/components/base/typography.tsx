@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../../lib/utils';
 
-const textVariants = cva('ui-font-sandvik-text', {
+const typographyVariants = cva('ui-font-sandvik-text', {
   variants: {
     variant: {
       medium: 'ui-text-md',
@@ -27,36 +27,41 @@ const textVariants = cva('ui-font-sandvik-text', {
   },
 });
 
-export interface TextProps
+export interface TypographyProps
   extends Omit<
       React.HTMLAttributes<HTMLParagraphElement | HTMLSpanElement>,
       'color'
     >,
-    Required<Pick<VariantProps<typeof textVariants>, 'variant' | 'color'>> {
+    Required<
+      Pick<VariantProps<typeof typographyVariants>, 'variant' | 'color'>
+    > {
   as?: 'p' | 'span';
   isBold?: boolean;
 }
 
-const Text = React.forwardRef<
+const Typography = React.forwardRef<
   HTMLParagraphElement | HTMLSpanElement,
-  TextProps
+  TypographyProps
 >(
   (
     { className, variant, color, isBold, children, as = 'p', ...props },
     ref,
   ) => {
-    const TextElement = as;
+    const TypographyElement = as;
     return (
-      <TextElement
-        className={cn(textVariants({ variant, color, isBold }), className)}
+      <TypographyElement
+        className={cn(
+          typographyVariants({ variant, color, isBold }),
+          className,
+        )}
         ref={ref as React.RefObject<HTMLParagraphElement>}
         {...props}
       >
         {children}
-      </TextElement>
+      </TypographyElement>
     );
   },
 );
-Text.displayName = 'Text';
+Typography.displayName = 'Typography';
 
-export { Text, textVariants };
+export { Typography, typographyVariants };

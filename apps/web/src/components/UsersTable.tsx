@@ -8,7 +8,7 @@ import {
   User,
   UserPermission,
 } from '@/gql/graphql';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Typography } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
@@ -216,13 +216,13 @@ export const UsersTable = ({
           closeDeleteModal();
         }}
       >
-        <Text variant="medium" color={'foreground'}>
+        <Typography variant="medium" color={'foreground'}>
           You are about to delete
-          <Text variant="medium" color={'foreground'} isBold as="span">
+          <Typography variant="medium" color={'foreground'} isBold as="span">
             {` ${userToDeleteName} `}
-          </Text>
+          </Typography>
           from the list. Are you sure you want to delete?
-        </Text>
+        </Typography>
       </DeleteModalConfirmation>
 
       <DataTable

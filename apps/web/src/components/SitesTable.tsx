@@ -6,7 +6,13 @@ import { useMutation, useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import {
+  Typography,
+  Badge,
+  Button,
+  DataTable,
+  TableHeadWithSorting,
+} from '@gsp/ui';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
@@ -108,9 +114,9 @@ export const SitesTable = ({
               }}
             >
               <LucideMoveRight />
-              <Text variant={'medium'} color={'foreground'}>
+              <Typography variant={'medium'} color={'foreground'}>
                 {row.getValue('totalSiteLocations')} Site locations
-              </Text>
+              </Typography>
             </Link>
           </Button>
         );
@@ -122,9 +128,9 @@ export const SitesTable = ({
       cell: ({ row }) => {
         const { address, city, postalCode, country } = row.original;
         return (
-          <Text variant="medium" color="foreground">
+          <Typography variant="medium" color="foreground">
             {address}, {city} {postalCode}, {country}
-          </Text>
+          </Typography>
         );
       },
     },
@@ -157,13 +163,13 @@ export const SitesTable = ({
           onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
         >
-          <Text variant="medium" color={'foreground'}>
+          <Typography variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
+            <Typography variant="medium" color={'foreground'} isBold as="span">
               {` ${siteToDelete.siteName} `}
-            </Text>
+            </Typography>
             from the list. Are you sure you want to delete?
-          </Text>
+          </Typography>
         </DeleteModalConfirmation>
       )}
 

@@ -3,7 +3,7 @@ import {
   Button,
   Headline,
   Anchor,
-  Text,
+  Typography,
   Badge,
   Form,
   FormField,
@@ -148,15 +148,15 @@ export default function Page(): JSX.Element {
           <TooltipTrigger>
             <Badge variant={'neutral'}>
               <LucideCircleHelp />
-              <Text color={'foreground'} variant={'small'}>
+              <Typography color={'foreground'} variant={'small'}>
                 Hover
-              </Text>
+              </Typography>
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
-            <Text color={'foreground'} variant={'small'}>
+            <Typography color={'foreground'} variant={'small'}>
               Hey! You're awesome! 🚀
-            </Text>
+            </Typography>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -167,22 +167,22 @@ export default function Page(): JSX.Element {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               Example
-            </Text>
+            </Typography>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               Without link
-            </Text>
+            </Typography>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbLink asChild>
             <BreadcrumbItem>
-              <Text variant="small" color="foreground">
+              <Typography variant="small" color="foreground">
                 <Link href="/overview">With Link</Link>
-              </Text>
+              </Typography>
             </BreadcrumbItem>
           </BreadcrumbLink>
         </BreadcrumbList>
@@ -221,13 +221,13 @@ export default function Page(): JSX.Element {
           console.log('Deleting item...');
         }}
       >
-        <Text variant="medium" color={'foreground'}>
+        <Typography variant="medium" color={'foreground'}>
           You are about to delete
-          <Text variant="medium" color={'foreground'} as="span" isBold>
+          <Typography variant="medium" color={'foreground'} as="span" isBold>
             {` Elliot Alderson `}
-          </Text>
+          </Typography>
           from the list. Are you sure you want to delete?
-        </Text>
+        </Typography>
       </DeleteModalConfirmation>
       <hr className="w-full" />
       <Headline variant="large" as="h1" color="foreground">
@@ -239,9 +239,9 @@ export default function Page(): JSX.Element {
             className="flex items-center justify-between py-2 gap-2"
             key={index}
           >
-            <Text color={'foreground'} variant={'small'}>
+            <Typography color={'foreground'} variant={'small'}>
               {site.name}
-            </Text>
+            </Typography>
             <DeleteEditDropdown
               itemSelected={index.toString()}
               openDeleteModal={openDeleteModal}
@@ -260,13 +260,13 @@ export default function Page(): JSX.Element {
             closeDeleteModal();
           }}
         >
-          <Text variant="medium" color={'foreground'}>
+          <Typography variant="medium" color={'foreground'}>
             You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
+            <Typography variant="medium" color={'foreground'} isBold as="span">
               {siteToDelete}
-            </Text>
+            </Typography>
             from the list. Are you sure you want to delete?
-          </Text>
+          </Typography>
         </DeleteModalConfirmation>
       </div>
       <hr className="w-full border-neutral-2" />
@@ -409,42 +409,42 @@ export default function Page(): JSX.Element {
         Texts 🦄
       </Headline>
       <div className="flex flex-col items-center gap-12">
-        <Text variant="medium" color="foreground">
+        <Typography variant="medium" color="foreground">
           Medium text
-        </Text>
+        </Typography>
 
-        <Text variant="medium" color="foreground" isBold>
+        <Typography variant="medium" color="foreground" isBold>
           Medium bold text
-        </Text>
+        </Typography>
 
-        <Text variant="small" color="destructive">
+        <Typography variant="small" color="destructive">
           Small text with destructive color
-        </Text>
+        </Typography>
 
-        <Text variant="xs" color="muted">
+        <Typography variant="xs" color="muted">
           XS text with muted color
-        </Text>
+        </Typography>
       </div>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
         Links 🦄
       </Headline>
       <div className="flex flex-col items-center gap-12 relative">
-        <Text variant="xs" color="foreground">
+        <Typography variant="xs" color="foreground">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="foreground">
               Link and black underline
             </Anchor>
           </Link>
-        </Text>
+        </Typography>
 
-        <Text variant="medium" color="destructive">
+        <Typography variant="medium" color="destructive">
           <Link href="#" passHref legacyBehavior>
             <Anchor isUnderline color="destructive">
               Link and destructive underline
             </Anchor>
           </Link>
-        </Text>
+        </Typography>
 
         <Headline variant="medium" color="foreground" as="h2" className="group">
           <Link href="#" passHref legacyBehavior>

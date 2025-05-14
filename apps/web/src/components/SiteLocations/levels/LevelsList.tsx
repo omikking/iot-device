@@ -7,7 +7,7 @@ import React, {
   Dispatch,
 } from 'react';
 import { LevelItem } from './LevelItem';
-import { Button, Headline, Text } from '@gsp/ui';
+import { Button, Headline, Typography } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Level } from '@/gql/graphql';
 
@@ -67,9 +67,9 @@ export const LevelsList = ({
       <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
         {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
-            <Text variant="small" color="foreground">
+            <Typography variant="small" color="foreground">
               Select site to view available levels
-            </Text>
+            </Typography>
           </div>
         )}
         {levels.map((level) => (

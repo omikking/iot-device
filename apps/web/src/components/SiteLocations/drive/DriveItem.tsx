@@ -1,7 +1,7 @@
 'use client';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { Text } from '@gsp/ui';
+import { Typography } from '@gsp/ui';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -167,9 +167,9 @@ export const DriveItem = ({
             className="flex flex-row w-full justify-between items-center gap-2"
             key={drive.id}
           >
-            <Text variant="medium" color="foreground">
+            <Typography variant="medium" color="foreground">
               {drive.driveName}
-            </Text>
+            </Typography>
 
             <DeleteEditDropdown
               itemSelected={drive.id}
@@ -184,17 +184,27 @@ export const DriveItem = ({
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteDrive}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Typography variant="medium" color={'foreground'}>
                 You are about to delete drive
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   {` ${drive.driveName} `}
-                </Text>
+                </Typography>
                 from your list. This action will also delete all the{' '}
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   locations
-                </Text>{' '}
+                </Typography>{' '}
                 connected to this drive. Are you sure you want to delete?
-              </Text>
+              </Typography>
             </DeleteModalConfirmation>
           </div>
         )}

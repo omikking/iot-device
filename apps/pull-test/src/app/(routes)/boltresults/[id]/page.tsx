@@ -17,7 +17,7 @@ import {
   TabsTrigger,
   TabsContent,
   DateRange,
-  Text,
+  Typography,
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -129,9 +129,9 @@ export default function Page(): JSX.Element {
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
+                      <Typography variant="medium" color="foreground">
                         {site}
-                      </Text>
+                      </Typography>
                     </BreadcrumbItem>
                   </>
                 )}
@@ -139,9 +139,9 @@ export default function Page(): JSX.Element {
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
+                      <Typography variant="medium" color="foreground">
                         {level}
-                      </Text>
+                      </Typography>
                     </BreadcrumbItem>
                   </>
                 )}
@@ -149,9 +149,9 @@ export default function Page(): JSX.Element {
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
+                      <Typography variant="medium" color="foreground">
                         {drive}
-                      </Text>
+                      </Typography>
                     </BreadcrumbItem>
                   </>
                 )}
@@ -159,9 +159,9 @@ export default function Page(): JSX.Element {
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
+                      <Typography variant="medium" color="foreground">
                         {location}
-                      </Text>
+                      </Typography>
                     </BreadcrumbItem>
                   </>
                 )}

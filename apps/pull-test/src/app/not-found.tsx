@@ -1,4 +1,4 @@
-import { Button, Headline, Text } from '@gsp/ui';
+import { Button, Headline, Typography } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,9 +12,9 @@ export default function NotFound() {
         <Headline as="h2" variant={'medium'} color={'foreground'}>
           Oops! Page not found.
         </Headline>
-        <Text color={'foreground'} variant={'medium'}>
+        <Typography color={'foreground'} variant={'medium'}>
           It looks like the page you're looking for doesn't exist.
-        </Text>
+        </Typography>
       </div>
       <Button size="large" variant="primary" asChild>
         <Link href={`/overview`}>

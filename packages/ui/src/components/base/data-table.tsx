@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from './table';
-import { Text } from './text';
+import { Typography } from './typography';
 
 export type { ColumnDef };
 
@@ -96,9 +96,9 @@ export function DataTable<TData, TValue>({
           <TableRow>
             <TableCell colSpan={columns.length}>
               <div className="ui-flex ui-h-80 ui-flex-col ui-justify-center ui-items-center ui-gap-5">
-                <Text color="foreground" variant="medium">
+                <Typography color="foreground" variant="medium">
                   {noResultMessage}
-                </Text>
+                </Typography>
                 <LucideSearch color="gray" />
               </div>
             </TableCell>

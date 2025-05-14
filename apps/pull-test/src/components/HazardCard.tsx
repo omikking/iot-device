@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import {
   Headline,
-  Text,
+  Typography,
   Badge,
   Button,
   Textarea,
@@ -86,9 +86,9 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
             })()}
         </div>
         <div className="w-full xl:w-1/2 flex flex-col gap-2 min-h-40">
-          <Text variant="small" color="foreground">
+          <Typography variant="small" color="foreground">
             Description
-          </Text>
+          </Typography>
           <Textarea value={comment || ''} className="flex-grow" disabled />
         </div>
       </div>

@@ -1,5 +1,5 @@
 export * from './base/headline';
-export * from './base/text';
+export * from './base/typography';
 export * from './base/button';
 export * from './base/badge';
 

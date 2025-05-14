@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Headline, Text } from '@gsp/ui';
+import { Headline, Typography } from '@gsp/ui';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { GetAllCompaniesQuery } from '@/gql/graphql';
 
@@ -30,9 +30,13 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
           >
             No companies found
           </Headline>
-          <Text variant="small" color="foreground" className="text-center">
+          <Typography
+            variant="small"
+            color="foreground"
+            className="text-center"
+          >
             You do not have permission to view any companies.
-          </Text>
+          </Typography>
         </section>
       ) : (
         <nav aria-label="Companies list">
@@ -44,9 +48,9 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
                   className="group w-full flex justify-between items-center border border-gold-3 hover:border-gold-primary focus:border-gold-primary focus:outline-none focus:ring-1 focus:ring-gold-primary transition-all ease-in-out duration-200 px-6 py-6 bg-main-white"
                   aria-label={`Select ${company.name}`}
                 >
-                  <Text variant="medium" color="foreground">
+                  <Typography variant="medium" color="foreground">
                     {company.name}
-                  </Text>
+                  </Typography>
                   <LucideMoveRight
                     aria-hidden="true"
                     className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5"

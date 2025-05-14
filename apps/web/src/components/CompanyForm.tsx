@@ -1,5 +1,5 @@
 'use client';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import { Button, ContentHolder, Form, Headline, Typography } from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
@@ -203,13 +203,13 @@ export const CompanyForm = ({
                     >
                       Want to update your plan?
                     </Headline>
-                    <Text
+                    <Typography
                       color="accent"
                       variant="medium"
                       className="mt-1 ml-4 underline underline-offset-2"
                     >
                       Call +46 70 174 06 21
-                    </Text>
+                    </Typography>
                   </div>
                 )}
               </div>

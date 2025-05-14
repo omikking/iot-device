@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Text } from '@gsp/ui';
+import { Typography } from '@gsp/ui';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
@@ -164,9 +164,9 @@ export const LocationItem = ({
             className="flex flex-row w-full justify-between items-center gap-2"
             key={location.id}
           >
-            <Text variant="medium" color="foreground">
+            <Typography variant="medium" color="foreground">
               {location.locationName}
-            </Text>
+            </Typography>
             <DeleteEditDropdown
               itemSelected={location.id}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
@@ -180,13 +180,18 @@ export const LocationItem = ({
               onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLocation}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Typography variant="medium" color={'foreground'}>
                 You are about to delete location{' '}
-                <Text variant="medium" color={'foreground'} as="span" isBold>
+                <Typography
+                  variant="medium"
+                  color={'foreground'}
+                  as="span"
+                  isBold
+                >
                   {` ${location.locationName} `}
-                </Text>{' '}
+                </Typography>{' '}
                 from your list. Are you sure you want to delete?
-              </Text>
+              </Typography>
             </DeleteModalConfirmation>
           </div>
         )}

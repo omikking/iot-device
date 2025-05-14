@@ -15,7 +15,7 @@ import {
   FormMessage,
   Headline,
   Input,
-  Text,
+  Typography,
   Anchor,
 } from '@gsp/ui';
 import Link from 'next/link';
@@ -99,10 +99,10 @@ export default function Page() {
           {step === 1 && (
             <>
               <div className="flex flex-col justify-center items-center px-14 text-center">
-                <Text variant="medium" color="foreground">
+                <Typography variant="medium" color="foreground">
                   Enter your email and we will send you a link to reset your
                   password.
-                </Text>
+                </Typography>
               </div>
               <FormField
                 control={form.control}
@@ -131,11 +131,15 @@ export default function Page() {
           {step === 2 && (
             <>
               <div className="flex flex-col justify-center items-center">
-                <Text variant="medium" color="foreground">
+                <Typography variant="medium" color="foreground">
                   Enter the verification code.
-                </Text>
+                </Typography>
                 <span className="flex">
-                  <Text variant="small" color="destructive" className="mr-1">
+                  <Typography
+                    variant="small"
+                    color="destructive"
+                    className="mr-1"
+                  >
                     <Link
                       href="/api/auth/reset-password"
                       passHref
@@ -145,10 +149,10 @@ export default function Page() {
                         Resend
                       </Anchor>
                     </Link>
-                  </Text>
-                  <Text variant="small" color="foreground">
+                  </Typography>
+                  <Typography variant="small" color="foreground">
                     code if you didn't receive it.
-                  </Text>
+                  </Typography>
                 </span>
               </div>
               <FormField
@@ -213,7 +217,7 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">               
+              <Button variant="primary" size="large" isWide type="submit">
                 <CircleCheckBig />
                 Confirm
               </Button>

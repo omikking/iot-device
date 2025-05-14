@@ -8,7 +8,7 @@ import { cn } from '../../lib/utils';
 import { buttonStyling } from './dropdown';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar } from './calendar';
-import { Text } from './text';
+import { Typography } from './typography';
 
 interface SingleDateCalendarProps {
   selectedDate?: Date;
@@ -49,12 +49,12 @@ export const SingleDateCalendar = ({
             disabled={disabled}
             className={buttonStyling}
           >
-            <Text
+            <Typography
               variant="medium"
               color={disabled || !date ? 'muted' : 'foreground'}
             >
               {date ? formattedDate(date) : 'Select date'}
-            </Text>
+            </Typography>
 
             <LucideCalendar
               size="18"

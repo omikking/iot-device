@@ -8,9 +8,14 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
+
+//TODO :- update this role decorator according to requirement this is for testing
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
+@Roles('COMPANY_USER', 'SADVIK_TECHNICIAN')
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 

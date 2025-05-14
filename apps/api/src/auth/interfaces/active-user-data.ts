@@ -1,6 +1,10 @@
 export interface ActiveUserData {
   id: string;
   email: string;
-  fullName: string | null;
-  globalRole?: string | null;
+  fullName: string;
+  globalRole: string | null;
+  userPermissions?: {
+    role: string;
+    companyId: string;
+  }[];
 }

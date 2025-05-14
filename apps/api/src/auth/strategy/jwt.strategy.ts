@@ -18,15 +18,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
-    // JWT payload. It will be appended to user object on the request body. req.user
-    // We get req.user in our custom decorator @User
-    // Alternatively, we could add user data to the JWT payload directly and return it here. Then we could avoid a Prisma DB call.
+  async validate(payload: {
+    sub: string;
+    email: string;
+  }): Promise<ActiveUserData> {
     try {
       const prismaUser = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          id: payload.sub,
-        },
+        where: { id: payload.sub },
+      });
+
+      const permissions = await this.prisma.userPermission.findMany({
+        where: { userId: prismaUser.id },
       });
 
       const activeUser: ActiveUserData = {
@@ -34,6 +36,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         email: prismaUser.email,
         fullName: prismaUser.fullName,
         globalRole: prismaUser.globalRole,
+        userPermissions: permissions.map((perm) => ({
+          role: perm.role,
+          companyId: perm.companyId,
+        })),
       };
 
       return activeUser;

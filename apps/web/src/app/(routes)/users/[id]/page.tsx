@@ -1,13 +1,13 @@
 'use client';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 import { useState } from 'react';
+import { User } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { User } from '@/gql/graphql';
-import { useQuery } from 'urql';
-import { graphql } from '@/gql';
 
 const getCompanyUsersQuery = graphql(`
   query getCompanyUsers($id: String!) {

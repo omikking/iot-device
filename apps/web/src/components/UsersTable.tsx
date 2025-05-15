@@ -1,6 +1,6 @@
 'use client';
 import { graphql } from '@/gql';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Application,
   GetCompanyUsersQuery,
@@ -13,7 +13,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
-import { useMutation } from 'urql';
+import { useMutation, useClient } from 'urql';
 import { useParams } from 'next/navigation';
 
 type UsersTableProps = {
@@ -62,9 +62,9 @@ export const UsersTable = ({
   const users = (companyData?.company.users as User[]) || [];
 
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-
+  const client = useClient();
   const [, deleteUser] = useMutation(deleteUserPermissionMutation);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
@@ -117,24 +117,31 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (userId: string) => {
-    const userToDelete = users.find((user) => user.id === userId);
+  const handleDelete = useCallback(async (): Promise<boolean> => {
+    const userToDeleteObj = users.find((user) => user.id === userToDelete);
+    const userPermissionToDelete = userToDeleteObj?.userPermissions?.find(
+      (userPerm) => userPerm.companyId === companyId,
+    );
 
-    if (userToDelete) {
-      const userPermissionToDelete = userToDelete.userPermissions?.find(
-        (userPerm) => userPerm.companyId === companyId,
-      );
+    setIsDeleting(true);
+    try {
+      const result = await client
+        .mutation(deleteUserPermissionMutation, {
+          id: userPermissionToDelete?.id || '',
+        })
+        .toPromise();
 
-      if (userPermissionToDelete) {
-        deleteUser({
-          id: userPermissionToDelete.id,
-        }).catch((error) => {
-          // TODO add toaster
-          console.log('error deleting user permission', error);
-        });
+      if (result.error) {
+        return false;
       }
+      return true;
+    } catch (error) {
+      //TODO error toast
+      return false;
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, [userToDelete, users, companyId, client]);
 
   const openEditModal = (userId: string) => {
     const userToEdit = users.find((user) => user.id === userId);
@@ -209,12 +216,15 @@ export const UsersTable = ({
         modalTitle="Delete user"
         isOpen={isDeleteUserModalOpen}
         onOpenChange={closeDeleteModal}
-        onDelete={() => {
-          if (userToDelete) {
-            handleDelete(userToDelete);
-          }
-          closeDeleteModal();
-        }}
+        onClose={closeDeleteModal}
+        onDelete={handleDelete}
+        isLoading={isDeleting}
+        // onDelete={() => {
+        //   if (userToDelete) {
+        //     handleDelete(userToDelete);
+        //   }
+        //   closeDeleteModal();
+        // }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete

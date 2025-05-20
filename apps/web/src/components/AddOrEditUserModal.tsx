@@ -17,6 +17,7 @@ import {
   ModalTitle,
   Switch,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
@@ -221,6 +222,11 @@ export const AddOrEditUserModal = ({
         onUserAdded();
       }
     } catch (error) {
+      showAlertToast({
+        title: 'Error',
+        description: 'An error occurred while creating the user.',
+        variant: 'error',
+      });
       setIsLoading(false);
       setIsSuccessful(false);
     }

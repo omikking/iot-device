@@ -31,7 +31,8 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const companyId = params.id;
+  // const companyId = params.id;
+  const companyId = '7fa6c15f-11c5-4d64-89ca-ab33ddb94a6e';
 
   const [{ data }] = useQuery({
     query: getCompanyName,

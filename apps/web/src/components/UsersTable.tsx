@@ -1,6 +1,4 @@
 'use client';
-import { graphql } from '@/gql';
-import { useState, useCallback } from 'react';
 import {
   Application,
   GetCompanyUsersQuery,
@@ -8,13 +6,15 @@ import {
   User,
   UserPermission,
 } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useParams } from 'next/navigation';
+import { useState, useCallback } from 'react';
+import { useMutation, useClient } from 'urql';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
-import { useMutation, useClient } from 'urql';
-import { useParams } from 'next/navigation';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type UsersTableProps = {
   companyData?: GetCompanyUsersQuery;
@@ -57,19 +57,18 @@ export const UsersTable = ({
   onOpenChange,
   onSelectUser,
 }: UsersTableProps) => {
+  const client = useClient();
   const params = useParams();
   const companyId = params.id as string;
-  const users = (companyData?.company.users as User[]) || [];
-
-  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-  const client = useClient();
-  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
   const [isDeleting, setIsDeleting] = useState(false);
+  const users = (companyData?.company.users as User[]) || [];
+  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
+  const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
 
-  const userToDeleteName = users.find(
+  const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
   )?.fullName;
 
@@ -211,25 +210,19 @@ export const UsersTable = ({
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Delete user"
         deleteIcon="User"
         modalTitle="Delete user"
-        isOpen={isDeleteUserModalOpen}
-        onOpenChange={closeDeleteModal}
-        onClose={closeDeleteModal}
-        onDelete={handleDelete}
+        deleteButtonText="Delete user"
         isLoading={isDeleting}
-        // onDelete={() => {
-        //   if (userToDelete) {
-        //     handleDelete(userToDelete);
-        //   }
-        //   closeDeleteModal();
-        // }}
+        isOpen={isDeleteUserModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {` ${userToDeleteName} `}
+            {` ${fullNameOfUserToDelete} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

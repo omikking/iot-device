@@ -1,14 +1,21 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-import { LucideMoveRight } from 'lucide-react';
-import { useMutation, useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { useClient } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { useCallback, useState } from 'react';
+import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+
+type SitesTableProps = {
+  companyId: string;
+  onOpenChange: (isOpen: boolean) => void;
+  onSelectSite: (site?: Site) => void;
+};
 
 const getCompanySitesQuery = graphql(`
   query getCompanySites($id: String!) {
@@ -40,12 +47,6 @@ const deleteSiteMutation = graphql(`
   }
 `);
 
-type SitesTableProps = {
-  companyId: string;
-  onOpenChange: (isOpen: boolean) => void;
-  onSelectSite: (site?: Site) => void;
-};
-
 export const SitesTable = ({
   companyId,
   onOpenChange,
@@ -56,10 +57,10 @@ export const SitesTable = ({
     variables: { id: companyId || '' },
   });
   const sites = (sitesData.data?.company.sites as Site[]) || [];
-
   const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
-  const [, deleteSite] = useMutation(deleteSiteMutation);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const client = useClient();
 
   const openDeleteModal = (siteId: string) => {
     const siteToDelete = sites?.find((site) => site.id === siteId);
@@ -72,20 +73,38 @@ export const SitesTable = ({
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    if (siteToDelete) {
-      deleteSite({
-        id: siteToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
-      });
+  const handleDelete = useCallback(async (): Promise<boolean> => {
+    // Why is this not working?
+    // const siteToDeleteObj = sites.find((site) => site.id === siteToDelete?.id);
+    // const siteToDelete =    siteToDeleteObj?.id;
+    const siteObj = sites.find((site) => site.id === siteToDelete?.id);
+    const siteId = siteObj?.id;
+
+    setIsDeleting(true);
+    try {
+      const result = await client
+        .mutation(deleteSiteMutation, {
+          id: siteId || '',
+        })
+        .toPromise();
+      if (result.error) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      //TODO error toast
+      return false;
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, [siteToDelete, sites, client]);
 
   const openEditModal = (siteId: string) => {
     const siteToEdit = sites?.find((site) => site.id === siteId);
-    onSelectSite(siteToEdit);
-    onOpenChange(true);
+    if (siteToEdit) {
+      onSelectSite(siteToEdit);
+      onOpenChange(true);
+    }
   };
 
   const columns: ColumnDef<Site>[] = [
@@ -150,12 +169,14 @@ export const SitesTable = ({
     <>
       {siteToDelete && (
         <DeleteModalConfirmation
-          deleteButtonText="Delete site"
           deleteIcon="Site"
           modalTitle="Delete site"
+          deleteButtonText="Delete site"
+          isLoading={isDeleting}
           isOpen={isDeleteSiteModalOpen}
           onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
+          onClose={closeDeleteModal}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

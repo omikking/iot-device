@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Badge,
   ColumnDef,
@@ -12,7 +12,7 @@ import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { graphql } from '@/gql';
-import { useMutation, useQuery } from 'urql';
+import { useClient, useQuery } from 'urql';
 import { useSession } from 'next-auth/react';
 
 type Administrator = GetAdminsQuery['users'][0];
@@ -45,6 +45,7 @@ const deleteAdminMutation = graphql(`
 
 export const AdministratorsTable = () => {
   const { data: session } = useSession();
+  // const [, deleteAdmin] = useMutation(deleteAdminMutation);
   const [{ data: administratorsData }] = useQuery({
     query: getAdminsQuery,
     pause: !session?.company?.id,
@@ -58,7 +59,8 @@ export const AdministratorsTable = () => {
   const [administratorToDelete, setAdministratorToDelete] = useState<
     Administrator | undefined
   >(undefined);
-  const [, deleteAdmin] = useMutation(deleteAdminMutation);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const client = useClient();
 
   const openDeleteModal = (adminId: string) => {
     const adminToDelete = administrators?.find((admin) => admin.id === adminId);
@@ -71,15 +73,32 @@ export const AdministratorsTable = () => {
     setAdministratorToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    if (administratorToDelete) {
-      deleteAdmin({
-        id: administratorToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
-      });
+  const handleDelete = useCallback(async (): Promise<boolean> => {
+    const adminObj = administrators.find(
+      (admin) => admin.id === administratorToDelete?.id,
+    );
+    const adminId = adminObj?.id;
+
+    setIsDeleting(true);
+    try {
+      const result = await client
+        .mutation(deleteAdminMutation, {
+          id: adminId || '',
+        })
+        .toPromise();
+      if (result.error) {
+        //TODO error toast
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      //TODO error toast
+      return false;
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, [administratorToDelete, administrators, client]);
 
   const columns: ColumnDef<Administrator>[] = [
     {
@@ -136,9 +155,11 @@ export const AdministratorsTable = () => {
           deleteButtonText="Confirm deletion"
           deleteIcon="User"
           modalTitle="Delete administrator"
+          isLoading={isDeleting}
           isOpen={isDeleteAdministratorModalOpen}
           onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
+          onClose={closeDeleteModal}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

@@ -97,22 +97,20 @@ export const DeleteModalConfirmation = ({
       const result = await onDelete();
       if (result !== false) {
         handleViewTransition('deleteSuccess');
+
         if (onSuccess) {
           setTimeout(() => {
             onSuccess();
-            console.log('hawhdwa');
-          }, 11200);
+          }, 1500);
         } else {
           setTimeout(() => {
+            setCurrentView('confirmDelete');
             onClose();
-            setTimeout(() => {
-              setCurrentView('confirmDelete');
-            }, 300);
           }, 1200);
         }
       }
     } catch (error) {
-      //TODO add toast
+      //TODO add toast?
       // Don't need to reset loading here as it's managed by parent
     }
   };
@@ -195,28 +193,5 @@ export const DeleteModalConfirmation = ({
         </div>
       </ModalContent>
     </Modal>
-
-    // <Modal open={isOpen} onOpenChange={onOpenChange}>
-    //   <ModalContent>
-    //     <ModalHeader>
-    //       <ModalTitle>{modalTitle}</ModalTitle>
-    //     </ModalHeader>
-    //     <div className="flex flex-row justify-center items-center pt-16 gap-4">
-    //       {getDeleteIcon(deleteIcon)}
-    //       <Headline variant="medium" as="h3" color="foreground" isBold>
-    //         {modalText || 'Confirm deletion'}
-    //       </Headline>
-    //     </div>
-    //     <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
-    //       {children}
-    //     </div>
-    //     <ModalFooter className="ui-px-10 ui-py-6">
-    //       <Button variant="destructive" size={'large'} onClick={onDelete}>
-    //         <LucideTrash2 />
-    //         {deleteButtonText || 'Confirm deletion'}
-    //       </Button>
-    //     </ModalFooter>
-    //   </ModalContent>
-    // </Modal>
   );
 };

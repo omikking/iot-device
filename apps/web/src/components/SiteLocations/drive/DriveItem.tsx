@@ -185,11 +185,15 @@ export const DriveItem = ({
               onDelete={handleDeleteDrive}
             >
               <Text variant="medium" color={'foreground'}>
-                You are about to delete
+                You are about to delete drive
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${drive.driveName} `}
                 </Text>
-                from the list. Are you sure you want to delete?
+                from your list. This action will also delete all the{' '}
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  locations
+                </Text>{' '}
+                connected to this drive. Are you sure you want to delete?
               </Text>
             </DeleteModalConfirmation>
           </div>

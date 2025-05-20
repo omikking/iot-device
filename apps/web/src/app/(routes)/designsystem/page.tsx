@@ -336,6 +336,10 @@ export default function Page(): JSX.Element {
             Button used as link
           </Link>
         </Button>
+
+        <Button isLoading={true} disabled variant="primary" size="large">
+          Button with loading spinner
+        </Button>
       </div>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

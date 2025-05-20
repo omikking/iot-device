@@ -1,20 +1,56 @@
 'use client';
 import { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
-import { UserSchema } from '@/app/mock/mock';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { useSession } from 'next-auth/react';
+import { User } from '@/gql/graphql';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 
-export default function Page(): JSX.Element {
-  const { data: session } = useSession();
+const getCompanyUsersQuery = graphql(`
+  query getCompanyUsers($id: String!) {
+    company(id: $id) {
+      id
+      users {
+        id
+        email
+        fullName
+        workPlace
+        phoneNumber
+        globalRole
+        userPermissions {
+          id
+          userId
+          companyId
+          role
+          appsAccess
+        }
+      }
+    }
+  }
+`);
 
+export default function Page({
+  params,
+}: {
+  params: { id: string; name: string };
+}): JSX.Element {
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<UserSchema | undefined>(
-    undefined,
-  );
+  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+
+  const companyId = params.id;
+
+  const [{ data: companyData }, executeQuery] = useQuery({
+    query: getCompanyUsersQuery,
+    variables: { id: companyId || '' },
+    pause: !companyId,
+  });
+
+  const refetchUsers = () => {
+    executeQuery({ requestPolicy: 'network-only' });
+  };
 
   const handleModalClose = (open: boolean) => {
     setOpenUserModal(open);
@@ -27,9 +63,9 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      {session?.company.name && (
+      {params.name && (
         <Badge variant="primary" size="large" className="absolute top-24">
-          {session.company.name}
+          {params.name}
         </Badge>
       )}
 
@@ -48,9 +84,11 @@ export default function Page(): JSX.Element {
           <AddOrEditUserModal
             onOpenChange={handleModalClose}
             user={selectedUser}
+            onUserAdded={refetchUsers}
           />
         </Modal>
         <UsersTable
+          companyData={companyData}
           onOpenChange={handleModalClose}
           onSelectUser={setSelectedUser}
         />

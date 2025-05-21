@@ -6,6 +6,7 @@ import {
   DataTable,
   TableHeadWithSorting,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
@@ -72,11 +73,21 @@ export const AdministratorsTable = () => {
   };
 
   const handleDelete = () => {
-    if (administratorToDelete) {
-      deleteAdmin({
-        id: administratorToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
+    try {
+      console.log('inside handleDelete');
+      if (administratorToDelete) {
+        deleteAdmin({
+          id: administratorToDelete.id,
+        }).then(() => {
+          closeDeleteModal();
+        });
+      }
+    } catch (error) {
+      console.log('Should display error toast because of error', error);
+      showAlertToast({
+        title: 'Error',
+        description: 'Something went wrong while deleting the administrator.',
+        variant: 'error',
       });
     }
   };

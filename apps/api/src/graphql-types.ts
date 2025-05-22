@@ -21,26 +21,6 @@ export enum Result {
     ABORT = "ABORT"
 }
 
-export enum BoltType {
-    MD47 = "MD47",
-    MDX47 = "MDX47"
-}
-
-export enum RingPosition {
-    RH_BACKS = "RH_BACKS",
-    RH_SHOULDER = "RH_SHOULDER",
-    RH_WALL_UPPER = "RH_WALL_UPPER",
-    LH_BACKS = "LH_BACKS",
-    LH_SHOULDER = "LH_SHOULDER",
-    LH_WALL_UPPER = "LH_WALL_UPPER",
-    CENTER_BACKS = "CENTER_BACKS"
-}
-
-export enum PullTestAbortReason {
-    NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
-    TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
-}
-
 export enum Application {
     PULL_TEST = "PULL_TEST",
     PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
@@ -53,6 +33,34 @@ export enum PlanLevel {
     SILVER = "SILVER",
     BRONZE = "BRONZE",
     INACTIVE = "INACTIVE"
+}
+
+export enum BoltType {
+    MD47 = "MD47",
+    MDX47 = "MDX47"
+}
+
+export enum PullTestAbortReason {
+    NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
+    TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
+}
+
+export enum RingPosition {
+    LH_Backs = "LH_Backs",
+    Center_Backs = "Center_Backs",
+    RH_Backs = "RH_Backs",
+    LH_Face_High = "LH_Face_High",
+    LH_Face_Low = "LH_Face_Low",
+    RH_Face_High = "RH_Face_High",
+    RH_Face_Low = "RH_Face_Low",
+    LH_Shoulder = "LH_Shoulder",
+    LH_Wall_Upper = "LH_Wall_Upper",
+    LH_Wall_Center = "LH_Wall_Center",
+    LH_Wall_Lower = "LH_Wall_Lower",
+    RH_Shoulder = "RH_Shoulder",
+    RH_Wall_Upper = "RH_Wall_Upper",
+    RH_Wall_Center = "RH_Wall_Center",
+    RH_Wall_Lower = "RH_Wall_Lower"
 }
 
 export class CreateBoltResultInput {
@@ -236,7 +244,7 @@ export class BoltResult {
 
 export class BoltResultResponse {
     totalRecords: number;
-    failedCount : number;
+    failedCount: number;
     hazardCount: number;
     successRate: number;
     results: BoltResult[];
@@ -251,13 +259,7 @@ export abstract class IQuery {
     company?: Company;
     drives: Drive[];
     drive?: Drive;
-    getRoles: Role[];
-    getResults: Result[];
-    getBoltTypes?: Nullable<BoltType[]>;
-    getRingPosition?: Nullable<RingPosition[]>;
-    getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
-    getApplication?: Nullable<Application[]>;
-    getPlanLevel?: Nullable<PlanLevel[]>;
+    enums: Enums;
     hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;
@@ -356,6 +358,21 @@ export class Drive {
     levelId: string;
     locations?: Nullable<Location[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class EnumOption {
+    key: string;
+    value: string;
+}
+
+export class Enums {
+    roles: string[];
+    results: string[];
+    boltTypes: string[];
+    ringPosition: EnumOption[];
+    pullTestAbortReason: string[];
+    getApplication?: Nullable<string[]>;
+    getPlanLevel?: Nullable<string[]>;
 }
 
 export class Level {

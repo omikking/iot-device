@@ -58,7 +58,10 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
+  failedCount: Scalars['Int']['output'];
+  hazardCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
+  successRate: Scalars['Int']['output'];
   totalRecords: Scalars['Int']['output'];
 };
 
@@ -242,6 +245,23 @@ export type Drive = {
   levelId: Scalars['String']['output'];
   locations?: Maybe<Array<Location>>;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EnumOption = {
+  __typename?: 'EnumOption';
+  key: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type Enums = {
+  __typename?: 'Enums';
+  boltTypes: Array<Scalars['String']['output']>;
+  getApplication?: Maybe<Array<Scalars['String']['output']>>;
+  getPlanLevel?: Maybe<Array<Scalars['String']['output']>>;
+  pullTestAbortReason: Array<Scalars['String']['output']>;
+  results: Array<Scalars['String']['output']>;
+  ringPosition: Array<EnumOption>;
+  roles: Array<Scalars['String']['output']>;
 };
 
 export type Flavor = {
@@ -627,13 +647,7 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
-  getApplication?: Maybe<Array<Application>>;
-  getBoltTypes?: Maybe<Array<BoltType>>;
-  getPlanLevel?: Maybe<Array<PlanLevel>>;
-  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
-  getResults: Array<Result>;
-  getRingPosition?: Maybe<Array<RingPosition>>;
-  getRoles: Array<Role>;
+  enums: Enums;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -780,13 +794,21 @@ export enum Result {
 }
 
 export enum RingPosition {
-  CenterBacks = 'CENTER_BACKS',
-  LhBacks = 'LH_BACKS',
-  LhShoulder = 'LH_SHOULDER',
-  LhWallUpper = 'LH_WALL_UPPER',
-  RhBacks = 'RH_BACKS',
-  RhShoulder = 'RH_SHOULDER',
-  RhWallUpper = 'RH_WALL_UPPER'
+  CenterBacks = 'Center_Backs',
+  LhBacks = 'LH_Backs',
+  LhFaceHigh = 'LH_Face_High',
+  LhFaceLow = 'LH_Face_Low',
+  LhShoulder = 'LH_Shoulder',
+  LhWallCenter = 'LH_Wall_Center',
+  LhWallLower = 'LH_Wall_Lower',
+  LhWallUpper = 'LH_Wall_Upper',
+  RhBacks = 'RH_Backs',
+  RhFaceHigh = 'RH_Face_High',
+  RhFaceLow = 'RH_Face_Low',
+  RhShoulder = 'RH_Shoulder',
+  RhWallCenter = 'RH_Wall_Center',
+  RhWallLower = 'RH_Wall_Lower',
+  RhWallUpper = 'RH_Wall_Upper'
 }
 
 export enum Role {

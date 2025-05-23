@@ -10,6 +10,7 @@ enum Result {
   FAIL
   ABORT
 }
+
 enum Application {
   PULL_TEST
   PULL_TEST_OPERATOR
@@ -34,7 +35,7 @@ enum PullTestAbortReason {
   TEST_STOPPED_INSTALL_ANGLE
 }
 
-enum RingPosition {
+enum RingPositionEnum {
   LH_Backs
   Center_Backs
   RH_Backs
@@ -53,18 +54,18 @@ enum RingPosition {
 }
 
 type EnumOption {
-  key: String!
+  key: RingPositionEnum!
   value: String!
 }
 
 type Enums {
-  roles: [String!]!
-  results: [String!]!
-  boltTypes: [String!]!
+  roles: [Role!]!
+  results: [Result!]!
+  boltTypes: [BoltType!]!
   ringPosition: [EnumOption!]!
-  pullTestAbortReason: [String!]!
-  getApplication: [String!]!
-  getPlanLevel: [String!]!
+  pullTestAbortReason: [PullTestAbortReason!]!
+  getApplication: [Application!]!
+  getPlanLevel: [PlanLevel!]!
 }
 
 type Query {

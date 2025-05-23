@@ -6,9 +6,18 @@ import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateLocationInput } from './dto/update-location.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
+import { Role } from '@prisma/client';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
+@Roles(
+  Role.SANDVIK_ADMIN,
+  Role.COMPANY_ADMIN,
+  Role.COMPANY_USER,
+  Role.SANDVIK_TECHNICIAN,
+)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 

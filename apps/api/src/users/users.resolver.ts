@@ -3,14 +3,16 @@ import { UsersService } from './users.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { GlobalRole } from '@prisma/client';
+import { GlobalRole, Role } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUser } from 'src/auth/decorators';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
@@ -24,6 +26,7 @@ export class UsersResolver {
     return this.usersService.findAll(roles);
   }
 
+  @Roles(Role.COMPANY_ADMIN, Role.SANDVIK_ADMIN)
   @Query('user')
   // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(

@@ -6,9 +6,12 @@ import { UpdateSiteInput } from './dto/update-site.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
+import { Role } from '@prisma/client';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 
@@ -17,6 +20,12 @@ export class SitesResolver {
     return this.sitesService.findAll();
   }
 
+  @Roles(
+    Role.COMPANY_ADMIN,
+    Role.COMPANY_USER,
+    Role.SANDVIK_ADMIN,
+    Role.SANDVIK_TECHNICIAN,
+  )
   @Query('site')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,

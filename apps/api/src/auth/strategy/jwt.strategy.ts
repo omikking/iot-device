@@ -39,6 +39,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         userPermissions: permissions.map((perm) => ({
           role: perm.role,
           companyId: perm.companyId,
+          appsAccess: perm.appsAccess,
         })),
       };
 

@@ -6,9 +6,18 @@ import { UpdateDriveInput } from './dto/update-drive.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
+import { Role } from '@prisma/client';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
+@Roles(
+  Role.SANDVIK_ADMIN,
+  Role.COMPANY_ADMIN,
+  Role.COMPANY_USER,
+  Role.SANDVIK_TECHNICIAN,
+)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 

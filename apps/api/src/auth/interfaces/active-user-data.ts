@@ -1,3 +1,5 @@
+import { Application } from '@prisma/client';
+
 export interface ActiveUserData {
   id: string;
   email: string;
@@ -6,5 +8,6 @@ export interface ActiveUserData {
   userPermissions?: {
     role: string;
     companyId: string;
+    appsAccess: Application[];
   }[];
 }

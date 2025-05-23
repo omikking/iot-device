@@ -14,10 +14,14 @@ import { BoltResultsService } from './boltResults.service';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
-import { BoltResult } from '@prisma/client';
+import { BoltResult, Role } from '@prisma/client';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles-decorator';
+import { App } from 'src/auth/decorators/app-decorator';
+import { Application } from '@prisma/client';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
@@ -51,6 +55,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 
+  @Roles(Role.COMPANY_USER, Role.SANDVIK_TECHNICIAN, Role.COMPANY_ADMIN)
+  @App(Application.PULL_TEST)
   @Query('boltResult')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,

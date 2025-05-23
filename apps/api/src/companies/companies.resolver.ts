@@ -10,15 +10,13 @@ import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorators/roles-decorator';
-
-//TODO :- update this role decorator according to requirement this is for testing
+import { GlobalRole, Role } from '@prisma/client';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
-@Roles('COMPANY_USER', 'SADVIK_TECHNICIAN')
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
-
+  @Roles(GlobalRole.SANDVIK_ADMIN)
   @Query(() => GraphQLTypes.CompanyListResponse, { name: 'companies' })
   async findAll(
     @ActiveUser() user: ActiveUserData,
@@ -32,7 +30,12 @@ export class CompaniesResolver {
 
     return this.companiesService.findAll(user, pagination);
   }
-
+  @Roles(
+    Role.SANDVIK_ADMIN,
+    Role.COMPANY_ADMIN,
+    Role.COMPANY_USER,
+    Role.SANDVIK_TECHNICIAN,
+  )
   @Query('company')
   // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(

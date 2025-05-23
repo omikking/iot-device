@@ -63,8 +63,8 @@ type Enums {
   boltTypes: [String!]!
   ringPosition: [EnumOption!]!
   pullTestAbortReason: [String!]!
-  getApplication: [String!]
-  getPlanLevel: [String!]
+  getApplication: [String!]!
+  getPlanLevel: [String!]!
 }
 
 type Query {

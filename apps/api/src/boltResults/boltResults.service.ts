@@ -31,7 +31,7 @@ export class BoltResultsService {
 
   async findMany(
     user: ActiveUserData,
-    pagination: { offset: number; limit: number },
+    pagination: { offset: number; limit?: number },
     filters?: BoltResultFilters,
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
@@ -77,7 +77,7 @@ export class BoltResultsService {
 
     const results = await this.prisma.boltResult.findMany({
       skip: offset,
-      take: limit,
+      ...(limit !== undefined ? { take: limit } : {}),
       where: whereCondition,
       include: {
         site: { select: { siteName: true } },

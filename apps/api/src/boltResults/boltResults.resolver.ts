@@ -54,10 +54,11 @@ export class BoltResultsResolver {
     @Args('endDate', { type: () => Date })
     endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const pagination = {
+    const pagination: { offset: number; limit?: number } = {
       offset: Number(offset ?? 0),
-      limit: Number(limit ?? 20),
+      ...(limit !== undefined ? { limit: Number(limit) } : {}),
     };
+
     const filters: BoltResultFilters = {
       siteId,
       levelId,

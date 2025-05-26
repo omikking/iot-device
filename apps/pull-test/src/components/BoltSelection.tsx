@@ -56,6 +56,10 @@ export const GET_LOCATIONS = gql`
   }
 `;
 
+type SiteOption = {
+  id: string;
+  name: string;
+}
 
 // @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
@@ -70,7 +74,7 @@ interface BoltSelectionProps {
   selectedTab?: string;
   filterState: FilterState;
   // Is this typing correct? or should it be (id: string) => void;
-  onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetSite: React.Dispatch<React.SetStateAction<SiteOption | undefined>>;
   onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -93,16 +97,7 @@ export const BoltSelection = ({
   onSetDateRange,
   onFilterChange,
 }: BoltSelectionProps) => {
-  const handleSetSite = (site?: string) => {
-    onSetSite(site);
-    onSetDateRange({
-      from: undefined,
-      to: undefined,
-    });
-    onSetLevel(undefined);
-    onSetDrive(undefined);
-    onSetLocation(undefined);
-  };
+
 
   const [{ data, fetching, error }] = useQuery({
     query: GET_SITES,
@@ -171,6 +166,17 @@ export const BoltSelection = ({
     })) || [];
   }, [locationsData]);
 
+  const handleSetSite = (site?: string) => {
+    const siteDetails = siteOptions.find((sites: SiteOption) => sites.id === site)
+    onSetSite(siteDetails);
+    onSetDateRange({
+      from: undefined,
+      to: undefined,
+    });
+    onSetLevel(undefined);
+    onSetDrive(undefined);
+    onSetLocation(undefined);
+  };
 
   return (
     <ContentHolder variant="filter">

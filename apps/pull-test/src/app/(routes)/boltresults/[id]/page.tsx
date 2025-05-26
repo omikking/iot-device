@@ -18,12 +18,12 @@ import {
   TabsTrigger,
   TabsContent,
   DateRange,
-  Text,
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbSeparator,
 } from '@gsp/ui';
+
+interface SiteOption {
+  id: string;
+  name: string;
+}
 
 export default function Page(): JSX.Element {
 
@@ -87,7 +87,7 @@ export default function Page(): JSX.Element {
 `;
 
 
-  const [site, setSite] = useState<string | undefined>(undefined);
+  const [site, setSite] = useState<SiteOption | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
   const [location, setLocation] = useState<string | undefined>(undefined);
@@ -123,12 +123,10 @@ export default function Page(): JSX.Element {
   }, [filterState]);
 
 
-  console.log(result, "resultresultresult")
-
   const [{ data }] = useQuery({
     query: boltResultQuery,
     variables: {
-      siteId: site,
+      siteId: site?.id,
       levelId: level,
       driveId: drive,
       locationId: location,
@@ -156,7 +154,7 @@ export default function Page(): JSX.Element {
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        {site || 'Select site'}
+        {site?.name || 'Select site'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -179,52 +177,7 @@ export default function Page(): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
-          <div className="flex-1 flex justify-start ">
-            <Breadcrumb>
-              <BreadcrumbList>
-                {site && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
-                        {site}
-                      </Text>
-                    </BreadcrumbItem>
-                  </>
-                )}
-                {level && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
-                        {level}
-                      </Text>
-                    </BreadcrumbItem>
-                  </>
-                )}
-                {drive && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
-                        {drive}
-                      </Text>
-                    </BreadcrumbItem>
-                  </>
-                )}
-                {location && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <Text variant="medium" color="foreground">
-                        {location}
-                      </Text>
-                    </BreadcrumbItem>
-                  </>
-                )}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
+
           <Modal>
             <ModalTrigger asChild>
               <Button
@@ -241,7 +194,7 @@ export default function Page(): JSX.Element {
         </div>
 
         <BoltSelection
-          site={site}
+          site={site?.id}
           level={level}
           drive={drive}
           location={location}
@@ -257,7 +210,8 @@ export default function Page(): JSX.Element {
           boltResults={boltResults}
         />
         <TabsContent value="table">
-          <BoltResultsTable site={site} boltResults={boltResults} />
+          <BoltResultsTable site={site?.id
+          } boltResults={boltResults} />
         </TabsContent>
         <TabsContent value="graphs">
           <BoltResultsGraphView />

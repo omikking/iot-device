@@ -36,6 +36,12 @@ input UpdateUserInput {
   isGlobalVisibility: Boolean
 }
 
+input UpdatePasswordInput {
+  oldPassword: String
+  newPassword: String
+  confirmPassword: String
+}
+
 """
 Query
 Define the queries that can be made to the User model
@@ -50,6 +56,10 @@ Mutation
 Define the mutations that can be made to the User model
 """
 type Mutation {
-  updateUser(id: String!, updateUserInput: UpdateUserInput!): User!
+  updateUser(
+    id: String!
+    updateUserInput: UpdateUserInput!
+    updatePasswordInput: UpdatePasswordInput
+  ): User!
   removeUser(id: String!): User!
 }

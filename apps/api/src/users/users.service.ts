@@ -1,4 +1,5 @@
 import { UserInputError } from '@nestjs/apollo';
+import * as argon from 'argon2';
 import { Injectable } from '@nestjs/common';
 import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -31,7 +32,42 @@ export class UsersService {
   async update(
     id: string,
     updateUserInput: GraphQLTypes.UpdateUserInput,
+    updatePasswordInput?: GraphQLTypes.UpdatePasswordInput,
   ): Promise<User> {
+    let hashedPassword: string | undefined = undefined;
+
+    const { oldPassword, newPassword, confirmPassword } =
+      updatePasswordInput || {};
+
+    if (oldPassword || newPassword || confirmPassword) {
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        throw new UserInputError(
+          'All password fields (old, new, confirm) are required.',
+        );
+      }
+
+      const existingUser = await this.prisma.user.findUnique({ where: { id } });
+      if (!existingUser) {
+        throw new UserInputError(`User #${id} not found`);
+      }
+
+      const isOldPasswordValid = await argon.verify(
+        existingUser.hash,
+        oldPassword,
+      );
+      if (!isOldPasswordValid) {
+        throw new UserInputError('Old password is incorrect');
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new UserInputError(
+          'New password and confirm password do not match',
+        );
+      }
+
+      hashedPassword = await argon.hash(newPassword);
+    }
+
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
@@ -41,12 +77,14 @@ export class UsersService {
         phoneNumber: updateUserInput?.phoneNumber || undefined,
         globalRole: (updateUserInput?.globalRole as GlobalRole) || undefined,
         isGlobalVisibility: updateUserInput?.isGlobalVisibility ?? undefined,
+        ...(hashedPassword && { hash: hashedPassword }),
       },
     });
 
     if (!updatedUser) {
       throw new UserInputError(`User #${id} not found`);
     }
+
     return updatedUser;
   }
 

@@ -1,13 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { graphql } from '@/gql';
+import { User } from '@/gql/graphql';
+import { useClient, useQuery } from 'urql';
+import { useCallback, useState } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { graphql } from '@/gql';
-import { useMutation, useQuery } from 'urql';
-import { User } from '@/gql/graphql';
 
 const getTechniciansQuery = graphql(`
   query getTechnicians {
@@ -31,10 +31,10 @@ const deleteTechnicianMutation = graphql(`
   }
 `);
 
-interface TechniciansTableProps {
+type TechniciansTableProps = {
   onOpenChange: (open: boolean) => void;
   onSelectTechnician: (technician?: User) => void;
-}
+};
 
 export const TechniciansTable = ({
   onOpenChange,
@@ -45,13 +45,12 @@ export const TechniciansTable = ({
   const [technicianToDelete, setTechnicianToDelete] = useState<
     User | undefined
   >(undefined);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [techniciansData] = useQuery({
     query: getTechniciansQuery,
   });
   const technicians = (techniciansData.data?.users as User[]) || [];
-
-  const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
+  const client = useClient();
 
   const openDeleteModal = (technicianId: string) => {
     const technicianToDelete = technicians?.find(
@@ -66,15 +65,29 @@ export const TechniciansTable = ({
     setTechnicianToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    if (technicianToDelete) {
-      deleteTechnician({
-        id: technicianToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
-      });
+  const handleDelete = useCallback(async (): Promise<boolean> => {
+    const techFound = technicians.find(
+      (tech) => tech.id === technicianToDelete?.id,
+    );
+    const techId = techFound?.id;
+    setIsDeleting(true);
+    try {
+      const result = await client
+        .mutation(deleteTechnicianMutation, { id: techId || '' })
+        .toPromise();
+      if (result.error) {
+        // TODO here aswell?
+        console.error('Error deleting technician:', result.error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      //TODO ERROR TOAST
+      return false;
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, [technicianToDelete]);
 
   const openEditModal = (technicianId: string) => {
     const technicianToEdit = technicians?.find(
@@ -151,12 +164,13 @@ export const TechniciansTable = ({
     <>
       {technicianToDelete && (
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="User"
           modalTitle="Delete technician"
+          isLoading={isDeleting}
           isOpen={isDeleteTechnicianModalOpen}
-          onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
+          onClose={closeDeleteModal}
+          onOpenChange={closeDeleteModal}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

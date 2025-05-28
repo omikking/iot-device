@@ -1,19 +1,18 @@
 'use client';
-import { useCallback, useState } from 'react';
 import {
+  Text,
   Badge,
   ColumnDef,
   DataTable,
   TableHeadWithSorting,
-  Text,
 } from '@gsp/ui';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { LucideUserCog } from 'lucide-react';
-import { GetAdminsQuery } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useClient, useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
+import { LucideUserCog } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { GetAdminsQuery } from '@/gql/graphql';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type Administrator = GetAdminsQuery['users'][0];
 
@@ -44,14 +43,12 @@ const deleteAdminMutation = graphql(`
 `);
 
 export const AdministratorsTable = () => {
-  const { data: session } = useSession();
-  // const [, deleteAdmin] = useMutation(deleteAdminMutation);
-  const [{ data: administratorsData }] = useQuery({
+  const [administratorsData] = useQuery({
     query: getAdminsQuery,
-    pause: !session?.company?.id,
   });
+
   const administrators =
-    (administratorsData?.users as GetAdminsQuery['users']) || [];
+    (administratorsData?.data?.users as GetAdminsQuery['users']) || [];
 
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
@@ -74,10 +71,10 @@ export const AdministratorsTable = () => {
   };
 
   const handleDelete = useCallback(async (): Promise<boolean> => {
-    const adminObj = administrators.find(
+    const adminFound = administrators.find(
       (admin) => admin.id === administratorToDelete?.id,
     );
-    const adminId = adminObj?.id;
+    const adminId = adminFound?.id;
 
     setIsDeleting(true);
     try {
@@ -152,14 +149,13 @@ export const AdministratorsTable = () => {
     <>
       {administratorToDelete && (
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="User"
           modalTitle="Delete administrator"
           isLoading={isDeleting}
           isOpen={isDeleteAdministratorModalOpen}
-          onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
           onClose={closeDeleteModal}
+          onOpenChange={closeDeleteModal}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

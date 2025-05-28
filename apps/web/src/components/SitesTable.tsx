@@ -13,8 +13,8 @@ import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 type SitesTableProps = {
   companyId: string;
-  onOpenChange: (isOpen: boolean) => void;
   onSelectSite: (site?: Site) => void;
+  onOpenChange: (isOpen: boolean) => void;
 };
 
 const getCompanySitesQuery = graphql(`
@@ -63,8 +63,8 @@ export const SitesTable = ({
   const client = useClient();
 
   const openDeleteModal = (siteId: string) => {
-    const siteToDelete = sites?.find((site) => site.id === siteId);
-    setSiteToDelete(siteToDelete);
+    const foundSite = sites?.find((site) => site.id === siteId);
+    setSiteToDelete(foundSite);
     setDeleteSiteModalOpen(true);
   };
 
@@ -73,12 +73,9 @@ export const SitesTable = ({
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = useCallback(async (): Promise<boolean> => {
-    // Why is this not working?
-    // const siteToDeleteObj = sites.find((site) => site.id === siteToDelete?.id);
-    // const siteToDelete =    siteToDeleteObj?.id;
-    const siteObj = sites.find((site) => site.id === siteToDelete?.id);
-    const siteId = siteObj?.id;
+  const handleDelete = useCallback(async () => {
+    const siteFound = sites.find((site) => site.id === siteToDelete?.id);
+    const siteId = siteFound?.id;
 
     setIsDeleting(true);
     try {
@@ -171,12 +168,11 @@ export const SitesTable = ({
         <DeleteModalConfirmation
           deleteIcon="Site"
           modalTitle="Delete site"
-          deleteButtonText="Delete site"
           isLoading={isDeleting}
           isOpen={isDeleteSiteModalOpen}
-          onOpenChange={closeDeleteModal}
           onDelete={handleDelete}
           onClose={closeDeleteModal}
+          onOpenChange={closeDeleteModal}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

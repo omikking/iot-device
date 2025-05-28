@@ -61,7 +61,10 @@ export const DriveItem = ({
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [driveToDelete, setDriveToDelete] = useState<Drive | undefined>(
+    undefined,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
   const [, createDrive] = useMutation(createDriveMutation);
   const [, updateDrive] = useMutation(updateDriveMutation);
   const [, deleteDrive] = useMutation(deleteDriveMutation);
@@ -74,6 +77,17 @@ export const DriveItem = ({
         driveName: drive.driveName || '',
       },
     });
+
+  const openDeleteModal = (driveId: string) => {
+    const foundDrive = drivesOptions.find((drive) => drive.id === driveId);
+    setDriveToDelete(foundDrive);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDriveToDelete(undefined);
+  };
 
   const handleEditDrive = () => {
     setIsEditing(true);
@@ -138,12 +152,21 @@ export const DriveItem = ({
   };
 
   const handleDeleteDrive = () => {
-    deleteDrive({
+    return deleteDrive({
       id: drive.id,
     }).then((result) => {
-      if (result.data) {
-        setSelectedDrive(undefined);
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
+      try {
+        if (result.data) {
+          setSelectedDrive(undefined);
+          // @TODO modal should be closed here but is closed somehow anyways. Fix it.
+          return true;
+        } else {
+          setIsDeleting(false);
+          return false;
+        }
+      } catch (error) {
+        setIsDeleting(false);
+        return false;
       }
     });
   };
@@ -173,16 +196,17 @@ export const DriveItem = ({
 
             <DeleteEditDropdown
               itemSelected={drive.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              openDeleteModal={openDeleteModal}
               handleEdit={handleEditDrive}
             />
             <DeleteModalConfirmation
               modalTitle="Delete drive"
-              deleteButtonText="Delete drive"
               deleteIcon="Site"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
+              onClose={closeDeleteModal}
               onDelete={handleDeleteDrive}
+              onOpenChange={closeDeleteModal}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete drive

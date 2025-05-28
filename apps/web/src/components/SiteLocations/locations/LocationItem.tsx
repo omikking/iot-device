@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { set, SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -58,6 +58,7 @@ export const LocationItem = ({
 }: LocationComponentProps) => {
   const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [, createLocation] = useMutation(createLocationMutation);
   const [, updateLocation] = useMutation(updateLocationMutation);
@@ -71,6 +72,15 @@ export const LocationItem = ({
         locationName: location.locationName || '',
       },
     });
+
+  const openDeleteModal = (locationId: string) => {
+    // const foundLocation = locationsOptions.find((level) => level.id === locationId)
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
 
   const handleEditLocation = () => {
     setIsEditing(true);
@@ -136,11 +146,20 @@ export const LocationItem = ({
   };
 
   const handleDeleteLocation = () => {
-    deleteLocation({
+    return deleteLocation({
       id: location.id,
     }).then((result) => {
-      if (result.data) {
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
+      setIsDeleting(true);
+      try {
+        if (result.data) {
+          return true;
+        } else {
+          setIsDeleting(false);
+          return false;
+        }
+      } catch (error) {
+        setIsDeleting(false);
+        return false;
       }
     });
   };
@@ -169,16 +188,17 @@ export const LocationItem = ({
             </Text>
             <DeleteEditDropdown
               itemSelected={location.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              openDeleteModal={openDeleteModal}
               handleEdit={handleEditLocation}
             />
             <DeleteModalConfirmation
               modalTitle="Delete location"
-              deleteButtonText="Delete location"
               deleteIcon="Site"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
+              onClose={closeDeleteModal}
               onDelete={handleDeleteLocation}
+              onOpenChange={setIsDeleteModalOpen}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete location{' '}

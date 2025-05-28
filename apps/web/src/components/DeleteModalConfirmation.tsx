@@ -4,7 +4,6 @@ import {
   Button,
   Headline,
   ModalTitle,
-  ModalFooter,
   ModalHeader,
   ModalContent,
   LoadingSpinner,
@@ -14,46 +13,40 @@ import {
   LucideMountain,
   LucideUserMinus,
   LucideBuilding2,
-  LucideAlertTriangle,
   LucideCheckCircle,
 } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
 import styles from './DeleteModal.module.css';
-import { useClient } from 'urql';
+import React, { useEffect, useRef, useState } from 'react';
 
 type DeleteModalConfirmationProps = {
-  modalTitle: string;
-  deleteIcon?: 'User' | 'Site' | 'Company';
-  modalText?: string;
-  deleteButtonText?: string;
-  children: React.ReactNode;
-  // onDelete: () => void;
-  onDelete: () => Promise<boolean | void>;
   isOpen?: boolean;
-  onOpenChange: (open: boolean) => void;
+  modalText?: string;
+  modalTitle: string;
+  isLoading?: boolean;
+  children: React.ReactNode;
+  deleteIcon?: 'User' | 'Site' | 'Company';
+  initialView?: 'confirmDelete' | 'deleteSuccess';
   onClose: () => void;
   onSuccess?: () => void;
-  initialView?: 'confirmDelete' | 'deleteSuccess';
-  isLoading?: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDelete: () => boolean | Promise<boolean>;
 };
 
 type ModalView = 'confirmDelete' | 'deleteSuccess';
 
 export const DeleteModalConfirmation = ({
-  modalTitle,
-  deleteIcon = 'User',
-  deleteButtonText,
+  isOpen,
   children,
   modalText,
-  onDelete,
-  isOpen,
-  onOpenChange,
-  onSuccess,
-  onClose,
-  initialView = 'confirmDelete',
   isLoading,
+  modalTitle,
+  deleteIcon = 'User',
+  initialView = 'confirmDelete',
+  onClose,
+  onDelete,
+  onSuccess,
+  onOpenChange,
 }: DeleteModalConfirmationProps) => {
-  // const [isLoading, setIsLoading] = useState(false);
   const [currentView, setCurrentView] = useState<ModalView>(initialView);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -94,7 +87,7 @@ export const DeleteModalConfirmation = ({
     event.preventDefault();
 
     try {
-      const result = await onDelete();
+      const result = await Promise.resolve(onDelete());
       if (result !== false) {
         handleViewTransition('deleteSuccess');
 
@@ -111,7 +104,7 @@ export const DeleteModalConfirmation = ({
       }
     } catch (error) {
       //TODO add toast?
-      // Don't need to reset loading here as it's managed by parent
+      console.error('Error during deletion:', error);
     }
   };
 
@@ -150,11 +143,7 @@ export const DeleteModalConfirmation = ({
 
   return (
     <Modal open={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent
-        onEscapeKeyDown={onClose}
-        onPointerDownOutside={onClose}
-        // className="overflow-y-auto w-96 h-[450px]"
-      >
+      <ModalContent onEscapeKeyDown={onClose} onPointerDownOutside={onClose}>
         <ModalHeader>
           <ModalTitle>{modalTitle}</ModalTitle>
         </ModalHeader>
@@ -185,7 +174,7 @@ export const DeleteModalConfirmation = ({
               variant="outline"
               size="large"
               onClick={onClose}
-              disabled={isTransitioning && currentView !== 'deleteSuccess'} // Allow closing on success view even if transitioning out
+              disabled={isTransitioning && currentView !== 'deleteSuccess'}
             >
               {currentView === 'deleteSuccess' ? 'Close' : 'Cancel'}
             </Button>

@@ -1,13 +1,13 @@
 'use client';
-import { Text, Headline } from '@gsp/ui';
-import { useState } from 'react';
-import { GoBack } from '@/components/GoBack';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
-import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
-import { useQuery } from 'urql';
 import { Company } from '@/gql/graphql';
+import { Text, Headline } from '@gsp/ui';
+import { useClient, useQuery } from 'urql';
+import { GoBack } from '@/components/GoBack';
+import { useCallback, useState } from 'react';
+import { CompanyForm } from '@/components/CompanyForm';
+import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -35,6 +35,14 @@ const getCompanyQuery = graphql(`
   }
 `);
 
+const deleteCompanyMutation = graphql(`
+  mutation deleteComany($id: String!) {
+    removeCompany(id: $id) {
+      id
+    }
+  }
+`);
+
 export default function Page({
   params,
 }: {
@@ -47,8 +55,33 @@ export default function Page({
     ? []
     : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
   const company = companyData?.data?.company as Company;
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const client = useClient();
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = useCallback(async (): Promise<boolean> => {
+    setIsDeleting(true);
+
+    try {
+      const result = await client
+        .mutation(deleteCompanyMutation, {
+          id: company.id,
+        })
+        .toPromise();
+      if (result.error) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      return false;
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [company?.id, client]);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -66,19 +99,19 @@ export default function Page({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
 
+      {/* TODO Discuss how to deal with  */}
       {company && (
         <DeleteModalConfirmation
           deleteIcon="Company"
-          deleteButtonText="Inactivate company"
           modalTitle="Inactivate company"
           modalText="Confirm inactivation"
+          isLoading={isDeleting}
           isOpen={isDeleteModalOpen}
-          onOpenChange={setIsDeleteModalOpen}
-          onDelete={() => {
-            console.log('Deleting item...');
-          }}
+          onDelete={handleDelete}
+          onClose={closeDeleteModal}
+          onOpenChange={closeDeleteModal}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col text-center gap-4 max-w-[450px]">
             <Text variant="medium" color={'foreground'} as="span">
               You are about to inactivate
               <Text variant="medium" color={'foreground'} as="span" isBold>

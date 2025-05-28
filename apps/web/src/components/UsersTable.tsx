@@ -1,15 +1,15 @@
 'use client';
 import {
-  Application,
-  GetCompanyUsersQuery,
   Role,
   User,
+  Application,
   UserPermission,
+  GetCompanyUsersQuery,
 } from '@/gql/graphql';
 import { graphql } from '@/gql';
+import { useClient } from 'urql';
 import { useParams } from 'next/navigation';
 import { useState, useCallback } from 'react';
-import { useMutation, useClient } from 'urql';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
@@ -18,8 +18,8 @@ import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type UsersTableProps = {
   companyData?: GetCompanyUsersQuery;
-  onOpenChange: (open: boolean) => void;
   onSelectUser: (user: User) => void;
+  onOpenChange: (open: boolean) => void;
 };
 
 // @TODO create a utils folder and add these kind of functions there
@@ -36,9 +36,10 @@ export const formatAppName = (appName: string): string => {
 
 export const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
-    SANDVIK_TECHNICIAN: 'Technician',
-    COMPANY_ADMIN: 'Admin',
     COMPANY_USER: 'User',
+    COMPANY_ADMIN: 'Admin',
+    SANDVIK_ADMIN: 'Sandvik Admin',
+    SANDVIK_TECHNICIAN: 'Technician',
   };
 
   return roleNames[role] || role;
@@ -57,16 +58,15 @@ export const UsersTable = ({
   onOpenChange,
   onSelectUser,
 }: UsersTableProps) => {
-  const client = useClient();
   const params = useParams();
   const companyId = params.id as string;
   const [isDeleting, setIsDeleting] = useState(false);
   const users = (companyData?.company.users as User[]) || [];
-  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
+  const client = useClient();
 
   const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
@@ -86,6 +86,8 @@ export const UsersTable = ({
       case Role.SandvikTechnician:
         return { variant: 'neutral', icon: <LucidePickaxe /> };
       case Role.CompanyAdmin:
+        return { variant: 'primary', icon: <LucideKey /> };
+      case Role.SandvikAdmin:
         return { variant: 'primary', icon: <LucideKey /> };
       default:
         return { variant: 'neutral', icon: <LucideUser /> };
@@ -117,8 +119,8 @@ export const UsersTable = ({
   };
 
   const handleDelete = useCallback(async (): Promise<boolean> => {
-    const userToDeleteObj = users.find((user) => user.id === userToDelete);
-    const userPermissionToDelete = userToDeleteObj?.userPermissions?.find(
+    const userToDeleteFound = users.find((user) => user.id === userToDelete);
+    const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
       (userPerm) => userPerm.companyId === companyId,
     );
 
@@ -212,7 +214,6 @@ export const UsersTable = ({
       <DeleteModalConfirmation
         deleteIcon="User"
         modalTitle="Delete user"
-        deleteButtonText="Delete user"
         isLoading={isDeleting}
         isOpen={isDeleteUserModalOpen}
         onDelete={handleDelete}

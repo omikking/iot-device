@@ -64,7 +64,10 @@ export const LevelItem = ({
   const [isEditing, setIsEditing] = useState(!level.id);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [levelToDelete, setLevelToDelete] = useState<Level | undefined>(
+    undefined,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
   const [, createLevel] = useMutation(createLevelMutation);
   const [, updateLevel] = useMutation(updateLevelMutation);
   const [, deleteLevel] = useMutation(deleteLevelMutation);
@@ -77,6 +80,17 @@ export const LevelItem = ({
         levelName: level.levelName || '',
       },
     });
+
+  const openDeleteModal = (levelId: string) => {
+    const foundLevel = levelsOptions.find((level) => level.id === levelId);
+    setLevelToDelete(foundLevel);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setLevelToDelete(undefined);
+  };
 
   const handleEditLevel = () => {
     setIsEditing(true);
@@ -140,13 +154,22 @@ export const LevelItem = ({
   };
 
   const handleDeleteLevel = () => {
-    deleteLevel({
+    return deleteLevel({
       id: level.id,
     }).then((result) => {
-      if (result.data) {
-        setSelectedLevel(undefined);
-        setSelectedDrive(undefined);
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
+      setIsDeleting(true);
+      try {
+        if (result.data) {
+          setSelectedLevel(undefined);
+          // setSelectedDrive(undefined);
+          return true;
+        } else {
+          setIsDeleting(false);
+          return false;
+        }
+      } catch (error) {
+        setIsDeleting(false);
+        return false;
       }
     });
   };
@@ -176,18 +199,23 @@ export const LevelItem = ({
 
             <DeleteEditDropdown
               itemSelected={level.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
+              openDeleteModal={openDeleteModal}
               handleEdit={handleEditLevel}
             />
             <DeleteModalConfirmation
               modalTitle="Delete level"
-              deleteButtonText="Delete level"
               deleteIcon="Site"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
+              onClose={closeDeleteModal}
               onDelete={handleDeleteLevel}
+              onOpenChange={closeDeleteModal}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Text
+                variant="medium"
+                color={'foreground'}
+                className="text-center"
+              >
                 You are about to delete level
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${level.levelName} `}

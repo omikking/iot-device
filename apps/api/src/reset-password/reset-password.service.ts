@@ -20,24 +20,36 @@ export class ResetPasswordService {
   }
 
   // Step 1: Request password reset //
-  async requestPasswordReset(requestPasswordResetInput: { email: string }): Promise<boolean> {
-    const { email } = requestPasswordResetInput;
-
-    if (!email) {
-      throw new UserInputError('Email is required');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+async requestPasswordReset(requestPasswordResetInput: { email: string }): Promise<boolean> {
+  const { email } = requestPasswordResetInput;
+ 
+  if (!email) {
+    throw new UserInputError('Email is required');
+  }
+ 
+  const user = await this.prisma.user.findUnique({
+    where: { email },
+  });
+ 
+  if (!user) {
+    throw new UserInputError('User not found with this email');
+  }
+ 
+  const token = await this.generateUniqueOTP();
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // for now its 30 minutes we can update it later accordingly
+ 
+  const existingRequest = await this.prisma.passwordResetRequest.findFirst({
+    where: { userId: user.id },
+  });
+ 
+  if (existingRequest) {
+    // Update existing token and expiry
+    await this.prisma.passwordResetRequest.updateMany({
+      where: { userId: user.id },
+      data: { token, expiresAt },
     });
-
-    if (!user) {
-      throw new UserInputError('User not found with this email');
-    }
-
-    const token = await this.generateUniqueOTP();
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
-
+  } else {
+    // Create new request
     await this.prisma.passwordResetRequest.create({
       data: {
         token,
@@ -45,9 +57,11 @@ export class ResetPasswordService {
         userId: user.id,
       },
     });
-    await this.mailer.sendOTP(user.email, token);
-    return true;
   }
+ 
+  await this.mailer.sendOTP(user.email, token);
+  return true;
+}
   // Step 2: Verify code with email  //
   async validateResetToken(validateResetTokenInput: { token: string; email: string }): Promise<boolean> {
     const { token, email } = validateResetTokenInput;

@@ -112,6 +112,13 @@ export type CompanyListResponse = {
   totalRecords: Scalars['Int']['output'];
 };
 
+export type ConfirmPasswordResetInput = {
+  confirmPassword: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
 /**
  * CreateAdminPermissionInput
  * Define the input fields to create a new userPermission
@@ -285,6 +292,7 @@ export type Location = {
  */
 export type Mutation = {
   __typename?: 'Mutation';
+  confirmPasswordReset: Scalars['Boolean']['output'];
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -304,6 +312,7 @@ export type Mutation = {
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  requestPasswordReset: Scalars['Boolean']['output'];
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -314,6 +323,16 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
+  validateResetToken: Scalars['Boolean']['output'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationConfirmPasswordResetArgs = {
+  confirmPasswordResetInput: ConfirmPasswordResetInput;
 };
 
 
@@ -492,6 +511,15 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRequestPasswordResetArgs = {
+  requestPasswordResetInput: RequestPasswordResetInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
@@ -584,6 +612,15 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserPermissionArgs = {
   id: Scalars['String']['input'];
   updateUserPermissionInput: UpdateUserPermissionInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationValidateResetTokenArgs = {
+  validateResetTokenInput: ValidateResetTokenInput;
 };
 
 /**
@@ -771,6 +808,10 @@ export type QueryUserPermissionArgs = {
  */
 export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type RequestPasswordResetInput = {
+  email: Scalars['String']['input'];
 };
 
 export enum Result {
@@ -979,6 +1020,11 @@ export type UserPermission = {
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
+};
+
+export type ValidateResetTokenInput = {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export type GetHazardsIdQueryVariables = Exact<{

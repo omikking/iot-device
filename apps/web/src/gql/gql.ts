@@ -21,6 +21,9 @@ const documents = {
     "\n  query getCompanySitesNames($id: String!) {\n    company(id: $id) {\n      name\n      sites {\n        id\n        siteName\n      }\n    }\n  }\n": types.GetCompanySitesNamesDocument,
     "\n  query getFullSiteLocations($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n": types.GetFullSiteLocationsDocument,
     "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n    }\n  }\n": types.GetCompanyUsersDocument,
+    "\n  mutation RequestPasswordReset(\n    $requestPasswordResetInput: RequestPasswordResetInput!\n  ) {\n    requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)\n  }\n": types.RequestPasswordResetDocument,
+    "\n  mutation ValidateResetToken(\n    $validateResetTokenInput: ValidateResetTokenInput!\n  ) {\n    validateResetToken(validateResetTokenInput: $validateResetTokenInput)\n  }\n": types.ValidateResetTokenDocument,
+    "\n  mutation ConfirmPasswordReset(\n    $confirmPasswordResetInput: ConfirmPasswordResetInput!\n  ) {\n    confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)\n  }\n": types.ConfirmPasswordResetDocument,
     "\n  mutation updateAccountUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      # oldPassword\n      # newPassword\n      # confirmPassword\n    }\n  }\n": types.UpdateAccountUserDocument,
     "\n  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.UpdateUserDocument,
     "\n  mutation createSite($createSiteInput: CreateSiteInput!) {\n    createSite(createSiteInput: $createSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.CreateSiteDocument,
@@ -95,6 +98,18 @@ export function graphql(source: "\n  query getFullSiteLocations($id: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RequestPasswordReset(\n    $requestPasswordResetInput: RequestPasswordResetInput!\n  ) {\n    requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)\n  }\n"): (typeof documents)["\n  mutation RequestPasswordReset(\n    $requestPasswordResetInput: RequestPasswordResetInput!\n  ) {\n    requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ValidateResetToken(\n    $validateResetTokenInput: ValidateResetTokenInput!\n  ) {\n    validateResetToken(validateResetTokenInput: $validateResetTokenInput)\n  }\n"): (typeof documents)["\n  mutation ValidateResetToken(\n    $validateResetTokenInput: ValidateResetTokenInput!\n  ) {\n    validateResetToken(validateResetTokenInput: $validateResetTokenInput)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ConfirmPasswordReset(\n    $confirmPasswordResetInput: ConfirmPasswordResetInput!\n  ) {\n    confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)\n  }\n"): (typeof documents)["\n  mutation ConfirmPasswordReset(\n    $confirmPasswordResetInput: ConfirmPasswordResetInput!\n  ) {\n    confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

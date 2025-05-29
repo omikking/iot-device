@@ -16,6 +16,7 @@ import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
 import { HazardsModule } from './hazards/hazards.module';
 import { EnumModule } from './enums/enum.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { EnumModule } from './enums/enum.module';
     BoltResultsModule,
     HazardsModule,
     EnumModule,
+    ResetPasswordModule,
   ],
   providers: [DateScalar],
 })

@@ -1,4 +1,5 @@
 'use client';
+
 import { GoBack } from '@/components/GoBack';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -19,9 +20,49 @@ import {
   Anchor,
 } from '@gsp/ui';
 import Link from 'next/link';
+import { useMutation } from 'urql';
+import { graphql } from '@/gql';
+import {
+  ConfirmPasswordResetInput,
+  RequestPasswordResetInput,
+  ValidateResetTokenInput,
+} from '@/gql/graphql';
+import { useRouter } from 'next/navigation';
+
+const REQUEST_RESET_MUTATION = graphql(`
+  mutation RequestPasswordReset(
+    $requestPasswordResetInput: RequestPasswordResetInput!
+  ) {
+    requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)
+  }
+`);
+const VALIDATE_RESET_TOKEN_MUTATION = graphql(`
+  mutation ValidateResetToken(
+    $validateResetTokenInput: ValidateResetTokenInput!
+  ) {
+    validateResetToken(validateResetTokenInput: $validateResetTokenInput)
+  }
+`);
+const CONFIRM_PASSWORD_RESET_MUTATION = graphql(`
+  mutation ConfirmPasswordReset(
+    $confirmPasswordResetInput: ConfirmPasswordResetInput!
+  ) {
+    confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)
+  }
+`);
 
 export default function Page() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
+  const [, requestPasswordReset] = useMutation<RequestPasswordResetInput>(
+    REQUEST_RESET_MUTATION,
+  );
+  const [, validateResetToken] = useMutation<ValidateResetTokenInput>(
+    VALIDATE_RESET_TOKEN_MUTATION,
+  );
+  const [, confirmPasswordReset] = useMutation<ConfirmPasswordResetInput>(
+    CONFIRM_PASSWORD_RESET_MUTATION,
+  );
 
   const getSchemaForStep = (step: number) => {
     switch (step) {
@@ -49,7 +90,7 @@ export default function Page() {
             path: ['confirmPassword'],
           });
       default:
-        throw new Error('Invalid step value');
+        throw new Error('Invalid step');
     }
   };
 
@@ -63,23 +104,67 @@ export default function Page() {
     },
   });
 
-  const onSubmit = async () => {
-    switch (step) {
-      case 1:
-        // TODO Integrate BE for sending verification code
-        setStep(2);
-        break;
-      case 2:
-        // TODO Integrate BE for verifying code
-        setStep(3);
-        break;
-      case 3:
-        console.log('Resetting password...');
-        alert('Password Reset Successful');
-        break;
-      default:
-        console.log('Unknown step');
-        break;
+  // Submit handler
+  const onSubmit = async (data: any) => {
+    try {
+      switch (step) {
+        case 1: {
+          const result = await requestPasswordReset({
+            requestPasswordResetInput: { email: data.email },
+          });
+
+          if (result.error) {
+            console.error('Request reset error:', result.error.message);
+            return;
+          }
+
+          setStep(2);
+          break;
+        }
+
+        case 2: {
+          const result = await validateResetToken({
+            validateResetTokenInput: {
+              email: data.email,
+              token: data.code,
+            },
+          });
+
+          if (result.error) {
+            console.error('Token validation error:', result.error.message);
+            return;
+          }
+
+          setStep(3);
+          break;
+        }
+
+        case 3: {
+          const result = await confirmPasswordReset({
+            confirmPasswordResetInput: {
+              email: data.email,
+              token: data.code,
+              newPassword: data.newPassword,
+              confirmPassword: data.confirmPassword,
+            },
+          });
+
+          if (result.error) {
+            console.error('Password reset error:', result.error.message);
+            return;
+          }
+
+          alert('Password reset successful!');
+          // optionally we can send user to login page on success we can remove this later
+          router.push('/api/auth/signin');
+          break;
+        }
+
+        default:
+          console.warn('Unknown step');
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
     }
   };
 
@@ -213,7 +298,7 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">               
+              <Button variant="primary" size="large" isWide type="submit">
                 <CircleCheckBig />
                 Confirm
               </Button>

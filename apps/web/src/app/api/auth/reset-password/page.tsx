@@ -51,6 +51,12 @@ const CONFIRM_PASSWORD_RESET_MUTATION = graphql(`
   }
 `);
 
+export type ResetCodeInput = {
+  email: string,
+  code : string,
+  newPassword: string,
+  confirmPassword: string,
+}
 export default function Page() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -105,7 +111,7 @@ export default function Page() {
   });
 
   // Submit handler
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ResetCodeInput) => {
     try {
       switch (step) {
         case 1: {

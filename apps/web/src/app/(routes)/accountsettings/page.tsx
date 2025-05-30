@@ -33,7 +33,7 @@ export default function Page(): JSX.Element {
       <Headline as="h1" variant="xl" color="foreground">
         Account settings
       </Headline>
-      <AccountSettingsForm user={user} />
+      {user && <AccountSettingsForm user={user} />}
     </main>
   );
 }

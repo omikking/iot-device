@@ -573,6 +573,7 @@ export type MutationUpdateSiteArgs = {
  */
 export type MutationUpdateUserArgs = {
   id: Scalars['String']['input'];
+  updatePasswordInput?: InputMaybe<UpdatePasswordInput>;
   updateUserInput: UpdateUserInput;
 };
 
@@ -897,6 +898,12 @@ export type UpdateLevelInput = {
  */
 export type UpdateLocationInput = {
   locationName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdatePasswordInput = {
+  confirmPassword?: InputMaybe<Scalars['String']['input']>;
+  newPassword?: InputMaybe<Scalars['String']['input']>;
+  oldPassword?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**

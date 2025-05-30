@@ -16,7 +16,7 @@ import {
 } from './schemas/AccountSettingsFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from '@/gql/graphql';
@@ -55,29 +55,15 @@ export default function AccountSettingsForm({
   const settingsForm = useForm<UserAccountFormValues>({
     resolver: zodResolver(accountSettingsFormSchema),
     defaultValues: {
-      email: '',
-      fullName: '',
-      workPlace: '',
-      phoneNumber: '',
+      email: user.email || '',
+      fullName: user.fullName || '',
+      workPlace: user.workPlace || '',
+      phoneNumber: user.phoneNumber || '',
       oldPassword: '',
       newPassword: '',
       confirmPassword: '',
     },
   });
-
-  useEffect(() => {
-    if (user) {
-      settingsForm.reset({
-        email: user.email || '',
-        fullName: user.fullName || '',
-        workPlace: user.workPlace || '',
-        phoneNumber: user.phoneNumber || '',
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
-    }
-  }, [user, settingsForm]);
 
   const onSubmit: SubmitHandler<UserAccountFormValues> = async (data) => {
     const {

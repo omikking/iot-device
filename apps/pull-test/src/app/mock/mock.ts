@@ -337,6 +337,30 @@ export const boltResultsMock: BoltResultSchema[] = [
   },
 ];
 
+export const mockBoltResult = [
+  {
+    abortReason: 'NOT_TESTED_VOID_CAVITY',
+    boltNumber: 3,
+    boltType: 'MD47',
+    comment: 'comment test here',
+    createdAt: 1741005675314,
+    driveId: 'Drive 1',
+    hazardCompletedDate: [],
+    id: 'Test 1',
+    image: 'test image base64',
+    isHazard: true,
+    levelId: 'level 1',
+    locationId: 'Location 1',
+    peakDisplacement: [10],
+    peakLoad: [15],
+    positionInRing: 'RH_BACKS',
+    result: 'PASS',
+    siteId: 'Bat Cave',
+    updatedAt: 1741005675314,
+    userId: '6411e9b8-7925-4c80-b76b-8f5d47d19aec',
+  },
+];
+
 export const hazardCardMock = [
   {
     dateTitle: '2021-05-23',

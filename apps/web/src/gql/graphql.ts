@@ -793,15 +793,6 @@ export type Site = {
 };
 
 /**
- * UpdateAdminPermissionInput
- * Define the input fields to update the sandvik admin to new admin
- */
-export type UpdateAdminPermissionInput = {
-  newUserId: Scalars['String']['input'];
-  oldUserId: Scalars['String']['input'];
-};
-
-/**
  * UpdateBoltResultInput
  * Define the input fields to update an existing boltResult
  * Optional are marked without the exclamation mark

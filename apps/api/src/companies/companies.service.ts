@@ -165,7 +165,7 @@ export class CompaniesService {
       const existingSandvikAdmins = await prisma.userPermission.findMany({
         where: {
           companyId: id,
-          role: 'SANDVIK_ADMIN',
+          role: Role.SANDVIK_ADMIN,
         },
       });
 

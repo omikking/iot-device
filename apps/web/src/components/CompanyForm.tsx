@@ -165,9 +165,7 @@ export const CompanyForm = ({
 
       <Form {...companyForm}>
         <form
-          onSubmit={companyForm.handleSubmit(onSubmit, (errors) =>
-            console.log(errors),
-          )}
+          onSubmit={companyForm.handleSubmit(onSubmit)}
         >
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}

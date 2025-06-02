@@ -95,15 +95,6 @@ input UpdatePlanInput {
 }
 
 """
-UpdateAdminPermissionInput
-Define the input fields to update the sandvik admin to new admin
-"""
-input UpdateAdminPermissionInput {
-  oldUserId: String!
-  newUserId: String!
-}
-
-"""
 CompanyListResponse
 Response structure for paginated list of companies
 """

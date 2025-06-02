@@ -123,11 +123,6 @@ export class UpdatePlanInput {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class UpdateAdminPermissionInput {
-    oldUserId: string;
-    newUserId: string;
-}
-
 export class CreateDriveInput {
     driveName: string;
     levelId: string;

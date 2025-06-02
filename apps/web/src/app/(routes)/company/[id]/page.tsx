@@ -36,7 +36,7 @@ const getCompanyQuery = graphql(`
 `);
 
 const deleteCompanyMutation = graphql(`
-  mutation deleteComany($id: String!) {
+  mutation deleteCompany($id: String!) {
     removeCompany(id: $id) {
       id
     }

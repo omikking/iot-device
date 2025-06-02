@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { set, SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -73,8 +73,7 @@ export const LocationItem = ({
       },
     });
 
-  const openDeleteModal = (locationId: string) => {
-    // const foundLocation = locationsOptions.find((level) => level.id === locationId)
+  const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
 

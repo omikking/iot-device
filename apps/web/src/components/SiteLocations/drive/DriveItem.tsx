@@ -61,9 +61,6 @@ export const DriveItem = ({
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [driveToDelete, setDriveToDelete] = useState<Drive | undefined>(
-    undefined,
-  );
   const [isDeleting, setIsDeleting] = useState(false);
   const [, createDrive] = useMutation(createDriveMutation);
   const [, updateDrive] = useMutation(updateDriveMutation);
@@ -78,15 +75,12 @@ export const DriveItem = ({
       },
     });
 
-  const openDeleteModal = (driveId: string) => {
-    const foundDrive = drivesOptions.find((drive) => drive.id === driveId);
-    setDriveToDelete(foundDrive);
+  const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    setDriveToDelete(undefined);
   };
 
   const handleEditDrive = () => {
@@ -208,7 +202,11 @@ export const DriveItem = ({
               onDelete={handleDeleteDrive}
               onOpenChange={closeDeleteModal}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Text
+                variant="medium"
+                color={'foreground'}
+                className="max-w-[450px] text-center"
+              >
                 You are about to delete drive
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${drive.driveName} `}

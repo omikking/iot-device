@@ -103,6 +103,8 @@ export default function Page(): JSX.Element {
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
+  const [siteIsDeleting, setSiteIsDeleting] = useState(false);
+  const [userIsDeleting, setUserIsDeleting] = useState(false);
 
   const getBadge = (
     role: Role,
@@ -130,9 +132,18 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  // const handleDelete = (index: string) => {
-  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  // };
+  const handleDeleteUser = () => {
+    setUserIsDeleting(true);
+    return true;
+  };
+
+  const handleDeleteSite = () => {
+    // setIsDeleteSiteModalOpen(false);
+    // setSiteToDelete(undefined);
+    // console.log(`Deleting site with index: ${index}`);
+    setSiteIsDeleting(true);
+    return true;
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -213,13 +224,13 @@ export default function Page(): JSX.Element {
         Delete item
       </Button>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        modalTitle="Delete Site"
+        deleteIcon="User"
+        modalTitle="Delete User"
+        isLoading={userIsDeleting}
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
-        onDelete={() => {
-          console.log('Deleting item...');
-        }}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
@@ -250,15 +261,13 @@ export default function Page(): JSX.Element {
           </div>
         ))}
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="Site"
           modalTitle="Delete Site"
+          isLoading={siteIsDeleting}
           isOpen={isDeleteSiteModalOpen}
+          onClose={closeDeleteModal}
           onOpenChange={closeDeleteModal}
-          onDelete={() => {
-            // handleDelete();
-            closeDeleteModal();
-          }}
+          onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

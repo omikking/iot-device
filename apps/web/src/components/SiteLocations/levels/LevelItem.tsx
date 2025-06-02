@@ -40,7 +40,7 @@ const deleteLevelMutation = graphql(`
   }
 `);
 
-interface LevelComponentProps {
+type LevelComponentProps = {
   selectedLevelId?: string;
   level: Level;
   levelsOptions: Level[];
@@ -49,7 +49,7 @@ interface LevelComponentProps {
   refreshSite: () => void;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const LevelItem = ({
   selectedLevelId,
@@ -59,14 +59,10 @@ export const LevelItem = ({
   handleSetLevel,
   refreshSite,
   setSelectedLevel,
-  setSelectedDrive,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(!level.id);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [levelToDelete, setLevelToDelete] = useState<Level | undefined>(
-    undefined,
-  );
   const [isDeleting, setIsDeleting] = useState(false);
   const [, createLevel] = useMutation(createLevelMutation);
   const [, updateLevel] = useMutation(updateLevelMutation);
@@ -81,15 +77,12 @@ export const LevelItem = ({
       },
     });
 
-  const openDeleteModal = (levelId: string) => {
-    const foundLevel = levelsOptions.find((level) => level.id === levelId);
-    setLevelToDelete(foundLevel);
+  const openDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    setLevelToDelete(undefined);
   };
 
   const handleEditLevel = () => {
@@ -113,7 +106,6 @@ export const LevelItem = ({
       return;
     }
 
-    // Checks that no other level has the same name
     const newLevelName = data.levelName;
     const isDuplicate = levelsOptions.some(
       (level) => level.levelName === newLevelName,
@@ -161,7 +153,6 @@ export const LevelItem = ({
       try {
         if (result.data) {
           setSelectedLevel(undefined);
-          // setSelectedDrive(undefined);
           return true;
         } else {
           setIsDeleting(false);
@@ -214,7 +205,7 @@ export const LevelItem = ({
               <Text
                 variant="medium"
                 color={'foreground'}
-                className="text-center"
+                className="max-w-[450px] text-center"
               >
                 You are about to delete level
                 <Text variant="medium" color={'foreground'} as="span" isBold>

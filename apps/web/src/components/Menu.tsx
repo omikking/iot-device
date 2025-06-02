@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 
@@ -34,13 +35,16 @@ const getCompanyName = graphql(`
 export const Menu = () => {
   // @TODO fix colors on icons
   const { data: session } = useSession();
-  const id = session?.company?.id;
+  const params = useParams();
+  const companyId = (params?.id as string)
+  const sessionCompanyId  = session?.company?.id;
   const [companyResult] = useQuery({
     query: getCompanyName,
-    variables: { id: id as string },
+    variables: { id: companyId },
   });
   const companyName = companyResult.data?.company?.name;
   const role = session?.user?.globalRole;
+
   return (
     <MenuWrapper>
       <MenuTrigger asChild>
@@ -52,29 +56,30 @@ export const Menu = () => {
 
       <MenuContent>
         <div className="flex flex-col gap-8">
-          {id ? (
-            <MenuTitle>{companyName}</MenuTitle>
-          ) : (
-            <Link href="/overview" passHref legacyBehavior>
-              <Button
-                className="mt-4"
-                variant="secondary"
-                size="large"
-                tabIndex={-1}
-              >
-                <LucideBuilding2 />
-                Select company
-              </Button>
-            </Link>
-          )}
-          <div className="flex flex-col gap-1">
+        {companyId && <MenuTitle>{companyName}</MenuTitle>}
+
+        {!companyId && role === 'SANDVIK_ADMIN' && (
+          <Link href="/overview" passHref legacyBehavior>
+            <Button
+              className="mt-4"
+              variant="secondary"
+              size="large"
+              tabIndex={-1}
+            >
+              <LucideBuilding2 />
+              Select company
+            </Button>
+          </Link>
+        )}
+
+          {companyId && (<div className="flex flex-col gap-1">
             <Headline
               variant="medium"
               color="foreground"
               as="h3"
               className="group"
             >
-              <Link href={`/users/${id}`} passHref legacyBehavior>
+              <Link href={`/users/${companyId}`} passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                   View users
@@ -88,7 +93,7 @@ export const Menu = () => {
               as="h3"
               className="group"
             >
-              <Link href={`/sites/${id}`} passHref legacyBehavior>
+              <Link href={`/sites/${companyId}`} passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
                   View sites
@@ -110,8 +115,8 @@ export const Menu = () => {
               </Link>
             </Headline>
 
-            {id && role === 'SANDVIK_ADMIN' && (
-              <Link href="/overview" passHref legacyBehavior>
+
+              <Link  href={role === 'SANDVIK_ADMIN' ? '/overview' : '/selectcompany'} passHref legacyBehavior>
                 <Button
                   className="mt-4"
                   variant="secondary"
@@ -122,8 +127,8 @@ export const Menu = () => {
                   Change company
                 </Button>
               </Link>
-            )}
           </div>
+          )}
 
           <hr className="border-neutral-2" />
 
@@ -179,7 +184,7 @@ export const Menu = () => {
 
           <div className="flex flex-col gap-1 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="/selectapplication" passHref legacyBehavior>
+            <Link href={`/selectapplication/${sessionCompanyId}`} passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideLayoutGrid className="text-orange-600" />
                   Browse apps

@@ -61,10 +61,8 @@ export class SitesService {
   }
 
   async remove(id: string): Promise<Site> {
-    const site = await this.prisma.site.delete({ where: { id } });
-    if (!site) {
-      throw new UserInputError(`Site #${id} not found`);
-    }
-    return site;
+    return this.prisma.site.delete({
+      where: { id },
+    });
   }
 }

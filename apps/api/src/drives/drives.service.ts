@@ -55,10 +55,8 @@ export class DrivesService {
   }
 
   async remove(id: string): Promise<Drive> {
-    const drive = await this.prisma.drive.delete({ where: { id } });
-    if (!drive) {
-      throw new UserInputError(`Drive #${id} not found`);
-    }
-    return drive;
+    return this.prisma.drive.delete({
+      where: { id },
+    });
   }
 }

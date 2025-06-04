@@ -9,22 +9,6 @@ scalar DateTime
 BoltResult model
 Define the BoltResult model and its fields
 """
-type Site {
-  siteName: String!
-}
-
-type Level {
-  levelName: String!
-}
-
-type Drive {
-  driveName: String!
-}
-
-type Location {
-  locationName: String!
-}
-
 type BoltResult {
   id: String!
   createdAt: DateTime!
@@ -119,11 +103,11 @@ type Query {
     driveId: String
     locationId: String
     result: [String!]
-    isHazard: Boolean,
-    withImage : Boolean,
-    withComment : Boolean,
+    isHazard: Boolean
+    withImage: Boolean
+    withComment: Boolean
     startDate: DateTime
-    endDate: DateTime 
+    endDate: DateTime
   ): BoltResultResponse!
 
   boltResult(id: String!): BoltResult!

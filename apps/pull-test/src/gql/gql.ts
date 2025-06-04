@@ -22,6 +22,7 @@ const documents = {
     "\n  query getDriveDetails($id: String!) {\n    drive(id: $id) {\n      id\n      driveName\n    }\n  }\n": types.GetDriveDetailsDocument,
     "\n  query getLocationDetails($id: String!) {\n    location(id: $id) {\n      id\n      locationName\n    }\n  }\n": types.GetLocationDetailsDocument,
     "\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n": types.GetNameDetailsDocument,
+    "\n  query GetCompany($id: String!) {\n    company(id: $id) {\n      sites {\n        id\n        siteName\n             levels {\n        levelName\n\t\t\t\tid\n\t\t\t\tdrives {\n\t\t\t\t\tdriveName\n          id\n\t\t\t\t\tlocations {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tlocationName\n\t\t\t\t\t}\n\t\t\t\t}\n      }\n\n      }\n    }\n  }\n": types.GetCompanyDocument,
     "\n  query GetSites {\n    sites {\n      id\n      siteName\n    }\n  }\n": types.GetSitesDocument,
     "\n  query GetLevels {\n    levels {\n\t\tid\n\t\tupdatedAt\n\t\tlevelName\n\t\tsiteId\n\n\t}\n  }\n": types.GetLevelsDocument,
     "\n  query GetDrives {\n    drives {\n\t\tid\n\t\tupdatedAt\n\t\tdriveName\n\t\tlevelId\n\t}\n  }\n": types.GetDrivesDocument,
@@ -77,6 +78,10 @@ export function graphql(source: "\n  query getLocationDetails($id: String!) {\n 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n"): (typeof documents)["\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetCompany($id: String!) {\n    company(id: $id) {\n      sites {\n        id\n        siteName\n             levels {\n        levelName\n\t\t\t\tid\n\t\t\t\tdrives {\n\t\t\t\t\tdriveName\n          id\n\t\t\t\t\tlocations {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tlocationName\n\t\t\t\t\t}\n\t\t\t\t}\n      }\n\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCompany($id: String!) {\n    company(id: $id) {\n      sites {\n        id\n        siteName\n             levels {\n        levelName\n\t\t\t\tid\n\t\t\t\tdrives {\n\t\t\t\t\tdriveName\n          id\n\t\t\t\t\tlocations {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tlocationName\n\t\t\t\t\t}\n\t\t\t\t}\n      }\n\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

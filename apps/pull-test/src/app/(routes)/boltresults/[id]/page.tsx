@@ -18,14 +18,29 @@ import {
   TabsTrigger,
   TabsContent,
   DateRange,
+  Text,
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbSeparator,
 } from '@gsp/ui';
 
 interface SiteOption {
   id: string;
   name: string;
 }
+interface Props {
+  params: {
+    id: string;
+  };
+}
 
-export default function Page(): JSX.Element {
+interface LevelOption {
+  id: string;
+  name: string;
+}
+
+export default function Page({ params }: Props): JSX.Element {
 
   const boltResultQuery = gql`
         query GetBoltResult(
@@ -86,16 +101,43 @@ export default function Page(): JSX.Element {
       }
 `;
 
+  //   const GetCompanyQuery = gql`
+  //   query GetCompany($id: String!) {
+  //     company(id: $id) {
+  //       id
+  //       sites {
+  //         id
+  //         siteName
+  //              levels {
+  //         levelName
+  // 				id
+  // 				drives {
+  // 					driveName
+  //           id
+  // 					locations {
+  // 						id
+  // 						locationName
+  // 					}
+  // 				}
+  //       }
+
+  //       }
+  //     }
+  //   }
+  // `;
+
+
 
   const [site, setSite] = useState<SiteOption | undefined>(undefined);
-  const [level, setLevel] = useState<string | undefined>(undefined);
-  const [drive, setDrive] = useState<string | undefined>(undefined);
-  const [location, setLocation] = useState<string | undefined>(undefined);
+  const [level, setLevel] = useState<LevelOption | undefined>(undefined);
+  const [drive, setDrive] = useState<LevelOption | undefined>(undefined);
+  const [location, setLocation] = useState<LevelOption | undefined>(undefined);
   const [selectedTab, setSelectedTab] = useState('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
+  const companyId = params.id;
 
   const [filterState, setFilterState] = useState({
     pass: false,
@@ -140,6 +182,7 @@ export default function Page(): JSX.Element {
   });
 
 
+
   useEffect(() => {
     if (data?.boltResults.results) {
       setBoltResults(data.boltResults.results)
@@ -148,6 +191,8 @@ export default function Page(): JSX.Element {
     }
 
   }, [data]);
+
+
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -177,6 +222,52 @@ export default function Page(): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
+          <div className="flex-1 flex justify-start ">
+            <Breadcrumb>
+              <BreadcrumbList>
+                {site && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {site.name}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {level && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {level.name}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {drive && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {drive.name}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+                {location && (
+                  <>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <Text variant="medium" color="foreground">
+                        {location.name}
+                      </Text>
+                    </BreadcrumbItem>
+                  </>
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
 
           <Modal>
             <ModalTrigger asChild>
@@ -194,10 +285,11 @@ export default function Page(): JSX.Element {
         </div>
 
         <BoltSelection
+          companyId={companyId}
           site={site?.id}
-          level={level}
-          drive={drive}
-          location={location}
+          level={level?.id}
+          drive={drive?.id}
+          location={location?.id}
           dateRange={dateRange}
           selectedTab={selectedTab}
           filterState={filterState}

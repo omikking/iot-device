@@ -25,7 +25,6 @@ export enum Application {
   Xcyclops = 'XCYCLOPS'
 }
 
-
 export type BoltResult = {
   __typename?: 'BoltResult';
   abortReason?: Maybe<Scalars['String']['output']>;

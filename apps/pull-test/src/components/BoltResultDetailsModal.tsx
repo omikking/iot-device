@@ -122,6 +122,7 @@ export const BoltResultDetailsModal = ({
     handleViewTransition('details');
   };
 
+  // TODO this should be moved to a separate component. Avoid render functions in general. Move to a file named BoltResultDetailsModalContent or similar.
   const renderDetailsView = () => (
     <div className="flex flex-col">
       {/* Image, Comment and Hazard Status */}
@@ -277,6 +278,7 @@ export const BoltResultDetailsModal = ({
         className={`transition-all duration-100 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
       >
         {currentView === 'details' && renderDetailsView()}
+
         {currentView !== 'details' && (
           <HazardCompleteModalContent
             boltResult={boltResult}

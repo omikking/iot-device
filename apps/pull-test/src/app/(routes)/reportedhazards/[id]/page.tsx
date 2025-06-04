@@ -51,7 +51,6 @@ export default function Page(): JSX.Element {
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
-    pause: !companyId,
   });
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
 

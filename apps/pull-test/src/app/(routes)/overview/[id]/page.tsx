@@ -9,6 +9,7 @@ import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { useSession } from 'next-auth/react';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
+import { useParams } from 'next/navigation';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
@@ -29,8 +30,8 @@ const getCompanyName = graphql(`
 `);
 
 export default function Page(): JSX.Element {
-  const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
+  const params = useParams();
+  const companyId = params.id as string;
 
   const [{ data }] = useQuery({
     query: getCompanyName,
@@ -45,7 +46,7 @@ export default function Page(): JSX.Element {
   });
 
   const activeHazards = hazardData?.hazards?.filter(
-    (hazard) => hazard.isHazard === true,
+    (hazard) => hazard.isHazard,
   );
 
   const totalActiveHazards = activeHazards?.length ?? 0;

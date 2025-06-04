@@ -8,6 +8,7 @@ import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 import { User } from '@/gql/graphql';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { useParams } from 'next/navigation';
 
 const getCompanyUsersQuery = graphql(`
   query getCompanyUsers($id: String!) {
@@ -32,15 +33,12 @@ const getCompanyUsersQuery = graphql(`
   }
 `);
 
-export default function Page({
-  params,
-}: {
-  params: { id: string; name: string };
-}): JSX.Element {
+export default function Page(): JSX.Element {
+  const params = useParams();
+  const companyId = params.id as string;
+
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
-
-  const companyId = params.id;
 
   const [{ data: companyData }, executeQuery] = useQuery({
     query: getCompanyUsersQuery,

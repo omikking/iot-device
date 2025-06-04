@@ -23,6 +23,7 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
+  // TODO should only be session user here and not params? Not be able to touch anyone else's account settings
   const [{ data: getUser }] = useQuery({
     query: getUserQuery,
     variables: { id: params.id },

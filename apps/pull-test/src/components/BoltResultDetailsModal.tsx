@@ -15,9 +15,8 @@ import Image from 'next/image';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import styles from './BoltResultDetailsModal.module.css';
 import { generateBoltSpecifications } from '@/libs/utils';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
 import { HazardCompleteModalContent } from './HazardCompleteModalContent';
@@ -28,7 +27,6 @@ type BoltResultDetailsModalProps = {
   isHazardCompletable?: boolean;
 };
 
-// GraphQL queries
 const getLevelDetails = graphql(`
   query getLevelDetails($id: String!) {
     level(id: $id) {
@@ -76,9 +74,6 @@ export const BoltResultDetailsModal = ({
   const [currentView, setCurrentView] = useState<ModalView>('details');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Refs for controlling animation
-  const contentRef = useRef<HTMLDivElement>(null);
-
   // Queries for related data
   const [{ data: levelData }] = useQuery({
     query: getLevelDetails,
@@ -110,20 +105,12 @@ export const BoltResultDetailsModal = ({
   const { image, isHazard, peakLoad, peakDisplacement } = boltResult || {};
 
   const handleViewTransition = (nextView: ModalView) => {
-    if (isTransitioning) return;
-
     setIsTransitioning(true);
 
-    // Apply exit animation
-    if (contentRef.current) {
-      contentRef.current.classList.remove(styles.animateFadeIn);
-      contentRef.current.classList.add(styles.animateFadeOut);
-    }
-    // Wait for animation to complete before changing view
     setTimeout(() => {
       setCurrentView(nextView);
       setIsTransitioning(false);
-    }, 300);
+    }, 100);
   };
 
   const handleCompleteHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -134,14 +121,6 @@ export const BoltResultDetailsModal = ({
   const resetModal = () => {
     handleViewTransition('details');
   };
-
-  // Apply animation classes when view changes
-  useEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.classList.remove(styles.animateFadeOut);
-      contentRef.current.classList.add(styles.animateFadeIn);
-    }
-  }, [currentView]);
 
   const renderDetailsView = () => (
     <div className="flex flex-col">
@@ -294,7 +273,9 @@ export const BoltResultDetailsModal = ({
       </ModalHeader>
 
       {/* Modal content based on current view with animation */}
-      <div ref={contentRef} className={styles.animateFadeIn}>
+      <div
+        className={`transition-all duration-100 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+      >
         {currentView === 'details' && renderDetailsView()}
         {currentView !== 'details' && (
           <HazardCompleteModalContent

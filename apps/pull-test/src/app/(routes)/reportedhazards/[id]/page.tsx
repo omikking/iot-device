@@ -16,6 +16,7 @@ import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';
 import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
+import { useParams } from 'next/navigation';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -44,14 +45,8 @@ const getHazardDetails = graphql(`
 `);
 
 export default function Page(): JSX.Element {
-  const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
-  const [modalHazardId, setModalHazardId] = useState<string | undefined>(
-    undefined,
-  );
-  const [confirmationModalHazardId, setConfirmationModalHazardId] = useState<
-    string | undefined
-  >(undefined);
+  const params = useParams();
+  const companyId = params.id as string;
 
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
@@ -60,25 +55,43 @@ export default function Page(): JSX.Element {
   });
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
 
-  const handleOpenDetailsModal = (hazardId: string) => {
-    setModalHazardId(hazardId);
-  };
+  const [openDetailsModal, setOpenDetailsModal] = useState<boolean>(false);
 
-  const handleCloseDetailsModal = () => {
-    setModalHazardId(undefined);
-  };
+  const [openConfirmationModal, setOpenConfirmationModal] =
+    useState<boolean>(false);
 
-  const handleOpenConfirmationModal = (hazardId: string) => {
-    setConfirmationModalHazardId(hazardId);
-  };
-  const handleCloseConfirmationModal = () => {
-    setConfirmationModalHazardId(undefined);
-  };
-
-  const selectedHazardForModal = hazards.find((h) => h.id === modalHazardId);
-  const selectedHazardForConfirmationModal = hazards.find(
-    (h) => h.id === confirmationModalHazardId,
+  const [selectedHazardId, setSelectedHazardId] = useState<string | undefined>(
+    undefined,
   );
+
+  const handleBoltDetailsModalToggle = (open: boolean, hazardId?: string) => {
+    if (open) {
+      setSelectedHazardId(hazardId);
+      setOpenDetailsModal(true);
+    } else {
+      setOpenDetailsModal(false);
+      setTimeout(() => {
+        setSelectedHazardId(undefined);
+      }, 200);
+    }
+  };
+
+  const handleCompleteConfirmationModalToggle = (
+    open: boolean,
+    hazardId?: string,
+  ) => {
+    if (open) {
+      setSelectedHazardId(hazardId);
+      setOpenConfirmationModal(true);
+    } else {
+      setOpenConfirmationModal(false);
+      setTimeout(() => {
+        setSelectedHazardId(undefined);
+      }, 200);
+    }
+  };
+
+  const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -112,9 +125,11 @@ export default function Page(): JSX.Element {
                 <HazardCard
                   key={boltResult.id}
                   boltResult={boltResult}
-                  onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+                  onViewMore={() =>
+                    handleBoltDetailsModalToggle(true, boltResult.id)
+                  }
                   onCompleteClick={() =>
-                    handleOpenConfirmationModal(boltResult.id)
+                    handleCompleteConfirmationModalToggle(true, boltResult.id)
                   }
                 />
               ),
@@ -130,7 +145,9 @@ export default function Page(): JSX.Element {
                 <HazardCard
                   key={boltResult.id}
                   boltResult={boltResult}
-                  onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+                  onViewMore={() =>
+                    handleBoltDetailsModalToggle(true, boltResult.id)
+                  }
                 />
               ),
           )}
@@ -143,41 +160,43 @@ export default function Page(): JSX.Element {
             <HazardCard
               key={boltResult.id}
               boltResult={boltResult}
-              onViewMore={() => handleOpenDetailsModal(boltResult.id)}
+              onViewMore={() =>
+                handleBoltDetailsModalToggle(true, boltResult.id)
+              }
+              onCompleteClick={() =>
+                handleCompleteConfirmationModalToggle(true, boltResult.id)
+              }
             />
           ))}
         </TabsContent>
       </Tabs>
 
-      {selectedHazardForModal && (
-        <Modal
-          open={!!modalHazardId}
-          onOpenChange={(isOpen) => {
-            if (!isOpen) handleCloseDetailsModal();
-          }}
-        >
+      <Modal
+        open={openDetailsModal}
+        onOpenChange={handleBoltDetailsModalToggle}
+      >
+        {selectedHazard && (
           <BoltResultDetailsModal
-            boltResult={selectedHazardForModal}
-            onClose={handleCloseDetailsModal}
             isHazardCompletable
+            boltResult={selectedHazard}
+            onClose={() => handleBoltDetailsModalToggle(false)}
           />
-        </Modal>
-      )}
-      {selectedHazardForConfirmationModal && (
-        <Modal
-          open={!!confirmationModalHazardId}
-          onOpenChange={(isOpen) => {
-            if (!isOpen) handleCloseConfirmationModal();
-          }}
-        >
+        )}
+      </Modal>
+
+      <Modal
+        open={openConfirmationModal}
+        onOpenChange={handleCompleteConfirmationModalToggle}
+      >
+        {selectedHazard && (
           <HazardCompleteModal
-            boltResult={selectedHazardForConfirmationModal}
+            boltResult={selectedHazard}
             onClose={() => {
-              handleCloseConfirmationModal();
+              handleCompleteConfirmationModalToggle(false);
             }}
           />
-        </Modal>
-      )}
+        )}
+      </Modal>
     </main>
   );
 }

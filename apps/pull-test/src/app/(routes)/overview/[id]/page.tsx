@@ -7,7 +7,6 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import { useParams } from 'next/navigation';
 

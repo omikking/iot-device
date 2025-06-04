@@ -55,10 +55,8 @@ export class LevelsService {
   }
 
   async remove(id: string): Promise<Level> {
-    const level = await this.prisma.level.delete({ where: { id } });
-    if (!level) {
-      throw new UserInputError(`Level #${id} not found`);
-    }
-    return level;
+    return this.prisma.level.delete({
+      where: { id },
+    });
   }
 }

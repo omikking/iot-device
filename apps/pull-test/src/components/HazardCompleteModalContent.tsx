@@ -58,36 +58,40 @@ export const HazardCompleteModalContent = ({
       ? boltResult.hazardCompletedDate
       : [];
 
-    try {
-      await updateReportedHazard({
-        id: boltResult.id,
-        updateBoltResultInput: {
-          isHazard: false,
-          hazardCompletedDate: [...currentHazardDates, Date.now()],
-        },
+    updateReportedHazard({
+      id: boltResult.id,
+      updateBoltResultInput: {
+        isHazard: false,
+        hazardCompletedDate: [...currentHazardDates, Date.now()],
+      },
+    })
+      .then((result) => {
+        // Handle success
+        if (result.data) {
+          handleViewTransition('success');
+
+          if (onSuccess) {
+            setTimeout(() => {
+              onSuccess();
+            }, 1200);
+          } else {
+            setTimeout(() => {
+              onClose();
+              // Reset to confirmation view for next time modal opens
+              setTimeout(() => {
+                setCurrentView('confirmation');
+              }, 300);
+            }, 1200);
+          }
+        }
+      })
+      .catch((error) => {
+        // TODO add error toaster
+        console.error('Error updating hazard:', error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-
-      handleViewTransition('success');
-
-      if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 1200);
-      } else {
-        setTimeout(() => {
-          onClose();
-          // Reset to confirmation view for next time modal opens
-          setTimeout(() => {
-            setCurrentView('confirmation');
-          }, 300);
-        }, 1200);
-      }
-    } catch (error) {
-      // TODO add error toaster
-      console.error('Error updating hazard:', error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (

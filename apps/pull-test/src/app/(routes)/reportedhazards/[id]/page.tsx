@@ -11,7 +11,6 @@ import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
-import { useSession } from 'next-auth/react';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';

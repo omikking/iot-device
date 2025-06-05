@@ -48,9 +48,7 @@ export const HazardCompleteModalContent = ({
     }, 300);
   };
 
-  const hazardConfirmed = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
+  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setIsLoading(true);
 
@@ -66,6 +64,8 @@ export const HazardCompleteModalContent = ({
       },
     })
       .then((result) => {
+        setIsLoading(true);
+
         // Handle success
         if (result.data) {
           handleViewTransition('success');
@@ -139,7 +139,7 @@ export const HazardCompleteModalContent = ({
         </div>
       </div>
 
-      <div className="px-10 pb-2 pt-8">
+      <div className="px-10 pb-5 pt-8">
         <div className="flex justify-end items-end gap-5">
           {(currentView === 'confirmation' || 'success') && (
             <Button

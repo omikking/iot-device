@@ -117,9 +117,7 @@ export const BoltResultDetailsModal = ({
     <ModalContent
       onEscapeKeyDown={currentView !== 'success' ? resetModal : undefined}
       onPointerDownOutside={currentView !== 'success' ? resetModal : undefined}
-      className={`overflow-y-auto w-96 ${
-        currentView !== 'details' ? 'h-[450px]' : ''
-      }`}
+      className="overflow-y-auto w-96"
     >
       <ModalHeader>
         <ModalTitle>

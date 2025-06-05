@@ -13,7 +13,7 @@ export const HazardCompleteModal = ({
     <ModalContent
       onEscapeKeyDown={onClose}
       onPointerDownOutside={onClose}
-      className="overflow-y-auto w-96 h-[450px]"
+      className="overflow-y-auto w-96"
     >
       <ModalHeader>
         <ModalTitle>Complete hazard</ModalTitle>

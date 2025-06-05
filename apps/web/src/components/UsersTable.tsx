@@ -58,7 +58,7 @@ export const UsersTable = ({
   onSelectUser,
 }: UsersTableProps) => {
   const params = useParams();
-  const companyId = params.id as string;
+  const companyId = params.id;
   const users = (companyData?.company.users as User[]) || [];
 
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);

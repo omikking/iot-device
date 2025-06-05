@@ -37,7 +37,7 @@ export default function Page({
 }: {
   params: { id: string; name?: string };
 }): JSX.Element {
-  const companyId = params.id as string;
+  const companyId = params.id;
 
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);

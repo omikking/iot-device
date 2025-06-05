@@ -114,7 +114,7 @@ export const AddOrEditUserModal = ({
   onUserAdded,
 }: AddOrEditUserModalProps) => {
   const params = useParams();
-  const companyId = params.id as string;
+  const companyId = params.id;
 
   const allApplications = Object.values(Application);
   const permission = user?.userPermissions?.[0];

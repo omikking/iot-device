@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
-import { useParams } from 'next/navigation';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
@@ -28,8 +27,11 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams();
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const companyId = params.id as string;
 
   const [{ data }] = useQuery({

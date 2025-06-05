@@ -8,7 +8,6 @@ import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Company } from '@/gql/graphql';
-import { useParams } from 'next/navigation';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -36,8 +35,11 @@ const getCompanyQuery = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams() as { id: string };
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const isNewCompany = params.id === 'new';
 
   // Does not call if it's new company flow.

@@ -16,7 +16,6 @@ import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
 import { Site } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { useParams } from 'next/navigation';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -27,8 +26,11 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams();
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const companyId = params.id as string;
 
   const [{ data }] = useQuery({

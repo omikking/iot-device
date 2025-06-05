@@ -15,7 +15,6 @@ import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';
 import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
-import { useParams } from 'next/navigation';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -43,8 +42,11 @@ const getHazardDetails = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams();
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const companyId = params.id as string;
 
   const [{ data: hazardData }] = useQuery({

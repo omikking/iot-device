@@ -6,7 +6,6 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import Link from 'next/link';
 import { LucideCircuitBoard } from 'lucide-react';
 import { graphql } from '@/gql';
-import { useParams } from 'next/navigation';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -17,8 +16,11 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams();
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const companyId = params.id as string;
 
   const [companyResult] = useQuery({

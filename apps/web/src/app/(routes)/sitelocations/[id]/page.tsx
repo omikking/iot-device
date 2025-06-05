@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { Drive, Level, Site } from '@/gql/graphql';
@@ -56,9 +56,11 @@ const getFullSiteLocationsQuery = graphql(`
   }
 `);
 
-export default function Page(): JSX.Element {
-  const params = useParams() as { id: string };
-
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const searchParams = useSearchParams();
   const [selectedSite, setSelectedSite] = useState<Site | undefined>();
   const [selectedLevel, setSelectedLevel] = useState<Level | undefined>();

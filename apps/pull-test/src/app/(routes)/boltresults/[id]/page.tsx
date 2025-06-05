@@ -6,6 +6,9 @@ import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
+import PdfComponent from '@/components/pdf';
+import { pdfComponentMockData } from '@/app/mock/mock';
+
 import {
   Button,
   Headline,
@@ -169,17 +172,21 @@ export default function Page(): JSX.Element {
             </Breadcrumb>
           </div>
           <Modal>
-            <ModalTrigger asChild>
-              <Button
-                disabled={!filteredResults?.length}
-                variant="primary"
-                size="large"
-              >
-                <LucideFileDown />
-                View PDF
-              </Button>
-            </ModalTrigger>
-            {/* @TODO Modal goes here /> */}
+            <PdfComponent
+              disabled={false}
+              objList={pdfComponentMockData.mockBoltResult}
+              reportDetails={pdfComponentMockData.mockBoltResult}
+              layout={{
+                logo: pdfComponentMockData.Layout.logo,
+                authorImage: pdfComponentMockData.Layout.authorImage,
+                authorSignature: pdfComponentMockData.Layout.authorSignature,
+                contactHtml: '<strong>John Doe</strong> - Site Manager',
+              }}
+              parentUrl={window.parent.location.toString()}
+              pdfName={'pull_test_report.pdf'}
+              pdfPageTitle={'Bolt Result'}
+              currentDate={new Date().toLocaleDateString()}
+            />
           </Modal>
         </div>
 

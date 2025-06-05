@@ -207,15 +207,10 @@ export const Menu = () => {
             </Headline>
 
             <Headline variant="medium" color="foreground" as="h3">
-              {/* @TODO update link */}
-              <Link
-                href="http://localhost:3000/accountsettings"
-                passHref
-                legacyBehavior
-              >
+              <Link href="/accountsettings" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideSettings />
-                  Settings
+                  Account settings
                 </Anchor>
               </Link>
             </Headline>

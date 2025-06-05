@@ -224,10 +224,8 @@ export class CompaniesService {
   }
 
   async remove(id: string): Promise<Company> {
-    const company = await this.prisma.company.delete({ where: { id } });
-    if (!company) {
-      throw new UserInputError(`Company #${id} not found`);
-    }
-    return company;
+    return this.prisma.company.delete({
+      where: { id },
+    });
   }
 }

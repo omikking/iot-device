@@ -184,17 +184,15 @@ export const BoltResultDetailsModal = ({
                 )}
               </div>
             )}
-            <div className="flex flex-col w-1/2 ">
+            <div className="flex flex-col w-1/2">
               {boltResult.comment && (
-                <div className="flex flex-col pt-10 h-full">
+                <div className="flex flex-col pt-10">
                   <Text variant="small" color="foreground">
                     Comment
                   </Text>
                   <Textarea
-                    value={
-                      'boltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.commentboltResult.comment'
-                    }
-                    className="mt-2 flex-grow h-[213px]"
+                    value={boltResult.comment}
+                    className="mt-2 h-[213px]"
                     disabled
                     readOnly
                   />

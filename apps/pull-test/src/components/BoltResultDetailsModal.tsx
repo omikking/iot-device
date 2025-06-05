@@ -1,25 +1,18 @@
 import {
   Button,
-  ModalContent,
+  ModalTitle,
+  ModalClose,
   ModalFooter,
   ModalHeader,
-  ModalTitle,
-  Textarea,
-  Text,
-  Badge,
-  Headline,
-  ModalClose,
-  Specification,
+  ModalContent,
 } from '@gsp/ui';
-import Image from 'next/image';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { BoltResult } from '@/gql/graphql';
-import { generateBoltSpecifications } from '@/libs/utils';
 import React, { useState } from 'react';
-import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { BoltResult } from '@/gql/graphql';
+import { LucideCircleCheckBig } from 'lucide-react';
 import { HazardCompleteModalContent } from './HazardCompleteModalContent';
+import { BoltResultDetailsModalContent } from './BoltResultDetailsModalContent';
 
 type BoltResultDetailsModalProps = {
   boltResult: BoltResult;
@@ -102,8 +95,6 @@ export const BoltResultDetailsModal = ({
     locationName: locationData?.location?.locationName || 'N/A',
   };
 
-  const { image, isHazard, peakLoad, peakDisplacement } = boltResult || {};
-
   const handleViewTransition = (nextView: ModalView) => {
     setIsTransitioning(true);
 
@@ -121,141 +112,6 @@ export const BoltResultDetailsModal = ({
   const resetModal = () => {
     handleViewTransition('details');
   };
-
-  // TODO this should be moved to a separate component. Avoid render functions in general. Move to a file named BoltResultDetailsModalContent or similar.
-  const renderDetailsView = () => (
-    <div className="flex flex-col">
-      {/* Image, Comment and Hazard Status */}
-      {(image || boltResult.comment || isHazard) && (
-        <div className="flex flex-grow pb-5 px-10 gap-10">
-          {image && (
-            <Image
-              src={'/capybara.jpg'}
-              alt="Attached bolt result image"
-              width={390}
-              height={280}
-              className="rounded-md h-72 mt-10"
-            />
-          )}
-          <div className="flex flex-col w-1/2">
-            {boltResult.comment && (
-              <div className="flex flex-col flex-grow pt-10">
-                <Text variant="small" color="foreground">
-                  Comment
-                </Text>
-                <Textarea
-                  value={boltResult.comment}
-                  className="mt-2 flex-grow"
-                  disabled
-                  readOnly
-                />
-              </div>
-            )}
-            <div className="flex pt-5 gap-4 items-center">
-              {isHazard && (
-                <>
-                  <Badge variant={'attention'}>
-                    <LucideTriangleAlert />
-                    Reported hazard
-                  </Badge>
-                  <Text variant="small" color="foreground">
-                    Reported by: {nameData?.user?.fullName || 'N/A'}
-                  </Text>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!isHazard && (
-        <div className="px-10">
-          <Badge variant="success">
-            <LucideCircleCheckBig />
-            Completed
-          </Badge>
-        </div>
-      )}
-
-      <div className="px-10 pt-10">
-        {/* Hazard Completion History */}
-        {!boltResult?.isHazard && (
-          <>
-            <Headline
-              className="pb-4"
-              variant="small"
-              as="h3"
-              color="foreground"
-              isBold
-            >
-              Hazard completion history
-            </Headline>
-            <div className="pb-10">
-              {boltResult?.hazardCompletedDate?.map((date, index) => {
-                const dateString = new Date(date).toISOString().split('T')[0];
-                return (
-                  <div key={index} className="flex flex-wrap">
-                    <Specification
-                      key={index}
-                      title={'Date'}
-                      text={dateString}
-                      className="w-1/2"
-                    />
-                    <Specification title={''} text={''} className="w-1/2" />
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* Bolt Specifications */}
-        <Headline
-          className="pb-4"
-          variant="small"
-          as="h3"
-          color="foreground"
-          isBold
-        >
-          Bolt specifications
-        </Headline>
-
-        {boltResult && (
-          <div className="flex flex-wrap">
-            {[...generateBoltSpecifications(boltResult, siteInfo).slice(1)].map(
-              (boltSpec, index) => (
-                <Specification
-                  key={index}
-                  title={boltSpec.title}
-                  text={boltSpec.text}
-                  className="w-1/2"
-                />
-              ),
-            )}
-            {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              0 && <Specification title="" text="" className="w-1/2" />}
-          </div>
-        )}
-
-        {/* Bolt Results */}
-        <div>
-          <Headline
-            className="pt-10"
-            variant="small"
-            as="h3"
-            color="foreground"
-            isBold
-          >
-            Bolt results
-          </Headline>
-          <MultiBoltReadingTable
-            peakLoad={peakLoad}
-            peakDisplacement={peakDisplacement}
-          />
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <ModalContent
@@ -277,8 +133,13 @@ export const BoltResultDetailsModal = ({
       <div
         className={`transition-all duration-100 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
       >
-        {currentView === 'details' && renderDetailsView()}
-
+        {currentView === 'details' && (
+          <BoltResultDetailsModalContent
+            boltResult={boltResult}
+            siteInfo={siteInfo}
+            fullName={nameData?.user?.fullName || 'N/A'}
+          />
+        )}
         {currentView !== 'details' && (
           <HazardCompleteModalContent
             boltResult={boltResult}
@@ -300,7 +161,7 @@ export const BoltResultDetailsModal = ({
         <ModalFooter className="px-10 pb-5 pt-8">
           <ModalClose asChild>
             <div className="flex justify-end items-end gap-5">
-              {isHazard && isHazardCompletable && (
+              {boltResult?.isHazard && isHazardCompletable && (
                 <Button
                   size="large"
                   variant="primary"

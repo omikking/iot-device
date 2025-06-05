@@ -232,17 +232,15 @@ export class BoltResult {
     driveId: string;
     locationId: string;
     userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
 }
 
- export class BoltResultExtend extends BoltResult {
-    site: { siteName: string};
-    level: { levelName:  string};
-    drive: { driveName:  string};
-    location : {locationName : string}
-}
 export class BoltResultResponse {
     totalRecords: number;
-    results: BoltResultExtend[];
+    results: BoltResult[];
 }
 
 export abstract class IQuery {

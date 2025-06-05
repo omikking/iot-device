@@ -41,92 +41,72 @@ interface LevelOption {
 }
 
 export default function Page({ params }: Props): JSX.Element {
-
   const boltResultQuery = gql`
-        query GetBoltResult(
-          $offset: Int,
-          $limit: Int,
-          $siteId: String,
-          $levelId: String,
-          $driveId: String,
-          $locationId: String,
-          $result: [String!],
-          $isHazard: Boolean,
-          $withImage: Boolean,
-          $withComment: Boolean,
-          $startDate: DateTime,
-          $endDate: DateTime
-        ) {
-          boltResults(
-            offset: $offset,
-            limit: $limit,
-            siteId: $siteId,
-            levelId: $levelId,
-            driveId: $driveId,
-            locationId: $locationId,
-            result: $result,  
-            isHazard: $isHazard,
-            withImage: $withImage,
-            withComment: $withComment,
-            startDate: $startDate,
-            endDate: $endDate
-          ) {
-            totalRecords
-            results {
-              id
-              createdAt
-              updatedAt
-              boltNumber
-              boltType
-              peakLoad
-              peakDisplacement
-              positionInRing
-              result
-              isHazard
-              hazardCompletedDate
-              abortReason
-              comment
-              image
-              siteId
-              levelId
-              driveId
-              locationId
-              userId
-              site { siteName }
-              drive { driveName }
-              location { locationName }
-              level { levelName }
-            }
+    query GetBoltResult(
+      $offset: Int
+      $limit: Int
+      $siteId: String
+      $levelId: String
+      $driveId: String
+      $locationId: String
+      $result: [String!]
+      $isHazard: Boolean
+      $withImage: Boolean
+      $withComment: Boolean
+      $startDate: DateTime
+      $endDate: DateTime
+    ) {
+      boltResults(
+        offset: $offset
+        limit: $limit
+        siteId: $siteId
+        levelId: $levelId
+        driveId: $driveId
+        locationId: $locationId
+        result: $result
+        isHazard: $isHazard
+        withImage: $withImage
+        withComment: $withComment
+        startDate: $startDate
+        endDate: $endDate
+      ) {
+        totalRecords
+        results {
+          id
+          createdAt
+          updatedAt
+          boltNumber
+          boltType
+          peakLoad
+          peakDisplacement
+          positionInRing
+          result
+          isHazard
+          hazardCompletedDate
+          abortReason
+          comment
+          image
+          siteId
+          levelId
+          driveId
+          locationId
+          userId
+          site {
+            siteName
+          }
+          drive {
+            driveName
+          }
+          location {
+            locationName
+          }
+          level {
+            levelName
+          }
         }
       }
-`;
-
-  //   const GetCompanyQuery = gql`
-  //   query GetCompany($id: String!) {
-  //     company(id: $id) {
-  //       id
-  //       sites {
-  //         id
-  //         siteName
-  //              levels {
-  //         levelName
-  // 				id
-  // 				drives {
-  // 					driveName
-  //           id
-  // 					locations {
-  // 						id
-  // 						locationName
-  // 					}
-  // 				}
-  //       }
-
-  //       }
-  //     }
-  //   }
-  // `;
-
-
+    }
+  `;
 
   const [site, setSite] = useState<SiteOption | undefined>(undefined);
   const [level, setLevel] = useState<LevelOption | undefined>(undefined);
@@ -157,13 +137,12 @@ export default function Page({ params }: Props): JSX.Element {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       reportedHazard,
       ...rest
-    } = filterState
+    } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
-
 
   const [{ data }] = useQuery({
     query: boltResultQuery,
@@ -181,18 +160,13 @@ export default function Page({ params }: Props): JSX.Element {
     },
   });
 
-
-
   useEffect(() => {
     if (data?.boltResults.results) {
-      setBoltResults(data.boltResults.results)
+      setBoltResults(data.boltResults.results);
     } else {
       setBoltResults([]);
     }
-
   }, [data]);
-
-
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -302,8 +276,7 @@ export default function Page({ params }: Props): JSX.Element {
           boltResults={boltResults}
         />
         <TabsContent value="table">
-          <BoltResultsTable site={site?.id
-          } boltResults={boltResults} />
+          <BoltResultsTable site={site?.id} boltResults={boltResults} />
         </TabsContent>
         <TabsContent value="graphs">
           <BoltResultsGraphView />

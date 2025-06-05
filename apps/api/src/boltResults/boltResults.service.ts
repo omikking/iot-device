@@ -12,18 +12,6 @@ import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
-interface BoltResultFilters {
-  siteId?: string;
-  levelId?: string;
-  driveId?: string;
-  locationId?: string;
-  result?: string[];
-  isHazard?: boolean;
-  withImage?: boolean;
-  withComment?: boolean;
-  startDate?: Date;
-  endDate?: Date;
-}
 
 @Injectable()
 export class BoltResultsService {
@@ -32,7 +20,18 @@ export class BoltResultsService {
   async findMany(
     user: ActiveUserData,
     pagination: { offset: number; limit?: number },
-    filters?: BoltResultFilters,
+    filters: {
+      siteId?: string | undefined;
+      levelId?: string | undefined;
+      driveId?: string | undefined;
+      locationId?: string | undefined;
+      result?: string[] | undefined;
+      isHazard?: boolean | undefined;
+      withImage?: boolean | undefined;
+      withComment?: boolean | undefined;
+      startDate?: Date | undefined;
+      endDate?: Date | undefined;
+    },
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
 
@@ -80,10 +79,10 @@ export class BoltResultsService {
       ...(limit !== undefined ? { take: limit } : {}),
       where: whereCondition,
       include: {
-        site: { select: { siteName: true } },
-        level: { select: { levelName: true } },
-        drive: { select: { driveName: true } },
-        location: { select: { locationName: true } },
+        site: true,
+        level: true,
+        drive: true,
+        location: true,
       },
     });
 

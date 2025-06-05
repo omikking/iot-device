@@ -27,7 +27,6 @@ module.exports = {
 
     return config
   },
-  images: { unoptimized: true },
   reactStrictMode: true,
   transpilePackages: ["@gsp/ui"],
 };

@@ -15,24 +15,13 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { BoltResult } from '@prisma/client';
-interface BoltResultFilters {
-  siteId?: string;
-  levelId?: string;
-  driveId?: string;
-  locationId?: string;
-  result?: string[];
-  isHazard?: boolean;
-  withImage?: boolean;
-  withComment?: boolean;
-  startDate?: Date;
-  endDate?: Date;
-}
+
 @Resolver()
 @UseGuards(JwtGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => GraphQLTypes.BoltResultExtend, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -59,7 +48,7 @@ export class BoltResultsResolver {
       ...(limit !== undefined ? { limit: Number(limit) } : {}),
     };
 
-    const filters: BoltResultFilters = {
+    const filters = {
       siteId,
       levelId,
       driveId,

@@ -19,72 +19,27 @@ const getCompanyQuery = gql`
       sites {
         id
         siteName
-             levels {
-        levelName
-				id
-				drives {
-					driveName
+        levels {
+          levelName
           id
-					locations {
-						id
-						locationName
-					}
-				}
-      }
-
+          drives {
+            driveName
+            id
+            locations {
+              id
+              locationName
+            }
+          }
+        }
       }
     }
-  }
-`;
-
-
-export const GET_SITES = gql`
-  query GetSites {
-    sites {
-      id
-      siteName
-    }
-  }
-`;
-
-export const GET_LEVELS = gql`
-  query GetLevels {
-    levels {
-		id
-		updatedAt
-		levelName
-		siteId
-
-	}
-  }
-`;
-
-export const GET_DRIVES = gql`
-  query GetDrives {
-    drives {
-		id
-		updatedAt
-		driveName
-		levelId
-	}
-  }
-`;
-
-export const GET_LOCATIONS = gql`
-  query GetLocations {
-    locations {
-    id,
-		updatedAt,
-    locationName,
-		driveId,
-  }
   }
 `;
 
 type SiteOption = {
   id: string;
   name: string;
-}
+};
 
 // @TODO Is this typing really correct?
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
@@ -122,55 +77,31 @@ export const BoltSelection = ({
   onSetLocation,
   onSetDateRange,
   onFilterChange,
-  companyId
+  companyId,
 }: BoltSelectionProps) => {
-
-  const [{ data: compnayIdCompanyDetails, }] = useQuery({
+  const [{ data: compnayIdCompanyDetails }] = useQuery({
     query: getCompanyQuery,
     variables: {
-      id: companyId
+      id: companyId,
     },
   });
 
-
-  const [{ data, fetching, error }] = useQuery({
-    query: GET_SITES,
-  });
-
-
   const siteOptions = useMemo(() => {
-    if (fetching || error || !compnayIdCompanyDetails?.company?.sites) return [];
+    if (!compnayIdCompanyDetails?.company?.sites) return [];
 
-    return compnayIdCompanyDetails?.company?.sites.map((site: {
-      levels: any; id: string; siteName: string
-    }) => ({
-      id: site.id,
-      name: site.siteName,
-      levels: site.levels
-    }));
-  }, [compnayIdCompanyDetails, fetching, error]);
-
-
-  // const [{ data: levelsData }] = useQuery({
-  //   query: GET_LEVELS,
-  //   // variables: { siteId: site },
-  //   // pause: !site || !dateRange,
-  // });
-
-  // const [{ data: drivesData }] = useQuery({
-  //   query: GET_DRIVES,
-  //   // variables: { levelId: level },
-  //   // pause: !level,
-  // });
-
-  // const [{ data: locationsData }] = useQuery({
-  //   query: GET_LOCATIONS,
-  //   // variables: { driveId: drive },
-  //   // pause: !drive,
-  // });
+    return compnayIdCompanyDetails?.company?.sites.map(
+      (site: { levels: any; id: string; siteName: string }) => ({
+        id: site.id,
+        name: site.siteName,
+        levels: site.levels,
+      }),
+    );
+  }, [compnayIdCompanyDetails]);
 
   const handleSetSite = (site?: string) => {
-    const siteDetails = siteOptions.find((sites: SiteOption) => sites.id === site)
+    const siteDetails = siteOptions.find(
+      (sites: SiteOption) => sites.id === site,
+    );
     onSetSite(siteDetails);
     onSetDateRange({
       from: undefined,
@@ -181,9 +112,8 @@ export const BoltSelection = ({
     onSetLocation(undefined);
   };
 
-
   const handleSetLevel = (levelId?: string) => {
-    const levelOption = levelsOptionsMock.find(l => l.id === levelId);
+    const levelOption = levelsOptionsMock.find((l) => l.id === levelId);
     onSetLevel(levelOption); // <-- This is typed as SiteOption, adjust if needed
     onSetDrive(undefined);
     onSetLocation(undefined);
@@ -196,44 +126,40 @@ export const BoltSelection = ({
 
   // Finds available levels on the selected site
   const levelsOptionsMock = useMemo(() => {
-    const levels = siteOptions.flatMap(site => site.levels || []);
-    return levels.map((level: {
-      drives: any;
-      id: string;
-      levelName: string;
-    }) => ({
-      id: level.id,
-      name: level.levelName,
-      drives: level.drives,
-    })) || [];
+    const levels = siteOptions.flatMap((site) => site.levels || []);
+    return (
+      levels.map((level: { drives: any; id: string; levelName: string }) => ({
+        id: level.id,
+        name: level.levelName,
+        drives: level.drives,
+      })) || []
+    );
   }, [siteOptions]);
 
-
   const drivesOptionsMock = useMemo(() => {
-    const selectedLevel = levelsOptionsMock.find(lvl => lvl.id === level);
+    const selectedLevel = levelsOptionsMock.find((lvl) => lvl.id === level);
     const drives = selectedLevel?.drives || [];
-    return drives.map((drive: {
-      locations: any;
-      id: string;
-      driveName: string;
-    }) => ({
-      id: drive.id,
-      name: drive.driveName,
-      locations: drive.locations,
-    }));
+    return drives.map(
+      (drive: { locations: any; id: string; driveName: string }) => ({
+        id: drive.id,
+        name: drive.driveName,
+        locations: drive.locations,
+      }),
+    );
   }, [levelsOptionsMock, level]);
 
   const locationsOptionsMock = useMemo(() => {
-    const selectedLevel = levelsOptionsMock.find(lvl => lvl.id === level);
-    const selectedDrive = selectedLevel?.drives?.find(drv => drv.id === drive);
+    const selectedLevel = levelsOptionsMock.find((lvl) => lvl.id === level);
+    const selectedDrive = selectedLevel?.drives?.find(
+      (drv) => drv.id === drive,
+    );
     const locations = selectedDrive?.locations || [];
-    console.log(selectedDrive, "selectedDrive")
+    console.log(selectedDrive, 'selectedDrive');
     return locations.map((location: { id: string; locationName: string }) => ({
       id: location.id,
       name: location.locationName,
     }));
   }, [levelsOptionsMock, level, drive]);
-
 
   return (
     <ContentHolder variant="filter">

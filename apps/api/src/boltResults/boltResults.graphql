@@ -53,7 +53,6 @@ input CreateBoltResultInput {
   abortReason: String
   comment: String
   image: String
-
   siteId: String!
   levelId: String!
   driveId: String!

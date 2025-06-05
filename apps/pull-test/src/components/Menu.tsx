@@ -17,7 +17,7 @@ import {
   LucideMoveRight,
   LucideSettings,
 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useQuery } from 'urql';
@@ -34,6 +34,9 @@ const getCompanyName = graphql(`
 
 export const Menu = () => {
   // @TODO fix colors on icons
+  const { data: session } = useSession();
+  const sessionCompanyId = session?.company?.id;
+
   const params = useParams();
   const companyId = params?.id as string;
 
@@ -116,7 +119,11 @@ export const Menu = () => {
 
           <div className="flex flex-col gap-1 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="/selectapplication" passHref legacyBehavior>
+              <Link
+                href={`/selectapplication/${sessionCompanyId}`}
+                passHref
+                legacyBehavior
+              >
                 <Anchor color="foreground">
                   <LucideLayoutGrid className="text-orange-600" />
                   Browse apps
@@ -124,12 +131,15 @@ export const Menu = () => {
               </Link>
             </Headline>
 
-            {/* @TODO Link to where? */}
             <Headline variant="medium" color="foreground" as="h3">
-              <Link href="#" passHref legacyBehavior>
+              <Link
+                href="http://localhost:3000/accountsettings"
+                passHref
+                legacyBehavior
+              >
                 <Anchor color="foreground">
                   <LucideSettings />
-                  Settings
+                  Account settings
                 </Anchor>
               </Link>
             </Headline>

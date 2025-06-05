@@ -9,7 +9,6 @@ import {
   Badge,
   Headline,
   ModalClose,
-  LoadingSpinner,
   Specification,
 } from '@gsp/ui';
 import Image from 'next/image';
@@ -302,13 +301,10 @@ export const BoltResultDetailsModal = ({
                 size="large"
                 variant="primary"
                 disabled={isConfirmed}
+                isLoading={isLoading}
                 onClick={isCompleted ? hazardConfirmed : completeHazard}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
-                  <LucideCircleCheckBig />
-                )}
+                {!isLoading && <LucideCircleCheckBig />}
                 Complete
               </Button>
             )}

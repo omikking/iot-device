@@ -23,7 +23,7 @@ export const AssociateDetailsForm = ({
     <>
       <FormField
         control={companyForm.control}
-        name="userPermissions"
+        name="sandvikAdminUserId"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">
@@ -38,7 +38,7 @@ export const AssociateDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="userPermissions"
+        name="sandvikAdminUserId"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">
@@ -53,7 +53,7 @@ export const AssociateDetailsForm = ({
       />
       <FormField
         control={companyForm.control}
-        name="userPermissions"
+        name="sandvikAdminUserId"
         render={() => {
           return (
             <FormItem className="min-w-[31%]">

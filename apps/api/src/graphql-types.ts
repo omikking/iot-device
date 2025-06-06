@@ -1,4 +1,3 @@
-
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -203,6 +202,12 @@ export class UpdateUserInput {
     isGlobalVisibility?: Nullable<boolean>;
 }
 
+export class UpdatePasswordInput {
+    oldPassword?:Nullable<string>;
+    newPassword?:Nullable<string>;
+    confirmPassword?:Nullable<string>;
+}
+
 export class BoltResult {
     id: string;
     createdAt: DateTime;
@@ -400,6 +405,9 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

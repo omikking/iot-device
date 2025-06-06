@@ -108,12 +108,8 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateAdminPermissionInput[];
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<CreatePlanInput[]>;
-}
-
-export class CreateAdminPermissionInput {
-    userId: string;
 }
 
 export class CreatePlanInput {
@@ -130,7 +126,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -139,11 +135,6 @@ export class UpdatePlanInput {
     applicationName: string;
     planLevel?: Nullable<string>;
     expiringDate?: Nullable<DateTime>;
-}
-
-export class UpdateAdminPermissionInput {
-    oldUserId: string;
-    newUserId: string;
 }
 
 export class CreateDriveInput {

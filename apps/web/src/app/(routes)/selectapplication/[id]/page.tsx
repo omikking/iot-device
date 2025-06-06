@@ -21,9 +21,11 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
+  const companyId = params.id;
+
   const [companyResult] = useQuery({
     query: getCompanyName,
-    variables: { id: params.id },
+    variables: { id: companyId },
   });
 
   const companyName = companyResult.data?.company?.name;

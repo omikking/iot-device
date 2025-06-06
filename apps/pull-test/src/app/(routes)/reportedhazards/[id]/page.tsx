@@ -6,7 +6,7 @@ import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { useSession } from 'next-auth/react';
-import { Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
+import { Badge, Headline, Tabs, TabsContent, TabsList, TabsTrigger } from '@gsp/ui';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -33,18 +33,35 @@ const getHazardDetails = graphql(`
     }
   }
 `);
-
-export default function Page(): JSX.Element {
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
+export default function Page({
+  params,
+}: {
+  params: { id: string; name: string };
+}): JSX.Element {
   const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
-
+  // const companyId = session?.company?.id || '';
+  const companyId = params.id;
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
     pause: !companyId,
   });
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
 
+  const companyName = data?.company?.name;
+  console.log(companyName)
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <Headline
@@ -57,7 +74,11 @@ export default function Page(): JSX.Element {
       </Headline>
 
       <GoBack />
-
+      {companyName && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {companyName}
+        </Badge>
+      )}
       <Tabs
         defaultValue="active"
         className="flex w-full max-w-[1330px] flex-col mx-auto pb-10 gap-4"

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Form,
@@ -60,6 +60,7 @@ export default function SignIn() {
       password: values.password,
       redirect: false,
     });
+
     result?.error && setError(result.error);
   };
 

@@ -24,7 +24,7 @@ CreateUserPermissionInput
 Define the input fields to create a new userPermission
 """
 input CreateUserPermissionInput {
-  userId: String!
+  userEmail: String!
   role: String!
   appsAccess: [String!]!
   companyId: String!

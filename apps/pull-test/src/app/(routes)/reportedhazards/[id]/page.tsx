@@ -47,8 +47,8 @@ export default function Page({
   params: { id: string; name: string };
 }): JSX.Element {
   const { data: session } = useSession();
-  // const companyId = session?.company?.id || '';
-  const companyId = params.id;
+  const companyId = session?.company?.id || '';
+  const paramsCompanyId = params.id;
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
@@ -57,7 +57,7 @@ export default function Page({
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
   const [{ data }] = useQuery({
     query: getCompanyName,
-    variables: { id: companyId },
+    variables: { id: paramsCompanyId },
   });
 
   const companyName = data?.company?.name;

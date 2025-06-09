@@ -43,20 +43,57 @@ export class CompaniesService {
     return { totalRecords, results };
   }
 
-  async findOne(id: string): Promise<Company> {
-    const company = await this.prisma.company.findUnique({ where: { id } });
+  async findOne(
+    id: string,
+  ): Promise<Company & { sandvikAdminUserId?: string }> {
+    const company = await this.prisma.company.findUnique({
+      where: { id },
+      include: {
+        userPermission: {
+          where: { role: Role.SANDVIK_ADMIN },
+          select: { userId: true },
+        },
+      },
+    });
+
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
     }
-    return company;
+
+    const sandvikAdminUserId = company.userPermission[0]?.userId;
+
+    return {
+      ...company,
+      sandvikAdminUserId,
+    };
   }
 
   async create(
     createCompanyInput: GraphQLTypes.CreateCompanyInput,
   ): Promise<Company> {
-    const { plans, ...companyData } = createCompanyInput;
+    const { plans, sandvikAdminUserId, ...companyData } = createCompanyInput;
 
     const company = await prisma.$transaction(async (prisma) => {
+      // Step 1: Validate admin user
+      if (!sandvikAdminUserId) {
+        throw new UserInputError('sandvikAdminUserId is required');
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: sandvikAdminUserId as string },
+        select: { globalRole: true },
+      });
+
+      if (!user) {
+        throw new UserInputError(`User ${sandvikAdminUserId} does not exist`);
+      }
+
+      if (user.globalRole !== Role.SANDVIK_ADMIN) {
+        throw new UserInputError(
+          `User ${sandvikAdminUserId} does not have global role SANDVIK_ADMIN`,
+        );
+      }
+
+      // Step 2: Create company with admin userPermission
       const createdCompany = await prisma.company.create({
         data: {
           name: companyData.name,
@@ -66,48 +103,22 @@ export class CompaniesService {
           city: companyData.city,
           country: companyData.country,
           companyContactEmail: companyData.companyContactEmail,
-
           userPermission: {
-            create: await Promise.all(
-              companyData.userPermissions?.map(async (userPermission) => {
-                const user = await prisma.user.findUnique({
-                  where: { id: userPermission.userId },
-                  select: { globalRole: true },
-                });
-
-                if (!user) {
-                  throw new UserInputError(
-                    `User ${userPermission.userId} does not exist`,
-                  );
-                }
-
-                // Check that user has globalRole Sandvik_ADMIN
-                if (user.globalRole !== Role.SANDVIK_ADMIN) {
-                  throw new UserInputError(
-                    `User ${userPermission.userId} does not have global role as SANDVIK_ADMIN`,
-                  );
-                }
-
-                return {
-                  user: {
-                    connect: {
-                      id: userPermission.userId,
-                    },
-                  },
-                  role: Role.SANDVIK_ADMIN,
-                  appsAccess: [
-                    Application.PULL_TEST,
-                    Application.PULL_TEST_OPERATOR,
-                    Application.ULTRABOLTS,
-                    Application.XCYCLOPS,
-                  ],
-                };
-              }),
-            ),
+            create: {
+              user: { connect: { id: sandvikAdminUserId } },
+              role: Role.SANDVIK_ADMIN,
+              appsAccess: [
+                Application.PULL_TEST,
+                Application.PULL_TEST_OPERATOR,
+                Application.ULTRABOLTS,
+                Application.XCYCLOPS,
+              ],
+            },
           },
         },
       });
 
+      // Step 3: Create plans if provided
       if (plans && plans.length >= 0) {
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
@@ -125,6 +136,7 @@ export class CompaniesService {
     if (!company) {
       throw new UserInputError('Failed to create the company and plans');
     }
+
     return company;
   }
 
@@ -132,9 +144,10 @@ export class CompaniesService {
     id: string,
     updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
   ): Promise<Company> {
-    const { plans, userPermissions, ...companyData } = updateCompanyInput;
+    const { plans, sandvikAdminUserId, ...companyData } = updateCompanyInput;
 
     const company = await this.prisma.$transaction(async (prisma) => {
+      // Step 1: Update basic company info
       const updatedCompany = await prisma.company.update({
         where: { id },
         data: {
@@ -145,20 +158,45 @@ export class CompaniesService {
           city: companyData?.city || undefined,
           country: companyData?.country || undefined,
           companyContactEmail: companyData?.companyContactEmail || undefined,
-
-          userPermission: {
-            updateMany: userPermissions?.map((userPermissionInput) => ({
-              where: {
-                companyId: id,
-                userId: userPermissionInput?.oldUserId,
-              },
-              data: {
-                userId: userPermissionInput?.newUserId || undefined,
-              },
-            })),
-          },
         },
       });
+
+      // Step 2: Update SANDVIK_ADMIN userPermission
+      const existingSandvikAdmins = await prisma.userPermission.findMany({
+        where: {
+          companyId: id,
+          role: Role.SANDVIK_ADMIN,
+        },
+      });
+
+      const isAlreadyAdmin = existingSandvikAdmins?.some(
+        (perm) => perm.userId === sandvikAdminUserId,
+      );
+
+      if (!isAlreadyAdmin) {
+        // Remove previous SANDVIK_ADMINs for this company
+        await prisma.userPermission.deleteMany({
+          where: {
+            companyId: id,
+            role: Role.SANDVIK_ADMIN,
+          },
+        });
+
+        // Create new SANDVIK_ADMIN
+        await prisma.userPermission.create({
+          data: {
+            companyId: id,
+            userId: sandvikAdminUserId as string,
+            role: Role.SANDVIK_ADMIN,
+            appsAccess: [
+              Application.PULL_TEST,
+              Application.PULL_TEST_OPERATOR,
+              Application.ULTRABOLTS,
+              Application.XCYCLOPS,
+            ],
+          },
+        });
+      }
 
       if (plans) {
         // Delete all plans that are not in the request
@@ -214,12 +252,14 @@ export class CompaniesService {
           }
         }
       }
+
       return updatedCompany;
     });
 
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
     }
+
     return company;
   }
 

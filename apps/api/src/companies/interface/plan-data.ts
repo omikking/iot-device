@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export interface Plan extends GraphQLTypes.Plan {}
+export type Plan = GraphQLTypes.Plan;

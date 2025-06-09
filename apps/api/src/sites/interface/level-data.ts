@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export interface Level extends GraphQLTypes.Level {}
+export type Level = GraphQLTypes.Level;

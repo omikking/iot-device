@@ -45,7 +45,7 @@ export default function Page({
         Select Application
       </Headline>
 
-      <div className="flex flex-row justify-around gap-10 max-w-[1000px] pt-20 border-t border-t-neutral-2">
+      <div className="flex flex-row justify-around gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
         <div className="flex flex-row gap-12 justify-center">
           <Link href={`http://localhost:3001/overview/${params.id}`}>
             <NavigationCard size={'medium'}>

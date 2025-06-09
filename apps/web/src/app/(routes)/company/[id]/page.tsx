@@ -20,6 +20,7 @@ const getCompanyQuery = graphql(`
       city
       country
       companyContactEmail
+      sandvikAdminUserId
       plans {
         id
         companyId

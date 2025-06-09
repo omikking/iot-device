@@ -1,5 +1,4 @@
 'use client';
-import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,
   LucideMoveRight,
@@ -8,11 +7,13 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
     hazards(companyId: $id) {
       id
+      isHazard
     }
   }
 `);
@@ -44,6 +45,12 @@ export default function Page({
     variables: { id: companyId },
     pause: !companyId,
   });
+
+  const activeHazards = hazardData?.hazards?.filter(
+    (hazard) => hazard.isHazard,
+  );
+
+  const totalActiveHazards = activeHazards?.length ?? 0;
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -77,7 +84,7 @@ export default function Page({
               variant="neutral"
               size="small"
             >
-              {`${hazardData?.hazards?.length ?? 0} active`}
+              {`${totalActiveHazards} active`}
             </Badge>
             <Headline as="h3" variant="medium" color="foreground">
               Hazards

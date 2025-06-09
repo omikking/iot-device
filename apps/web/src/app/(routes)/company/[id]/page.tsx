@@ -70,21 +70,25 @@ export default function Page({
   const handleDelete = useCallback(async (): Promise<boolean> => {
     setIsDeleting(true);
 
-    try {
-      const result = await client
-        .mutation(deleteCompanyMutation, {
-          id: company.id,
-        })
-        .toPromise();
-      if (result.error) {
+    return client
+      .mutation(deleteCompanyMutation, {
+        id: company.id,
+      })
+      .toPromise()
+      .then((response) => {
+        if (response.error) {
+          console.error('Error deleting company:', response.error);
+          return false;
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error deleting company:', error);
         return false;
-      }
-      return true;
-    } catch (error) {
-      return false;
-    } finally {
-      setIsDeleting(false);
-    }
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   }, [company?.id, client]);
 
   return (

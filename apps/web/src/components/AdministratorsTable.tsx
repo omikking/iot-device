@@ -7,7 +7,7 @@ import {
   TableHeadWithSorting,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
-import { useClient, useQuery } from 'urql';
+import { useClient, useMutation, useQuery } from 'urql';
 import { LucideUserCog } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { GetAdminsQuery } from '@/gql/graphql';
@@ -57,7 +57,7 @@ export const AdministratorsTable = () => {
     Administrator | undefined
   >(undefined);
   const [isDeleting, setIsDeleting] = useState(false);
-  const client = useClient();
+  const [, deleteAdmin] = useMutation(deleteAdminMutation);
 
   const openDeleteModal = (adminId: string) => {
     const adminToDelete = administrators?.find((admin) => admin.id === adminId);
@@ -70,32 +70,60 @@ export const AdministratorsTable = () => {
     setAdministratorToDelete(undefined);
   };
 
-  const handleDelete = useCallback(async (): Promise<boolean> => {
-    const adminFound = administrators.find(
-      (admin) => admin.id === administratorToDelete?.id,
-    );
-    const adminId = adminFound?.id;
+  // const handleDelete = useCallback(async (): Promise<boolean> => {
+  //   const adminFound = administrators.find(
+  //     (admin) => admin.id === administratorToDelete?.id,
+  //   );
+  //   const adminId = adminFound?.id;
+
+  //   setIsDeleting(true);
+  //   return client
+  //     .mutation(deleteAdminMutation, {
+  //       id: adminId || '',
+  //     })
+  //     .toPromise()
+  //     .then((response) => {
+  //       if (response.error) {
+  //         console.error('Error deleting administrator:', response.error);
+  //         return false;
+  //       }
+  //       return true;
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error deleting administrator:', error);
+  //       return false;
+  //     })
+  //     .finally(() => {
+  //       setIsDeleting(false);
+  //     });
+  // }, [administratorToDelete, administrators, client]);
+
+  const handleDelete = async (): Promise<boolean> => {
+    if (!administratorToDelete?.id) {
+      console.error('No administrator selected for deletion');
+      return false;
+    }
+
+    const adminId = administratorToDelete.id;
+    console.log('Deleting administrator with ID:', adminId);
 
     setIsDeleting(true);
-    try {
-      const result = await client
-        .mutation(deleteAdminMutation, {
-          id: adminId || '',
-        })
-        .toPromise();
-      if (result.error) {
-        //TODO error toast
+    return deleteAdmin({ id: adminId })
+      .then((result) => {
+        if (result.error) {
+          console.error('Error deleting administrator:', result.error);
+          return false;
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error deleting administrator:', error);
         return false;
-      }
-
-      return true;
-    } catch (error) {
-      //TODO error toast
-      return false;
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [administratorToDelete, administrators, client]);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   const columns: ColumnDef<Administrator>[] = [
     {

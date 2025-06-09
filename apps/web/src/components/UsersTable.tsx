@@ -7,7 +7,7 @@ import {
   GetCompanyUsersQuery,
 } from '@/gql/graphql';
 import { graphql } from '@/gql';
-import { useClient } from 'urql';
+import { useClient, useMutation } from 'urql';
 import { useParams } from 'next/navigation';
 import { useState, useCallback } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
@@ -53,6 +53,14 @@ const deleteUserPermissionMutation = graphql(`
   }
 `);
 
+// const deleteUserMutation = graphql(`
+//   mutation deleteUser($id: String!) {
+//     removeUser(id: $id) {
+//       id
+//     }
+//   }
+// `);
+
 export const UsersTable = ({
   companyData,
   onOpenChange,
@@ -66,7 +74,7 @@ export const UsersTable = ({
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
-  const client = useClient();
+  const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
 
   const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
@@ -118,31 +126,38 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = useCallback(async (): Promise<boolean> => {
+  const handleDelete = async (): Promise<boolean> => {
     const userToDeleteFound = users.find((user) => user.id === userToDelete);
     const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
       (userPerm) => userPerm.companyId === companyId,
     );
 
-    setIsDeleting(true);
-    try {
-      const result = await client
-        .mutation(deleteUserPermissionMutation, {
-          id: userPermissionToDelete?.id || '',
-        })
-        .toPromise();
-
-      if (result.error) {
-        return false;
-      }
-      return true;
-    } catch (error) {
-      //TODO error toast
-      return false;
-    } finally {
-      setIsDeleting(false);
+    // check for userPermId, cant delete if type is undefined
+    if (!userPermissionToDelete?.id) {
+      console.log('No user permission found to delete');
+      return Promise.resolve(false);
     }
-  }, [userToDelete, users, companyId, client]);
+
+    setIsDeleting(true);
+    return deleteUserPermission({
+      id: userPermissionToDelete.id,
+    })
+      .then((result) => {
+        if (result.error) {
+          console.log('Error deleting user permission:', result.error);
+          return false;
+        }
+        setIsDeleting(true);
+        return true;
+      })
+      .catch((error) => {
+        console.log('Error deleting user permission:', error);
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   const openEditModal = (userId: string) => {
     const userToEdit = users.find((user) => user.id === userId);

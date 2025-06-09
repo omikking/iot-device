@@ -148,7 +148,8 @@ export const DeleteModalConfirmation = ({
           <ModalTitle>{modalTitle}</ModalTitle>
         </ModalHeader>
 
-        <div ref={contentRef} className={styles.animateFadeIn}>
+        {/* <div ref={contentRef} className={styles.animateFadeIn}> */}
+        <div ref={contentRef} className={'opacity-100 translate-y-0'}>
           {currentView === 'confirmDelete' && renderConfirmDeleteView()}
           {currentView === 'deleteSuccess' && renderDeleteSuccessView()}
         </div>

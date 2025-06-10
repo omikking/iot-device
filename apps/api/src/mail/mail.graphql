@@ -1,0 +1,13 @@
+input SendMailInput {
+  email: String!
+  username: String!
+}
+
+type MailResponse {
+  success: Boolean!
+  message: String!
+}
+
+type Mutation {
+  sendTestEmail(input: SendMailInput!): MailResponse!
+}

@@ -117,7 +117,8 @@ export const AddOrEditTechnicianModal = ({
   }, [technician, form]);
 
   return (
-    <ModalContent onCloseAutoFocus={resetFormValues}>
+    <ModalContent onCloseAutoFocus={resetFormValues}
+     onOpenAutoFocus={(event) => event.preventDefault()}>
       <ModalHeader>
         <ModalTitle>
           {technician ? 'Edit technician' : 'Add technician'}

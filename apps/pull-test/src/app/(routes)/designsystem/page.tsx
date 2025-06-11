@@ -32,11 +32,15 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Hazard card 🦄
       </Headline>
-      <div className="flex flex-row flex-wrap justify-center gap-12">
+      <div className="w-full flex flex-row flex-wrap justify-center gap-12">
         {mockBoltResult.map(
           (hazardCard, index) =>
             hazardCard.isHazard && (
-              <HazardCard key={index} boltResult={hazardCard} />
+              <HazardCard
+                key={index}
+                boltResult={hazardCard}
+                onViewMore={() => console.log('opens modal')}
+              />
             ),
         )}
       </div>

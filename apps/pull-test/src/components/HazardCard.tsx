@@ -1,27 +1,26 @@
 import {
-  LucideAlertTriangle,
-  LucideCircleCheckBig,
-  LucideClipboardList,
-} from 'lucide-react';
-import {
   Headline,
   Text,
   Badge,
   Button,
   Textarea,
-  Modal,
-  ModalTrigger,
   Specification,
 } from '@gsp/ui';
-import { BoltResultDetailsModal } from './BoltResultDetailsModal';
+import {
+  LucideAlertTriangle,
+  LucideCircleCheckBig,
+  LucideClipboardList,
+} from 'lucide-react';
+import React from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { BoltResult } from '@/gql/graphql';
-import React, { useState } from 'react';
 import { generateBoltSpecifications } from '@/libs/utils';
 
 type HazardCardProps = {
   boltResult: BoltResult;
+  onViewMore: (hazardId: string) => void;
+  onCompleteClick?: (hazardId: string) => void;
 };
 
 const getSiteNameQuery = graphql(`
@@ -32,9 +31,12 @@ const getSiteNameQuery = graphql(`
   }
 `);
 
-export const HazardCard = ({ boltResult }: HazardCardProps) => {
-  const { isHazard, comment, createdAt } = boltResult;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export const HazardCard = ({
+  boltResult,
+  onViewMore,
+  onCompleteClick,
+}: HazardCardProps) => {
+  const { isHazard, comment, createdAt, hazardCompletedDate } = boltResult;
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -64,13 +66,19 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
             Hazard
           </Badge>
         )}
+        {!isHazard && hazardCompletedDate?.length && (
+          <Badge variant="success">
+            <LucideCircleCheckBig />
+            Completed
+          </Badge>
+        )}
       </div>
       <div className="w-full flex flex-col xl:flex-row gap-6 py-4 px-6">
         <div className="pt-6 flex-grow">
           {boltResult &&
             (() => {
               const allSpecs = generateBoltSpecifications(boltResult, {});
-              // Get first two and last two items
+
               const selectedSpecs = [
                 ...allSpecs.slice(0, 2),
                 ...allSpecs.slice(-2, -1),
@@ -93,25 +101,27 @@ export const HazardCard = ({ boltResult }: HazardCardProps) => {
         </div>
       </div>
       <div className="flex flex-row justify-end py-4 px-6 gap-4">
-        {isHazard && (
-          <Button variant="primary" size="small">
+        {isHazard && onCompleteClick && (
+          <Button
+            variant="primary"
+            size="small"
+            onClick={(e) => {
+              e.preventDefault();
+              onCompleteClick(boltResult.id);
+            }}
+          >
             <LucideCircleCheckBig />
             Complete
           </Button>
         )}
-        <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <ModalTrigger asChild>
-            <Button variant="outline" size="small">
-              <LucideClipboardList />
-              View more
-            </Button>
-          </ModalTrigger>
-          <BoltResultDetailsModal
-            isHazardCompletable
-            boltResult={boltResult}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </Modal>
+        <Button
+          variant="outline"
+          size="small"
+          onClick={() => onViewMore(boltResult.id)}
+        >
+          <LucideClipboardList />
+          View more
+        </Button>
       </div>
     </div>
   );

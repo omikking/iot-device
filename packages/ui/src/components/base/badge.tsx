@@ -29,12 +29,11 @@ const badgeVariants = cva(
   },
 );
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    Required<Pick<VariantProps<typeof badgeVariants>, 'variant'>> {
-  size?: 'small' | 'large';
-  badgeText?: string;
-}
+export type BadgeProps = React.HTMLAttributes<HTMLDivElement> &
+  Required<Pick<VariantProps<typeof badgeVariants>, 'variant'>> & {
+    size?: 'small' | 'large';
+    badgeText?: string;
+  };
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ className, variant, size = 'small', children }, ref) => {

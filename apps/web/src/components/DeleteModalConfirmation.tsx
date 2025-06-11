@@ -164,12 +164,8 @@ export const DeleteModalConfirmation = ({
                 variant="destructive"
                 disabled={isLoading || isTransitioning}
                 onClick={handleDeleteConfirm}
+                isLoading={isLoading}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
-                  <LucideTrash2 />
-                )}
                 Delete
               </Button>
             )}

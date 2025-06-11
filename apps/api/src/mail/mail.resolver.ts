@@ -1,7 +1,6 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { MailService } from './mail.service';
 import { MailResponse } from './mail-response.dto';
-import { SignupDto } from 'src/auth/dto';
 
 @Resolver()
 export class MailResolver {
@@ -18,13 +17,4 @@ export class MailResolver {
       message: `Test email sent to ${input.email}`,
     };
   }
-
-  //   @Post('signin')
-  // signin(@Body() dto: SigninDto) {
-  //   return this.authService.signin(dto);
-  // }
-  // @Mutation(() => AuthResponse)
-  // async register(@Args('input') input: SignupDto) {
-  //   return this.authService.registerUser(input);
-  // }
 }

@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*", "src/**/*.hbs"],
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,

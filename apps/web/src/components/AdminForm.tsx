@@ -17,10 +17,10 @@ import {
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
 
-interface AdminFormProps {
+type AdminFormProps = {
   isNewCompany: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-}
+};
 
 const getAdminsQuery = graphql(`
   query GetUsers($roles: [String]!) {

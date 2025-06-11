@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-interface DeleteModalConfirmationProps {
+type DeleteModalConfirmationProps = {
   modalTitle: string;
   deleteIcon?: 'User' | 'Site' | 'Company';
   modalText?: string;
@@ -24,7 +24,7 @@ interface DeleteModalConfirmationProps {
   onDelete: () => void;
   isOpen?: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export const DeleteModalConfirmation = ({
   modalTitle,

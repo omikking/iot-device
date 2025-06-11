@@ -1,4 +1,4 @@
-export interface BoltResultSchema {
+export type BoltResultSchema = {
   id: string;
   boltNumber: string;
   boltType: string;
@@ -14,7 +14,7 @@ export interface BoltResultSchema {
   comment: string;
   result: 'Pass' | 'Fail' | 'Abort';
   createdDate: Date;
-}
+};
 
 export const boltResultsMock: BoltResultSchema[] = [
   {

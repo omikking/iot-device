@@ -6,7 +6,7 @@ import { User } from 'next-auth';
 import { UUID } from 'crypto';
 
 declare module 'next-auth/jwt' {
-  interface JWT {
+  type JWT = {
     user: {
       id: UUID;
       email: string;
@@ -17,11 +17,11 @@ declare module 'next-auth/jwt' {
       accessToken: string;
     };
     error: string?;
-  }
+  };
 }
 
 declare module 'next-auth' {
-  interface User {
+  type User = {
     user: {
       id: UUID;
       email: string;
@@ -32,11 +32,11 @@ declare module 'next-auth' {
       accessToken: string;
     };
     error: string?;
-  }
+  };
 }
 
 declare module 'next-auth' {
-  interface Session {
+  type Session = {
     user: {
       id: UUID;
       email: string;
@@ -49,5 +49,5 @@ declare module 'next-auth' {
     };
     accessToken: string;
     error: string?;
-  }
+  };
 }

@@ -21,7 +21,7 @@ export const capitalizeFirstLetter = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 };
 
-interface AppPlanProps {
+type AppPlanProps = {
   appPlan: Plan;
   planLevel: PlanLevel;
   isAdmin: boolean;
@@ -29,7 +29,7 @@ interface AppPlanProps {
   activePlanLevel?: PlanLevel;
   expiringDate?: Date | number;
   onPlanLevelChange: (planLevel?: PlanLevel) => void;
-}
+};
 
 export const AppPlan = ({
   appPlan,

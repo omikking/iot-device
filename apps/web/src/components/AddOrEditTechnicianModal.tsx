@@ -117,8 +117,10 @@ export const AddOrEditTechnicianModal = ({
   }, [technician, form]);
 
   const formValues = form.watch();
+  const isDirty = form.formState.isDirty
   const isAnyFieldEmpty = !formValues.email
 
+ const isSubmitDisabled = isAnyFieldEmpty || !isDirty
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
@@ -216,7 +218,7 @@ export const AddOrEditTechnicianModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isAnyFieldEmpty || isLoading}
+                disabled={isSubmitDisabled || isLoading}
                 isLoading={isLoading}
               >
                 {technician ? (

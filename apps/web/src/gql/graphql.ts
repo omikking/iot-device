@@ -25,6 +25,10 @@ export enum Application {
   Xcyclops = 'XCYCLOPS'
 }
 
+/**
+ * BoltResult model
+ * Define the BoltResult model and its fields
+ */
 export type BoltResult = {
   __typename?: 'BoltResult';
   abortReason?: Maybe<Scalars['String']['output']>;

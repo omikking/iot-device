@@ -1,70 +1,68 @@
-'use client';
 import { useMemo } from 'react';
 import {
   ContentHolder,
   DateRange,
   Dropdown,
-  DropdownItem,
   Label,
   RangeCalendar,
 } from '@gsp/ui';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 import { BoltResultSchema } from '@/app/mock/mock';
-import { gql } from 'urql';
-import { useQuery } from 'urql';
+import { gql, useQuery } from 'urql';
 
-const getCompanyQuery = gql`
-  query GetCompany($id: String!) {
-    company(id: $id) {
-      sites {
-        id
-        siteName
-        levels {
-          levelName
-          id
-          drives {
-            driveName
-            id
-            locations {
-              id
-              locationName
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-type SiteOption = {
+interface Location {
   id: string;
   name: string;
-};
+}
 
-// @TODO Is this typing really correct?
-type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
-  React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+interface Drive {
+  id: string;
+  name: string;
+  locations: Location[];
+}
+
+interface Level {
+  id: string;
+  name: string;
+  drives: Drive[];
+}
+
+interface Site {
+  id: string;
+  name: string;
+  levels: Level[];
+}
+
+interface Company {
+  sites: Site[];
+}
+
+interface CompanyData {
+  company: Company;
+}
 
 interface BoltSelectionProps {
-  site?: string;
-  level?: string;
-  drive?: string;
-  location?: string;
+  companyId: string;
+  site?: Site;
+  level?: Level;
+  drive?: Drive;
+  location?: Location;
   dateRange?: DateRange;
   selectedTab?: string;
   filterState: FilterState;
-  // Is this typing correct? or should it be (id: string) => void;
-  onSetSite: React.Dispatch<React.SetStateAction<SiteOption | undefined>>;
-  onSetLevel: React.Dispatch<React.SetStateAction<SiteOption | undefined>>;
-  onSetDrive: React.Dispatch<React.SetStateAction<SiteOption | undefined>>;
-  onSetLocation: React.Dispatch<React.SetStateAction<SiteOption | undefined>>;
+  onSetSite: React.Dispatch<React.SetStateAction<Site | undefined>>;
+  onSetLevel: React.Dispatch<React.SetStateAction<Level | undefined>>;
+  onSetDrive: React.Dispatch<React.SetStateAction<Drive | undefined>>;
+  onSetLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResultSchema[];
-  companyId?: string;
+  compnayIdCompanyDetails?: CompanyData;
 }
 
 export const BoltSelection = ({
+  companyId,
+  // compnayIdCompanyDetails,
   site,
   level,
   drive,
@@ -77,89 +75,95 @@ export const BoltSelection = ({
   onSetLocation,
   onSetDateRange,
   onFilterChange,
-  companyId,
 }: BoltSelectionProps) => {
-  const [{ data: compnayIdCompanyDetails }] = useQuery({
+  const getCompanyQuery = gql`
+    query GetCompany($id: String!) {
+      company(id: $id) {
+        sites {
+          id
+          name: siteName
+          levels {
+            id
+            name: levelName
+            drives {
+              id
+              name: driveName
+              locations {
+                id
+                name: locationName
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const [{ data: compnayIdCompanyDetails }] = useQuery<CompanyData>({
     query: getCompanyQuery,
-    variables: {
-      id: companyId,
-    },
+    variables: { id: companyId },
   });
 
   const siteOptions = useMemo(() => {
-    if (!compnayIdCompanyDetails?.company?.sites) return [];
-
-    return compnayIdCompanyDetails?.company?.sites.map(
-      (site: { levels: any; id: string; siteName: string }) => ({
+    return (
+      compnayIdCompanyDetails?.company.sites.map((site) => ({
         id: site.id,
-        name: site.siteName,
+        name: site.name,
         levels: site.levels,
-      }),
+      })) || []
     );
   }, [compnayIdCompanyDetails]);
 
-  const handleSetSite = (site?: string) => {
-    const siteDetails = siteOptions.find(
-      (sites: SiteOption) => sites.id === site,
-    );
-    onSetSite(siteDetails);
-    onSetDateRange({
-      from: undefined,
-      to: undefined,
-    });
+  const handleSetSite = (siteId?: string) => {
+    const selectedSite = siteOptions.find((s) => s.id === siteId);
+    onSetSite(selectedSite);
+    onSetDateRange({ from: undefined, to: undefined });
     onSetLevel(undefined);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
+  const levelsOptions = useMemo(() => {
+    return (
+      site?.levels.map((level) => ({
+        id: level.id,
+        name: level.name,
+        drives: level.drives,
+      })) || []
+    );
+  }, [site]);
+
   const handleSetLevel = (levelId?: string) => {
-    const levelOption = levelsOptionsMock.find((l) => l.id === levelId);
-    onSetLevel(levelOption); // <-- This is typed as SiteOption, adjust if needed
+    const selectedLevel = levelsOptions.find((l) => l.id === levelId);
+    onSetLevel(selectedLevel);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
-  const handleSetDrive = (drive?: string) => {
-    onSetDrive(drive);
+  const drivesOptions = useMemo(() => {
+    return (
+      level?.drives.map((drive) => ({
+        id: drive.id,
+        name: drive.name,
+        locations: drive.locations,
+      })) || []
+    );
+  }, [level]);
+
+  const handleSetDrive = (driveId?: string) => {
+    const selectedDrive = drivesOptions.find((d) => d.id === driveId);
+    onSetDrive(selectedDrive);
     onSetLocation(undefined);
   };
 
-  // Finds available levels on the selected site
-  const levelsOptionsMock = useMemo(() => {
-    const levels = siteOptions.flatMap((site) => site.levels || []);
+  const locationsOptions = useMemo(() => {
     return (
-      levels.map((level: { drives: any; id: string; levelName: string }) => ({
-        id: level.id,
-        name: level.levelName,
-        drives: level.drives,
+      drive?.locations.map((location) => ({
+        id: location.id,
+        name: location.name,
       })) || []
     );
-  }, [siteOptions]);
-
-  const drivesOptionsMock = useMemo(() => {
-    const selectedLevel = levelsOptionsMock.find((lvl) => lvl.id === level);
-    const drives = selectedLevel?.drives || [];
-    return drives.map(
-      (drive: { locations: any; id: string; driveName: string }) => ({
-        id: drive.id,
-        name: drive.driveName,
-        locations: drive.locations,
-      }),
-    );
-  }, [levelsOptionsMock, level]);
-
-  const locationsOptionsMock = useMemo(() => {
-    const selectedLevel = levelsOptionsMock.find((lvl) => lvl.id === level);
-    const selectedDrive = selectedLevel?.drives?.find(
-      (drv) => drv.id === drive,
-    );
-    const locations = selectedDrive?.locations || [];
-    console.log(selectedDrive, 'selectedDrive');
-    return locations.map((location: { id: string; locationName: string }) => ({
-      id: location.id,
-      name: location.locationName,
-    }));
-  }, [levelsOptionsMock, level, drive]);
+  }, [drive]);
 
   return (
     <ContentHolder variant="filter">
@@ -169,13 +173,13 @@ export const BoltSelection = ({
       />
 
       <div className="space-y-1.5 mt-0.5">
-        <Label>Site</Label>
+        <Label htmlFor="site">Site</Label>
         <Dropdown
           id="site"
           isResettable
           placeholder="Select site"
-          selectedId={site}
-          options={siteOptions as DropdownItem[]}
+          selectedId={site?.id}
+          options={siteOptions}
           onSelect={handleSetSite}
           className="w-56"
         />
@@ -185,50 +189,64 @@ export const BoltSelection = ({
         <Label>Date range</Label>
         <RangeCalendar
           selected={dateRange}
-          onSelect={onSetDateRange as SetRangeDateType}
-          // disabled={!site}
+          onSelect={(range) => {
+            if (
+              range &&
+              typeof range === 'object' &&
+              'from' in range &&
+              'to' in range
+            ) {
+              onSetDateRange;
+            }
+          }}
+          disabled={!site}
           className="w-72"
         />
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label>Level</Label>
+        <Label htmlFor="level">Level</Label>
         <Dropdown
           id="level"
           isResettable
-          // disabled={!site || !dateRange || !levelsOptionsMock}
+          disabled={!site || !dateRange || levelsOptions.length === 0}
           placeholder="Select level"
-          selectedId={level}
-          options={levelsOptionsMock as DropdownItem[]}
+          selectedId={level?.id}
+          options={levelsOptions}
           onSelect={handleSetLevel}
           className="w-56"
         />
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label>Drive</Label>
+        <Label htmlFor="drive">Drive</Label>
         <Dropdown
           id="drive"
           isResettable
-          // disabled={!level || !drivesOptionsMock}
+          disabled={!level || drivesOptions.length === 0}
           placeholder="Select drive"
-          selectedId={drive}
-          options={drivesOptionsMock as DropdownItem[]}
+          selectedId={drive?.id}
+          options={drivesOptions}
           onSelect={handleSetDrive}
           className="w-56"
         />
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label>Location</Label>
+        <Label htmlFor="location">Location</Label>
         <Dropdown
           id="location"
           isResettable
-          // disabled={!drive || !locationsOptionsMock}
+          disabled={!drive || locationsOptions.length === 0}
           placeholder="Select location"
-          selectedId={location}
-          options={locationsOptionsMock as DropdownItem[]}
-          onSelect={onSetLocation}
+          selectedId={location?.id}
+          options={locationsOptions}
+          onSelect={(locationId) => {
+            const selectedLocation = locationsOptions.find(
+              (loc) => loc.id === locationId,
+            );
+            onSetLocation(selectedLocation);
+          }}
           className="w-56"
         />
       </div>

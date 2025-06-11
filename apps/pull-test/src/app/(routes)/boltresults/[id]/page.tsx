@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useMemo, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
@@ -25,22 +26,38 @@ import {
   BreadcrumbSeparator,
 } from '@gsp/ui';
 
-interface SiteOption {
-  id: string;
-  name: string;
-}
 interface Props {
   params: {
     id: string;
   };
 }
 
-interface LevelOption {
+interface Location {
   id: string;
   name: string;
 }
 
+interface Drive {
+  id: string;
+  name: string;
+  locations: Location[];
+}
+
+interface Level {
+  id: string;
+  name: string;
+  drives: Drive[];
+}
+
+interface Site {
+  id: string;
+  name: string;
+  levels: Level[];
+}
+
 export default function Page({ params }: Props): JSX.Element {
+  const companyId = params.id;
+
   const boltResultQuery = gql`
     query GetBoltResult(
       $offset: Int
@@ -108,16 +125,16 @@ export default function Page({ params }: Props): JSX.Element {
     }
   `;
 
-  const [site, setSite] = useState<SiteOption | undefined>(undefined);
-  const [level, setLevel] = useState<LevelOption | undefined>(undefined);
-  const [drive, setDrive] = useState<LevelOption | undefined>(undefined);
-  const [location, setLocation] = useState<LevelOption | undefined>(undefined);
-  const [selectedTab, setSelectedTab] = useState('table');
+  const [site, setSite] = useState<Site | undefined>();
+  const [level, setLevel] = useState<Level | undefined>();
+  const [drive, setDrive] = useState<Drive | undefined>();
+  const [location, setLocation] = useState<Location | undefined>();
+
+  const [selectedTab, setSelectedTab] = useState<'table' | 'graphs'>('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
-  const companyId = params.id;
 
   const [filterState, setFilterState] = useState({
     pass: false,
@@ -127,41 +144,38 @@ export default function Page({ params }: Props): JSX.Element {
     withImage: false,
     reportedHazard: false,
   });
-  const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
+
   const result = useMemo(() => {
-    const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      withComment,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      withImage,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      reportedHazard,
-      ...rest
-    } = filterState;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { withComment, withImage, reportedHazard, ...rest } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
 
-  const [{ data }] = useQuery({
+  const [{ data }] = useQuery<{
+    boltResults: { totalRecords: number; results: BoltResultSchema[] };
+  }>({
     query: boltResultQuery,
     variables: {
       siteId: site?.id,
-      levelId: level,
-      driveId: drive,
-      locationId: location,
-      isHazard: filterState.reportedHazard ? true : undefined,
-      withImage: filterState.withImage ? true : undefined,
-      withComment: filterState.withComment ? true : undefined,
+      levelId: level?.id,
+      driveId: drive?.id,
+      locationId: location?.id,
+      isHazard: filterState.reportedHazard || undefined,
+      withImage: filterState.withImage || undefined,
+      withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
       endDate: dateRange?.to,
-      result: result,
+      result: result.length ? result : undefined,
     },
   });
 
+  const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
+
   useEffect(() => {
-    if (data?.boltResults.results) {
+    if (data?.boltResults?.results) {
       setBoltResults(data.boltResults.results);
     } else {
       setBoltResults([]);
@@ -173,7 +187,7 @@ export default function Page({ params }: Props): JSX.Element {
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        {site?.name || 'Select site'}
+        {site?.name ?? 'Select site'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -182,21 +196,22 @@ export default function Page({ params }: Props): JSX.Element {
 
       <Tabs
         defaultValue="table"
-        onValueChange={setSelectedTab}
+        onValueChange={(value) => setSelectedTab(value as 'table' | 'graphs')}
         className="w-full max-w-[1600px]"
       >
         <div className="w-full flex flex-row justify-between items-center pb-2 gap-10">
           <TabsList>
             <TabsTrigger value="table">
-              <LucideGrid3X3 size="18" className="mr-1.5" />
+              <LucideGrid3X3 size={18} className="mr-1.5" />
               Table
             </TabsTrigger>
             <TabsTrigger value="graphs">
-              <LucideLineChart size="18" className="mr-1.5" />
+              <LucideLineChart size={18} className="mr-1.5" />
               Graphs
             </TabsTrigger>
           </TabsList>
-          <div className="flex-1 flex justify-start ">
+
+          <div className="flex-1 flex justify-start">
             <Breadcrumb>
               <BreadcrumbList>
                 {site && (
@@ -246,7 +261,7 @@ export default function Page({ params }: Props): JSX.Element {
           <Modal>
             <ModalTrigger asChild>
               <Button
-                disabled={!boltResults?.length}
+                disabled={!boltResults.length}
                 variant="primary"
                 size="large"
               >
@@ -254,16 +269,16 @@ export default function Page({ params }: Props): JSX.Element {
                 View PDF
               </Button>
             </ModalTrigger>
-            {/* @TODO Modal goes here /> */}
+            {/* TODO: Add modal content */}
           </Modal>
         </div>
 
         <BoltSelection
           companyId={companyId}
-          site={site?.id}
-          level={level?.id}
-          drive={drive?.id}
-          location={location?.id}
+          site={site}
+          level={level}
+          drive={drive}
+          location={location}
           dateRange={dateRange}
           selectedTab={selectedTab}
           filterState={filterState}
@@ -275,9 +290,11 @@ export default function Page({ params }: Props): JSX.Element {
           onFilterChange={setFilterState}
           boltResults={boltResults}
         />
+
         <TabsContent value="table">
           <BoltResultsTable site={site?.id} boltResults={boltResults} />
         </TabsContent>
+
         <TabsContent value="graphs">
           <BoltResultsGraphView />
         </TabsContent>

@@ -104,9 +104,9 @@ export class BoltResultsService {
         positionInRing:
           (updateBoltResultInput?.positionInRing as RingPosition) || undefined,
         result: (updateBoltResultInput?.result as Result) || undefined,
-        isHazard: updateBoltResultInput?.isHazard || undefined,
+        isHazard: updateBoltResultInput?.isHazard ?? undefined,
         hazardCompletedDate:
-          updateBoltResultInput?.hazardCompletedDate || undefined,
+          updateBoltResultInput?.hazardCompletedDate ?? undefined,
         abortReason:
           (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
           undefined,

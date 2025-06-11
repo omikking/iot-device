@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export interface Location extends GraphQLTypes.Location {}
+export type Location = GraphQLTypes.Location;

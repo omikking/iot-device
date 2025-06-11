@@ -1,4 +1,3 @@
-// src/mail/mail.module.ts
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -13,31 +12,28 @@ import { MailResolver } from './mail.resolver';
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        const user = config.get<string>('MAIL_USER');
-        const pass = config.get<string>('MAIL_PASS');
-
-        console.log('✅ MAIL_USER:', user);
-        console.log('✅ MAIL_PASS:', pass ? '******' : '❌ Missing');
-
-        return {
-          transport: {
-            service: 'gmail',
-            auth: {
-              user,
-              pass,
-            },
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          host: config.get('MAIL_HOST'),
+          port: parseInt(config.get('MAIL_PORT') || '25'),
+          secure: false,
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASS'),
           },
-          defaults: {
-            from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+          tls: {
+            rejectUnauthorized: false,
           },
-          template: {
-            dir: join(process.cwd(), 'src', 'mail', 'templates'),
-            adapter: new HandlebarsAdapter(),
-            options: { strict: true },
-          },
-        };
-      },
+        },
+        defaults: {
+          from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+        },
+        template: {
+          dir: join(process.cwd(), 'src', 'mail', 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: { strict: true },
+        },
+      }),
     }),
   ],
   providers: [MailService, MailResolver],

@@ -14,18 +14,20 @@ export class MailService {
       this.configService.get<string>('BASE_URL') ||
       'http://localhost:3333/graphql';
 
-    // const encodedEmail = encodeURIComponent(to);
-    // console.log(encodedEmail, 'encodedEmail');
-
-    await this.mailerService.sendMail({
-      to,
-      subject: 'Welcome to Ground Support Platform',
-      template: 'welcome', // refers to welcome.hbs
-      context: {
-        username,
-        baseUrl,
-        email: to,
-      },
-    });
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject: 'Welcome to Ground Support Platform',
+        template: 'welcome',
+        context: {
+          username,
+          baseUrl,
+          email: to,
+        },
+      });
+      console.log('✅ Email sent to:', to);
+    } catch (err) {
+      console.error('❌ Email sending failed:', err);
+    }
   }
 }

@@ -24,13 +24,13 @@ import { Text } from './text';
 
 export type { ColumnDef };
 
-type DataTableProps<TData, TValue> = {
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   noResultMessage?: string;
   variant?: 'border' | 'noBorder';
   className?: string;
-};
+}
 
 export function DataTable<TData, TValue>({
   columns,

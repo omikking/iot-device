@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export type Company = GraphQLTypes.Company;
+export interface Company extends GraphQLTypes.Company {}

@@ -54,10 +54,10 @@ const Alert = React.forwardRef<
 });
 Alert.displayName = 'Alert';
 
-type AlertTextProps = React.HTMLAttributes<HTMLElement> & {
+interface AlertTextProps extends React.HTMLAttributes<HTMLElement> {
   variant: AlertVariant;
   children: React.ReactNode;
-};
+}
 
 const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTextProps>(
   ({ className, children }, ref) => (

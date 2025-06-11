@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export type User = GraphQLTypes.User;
+export interface User extends GraphQLTypes.User {}

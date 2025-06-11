@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export type Coffee = GraphQLTypes.Coffee;
+export interface Coffee extends GraphQLTypes.Coffee {}

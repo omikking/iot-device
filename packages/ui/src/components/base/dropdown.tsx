@@ -15,14 +15,14 @@ import { Button } from './button';
 import { Text } from './text';
 import { Badge } from './badge';
 
-export type DropdownItem = {
+export interface DropdownItem {
   id: string;
   name: string;
   iconLabel?: string;
   background?: 'primary' | 'neutral';
-};
+}
 
-export type DropdownProps = {
+export interface DropdownProps {
   id: string;
   placeholder?: string;
   options: DropdownItem[];
@@ -34,7 +34,7 @@ export type DropdownProps = {
   badgeIcon?: boolean;
   badgeVariant?: 'primary' | 'neutral';
   onSelect?: (id?: string) => void;
-};
+}
 
 export const buttonStyling =
   'flex justify-between items-center ui-h-12 ui-border ui-border-neutral-3 ui-rounded ui-w-full ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-transparent disabled:ui-pointer-events-none';

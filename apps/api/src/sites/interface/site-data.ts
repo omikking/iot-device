@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export type Site = GraphQLTypes.Site;
+export interface Site extends GraphQLTypes.Site {}

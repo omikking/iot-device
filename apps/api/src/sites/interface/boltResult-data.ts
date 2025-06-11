@@ -1,3 +1,3 @@
 import * as GraphQLTypes from '../../graphql-types';
 
-export type BoltResult = GraphQLTypes.BoltResult;
+export interface BoltResult extends GraphQLTypes.BoltResult {}

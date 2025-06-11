@@ -88,10 +88,10 @@ const FormItem = React.forwardRef<
 });
 FormItem.displayName = 'FormItem';
 
-type FormLabelProps = {
+interface FormLabelProps {
   disabled?: boolean;
   variant?: 'xs' | 'small' | 'medium';
-};
+}
 
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

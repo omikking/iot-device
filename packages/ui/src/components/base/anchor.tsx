@@ -25,14 +25,12 @@ const anchorVariants = cva(
   },
 );
 
-export type AnchorProps = Omit<
-  React.HTMLAttributes<HTMLAnchorElement>,
-  'color'
-> &
-  Required<Pick<VariantProps<typeof anchorVariants>, 'color'>> & {
-    href?: string;
-    isUnderline?: boolean;
-  };
+export interface AnchorProps
+  extends Omit<React.HTMLAttributes<HTMLAnchorElement>, 'color'>,
+    Required<Pick<VariantProps<typeof anchorVariants>, 'color'>> {
+  href?: string;
+  isUnderline?: boolean;
+}
 
 const Anchor = React.forwardRef<HTMLAnchorElement, AnchorProps>(
   ({ className, isUnderline, color, href, children }, ref) => {

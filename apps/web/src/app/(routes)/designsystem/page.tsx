@@ -138,9 +138,6 @@ export default function Page(): JSX.Element {
   };
 
   const handleDeleteSite = () => {
-    // setIsDeleteSiteModalOpen(false);
-    // setSiteToDelete(undefined);
-    // console.log(`Deleting site with index: ${index}`);
     setSiteIsDeleting(true);
     return true;
   };

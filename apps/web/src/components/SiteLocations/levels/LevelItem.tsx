@@ -1,16 +1,16 @@
 'use client';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { set, SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Drive, Level } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { Drive, Level } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createLevelMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -76,14 +76,6 @@ export const LevelItem = ({
         levelName: level.levelName || '',
       },
     });
-
-  const openDeleteModal = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
 
   const handleEditLevel = () => {
     setIsEditing(true);
@@ -174,9 +166,8 @@ export const LevelItem = ({
           return false;
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setIsDeleting(false);
-        console.error('Error deleting level:', error);
         return false;
       })
       .finally(() => {
@@ -209,7 +200,7 @@ export const LevelItem = ({
 
             <DeleteEditDropdown
               itemSelected={level.id}
-              openDeleteModal={openDeleteModal}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
             />
             <DeleteModalConfirmation
@@ -217,9 +208,9 @@ export const LevelItem = ({
               deleteIcon="Site"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={closeDeleteModal}
+              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteLevel}
-              onOpenChange={closeDeleteModal}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text
                 variant="medium"

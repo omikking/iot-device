@@ -1,16 +1,16 @@
 'use client';
+import { Text } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { Drive } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Drive } from '@/gql/graphql';
-import { useMutation } from 'urql';
-import { graphql } from '@/gql';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -74,14 +74,6 @@ export const DriveItem = ({
         driveName: drive.driveName || '',
       },
     });
-
-  const openDeleteModal = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
 
   const handleEditDrive = () => {
     setIsEditing(true);
@@ -172,7 +164,7 @@ export const DriveItem = ({
           return false;
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setIsDeleting(false);
         return false;
       })
@@ -206,7 +198,7 @@ export const DriveItem = ({
 
             <DeleteEditDropdown
               itemSelected={drive.id}
-              openDeleteModal={openDeleteModal}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
             />
             <DeleteModalConfirmation
@@ -214,9 +206,9 @@ export const DriveItem = ({
               deleteIcon="Site"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={closeDeleteModal}
+              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteDrive}
-              onOpenChange={closeDeleteModal}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text
                 variant="medium"

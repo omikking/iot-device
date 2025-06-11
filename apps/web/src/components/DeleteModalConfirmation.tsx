@@ -6,10 +6,8 @@ import {
   ModalTitle,
   ModalHeader,
   ModalContent,
-  LoadingSpinner,
 } from '@gsp/ui';
 import {
-  LucideTrash2,
   LucideMountain,
   LucideUserMinus,
   LucideBuilding2,
@@ -61,8 +59,6 @@ export const DeleteModalConfirmation = ({
         return null;
     }
   };
-
-  // const contentRef = useRef<HTMLDivElement>(null);
 
   const handleViewTransition = (nextView: ModalView) => {
     if (isTransitioning) return;

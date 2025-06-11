@@ -1,16 +1,16 @@
 'use client';
-import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Location } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { Location } from '@/gql/graphql';
+import React, { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -72,14 +72,6 @@ export const LocationItem = ({
         locationName: location.locationName || '',
       },
     });
-
-  const openDeleteModal = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-  };
 
   const handleEditLocation = () => {
     setIsEditing(true);
@@ -205,7 +197,7 @@ export const LocationItem = ({
             </Text>
             <DeleteEditDropdown
               itemSelected={location.id}
-              openDeleteModal={openDeleteModal}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
             />
             <DeleteModalConfirmation
@@ -213,9 +205,9 @@ export const LocationItem = ({
               deleteIcon="Site"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={closeDeleteModal}
+              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteLocation}
-              onOpenChange={setIsDeleteModalOpen}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete location{' '}

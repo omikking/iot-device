@@ -15,8 +15,7 @@ import {
   LucideBuilding2,
   LucideCheckCircle,
 } from 'lucide-react';
-import styles from './DeleteModal.module.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 type DeleteModalConfirmationProps = {
   isOpen?: boolean;
@@ -63,17 +62,12 @@ export const DeleteModalConfirmation = ({
     }
   };
 
-  const contentRef = useRef<HTMLDivElement>(null);
+  // const contentRef = useRef<HTMLDivElement>(null);
 
   const handleViewTransition = (nextView: ModalView) => {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
-
-    if (contentRef.current) {
-      contentRef.current.classList.remove(styles.animateFadeIn);
-      contentRef.current.classList.add(styles.animateFadeOut);
-    }
 
     setTimeout(() => {
       setCurrentView(nextView);
@@ -86,60 +80,31 @@ export const DeleteModalConfirmation = ({
   ) => {
     event.preventDefault();
 
-    try {
-      const result = await Promise.resolve(onDelete());
-      if (result !== false) {
-        handleViewTransition('deleteSuccess');
+    await Promise.resolve(onDelete())
+      .then((result) => {
+        if (result !== false) {
+          handleViewTransition('deleteSuccess');
 
-        if (onSuccess) {
-          setTimeout(() => {
-            onSuccess();
-          }, 1500);
-        } else {
-          setTimeout(() => {
-            setCurrentView('confirmDelete');
-            onClose();
-          }, 1200);
+          if (onSuccess) {
+            setTimeout(() => {
+              onSuccess();
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              setCurrentView('confirmDelete');
+              onClose();
+            }, 1200);
+          }
         }
-      }
-    } catch (error) {
-      //TODO add toast?
-      console.error('Error during deletion:', error);
-    }
+      })
+      .catch((error) => {
+        console.error('Error during deletion:', error);
+      })
+      .finally(() => {
+        //remove later
+        console.log('Deletion process completed');
+      });
   };
-
-  useEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.classList.remove(styles.animateFadeOut);
-      contentRef.current.classList.add(styles.animateFadeIn);
-    }
-  }, [currentView]);
-
-  const renderConfirmDeleteView = () => (
-    <div className="flex flex-col items-center justify-center gap-6 p-4 h-[250px]">
-      <div className="flex flex-row justify-center items-center pt-16 gap-4">
-        {getDeleteIcon(deleteIcon)}
-        <Headline variant="medium" as="h3" color="foreground" isBold>
-          {modalText || 'Confirm deletion'}
-        </Headline>
-      </div>
-      {children}
-    </div>
-  );
-
-  const renderDeleteSuccessView = () => (
-    <div className="flex flex-col items-center justify-center gap-6 p-4 h-[250px]">
-      <div className="flex pt-16 gap-4 items-center">
-        <LucideCheckCircle size={30} className="text-success" />
-        <Headline as="h3" color="foreground" variant="small" isBold>
-          Deleted Successfully
-        </Headline>
-      </div>
-      <Text className="text-center w-2/3" color="foreground" variant="medium">
-        The {modalText} has been successfully deleted.
-      </Text>
-    </div>
-  );
 
   return (
     <Modal open={isOpen} onOpenChange={onOpenChange}>
@@ -148,10 +113,47 @@ export const DeleteModalConfirmation = ({
           <ModalTitle>{modalTitle}</ModalTitle>
         </ModalHeader>
 
-        {/* <div ref={contentRef} className={styles.animateFadeIn}> */}
-        <div ref={contentRef} className={'opacity-100 translate-y-0'}>
-          {currentView === 'confirmDelete' && renderConfirmDeleteView()}
-          {currentView === 'deleteSuccess' && renderDeleteSuccessView()}
+        <div className="h-[250px] flex items-center justify-center">
+          {/* Confirm Delete View */}
+          <div
+            className={`absolute flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 ${
+              currentView === 'confirmDelete'
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0] z-0'
+            }`}
+          >
+            <div className="flex flex-row justify-center items-center pt-16 gap-4">
+              {getDeleteIcon(deleteIcon)}
+              <Headline variant="medium" as="h3" color="foreground" isBold>
+                {modalText || 'Confirm deletion'}
+              </Headline>
+            </div>
+            {children}
+          </div>
+
+          {/* Delete Success View */}
+          <div
+            className={`absolute flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 ${
+              currentView === 'deleteSuccess'
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0 z-0'
+            }`}
+          >
+            <div className="flex flex-row pt-16 gap-4 items-center">
+              <LucideCheckCircle size={30} className="text-success" />
+              <Headline as="h3" color="foreground" variant="small" isBold>
+                Deleted Successfully
+              </Headline>
+            </div>
+            {/* Remove this text part? Can't see it in the figma design. */}
+            <Text
+              className="text-center w-full"
+              color="foreground"
+              variant="medium"
+            >
+              The {modalText} has been successfully deleted.
+            </Text>
+          </div>
         </div>
 
         <div className="px-10 pb-5 pt-8">

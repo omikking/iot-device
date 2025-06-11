@@ -121,12 +121,19 @@ export const LocationItem = ({
           locationName: newLocationName,
           driveId: location.driveId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-          locationsOptions.length === 1 && refreshSite();
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+            locationsOptions.length === 1 && refreshSite();
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating location:', error);
+        })
+        .finally(() => {
+          console.log('Create process completed');
+        });
     }
 
     // To edit a location
@@ -136,31 +143,42 @@ export const LocationItem = ({
         updateLocationInput: {
           locationName: newLocationName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating location:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteLocation = () => {
     return deleteLocation({
       id: location.id,
-    }).then((result) => {
-      setIsDeleting(true);
-      try {
+    })
+      .then((result) => {
+        setIsDeleting(true);
+
         if (result.data) {
           return true;
         } else {
           setIsDeleting(false);
           return false;
         }
-      } catch (error) {
+      })
+      .catch(() => {
         setIsDeleting(false);
         return false;
-      }
-    });
+      })
+      .finally(() => {
+        console.log();
+      });
   };
 
   return (

@@ -122,12 +122,19 @@ export const DriveItem = ({
           driveName: newDriveName,
           levelId: drive.levelId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          drivesOptions.length === 1 && refreshSite();
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            drivesOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating drive:', error);
+        })
+        .finally(() => {
+          console.log('Creation process completed');
+        });
     }
 
     // To edit a drive
@@ -137,32 +144,41 @@ export const DriveItem = ({
         updateDriveInput: {
           driveName: newDriveName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating drive:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteDrive = () => {
     return deleteDrive({
       id: drive.id,
-    }).then((result) => {
-      try {
-        if (result.data) {
+    })
+      .then((result) => {
+        if (result.error) {
           setSelectedDrive(undefined);
-          // @TODO modal should be closed here but is closed somehow anyways. Fix it.
           return true;
         } else {
           setIsDeleting(false);
           return false;
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         setIsDeleting(false);
         return false;
-      }
-    });
+      })
+      .finally(() => {
+        console.log('Deletion process completed');
+      });
   };
 
   return (

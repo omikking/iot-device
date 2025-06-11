@@ -7,9 +7,9 @@ import {
   TableHeadWithSorting,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
-import { useClient, useMutation, useQuery } from 'urql';
+import { useState } from 'react';
+import { useMutation, useQuery } from 'urql';
 import { LucideUserCog } from 'lucide-react';
-import { useCallback, useState } from 'react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
@@ -69,34 +69,6 @@ export const AdministratorsTable = () => {
     setIsDeleteAdministratorModalOpen(false);
     setAdministratorToDelete(undefined);
   };
-
-  // const handleDelete = useCallback(async (): Promise<boolean> => {
-  //   const adminFound = administrators.find(
-  //     (admin) => admin.id === administratorToDelete?.id,
-  //   );
-  //   const adminId = adminFound?.id;
-
-  //   setIsDeleting(true);
-  //   return client
-  //     .mutation(deleteAdminMutation, {
-  //       id: adminId || '',
-  //     })
-  //     .toPromise()
-  //     .then((response) => {
-  //       if (response.error) {
-  //         console.error('Error deleting administrator:', response.error);
-  //         return false;
-  //       }
-  //       return true;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error deleting administrator:', error);
-  //       return false;
-  //     })
-  //     .finally(() => {
-  //       setIsDeleting(false);
-  //     });
-  // }, [administratorToDelete, administrators, client]);
 
   const handleDelete = async (): Promise<boolean> => {
     if (!administratorToDelete?.id) {

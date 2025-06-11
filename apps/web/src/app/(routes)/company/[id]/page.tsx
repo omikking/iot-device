@@ -1,10 +1,10 @@
 'use client';
 import { graphql } from '@/gql';
+import { useState } from 'react';
 import { Company } from '@/gql/graphql';
 import { Text, Headline } from '@gsp/ui';
-import { useClient, useQuery } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import { GoBack } from '@/components/GoBack';
-import { useCallback, useState } from 'react';
 import { CompanyForm } from '@/components/CompanyForm';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
@@ -61,23 +61,21 @@ export default function Page({
   const company = companyData?.data?.company as Company;
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const client = useClient();
+  const [, deleteCompany] = useMutation(deleteCompanyMutation);
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleDelete = useCallback(async (): Promise<boolean> => {
+  const handleDelete = async (): Promise<boolean> => {
     setIsDeleting(true);
 
-    return client
-      .mutation(deleteCompanyMutation, {
-        id: company.id,
-      })
-      .toPromise()
-      .then((response) => {
-        if (response.error) {
-          console.error('Error deleting company:', response.error);
+    return deleteCompany({
+      id: company.id,
+    })
+      .then((result) => {
+        if (result.error) {
+          console.error('Error deleting company:', result.error);
           return false;
         }
         return true;
@@ -89,7 +87,7 @@ export default function Page({
       .finally(() => {
         setIsDeleting(false);
       });
-  }, [company?.id, client]);
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -119,7 +117,7 @@ export default function Page({
           onClose={closeDeleteModal}
           onOpenChange={closeDeleteModal}
         >
-          <div className="flex flex-col text-center gap-4 max-w-[450px]">
+          <div className="flex flex-col text-center gap-4 max-w-[420px]">
             <Text variant="medium" color={'foreground'} as="span">
               You are about to inactivate
               <Text variant="medium" color={'foreground'} as="span" isBold>

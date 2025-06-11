@@ -7,9 +7,9 @@ import {
   GetCompanyUsersQuery,
 } from '@/gql/graphql';
 import { graphql } from '@/gql';
-import { useClient, useMutation } from 'urql';
+import { useState } from 'react';
+import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
-import { useState, useCallback } from 'react';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
@@ -38,7 +38,6 @@ export const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
     COMPANY_USER: 'User',
     COMPANY_ADMIN: 'Admin',
-    SANDVIK_ADMIN: 'Sandvik Admin',
     SANDVIK_TECHNICIAN: 'Technician',
   };
 
@@ -52,14 +51,6 @@ const deleteUserPermissionMutation = graphql(`
     }
   }
 `);
-
-// const deleteUserMutation = graphql(`
-//   mutation deleteUser($id: String!) {
-//     removeUser(id: $id) {
-//       id
-//     }
-//   }
-// `);
 
 export const UsersTable = ({
   companyData,
@@ -94,8 +85,6 @@ export const UsersTable = ({
       case Role.SandvikTechnician:
         return { variant: 'neutral', icon: <LucidePickaxe /> };
       case Role.CompanyAdmin:
-        return { variant: 'primary', icon: <LucideKey /> };
-      case Role.SandvikAdmin:
         return { variant: 'primary', icon: <LucideKey /> };
       default:
         return { variant: 'neutral', icon: <LucideUser /> };
@@ -139,19 +128,17 @@ export const UsersTable = ({
     }
 
     setIsDeleting(true);
+
     return deleteUserPermission({
       id: userPermissionToDelete.id,
     })
       .then((result) => {
         if (result.error) {
-          console.log('Error deleting user permission:', result.error);
           return false;
         }
-        setIsDeleting(true);
         return true;
       })
-      .catch((error) => {
-        console.log('Error deleting user permission:', error);
+      .catch(() => {
         return false;
       })
       .finally(() => {

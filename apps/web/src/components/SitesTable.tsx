@@ -1,11 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { graphql } from '@/gql';
-import { useQuery } from 'urql';
-import { useClient } from 'urql';
+import { useState } from 'react';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { useCallback, useState } from 'react';
+import { useMutation, useQuery } from 'urql';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
@@ -60,7 +59,7 @@ export const SitesTable = ({
   const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
   const [isDeleting, setIsDeleting] = useState(false);
-  const client = useClient();
+  const [, deleteSite] = useMutation(deleteSiteMutation);
 
   const openDeleteModal = (siteId: string) => {
     const foundSite = sites?.find((site) => site.id === siteId);
@@ -73,28 +72,31 @@ export const SitesTable = ({
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = async (): Promise<boolean> => {
     const siteFound = sites.find((site) => site.id === siteToDelete?.id);
     const siteId = siteFound?.id;
 
-    setIsDeleting(true);
-    try {
-      const result = await client
-        .mutation(deleteSiteMutation, {
-          id: siteId || '',
-        })
-        .toPromise();
-      if (result.error) {
-        return false;
-      }
-      return true;
-    } catch (error) {
-      //TODO error toast
-      return false;
-    } finally {
-      setIsDeleting(false);
+    if (!siteId) {
+      console.error('No site selected for deletion');
+      return Promise.resolve(false);
     }
-  }, [siteToDelete, sites, client]);
+
+    setIsDeleting(true);
+
+    return deleteSite({ id: siteId })
+      .then((result) => {
+        if (result.error) {
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   const openEditModal = (siteId: string) => {
     const siteToEdit = sites?.find((site) => site.id === siteId);

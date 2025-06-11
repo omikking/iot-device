@@ -1,8 +1,8 @@
 'use client';
 import { graphql } from '@/gql';
+import { useState } from 'react';
 import { User } from '@/gql/graphql';
-import { useClient, useQuery } from 'urql';
-import { useCallback, useState } from 'react';
+import { useMutation, useQuery } from 'urql';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
@@ -49,8 +49,9 @@ export const TechniciansTable = ({
   const [techniciansData] = useQuery({
     query: getTechniciansQuery,
   });
+  const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
+
   const technicians = (techniciansData.data?.users as User[]) || [];
-  const client = useClient();
 
   const openDeleteModal = (technicianId: string) => {
     const technicianToDelete = technicians?.find(
@@ -65,29 +66,34 @@ export const TechniciansTable = ({
     setTechnicianToDelete(undefined);
   };
 
-  const handleDelete = useCallback(async (): Promise<boolean> => {
+  const handleDelete = async (): Promise<boolean> => {
     const techFound = technicians.find(
       (tech) => tech.id === technicianToDelete?.id,
     );
+
     const techId = techFound?.id;
-    setIsDeleting(true);
-    try {
-      const result = await client
-        .mutation(deleteTechnicianMutation, { id: techId || '' })
-        .toPromise();
-      if (result.error) {
-        // TODO here aswell?
-        console.error('Error deleting technician:', result.error);
-        return false;
-      }
-      return true;
-    } catch (error) {
-      //TODO ERROR TOAST
+
+    if (!techId) {
+      console.error('No technician selected for deletion');
       return false;
-    } finally {
-      setIsDeleting(false);
     }
-  }, [technicianToDelete]);
+
+    setIsDeleting(true);
+
+    return deleteTechnician({ id: techId })
+      .then((result) => {
+        if (result.error) {
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   const openEditModal = (technicianId: string) => {
     const technicianToEdit = technicians?.find(

@@ -2,7 +2,7 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { set, SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
@@ -122,12 +122,19 @@ export const LevelItem = ({
           levelName: newLevelName,
           siteId: level.siteId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          levelsOptions.length === 1 && refreshSite();
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            levelsOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating level:', error);
+        })
+        .finally(() => {
+          console.log('Creation process completed');
+        });
     }
 
     // To edit a level
@@ -137,20 +144,28 @@ export const LevelItem = ({
         updateLevelInput: {
           levelName: newLevelName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating level:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteLevel = () => {
     return deleteLevel({
       id: level.id,
-    }).then((result) => {
-      setIsDeleting(true);
-      try {
+    })
+      .then((result) => {
+        setIsDeleting(true);
+
         if (result.data) {
           setSelectedLevel(undefined);
           return true;
@@ -158,11 +173,15 @@ export const LevelItem = ({
           setIsDeleting(false);
           return false;
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         setIsDeleting(false);
+        console.error('Error deleting level:', error);
         return false;
-      }
-    });
+      })
+      .finally(() => {
+        console.log('Deletion process completed');
+      });
   };
 
   return (

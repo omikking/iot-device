@@ -170,6 +170,7 @@ export default function Page({ params }: Props): JSX.Element {
       endDate: dateRange?.to,
       result: result.length ? result : undefined,
     },
+    pause: !site?.id,
   });
 
   const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);

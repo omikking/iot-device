@@ -61,7 +61,6 @@ export default function Page({
   });
 
   const companyName = data?.company?.name;
-  console.log(companyName)
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <Headline

@@ -35,12 +35,12 @@ const getCompanyUsersQuery = graphql(`
 export default function Page({
   params,
 }: {
-  params: { id: string; name: string };
+  params: { id: string; name?: string };
 }): JSX.Element {
+  const companyId = params.id;
+
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
-
-  const companyId = params.id;
 
   const [{ data: companyData }, executeQuery] = useQuery({
     query: getCompanyUsersQuery,

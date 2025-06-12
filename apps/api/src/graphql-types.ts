@@ -1,4 +1,3 @@
-
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -108,12 +107,8 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateAdminPermissionInput[];
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<CreatePlanInput[]>;
-}
-
-export class CreateAdminPermissionInput {
-    userId: string;
 }
 
 export class CreatePlanInput {
@@ -130,7 +125,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -139,11 +134,6 @@ export class UpdatePlanInput {
     applicationName: string;
     planLevel?: Nullable<string>;
     expiringDate?: Nullable<DateTime>;
-}
-
-export class UpdateAdminPermissionInput {
-    oldUserId: string;
-    newUserId: string;
 }
 
 export class CreateDriveInput {
@@ -210,6 +200,12 @@ export class UpdateUserInput {
     phoneNumber?: Nullable<string>;
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
+}
+
+export class UpdatePasswordInput {
+    oldPassword?:Nullable<string>;
+    newPassword?:Nullable<string>;
+    confirmPassword?:Nullable<string>;
 }
 
 export class BoltResult {
@@ -413,6 +409,9 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

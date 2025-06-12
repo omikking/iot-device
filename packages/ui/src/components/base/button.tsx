@@ -69,7 +69,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         <>
-          {isLoading && <LoadingSpinner />}
+          {isLoading && <LoadingSpinner className="ui-animate-spin" />}
           {React.isValidElement(children) && asChild
             ? React.cloneElement(children as React.ReactElement, childProps)
             : children}

@@ -145,6 +145,12 @@ export const AddOrEditSiteModal = ({
     }
   }, [site, form]);
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty;
+
+  const isAnyFieldEmpty = !formValues.siteName || !formValues.address ||!formValues.postalCode ||!formValues.city ||!formValues.country;
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
@@ -257,7 +263,7 @@ export const AddOrEditSiteModal = ({
                 type="submit"
                 variant="primary"
                 size="large"
-                disabled={isLoading}
+                disabled={isSubmitDisabled || isLoading}
                 isLoading={isLoading}
               >
                 {!isLoading && <LucidePlus />}

@@ -50,7 +50,7 @@ export function graphql(source: "\n    query GetBoltResult(\n      $offset: Int\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getHazardsId($id: String!) {\n    hazards(companyId: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  query getHazardsId($id: String!) {\n    hazards(companyId: $id) {\n      id\n    }\n  }\n"];
+export function graphql(source: "\n  query getHazardsId($id: String!) {\n    hazards(companyId: $id) {\n      id\n      isHazard\n    }\n  }\n"): (typeof documents)["\n  query getHazardsId($id: String!) {\n    hazards(companyId: $id) {\n      id\n      isHazard\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

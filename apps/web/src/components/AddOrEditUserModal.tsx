@@ -10,7 +10,6 @@ import {
   FormMessage,
   Headline,
   Input,
-  LoadingSpinner,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -115,7 +114,7 @@ export const AddOrEditUserModal = ({
   onUserAdded,
 }: AddOrEditUserModalProps) => {
   const params = useParams();
-  const companyId = params.id as string;
+  const companyId = params.id;
 
   const allApplications = Object.values(Application);
   const permission = user?.userPermissions?.[0];
@@ -597,14 +596,9 @@ export const AddOrEditUserModal = ({
                 variant="primary"
                 size="large"
                 disabled={isAnyFieldEmpty || isLoading}
+                isLoading={isLoading}
               >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : user ? (
-                  <LucideEdit />
-                ) : (
-                  <LucidePlus />
-                )}
+                {!isLoading && (user ? <LucideEdit /> : <LucidePlus />)}
                 {user ? 'Edit user' : 'Add user'}
               </Button>
             </ModalFooter>

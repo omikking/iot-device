@@ -110,6 +110,9 @@ export const AddAdministratorModal = ({
     }
   }, [administrator, form]);
 
+  const formValues = form.watch();
+  const isAnyFieldEmpty = !formValues.email
+
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
@@ -147,7 +150,7 @@ export const AddAdministratorModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isLoading}
+                disabled={isAnyFieldEmpty || isLoading}
                 isLoading={isLoading}
               >
                 {administrator ? (

@@ -168,25 +168,24 @@ export const TechniciansTable = ({
 
   return (
     <>
-      {technicianToDelete && (
-        <DeleteModalConfirmation
-          deleteIcon="User"
-          modalTitle="Delete technician"
-          isLoading={isDeleting}
-          isOpen={isDeleteTechnicianModalOpen}
-          onDelete={handleDelete}
-          onClose={closeDeleteModal}
-          onOpenChange={closeDeleteModal}
-        >
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
-              {` ${technicianToDelete.fullName} `}
-            </Text>
-            from the list. Are you sure you want to delete?
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Delete technician"
+        modalDeleteButtonText="Delete technician"
+        isLoading={isDeleting}
+        isOpen={isDeleteTechnicianModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${technicianToDelete?.fullName} `}
           </Text>
-        </DeleteModalConfirmation>
-      )}
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

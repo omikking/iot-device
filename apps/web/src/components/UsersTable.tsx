@@ -216,6 +216,7 @@ export const UsersTable = ({
       <DeleteModalConfirmation
         deleteIcon="User"
         modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
         isLoading={isDeleting}
         isOpen={isDeleteUserModalOpen}
         onDelete={handleDelete}

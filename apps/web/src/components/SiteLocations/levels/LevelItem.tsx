@@ -204,8 +204,9 @@ export const LevelItem = ({
               handleEdit={handleEditLevel}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete level"
               deleteIcon="Site"
+              modalTitle="Delete level"
+              modalDeleteButtonText="Delete level"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
               onClose={() => setIsDeleteModalOpen(false)}

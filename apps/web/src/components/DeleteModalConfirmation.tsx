@@ -1,5 +1,4 @@
 import {
-  Text,
   Modal,
   Button,
   Headline,
@@ -11,7 +10,8 @@ import {
   LucideMountain,
   LucideUserMinus,
   LucideBuilding2,
-  LucideCheckCircle,
+  LucideTrash2,
+  LucideCircleAlert,
 } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -19,6 +19,7 @@ type DeleteModalConfirmationProps = {
   isOpen?: boolean;
   modalText?: string;
   modalTitle: string;
+  modalDeleteButtonText: string;
   isLoading?: boolean;
   children: React.ReactNode;
   deleteIcon?: 'User' | 'Site' | 'Company';
@@ -37,6 +38,7 @@ export const DeleteModalConfirmation = ({
   modalText,
   isLoading,
   modalTitle,
+  modalDeleteButtonText,
   deleteIcon = 'User',
   initialView = 'confirmDelete',
   onClose,
@@ -136,19 +138,11 @@ export const DeleteModalConfirmation = ({
             }`}
           >
             <div className="flex flex-row pt-16 gap-4 items-center">
-              <LucideCheckCircle size={30} className="text-success" />
+              <LucideCircleAlert size={30} className="text-blue-primary" />
               <Headline as="h3" color="foreground" variant="small" isBold>
                 Deleted Successfully
               </Headline>
             </div>
-            {/* Remove this text part? Can't see it in the figma design. */}
-            <Text
-              className="text-center w-full"
-              color="foreground"
-              variant="medium"
-            >
-              The {modalText} has been successfully deleted.
-            </Text>
           </div>
         </div>
 
@@ -162,7 +156,8 @@ export const DeleteModalConfirmation = ({
                 onClick={handleDeleteConfirm}
                 isLoading={isLoading}
               >
-                Delete
+                <LucideTrash2 />
+                {modalDeleteButtonText}
               </Button>
             )}
             <Button

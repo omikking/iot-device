@@ -106,34 +106,34 @@ export default function Page({
       />
 
       {/* TODO Discuss how to deal with  */}
-      {company && (
-        <DeleteModalConfirmation
-          deleteIcon="Company"
-          modalTitle="Inactivate company"
-          modalText="Confirm inactivation"
-          isLoading={isDeleting}
-          isOpen={isDeleteModalOpen}
-          onDelete={handleDelete}
-          onClose={closeDeleteModal}
-          onOpenChange={closeDeleteModal}
-        >
-          <div className="flex flex-col text-center gap-4 max-w-[420px]">
+
+      <DeleteModalConfirmation
+        deleteIcon="Company"
+        modalTitle="Inactivate company"
+        modalDeleteButtonText="Inactivate company"
+        modalText="Confirm inactivation"
+        isLoading={isDeleting}
+        isOpen={isDeleteModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <div className="flex flex-col text-center gap-4 max-w-[420px]">
+          <Text variant="medium" color={'foreground'} as="span">
+            You are about to inactivate
+            <Text variant="medium" color={'foreground'} as="span" isBold>
+              {` ${company?.name}. `}
+            </Text>
             <Text variant="medium" color={'foreground'} as="span">
-              You are about to inactivate
-              <Text variant="medium" color={'foreground'} as="span" isBold>
-                {` ${company?.name}. `}
-              </Text>
-              <Text variant="medium" color={'foreground'} as="span">
-                Are you sure about this action?
-              </Text>
+              Are you sure about this action?
             </Text>
-            <Text color={'foreground'} variant={'medium'}>
-              The company will become inactive. The company data will not be
-              deleted and is recoverable.
-            </Text>
-          </div>
-        </DeleteModalConfirmation>
-      )}
+          </Text>
+          <Text color={'foreground'} variant={'medium'}>
+            The company will become inactive. The company data will not be
+            deleted and is recoverable.
+          </Text>
+        </div>
+      </DeleteModalConfirmation>
     </main>
   );
 }

@@ -202,8 +202,9 @@ export const DriveItem = ({
               handleEdit={handleEditDrive}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete drive"
               deleteIcon="Site"
+              modalTitle="Delete drive"
+              modalDeleteButtonText="Delete drive"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
               onClose={() => setIsDeleteModalOpen(false)}

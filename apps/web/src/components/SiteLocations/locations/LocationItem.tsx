@@ -201,8 +201,9 @@ export const LocationItem = ({
               handleEdit={handleEditLocation}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete location"
               deleteIcon="Site"
+              modalTitle="Delete location"
+              modalDeleteButtonText="Delete location"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
               onClose={() => setIsDeleteModalOpen(false)}

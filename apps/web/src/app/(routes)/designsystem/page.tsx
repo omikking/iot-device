@@ -222,7 +222,8 @@ export default function Page(): JSX.Element {
       </Button>
       <DeleteModalConfirmation
         deleteIcon="User"
-        modalTitle="Delete User"
+        modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
         isLoading={userIsDeleting}
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
@@ -259,7 +260,8 @@ export default function Page(): JSX.Element {
         ))}
         <DeleteModalConfirmation
           deleteIcon="Site"
-          modalTitle="Delete Site"
+          modalTitle="Delete site"
+          modalDeleteButtonText="Delete site"
           isLoading={siteIsDeleting}
           isOpen={isDeleteSiteModalOpen}
           onClose={closeDeleteModal}

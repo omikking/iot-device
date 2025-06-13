@@ -164,9 +164,7 @@ export const CompanyForm = ({
       <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
 
       <Form {...companyForm}>
-        <form
-          onSubmit={companyForm.handleSubmit(onSubmit)}
-        >
+        <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
             <CompanyDetailsForm companyForm={companyForm} />
@@ -246,7 +244,7 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
             <Button variant="primary" size="large" type="submit">
               <LucideCircleCheckBig />
               {isNewCompany ? 'Send invitation' : 'Update company details'}

@@ -166,25 +166,24 @@ export const SitesTable = ({
 
   return (
     <>
-      {siteToDelete && (
-        <DeleteModalConfirmation
-          deleteIcon="Site"
-          modalTitle="Delete site"
-          isLoading={isDeleting}
-          isOpen={isDeleteSiteModalOpen}
-          onDelete={handleDelete}
-          onClose={closeDeleteModal}
-          onOpenChange={closeDeleteModal}
-        >
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
-              {` ${siteToDelete.siteName} `}
-            </Text>
-            from the list. Are you sure you want to delete?
+      <DeleteModalConfirmation
+        deleteIcon="Site"
+        modalTitle="Delete site"
+        modalDeleteButtonText="Delete site"
+        isLoading={isDeleting}
+        isOpen={isDeleteSiteModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${siteToDelete?.siteName} `}
           </Text>
-        </DeleteModalConfirmation>
-      )}
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

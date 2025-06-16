@@ -8,61 +8,34 @@ import {
 } from '@gsp/ui';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 import { BoltResultSchema } from '@/app/mock/mock';
-import { gql, useQuery } from 'urql';
+import { GetCompanyQuery } from '@/gql/graphql';
 
-interface Location {
-  id: string;
-  name: string;
-}
-
-interface Drive {
-  id: string;
-  name: string;
-  locations: Location[];
-}
-
-interface Level {
-  id: string;
-  name: string;
-  drives: Drive[];
-}
-
-interface Site {
-  id: string;
-  name: string;
-  levels: Level[];
-}
-
-interface Company {
-  sites: Site[];
-}
-
-interface CompanyData {
-  company: Company;
-}
+type CompanyType = GetCompanyQuery['company'];
+type SiteType = NonNullable<CompanyType['sites']>[number];
+type LevelType = NonNullable<SiteType['levels']>[number];
+type DriveType = NonNullable<LevelType['drives']>[number];
+type LocationType = NonNullable<DriveType['locations']>[number];
 
 interface BoltSelectionProps {
-  companyId: string;
-  site?: Site;
-  level?: Level;
-  drive?: Drive;
-  location?: Location;
+  site?: SiteType;
+  level?: LevelType;
+  drive?: DriveType;
+  location?: LocationType;
   dateRange?: DateRange;
   selectedTab?: string;
   filterState: FilterState;
-  onSetSite: React.Dispatch<React.SetStateAction<Site | undefined>>;
-  onSetLevel: React.Dispatch<React.SetStateAction<Level | undefined>>;
-  onSetDrive: React.Dispatch<React.SetStateAction<Drive | undefined>>;
-  onSetLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
+  onSetSite: React.Dispatch<React.SetStateAction<SiteType | undefined>>;
+  onSetLevel: React.Dispatch<React.SetStateAction<LevelType | undefined>>;
+  onSetDrive: React.Dispatch<React.SetStateAction<DriveType | undefined>>;
+  onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResultSchema[];
-  compnayIdCompanyDetails?: CompanyData;
+  companyByIdResponse: GetCompanyQuery;
 }
 
 export const BoltSelection = ({
-  companyId,
-  // compnayIdCompanyDetails,
+  companyByIdResponse,
   site,
   level,
   drive,
@@ -76,43 +49,15 @@ export const BoltSelection = ({
   onSetDateRange,
   onFilterChange,
 }: BoltSelectionProps) => {
-  const getCompanyQuery = gql`
-    query GetCompany($id: String!) {
-      company(id: $id) {
-        sites {
-          id
-          name: siteName
-          levels {
-            id
-            name: levelName
-            drives {
-              id
-              name: driveName
-              locations {
-                id
-                name: locationName
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const [{ data: compnayIdCompanyDetails }] = useQuery<CompanyData>({
-    query: getCompanyQuery,
-    variables: { id: companyId },
-  });
-
   const siteOptions = useMemo(() => {
     return (
-      compnayIdCompanyDetails?.company.sites.map((site) => ({
-        id: site.id,
-        name: site.name,
-        levels: site.levels,
+      companyByIdResponse?.company?.sites?.map((site) => ({
+        id: site?.id,
+        name: site?.name,
+        levels: site?.levels,
       })) || []
     );
-  }, [compnayIdCompanyDetails]);
+  }, [companyByIdResponse]);
 
   const handleSetSite = (siteId?: string) => {
     const selectedSite = siteOptions.find((s) => s.id === siteId);
@@ -125,7 +70,7 @@ export const BoltSelection = ({
 
   const levelsOptions = useMemo(() => {
     return (
-      site?.levels.map((level) => ({
+      site?.levels?.map((level) => ({
         id: level.id,
         name: level.name,
         drives: level.drives,
@@ -142,7 +87,7 @@ export const BoltSelection = ({
 
   const drivesOptions = useMemo(() => {
     return (
-      level?.drives.map((drive) => ({
+      level?.drives?.map((drive) => ({
         id: drive.id,
         name: drive.name,
         locations: drive.locations,
@@ -158,7 +103,7 @@ export const BoltSelection = ({
 
   const locationsOptions = useMemo(() => {
     return (
-      drive?.locations.map((location) => ({
+      drive?.locations?.map((location) => ({
         id: location.id,
         name: location.name,
       })) || []
@@ -173,7 +118,7 @@ export const BoltSelection = ({
       />
 
       <div className="space-y-1.5 mt-0.5">
-        <Label htmlFor="site">Site</Label>
+        <Label>Site</Label>
         <Dropdown
           id="site"
           isResettable
@@ -205,7 +150,7 @@ export const BoltSelection = ({
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label htmlFor="level">Level</Label>
+        <Label>Level</Label>
         <Dropdown
           id="level"
           isResettable
@@ -219,7 +164,7 @@ export const BoltSelection = ({
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label htmlFor="drive">Drive</Label>
+        <Label>Drive</Label>
         <Dropdown
           id="drive"
           isResettable
@@ -233,7 +178,7 @@ export const BoltSelection = ({
       </div>
 
       <div className="space-y-1.5 mt-0.5">
-        <Label htmlFor="location">Location</Label>
+        <Label>Location</Label>
         <Dropdown
           id="location"
           isResettable

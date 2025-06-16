@@ -25,6 +25,7 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
+import { GetCompanyQuery } from '@/gql/graphql';
 
 interface Props {
   params: {
@@ -32,29 +33,11 @@ interface Props {
   };
 }
 
-interface Location {
-  id: string;
-  name: string;
-}
-
-interface Drive {
-  id: string;
-  name: string;
-  locations: Location[];
-}
-
-interface Level {
-  id: string;
-  name: string;
-  drives: Drive[];
-}
-
-interface Site {
-  id: string;
-  name: string;
-  levels: Level[];
-}
-
+type CompanyType = GetCompanyQuery['company'];
+type SiteType = NonNullable<CompanyType['sites']>[number];
+type LevelType = NonNullable<SiteType['levels']>[number];
+type DriveType = NonNullable<LevelType['drives']>[number];
+type LocationType = NonNullable<DriveType['locations']>[number];
 export default function Page({ params }: Props): JSX.Element {
   const companyId = params.id;
 
@@ -124,11 +107,34 @@ export default function Page({ params }: Props): JSX.Element {
       }
     }
   `;
+  const getCompanyQuery = gql`
+    query GetCompany($id: String!) {
+      company(id: $id) {
+        name
+        sites {
+          id
+          name: siteName
+          levels {
+            id
+            name: levelName
+            drives {
+              id
+              name: driveName
+              locations {
+                id
+                name: locationName
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
 
-  const [site, setSite] = useState<Site | undefined>();
-  const [level, setLevel] = useState<Level | undefined>();
-  const [drive, setDrive] = useState<Drive | undefined>();
-  const [location, setLocation] = useState<Location | undefined>();
+  const [site, setSite] = useState<SiteType | undefined>();
+  const [level, setLevel] = useState<LevelType | undefined>();
+  const [drive, setDrive] = useState<DriveType | undefined>();
+  const [location, setLocation] = useState<LocationType | undefined>();
 
   const [selectedTab, setSelectedTab] = useState<'table' | 'graphs'>('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -154,6 +160,10 @@ export default function Page({ params }: Props): JSX.Element {
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
 
+  const [{ data: companyByIdResponse }] = useQuery({
+    query: getCompanyQuery,
+    variables: { id: companyId },
+  });
   const [{ data }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResultSchema[] };
   }>({
@@ -188,7 +198,7 @@ export default function Page({ params }: Props): JSX.Element {
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        {site?.name ?? 'Select site'}
+        {companyByIdResponse?.company?.name ?? 'Select company'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -275,7 +285,7 @@ export default function Page({ params }: Props): JSX.Element {
         </div>
 
         <BoltSelection
-          companyId={companyId}
+          companyByIdResponse={companyByIdResponse}
           site={site}
           level={level}
           drive={drive}

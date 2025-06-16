@@ -50,13 +50,7 @@ export const BoltSelection = ({
   onFilterChange,
 }: BoltSelectionProps) => {
   const siteOptions = useMemo(() => {
-    return (
-      companyByIdResponse?.company?.sites?.map((site) => ({
-        id: site?.id,
-        name: site?.name,
-        levels: site?.levels,
-      })) || []
-    );
+    return companyByIdResponse?.company?.sites || [];
   }, [companyByIdResponse]);
 
   const handleSetSite = (siteId?: string) => {
@@ -69,13 +63,7 @@ export const BoltSelection = ({
   };
 
   const levelsOptions = useMemo(() => {
-    return (
-      site?.levels?.map((level) => ({
-        id: level.id,
-        name: level.name,
-        drives: level.drives,
-      })) || []
-    );
+    return site?.levels || [];
   }, [site]);
 
   const handleSetLevel = (levelId?: string) => {
@@ -86,13 +74,7 @@ export const BoltSelection = ({
   };
 
   const drivesOptions = useMemo(() => {
-    return (
-      level?.drives?.map((drive) => ({
-        id: drive.id,
-        name: drive.name,
-        locations: drive.locations,
-      })) || []
-    );
+    return level?.drives || [];
   }, [level]);
 
   const handleSetDrive = (driveId?: string) => {
@@ -102,12 +84,7 @@ export const BoltSelection = ({
   };
 
   const locationsOptions = useMemo(() => {
-    return (
-      drive?.locations?.map((location) => ({
-        id: location.id,
-        name: location.name,
-      })) || []
-    );
+    return drive?.locations || [];
   }, [drive]);
 
   return (

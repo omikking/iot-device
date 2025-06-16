@@ -30,7 +30,9 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
+      const isAdmin = session.user.globalRole === 'SANDVIK_ADMIN';
+      const redirectTo = isAdmin ? '/overview' : '/selectcompany';
+      const callbackUrl = searchParams.get('callbackUrl') || redirectTo;
       router.push(callbackUrl);
     }
   }, [status, router, searchParams]);

@@ -10,11 +10,16 @@ export class MailResolver {
   async sendTestEmail(
     @Args('input') input: { email: string; username: string },
   ): Promise<MailResponse> {
-    await this.mailService.sendWelcomeEmail(input.email, input.username);
-
-    return {
-      success: true,
-      message: `Test email sent to ${input.email}`,
-    };
+    try {
+      return await this.mailService.sendWelcomeEmail(
+        input.email,
+        input.username,
+      );
+    } catch (error) {
+      return {
+        success: false,
+        message: `An unexpected error occurred while sending the email to ${input.email}.`,
+      };
+    }
   }
 }

@@ -2,38 +2,43 @@
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <title>Ground Support Platform Access Update</title>
+    <title>Welcome Aboard</title>
     <style>
-      /* Reset and base */ body, html { margin: 0; padding: 0; background-color:
-      #f7f9fc; font-family: Arial, sans-serif; color: #333;
-      -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; } .container {
-      max-width: 600px; background: #fff; margin: 20px auto; border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05); padding: 24px 32px; } h1 { color:
-      #1a73e8; font-size: 22px; margin-bottom: 16px; text-align: center; } p {
-      font-size: 16px; line-height: 1.5; margin: 12px 0; } .btn { display:
-      inline-block; padding: 12px 24px; margin: 12px 8px 24px 8px; font-size:
-      16px; color: #fff; background-color: #1a73e8; text-decoration: none;
-      border-radius: 6px; font-weight: bold; text-align: center; cursor:
-      pointer; transition: background-color 0.3s ease; } .btn:hover {
-      background-color: #155ab6; } .btn.cancel { background-color: #e53935; }
-      .btn.cancel:hover { background-color: #b42b24; } .btn-container {
-      text-align: center; } .footer { font-size: 14px; color: #888; text-align:
-      center; margin-top: 32px; line-height: 1.4; } /* Responsive */ @media only
-      screen and (max-width: 640px) { .container { margin: 12px 16px; padding:
-      20px; } h1 { font-size: 20px; } p { font-size: 15px; } .btn { display:
-      block; width: 80%; margin: 12px auto; } }
+      body, html { margin: 0; padding: 0; background-color: #f7f9fc;
+      font-family: Arial, sans-serif; color: #333; -webkit-text-size-adjust:
+      100%; -ms-text-size-adjust: 100%; } .container { max-width: 600px;
+      background: #ffffff; margin: 20px auto; border-radius: 8px; box-shadow: 0
+      0 10px rgba(0,0,0,0.05); padding: 24px 32px; } h1 { color: #1a73e8;
+      font-size: 22px; margin-bottom: 16px; text-align: center; } p { font-size:
+      16px; line-height: 1.5; margin: 12px 0; } .btn-container { text-align:
+      center; } .btn { display: inline-block; padding: 12px 24px; margin: 16px
+      0; font-size: 16px; color: #ffffff; background-color: #1a73e8;
+      text-decoration: none; border-radius: 6px; font-weight: bold; text-align:
+      center; transition: background-color 0.3s ease; } .btn:hover {
+      background-color: #155ab6; } .footer { font-size: 14px; color: #888;
+      text-align: center; margin-top: 32px; line-height: 1.6; } .footer-logo {
+      text-align: center; margin-top: 20px; } .footer-logo img { max-width:
+      120px; height: auto; } @media only screen and (max-width: 640px) {
+      .container { margin: 12px; padding: 20px; } h1 { font-size: 20px; } p {
+      font-size: 15px; } .btn { display: block; width: 80%; margin: 16px auto; }
+      .footer-logo img { max-width: 100px; } }
     </style>
   </head>
+
   <body>
     <div class='container'>
       <h1>Ground Support Platform Access Update</h1>
+
       <p>Hello <strong>{{username}}</strong>,</p>
+
       <p>We wanted to inform you that your invitation to the Ground Support
         Platform has been revoked.</p>
-      <p>If this action was not expected or if you believe this was a mistake,
-        please contact support immediately.</p>
-      <p>However, you still have the option to join the platform by using the
-        link below:</p>
+
+      <p>If this action was not expected or you believe it was a mistake, please
+        contact support immediately.</p>
+
+      <p>However, you still have the option to join the platform using the link
+        below:</p>
 
       <div class='btn-container'>
         <a
@@ -41,17 +46,21 @@
           class='btn'
           target='_blank'
           rel='noopener'
-        >Join as Technician or Operator</a>
-
+        >
+          Join as Technician or Operator
+        </a>
       </div>
 
-      <p>Note: Upon successful registration as a user, our system will
-        automatically send your details to our innovation team for further
-        collaboration.</p>
+      <p>Note: Upon successful registration, your details will automatically be
+        shared with the innovation team for further collaboration.</p>
 
       <div class='footer'>
         Thank you,<br />
         The Ground Support Team
+
+        <div class='footer-logo'>
+          <img src='cid:sandviklogo' alt='Sandvik Logo' />
+        </div>
       </div>
     </div>
   </body>

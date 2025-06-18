@@ -1,5 +1,6 @@
 'use client';
 import {
+  Badge,
   Headline,
   Tabs,
   TabsContent,
@@ -9,6 +10,7 @@ import {
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
@@ -41,19 +43,34 @@ const getHazardDetails = graphql(`
     }
   }
 `);
-
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
 export default function Page({
   params,
 }: {
   params: { id: string };
 }): JSX.Element {
-  const companyId = params.id;
-
+  const { data: session } = useSession();
+  const companyId = session?.company?.id || '';
+  const paramsCompanyId = params.id;
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
+    pause: !companyId,
   });
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
+    const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: paramsCompanyId },
+  });
+
+  const companyName = data?.company?.name;
 
   const [openDetailsModal, setOpenDetailsModal] = useState<boolean>(false);
 
@@ -105,7 +122,11 @@ export default function Page({
       </Headline>
 
       <GoBack />
-
+      {companyName && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {companyName}
+        </Badge>
+      )}
       <Tabs
         defaultValue="active"
         className="flex w-full max-w-[1330px] flex-col mx-auto pb-10 gap-4"

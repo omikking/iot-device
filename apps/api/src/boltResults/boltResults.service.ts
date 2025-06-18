@@ -17,6 +17,25 @@ import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BoltResult,
+  Result,
+  PullTestAbortReason,
+  BoltType,
+  RingPosition,
+  GlobalRole,
+} from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserInputError } from '@nestjs/apollo';
+import * as GraphQLTypes from 'src/graphql-types';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { UpdateBoltResultInput } from './dto/update-boltResult.input';
+
+@Injectable()
+export class BoltResultsService {
+  constructor(private prisma: PrismaService) {}
+
   async findMany(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
@@ -135,9 +154,9 @@ export class BoltResultsService {
         positionInRing:
           (updateBoltResultInput?.positionInRing as RingPosition) || undefined,
         result: (updateBoltResultInput?.result as Result) || undefined,
-        isHazard: updateBoltResultInput?.isHazard || undefined,
+        isHazard: updateBoltResultInput?.isHazard ?? undefined,
         hazardCompletedDate:
-          updateBoltResultInput?.hazardCompletedDate || undefined,
+          updateBoltResultInput?.hazardCompletedDate ?? undefined,
         abortReason:
           (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
           undefined,

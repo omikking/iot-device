@@ -24,10 +24,10 @@ export type FilterState = {
   withImage: boolean;
   reportedHazard: boolean;
 };
-interface BoltResultsFilterProps {
+type BoltResultsFilterProps = {
   selectedTab?: string;
   onFilterChange: (filters: FilterState) => void;
-}
+};
 
 // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
 export const BoltResultsFilter = ({

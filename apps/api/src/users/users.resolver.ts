@@ -8,6 +8,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUser } from 'src/auth/decorators';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { UpdatePasswordInput } from './dto/update-user-password.input';
 
 @Resolver()
 @UseGuards(JwtGuard)
@@ -37,8 +38,10 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @Args('updateUserInput')
     updateUserInput: UpdateUserInput,
+    @Args('updatePasswordInput', { nullable: true })
+    updatePasswordInput?: UpdatePasswordInput,
   ): Promise<GraphQLTypes.User> {
-    return this.usersService.update(id, updateUserInput);
+    return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
   @Mutation('removeUser')

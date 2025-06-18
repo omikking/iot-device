@@ -45,10 +45,10 @@ const updateTechnicianMutation = graphql(`
   }
 `);
 
-interface AddOrEditTechnicianModalProps {
+type AddOrEditTechnicianModalProps = {
   onOpenChange: (open: boolean) => void;
   technician?: User;
-}
+};
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,

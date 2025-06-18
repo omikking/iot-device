@@ -1,11 +1,11 @@
 import { Headline } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 
-interface SuccessMessageProps {
+type SuccessMessageProps = {
   title?: string;
   isVisible: boolean;
   children?: React.ReactNode;
-}
+};
 
 export const SuccessMessage = ({
   isVisible,

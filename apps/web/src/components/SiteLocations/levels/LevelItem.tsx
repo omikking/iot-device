@@ -40,7 +40,7 @@ const deleteLevelMutation = graphql(`
   }
 `);
 
-interface LevelComponentProps {
+type LevelComponentProps = {
   selectedLevelId?: string;
   level: Level;
   levelsOptions: Level[];
@@ -49,7 +49,7 @@ interface LevelComponentProps {
   refreshSite: () => void;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const LevelItem = ({
   selectedLevelId,

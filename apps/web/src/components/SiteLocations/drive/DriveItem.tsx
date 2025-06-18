@@ -40,7 +40,7 @@ const deleteDriveMutation = graphql(`
   }
 `);
 
-interface DriveComponentProps {
+type DriveComponentProps = {
   drive: Drive;
   drivesOptions: Drive[];
   selectedDriveId?: string;
@@ -48,7 +48,7 @@ interface DriveComponentProps {
   handleSetDrive: (drive: Drive) => void;
   refreshSite: () => void;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const DriveItem = ({
   drive,

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Role } from '@/gql/graphql'
 import {
   Button,
   Form,
@@ -30,7 +31,9 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
+      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      const redirectTo = isAdmin ? '/overview' : '/selectcompany';
+      const callbackUrl = searchParams.get('callbackUrl') || redirectTo;
       router.push(callbackUrl);
     }
   }, [status, router, searchParams]);

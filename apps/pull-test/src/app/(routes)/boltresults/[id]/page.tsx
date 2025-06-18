@@ -23,8 +23,23 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
 
-export default function Page(): JSX.Element {
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
+
+export default function Page({
+  params,
+}: {
+  params: { id: string };
+}): JSX.Element {
   const [site, setSite] = useState<string | undefined>(undefined);
   const [level, setLevel] = useState<string | undefined>(undefined);
   const [drive, setDrive] = useState<string | undefined>(undefined);
@@ -43,6 +58,15 @@ export default function Page(): JSX.Element {
     withImage: false,
     reportedHazard: false,
   });
+
+  const companyId = params.id;
+
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
+
+  const companyName = data?.company?.name;
 
   const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
 
@@ -98,9 +122,11 @@ export default function Page(): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      <Badge variant="primary" size="large" className="absolute top-24">
-        {site || 'Select site'}
-      </Badge>
+      {companyName && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {companyName}
+        </Badge>
+      )}
 
       <Headline as="h1" variant="xl" color="foreground">
         Bolt results

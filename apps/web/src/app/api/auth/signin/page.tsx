@@ -70,6 +70,8 @@ export default function SignIn() {
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
 
+  const formValues = form.watch(); 
+  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
       {/* @TODO is this page ground support platform login only or login for all apps? */}
@@ -144,7 +146,7 @@ export default function SignIn() {
                 </Text>
               </div>
             </div>
-            <Button variant="primary" size="large" isWide type="submit">
+            <Button variant="primary" size="large" isWide type="submit" disabled={isAnyFieldEmpty}>
               <LucideLogIn />
               Login
             </Button>

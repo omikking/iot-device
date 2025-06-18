@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { MailResponse } from './mail-response.dto';
 
 @Injectable()
 export class MailService {
@@ -11,7 +10,10 @@ export class MailService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendWelcomeEmail(to: string, username: string): Promise<MailResponse> {
+  async sendWelcomeEmail(
+    to: string,
+    username: string,
+  ): Promise<{ success: boolean; message: string }> {
     const baseUrl = this.configService.get<string>('BASE_URL');
 
     try {

@@ -1,15 +1,14 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { MailService } from './mail.service';
-import { MailResponse } from './mail-response.dto';
 
 @Resolver()
 export class MailResolver {
   constructor(private readonly mailService: MailService) {}
 
-  @Mutation(() => MailResponse)
+  @Mutation('sendTestEmail') // match the name in schema
   async sendTestEmail(
     @Args('input') input: { email: string; username: string },
-  ): Promise<MailResponse> {
+  ): Promise<{ success: boolean; message: string }> {
     try {
       return await this.mailService.sendWelcomeEmail(
         input.email,

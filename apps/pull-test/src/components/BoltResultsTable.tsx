@@ -3,7 +3,7 @@ import type { ColumnDef } from '@gsp/ui';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
-import { BoltResult } from '@/gql/graphql';
+import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { BoltResultSchema } from '@/app/mock/mock';
 
@@ -14,17 +14,17 @@ type BoltResultsTableProps = {
 };
 
 const getBadge = (
-  result: 'Pass' | 'Fail' | 'Abort',
+  result: Result.Abort | Result.Pass | Result.Fail,
 ): {
   variant: 'success' | 'destructive' | 'warning';
   icon: React.ReactNode;
 } => {
   switch (result) {
-    case 'Pass':
+    case Result.Pass:
       return { variant: 'success', icon: <LucideCheckCircle /> };
-    case 'Fail':
+    case Result.Fail:
       return { variant: 'destructive', icon: <LucideXCircle /> };
-    case 'Abort':
+    case Result.Abort:
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
 };
@@ -104,17 +104,20 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'level',
       header: 'Level',
+      cell: ({ row }) => row.original.level?.levelName,
     },
     {
       accessorKey: 'drive',
       header: 'Drive',
+      cell: ({ row }) => row.original.drive?.driveName,
     },
     {
       accessorKey: 'location',
       header: 'Location',
+      cell: ({ row }) => row.original.location?.locationName,
     },
     {
-      accessorKey: 'ring',
+      accessorKey: 'positionInRing',
       header: 'Position in ring',
     },
     {
@@ -131,8 +134,8 @@ export const BoltResultsTable = ({
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
-          <Badge variant={getBadge(row.getValue('result')).variant}>
-            {getBadge(row.getValue('result')).icon}
+          <Badge variant={getBadge(row?.getValue('result'))?.variant}>
+            {getBadge(row?.getValue('result'))?.icon}
             {row.getValue('result')}
           </Badge>
         </div>
@@ -152,7 +155,7 @@ export const BoltResultsTable = ({
             : 'There are no bolt results found for your search.'
         }
       />
-      {boltResults?.length && (
+      {!!boltResults?.length && boltResults?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">
           {boltResults?.length} total
         </Badge>

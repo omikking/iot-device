@@ -31,6 +31,11 @@ type BoltResult {
   driveId: String!
   locationId: String!
   userId: String!
+
+  site: Site
+  level: Level
+  drive: Drive
+  location: Location
 }
 
 """
@@ -48,7 +53,6 @@ input CreateBoltResultInput {
   abortReason: String
   comment: String
   image: String
-
   siteId: String!
   levelId: String!
   driveId: String!
@@ -97,8 +101,12 @@ type Query {
     levelId: String
     driveId: String
     locationId: String
-    result: String
+    result: [String!]
     isHazard: Boolean
+    withImage: Boolean
+    withComment: Boolean
+    startDate: DateTime
+    endDate: DateTime
   ): BoltResultResponse!
 
   boltResult(id: String!): BoltResult!

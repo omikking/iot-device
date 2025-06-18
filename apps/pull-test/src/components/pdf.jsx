@@ -156,8 +156,8 @@ const Pdf = ({
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['boltType']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['peakLoad'].join(' ')}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['peakDisplacement'].join(' ')}</td>
-                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['levelName']}</td>
-                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['driveName']}</td>
+                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['level']['levelName']}</td>
+                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['drive']['driveName']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['positionInRing']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['result']}</td>
                 </tr>`,

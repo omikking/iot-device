@@ -136,10 +136,6 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  // const handleDelete = (index: string) => {
-  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  // };
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">

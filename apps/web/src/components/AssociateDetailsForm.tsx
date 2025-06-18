@@ -12,9 +12,9 @@ import {
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
 
-interface AssociateDetailsFormProps {
+type AssociateDetailsFormProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-}
+};
 
 export const AssociateDetailsForm = ({
   companyForm,

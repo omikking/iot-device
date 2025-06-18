@@ -2,12 +2,9 @@
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 
 export default function NotFound() {
-  const { data: session } = useSession();
-  const companyId = session?.company?.id;
-  const redirectPath =`/selectcompany/${companyId}`;
+  const redirectPath =`http://localhost:3000/selectcompany`;
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

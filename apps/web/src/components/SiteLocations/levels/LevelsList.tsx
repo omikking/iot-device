@@ -11,7 +11,7 @@ import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Level } from '@/gql/graphql';
 
-interface LevelsListProps {
+type LevelsListProps = {
   levelsOptions: Level[];
   selectedLevelId?: string;
   selectedSiteId?: string;
@@ -19,7 +19,7 @@ interface LevelsListProps {
   refreshSite: () => void;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const LevelsList = ({
   levelsOptions,

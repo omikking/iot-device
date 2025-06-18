@@ -2,6 +2,7 @@
 import React, {
   useState,
   useEffect,
+  useMemo,
   useRef,
   SetStateAction,
   Dispatch,
@@ -47,8 +48,15 @@ export const LevelsList = ({
     setLevels((prevLevels) => [...prevLevels, newLevel]);
   };
 
-  useEffect(() => {
-    levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+  useMemo(() => {
+    if (levelsOptions < levels) {
+      console.log('dawdawd');
+      setTimeout(() => {
+        levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+      }, 1500);
+    } else {
+      levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+    }
   }, [levelsOptions]);
 
   useEffect(() => {
@@ -83,6 +91,7 @@ export const LevelsList = ({
             refreshSite={refreshSite}
             setSelectedDrive={setSelectedDrive}
             setSelectedLevel={setSelectedLevel}
+            setLevels={setLevels}
           />
         ))}
       </div>

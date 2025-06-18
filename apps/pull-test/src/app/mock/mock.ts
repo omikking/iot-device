@@ -1,4 +1,4 @@
-export interface BoltResultSchema {
+export type BoltResultSchema = {
   id: string;
   boltNumber: string;
   boltType: string;
@@ -17,13 +17,13 @@ export interface BoltResultSchema {
   isHazard?: boolean;
   createdDate: Date;
   author?: string;
-}
+};
 
-export interface MultiBoltReadingSchema {
+export type MultiBoltReadingSchema = {
   reading: string;
   peakLoad: string;
   peakDisplacement: string;
-}
+};
 
 export const boltResultsMock: BoltResultSchema[] = [
   {

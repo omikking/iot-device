@@ -13,13 +13,13 @@ export const siteLocationsSchema = z.object({
 
 export type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
 
-interface AddSiteLocationItemFormProps {
+type AddSiteLocationItemFormProps = {
   form: UseFormReturn<SiteLocationsValue>;
   type: 'level' | 'drive' | 'location';
   inputRef: React.RefObject<HTMLInputElement>;
   onSubmit: SubmitHandler<SiteLocationsValue>;
   onCancel: () => void;
-}
+};
 
 export const AddSiteLocationItemForm = ({
   form,

@@ -31,10 +31,10 @@ const deleteTechnicianMutation = graphql(`
   }
 `);
 
-interface TechniciansTableProps {
+type TechniciansTableProps = {
   onOpenChange: (open: boolean) => void;
   onSelectTechnician: (technician?: User) => void;
-}
+};
 
 export const TechniciansTable = ({
   onOpenChange,

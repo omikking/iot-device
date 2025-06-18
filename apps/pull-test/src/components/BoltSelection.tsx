@@ -15,7 +15,7 @@ import { sitesMock } from '@/app/mock/mock';
 type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
   React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 
-interface BoltSelectionProps {
+type BoltSelectionProps = {
   site?: string;
   level?: string;
   drive?: string;
@@ -30,7 +30,7 @@ interface BoltSelectionProps {
   onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
-}
+};
 
 export const BoltSelection = ({
   site,

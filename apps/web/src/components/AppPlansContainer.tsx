@@ -21,11 +21,11 @@ export const formattedDate = (timestamp: Date | number) => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
-interface AppPlansContainerProps {
+type AppPlansContainerProps = {
   appPlan: Plan;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   isAdmin: boolean;
-}
+};
 
 export const AppPlansContainer = ({
   appPlan,

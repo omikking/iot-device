@@ -4,9 +4,9 @@ import { Headline, Text } from '@gsp/ui';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { GetAllCompaniesQuery } from '@/gql/graphql';
 
-interface SelectCompanyListProps {
+type SelectCompanyListProps = {
   companies: GetAllCompaniesQuery['companies']['results'];
-}
+};
 
 export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
   return (

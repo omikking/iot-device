@@ -6,9 +6,8 @@ import { useSession } from 'next-auth/react';
 
 export default function NotFound() {
   const { data: session } = useSession();
-  const globalRole = session?.user.globalRole;
-  const isAdmin = globalRole === 'SANDVIK_ADMIN';
-  const redirectPath = isAdmin ? '/overview' : '/selectcompany';
+  const companyId = session?.company?.id;
+  const redirectPath =`/selectcompany/${companyId}`;
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

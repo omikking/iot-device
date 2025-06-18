@@ -3,11 +3,12 @@ import { Button, Headline, Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { Role } from '@/gql/graphql'
 
 export default function NotFound() {
   const { data: session } = useSession();
   const globalRole = session?.user?.globalRole;
-  const isAdmin = globalRole === 'SANDVIK_ADMIN';
+  const isAdmin = globalRole === Role.SandvikAdmin;
   const redirectPath = isAdmin ? '/overview' : '/selectcompany';
 
   return (

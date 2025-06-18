@@ -1,38 +1,41 @@
-'use client';
-
+import { useMemo } from 'react';
 import {
   ContentHolder,
   DateRange,
   Dropdown,
-  DropdownItem,
   Label,
   RangeCalendar,
 } from '@gsp/ui';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
-import { sitesMock } from '@/app/mock/mock';
+import { BoltResultSchema } from '@/app/mock/mock';
+import { GetCompanyQuery } from '@/gql/graphql';
 
-// @TODO Is this typing really correct?
-type SetRangeDateType = React.ReactEventHandler<HTMLDivElement> &
-  React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+type CompanyType = GetCompanyQuery['company'];
+type SiteType = NonNullable<CompanyType['sites']>[number];
+type LevelType = NonNullable<SiteType['levels']>[number];
+type DriveType = NonNullable<LevelType['drives']>[number];
+type LocationType = NonNullable<DriveType['locations']>[number];
 
-type BoltSelectionProps = {
-  site?: string;
-  level?: string;
-  drive?: string;
-  location?: string;
+interface BoltSelectionProps {
+  site?: SiteType;
+  level?: LevelType;
+  drive?: DriveType;
+  location?: LocationType;
   dateRange?: DateRange;
   selectedTab?: string;
   filterState: FilterState;
-  // Is this typing correct? or should it be (id: string) => void;
-  onSetSite: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onSetLevel: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onSetDrive: React.Dispatch<React.SetStateAction<string | undefined>>;
-  onSetLocation: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onSetSite: React.Dispatch<React.SetStateAction<SiteType | undefined>>;
+  onSetLevel: React.Dispatch<React.SetStateAction<LevelType | undefined>>;
+  onSetDrive: React.Dispatch<React.SetStateAction<DriveType | undefined>>;
+  onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
-};
+  boltResults: BoltResultSchema[];
+  companyByIdResponse: GetCompanyQuery;
+}
 
 export const BoltSelection = ({
+  companyByIdResponse,
   site,
   level,
   drive,
@@ -46,41 +49,43 @@ export const BoltSelection = ({
   onSetDateRange,
   onFilterChange,
 }: BoltSelectionProps) => {
-  const handleSetSite = (site?: string) => {
-    onSetSite(site);
-    onSetDateRange({
-      from: undefined,
-      to: undefined,
-    });
+  const siteOptions = useMemo(() => {
+    return companyByIdResponse?.company?.sites || [];
+  }, [companyByIdResponse]);
+
+  const handleSetSite = (siteId?: string) => {
+    const selectedSite = siteOptions.find((s) => s.id === siteId);
+    onSetSite(selectedSite);
+    onSetDateRange({ from: undefined, to: undefined });
     onSetLevel(undefined);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
-  const handleSetLevel = (level?: string) => {
-    onSetLevel(level);
+  const levelsOptions = useMemo(() => {
+    return site?.levels || [];
+  }, [site]);
+
+  const handleSetLevel = (levelId?: string) => {
+    const selectedLevel = levelsOptions.find((l) => l.id === levelId);
+    onSetLevel(selectedLevel);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
-  const handleSetDrive = (drive?: string) => {
-    onSetDrive(drive);
+  const drivesOptions = useMemo(() => {
+    return level?.drives || [];
+  }, [level]);
+
+  const handleSetDrive = (driveId?: string) => {
+    const selectedDrive = drivesOptions.find((d) => d.id === driveId);
+    onSetDrive(selectedDrive);
     onSetLocation(undefined);
   };
 
-  // Finds available levels on the selected site
-  const levelsOptionsMock = sitesMock.find(
-    (boltSites) => boltSites.name === site,
-  )?.levels;
-
-  // Finds available levels on the selected site
-  const drivesOptionsMock = levelsOptionsMock?.find(
-    (boltLevels) => boltLevels.name === level,
-  )?.drives;
-
-  const locationsOptionsMock = drivesOptionsMock?.find(
-    (boltDrives) => boltDrives.name === drive,
-  )?.locations;
+  const locationsOptions = useMemo(() => {
+    return drive?.locations || [];
+  }, [drive]);
 
   return (
     <ContentHolder variant="filter">
@@ -95,8 +100,8 @@ export const BoltSelection = ({
           id="site"
           isResettable
           placeholder="Select site"
-          selectedId={site}
-          options={sitesMock as DropdownItem[]}
+          selectedId={site?.id}
+          options={siteOptions}
           onSelect={handleSetSite}
           className="w-56"
         />
@@ -106,7 +111,16 @@ export const BoltSelection = ({
         <Label>Date range</Label>
         <RangeCalendar
           selected={dateRange}
-          onSelect={onSetDateRange as SetRangeDateType}
+          onSelect={(range) => {
+            if (
+              range &&
+              typeof range === 'object' &&
+              'from' in range &&
+              'to' in range
+            ) {
+              onSetDateRange;
+            }
+          }}
           disabled={!site}
           className="w-72"
         />
@@ -117,10 +131,10 @@ export const BoltSelection = ({
         <Dropdown
           id="level"
           isResettable
-          disabled={!levelsOptionsMock}
+          disabled={!site || !dateRange || levelsOptions.length === 0}
           placeholder="Select level"
-          selectedId={level}
-          options={levelsOptionsMock as DropdownItem[]}
+          selectedId={level?.id}
+          options={levelsOptions}
           onSelect={handleSetLevel}
           className="w-56"
         />
@@ -131,10 +145,10 @@ export const BoltSelection = ({
         <Dropdown
           id="drive"
           isResettable
-          disabled={!drivesOptionsMock}
+          disabled={!level || drivesOptions.length === 0}
           placeholder="Select drive"
-          selectedId={drive}
-          options={drivesOptionsMock as DropdownItem[]}
+          selectedId={drive?.id}
+          options={drivesOptions}
           onSelect={handleSetDrive}
           className="w-56"
         />
@@ -145,11 +159,16 @@ export const BoltSelection = ({
         <Dropdown
           id="location"
           isResettable
-          disabled={!locationsOptionsMock}
+          disabled={!drive || locationsOptions.length === 0}
           placeholder="Select location"
-          selectedId={location}
-          options={locationsOptionsMock as DropdownItem[]}
-          onSelect={onSetLocation}
+          selectedId={location?.id}
+          options={locationsOptions}
+          onSelect={(locationId) => {
+            const selectedLocation = locationsOptions.find(
+              (loc) => loc.id === locationId,
+            );
+            onSetLocation(selectedLocation);
+          }}
           className="w-56"
         />
       </div>

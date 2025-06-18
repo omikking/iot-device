@@ -24,14 +24,14 @@
   // vscode-icons extension settings
   "vsicons.associations.folders": [
     {
-        "icon": "www",
-        "extensions": ["pull-test"],
-        "format": "svg"
+      "icon": "www",
+      "extensions": ["pull-test"],
+      "format": "svg"
     },
     {
-        "icon": "config",
-        "extensions": ["eslint-config", "tailwind-config", "typescript-config"],
-        "format": "svg"
+      "icon": "config",
+      "extensions": ["eslint-config", "tailwind-config", "typescript-config"],
+      "format": "svg"
     }
   ]
 }

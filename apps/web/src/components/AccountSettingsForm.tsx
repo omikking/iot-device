@@ -108,16 +108,14 @@ export default function AccountSettingsForm({
   };
 
   const formValues = settingsForm.getValues();
-
-  const areAllFieldsEmpty =
-    !formValues.email &&
-    !formValues.fullName &&
-    !formValues.workPlace &&
-    !formValues.phoneNumber &&
-    !formValues.oldPassword &&
-    !formValues.newPassword &&
-    !formValues.confirmPassword;
-
+  const isDirty = settingsForm.formState.isDirty;
+  const isAnyFieldEmpty =
+    !formValues.email ||
+    !formValues.fullName ||
+    !formValues.workPlace ||
+    !formValues.phoneNumber 
+    
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
   return (
     <Form {...settingsForm}>
       <form onSubmit={settingsForm.handleSubmit(onSubmit)}>
@@ -268,7 +266,7 @@ export default function AccountSettingsForm({
             variant="primary"
             size="large"
             type="submit"
-            disabled={areAllFieldsEmpty}
+            disabled={isSubmitDisabled}
           >
             <LucideCheckCircle />
             Save changes

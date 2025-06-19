@@ -228,6 +228,10 @@ export class BoltResult {
     driveId: string;
     locationId: string;
     userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
 }
 
 export class BoltResultResponse {

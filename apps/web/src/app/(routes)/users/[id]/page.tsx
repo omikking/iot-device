@@ -31,7 +31,14 @@ const getCompanyUsersQuery = graphql(`
     }
   }
 `);
-
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
 export default function Page({
   params,
 }: {
@@ -47,7 +54,12 @@ export default function Page({
     variables: { id: companyId || '' },
     pause: !companyId,
   });
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
 
+  const companyName = data?.company?.name;
   const refetchUsers = () => {
     executeQuery({ requestPolicy: 'network-only' });
   };
@@ -62,7 +74,11 @@ export default function Page({
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
-
+      {companyName && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {companyName}
+        </Badge>
+      )}
       {params.name && (
         <Badge variant="primary" size="large" className="absolute top-24">
           {params.name}

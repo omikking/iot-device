@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Role } from '@/gql/graphql'
 import {
   Button,
   Form,
@@ -30,7 +31,9 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
+      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      const redirectTo = isAdmin ? '/overview' : '/selectcompany';
+      const callbackUrl = searchParams.get('callbackUrl') || redirectTo;
       router.push(callbackUrl);
     }
   }, [status, router, searchParams]);
@@ -67,6 +70,8 @@ export default function SignIn() {
   console.log('Session from sign in page: ', session);
   console.log('Status from sign in page: ', status);
 
+  const formValues = form.watch(); 
+  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
       {/* @TODO is this page ground support platform login only or login for all apps? */}
@@ -141,7 +146,7 @@ export default function SignIn() {
                 </Text>
               </div>
             </div>
-            <Button variant="primary" size="large" isWide type="submit">
+            <Button variant="primary" size="large" isWide type="submit" disabled={isAnyFieldEmpty}>
               <LucideLogIn />
               Login
             </Button>

@@ -45,10 +45,10 @@ const updateTechnicianMutation = graphql(`
   }
 `);
 
-interface AddOrEditTechnicianModalProps {
+type AddOrEditTechnicianModalProps = {
   onOpenChange: (open: boolean) => void;
   technician?: User;
-}
+};
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
@@ -116,6 +116,11 @@ export const AddOrEditTechnicianModal = ({
     }
   }, [technician, form]);
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty
+  const isAnyFieldEmpty = !formValues.email
+
+ const isSubmitDisabled = isAnyFieldEmpty || !isDirty
   return (
     <ModalContent
       onCloseAutoFocus={resetFormValues}
@@ -217,7 +222,7 @@ export const AddOrEditTechnicianModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isLoading}
+                disabled={isSubmitDisabled || isLoading}
                 isLoading={isLoading}
               >
                 {technician ? (

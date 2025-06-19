@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LucideSearch } from 'lucide-react';
+import { LucideSearchX } from 'lucide-react';
 
 import {
   ColumnDef,
@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
   noResultMessage?: string;
   variant?: 'border' | 'noBorder';
   className?: string;
+  IconProp?: React.ComponentType<{ color?: string }>;
 }
 
 export function DataTable<TData, TValue>({
@@ -38,6 +39,7 @@ export function DataTable<TData, TValue>({
   noResultMessage = 'Could not find any data.',
   variant,
   className,
+  IconProp,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -99,7 +101,11 @@ export function DataTable<TData, TValue>({
                 <Text color="foreground" variant="medium">
                   {noResultMessage}
                 </Text>
-                <LucideSearch color="gray" />
+                {IconProp ? (
+                  <IconProp color="gray" />
+                ) : (
+                  <LucideSearchX color="gray" />
+                )}
               </div>
             </TableCell>
             <TableCell className="!ui-p-0" />

@@ -2,7 +2,12 @@
 import type { ColumnDef } from '@gsp/ui';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
+import {
+  LucideCheckCircle,
+  LucideXCircle,
+  LucideSearchX,
+  ClipboardList,
+} from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { BoltResultSchema } from '@/app/mock/mock';
@@ -146,6 +151,7 @@ export const BoltResultsTable = ({
   return (
     <>
       <DataTable
+        IconProp={!site ? ClipboardList : undefined}
         columns={columns}
         // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
         data={(boltResults as BoltResult[]) || []}

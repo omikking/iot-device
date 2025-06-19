@@ -1,8 +1,10 @@
+'use client';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NotFound() {
+  const redirectPath =`http://localhost:3000/selectcompany`;
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">
@@ -17,7 +19,7 @@ export default function NotFound() {
         </Text>
       </div>
       <Button size="large" variant="primary" asChild>
-        <Link href={`/overview`}>
+        <Link href={redirectPath}>
           <LucideMoveRight />
           Go back to home page
         </Link>

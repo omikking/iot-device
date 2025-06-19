@@ -6,7 +6,7 @@ import { useMutation, useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { Text, Badge, Button, DataTable, TableHeadWithSorting, showAlertToast } from '@gsp/ui';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
@@ -72,11 +72,21 @@ export const SitesTable = ({
     setSiteToDelete(undefined);
   };
 
-  const handleDelete = () => {
+const handleDelete = () => {
     if (siteToDelete) {
-      deleteSite({
-        id: siteToDelete.id,
-      }).then(() => {
+      deleteSite({ id: siteToDelete.id }).then((result) => {
+        if (result.data) {
+          showAlertToast({
+            title: 'Site has been deleted',
+            variant: 'info',
+          });
+        } else {
+          showAlertToast({
+            title: 'Deletion Failed',
+            description: 'Please contact our support team for assistance',
+            variant: 'error',
+          });
+        }
         closeDeleteModal();
       });
     }

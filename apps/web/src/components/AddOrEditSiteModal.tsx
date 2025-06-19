@@ -11,6 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
+  showAlertToast
 } from '@gsp/ui';
 import {
   createSiteFormSchema,
@@ -108,7 +109,7 @@ export const AddOrEditSiteModal = ({
     }, 1700);
   };
 
-  const onSubmit: SubmitHandler<CreateSiteFormValues | UpdateSiteFormValues> = (
+ const onSubmit: SubmitHandler<CreateSiteFormValues | UpdateSiteFormValues> = (
     data,
   ) => {
     setIsLoading(true);
@@ -127,13 +128,43 @@ export const AddOrEditSiteModal = ({
     }
 
     if (!site) {
-      createSite({
-        createSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
+      createSite({ createSiteInput: data }).then((result) => {
+        const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
+          err.message.includes('already exists'),
+        );
+
+        if (alreadyExistsError) {
+          showAlertToast({
+            title: 'Site already exists',
+            description: alreadyExistsError.message,
+            variant: 'info',
+          });
+          return;
+        }
+
+        // General error
+        if (result.error) {
+          showAlertToast({
+            title: 'Failed to add site',
+            description: 'Please contact our support team for assistance.',
+            variant: 'error',
+          });
+          return;
+        }
+
+        // Success
         if (result.data) {
           onSuccessfulSubmit();
+          showAlertToast({
+            title: 'Site successfully added',
+            variant: 'success',
+          });
+        } else {
+          showAlertToast({
+            title: 'Unexpected response',
+            description: 'Please contact support.',
+            variant: 'error',
+          });
         }
       });
     }

@@ -15,7 +15,7 @@ import { HazardCompleteModalContent } from './HazardCompleteModalContent';
 import { BoltResultDetailsModalContent } from './BoltResultDetailsModalContent';
 
 type BoltResultDetailsModalProps = {
-  isModalOpen: boolean;
+  isModalOpen?: boolean;
   boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;

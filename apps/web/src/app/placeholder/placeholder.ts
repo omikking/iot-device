@@ -14,17 +14,17 @@ export const placeholder = {
   fullNamePlaceholder: 'Fill in full name...',
   phoneNumberPlaceholder: 'Fill in phone number...',
 
-  //contactInfo
+  //companyContactInfo
   companyNamePlaceholder: 'Fill in company name...',
   contactEmailPlaceholder: 'Fill in contact email...',
   workplacePlaceholder: 'Fill in workplace...',
-
-  verificationCodePlaceholder: 'Fill in the verification code...',
   organisationNumberPlaceholder: 'Fill in organisation number...',
   countryPlaceholder: 'Fill in country...',
   cityPlaceholder: 'Fill in city...',
   addressPlaceholder: 'Fill in address...',
   postalCodePlaceholder: 'Fill in postal code...',
+
+  //site
   siteNamePlaceholder: 'Fill in site name...',
   passCriteriaPlaceholder: 'Fill in pass criteria...',
   levelsPlaceholder: 'New level...',
@@ -45,4 +45,7 @@ export const placeholder = {
   passwordErrorPlaceholder:
     'Password must be at least 8 characters and include a number and a symbol.',
   passwordMismatchPlaceholder: 'Passwords do not match.',
+
+  //misc
+  verificationCodePlaceholder: 'Fill in the verification code...',
 };

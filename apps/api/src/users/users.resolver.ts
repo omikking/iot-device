@@ -10,6 +10,7 @@ import { ActiveUser } from 'src/auth/decorators';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorators/roles-decorator';
+import { UpdatePasswordInput } from './dto/update-user-password.input';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -40,8 +41,10 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @Args('updateUserInput')
     updateUserInput: UpdateUserInput,
+    @Args('updatePasswordInput', { nullable: true })
+    updatePasswordInput?: UpdatePasswordInput,
   ): Promise<GraphQLTypes.User> {
-    return this.usersService.update(id, updateUserInput);
+    return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
   @Mutation('removeUser')

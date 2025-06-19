@@ -130,10 +130,6 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  // const handleDelete = (index: string) => {
-  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  // };
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
@@ -329,6 +325,10 @@ export default function Page(): JSX.Element {
             <LucideMoveRight />
             Button used as link
           </Link>
+        </Button>
+
+        <Button isLoading={true} disabled variant="primary" size="large">
+          Button with loading spinner
         </Button>
       </div>
       <hr className="w-full border-neutral-2" />

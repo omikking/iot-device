@@ -8,6 +8,7 @@ export const updateCompanyFormSchema = z.object({
   city: z.string().min(3),
   country: z.string().min(3),
   companyContactEmail: z.string().email(),
+  sandvikAdminUserId: z.string().optional(),
   plans: z
     .array(
       z.object({
@@ -15,14 +16,6 @@ export const updateCompanyFormSchema = z.object({
         applicationName: z.string(),
         planLevel: z.string(),
         expiringDate: z.number().optional(),
-      }),
-    )
-    .optional(),
-  userPermissions: z
-    .array(
-      z.object({
-        newUserId: z.string().optional(),
-        oldUserId: z.string().optional(),
       }),
     )
     .optional(),
@@ -36,19 +29,13 @@ export const createCompanyFormSchema = z.object({
   city: z.string().min(3),
   country: z.string().min(3),
   companyContactEmail: z.string().email(),
+  sandvikAdminUserId: z.string(),
   plans: z
     .array(
       z.object({
         applicationName: z.string(),
         planLevel: z.string(),
         expiringDate: z.number().optional(),
-      }),
-    )
-    .optional(),
-  userPermissions: z
-    .array(
-      z.object({
-        userId: z.string(),
       }),
     )
     .optional(),

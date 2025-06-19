@@ -1,6 +1,7 @@
 import {
   ArrayNotEmpty,
   IsArray,
+  IsEmail,
   IsString,
   IsUUID,
   Length,
@@ -8,8 +9,8 @@ import {
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateUserPermissionInput extends GraphQLTypes.CreateUserPermissionInput {
-  @IsUUID()
-  userId: string;
+  @IsEmail()
+  userEmail: string;
 
   @IsString()
   @Length(2, 35)

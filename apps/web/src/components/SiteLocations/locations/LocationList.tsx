@@ -5,12 +5,12 @@ import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Location } from '@/gql/graphql';
 
-interface LocationsListProps {
+type LocationsListProps = {
   selectedDriveId?: string;
   locationsOptions: Location[];
   drivesOptions: Drive[];
   refreshSite: () => void;
-}
+};
 
 export const LocationsList = ({
   selectedDriveId,

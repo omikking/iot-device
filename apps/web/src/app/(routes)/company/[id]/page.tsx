@@ -20,6 +20,7 @@ const getCompanyQuery = graphql(`
       city
       country
       companyContactEmail
+      sandvikAdminUserId
       plans {
         id
         companyId
@@ -45,7 +46,10 @@ export default function Page({
   // Does not call if it's new company flow.
   const [companyData] = isNewCompany
     ? []
-    : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
+    : useQuery({
+        query: getCompanyQuery,
+        variables: { id: params.id },
+      });
   const company = companyData?.data?.company as Company;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

@@ -25,7 +25,7 @@ import { Application } from '@prisma/client';
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => GraphQLTypes.BoltResultResponse, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -35,23 +35,35 @@ export class BoltResultsResolver {
     @Args('driveId', { type: () => String, nullable: true }) driveId?: string,
     @Args('locationId', { type: () => String, nullable: true })
     locationId?: string,
-    @Args('result', { type: () => String, nullable: true }) result?: string,
+    @Args('result', { type: () => [String] }) result?: string[],
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
+    @Args('withComment', { type: () => Boolean, nullable: true })
+    withComment?: boolean,
+    @Args('withImage', { type: () => Boolean, nullable: true })
+    withImage?: boolean,
+    @Args('startDate', { type: () => Date })
+    startDate?: Date,
+    @Args('endDate', { type: () => Date })
+    endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const pagination = {
+    const pagination: { offset: number; limit?: number } = {
       offset: Number(offset ?? 0),
-      limit: Number(limit ?? 20),
+      ...(limit !== undefined ? { limit: Number(limit) } : {}),
     };
-    const filters: Partial<Record<string, string | boolean>> = {
+
+    const filters = {
       siteId,
       levelId,
       driveId,
       locationId,
       result,
       isHazard,
+      withImage,
+      withComment,
+      startDate,
+      endDate,
     };
-
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 

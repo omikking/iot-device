@@ -43,7 +43,7 @@ const Specification = ({ title, text, className }: SpecificationProps) => {
           {text}
         </Badge>
       ) : (
-        <Text className="ui-max-w-32" variant="small" color="foreground">
+        <Text className="ui-max-w-40" variant="small" color="foreground">
           {text}
         </Text>
       )}

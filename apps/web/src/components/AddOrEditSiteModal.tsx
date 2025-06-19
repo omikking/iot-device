@@ -59,11 +59,13 @@ const updateSiteMutation = graphql(`
 type AddOrEditSiteModalProps = {
   site?: Site;
   onOpenChange: (open: boolean) => void;
+  setOnSuccess: (success: boolean) => void;
 };
 
 export const AddOrEditSiteModal = ({
   site,
   onOpenChange,
+  setOnSuccess,
 }: AddOrEditSiteModalProps) => {
   const { data: session } = useSession();
 
@@ -134,6 +136,7 @@ export const AddOrEditSiteModal = ({
         console.log(result);
         if (result.data) {
           onSuccessfulSubmit();
+          setOnSuccess(true);
         }
       });
     }
@@ -148,8 +151,13 @@ export const AddOrEditSiteModal = ({
   const formValues = form.watch();
   const isDirty = form.formState.isDirty;
 
-  const isAnyFieldEmpty = !formValues.siteName || !formValues.address ||!formValues.postalCode ||!formValues.city ||!formValues.country;
-  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+  const isAnyFieldEmpty =
+    !formValues.siteName ||
+    !formValues.address ||
+    !formValues.postalCode ||
+    !formValues.city ||
+    !formValues.country;
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LucideMoveRight } from 'lucide-react';
 import { useMutation, useQuery } from 'urql';
 import { graphql } from '@/gql';
@@ -44,14 +44,16 @@ type SitesTableProps = {
   companyId: string;
   onOpenChange: (isOpen: boolean) => void;
   onSelectSite: (site?: Site) => void;
+  onSuccess: boolean;
 };
 
 export const SitesTable = ({
   companyId,
   onOpenChange,
   onSelectSite,
+  onSuccess,
 }: SitesTableProps) => {
-  const [sitesData] = useQuery({
+  const [sitesData, refetchSites] = useQuery({
     query: getCompanySitesQuery,
     variables: { id: companyId || '' },
   });
@@ -61,6 +63,9 @@ export const SitesTable = ({
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
   const [, deleteSite] = useMutation(deleteSiteMutation);
 
+  useEffect(() => {
+    refetchSites({ requestPolicy: 'network-only' });
+  }, [onSuccess]);
   const openDeleteModal = (siteId: string) => {
     const siteToDelete = sites?.find((site) => site.id === siteId);
     setSiteToDelete(siteToDelete);

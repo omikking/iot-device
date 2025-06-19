@@ -46,6 +46,7 @@ export default function Page({
   // );
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
+  const [successfullCreate, setIsSuccessfullCreate] = useState<boolean>(false);
 
   const handleModalToggle = (open: boolean) => {
     setOpenSiteModal(open);
@@ -95,6 +96,7 @@ export default function Page({
               <AddOrEditSiteModal
                 onOpenChange={handleModalToggle}
                 site={selectedSite}
+                setOnSuccess={setIsSuccessfullCreate}
               />
             </Modal>
           </div>
@@ -104,6 +106,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              onSuccess={successfullCreate}
             />
           </TabsContent>
 
@@ -112,6 +115,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              onSuccess={successfullCreate}
             />
           </TabsContent>
 
@@ -120,6 +124,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              onSuccess={successfullCreate}
             />
           </TabsContent>
         </Tabs>

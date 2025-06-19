@@ -5,12 +5,12 @@ import { MailService } from './mail.service';
 export class MailResolver {
   constructor(private readonly mailService: MailService) {}
 
-  @Mutation('sendTestEmail') // match the name in schema
-  async sendTestEmail(
+  @Mutation('sendUserInvitationEmail') // match the name in schema
+  async sendInvitationEmail(
     @Args('input') input: { email: string; username: string },
   ): Promise<{ success: boolean; message: string }> {
     try {
-      return await this.mailService.sendWelcomeEmail(
+      return await this.mailService.sendInvitationEmail(
         input.email,
         input.username,
       );

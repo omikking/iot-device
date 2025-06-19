@@ -10,7 +10,7 @@ export class MailService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendWelcomeEmail(
+  async sendInvitationEmail(
     to: string,
     username: string,
   ): Promise<{ success: boolean; message: string }> {
@@ -19,8 +19,8 @@ export class MailService {
     try {
       await this.mailerService.sendMail({
         to,
-        subject: 'Welcome to Ground Support Platform',
-        template: './welcome',
+        subject: "You're invited to join – Set up your account now",
+        template: './user-invitation',
         context: {
           username,
           baseUrl,

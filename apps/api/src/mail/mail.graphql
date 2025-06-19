@@ -9,5 +9,5 @@ type MailResponse {
 }
 
 type Mutation {
-  sendTestEmail(input: SendMailInput!): MailResponse!
+  sendUserInvitationEmail(input: SendMailInput!): MailResponse!
 }

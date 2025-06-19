@@ -38,7 +38,6 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
-    "@nestjs/serve-static": "^5.0.3",
     "@prisma/client": "^5.13.0",
     "@types/nodemailer": "^6.4.17",
     "argon2": "^0.40.1",
@@ -51,7 +50,6 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "serve-static": "^2.2.0",
     "ts-morph": "^23.0.0"
   },
   "devDependencies": {

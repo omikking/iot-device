@@ -59,13 +59,13 @@ const updateSiteMutation = graphql(`
 type AddOrEditSiteModalProps = {
   site?: Site;
   onOpenChange: (open: boolean) => void;
-  setOnSuccess: (success: boolean) => void;
+  refreshSites: () => void;
 };
 
 export const AddOrEditSiteModal = ({
   site,
   onOpenChange,
-  setOnSuccess,
+  refreshSites,
 }: AddOrEditSiteModalProps) => {
   const { data: session } = useSession();
 
@@ -136,7 +136,7 @@ export const AddOrEditSiteModal = ({
         console.log(result);
         if (result.data) {
           onSuccessfulSubmit();
-          setOnSuccess(true);
+          refreshSites();
         }
       });
     }

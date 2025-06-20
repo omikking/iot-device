@@ -25,7 +25,21 @@ const getCompanyName = graphql(`
     }
   }
 `);
-
+const getCompanySitesQuery = graphql(`
+  query getCompanySites($id: String!) {
+    company(id: $id) {
+      sites {
+        id
+        siteName
+        address
+        city
+        country
+        postalCode
+        companyId
+      }
+    }
+  }
+`);
 export default function Page({
   params,
 }: {
@@ -44,9 +58,19 @@ export default function Page({
   // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
   //   'Pull Test',
   // );
+
+    const [sitesData, refetchSites] = useQuery({
+    query: getCompanySitesQuery,
+    variables: { id: companyId || '' },
+  });
+  const sites = (sitesData.data?.company.sites as Site[]) || [];
+
+  const refreshSite = () => {
+    refetchSites({ requestPolicy: 'network-only' });
+  };
+  
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
-  const [successfullCreate, setIsSuccessfullCreate] = useState<boolean>(false);
 
   const handleModalToggle = (open: boolean) => {
     setOpenSiteModal(open);
@@ -96,7 +120,7 @@ export default function Page({
               <AddOrEditSiteModal
                 onOpenChange={handleModalToggle}
                 site={selectedSite}
-                setOnSuccess={setIsSuccessfullCreate}
+                refreshSites={refreshSite}
               />
             </Modal>
           </div>
@@ -106,7 +130,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
-              onSuccess={successfullCreate}
+              sites = {sites}
             />
           </TabsContent>
 
@@ -115,7 +139,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
-              onSuccess={successfullCreate}
+              sites = {sites}
             />
           </TabsContent>
 
@@ -124,7 +148,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
-              onSuccess={successfullCreate}
+              sites = {sites}
             />
           </TabsContent>
         </Tabs>

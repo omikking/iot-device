@@ -45,6 +45,7 @@ type LevelComponentProps = {
   level: Level;
   levelsOptions: Level[];
   inputRef: React.RefObject<HTMLInputElement>;
+  setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;
   handleSetLevel: (level: Level) => void;
   refreshSite: () => void;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
@@ -56,6 +57,7 @@ export const LevelItem = ({
   level,
   levelsOptions,
   inputRef,
+  setIsDeletingLevel,
   handleSetLevel,
   refreshSite,
   setSelectedLevel,
@@ -152,26 +154,26 @@ export const LevelItem = ({
   };
 
   const handleDeleteLevel = () => {
-    return deleteLevel({
-      id: level.id,
-    })
-      .then((result) => {
-        setIsDeleting(true);
+    setIsDeleting(true);
+    setIsDeletingLevel(true);
 
-        if (result.data) {
+    return deleteLevel({ id: level.id })
+      .then((result) => {
+        if (result.error) {
           setSelectedLevel(undefined);
-          return true;
-        } else {
-          setIsDeleting(false);
           return false;
         }
+        return true;
       })
       .catch(() => {
-        setIsDeleting(false);
         return false;
       })
       .finally(() => {
-        console.log('Deletion process completed');
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingLevel(false);
+        }, 1500);
       });
   };
 

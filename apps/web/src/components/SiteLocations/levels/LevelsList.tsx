@@ -48,16 +48,9 @@ export const LevelsList = ({
     setLevels((prevLevels) => [...prevLevels, newLevel]);
   };
 
-  useMemo(() => {
-    if (levelsOptions < levels) {
-      console.log('dawdawd');
-      setTimeout(() => {
-        levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
-      }, 1500);
-    } else {
-      levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
-    }
-  }, [levelsOptions]);
+  // useEffect(() => {
+  //   levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+  // }, [levelsOptions]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -91,7 +84,6 @@ export const LevelsList = ({
             refreshSite={refreshSite}
             setSelectedDrive={setSelectedDrive}
             setSelectedLevel={setSelectedLevel}
-            setLevels={setLevels}
           />
         ))}
       </div>

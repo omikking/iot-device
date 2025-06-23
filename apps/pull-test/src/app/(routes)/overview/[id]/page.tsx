@@ -7,6 +7,7 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { useSession } from 'next-auth/react';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 
 const getHazardsIdQuery = graphql(`
@@ -32,7 +33,10 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const companyId = params.id;
+  const { data: session } = useSession();
+  // const companyId = params.id;
+  // TODO session company id will be dynamic in the future, hardcoded for now(since company ID is hardcoded).
+  const companyId = session?.company?.id || params.id;
 
   const [{ data }] = useQuery({
     query: getCompanyName,

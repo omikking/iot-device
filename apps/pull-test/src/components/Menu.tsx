@@ -120,7 +120,7 @@ export const Menu = () => {
           <div className="flex flex-col gap-1 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
               <Link
-                href={`/selectapplication/${sessionCompanyId}`}
+                href={`http://localhost:3000/selectapplication/${sessionCompanyId}`}
                 passHref
                 legacyBehavior
               >

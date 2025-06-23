@@ -12,21 +12,21 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@gsp/ui';
-import React, { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createSiteFormSchema,
   updateSiteFormSchema,
   CreateSiteFormValues,
   UpdateSiteFormValues,
 } from './schemas/SiteFormSchema';
-import { LucidePlus } from 'lucide-react';
-import { SuccessMessage } from './SuccessMessage';
 import { graphql } from '@/gql';
-import { Site } from '@/gql/graphql';
 import { useMutation } from 'urql';
+import { Site } from '@/gql/graphql';
+import { LucidePlus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { SuccessMessage } from './SuccessMessage';
+import React, { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -145,6 +145,12 @@ export const AddOrEditSiteModal = ({
     }
   }, [site, form]);
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty;
+
+  const isAnyFieldEmpty = !formValues.siteName || !formValues.address ||!formValues.postalCode ||!formValues.city ||!formValues.country;
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
@@ -257,7 +263,7 @@ export const AddOrEditSiteModal = ({
                 type="submit"
                 variant="primary"
                 size="large"
-                disabled={isLoading}
+                disabled={isSubmitDisabled || isLoading}
                 isLoading={isLoading}
               >
                 {!isLoading && <LucidePlus />}

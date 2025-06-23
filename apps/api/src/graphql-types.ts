@@ -1,4 +1,3 @@
-
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -39,6 +38,20 @@ export enum RingPosition {
 export enum PullTestAbortReason {
     NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
     TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
+}
+
+export enum Application {
+    PULL_TEST = "PULL_TEST",
+    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
+    XCYCLOPS = "XCYCLOPS",
+    ULTRABOLTS = "ULTRABOLTS"
+}
+
+export enum PlanLevel {
+    GOLD = "GOLD",
+    SILVER = "SILVER",
+    BRONZE = "BRONZE",
+    INACTIVE = "INACTIVE"
 }
 
 export class CreateBoltResultInput {
@@ -94,12 +107,8 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateAdminPermissionInput[];
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<CreatePlanInput[]>;
-}
-
-export class CreateAdminPermissionInput {
-    userId: string;
 }
 
 export class CreatePlanInput {
@@ -116,7 +125,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -125,11 +134,6 @@ export class UpdatePlanInput {
     applicationName: string;
     planLevel?: Nullable<string>;
     expiringDate?: Nullable<DateTime>;
-}
-
-export class UpdateAdminPermissionInput {
-    oldUserId: string;
-    newUserId: string;
 }
 
 export class CreateDriveInput {
@@ -178,7 +182,7 @@ export class UpdateSiteInput {
 }
 
 export class CreateUserPermissionInput {
-    userId: string;
+    userEmail: string;
     role: string;
     appsAccess: string[];
     companyId: string;
@@ -196,6 +200,12 @@ export class UpdateUserInput {
     phoneNumber?: Nullable<string>;
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
+}
+
+export class UpdatePasswordInput {
+    oldPassword?:Nullable<string>;
+    newPassword?:Nullable<string>;
+    confirmPassword?:Nullable<string>;
 }
 
 export class BoltResult {
@@ -218,6 +228,10 @@ export class BoltResult {
     driveId: string;
     locationId: string;
     userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
 }
 
 export class BoltResultResponse {
@@ -239,6 +253,8 @@ export abstract class IQuery {
     getBoltTypes?: Nullable<BoltType[]>;
     getRingPosition?: Nullable<RingPosition[]>;
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
+    getApplication?: Nullable<Application[]>;
+    getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
     levels: Level[];
     level?: Level;
@@ -393,6 +409,9 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

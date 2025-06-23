@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { Button, Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Button, Text, LoadingSpinner } from '@gsp/ui';
 import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 
 const getCompaniesQuery = graphql(`
@@ -17,8 +17,24 @@ const getCompaniesQuery = graphql(`
 `);
 
 export const CompanyList = () => {
-  const [{ data }] = useQuery({ query: getCompaniesQuery });
-  const companies = data?.companies?.results;
+  const [{ data, fetching }] = useQuery({ query: getCompaniesQuery });
+  const companies = data?.companies?.results || [];
+
+  if (fetching) {
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!fetching && companies?.length === 0) {
+    return (
+      <Text variant="medium" color="muted">
+        No companies found.
+      </Text>
+    );
+  }
 
   return (
     <>

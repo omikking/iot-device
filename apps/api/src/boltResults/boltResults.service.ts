@@ -19,21 +19,55 @@ export class BoltResultsService {
 
   async findMany(
     user: ActiveUserData,
-    pagination: { offset: number; limit: number },
-    filters?: Partial<Record<string, string | boolean>>,
+    pagination: { offset: number; limit?: number },
+    filters: {
+      siteId?: string | undefined;
+      levelId?: string | undefined;
+      driveId?: string | undefined;
+      locationId?: string | undefined;
+      result?: string[] | undefined;
+      isHazard?: boolean | undefined;
+      withImage?: boolean | undefined;
+      withComment?: boolean | undefined;
+      startDate?: Date | undefined;
+      endDate?: Date | undefined;
+    },
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit } = pagination;
+
+    const {
+      siteId,
+      levelId,
+      driveId,
+      locationId,
+      result,
+      isHazard,
+      withImage,
+      withComment,
+      startDate,
+      endDate,
+    } = filters || {};
 
     const whereCondition: Record<string, any> = {
       ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
         ? { userId: user.id }
         : {}),
-      ...(filters &&
-        Object.fromEntries(
-          Object.entries(filters).filter(
-            ([, value]) => value !== undefined && value !== null,
-          ),
-        )),
+      ...(siteId ? { siteId } : {}),
+      ...(levelId ? { levelId } : {}),
+      ...(driveId ? { driveId } : {}),
+      ...(locationId ? { locationId } : {}),
+      ...(result && result.length ? { result: { in: result } } : {}),
+      ...(typeof isHazard === 'boolean' ? { isHazard } : {}),
+      ...(withImage === true ? { imageUrl: { not: null } } : {}),
+      ...(withComment === true ? { comment: { not: null } } : {}),
+      ...(startDate && endDate
+        ? {
+            createdAt: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
+          }
+        : {}),
     };
 
     const totalRecords = await this.prisma.boltResult.count({
@@ -41,10 +75,17 @@ export class BoltResultsService {
     });
 
     const results = await this.prisma.boltResult.findMany({
-      skip: Number(offset),
-      take: Number(limit),
+      skip: offset,
+      ...(limit !== undefined ? { take: limit } : {}),
       where: whereCondition,
+      include: {
+        site: true,
+        level: true,
+        drive: true,
+        location: true,
+      },
     });
+
     return { totalRecords, results };
   }
 
@@ -104,9 +145,9 @@ export class BoltResultsService {
         positionInRing:
           (updateBoltResultInput?.positionInRing as RingPosition) || undefined,
         result: (updateBoltResultInput?.result as Result) || undefined,
-        isHazard: updateBoltResultInput?.isHazard || undefined,
+        isHazard: updateBoltResultInput?.isHazard ?? undefined,
         hazardCompletedDate:
-          updateBoltResultInput?.hazardCompletedDate || undefined,
+          updateBoltResultInput?.hazardCompletedDate ?? undefined,
         abortReason:
           (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
           undefined,

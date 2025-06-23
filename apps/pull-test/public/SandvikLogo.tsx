@@ -1,8 +1,8 @@
-interface SandvikLogoProps {
+type SandvikLogoProps = {
   width?: string;
   height?: string;
   fill?: string;
-}
+};
 
 export const SandvikLogo = ({ width, height, fill }: SandvikLogoProps) => {
   return (

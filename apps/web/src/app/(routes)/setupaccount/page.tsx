@@ -55,7 +55,8 @@ export default function Page(): JSX.Element {
   );
 
   // const userRole = companyPermission?.role;
-  const userRole = 'COMPANY_USER' as string;
+  // Just for testing purposes, hardcoded user role
+  const userRole = 'SANDVIK_TECHNICIAN' as string;
 
   let invitationRoleTitle: JSX.Element | string;
 
@@ -64,10 +65,18 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+          <Text
+            // is it correct to use increase text font size here?
+            // according to design system medium is 16px and its the largest
+            className="ui-text-xl"
+            color={'foreground'}
+            variant={'medium'}
+            as="span"
+            isBold
+          >
             {` Ground Support Platform `}
-            as an administrator.
           </Text>
+          as an administrator.
         </Headline>
       );
       break;
@@ -75,7 +84,15 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+          <Text
+            // is it correct to use increase text font size here?
+            // according to design system medium is 16px and its the largest
+            className="ui-text-xl"
+            color={'foreground'}
+            variant={'medium'}
+            as="span"
+            isBold
+          >
             {` Ground Support Platform `}
           </Text>
           as a technician.
@@ -86,7 +103,15 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+          <Text
+            // is it correct to use increase text font size here?
+            // according to design system medium is 16px and its the largest
+            className="ui-text-xl"
+            color={'foreground'}
+            variant={'medium'}
+            as="span"
+            isBold
+          >
             {` ${userData?.user?.workPlace} `}
           </Text>
           as an administrator.
@@ -97,7 +122,15 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text color={'foreground'} variant={'medium'} as="span" isBold>
+          <Text
+            // is it correct to use increase text font size here?
+            // according to design system medium is 16px and its the largest
+            className="ui-text-xl"
+            color={'foreground'}
+            variant={'medium'}
+            as="span"
+            isBold
+          >
             {` ${userData?.user?.workPlace}. `}
           </Text>
         </Headline>
@@ -275,6 +308,7 @@ export default function Page(): JSX.Element {
             >
               <LucideUserRoundCog /> Sign up
             </Button>
+            {/* ADD TOAST */}
           </div>
         </form>
       </Form>

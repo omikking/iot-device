@@ -27,19 +27,19 @@ export const placeholder = {
   //site
   siteNamePlaceholder: 'Fill in site name...',
   passCriteriaPlaceholder: 'Fill in pass criteria...',
-  levelsPlaceholder: 'New level...',
-  drivePlaceholder: 'New drive...',
-  locationPlaceholder: 'New location...',
+  levelsPlaceholder: 'Fill in level name',
+  drivePlaceholder: 'Fill in drive name...',
+  locationPlaceholder: 'Fill in location name...',
 
   //dropdown
-  selectAdministratorPlaceholder: 'Select an administrator',
-  selectPermissionPlaceholder: 'Select permissions',
-  selectRolePlaceholder: 'Select a role',
-  selectTechnicianPlaceholder: 'Select a technician',
+  selectAdministratorPlaceholder: 'Select an administrator...',
+  selectPermissionPlaceholder: 'Select permissions...',
+  selectRolePlaceholder: 'Select a role...',
+  selectTechnicianPlaceholder: 'Select a technician...',
 
   //Validation messages
   validEmailPlaceholder: 'Fill in a valid email...',
-  validVisibilityPlaceholder: 'Select visibility',
+  validVisibilityPlaceholder: 'Select visibility...',
 
   // password error messages
   passwordErrorPlaceholder:
@@ -48,4 +48,5 @@ export const placeholder = {
 
   //misc
   verificationCodePlaceholder: 'Fill in the verification code...',
+  selectRangeDatesPlaceholder: 'Select date range',
 };

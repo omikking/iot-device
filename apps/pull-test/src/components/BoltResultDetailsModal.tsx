@@ -15,6 +15,7 @@ import { HazardCompleteModalContent } from './HazardCompleteModalContent';
 import { BoltResultDetailsModalContent } from './BoltResultDetailsModalContent';
 
 type BoltResultDetailsModalProps = {
+  isModalOpen?: boolean;
   boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
@@ -63,6 +64,7 @@ export const BoltResultDetailsModal = ({
   isHazardCompletable = false,
   boltResult,
   onClose,
+  isModalOpen,
 }: BoltResultDetailsModalProps) => {
   const [currentView, setCurrentView] = useState<ModalView>('details');
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -71,21 +73,25 @@ export const BoltResultDetailsModal = ({
   const [{ data: levelData }] = useQuery({
     query: getLevelDetails,
     variables: { id: boltResult?.levelId },
+    pause: !isModalOpen,
   });
 
   const [{ data: driveData }] = useQuery({
     query: getDriveDetails,
     variables: { id: boltResult?.driveId },
+    pause: !isModalOpen,
   });
 
   const [{ data: locationData }] = useQuery({
     query: getLocationDetails,
     variables: { id: boltResult?.locationId },
+    pause: !isModalOpen,
   });
 
   const [{ data: nameData }] = useQuery({
     query: getNameDetails,
     variables: { id: boltResult?.userId },
+    pause: !isModalOpen,
   });
 
   // Prepare site info for specs

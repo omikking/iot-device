@@ -41,6 +41,7 @@ declare module 'next-auth' {
       id: UUID;
       email: string;
       fullName: string;
+      globalRole: string;
     };
     // TODO: Backend integration
     company: {

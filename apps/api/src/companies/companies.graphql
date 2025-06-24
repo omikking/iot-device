@@ -1,3 +1,8 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
 scalar DateTime
 
 """
@@ -18,6 +23,7 @@ type Company {
   users: [User!]
   plans: [Plan!]
   sites: [Site!]
+  sandvikAdminUserId: String
 }
 
 """
@@ -46,16 +52,8 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateUserPermissionInput!]! # ✅ aligned with code
+  sandvikAdminUserId: String
   plans: [CreatePlanInput!]
-}
-
-"""
-CreateUserPermissionInput
-Input for assigning a user (admin or other role) during company creation
-"""
-input CreateUserPermissionInput {
-  userId: String!
 }
 
 """
@@ -71,7 +69,7 @@ input CreatePlanInput {
 """
 UpdateCompanyInput
 Define the input fields to update an existing company
-Optional fields are marked as nullable
+Optional are marked without the exclamation mark
 """
 input UpdateCompanyInput {
   name: String
@@ -81,17 +79,8 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateUserPermissionInput!] # ✅ aligned with update logic
+  sandvikAdminUserId: String
   plans: [UpdatePlanInput!]
-}
-
-"""
-UpdateUserPermissionInput
-Used to switch an existing user to a new one
-"""
-input UpdateUserPermissionInput {
-  oldUserId: String!
-  newUserId: String!
 }
 
 """

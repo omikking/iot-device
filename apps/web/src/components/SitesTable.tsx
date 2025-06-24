@@ -2,30 +2,13 @@
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-
+import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { useMutation, useQuery } from 'urql';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-
-const getCompanySitesQuery = graphql(`
-  query getCompanySites($id: String!) {
-    company(id: $id) {
-      sites {
-        id
-        siteName
-        address
-        city
-        country
-        postalCode
-        companyId
-      }
-    }
-  }
-`);
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -42,25 +25,21 @@ const deleteSiteMutation = graphql(`
 `);
 
 type SitesTableProps = {
-  companyId: string;
-  onOpenChange: (isOpen: boolean) => void;
-  onSelectSite: (site?: Site) => void;
   sites: Site[];
+  companyId: string;
+  onSelectSite: (site?: Site) => void;
+  onOpenChange: (isOpen: boolean) => void;
 };
 
 export const SitesTable = ({
+  sites,
   companyId,
   onOpenChange,
   onSelectSite,
-  sites,
 }: SitesTableProps) => {
-  const [sitesData] = useQuery({
-    query: getCompanySitesQuery,
-    variables: { id: companyId || '' },
-  });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [, deleteSite] = useMutation(deleteSiteMutation);
 
   const openDeleteModal = (siteId: string) => {

@@ -17,11 +17,12 @@ import React, { useState } from 'react';
 
 type DeleteModalConfirmationProps = {
   isOpen?: boolean;
-  modalText?: string;
   modalTitle: string;
-  modalDeleteButtonText: string;
+  modalText?: string;
   isLoading?: boolean;
+  deleteButtonText?: string;
   children: React.ReactNode;
+  modalDeleteButtonText: string;
   deleteIcon?: 'User' | 'Site' | 'Company';
   initialView?: 'confirmDelete' | 'deleteSuccess';
   onClose: () => void;

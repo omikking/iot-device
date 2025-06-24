@@ -1,4 +1,5 @@
 import {
+  ArrayNotEmpty,
   IsArray,
   IsEmail,
   IsOptional,
@@ -43,8 +44,10 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @IsEmail()
   companyContactEmail: string;
 
-  @IsString()
-  sandvikAdminUserId?: string;
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()
+  userPermissions: GraphQLTypes.UpdateAdminPermissionInput[];
 
   @IsOptional()
   @IsArray()

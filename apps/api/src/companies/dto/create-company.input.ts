@@ -1,4 +1,11 @@
-import { IsArray, IsEmail, IsString, Length } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsEmail,
+  IsString,
+  Length,
+} from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
@@ -15,7 +22,7 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   address: string;
 
   @IsString()
-  @Length(5) // @TODO Need to update in the future, might not be 5 in countries outside of SWE
+  @Length(5)
   postalCode: string;
 
   @IsString()
@@ -30,8 +37,10 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @IsEmail()
   companyContactEmail: string;
 
-  @IsString()
-  sandvikAdminUserId: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayMaxSize(1)
+  userPermissions: GraphQLTypes.CreateAdminPermissionInput[];
 
   @IsArray()
   plans: GraphQLTypes.CreatePlanInput[];

@@ -51,13 +51,13 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateAdminPermissionInput!]!
+  userPermissions: [CreateAdminPermissionInput!]! # ✅ Required
   plans: [CreatePlanInput!]
 }
 
 """
 CreateAdminPermissionInput
-Define the input fields to create a new userPermission
+Input for assigning an admin user during company creation
 """
 input CreateAdminPermissionInput {
   userId: String!
@@ -76,7 +76,7 @@ input CreatePlanInput {
 """
 UpdateCompanyInput
 Define the input fields to update an existing company
-Optional are marked without the exclamation mark
+Optional fields are marked as nullable
 """
 input UpdateCompanyInput {
   name: String
@@ -86,8 +86,17 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateAdminPermissionInput!]
+  userPermissions: [UpdateAdminPermissionInput!] # ✅ Optional update
   plans: [UpdatePlanInput!]
+}
+
+"""
+UpdateAdminPermissionInput
+Used to switch an existing admin to a new one
+"""
+input UpdateAdminPermissionInput {
+  oldUserId: String!
+  newUserId: String!
 }
 
 """
@@ -99,15 +108,6 @@ input UpdatePlanInput {
   applicationName: String!
   planLevel: String
   expiringDate: DateTime
-}
-
-"""
-UpdateAdminPermissionInput
-Define the input fields to update the sandvik admin to new admin
-"""
-input UpdateAdminPermissionInput {
-  oldUserId: String!
-  newUserId: String!
 }
 
 """

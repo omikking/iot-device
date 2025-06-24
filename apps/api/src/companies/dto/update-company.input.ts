@@ -26,7 +26,7 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
 
   @IsOptional()
   @IsString()
-  @Length(5) // @TODO Need to update in the future, might not be 5 in countries outside of SWE
+  @Length(5)
   postalCode: string;
 
   @IsOptional()
@@ -47,7 +47,7 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  userPermissions: GraphQLTypes.UpdateAdminPermissionInput[];
+  userPermissions: GraphQLTypes.UpdateUserPermissionInput[]; // ✅ updated
 
   @IsOptional()
   @IsArray()

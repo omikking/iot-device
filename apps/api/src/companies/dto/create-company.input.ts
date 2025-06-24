@@ -40,7 +40,7 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @IsArray()
   @ArrayNotEmpty()
   @ArrayMaxSize(1)
-  userPermissions: GraphQLTypes.CreateAdminPermissionInput[];
+  userPermissions: GraphQLTypes.CreateUserPermissionInput[]; // ✅ updated
 
   @IsArray()
   plans: GraphQLTypes.CreatePlanInput[];

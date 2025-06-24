@@ -1,8 +1,3 @@
-# The SDL is our source of truth when building the API.
-# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
-
-# Use npx ts-node src/generate-types.ts to generate the types
-
 scalar DateTime
 
 """
@@ -51,15 +46,15 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateAdminPermissionInput!]! # ✅ Required
+  userPermissions: [CreateUserPermissionInput!]! # ✅ updated
   plans: [CreatePlanInput!]
 }
 
 """
-CreateAdminPermissionInput
-Input for assigning an admin user during company creation
+CreateUserPermissionInput
+Input for assigning a user (admin or other role) during company creation
 """
-input CreateAdminPermissionInput {
+input CreateUserPermissionInput {
   userId: String!
 }
 
@@ -86,15 +81,15 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateAdminPermissionInput!] # ✅ Optional update
+  userPermissions: [UpdateUserPermissionInput!] # ✅ updated
   plans: [UpdatePlanInput!]
 }
 
 """
-UpdateAdminPermissionInput
-Used to switch an existing admin to a new one
+UpdateUserPermissionInput
+Used to switch an existing user to a new one
 """
-input UpdateAdminPermissionInput {
+input UpdateUserPermissionInput {
   oldUserId: String!
   newUserId: String!
 }

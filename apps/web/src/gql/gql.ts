@@ -46,6 +46,7 @@ const documents = {
     "\n  mutation createLocation($createLocationInput: CreateLocationInput!) {\n    createLocation(createLocationInput: $createLocationInput) {\n      id\n      locationName\n      driveId\n    }\n  }\n": types.CreateLocationDocument,
     "\n  mutation updateLocation(\n    $id: String!\n    $updateLocationInput: UpdateLocationInput!\n  ) {\n    updateLocation(id: $id, updateLocationInput: $updateLocationInput) {\n      id\n      locationName\n      driveId\n    }\n  }\n": types.UpdateLocationDocument,
     "\n  mutation deleteLocation($id: String!) {\n    removeLocation(id: $id) {\n      id\n    }\n  }\n": types.DeleteLocationDocument,
+    "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n": types.DeleteSiteDocument,
     "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetTechniciansDocument,
     "\n  mutation deleteTechnician($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n": types.DeleteTechnicianDocument,
     "\n  mutation deleteUserPermission($id: String!) {\n    removeUserPermission(id: $id) {\n      id\n    }\n  }\n": types.DeleteUserPermissionDocument,
@@ -195,6 +196,10 @@ export function graphql(source: "\n  mutation updateLocation(\n    $id: String!\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteLocation($id: String!) {\n    removeLocation(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation deleteLocation($id: String!) {\n    removeLocation(id: $id) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n"): (typeof documents)["\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

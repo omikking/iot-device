@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -115,8 +116,16 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    sandvikAdminUserId?: Nullable<string>;
+    userPermissions: CreateUserPermissionInput[];
     plans?: Nullable<CreatePlanInput[]>;
+}
+
+export class CreateUserPermissionInput {
+    userId: string;
+    userEmail: string;
+    role: string;
+    appsAccess: string[];
+    companyId: string;
 }
 
 export class CreatePlanInput {
@@ -133,8 +142,15 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    sandvikAdminUserId?: Nullable<string>;
+    userPermissions?: Nullable<UpdateUserPermissionInput[]>;
     plans?: Nullable<UpdatePlanInput[]>;
+}
+
+export class UpdateUserPermissionInput {
+    oldUserId: string;
+    newUserId: string;
+    role?: Nullable<string>;
+    appsAccess?: Nullable<string[]>;
 }
 
 export class UpdatePlanInput {
@@ -171,6 +187,11 @@ export class UpdateLocationInput {
     locationName?: Nullable<string>;
 }
 
+export class SendMailInput {
+    email: string;
+    username: string;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -189,18 +210,6 @@ export class UpdateSiteInput {
     companyId: string;
 }
 
-export class CreateUserPermissionInput {
-    userEmail: string;
-    role: string;
-    appsAccess: string[];
-    companyId: string;
-}
-
-export class UpdateUserPermissionInput {
-    role?: Nullable<string>;
-    appsAccess?: Nullable<string[]>;
-}
-
 export class UpdateUserInput {
     email?: Nullable<string>;
     fullName?: Nullable<string>;
@@ -211,9 +220,9 @@ export class UpdateUserInput {
 }
 
 export class UpdatePasswordInput {
-    oldPassword?:Nullable<string>;
-    newPassword?:Nullable<string>;
-    confirmPassword?:Nullable<string>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export class BoltResult {
@@ -295,6 +304,7 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    sendUserInvitationEmail?: MailResponse;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -394,6 +404,11 @@ export class Location {
     boltResults?: Nullable<BoltResult[]>;
 }
 
+export class MailResponse {
+    success: boolean;
+    message: string;
+}
+
 export class Site {
     id: string;
     createdAt: DateTime;
@@ -429,9 +444,6 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
-    oldPassword?: Nullable<string>;
-    newPassword?: Nullable<string>;
-    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

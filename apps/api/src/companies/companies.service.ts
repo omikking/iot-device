@@ -54,22 +54,15 @@ export class CompaniesService {
   async create(
     createCompanyInput: GraphQLTypes.CreateCompanyInput,
   ): Promise<Company> {
-    const { plans, ...companyData } = createCompanyInput;
+    const { plans, userPermissions, ...companyData } = createCompanyInput;
 
     const company = await prisma.$transaction(async (prisma) => {
       const createdCompany = await prisma.company.create({
         data: {
-          name: companyData.name,
-          orgNumber: companyData.orgNumber,
-          address: companyData.address,
-          postalCode: companyData.postalCode,
-          city: companyData.city,
-          country: companyData.country,
-          companyContactEmail: companyData.companyContactEmail,
-
+          ...companyData,
           userPermission: {
             create: await Promise.all(
-              companyData.userPermissions?.map(async (userPermission) => {
+              userPermissions?.map(async (userPermission) => {
                 const user = await prisma.user.findUnique({
                   where: { id: userPermission.userId },
                   select: { globalRole: true },
@@ -81,7 +74,6 @@ export class CompaniesService {
                   );
                 }
 
-                // Check that user has globalRole Sandvik_ADMIN
                 if (user.globalRole !== Role.SANDVIK_ADMIN) {
                   throw new UserInputError(
                     `User ${userPermission.userId} does not have global role as SANDVIK_ADMIN`,
@@ -108,7 +100,7 @@ export class CompaniesService {
         },
       });
 
-      if (plans && plans.length >= 0) {
+      if (plans?.length) {
         await prisma.plan.createMany({
           data: plans.map((plan) => ({
             companyId: createdCompany.id,
@@ -134,37 +126,42 @@ export class CompaniesService {
   ): Promise<Company> {
     const { plans, userPermissions, ...companyData } = updateCompanyInput;
 
+    // Convert nulls to undefined to match Prisma types
+    const sanitizedData = Object.fromEntries(
+      Object.entries(companyData).map(([key, value]) => [
+        key,
+        value ?? undefined,
+      ]),
+    );
+
     const company = await this.prisma.$transaction(async (prisma) => {
       const updatedCompany = await prisma.company.update({
         where: { id },
         data: {
-          name: companyData?.name || undefined,
-          orgNumber: companyData?.orgNumber || undefined,
-          address: companyData?.address || undefined,
-          postalCode: companyData?.postalCode || undefined,
-          city: companyData?.city || undefined,
-          country: companyData?.country || undefined,
-          companyContactEmail: companyData?.companyContactEmail || undefined,
-
-          userPermission: {
-            updateMany: userPermissions?.map((userPermissionInput) => ({
-              where: {
-                companyId: id,
-                userId: userPermissionInput?.oldUserId,
-              },
-              data: {
-                userId: userPermissionInput?.newUserId || undefined,
-              },
-            })),
-          },
+          ...sanitizedData,
+          ...(userPermissions
+            ? {
+                userPermission: {
+                  updateMany: userPermissions.map((userPermissionInput) => ({
+                    where: {
+                      companyId: id,
+                      userId: userPermissionInput.oldUserId,
+                    },
+                    data: {
+                      userId: userPermissionInput.newUserId || undefined,
+                    },
+                  })),
+                },
+              }
+            : {}),
         },
       });
 
+      // 🛠 Handle Plans
       if (plans) {
-        // Delete all plans that are not in the request
         const plansToKeepId = plans
           .map((plan) => plan.id)
-          .filter((id): id is string => !id !== null && id !== undefined);
+          .filter((id): id is string => !!id);
 
         if (plansToKeepId.length > 0) {
           await prisma.plan.deleteMany({
@@ -176,24 +173,15 @@ export class CompaniesService {
             },
           });
         } else {
-          // Handle case when no plans are left to keep
-          await prisma.plan.deleteMany({
-            where: { companyId: id },
-          });
+          await prisma.plan.deleteMany({ where: { companyId: id } });
         }
 
-        // Update existing plans or create new
         for (const plan of plans) {
-          let existingPlan;
+          const existingPlan = plan?.id
+            ? await prisma.plan.findUnique({ where: { id: plan.id } })
+            : null;
 
-          if (plan?.id) {
-            existingPlan = await prisma.plan.findUnique({
-              where: { id: plan.id },
-            });
-          }
-
-          if (existingPlan && plan?.id) {
-            // Update plan if it already exists
+          if (existingPlan && plan.id) {
             await prisma.plan.update({
               where: { id: plan.id },
               data: {
@@ -202,7 +190,6 @@ export class CompaniesService {
               },
             });
           } else {
-            // Create new plan if new one was added
             await prisma.plan.create({
               data: {
                 companyId: updatedCompany.id,
@@ -214,12 +201,14 @@ export class CompaniesService {
           }
         }
       }
+
       return updatedCompany;
     });
 
     if (!company) {
       throw new UserInputError(`Company #${id} not found`);
     }
+
     return company;
   }
 

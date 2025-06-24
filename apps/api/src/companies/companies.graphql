@@ -46,7 +46,7 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateUserPermissionInput!]! # ✅ updated
+  userPermissions: [CreateUserPermissionInput!]! # ✅ aligned with code
   plans: [CreatePlanInput!]
 }
 
@@ -81,7 +81,7 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateUserPermissionInput!] # ✅ updated
+  userPermissions: [UpdateUserPermissionInput!] # ✅ aligned with update logic
   plans: [UpdatePlanInput!]
 }
 

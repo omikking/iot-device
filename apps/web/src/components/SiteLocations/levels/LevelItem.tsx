@@ -41,26 +41,26 @@ const deleteLevelMutation = graphql(`
 `);
 
 type LevelComponentProps = {
-  selectedLevelId?: string;
   level: Level;
   levelsOptions: Level[];
+  selectedLevelId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;
-  handleSetLevel: (level: Level) => void;
   refreshSite: () => void;
+  handleSetLevel: (level: Level) => void;
+  setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 };
 
 export const LevelItem = ({
-  selectedLevelId,
   level,
-  levelsOptions,
   inputRef,
-  setIsDeletingLevel,
-  handleSetLevel,
+  levelsOptions,
+  selectedLevelId,
   refreshSite,
+  handleSetLevel,
   setSelectedLevel,
+  setIsDeletingLevel,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(!level.id);
 
@@ -202,8 +202,8 @@ export const LevelItem = ({
 
             <DeleteEditDropdown
               itemSelected={level.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
               deleteIcon="Site"
@@ -211,8 +211,8 @@ export const LevelItem = ({
               modalDeleteButtonText="Delete level"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteLevel}
+              onClose={() => setIsDeleteModalOpen(false)}
               onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text

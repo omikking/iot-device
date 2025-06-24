@@ -45,19 +45,21 @@ interface DriveComponentProps {
   drivesOptions: Drive[];
   selectedDriveId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetDrive: (drive: Drive) => void;
   refreshSite: () => void;
+  handleSetDrive: (drive: Drive) => void;
+  setIsDeletingDrive: Dispatch<SetStateAction<boolean>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 }
 
 export const DriveItem = ({
   drive,
+  inputRef,
   drivesOptions,
   selectedDriveId,
-  inputRef,
-  handleSetDrive,
   refreshSite,
+  handleSetDrive,
   setSelectedDrive,
+  setIsDeletingDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -152,24 +154,26 @@ export const DriveItem = ({
   };
 
   const handleDeleteDrive = () => {
-    return deleteDrive({
-      id: drive.id,
-    })
+    setIsDeleting(true);
+    setIsDeletingDrive(true);
+
+    return deleteDrive({ id: drive.id })
       .then((result) => {
         if (result.error) {
           setSelectedDrive(undefined);
-          return true;
-        } else {
-          setIsDeleting(false);
           return false;
         }
+        return true;
       })
       .catch(() => {
-        setIsDeleting(false);
         return false;
       })
       .finally(() => {
-        console.log('Deletion process completed');
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingDrive(false);
+        }, 1500);
       });
   };
 
@@ -198,8 +202,8 @@ export const DriveItem = ({
 
             <DeleteEditDropdown
               itemSelected={drive.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
               deleteIcon="Site"
@@ -207,8 +211,8 @@ export const DriveItem = ({
               modalDeleteButtonText="Delete drive"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteDrive}
+              onClose={() => setIsDeleteModalOpen(false)}
               onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text

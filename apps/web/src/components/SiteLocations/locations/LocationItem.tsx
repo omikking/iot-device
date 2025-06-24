@@ -48,17 +48,19 @@ interface LocationComponentProps {
   locationsOptions: Location[];
   inputRef: React.RefObject<HTMLInputElement>;
   refreshSite: () => void;
+  setIsDeletingLocation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const LocationItem = ({
   location,
-  locationsOptions,
   inputRef,
+  locationsOptions,
   refreshSite,
+  setIsDeletingLocation,
 }: LocationComponentProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const [, createLocation] = useMutation(createLocationMutation);
   const [, updateLocation] = useMutation(updateLocationMutation);
@@ -151,25 +153,27 @@ export const LocationItem = ({
   };
 
   const handleDeleteLocation = () => {
+    setIsDeleting(true);
+    setIsDeletingLocation(true);
+
     return deleteLocation({
       id: location.id,
     })
       .then((result) => {
-        setIsDeleting(true);
-
-        if (result.data) {
+        if (result.error) {
           return true;
-        } else {
-          setIsDeleting(false);
-          return false;
         }
+        return true;
       })
       .catch(() => {
-        setIsDeleting(false);
         return false;
       })
       .finally(() => {
-        console.log();
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingLocation(false);
+        }, 1500);
       });
   };
 
@@ -197,8 +201,8 @@ export const LocationItem = ({
             </Text>
             <DeleteEditDropdown
               itemSelected={location.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
               deleteIcon="Site"
@@ -206,8 +210,8 @@ export const LocationItem = ({
               modalDeleteButtonText="Delete location"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onClose={() => setIsDeleteModalOpen(false)}
               onDelete={handleDeleteLocation}
+              onClose={() => setIsDeleteModalOpen(false)}
               onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text variant="medium" color={'foreground'}>

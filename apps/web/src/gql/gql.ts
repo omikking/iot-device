@@ -16,6 +16,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  query getUser($id: String!) {\n    user(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n": types.GetUserDocument,
     "\n  query getCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      sandvikAdminUserId\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n": types.GetCompanyDocument,
+    "\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n": types.RemoveCompanyDocument,
     "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query GetAllCompanies($offset: Int, $limit: Int) {\n    companies(offset: $offset, limit: $limit) {\n      totalRecords\n      results {\n        id\n        name\n      }\n    }\n  }\n": types.GetAllCompaniesDocument,
     "\n  query getCompanySitesNames($id: String!) {\n    company(id: $id) {\n      name\n      sites {\n        id\n        siteName\n      }\n    }\n  }\n": types.GetCompanySitesNamesDocument,
@@ -75,6 +76,10 @@ export function graphql(source: "\n  query getUser($id: String!) {\n    user(id:
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      sandvikAdminUserId\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      sandvikAdminUserId\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

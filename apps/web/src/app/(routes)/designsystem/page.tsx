@@ -103,6 +103,8 @@ export default function Page(): JSX.Element {
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
+  const [siteIsDeleting, setSiteIsDeleting] = useState(false);
+  const [userIsDeleting, setUserIsDeleting] = useState(false);
 
   const getBadge = (
     role: Role,
@@ -128,6 +130,16 @@ export default function Page(): JSX.Element {
   const closeDeleteModal = () => {
     setIsDeleteSiteModalOpen(false);
     setSiteToDelete(undefined);
+  };
+
+  const handleDeleteUser = () => {
+    setUserIsDeleting(true);
+    return true;
+  };
+
+  const handleDeleteSite = () => {
+    setSiteIsDeleting(true);
+    return true;
   };
 
   return (
@@ -209,13 +221,14 @@ export default function Page(): JSX.Element {
         Delete item
       </Button>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        modalTitle="Delete Site"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={userIsDeleting}
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
-        onDelete={() => {
-          console.log('Deleting item...');
-        }}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
@@ -246,15 +259,14 @@ export default function Page(): JSX.Element {
           </div>
         ))}
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="Site"
-          modalTitle="Delete Site"
+          modalTitle="Delete site"
+          modalDeleteButtonText="Delete site"
+          isLoading={siteIsDeleting}
           isOpen={isDeleteSiteModalOpen}
+          onClose={closeDeleteModal}
           onOpenChange={closeDeleteModal}
-          onDelete={() => {
-            // handleDelete();
-            closeDeleteModal();
-          }}
+          onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete

@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
@@ -262,10 +262,9 @@ export default function Page({ params }: Props): JSX.Element {
           </div>
 
           <Modal>
-
             <PdfComponent
               disabled={false}
-              objList={boltResults}
+              objList={boltResultsResponse?.boltResults}
               reportDetails={pdfComponentMockData.mockBoltResult}
               layout={{
                 logo: pdfComponentMockData.Layout.logo,
@@ -278,7 +277,6 @@ export default function Page({ params }: Props): JSX.Element {
               pdfPageTitle={'Bolt Result'}
               currentDate={new Date().toLocaleDateString()}
             />
-
           </Modal>
         </div>
 

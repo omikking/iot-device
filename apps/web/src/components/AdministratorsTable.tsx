@@ -1,19 +1,18 @@
 'use client';
-import { useState } from 'react';
 import {
+  Text,
   Badge,
   ColumnDef,
   DataTable,
   TableHeadWithSorting,
-  Text,
 } from '@gsp/ui';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { graphql } from '@/gql';
+import { useState } from 'react';
+import { useMutation, useQuery } from 'urql';
 import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
-import { graphql } from '@/gql';
-import { useMutation, useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type Administrator = GetAdminsQuery['users'][0];
 
@@ -44,13 +43,12 @@ const deleteAdminMutation = graphql(`
 `);
 
 export const AdministratorsTable = () => {
-  const { data: session } = useSession();
-  const [{ data: administratorsData }] = useQuery({
+  const [administratorsData] = useQuery({
     query: getAdminsQuery,
-    pause: !session?.company?.id,
   });
+
   const administrators =
-    (administratorsData?.users as GetAdminsQuery['users']) || [];
+    (administratorsData?.data?.users as GetAdminsQuery['users']) || [];
 
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
@@ -58,6 +56,7 @@ export const AdministratorsTable = () => {
   const [administratorToDelete, setAdministratorToDelete] = useState<
     Administrator | undefined
   >(undefined);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [, deleteAdmin] = useMutation(deleteAdminMutation);
 
   const openDeleteModal = (adminId: string) => {
@@ -71,14 +70,31 @@ export const AdministratorsTable = () => {
     setAdministratorToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    if (administratorToDelete) {
-      deleteAdmin({
-        id: administratorToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
-      });
+  const handleDelete = async (): Promise<boolean> => {
+    if (!administratorToDelete?.id) {
+      console.error('No administrator selected for deletion');
+      return false;
     }
+
+    const adminId = administratorToDelete.id;
+    console.log('Deleting administrator with ID:', adminId);
+
+    setIsDeleting(true);
+    return deleteAdmin({ id: adminId })
+      .then((result) => {
+        if (result.error) {
+          console.error('Error deleting administrator:', result.error);
+          return false;
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error deleting administrator:', error);
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const columns: ColumnDef<Administrator>[] = [
@@ -131,24 +147,24 @@ export const AdministratorsTable = () => {
 
   return (
     <>
-      {administratorToDelete && (
-        <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
-          deleteIcon="User"
-          modalTitle="Delete administrator"
-          isOpen={isDeleteAdministratorModalOpen}
-          onOpenChange={closeDeleteModal}
-          onDelete={handleDelete}
-        >
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
-              {` ${administratorToDelete?.fullName} `}
-            </Text>
-            from the list. Are you sure you want to delete?
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Delete administrator"
+        modalDeleteButtonText="Delete administrator"
+        isLoading={isDeleting}
+        isOpen={isDeleteAdministratorModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${administratorToDelete?.fullName} `}
           </Text>
-        </DeleteModalConfirmation>
-      )}
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

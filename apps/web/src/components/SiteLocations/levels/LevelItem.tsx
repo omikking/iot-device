@@ -1,16 +1,16 @@
 'use client';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Drive, Level } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { Drive, Level } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createLevelMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -41,30 +41,31 @@ const deleteLevelMutation = graphql(`
 `);
 
 type LevelComponentProps = {
-  selectedLevelId?: string;
   level: Level;
   levelsOptions: Level[];
+  selectedLevelId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetLevel: (level: Level) => void;
   refreshSite: () => void;
+  handleSetLevel: (level: Level) => void;
+  setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 };
 
 export const LevelItem = ({
-  selectedLevelId,
   level,
-  levelsOptions,
   inputRef,
-  handleSetLevel,
+  levelsOptions,
+  selectedLevelId,
   refreshSite,
+  handleSetLevel,
   setSelectedLevel,
-  setSelectedDrive,
+  setIsDeletingLevel,
 }: LevelComponentProps) => {
   const [isEditing, setIsEditing] = useState(!level.id);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [, createLevel] = useMutation(createLevelMutation);
   const [, updateLevel] = useMutation(updateLevelMutation);
   const [, deleteLevel] = useMutation(deleteLevelMutation);
@@ -99,7 +100,6 @@ export const LevelItem = ({
       return;
     }
 
-    // Checks that no other level has the same name
     const newLevelName = data.levelName;
     const isDuplicate = levelsOptions.some(
       (level) => level.levelName === newLevelName,
@@ -116,12 +116,19 @@ export const LevelItem = ({
           levelName: newLevelName,
           siteId: level.siteId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          levelsOptions.length === 1 && refreshSite();
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            levelsOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating level:', error);
+        })
+        .finally(() => {
+          console.log('Creation process completed');
+        });
     }
 
     // To edit a level
@@ -131,24 +138,43 @@ export const LevelItem = ({
         updateLevelInput: {
           levelName: newLevelName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating level:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteLevel = () => {
-    deleteLevel({
-      id: level.id,
-    }).then((result) => {
-      if (result.data) {
-        setSelectedLevel(undefined);
-        setSelectedDrive(undefined);
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
-      }
-    });
+    setIsDeleting(true);
+    setIsDeletingLevel(true);
+
+    return deleteLevel({ id: level.id })
+      .then((result) => {
+        if (result.error) {
+          setSelectedLevel(undefined);
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingLevel(false);
+        }, 1500);
+      });
   };
 
   return (
@@ -176,18 +202,24 @@ export const LevelItem = ({
 
             <DeleteEditDropdown
               itemSelected={level.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLevel}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete level"
-              deleteButtonText="Delete level"
               deleteIcon="Site"
+              modalTitle="Delete level"
+              modalDeleteButtonText="Delete level"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLevel}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Text
+                variant="medium"
+                color={'foreground'}
+                className="max-w-[450px] text-center"
+              >
                 You are about to delete level
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${level.levelName} `}

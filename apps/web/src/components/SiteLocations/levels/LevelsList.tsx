@@ -33,6 +33,7 @@ export const LevelsList = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [levels, setLevels] = useState<Level[]>(levelsOptions);
+  const [isDeletingLevel, setIsDeletingLevel] = useState<boolean>(false);
 
   // Add a new empty level
   const addLevel = () => {
@@ -48,8 +49,10 @@ export const LevelsList = ({
   };
 
   useEffect(() => {
-    levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
-  }, [levelsOptions]);
+    if (!isDeletingLevel) {
+      levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+    }
+  }, [levelsOptions, isDeletingLevel]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -83,6 +86,7 @@ export const LevelsList = ({
             refreshSite={refreshSite}
             setSelectedDrive={setSelectedDrive}
             setSelectedLevel={setSelectedLevel}
+            setIsDeletingLevel={setIsDeletingLevel}
           />
         ))}
       </div>

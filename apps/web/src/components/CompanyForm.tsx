@@ -162,26 +162,25 @@ export const CompanyForm = ({
   const formValues = companyForm.watch();
   const isDirty = companyForm.formState.isDirty;
 
-  const isAnyFieldEmpty = !formValues.name ||
-  !formValues.companyContactEmail ||
-  !formValues.orgNumber ||
-  !formValues.country ||
-  !formValues.city ||
-  !formValues.address ||
-  !formValues.sandvikAdminUserId ||
-  !formValues.postalCode
+  const isAnyFieldEmpty =
+    !formValues.name ||
+    !formValues.companyContactEmail ||
+    !formValues.orgNumber ||
+    !formValues.country ||
+    !formValues.city ||
+    !formValues.address ||
+    !formValues.sandvikAdminUserId ||
+    !formValues.postalCode;
 
   const isSubmitDisabled = isNewCompany
-  ? isAnyFieldEmpty
-  : !isDirty || isAnyFieldEmpty;
+    ? isAnyFieldEmpty
+    : !isDirty || isAnyFieldEmpty;
   return (
     <>
       <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
 
       <Form {...companyForm}>
-        <form
-          onSubmit={companyForm.handleSubmit(onSubmit)}
-        >
+        <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
             <CompanyDetailsForm companyForm={companyForm} />
@@ -262,7 +261,12 @@ export const CompanyForm = ({
 
           {/* Submit & Inactivate buttons */}
           <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
-            <Button variant="primary" size="large" type="submit" disabled={isSubmitDisabled}>
+            <Button
+              variant="primary"
+              size="large"
+              type="submit"
+              disabled={isSubmitDisabled}
+            >
               <LucideCircleCheckBig />
               {isNewCompany ? 'Send invitation' : 'Update company details'}
             </Button>

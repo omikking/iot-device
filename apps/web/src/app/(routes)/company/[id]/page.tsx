@@ -1,13 +1,13 @@
 'use client';
-import { Text, Headline } from '@gsp/ui';
-import { useState } from 'react';
-import { GoBack } from '@/components/GoBack';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
-import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
-import { useQuery } from 'urql';
+import { useState } from 'react';
 import { Company } from '@/gql/graphql';
+import { Text, Headline } from '@gsp/ui';
+import { useMutation, useQuery } from 'urql';
+import { GoBack } from '@/components/GoBack';
+import { CompanyForm } from '@/components/CompanyForm';
+import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -36,6 +36,14 @@ const getCompanyQuery = graphql(`
   }
 `);
 
+const deleteCompanyMutation = graphql(`
+  mutation removeCompany($id: String!) {
+    removeCompany(id: $id) {
+      id
+    }
+  }
+`);
+
 export default function Page({
   params,
 }: {
@@ -51,8 +59,35 @@ export default function Page({
         variables: { id: params.id },
       });
   const company = companyData?.data?.company as Company;
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [, deleteCompany] = useMutation(deleteCompanyMutation);
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = async (): Promise<boolean> => {
+    setIsDeleting(true);
+
+    return deleteCompany({
+      id: company.id,
+    })
+      .then((result) => {
+        if (result.error) {
+          console.error('Error deleting company:', result.error);
+          return false;
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error deleting company:', error);
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -70,35 +105,35 @@ export default function Page({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
 
-      {company && (
-        <DeleteModalConfirmation
-          deleteIcon="Company"
-          deleteButtonText="Inactivate company"
-          modalTitle="Inactivate company"
-          modalText="Confirm inactivation"
-          isOpen={isDeleteModalOpen}
-          onOpenChange={setIsDeleteModalOpen}
-          onDelete={() => {
-            console.log('Deleting item...');
-          }}
-        >
-          <div className="flex flex-col gap-4">
+      {/* TODO Discuss how to deal with  */}
+
+      <DeleteModalConfirmation
+        deleteIcon="Company"
+        modalTitle="Inactivate company"
+        modalDeleteButtonText="Inactivate company"
+        modalText="Confirm inactivation"
+        isLoading={isDeleting}
+        isOpen={isDeleteModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <div className="flex flex-col text-center gap-4 max-w-[420px]">
+          <Text variant="medium" color={'foreground'} as="span">
+            You are about to inactivate
+            <Text variant="medium" color={'foreground'} as="span" isBold>
+              {` ${company?.name}. `}
+            </Text>
             <Text variant="medium" color={'foreground'} as="span">
-              You are about to inactivate
-              <Text variant="medium" color={'foreground'} as="span" isBold>
-                {` ${company?.name}. `}
-              </Text>
-              <Text variant="medium" color={'foreground'} as="span">
-                Are you sure about this action?
-              </Text>
+              Are you sure about this action?
             </Text>
-            <Text color={'foreground'} variant={'medium'}>
-              The company will become inactive. The company data will not be
-              deleted and is recoverable.
-            </Text>
-          </div>
-        </DeleteModalConfirmation>
-      )}
+          </Text>
+          <Text color={'foreground'} variant={'medium'}>
+            The company will become inactive. The company data will not be
+            deleted and is recoverable.
+          </Text>
+        </div>
+      </DeleteModalConfirmation>
     </main>
   );
 }

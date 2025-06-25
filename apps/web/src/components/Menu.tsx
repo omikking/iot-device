@@ -60,7 +60,12 @@ export const Menu = () => {
 
       <MenuContent>
         <div className="flex flex-col gap-8">
-          {companyId && <MenuTitle>{companyName}</MenuTitle>}
+          {companyId ? (
+            <MenuTitle>{companyName}</MenuTitle>
+          ) : (
+            // sr-only title for accessibility, but is hidden visually
+            <MenuTitle className="sr-only">Menu</MenuTitle>
+          )}
 
           {!companyId && role === Role.SandvikAdmin && (
             <Link href="/overview" passHref legacyBehavior>

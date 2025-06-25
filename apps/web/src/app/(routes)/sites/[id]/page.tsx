@@ -8,14 +8,14 @@ import {
   Tabs,
   TabsContent,
 } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { Site } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
-import { Site } from '@/gql/graphql';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
@@ -164,7 +164,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data }] = useQuery<{
+  const [{ data: boltResultsResponse }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResultSchema[] };
   }>({
     query: boltResultQuery,
@@ -182,16 +182,6 @@ export default function Page({ params }: Props): JSX.Element {
     },
     pause: !site?.id,
   });
-
-  const [boltResults, setBoltResults] = useState<BoltResultSchema[]>([]);
-
-  useEffect(() => {
-    if (data?.boltResults?.results) {
-      setBoltResults(data.boltResults.results);
-    } else {
-      setBoltResults([]);
-    }
-  }, [data]);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -272,7 +262,7 @@ export default function Page({ params }: Props): JSX.Element {
           <Modal>
             <ModalTrigger asChild>
               <Button
-                disabled={!boltResults.length}
+                disabled={!boltResultsResponse?.boltResults?.results?.length}
                 variant="primary"
                 size="large"
               >
@@ -299,11 +289,14 @@ export default function Page({ params }: Props): JSX.Element {
           onSetLocation={setLocation}
           onSetDateRange={setDateRange}
           onFilterChange={setFilterState}
-          boltResults={boltResults}
+          boltResults={boltResultsResponse?.boltResults?.results || []}
         />
 
         <TabsContent value="table">
-          <BoltResultsTable site={site?.id} boltResults={boltResults} />
+          <BoltResultsTable
+            site={site?.id}
+            boltResults={boltResultsResponse?.boltResults?.results}
+          />
         </TabsContent>
 
         <TabsContent value="graphs">

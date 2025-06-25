@@ -13,20 +13,15 @@ type LocationsListProps = {
 };
 
 export const LocationsList = ({
+  drivesOptions,
   selectedDriveId,
   locationsOptions,
-  drivesOptions,
   refreshSite,
 }: LocationsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [locations, setLocations] = useState<Location[]>([]);
-
-  useEffect(() => {
-    locationsOptions.length > 0
-      ? setLocations(locationsOptions)
-      : setLocations([]);
-  }, [locationsOptions]);
+  const [isDeletingLocation, setIsDeletingLocation] = useState<boolean>(false);
 
   // Add a new empty location
   const addLocation = () => {
@@ -39,6 +34,14 @@ export const LocationsList = ({
     };
     setLocations((prevLocations) => [...prevLocations, newLocation]);
   };
+
+  useEffect(() => {
+    if (!isDeletingLocation) {
+      locationsOptions.length > 0
+        ? setLocations(locationsOptions)
+        : setLocations([]);
+    }
+  }, [locationsOptions, isDeletingLocation]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -65,9 +68,10 @@ export const LocationsList = ({
           <LocationItem
             key={location.id}
             location={location}
-            locationsOptions={locations}
             inputRef={inputRef}
+            locationsOptions={locations}
             refreshSite={refreshSite}
+            setIsDeletingLocation={setIsDeletingLocation}
           />
         ))}
       </div>

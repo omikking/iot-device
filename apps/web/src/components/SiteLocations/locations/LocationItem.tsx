@@ -1,16 +1,16 @@
 'use client';
-import React, { useState } from 'react';
 import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Location } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { Location } from '@/gql/graphql';
+import React, { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -48,14 +48,17 @@ type LocationComponentProps = {
   locationsOptions: Location[];
   inputRef: React.RefObject<HTMLInputElement>;
   refreshSite: () => void;
+  setIsDeletingLocation: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocationItem = ({
   location,
-  locationsOptions,
   inputRef,
+  locationsOptions,
   refreshSite,
+  setIsDeletingLocation,
 }: LocationComponentProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -112,12 +115,19 @@ export const LocationItem = ({
           locationName: newLocationName,
           driveId: location.driveId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-          locationsOptions.length === 1 && refreshSite();
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+            locationsOptions.length === 1 && refreshSite();
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating location:', error);
+        })
+        .finally(() => {
+          console.log('Create process completed');
+        });
     }
 
     // To edit a location
@@ -127,22 +137,44 @@ export const LocationItem = ({
         updateLocationInput: {
           locationName: newLocationName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating location:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteLocation = () => {
-    deleteLocation({
+    setIsDeleting(true);
+    setIsDeletingLocation(true);
+
+    return deleteLocation({
       id: location.id,
-    }).then((result) => {
-      if (result.data) {
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
-      }
-    });
+    })
+      .then((result) => {
+        if (result.error) {
+          return true;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingLocation(false);
+        }, 1500);
+      });
   };
 
   return (
@@ -169,16 +201,18 @@ export const LocationItem = ({
             </Text>
             <DeleteEditDropdown
               itemSelected={location.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete location"
-              deleteButtonText="Delete location"
               deleteIcon="Site"
+              modalTitle="Delete location"
+              modalDeleteButtonText="Delete location"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLocation}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text variant="medium" color={'foreground'}>
                 You are about to delete location{' '}

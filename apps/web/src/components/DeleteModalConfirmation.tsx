@@ -1,41 +1,55 @@
 import {
+  Modal,
   Button,
   Headline,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   ModalTitle,
+  ModalHeader,
+  ModalContent,
 } from '@gsp/ui';
 import {
-  LucideTrash2,
   LucideMountain,
   LucideUserMinus,
   LucideBuilding2,
+  LucideTrash2,
+  LucideCircleAlert,
 } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 type DeleteModalConfirmationProps = {
+  isOpen?: boolean;
   modalTitle: string;
-  deleteIcon?: 'User' | 'Site' | 'Company';
   modalText?: string;
+  isLoading?: boolean;
   deleteButtonText?: string;
   children: React.ReactNode;
-  onDelete: () => void;
-  isOpen?: boolean;
+  modalDeleteButtonText: string;
+  deleteIcon?: 'User' | 'Site' | 'Company';
+  initialView?: 'confirmDelete' | 'deleteSuccess';
+  onClose: () => void;
+  onSuccess?: () => void;
   onOpenChange: (open: boolean) => void;
+  onDelete: () => boolean | Promise<boolean>;
 };
 
+type ModalView = 'confirmDelete' | 'deleteSuccess';
+
 export const DeleteModalConfirmation = ({
-  modalTitle,
-  deleteIcon = 'User',
-  deleteButtonText,
+  isOpen,
   children,
   modalText,
+  isLoading,
+  modalTitle,
+  modalDeleteButtonText,
+  deleteIcon = 'User',
+  initialView = 'confirmDelete',
+  onClose,
   onDelete,
-  isOpen,
+  onSuccess,
   onOpenChange,
 }: DeleteModalConfirmationProps) => {
+  const [currentView, setCurrentView] = useState<ModalView>(initialView);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   const getDeleteIcon = (role: 'User' | 'Site' | 'Company') => {
     switch (role) {
       case 'User':
@@ -49,27 +63,114 @@ export const DeleteModalConfirmation = ({
     }
   };
 
+  const handleViewTransition = (nextView: ModalView) => {
+    if (isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentView(nextView);
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  const handleDeleteConfirm = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+
+    await Promise.resolve(onDelete())
+      .then((result) => {
+        if (result !== false) {
+          handleViewTransition('deleteSuccess');
+
+          if (onSuccess) {
+            setTimeout(() => {
+              onSuccess();
+            }, 1500);
+          } else {
+            setTimeout(() => {
+              setCurrentView('confirmDelete');
+              onClose();
+            }, 1200);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error during deletion:', error);
+      })
+      .finally(() => {
+        //remove later
+        console.log('Deletion process completed');
+      });
+  };
+
   return (
     <Modal open={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent>
+      <ModalContent onEscapeKeyDown={onClose} onPointerDownOutside={onClose}>
         <ModalHeader>
           <ModalTitle>{modalTitle}</ModalTitle>
         </ModalHeader>
-        <div className="flex flex-row justify-center items-center pt-16 gap-4">
-          {getDeleteIcon(deleteIcon)}
-          <Headline variant="medium" as="h3" color="foreground" isBold>
-            {modalText || 'Confirm deletion'}
-          </Headline>
+
+        <div className="h-[250px] flex items-center justify-center">
+          {/* Confirm Delete View */}
+          <div
+            className={`absolute flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 ${
+              currentView === 'confirmDelete'
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0] z-0'
+            }`}
+          >
+            <div className="flex flex-row justify-center items-center pt-16 gap-4">
+              {getDeleteIcon(deleteIcon)}
+              <Headline variant="medium" as="h3" color="foreground" isBold>
+                {modalText || 'Confirm deletion'}
+              </Headline>
+            </div>
+            {children}
+          </div>
+
+          {/* Delete Success View */}
+          <div
+            className={`absolute flex flex-col items-center justify-center gap-6 p-4 transition-all duration-300 ${
+              currentView === 'deleteSuccess'
+                ? 'opacity-100 translate-y-[-10px] z-10'
+                : 'opacity-0 translate-y-0 z-0'
+            }`}
+          >
+            <div className="flex flex-row pt-16 gap-4 items-center">
+              <LucideCircleAlert size={30} className="text-blue-primary" />
+              <Headline as="h3" color="foreground" variant="small" isBold>
+                Deleted Successfully
+              </Headline>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col justify-center items-center text-center pb-5 pt-10 max-w-[350px] mx-auto">
-          {children}
+
+        <div className="px-10 pb-5 pt-8">
+          <div className="flex justify-end items-end gap-5">
+            {currentView === 'confirmDelete' && (
+              <Button
+                size="large"
+                variant="destructive"
+                disabled={isLoading || isTransitioning}
+                onClick={handleDeleteConfirm}
+                isLoading={isLoading}
+              >
+                <LucideTrash2 />
+                {modalDeleteButtonText}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="large"
+              onClick={onClose}
+              disabled={isTransitioning && currentView !== 'deleteSuccess'}
+            >
+              {currentView === 'deleteSuccess' ? 'Close' : 'Cancel'}
+            </Button>
+          </div>
         </div>
-        <ModalFooter className="ui-px-10 ui-py-6">
-          <Button variant="destructive" size={'large'} onClick={onDelete}>
-            <LucideTrash2 />
-            {deleteButtonText || 'Confirm deletion'}
-          </Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

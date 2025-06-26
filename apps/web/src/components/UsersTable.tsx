@@ -1,25 +1,25 @@
 'use client';
-import { graphql } from '@/gql';
-import { useState } from 'react';
 import {
-  Application,
-  GetCompanyUsersQuery,
   Role,
   User,
+  Application,
   UserPermission,
+  GetCompanyUsersQuery,
 } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useState } from 'react';
+import { useMutation } from 'urql';
+import { useParams } from 'next/navigation';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
-import { useMutation } from 'urql';
-import { useParams } from 'next/navigation';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type UsersTableProps = {
   companyData?: GetCompanyUsersQuery;
-  onOpenChange: (open: boolean) => void;
   onSelectUser: (user: User) => void;
+  onOpenChange: (open: boolean) => void;
 };
 
 // @TODO create a utils folder and add these kind of functions there
@@ -36,9 +36,9 @@ export const formatAppName = (appName: string): string => {
 
 export const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
-    SANDVIK_TECHNICIAN: 'Technician',
-    COMPANY_ADMIN: 'Admin',
     COMPANY_USER: 'User',
+    COMPANY_ADMIN: 'Admin',
+    SANDVIK_TECHNICIAN: 'Technician',
   };
 
   return roleNames[role] || role;
@@ -58,18 +58,16 @@ export const UsersTable = ({
   onSelectUser,
 }: UsersTableProps) => {
   const params = useParams();
-  const companyId = params.id;
+  const companyId = params.id as string;
+  const [isDeleting, setIsDeleting] = useState(false);
   const users = (companyData?.company.users as User[]) || [];
-
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-
-  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
-
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
+  const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
 
-  const userToDeleteName = users.find(
+  const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
   )?.fullName;
 
@@ -117,23 +115,35 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (userId: string) => {
-    const userToDelete = users.find((user) => user.id === userId);
+  const handleDelete = async (): Promise<boolean> => {
+    const userToDeleteFound = users.find((user) => user.id === userToDelete);
+    const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
+      (userPerm) => userPerm.companyId === companyId,
+    );
 
-    if (userToDelete) {
-      const userPermissionToDelete = userToDelete.userPermissions?.find(
-        (userPerm) => userPerm.companyId === companyId,
-      );
-
-      if (userPermissionToDelete) {
-        deleteUser({
-          id: userPermissionToDelete.id,
-        }).catch((error) => {
-          // TODO add toaster
-          console.log('error deleting user permission', error);
-        });
-      }
+    // check for userPermId, cant delete if type is undefined
+    if (!userPermissionToDelete?.id) {
+      console.log('No user permission found to delete');
+      return Promise.resolve(false);
     }
+
+    setIsDeleting(true);
+
+    return deleteUserPermission({
+      id: userPermissionToDelete.id,
+    })
+      .then((result) => {
+        if (result.error) {
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const openEditModal = (userId: string) => {
@@ -204,22 +214,19 @@ export const UsersTable = ({
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Delete user"
         deleteIcon="User"
         modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={isDeleting}
         isOpen={isDeleteUserModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
         onOpenChange={closeDeleteModal}
-        onDelete={() => {
-          if (userToDelete) {
-            handleDelete(userToDelete);
-          }
-          closeDeleteModal();
-        }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {` ${userToDeleteName} `}
+            {` ${fullNameOfUserToDelete} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>

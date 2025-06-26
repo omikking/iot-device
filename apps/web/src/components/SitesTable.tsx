@@ -1,4 +1,12 @@
 'use client';
+import {
+  Text,
+  Badge,
+  Button,
+  DataTable,
+  showAlertToast,
+  TableHeadWithSorting,
+} from '@gsp/ui';
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useState } from 'react';
@@ -8,14 +16,6 @@ import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import {
-  Text,
-  Badge,
-  Button,
-  DataTable,
-  TableHeadWithSorting,
-  showAlertToast,
-} from '@gsp/ui';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -91,7 +91,6 @@ export const SitesTable = ({
         return false;
       })
       .finally(() => {
-        closeDeleteModal();
         setIsDeleting(false);
       });
   };

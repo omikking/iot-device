@@ -21,6 +21,7 @@ import { graphql } from '@/gql';
 import { useForm } from 'react-hook-form';
 import { LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Role } from '@/gql/graphql';
 
 const getUserWithPermissionsQuery = graphql(`
   query getUserWithPermissions($id: String!) {
@@ -56,26 +57,18 @@ export default function Page(): JSX.Element {
 
   // const userRole = companyPermission?.role;
   // Just for testing purposes, hardcoded user role
-  const userRole = 'SANDVIK_TECHNICIAN' as string;
+  const userRole = Role.SandvikTechnician as string;
 
   let invitationRoleTitle: JSX.Element | string;
 
   switch (userRole) {
-    case 'SANDVIK_ADMIN':
+    case Role.SandvikAdmin:
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text
-            // is it correct to use increase text font size here?
-            // according to design system medium is 16px and its the largest
-            className="ui-text-xl"
-            color={'foreground'}
-            variant={'medium'}
-            as="span"
-            isBold
-          >
+          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
             {` Ground Support Platform `}
-          </Text>
+          </Headline>
           as an administrator.
         </Headline>
       );
@@ -84,17 +77,9 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text
-            // is it correct to use increase text font size here?
-            // according to design system medium is 16px and its the largest
-            className="ui-text-xl"
-            color={'foreground'}
-            variant={'medium'}
-            as="span"
-            isBold
-          >
+          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
             {` Ground Support Platform `}
-          </Text>
+          </Headline>
           as a technician.
         </Headline>
       );
@@ -103,17 +88,9 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text
-            // is it correct to use increase text font size here?
-            // according to design system medium is 16px and its the largest
-            className="ui-text-xl"
-            color={'foreground'}
-            variant={'medium'}
-            as="span"
-            isBold
-          >
+          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
             {` ${userData?.user?.workPlace} `}
-          </Text>
+          </Headline>
           as an administrator.
         </Headline>
       );
@@ -122,17 +99,9 @@ export default function Page(): JSX.Element {
       invitationRoleTitle = (
         <Headline as="h4" variant="small" color="foreground">
           You're invited to join
-          <Text
-            // is it correct to use increase text font size here?
-            // according to design system medium is 16px and its the largest
-            className="ui-text-xl"
-            color={'foreground'}
-            variant={'medium'}
-            as="span"
-            isBold
-          >
+          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
             {` ${userData?.user?.workPlace}. `}
-          </Text>
+          </Headline>
         </Headline>
       );
       break;

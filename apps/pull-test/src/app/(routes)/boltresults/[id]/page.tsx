@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
@@ -26,6 +26,7 @@ import {
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
+  Button,
 } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
 
@@ -261,23 +262,31 @@ export default function Page({ params }: Props): JSX.Element {
             </Breadcrumb>
           </div>
 
-          <Modal>
-            <PdfComponent
-              disabled={false}
-              objList={boltResultsResponse?.boltResults}
-              reportDetails={pdfComponentMockData.mockBoltResult}
-              layout={{
-                logo: pdfComponentMockData.Layout.logo,
-                authorImage: pdfComponentMockData.Layout.authorImage,
-                authorSignature: pdfComponentMockData.Layout.authorSignature,
-                contactHtml: '<strong>John Doe</strong> - Site Manager',
-              }}
-              parentUrl={window.parent.location.toString()}
-              pdfName={'pull_test_report.pdf'}
-              pdfPageTitle={'Bolt Result'}
-              currentDate={new Date().toLocaleDateString()}
-            />
-          </Modal>
+          <Button
+            onClick={() => {
+              // Save the data to sessionStorage
+              sessionStorage.setItem(
+                'pdfData',
+                JSON.stringify({
+                  objList: boltResultsResponse?.boltResults,
+                  reportDetails: pdfComponentMockData.mockBoltResult,
+                  layout: pdfComponentMockData.Layout,
+                  pdfName: 'pull_test_report.pdf',
+                  pdfPageTitle: 'Bolt Result',
+                  currentDate: new Date().toLocaleDateString(),
+                }),
+              );
+              // Redirect to preview page
+              window.location.href = `/pulltestreport/${companyId}`;
+            }}
+            size="large"
+            variant="outline"
+          >
+            <>
+              <LucideFileDown className="mr-2" />
+              View PDF
+            </>
+          </Button>
         </div>
 
         <BoltSelection

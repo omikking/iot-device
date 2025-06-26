@@ -5,7 +5,7 @@ import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
 
 const Pdf = ({
-  objList,
+  objList = [],
   reportDetails,
   layout,
   parentUrl = '',
@@ -60,6 +60,8 @@ const Pdf = ({
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
+    const totalPages = Math.ceil((objList?.length || 0) / 10) + 2;
+
 
     // ========== PAGE 1 ==========
     const page1Container = createHiddenWrapper();
@@ -103,7 +105,7 @@ const Pdf = ({
     pdf.setFontSize(10);
     pdf.text(parentUrl, margin, pageHeight - 5);
     pdf.text(
-      `Page 1 of ${Math.ceil(objList.length / 10) + 2}`,
+      `Page 1 of ${totalPages}`,
       pageWidth - margin,
       pageHeight - 5,
       { align: 'right' },
@@ -263,7 +265,7 @@ const Pdf = ({
           ) : (
             <>
               <LucideFileDown />
-              View PDF
+              Export PDF
             </>
           )}
         </Button>

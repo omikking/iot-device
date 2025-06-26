@@ -70,14 +70,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import {
-  optionsDesignSystemMock,
-  usersMock,
-  sitesMock,
-  pdfComponentMockData,
-} from '@/app/mock/mock';
+import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
-import PdfComponent from '@/components/pdf';
 
 type Role = 'User' | 'Technician' | 'Admin';
 

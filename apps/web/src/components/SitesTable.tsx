@@ -1,30 +1,21 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-import { LucideMoveRight } from 'lucide-react';
-import { useMutation, useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { useState } from 'react';
+import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting, showAlertToast } from '@gsp/ui';
+import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-
-const getCompanySitesQuery = graphql(`
-  query getCompanySites($id: String!) {
-    company(id: $id) {
-      sites {
-        id
-        siteName
-        address
-        city
-        country
-        postalCode
-        companyId
-      }
-    }
-  }
-`);
+import {
+  Text,
+  Badge,
+  Button,
+  DataTable,
+  TableHeadWithSorting,
+  showAlertToast,
+} from '@gsp/ui';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -41,29 +32,26 @@ const deleteSiteMutation = graphql(`
 `);
 
 type SitesTableProps = {
+  sites: Site[];
   companyId: string;
-  onOpenChange: (isOpen: boolean) => void;
   onSelectSite: (site?: Site) => void;
+  onOpenChange: (isOpen: boolean) => void;
 };
 
 export const SitesTable = ({
+  sites,
   companyId,
   onOpenChange,
   onSelectSite,
 }: SitesTableProps) => {
-  const [sitesData] = useQuery({
-    query: getCompanySitesQuery,
-    variables: { id: companyId || '' },
-  });
-  const sites = (sitesData.data?.company.sites as Site[]) || [];
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
   const [, deleteSite] = useMutation(deleteSiteMutation);
 
   const openDeleteModal = (siteId: string) => {
-    const siteToDelete = sites?.find((site) => site.id === siteId);
-    setSiteToDelete(siteToDelete);
+    const foundSite = sites?.find((site) => site.id === siteId);
+    setSiteToDelete(foundSite);
     setDeleteSiteModalOpen(true);
   };
 
@@ -72,30 +60,48 @@ export const SitesTable = ({
     setSiteToDelete(undefined);
   };
 
-const handleDelete = () => {
-    if (siteToDelete) {
-      deleteSite({ id: siteToDelete.id }).then((result) => {
-        if (result.data) {
-          showAlertToast({
-            title: 'Site has been deleted',
-            variant: 'info',
-          });
-        } else {
+  const handleDelete = async (): Promise<boolean> => {
+    const siteFound = sites.find((site) => site.id === siteToDelete?.id);
+    const siteId = siteFound?.id;
+
+    if (!siteId) {
+      console.error('No site selected for deletion');
+      return Promise.resolve(false);
+    }
+
+    setIsDeleting(true);
+
+    return deleteSite({ id: siteId })
+      .then((result) => {
+        if (result.error) {
           showAlertToast({
             title: 'Deletion Failed',
             description: 'Please contact our support team for assistance',
             variant: 'error',
           });
+          return false;
         }
+        showAlertToast({
+          title: 'Site has been deleted',
+          variant: 'info',
+        });
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
         closeDeleteModal();
+        setIsDeleting(false);
       });
-    }
   };
 
   const openEditModal = (siteId: string) => {
     const siteToEdit = sites?.find((site) => site.id === siteId);
-    onSelectSite(siteToEdit);
-    onOpenChange(true);
+    if (siteToEdit) {
+      onSelectSite(siteToEdit);
+      onOpenChange(true);
+    }
   };
 
   const columns: ColumnDef<Site>[] = [
@@ -158,24 +164,24 @@ const handleDelete = () => {
 
   return (
     <>
-      {siteToDelete && (
-        <DeleteModalConfirmation
-          deleteButtonText="Delete site"
-          deleteIcon="Site"
-          modalTitle="Delete site"
-          isOpen={isDeleteSiteModalOpen}
-          onOpenChange={closeDeleteModal}
-          onDelete={handleDelete}
-        >
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
-              {` ${siteToDelete.siteName} `}
-            </Text>
-            from the list. Are you sure you want to delete?
+      <DeleteModalConfirmation
+        deleteIcon="Site"
+        modalTitle="Delete site"
+        modalDeleteButtonText="Delete site"
+        isLoading={isDeleting}
+        isOpen={isDeleteSiteModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${siteToDelete?.siteName} `}
           </Text>
-        </DeleteModalConfirmation>
-      )}
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

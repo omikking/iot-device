@@ -11,7 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
-  showAlertToast
+  showAlertToast,
 } from '@gsp/ui';
 import {
   createSiteFormSchema,
@@ -60,11 +60,13 @@ const updateSiteMutation = graphql(`
 type AddOrEditSiteModalProps = {
   site?: Site;
   onOpenChange: (open: boolean) => void;
+  refreshSites: () => void;
 };
 
 export const AddOrEditSiteModal = ({
   site,
   onOpenChange,
+  refreshSites,
 }: AddOrEditSiteModalProps) => {
   const { data: session } = useSession();
 
@@ -109,7 +111,7 @@ export const AddOrEditSiteModal = ({
     }, 1700);
   };
 
- const onSubmit: SubmitHandler<CreateSiteFormValues | UpdateSiteFormValues> = (
+  const onSubmit: SubmitHandler<CreateSiteFormValues | UpdateSiteFormValues> = (
     data,
   ) => {
     setIsLoading(true);
@@ -165,6 +167,7 @@ export const AddOrEditSiteModal = ({
             description: 'Please contact support.',
             variant: 'error',
           });
+          refreshSites();
         }
       });
     }
@@ -179,8 +182,13 @@ export const AddOrEditSiteModal = ({
   const formValues = form.watch();
   const isDirty = form.formState.isDirty;
 
-  const isAnyFieldEmpty = !formValues.siteName || !formValues.address ||!formValues.postalCode ||!formValues.city ||!formValues.country;
-  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+  const isAnyFieldEmpty =
+    !formValues.siteName ||
+    !formValues.address ||
+    !formValues.postalCode ||
+    !formValues.city ||
+    !formValues.country;
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

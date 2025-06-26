@@ -20,11 +20,11 @@ export class SitesService {
     return site;
   }
 
- async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
+  async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
     const siteName = createSiteInput.siteName.trim();
 
     // Check if a site with the same name already exists
-    const existingSite = await this.prisma.site.findUnique({
+    const existingSite = await this.prisma.site.findFirst({
       where: { siteName },
     });
 

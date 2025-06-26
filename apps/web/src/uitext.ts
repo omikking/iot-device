@@ -1,5 +1,4 @@
-// Just an example of a placeholder file for the web app.
-export const placeholder = {
+export const uiTexts = {
   //email
   emailPlaceholder: 'Fill in an email...',
 
@@ -49,4 +48,15 @@ export const placeholder = {
   //misc
   verificationCodePlaceholder: 'Fill in the verification code...',
   selectRangeDatesPlaceholder: 'Select date range',
+
+  // SiteFailed messages
+  createSiteFailedText: 'Failed to add site',
+  deleteFailedText: 'Deletion Failed',
+  siteAlreadyExistsText: 'Site already exists',
+  // contact support message
+  failedDescriptionText: 'Please contact our support team for assistance',
+
+  // Site delete success messages
+  successfulSiteDeleteText: 'Site has been deleted',
+  successfulSiteCreateText: 'Site successfully added',
 };

@@ -28,6 +28,7 @@ import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { uiTexts } from '@/uitext';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -137,8 +138,8 @@ export const AddOrEditSiteModal = ({
 
         if (alreadyExistsError) {
           showAlertToast({
-            title: 'Site already exists',
-            description: alreadyExistsError.message,
+            title: uiTexts.siteAlreadyExistsText,
+            description: uiTexts.siteAlreadyExistsText,
             variant: 'info',
           });
           return;
@@ -147,8 +148,8 @@ export const AddOrEditSiteModal = ({
         // General error
         if (result.error) {
           showAlertToast({
-            title: 'Failed to add site',
-            description: 'Please contact our support team for assistance.',
+            title: uiTexts.createSiteFailedText,
+            description: uiTexts.failedDescriptionText,
             variant: 'error',
           });
           return;
@@ -158,13 +159,13 @@ export const AddOrEditSiteModal = ({
         if (result.data) {
           onSuccessfulSubmit();
           showAlertToast({
-            title: 'Site successfully added',
+            title: uiTexts.successfulSiteCreateText,
             variant: 'success',
           });
         } else {
           showAlertToast({
-            title: 'Unexpected response',
-            description: 'Please contact support.',
+            title: uiTexts.createSiteFailedText,
+            description: uiTexts.failedDescriptionText,
             variant: 'error',
           });
           refreshSites();

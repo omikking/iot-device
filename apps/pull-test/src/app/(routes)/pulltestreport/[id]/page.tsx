@@ -6,7 +6,7 @@ import { LucideFileDown } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
-import PdfComponent from '@/components/pdf';
+import PdfComponent from '@/components/PullTestReportPDF';
 import { pdfComponentMockData } from '@/app/mock/mock';
 
 import { gql, useQuery } from 'urql';

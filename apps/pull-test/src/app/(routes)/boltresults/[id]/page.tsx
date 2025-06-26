@@ -8,14 +8,12 @@ import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
-import PdfComponent from '@/components/pdf';
 import { pdfComponentMockData } from '@/app/mock/mock';
 
 import { gql, useQuery } from 'urql';
 import {
   Headline,
   Badge,
-  Modal,
   Tabs,
   TabsList,
   TabsTrigger,

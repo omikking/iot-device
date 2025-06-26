@@ -1,11 +1,9 @@
 'use client';
 
 import { useMemo, useState, useRef, useEffect } from 'react';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { LucideFileDown } from 'lucide-react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
-import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
 import PdfComponent from '@/components/pdf';
@@ -17,16 +15,9 @@ import {
   Badge,
   Modal,
   Tabs,
-  TabsList,
-  TabsTrigger,
   TabsContent,
   DateRange,
   Button,
-  Text,
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbSeparator,
 } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
 
@@ -133,18 +124,17 @@ export default function Page({ params }: Props): JSX.Element {
       }
     }
   `;
-  const [site, setSite] = useState<SiteType | undefined>();
-  const [level, setLevel] = useState<LevelType | undefined>();
-  const [drive, setDrive] = useState<DriveType | undefined>();
-  const [location, setLocation] = useState<LocationType | undefined>();
+  const [site] = useState<SiteType | undefined>();
+  const [level] = useState<LevelType | undefined>();
+  const [drive] = useState<DriveType | undefined>();
+  const [location] = useState<LocationType | undefined>();
 
-  const [selectedTab, setSelectedTab] = useState<'table' | 'graphs'>('table');
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+  const [dateRange] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
 
-  const [filterState, setFilterState] = useState({
+  const [filterState] = useState({
     pass: false,
     fail: false,
     abort: false,
@@ -228,7 +218,7 @@ export default function Page({ params }: Props): JSX.Element {
             <PdfComponent
               disabled={false}
               objList={boltResultsResponse?.boltResults}
-              reportDetails={pdfComponentMockData.mockBoltResult}
+              reportDetails={pdfComponentMockData.reportDetails}
               layout={{
                 logo: pdfComponentMockData.Layout.logo,
                 authorImage: pdfComponentMockData.Layout.authorImage,

@@ -3,9 +3,46 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
+import { BoltResultSchema } from '@/app/mock/mock';
+
+interface PdfProps {
+  objList?: {
+    totalRecords: number;
+    results: BoltResultSchema[];
+  };
+  reportDetails: {
+    startDate: string;
+    companyName: string;
+    mine: string;
+    contractor: string;
+    commodity: string;
+    contactPerson: { name: string; designation: string }[];
+    author: string;
+    designation: string;
+    email: string;
+    contactNumber: string;
+  };
+  layout: {
+    contactHtml: string;
+    logo: {
+      src: string;
+    };
+    authorImage: {
+      src: string;
+    };
+    authorSignature: {
+      src: string;
+    };
+  };
+  parentUrl?: string;
+  pdfName?: string;
+  pdfPageTitle?: string;
+  currentDate?: string;
+  disabled?: boolean;
+}
 
 const Pdf = ({
-  objList = [],
+  objList = { totalRecords: 0, results: [] },
   reportDetails,
   layout,
   parentUrl = '',
@@ -13,13 +50,16 @@ const Pdf = ({
   pdfPageTitle = 'Pull Test Report',
   currentDate = new Date().toLocaleDateString(),
   disabled,
-}) => {
-  const [logoDataUrl, setLogoDataUrl] = useState(null);
-  const [authorImage, setAuthorImage] = useState(null);
-  const [authorSignatureImage, setAuthorSignature] = useState(null);
+}: PdfProps) => {
+  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
+  const [authorImage, setAuthorImage] = useState<string | null>(null);
+  const [authorSignatureImage, setAuthorSignature] = useState<string | null>(
+    null,
+  );
+
   const [isLoading, setLoading] = useState(false);
   const pdfRef = useRef(new jsPDF({ orientation: 'portrait', compress: true }));
-  const loadImageAsBase64 = (imagePath) =>
+  const loadImageAsBase64 = (imagePath: string) =>
     new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -29,13 +69,14 @@ const Pdf = ({
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Canvas context not available'));
         ctx.drawImage(img, 0, 0);
         resolve(canvas.toDataURL('image/png'));
       };
       img.onerror = reject;
     });
 
-  const renderToCanvas = async (htmlElement) => {
+  const renderToCanvas = async (htmlElement: HTMLElement) => {
     return await html2canvas(htmlElement, {
       useCORS: true,
       scale: 3,
@@ -60,8 +101,7 @@ const Pdf = ({
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
-    const totalPages = Math.ceil((objList?.length || 0) / 10) + 2;
-
+    const totalPages = Math.ceil((objList?.totalRecords || 0) / 10) + 2;
 
     // ========== PAGE 1 ==========
     const page1Container = createHiddenWrapper();
@@ -104,18 +144,15 @@ const Pdf = ({
     pdf.text(currentDate, margin, 10);
     pdf.setFontSize(10);
     pdf.text(parentUrl, margin, pageHeight - 5);
-    pdf.text(
-      `Page 1 of ${totalPages}`,
-      pageWidth - margin,
-      pageHeight - 5,
-      { align: 'right' },
-    );
+    pdf.text(`Page 1 of ${totalPages}`, pageWidth - margin, pageHeight - 5, {
+      align: 'right',
+    });
 
     // ========== TABLE PAGES ==========
     const chunkSize = 10;
     const rowChunks = [];
-    for (let i = 0; i < objList.length; i += chunkSize) {
-      rowChunks.push(objList.slice(i, i + chunkSize));
+    for (let i = 0; i < objList.results.length; i += chunkSize) {
+      rowChunks.push(objList.results.slice(i, i + chunkSize));
     }
 
     for (let pageIndex = 0; pageIndex < rowChunks.length; pageIndex++) {
@@ -160,7 +197,7 @@ const Pdf = ({
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['peakDisplacement'].join(' ')}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['level']['levelName']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['drive']['driveName']}</td>
-                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['positionInRing']}</td>
+                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;"></td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['result']}</td>
                 </tr>`,
             )
@@ -242,9 +279,14 @@ const Pdf = ({
   };
   useEffect(() => {
     (async () => {
-      const logo = await loadImageAsBase64(layout.logo.src);
-      const authorImg = await loadImageAsBase64(layout.authorImage.src);
-      const signature = await loadImageAsBase64(layout.authorSignature.src);
+      const logo = (await loadImageAsBase64(layout.logo.src)) as string;
+      const authorImg = (await loadImageAsBase64(
+        layout.authorImage.src,
+      )) as string;
+      const signature = (await loadImageAsBase64(
+        layout.authorSignature.src,
+      )) as string;
+
       setLogoDataUrl(logo);
       setAuthorImage(authorImg);
       setAuthorSignature(signature);

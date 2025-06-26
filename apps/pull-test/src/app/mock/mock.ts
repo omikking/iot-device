@@ -20,7 +20,7 @@ export interface BoltResultSchema {
   isHazard?: boolean;
   createdDate: Date;
   author?: string;
-};
+}
 
 export type MultiBoltReadingSchema = {
   reading: string;
@@ -447,7 +447,7 @@ export const pdfComponentMockData = {
     authorSignature: authorSignature,
     contactHtml: '<strong>John Doe</strong> - Site Manager',
   },
-  ortDetails: {
+  reportDetails: {
     startDate: '15-12-2024',
     companyName: 'St Barbara',
     mine: 'Sons of Gwalia',

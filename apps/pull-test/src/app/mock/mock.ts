@@ -1,6 +1,3 @@
-import authorSignature from './image/signature.png';
-import authorImage from './image/author.jpg';
-import SandvikLogo from './image/sandvik-logo.jpg';
 export interface BoltResultSchema {
   id: string;
   boltNumber: string;
@@ -439,12 +436,10 @@ export const sitesMock = [
   },
 ];
 
+// TODO Fix mock data
 export const pdfComponentMockData = {
   pdfPageTitle: 'Pull Test Report',
   Layout: {
-    logo: SandvikLogo,
-    authorImage: authorImage,
-    authorSignature: authorSignature,
     contactHtml: '<strong>John Doe</strong> - Site Manager',
   },
   reportDetails: {

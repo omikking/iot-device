@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
 
-interface PdfProps {
+interface PullTestReportPDFProps {
   objList?: {
     totalRecords: number;
     results: BoltResultSchema[];
@@ -41,40 +41,36 @@ interface PdfProps {
   disabled?: boolean;
 }
 
-const PullTestReportPDF = ({
+export const PullTestReportPDF = ({
   objList = { totalRecords: 0, results: [] },
-  reportDetails,
-  layout,
+  // layout,
   parentUrl = '',
   pdfName = 'report.pdf',
   pdfPageTitle = 'Pull Test Report',
   currentDate = new Date().toLocaleDateString(),
   disabled,
-}: PdfProps) => {
-  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
-  const [authorImage, setAuthorImage] = useState<string | null>(null);
-  const [authorSignatureImage, setAuthorSignature] = useState<string | null>(
-    null,
-  );
-
+}: PullTestReportPDFProps) => {
+  // const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
+
   const pdfRef = useRef(new jsPDF({ orientation: 'portrait', compress: true }));
-  const loadImageAsBase64 = (imagePath: string) =>
-    new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = imagePath;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return reject(new Error('Canvas context not available'));
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      };
-      img.onerror = reject;
-    });
+
+  // const loadImageAsBase64 = (imagePath: string) =>
+  //   new Promise((resolve, reject) => {
+  //     const img = new Image();
+  //     img.crossOrigin = 'anonymous';
+  //     img.src = imagePath;
+  //     img.onload = () => {
+  //       const canvas = document.createElement('canvas');
+  //       canvas.width = img.width;
+  //       canvas.height = img.height;
+  //       const ctx = canvas.getContext('2d');
+  //       if (!ctx) return reject(new Error('Canvas context not available'));
+  //       ctx.drawImage(img, 0, 0);
+  //       resolve(canvas.toDataURL('image/png'));
+  //     };
+  //     img.onerror = reject;
+  //   });
 
   const renderToCanvas = async (htmlElement: HTMLElement) => {
     return await html2canvas(htmlElement, {
@@ -111,20 +107,15 @@ const PullTestReportPDF = ({
     wrapper.style.width = '210mm';
     wrapper.style.minHeight = '297mm';
 
+    // Add in wrapper later
+    // <div>
+    //   <img src="${logoDataUrl}" alt="Logo" style="height: 30px;" />
+    // </div>;
+
     wrapper.innerHTML = `
       <div style="width: 100%; padding: 20px; box-sizing: border-box;">
         <div style="width: 94%; height: 150px; background-color: #18B7F9; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; margin-top: 25px;">
-          <div><img src="${logoDataUrl}" alt="Logo" style="height: 30px;" /></div>
-          <div style="font-size: 12px; color: white;">Metric/Imperial</div>
           <div style="font-size: 18px; color: white;">PULL TEST REPORT</div>
-        </div>
-        <div style="display: grid; padding: 20px; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 0;">
-          <div><p style="color: orange;">START DATE</p><p style="color: #87CEEB;">${reportDetails.startDate}</p></div>
-          <div><p style="color: orange;">COMPANY NAME</p><p style="color: #87CEEB;">${reportDetails.companyName}</p></div>
-          <div><p style="color: orange;">CONTRACTOR</p><p style="color: #87CEEB;">${reportDetails.contractor}</p></div>
-          <div><p style="color: orange;">MINE</p><p style="color: #87CEEB;">${reportDetails.mine}</p></div>
-          <div><p style="color: orange;">COMMODITY</p><p style="color: #87CEEB;">${reportDetails.commodity}</p></div>
-          <div style="grid-column: span 3;"><p style="color: orange;">CONTACT PERSON</p>${layout.contactHtml}</div>
         </div>
       </div>
     `;
@@ -231,39 +222,7 @@ const PullTestReportPDF = ({
       );
     }
 
-    // ========== FINAL PAGE: AUTHOR INFO ==========
-    const authorContainer = createHiddenWrapper();
-    const authorWrapper = document.createElement('div');
-    authorWrapper.style.fontFamily = "'Poppins', sans-serif";
-    authorWrapper.style.width = '210mm';
-    authorWrapper.style.minHeight = '297mm';
-    authorWrapper.style.padding = '20px';
-
-    authorWrapper.innerHTML = `
-      <div style="padding-top: 40px;">
-        <div style="font-size: 20px; color: orange; font-weight: bold;">General Observation</div>
-        <div style="display: flex; flex-direction: column; align-items: center; padding-top: 20px;">
-          <div style="font-size: 18px;">${reportDetails.author}</div>
-          <img src="${authorImage}" alt="Author" style="width: 120px; height: 120px; border-radius: 50%; margin: 20px 0;" />
-          <div>${reportDetails.designation}</div>
-          <div>${reportDetails.email}</div>
-          <div>${reportDetails.contactNumber}</div>
-          <img src="${authorSignatureImage}" alt="Signature" style="width: 120px; height: 120px;" />
-        </div>
-      </div>
-    `;
-
-    authorContainer.appendChild(authorWrapper);
-    const authorCanvas = await renderToCanvas(authorWrapper);
-    document.body.removeChild(authorContainer);
-
-    const authorImgData = authorCanvas.toDataURL('image/png');
-    const authorImgProps = pdf.getImageProperties(authorImgData);
-    const authorImgHeight =
-      (authorImgProps.height * pageWidth) / authorImgProps.width;
-
     pdf.addPage();
-    pdf.addImage(authorImgData, 'PNG', 0, 0, pageWidth, authorImgHeight);
     pdf.setFontSize(10);
     pdf.text(pdfPageTitle, pageWidth / 2, 10, { align: 'center' });
     pdf.text(parentUrl, margin, pageHeight - 5);
@@ -277,43 +236,27 @@ const PullTestReportPDF = ({
     pdf.save(pdfName);
     setLoading(false);
   };
-  useEffect(() => {
-    (async () => {
-      const logo = (await loadImageAsBase64(layout.logo.src)) as string;
-      const authorImg = (await loadImageAsBase64(
-        layout.authorImage.src,
-      )) as string;
-      const signature = (await loadImageAsBase64(
-        layout.authorSignature.src,
-      )) as string;
-
-      setLogoDataUrl(logo);
-      setAuthorImage(authorImg);
-      setAuthorSignature(signature);
-    })();
-  }, [layout]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const logo = (await loadImageAsBase64(layout.logo.src)) as string;
+  //     setLogoDataUrl(logo);
+  //   })();
+  // }, [layout]);
 
   return (
-    <div>
-      {logoDataUrl && (
-        <Button
-          onClick={generatePdfContent}
-          disabled={disabled}
-          size="large"
-          variant="outline"
-        >
-          {isLoading ? (
-            'Generating PDF...'
-          ) : (
-            <>
-              <LucideFileDown />
-              Export PDF
-            </>
-          )}
-        </Button>
-      )}
-    </div>
+    <>
+      <Button
+        onClick={generatePdfContent}
+        disabled={disabled}
+        size="large"
+        variant="primary"
+        isLoading={isLoading}
+      >
+        <>
+          {!isLoading && <LucideFileDown />}
+          Export PDF
+        </>
+      </Button>
+    </>
   );
 };
-
-export default PullTestReportPDF;

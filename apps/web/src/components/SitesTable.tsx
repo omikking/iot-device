@@ -16,7 +16,7 @@ import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { uiTexts } from '@/uitext';
+import { responses } from '@/app/texts/responses';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -76,14 +76,14 @@ export const SitesTable = ({
       .then((result) => {
         if (result.error) {
           showAlertToast({
-            title: uiTexts.deleteFailedText,
-            description: uiTexts.failedDescriptionText,
+            title: responses.deleteFailedError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
           return false;
         }
         showAlertToast({
-          title: uiTexts.successfulSiteDeleteText,
+          title: responses.siteDeleteSuccess,
           variant: 'info',
         });
         return true;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
@@ -137,11 +137,11 @@ export default function Page({ params }: Props): JSX.Element {
     reportedHazard: false,
   });
 
-  type PdfRefType = {
-    generatePdf: () => void;
-  };
+  // type PdfRefType = {
+  //   generatePdf: () => void;
+  // };
 
-  const pdfRef = useRef<PdfRefType | null>(null);
+  // const pdfRef = useRef<PdfRefType | null>(null);
   const [pdfData, setPdfData] = useState(null);
 
   console.log(pdfData);

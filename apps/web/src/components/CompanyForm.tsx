@@ -1,5 +1,12 @@
 'use client';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import {
+  Button,
+  ContentHolder,
+  Form,
+  Headline,
+  Text,
+  showAlertToast,
+} from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
@@ -22,6 +29,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
+import { responses } from '@/app/uitexts/responses';
 
 const allPlans = [
   { applicationName: 'PULL_TEST' },
@@ -133,18 +141,58 @@ export const CompanyForm = ({
         id: company.id,
         updateCompanyInput: data,
       }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
+        if (result) {
+          showAlertToast({
+            title: responses.successfulCompanyUpdate,
+            variant: 'success',
+          });
+        } else {
+          showAlertToast({
+            title: responses.serverError,
+            description: responses.contactSupportErrorTryAgain,
+            variant: 'error',
+          });
+        }
       });
     }
 
     if (!company && isNewCompany) {
       createCompany({
         createCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+      })
+        .then((result) => {
+          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
+            err.message.includes(responses.companyAlreadyExistsError),
+          );
+          if (alreadyExistsError) {
+            showAlertToast({
+              title: responses.companyAlreadyExistsError,
+              variant: 'info',
+            });
+            return;
+          }
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyCreation,
+              variant: 'success',
+            });
+          } else {
+            showAlertToast({
+              title: responses.serverError,
+              description: responses.contactSupportErrorTryAgain,
+              variant: 'error',
+            });
+          }
+          console.log(result);
+        })
+        .catch(() => {
+          showAlertToast({
+            title: 'Something',
+            description: 'went wrong while creating the company',
+            variant: 'error',
+          });
+          return;
+        });
     }
   };
 
@@ -260,7 +308,20 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
+
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
+            {!isNewCompany && (
+              <Button
+                variant="destructive"
+                size="large"
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <LucideTrash2 />
+                Inactivate company
+              </Button>
+            )}
+
             <Button
               variant="primary"
               size="large"
@@ -268,19 +329,8 @@ export const CompanyForm = ({
               disabled={isSubmitDisabled}
             >
               <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Update company details'}
+              {isNewCompany ? 'Send invitation' : 'Save changes'}
             </Button>
-
-            {!isNewCompany && (
-              <Button
-                variant="destructive"
-                size="large"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <LucideTrash2 />
-                Inactivate company
-              </Button>
-            )}
           </div>
         </form>
       </Form>

@@ -2,10 +2,11 @@
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { Company } from '@/gql/graphql';
-import { Text, Headline } from '@gsp/ui';
 import { useMutation, useQuery } from 'urql';
 import { GoBack } from '@/components/GoBack';
+import { responses } from '@/app/uitexts/responses';
 import { CompanyForm } from '@/components/CompanyForm';
+import { Text, Headline, showAlertToast } from '@gsp/ui';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 
@@ -67,6 +68,7 @@ export default function Page({
     setIsDeleteModalOpen(false);
   };
 
+  // TODO still not able to delete company, need to fix it in backend
   const handleDelete = async (): Promise<boolean> => {
     setIsDeleting(true);
 
@@ -75,13 +77,25 @@ export default function Page({
     })
       .then((result) => {
         if (result.error) {
-          console.error('Error deleting company:', result.error);
+          showAlertToast({
+            title: responses.deleteFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
         }
+        showAlertToast({
+          title: responses.companyDeleteSuccess,
+          variant: 'success',
+        });
         return true;
       })
-      .catch((error) => {
-        console.error('Error deleting company:', error);
+      .catch(() => {
+        showAlertToast({
+          title: responses.deleteFailedError,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
         return false;
       })
       .finally(() => {
@@ -104,8 +118,6 @@ export default function Page({
         isNewCompany={isNewCompany}
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
-
-      {/* TODO Discuss how to deal with  */}
 
       <DeleteModalConfirmation
         deleteIcon="Company"

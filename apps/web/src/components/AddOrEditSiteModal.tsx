@@ -131,46 +131,50 @@ export const AddOrEditSiteModal = ({
     }
 
     if (!site) {
-      createSite({ createSiteInput: data }).then((result) => {
-        const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-          err.message.includes('already exists'),
-        );
+      createSite({ createSiteInput: data })
+        .then((result) => {
+          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
+            err.message.includes('already exists'),
+          );
 
-        if (alreadyExistsError) {
-          showAlertToast({
-            title: uiTexts.siteAlreadyExistsText,
-            description: uiTexts.siteAlreadyExistsText,
-            variant: 'info',
-          });
-          return;
-        }
+          if (alreadyExistsError) {
+            showAlertToast({
+              title: uiTexts.siteAlreadyExistsText,
+              description: uiTexts.siteAlreadyExistsText,
+              variant: 'info',
+            });
+            return;
+          }
 
-        // General error
-        if (result.error) {
-          showAlertToast({
-            title: uiTexts.createSiteFailedText,
-            description: uiTexts.failedDescriptionText,
-            variant: 'error',
-          });
-          return;
-        }
+          // General error
+          if (result.error) {
+            showAlertToast({
+              title: uiTexts.createSiteFailedText,
+              description: uiTexts.failedDescriptionText,
+              variant: 'error',
+            });
+            return;
+          }
 
-        // Success
-        if (result.data) {
-          onSuccessfulSubmit();
-          showAlertToast({
-            title: uiTexts.successfulSiteCreateText,
-            variant: 'success',
-          });
-        } else {
-          showAlertToast({
-            title: uiTexts.createSiteFailedText,
-            description: uiTexts.failedDescriptionText,
-            variant: 'error',
-          });
-          refreshSites();
-        }
-      });
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+            showAlertToast({
+              title: uiTexts.successfulSiteCreateText,
+              variant: 'success',
+            });
+          } else {
+            showAlertToast({
+              title: uiTexts.createSiteFailedText,
+              description: uiTexts.failedDescriptionText,
+              variant: 'error',
+            });
+            refreshSites();
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 

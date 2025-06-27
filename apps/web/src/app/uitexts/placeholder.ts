@@ -1,7 +1,7 @@
-// Just an example of a placeholder file for the web app.
 export const placeholder = {
   //email
   emailPlaceholder: 'Fill in an email...',
+  validEmailPlaceholder: 'Fill in a valid email...',
 
   //password
   passwordPlaceholder: 'Fill in your password...',
@@ -10,11 +10,12 @@ export const placeholder = {
   currentPasswordPlaceholder: 'Fill in current password...',
   confirmPasswordPlaceholder: 'Fill in password confirmation...',
 
-  //contactInfo
+  //login
+  verificationCodePlaceholder: 'Fill in verification code...',
+
+  //company info
   fullNamePlaceholder: 'Fill in full name...',
   phoneNumberPlaceholder: 'Fill in phone number...',
-
-  //companyContactInfo
   companyNamePlaceholder: 'Fill in company name...',
   contactEmailPlaceholder: 'Fill in contact email...',
   workplacePlaceholder: 'Fill in workplace...',
@@ -30,23 +31,12 @@ export const placeholder = {
   levelsPlaceholder: 'Fill in level name',
   drivePlaceholder: 'Fill in drive name...',
   locationPlaceholder: 'Fill in location name...',
+  visibilityPlaceholder: 'Select visibility...',
 
   //dropdown
   selectAdministratorPlaceholder: 'Select an administrator...',
   selectPermissionPlaceholder: 'Select permissions...',
   selectRolePlaceholder: 'Select a role...',
   selectTechnicianPlaceholder: 'Select a technician...',
-
-  //Validation messages
-  validEmailPlaceholder: 'Fill in a valid email...',
-  validVisibilityPlaceholder: 'Select visibility...',
-
-  // password error messages
-  passwordErrorPlaceholder:
-    'Password must be at least 8 characters and include a number and a symbol.',
-  passwordMismatchPlaceholder: 'Passwords do not match.',
-
-  //misc
-  verificationCodePlaceholder: 'Fill in the verification code...',
-  selectRangeDatesPlaceholder: 'Select date range',
+  selectRangeDatesPlaceholder: 'Select date range...',
 };

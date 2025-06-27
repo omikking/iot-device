@@ -36,17 +36,21 @@ export type BoltResult = {
   boltType: Scalars['String']['output'];
   comment?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  drive?: Maybe<Drive>;
   driveId: Scalars['String']['output'];
   hazardCompletedDate?: Maybe<Array<Scalars['DateTime']['output']>>;
   id: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isHazard: Scalars['Boolean']['output'];
+  level?: Maybe<Level>;
   levelId: Scalars['String']['output'];
+  location?: Maybe<Location>;
   locationId: Scalars['String']['output'];
   peakDisplacement: Array<Scalars['Int']['output']>;
   peakLoad: Array<Scalars['Int']['output']>;
   positionInRing: Scalars['String']['output'];
   result: Scalars['String']['output'];
+  site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
@@ -58,10 +62,7 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  failedCount: Scalars['Int']['output'];
-  hazardCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
-  successRate: Scalars['Int']['output'];
   totalRecords: Scalars['Int']['output'];
 };
 
@@ -240,23 +241,6 @@ export type Drive = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type EnumOption = {
-  __typename?: 'EnumOption';
-  key: RingPositionEnum;
-  value: Scalars['String']['output'];
-};
-
-export type Enums = {
-  __typename?: 'Enums';
-  boltTypes: Array<BoltType>;
-  getApplication: Array<Application>;
-  getPlanLevel: Array<PlanLevel>;
-  pullTestAbortReason: Array<PullTestAbortReason>;
-  results: Array<Result>;
-  ringPosition: Array<EnumOption>;
-  roles: Array<Role>;
-};
-
 export type Flavor = {
   __typename?: 'Flavor';
   id: Scalars['ID']['output'];
@@ -292,12 +276,6 @@ export type Location = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type MailResponse = {
-  __typename?: 'MailResponse';
-  message: Scalars['String']['output'];
-  success: Scalars['Boolean']['output'];
-};
-
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -323,7 +301,6 @@ export type Mutation = {
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
-  sendUserInvitationEmail: MailResponse;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -512,15 +489,6 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
-export type MutationSendUserInvitationEmailArgs = {
-  input: SendMailInput;
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
@@ -657,7 +625,13 @@ export type Query = {
   company: Company;
   drive: Drive;
   drives: Array<Drive>;
-  enums: Enums;
+  getApplication?: Maybe<Array<Application>>;
+  getBoltTypes?: Maybe<Array<BoltType>>;
+  getPlanLevel?: Maybe<Array<PlanLevel>>;
+  getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getResults: Array<Result>;
+  getRingPosition?: Maybe<Array<RingPosition>>;
+  getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
   levels: Array<Level>;
@@ -687,13 +661,17 @@ export type QueryBoltResultArgs = {
  */
 export type QueryBoltResultsArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   levelId?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   locationId?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  result?: InputMaybe<Scalars['String']['input']>;
+  result?: InputMaybe<Array<Scalars['String']['input']>>;
   siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  withComment?: InputMaybe<Scalars['Boolean']['input']>;
+  withImage?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -803,22 +781,14 @@ export enum Result {
   Pass = 'PASS'
 }
 
-export enum RingPositionEnum {
-  CenterBacks = 'Center_Backs',
-  LhBacks = 'LH_Backs',
-  LhFaceHigh = 'LH_Face_High',
-  LhFaceLow = 'LH_Face_Low',
-  LhShoulder = 'LH_Shoulder',
-  LhWallCenter = 'LH_Wall_Center',
-  LhWallLower = 'LH_Wall_Lower',
-  LhWallUpper = 'LH_Wall_Upper',
-  RhBacks = 'RH_Backs',
-  RhFaceHigh = 'RH_Face_High',
-  RhFaceLow = 'RH_Face_Low',
-  RhShoulder = 'RH_Shoulder',
-  RhWallCenter = 'RH_Wall_Center',
-  RhWallLower = 'RH_Wall_Lower',
-  RhWallUpper = 'RH_Wall_Upper'
+export enum RingPosition {
+  CenterBacks = 'CENTER_BACKS',
+  LhBacks = 'LH_BACKS',
+  LhShoulder = 'LH_SHOULDER',
+  LhWallUpper = 'LH_WALL_UPPER',
+  RhBacks = 'RH_BACKS',
+  RhShoulder = 'RH_SHOULDER',
+  RhWallUpper = 'RH_WALL_UPPER'
 }
 
 export enum Role {
@@ -827,11 +797,6 @@ export enum Role {
   SandvikAdmin = 'SANDVIK_ADMIN',
   SandvikTechnician = 'SANDVIK_TECHNICIAN'
 }
-
-export type SendMailInput = {
-  email: Scalars['String']['input'];
-  username: Scalars['String']['input'];
-};
 
 /**
  * Site model

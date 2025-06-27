@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
@@ -137,16 +137,22 @@ export default function Page({ params }: Props): JSX.Element {
     reportedHazard: false,
   });
 
-  // const pdfRef = useRef<PdfRefType | null>(null);
-  // const [pdfData, setPdfData] = useState(null);
+  type PdfRefType = {
+    generatePdf: () => void;
+  };
+
+  const pdfRef = useRef<PdfRefType | null>(null);
+  const [pdfData, setPdfData] = useState(null);
+
+  console.log(pdfData);
 
   // TODO fix later
-  // useEffect(() => {
-  //   const stored = sessionStorage.getItem('pdfPayload');
-  //   if (stored) {
-  //     setPdfData(JSON.parse(stored));
-  //   }
-  // }, []);
+  useEffect(() => {
+    const stored = sessionStorage.getItem('pullTestReportPDF');
+    if (stored) {
+      setPdfData(JSON.parse(stored));
+    }
+  }, []);
 
   const result = useMemo(() => {
     const { ...rest } = filterState;
@@ -160,6 +166,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
+
   const [{ data: boltResultsResponse }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResultSchema[] };
   }>({
@@ -192,23 +199,36 @@ export default function Page({ params }: Props): JSX.Element {
       </Headline>
 
       <div className="w-full max-w-[1400px] flex flex-col items-end gap-6">
-        {/* {pdfData && ( */}
-        <PullTestReportPDF
-          disabled={false}
-          objList={boltResultsResponse?.boltResults}
-          reportDetails={pdfComponentMockData.reportDetails}
-          layout={{
-            logo: pdfComponentMockData.Layout.logo,
-            authorImage: pdfComponentMockData.Layout.authorImage,
-            authorSignature: pdfComponentMockData.Layout.authorSignature,
-            contactHtml: '<strong>John Doe</strong> - Site Manager',
-          }}
-          parentUrl={window.parent.location.toString()}
-          pdfName={'pull_test_report.pdf'}
-          pdfPageTitle={'Bolt Result'}
-          currentDate={new Date().toLocaleDateString()}
-        />
-        {/* )} */}
+        {pdfData && (
+          <>
+            <PullTestReportPDF
+              disabled={false}
+              objList={boltResultsResponse?.boltResults}
+              reportDetails={pdfComponentMockData.reportDetails}
+              layout={{
+                // logo: pdfComponentMockData.Layout.logo,
+                contactHtml: '<strong>John Doe</strong> - Site Manager',
+              }}
+              parentUrl={window.parent.location.toString()}
+              pdfName={'pull_test_report.pdf'}
+              pdfPageTitle={'Bolt Result'}
+              currentDate={new Date().toLocaleDateString()}
+            />
+
+            {/* <Button
+              onClick={generatePdfContent}
+              disabled={disabled}
+              size="large"
+              variant="primary"
+              isLoading={isLoading}
+            >
+              <>
+                {!isLoading && <LucideFileDown />}
+                Export PDF
+              </>
+            </Button> */}
+          </>
+        )}
 
         <div className="w-full border-2 border-gray-200 shadow-md rounded-lg">
           <Headline as="h2" variant="large" color="foreground">

@@ -24,15 +24,9 @@ interface PullTestReportPDFProps {
   };
   layout: {
     contactHtml: string;
-    logo: {
-      src: string;
-    };
-    authorImage: {
-      src: string;
-    };
-    authorSignature: {
-      src: string;
-    };
+    // logo: {
+    //   src: string;
+    // };
   };
   parentUrl?: string;
   pdfName?: string;

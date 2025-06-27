@@ -267,7 +267,7 @@ export default function Page({ params }: Props): JSX.Element {
             onClick={() => {
               // Save the data to session storage
               sessionStorage.setItem(
-                'pdfData',
+                'pullTestReportPDF',
                 JSON.stringify({
                   objList: boltResultsResponse?.boltResults,
                   reportDetails: pdfComponentMockData.mockBoltResult,

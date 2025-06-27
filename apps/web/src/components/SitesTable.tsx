@@ -16,7 +16,7 @@ import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/texts/responses';
+import { responses } from '@/app/uitexts/responses';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {

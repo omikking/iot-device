@@ -28,7 +28,7 @@ import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { responses } from '@/app/texts/responses';
+import { responses } from '@/app/uitexts/responses';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {

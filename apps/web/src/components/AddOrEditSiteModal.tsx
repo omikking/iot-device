@@ -11,6 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   createSiteFormSchema,
@@ -27,6 +28,7 @@ import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { responses } from '@/app/uitexts/responses';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -59,11 +61,13 @@ const updateSiteMutation = graphql(`
 type AddOrEditSiteModalProps = {
   site?: Site;
   onOpenChange: (open: boolean) => void;
+  refreshSites: () => void;
 };
 
 export const AddOrEditSiteModal = ({
   site,
   onOpenChange,
+  refreshSites,
 }: AddOrEditSiteModalProps) => {
   const { data: session } = useSession();
 
@@ -127,15 +131,49 @@ export const AddOrEditSiteModal = ({
     }
 
     if (!site) {
-      createSite({
-        createSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      createSite({ createSiteInput: data })
+        .then((result) => {
+          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
+            err.message.includes('already exists'),
+          );
+
+          if (alreadyExistsError) {
+            showAlertToast({
+              title: responses.siteAlreadyExistsError,
+              variant: 'info',
+            });
+            return;
+          }
+
+          // General error
+          if (result.error) {
+            showAlertToast({
+              title: responses.createSiteError,
+              description: responses.contactSupportError,
+              variant: 'error',
+            });
+            return;
+          }
+
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+            showAlertToast({
+              title: responses.siteCreateSuccess,
+              variant: 'success',
+            });
+          } else {
+            showAlertToast({
+              title: responses.createSiteError,
+              description: responses.contactSupportError,
+              variant: 'error',
+            });
+            refreshSites();
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -148,8 +186,13 @@ export const AddOrEditSiteModal = ({
   const formValues = form.watch();
   const isDirty = form.formState.isDirty;
 
-  const isAnyFieldEmpty = !formValues.siteName || !formValues.address ||!formValues.postalCode ||!formValues.city ||!formValues.country;
-  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+  const isAnyFieldEmpty =
+    !formValues.siteName ||
+    !formValues.address ||
+    !formValues.postalCode ||
+    !formValues.city ||
+    !formValues.country;
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

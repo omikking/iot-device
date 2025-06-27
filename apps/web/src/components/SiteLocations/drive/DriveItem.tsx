@@ -1,16 +1,16 @@
 'use client';
+import { Text } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { Drive } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Drive } from '@/gql/graphql';
-import { useMutation } from 'urql';
-import { graphql } from '@/gql';
+import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -45,23 +45,25 @@ type DriveComponentProps = {
   drivesOptions: Drive[];
   selectedDriveId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
-  handleSetDrive: (drive: Drive) => void;
   refreshSite: () => void;
+  handleSetDrive: (drive: Drive) => void;
+  setIsDeletingDrive: Dispatch<SetStateAction<boolean>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 };
 
 export const DriveItem = ({
   drive,
+  inputRef,
   drivesOptions,
   selectedDriveId,
-  inputRef,
-  handleSetDrive,
   refreshSite,
+  handleSetDrive,
   setSelectedDrive,
+  setIsDeletingDrive,
 }: DriveComponentProps) => {
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [, createDrive] = useMutation(createDriveMutation);
   const [, updateDrive] = useMutation(updateDriveMutation);
   const [, deleteDrive] = useMutation(deleteDriveMutation);
@@ -114,12 +116,19 @@ export const DriveItem = ({
           driveName: newDriveName,
           levelId: drive.levelId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          drivesOptions.length === 1 && refreshSite();
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            drivesOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating drive:', error);
+        })
+        .finally(() => {
+          console.log('Creation process completed');
+        });
     }
 
     // To edit a drive
@@ -129,23 +138,43 @@ export const DriveItem = ({
         updateDriveInput: {
           driveName: newDriveName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data) {
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating drive:', error);
+        })
+        .finally(() => {
+          console.log('Update process completed');
+        });
     }
   };
 
   const handleDeleteDrive = () => {
-    deleteDrive({
-      id: drive.id,
-    }).then((result) => {
-      if (result.data) {
-        setSelectedDrive(undefined);
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
-      }
-    });
+    setIsDeleting(true);
+    setIsDeletingDrive(true);
+
+    return deleteDrive({ id: drive.id })
+      .then((result) => {
+        if (result.error) {
+          setSelectedDrive(undefined);
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+
+        setTimeout(() => {
+          setIsDeletingDrive(false);
+        }, 1500);
+      });
   };
 
   return (
@@ -173,18 +202,24 @@ export const DriveItem = ({
 
             <DeleteEditDropdown
               itemSelected={drive.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditDrive}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete drive"
-              deleteButtonText="Delete drive"
               deleteIcon="Site"
+              modalTitle="Delete drive"
+              modalDeleteButtonText="Delete drive"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteDrive}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
-              <Text variant="medium" color={'foreground'}>
+              <Text
+                variant="medium"
+                color={'foreground'}
+                className="max-w-[450px] text-center"
+              >
                 You are about to delete drive
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${drive.driveName} `}

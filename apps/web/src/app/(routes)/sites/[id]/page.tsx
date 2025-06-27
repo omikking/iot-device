@@ -8,14 +8,14 @@ import {
   Tabs,
   TabsContent,
 } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { Site } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
-import { Site } from '@/gql/graphql';
-import { graphql } from '@/gql';
-import { useQuery } from 'urql';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -25,7 +25,21 @@ const getCompanyName = graphql(`
     }
   }
 `);
-
+const getCompanySitesQuery = graphql(`
+  query getCompanySites($id: String!) {
+    company(id: $id) {
+      sites {
+        id
+        siteName
+        address
+        city
+        country
+        postalCode
+        companyId
+      }
+    }
+  }
+`);
 export default function Page({
   params,
 }: {
@@ -44,6 +58,17 @@ export default function Page({
   // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
   //   'Pull Test',
   // );
+
+    const [sitesData, refetchSites] = useQuery({
+    query: getCompanySitesQuery,
+    variables: { id: companyId || '' },
+  });
+  const sites = (sitesData.data?.company.sites as Site[]) || [];
+
+  const refreshSite = () => {
+    refetchSites({ requestPolicy: 'network-only' });
+  };
+  
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -95,6 +120,7 @@ export default function Page({
               <AddOrEditSiteModal
                 onOpenChange={handleModalToggle}
                 site={selectedSite}
+                refreshSites={refreshSite}
               />
             </Modal>
           </div>
@@ -104,6 +130,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              sites = {sites}
             />
           </TabsContent>
 
@@ -112,6 +139,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              sites = {sites}
             />
           </TabsContent>
 
@@ -120,6 +148,7 @@ export default function Page({
               companyId={companyId}
               onOpenChange={handleModalToggle}
               onSelectSite={setSelectedSite}
+              sites = {sites}
             />
           </TabsContent>
         </Tabs>

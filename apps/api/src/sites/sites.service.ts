@@ -21,9 +21,20 @@ export class SitesService {
   }
 
   async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
+    const siteName = createSiteInput.siteName.trim();
+
+    // Check if a site with the same name already exists
+    const existingSite = await this.prisma.site.findFirst({
+      where: { siteName },
+    });
+
+    if (existingSite) {
+      throw new UserInputError(`Site with name "${siteName}" already exists.`);
+    }
+
     const createdSite = await this.prisma.site.create({
       data: {
-        siteName: createSiteInput.siteName,
+        siteName,
         address: createSiteInput.address,
         postalCode: createSiteInput.postalCode,
         city: createSiteInput.city,
@@ -35,9 +46,9 @@ export class SitesService {
     if (!createdSite) {
       throw new UserInputError('Failed to create site');
     }
+
     return createdSite;
   }
-
   async update(
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,

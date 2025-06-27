@@ -16,23 +16,24 @@ type DrivesListProps = {
   selectedDriveId?: string;
   selectedLevelId?: string;
   levelsOptions: Level[];
-  handleSetDrive: () => void;
   refreshSite: () => void;
+  handleSetDrive: () => void;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 };
 
 export const DrivesList = ({
   drivesOptions,
+  levelsOptions,
   selectedDriveId,
   selectedLevelId,
-  levelsOptions,
-  handleSetDrive,
   refreshSite,
+  handleSetDrive,
   setSelectedDrive,
 }: DrivesListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [drives, setDrives] = useState<Drive[]>(drivesOptions);
+  const [isDeletingDrive, setIsDeletingDrive] = useState<boolean>(false);
 
   // Add a new empty drive
   const addDrive = () => {
@@ -48,8 +49,10 @@ export const DrivesList = ({
   };
 
   useEffect(() => {
-    drivesOptions.length > 0 ? setDrives(drivesOptions) : setDrives([]);
-  }, [drivesOptions]);
+    if (!isDeletingDrive) {
+      drivesOptions.length > 0 ? setDrives(drivesOptions) : setDrives([]);
+    }
+  }, [drivesOptions, isDeletingDrive]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -82,6 +85,7 @@ export const DrivesList = ({
             handleSetDrive={handleSetDrive}
             refreshSite={refreshSite}
             setSelectedDrive={setSelectedDrive}
+            setIsDeletingDrive={setIsDeletingDrive}
           />
         ))}
       </div>

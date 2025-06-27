@@ -1,13 +1,13 @@
 'use client';
+import { graphql } from '@/gql';
 import { useState } from 'react';
+import { User } from '@/gql/graphql';
+import { useMutation, useQuery } from 'urql';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { graphql } from '@/gql';
-import { useMutation, useQuery } from 'urql';
-import { User } from '@/gql/graphql';
 
 const getTechniciansQuery = graphql(`
   query getTechnicians {
@@ -45,13 +45,13 @@ export const TechniciansTable = ({
   const [technicianToDelete, setTechnicianToDelete] = useState<
     User | undefined
   >(undefined);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [techniciansData] = useQuery({
     query: getTechniciansQuery,
   });
-  const technicians = (techniciansData.data?.users as User[]) || [];
-
   const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
+
+  const technicians = (techniciansData.data?.users as User[]) || [];
 
   const openDeleteModal = (technicianId: string) => {
     const technicianToDelete = technicians?.find(
@@ -66,14 +66,33 @@ export const TechniciansTable = ({
     setTechnicianToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    if (technicianToDelete) {
-      deleteTechnician({
-        id: technicianToDelete.id,
-      }).then(() => {
-        closeDeleteModal();
-      });
+  const handleDelete = async (): Promise<boolean> => {
+    const techFound = technicians.find(
+      (tech) => tech.id === technicianToDelete?.id,
+    );
+
+    const techId = techFound?.id;
+
+    if (!techId) {
+      console.error('No technician selected for deletion');
+      return false;
     }
+
+    setIsDeleting(true);
+
+    return deleteTechnician({ id: techId })
+      .then((result) => {
+        if (result.error) {
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const openEditModal = (technicianId: string) => {
@@ -149,24 +168,24 @@ export const TechniciansTable = ({
 
   return (
     <>
-      {technicianToDelete && (
-        <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
-          deleteIcon="User"
-          modalTitle="Delete technician"
-          isOpen={isDeleteTechnicianModalOpen}
-          onOpenChange={closeDeleteModal}
-          onDelete={handleDelete}
-        >
-          <Text variant="medium" color={'foreground'}>
-            You are about to delete
-            <Text variant="medium" color={'foreground'} isBold as="span">
-              {` ${technicianToDelete.fullName} `}
-            </Text>
-            from the list. Are you sure you want to delete?
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Delete technician"
+        modalDeleteButtonText="Delete technician"
+        isLoading={isDeleting}
+        isOpen={isDeleteTechnicianModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          You are about to delete
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${technicianToDelete?.fullName} `}
           </Text>
-        </DeleteModalConfirmation>
-      )}
+          from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}

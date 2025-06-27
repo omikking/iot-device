@@ -58,6 +58,16 @@ type EnumOption {
   value: String!
 }
 
+enum UserStatus {
+  INVITED
+  PENDING_VERIFICATION
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DEACTIVATED
+  DELETED
+}
+
 type Enums {
   roles: [Role!]!
   results: [Result!]!
@@ -66,6 +76,7 @@ type Enums {
   pullTestAbortReason: [PullTestAbortReason!]!
   getApplication: [Application!]!
   getPlanLevel: [PlanLevel!]!
+  getUserStatus: [UserStatus!]!
 }
 
 type Query {

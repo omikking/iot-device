@@ -4,18 +4,28 @@ import { Injectable } from '@nestjs/common';
 import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
   findAll(roles?: GlobalRole[]): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
-    const where: Prisma.UserWhereInput = {};
+    const where: Prisma.UserWhereInput = {
+      status: 'ACTIVE', // ✅ Add this line
+    };
 
     if (roles && roles.length > 0) {
       where.globalRole = { in: roles };
     }
+
     return this.prisma.user.findMany({
       where,
     });
@@ -94,5 +104,63 @@ export class UsersService {
       throw new UserInputError(`User #${id} not found`);
     }
     return user;
+  }
+
+  // Admin can invite technician by sending an email to their address
+  async createUserWithEmail(input: { email: string }): Promise<User> {
+    const { email } = input;
+    const existing = await this.prisma.user.findUnique({
+      where: { email, status: 'INVITED' },
+    });
+    if (existing) {
+      throw new UserInputError(`Email "${email}" already exists`);
+    }
+
+    //setup user inivation mail here
+
+    let newUser: User;
+
+    try {
+      // 1. Create the user
+      newUser = await this.prisma.user.create({
+        data: {
+          email,
+          hash: '',
+          fullName: 'N/A',
+          workPlace: 'N/A',
+          status: 'INVITED',
+        },
+      });
+
+      // 2. Send invitation email
+      const username = email.split('@')[0];
+      const to = email;
+      const baseUrl = this.configService.get<string>('WEB_APP_BASE_URL');
+
+      await this.mailerService.sendMail({
+        to,
+        subject: "You're invited to join – Set up your account now",
+        template: './user-invitation',
+        context: {
+          username,
+          baseUrl,
+          email: to,
+          logoCid: 'sandviklogo',
+        },
+        attachments: [
+          {
+            filename: 'sandvik_icon.jpg',
+            path: join(__dirname, '..', 'assets', 'images', 'sandvik_icon.jpg'),
+            cid: 'sandviklogo',
+          },
+        ],
+      });
+    } catch (error) {
+      // 3. Handle error: log it and optionally rethrow
+      throw new Error('User created but failed to send invitation email.');
+    }
+
+    // 4. Return created user
+    return newUser;
   }
 }

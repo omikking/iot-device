@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -60,6 +61,16 @@ export enum RingPositionEnum {
     RH_Wall_Upper = "RH_Wall_Upper",
     RH_Wall_Center = "RH_Wall_Center",
     RH_Wall_Lower = "RH_Wall_Lower"
+}
+
+export enum UserStatus {
+    INVITED = "INVITED",
+    PENDING_VERIFICATION = "PENDING_VERIFICATION",
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    SUSPENDED = "SUSPENDED",
+    DEACTIVATED = "DEACTIVATED",
+    DELETED = "DELETED"
 }
 
 export class CreateBoltResultInput {
@@ -211,9 +222,9 @@ export class UpdateUserInput {
 }
 
 export class UpdatePasswordInput {
-    oldPassword?:Nullable<string>;
-    newPassword?:Nullable<string>;
-    confirmPassword?:Nullable<string>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export class BoltResult {
@@ -301,6 +312,7 @@ export abstract class IMutation {
     createUserPermission?: UserPermission;
     updateUserPermission?: UserPermission;
     removeUserPermission?: UserPermission;
+    createUserWithEmail?: User;
     updateUser?: User;
     removeUser?: User;
 }
@@ -333,6 +345,7 @@ export class Company {
     users?: Nullable<User[]>;
     plans?: Nullable<Plan[]>;
     sites?: Nullable<Site[]>;
+    sandvikAdminUserId?: Nullable<string>;
 }
 
 export class Plan {
@@ -373,6 +386,7 @@ export class Enums {
     pullTestAbortReason: PullTestAbortReason[];
     getApplication: Application[];
     getPlanLevel: PlanLevel[];
+    getUserStatus: UserStatus[];
 }
 
 export class Level {
@@ -429,9 +443,6 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
-    oldPassword?: Nullable<string>;
-    newPassword?: Nullable<string>;
-    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

@@ -9,6 +9,7 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUser } from 'src/auth/decorators';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdatePasswordInput } from './dto/update-user-password.input';
+import { ForbiddenException } from '@nestjs/common';
 
 @Resolver()
 @UseGuards(JwtGuard)
@@ -49,5 +50,20 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.User> {
     return this.usersService.remove(id);
+  }
+
+  // Admin can invite technician by sending an email to their address
+  @Mutation('createUserWithEmail')
+  async createUserWithEmail(
+    @Args('email') email: string,
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.User> {
+    if (user.globalRole !== 'SANDVIK_ADMIN') {
+      throw new ForbiddenException(
+        "You don't have permission to invite a user",
+      );
+    }
+
+    return this.usersService.createUserWithEmail({ email });
   }
 }

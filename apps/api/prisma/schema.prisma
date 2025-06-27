@@ -51,6 +51,15 @@ enum BoltType {
   MD47
   MDX47
 }
+enum UserStatus {
+  INVITED
+  PENDING_VERIFICATION
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DEACTIVATED
+  DELETED
+}
 
 enum RingPosition {
   LH_BACKS
@@ -128,9 +137,11 @@ model User {
   phoneNumber        String?
   globalRole         GlobalRole? // For role SANDVIK_TECHNICIAN or SANDVIK_ADMIN
   isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
-
   userRole   UserPermission[]
   boltResult BoltResult[] // @TODO Check if this can be removed. - We just need to give every BoltResult a userId, is this the correct way?
+  status     UserStatus @default(ACTIVE) //@User-invitaion part we need to be maintain User status
+
+
 
   @@map("users")
 }

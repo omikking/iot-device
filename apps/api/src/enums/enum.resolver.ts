@@ -6,6 +6,7 @@ import {
   PullTestAbortReason,
   Application,
   PlanLevel,
+  UserStatus,
 } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -24,6 +25,7 @@ export class EnumResolver {
       pullTestAbortReason: Object.values(PullTestAbortReason),
       getApplication: Object.values(Application),
       getPlanLevel: Object.values(PlanLevel),
+      getUserStatus: Object.values(UserStatus),
     };
   }
 }

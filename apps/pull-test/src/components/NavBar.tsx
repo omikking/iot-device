@@ -6,11 +6,13 @@ import { LucideUser } from 'lucide-react';
 import { SandvikLogo } from 'public/SandvikLogo';
 import { Menu } from './Menu';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useParams } from 'next/navigation';
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const params = useParams();
+  const companyId = params?.id as string;
 
   const excludedPaths = ['/api/auth/signin', '/forgot-password'];
   const isExcludedPath = excludedPaths.includes(pathname);
@@ -18,7 +20,7 @@ export const NavBar = () => {
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <Link href="/overview">
+        <Link href={`/overview/${companyId}`}>
           <div className="flex items-center justify-center gap-2">
             <SandvikLogo />
             <div className="h-6 border-l border-black mx-1" />

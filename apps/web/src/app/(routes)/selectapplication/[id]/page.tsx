@@ -47,28 +47,20 @@ export default function Page({
 
       <div className="flex flex-row justify-around gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
         <div className="flex flex-row gap-12 justify-center">
-          <Link href={`http://localhost:3001/overview/${params.id}`}>
-            <NavigationCard size={'medium'}>
-              <Headline as="h3" variant="medium" color="foreground">
+          <Link href={`http://localhost:3001/overview/${companyId}`}>
+            <NavigationCard size="small">
+              <Headline as="h3" variant="medium" color="foreground" isBold>
                 Pull Test
               </Headline>
-              <SandvikLogo />
+              <SandvikLogo width="32" height="32" />
             </NavigationCard>
           </Link>
           {/* <Link href="http://localhost:3000/designsystem">
-            <NavigationCard size={'medium'}>
-              <Headline as="h3" variant="medium" color="foreground">
-                Ultrabolts
+            <NavigationCard size="small">
+              <Headline as="h3" variant="medium" color="foreground" isBold>
+                Banshee
               </Headline>
-              <SandvikLogo />
-            </NavigationCard>
-          </Link>
-          <Link href="http://localhost:3000/designsystem">
-            <NavigationCard size={'medium'}>
-              <Headline as="h3" variant="medium" color="foreground">
-                Cyclops
-              </Headline>
-              <SandvikLogo />
+              <SandvikLogo width="32" height="32" />
             </NavigationCard>
           </Link> */}
         </div>
@@ -81,7 +73,7 @@ export default function Page({
               <Headline as="h3" variant="medium" color="foreground">
                 Management
               </Headline>
-              <LucideCircuitBoard size={56} />
+              <LucideCircuitBoard size={40} />
             </NavigationCard>
           </Link>
         </div>

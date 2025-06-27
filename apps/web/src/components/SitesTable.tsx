@@ -1,4 +1,12 @@
 'use client';
+import {
+  Text,
+  Badge,
+  Button,
+  DataTable,
+  showAlertToast,
+  TableHeadWithSorting,
+} from '@gsp/ui';
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useState } from 'react';
@@ -7,8 +15,8 @@ import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { Text, Badge, Button, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -67,8 +75,17 @@ export const SitesTable = ({
     return deleteSite({ id: siteId })
       .then((result) => {
         if (result.error) {
+          showAlertToast({
+            title: responses.deleteFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
         }
+        showAlertToast({
+          title: responses.siteDeleteSuccess,
+          variant: 'info',
+        });
         return true;
       })
       .catch(() => {

@@ -22,92 +22,53 @@ import { useForm } from 'react-hook-form';
 import { LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Role } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
 
-const getUserWithPermissionsQuery = graphql(`
-  query getUserWithPermissions($id: String!) {
+const getUserQuery = graphql(`
+  query getUser($id: String!) {
     user(id: $id) {
       id
       email
       fullName
       workPlace
       phoneNumber
-      userPermissions {
-        id
-        role
-        companyId
-      }
     }
   }
 `);
 
 export default function Page(): JSX.Element {
-  //Values that will be passed somehow, hardcoded for now
-  const tempTestId = '87506bef-5283-44d8-ab42-a668ea616975';
-  const companyId = '316a80e7-a02d-4098-bd65-fb770aad2a4f';
+  const { data: session } = useSession();
+
+  const userRole = session?.user?.globalRole;
+  const userId = session?.user?.id as string;
 
   const [{ data: userData }] = useQuery({
-    query: getUserWithPermissionsQuery,
-    variables: { id: tempTestId },
+    query: getUserQuery,
+    variables: { id: userId },
+    pause: !userId,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const companyPermission = userData?.user?.userPermissions?.find(
-    (permission) => permission.companyId === companyId,
-  );
-
-  // const userRole = companyPermission?.role;
-  // Just for testing purposes, hardcoded user role
-  const userRole = Role.SandvikTechnician as string;
-
-  let invitationRoleTitle: JSX.Element | string;
-
-  switch (userRole) {
-    case Role.SandvikAdmin:
-      invitationRoleTitle = (
-        <Headline as="h4" variant="small" color="foreground">
-          You're invited to join
-          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
-            {` Ground Support Platform `}
-          </Headline>
-          as an administrator.
-        </Headline>
-      );
-      break;
-    case 'SANDVIK_TECHNICIAN':
-      invitationRoleTitle = (
-        <Headline as="h4" variant="small" color="foreground">
-          You're invited to join
-          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
-            {` Ground Support Platform `}
-          </Headline>
-          as a technician.
-        </Headline>
-      );
-      break;
-    case 'COMPANY_ADMIN':
-      invitationRoleTitle = (
-        <Headline as="h4" variant="small" color="foreground">
-          You're invited to join
-          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
-            {` ${userData?.user?.workPlace} `}
-          </Headline>
-          as an administrator.
-        </Headline>
-      );
-      break;
-    case 'COMPANY_USER':
-      invitationRoleTitle = (
-        <Headline as="h4" variant="small" color="foreground">
-          You're invited to join
-          <Headline color={'foreground'} variant={'medium'} as="span" isBold>
-            {` ${userData?.user?.workPlace}. `}
-          </Headline>
-        </Headline>
-      );
-      break;
-    default:
-      invitationRoleTitle = '';
-  }
+  const getRoleContent = (userRole: Role) => {
+    const roleContent = {
+      [Role.SandvikAdmin]: {
+        headline: 'Ground Support Platform',
+        subtext: 'as an administrator.',
+      },
+      [Role.SandvikTechnician]: {
+        headline: 'Ground Support Platform',
+        subtext: 'as a technician.',
+      },
+      [Role.CompanyAdmin]: {
+        headline: `${userData?.user?.workPlace}`,
+        subtext: 'as an administrator.',
+      },
+      [Role.CompanyUser]: {
+        headline: `${userData?.user?.workPlace}`,
+        subtext: undefined,
+      },
+    };
+    return roleContent[userRole];
+  };
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -142,7 +103,16 @@ export default function Page(): JSX.Element {
         Setup Account
       </Headline>
       <div className="flex flex-col gap-3 items-center">
-        {invitationRoleTitle}
+        {userRole && (
+          <Headline as="h4" variant="small" color="foreground">
+            You're invited to join
+            <Headline color={'foreground'} variant={'medium'} as="span" isBold>
+              {' '}
+              {getRoleContent(userRole)?.headline}{' '}
+            </Headline>
+            {getRoleContent(userRole)?.subtext}
+          </Headline>
+        )}
 
         <Text color={'foreground'} variant={'medium'}>
           Please complete your account setup to get started.

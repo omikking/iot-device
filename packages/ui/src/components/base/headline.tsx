@@ -25,25 +25,29 @@ const headlineVariants = cva('ui-font-sandvik-headline', {
 });
 
 export interface HeadlineProps
-  extends Omit<React.HTMLAttributes<HTMLHeadingElement>, 'color'>,
+  extends Omit<
+      React.HTMLAttributes<HTMLHeadingElement | HTMLSpanElement>,
+      'color'
+    >,
     Required<Pick<VariantProps<typeof headlineVariants>, 'variant' | 'color'>> {
-  as: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  as: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span';
   isBold?: boolean;
 }
 
-const Headline = React.forwardRef<HTMLHeadingElement, HeadlineProps>(
-  ({ className, variant, color, isBold, children, as }, ref) => {
-    const HeadlineElement = as;
-    return (
-      <HeadlineElement
-        className={cn(headlineVariants({ variant, color, isBold }), className)}
-        ref={ref}
-      >
-        {children}
-      </HeadlineElement>
-    );
-  },
-);
+const Headline = React.forwardRef<
+  HTMLHeadingElement | HTMLSpanElement,
+  HeadlineProps
+>(({ className, variant, color, isBold, children, as }, ref) => {
+  const HeadlineElement = as;
+  return (
+    <HeadlineElement
+      className={cn(headlineVariants({ variant, color, isBold }), className)}
+      ref={ref as React.RefObject<HTMLParagraphElement>}
+    >
+      {children}
+    </HeadlineElement>
+  );
+});
 Headline.displayName = 'Headline';
 
 export { Headline, headlineVariants };

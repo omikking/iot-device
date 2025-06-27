@@ -10,7 +10,6 @@ import {
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
@@ -56,18 +55,18 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
-  const paramsCompanyId = params.id;
+  const companyId = params.id;
+
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
     pause: !companyId,
   });
+
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
-    const [{ data }] = useQuery({
+  const [{ data }] = useQuery({
     query: getCompanyName,
-    variables: { id: paramsCompanyId },
+    variables: { id: companyId },
   });
 
   const companyName = data?.company?.name;

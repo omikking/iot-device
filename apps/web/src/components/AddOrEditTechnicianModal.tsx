@@ -19,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   UpdateTechnicianFormValues,
@@ -32,6 +33,7 @@ import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 import { User } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { responses } from '@/app/uitexts/responses';
 
 // @TODO make the create user query later when BE is advanced.
 
@@ -95,11 +97,39 @@ export const AddOrEditTechnicianModal = ({
       updateTechnician({
         id: technician.id,
         updateUserInput: data,
-      }).then((result) => {
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      })
+        .then((result) => {
+          // Question FELIX: When unsuccessful, should we have a short pause before closing the modal?
+          // Because there is a short pause when the modal closes after a successful submission.
+          if (result.error) {
+            onOpenChange(false);
+            showAlertToast({
+              title: responses.techinicianUpdateFailedError,
+              description: responses.contactSupportError,
+              variant: 'error',
+            });
+            return;
+          }
+
+          if (result.data) {
+            onSuccessfulSubmit();
+            showAlertToast({
+              title: responses.techincianUpdateSuccess,
+              variant: 'success',
+            });
+          }
+        })
+        .catch(() => {
+          onOpenChange(false);
+          showAlertToast({
+            title: responses.techinicianUpdateFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!technician) {
@@ -117,10 +147,10 @@ export const AddOrEditTechnicianModal = ({
   }, [technician, form]);
 
   const formValues = form.watch();
-  const isDirty = form.formState.isDirty
-  const isAnyFieldEmpty = !formValues.email
+  const isDirty = form.formState.isDirty;
+  const isAnyFieldEmpty = !formValues.email;
 
- const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
   return (
     <ModalContent
       onCloseAutoFocus={resetFormValues}

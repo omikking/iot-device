@@ -3,11 +3,12 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { User } from '@/gql/graphql';
 import { useMutation, useQuery } from 'urql';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
 
 const getTechniciansQuery = graphql(`
   query getTechnicians {
@@ -83,11 +84,31 @@ export const TechniciansTable = ({
     return deleteTechnician({ id: techId })
       .then((result) => {
         if (result.error) {
+          showAlertToast({
+            title: responses.deleteFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          closeDeleteModal();
           return false;
         }
+
+        if (result.data) {
+          showAlertToast({
+            title: responses.techinicianDeleteSuccess,
+            variant: 'info',
+          });
+        }
+
         return true;
       })
       .catch(() => {
+        showAlertToast({
+          title: responses.deleteFailedError,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+        closeDeleteModal();
         return false;
       })
       .finally(() => {

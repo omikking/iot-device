@@ -118,16 +118,32 @@ export const AddOrEditSiteModal = ({
     setIsLoading(true);
 
     if (site) {
-      updateSite({
-        id: site.id,
-        updateSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      updateSite({ id: site.id, updateSiteInput: data })
+        .then((result) => {
+          if (result.error) {
+            showAlertToast({
+              title: responses.updateSiteError,
+              variant: 'error',
+            });
+          }
+          if (result.data) {
+            onSuccessfulSubmit();
+            showAlertToast({
+              title: responses.siteSuccessFullUpdate,
+              variant: 'success',
+            });
+          }
+        })
+        .catch(() => {
+          showAlertToast({
+            title: responses.updateSiteError,
+            variant: 'error',
+          });
+          return;
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!site) {
@@ -170,6 +186,15 @@ export const AddOrEditSiteModal = ({
             });
             refreshSites();
           }
+        })
+        .catch(() => {
+          // General error
+          showAlertToast({
+            title: responses.createSiteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return;
         })
         .finally(() => {
           setIsLoading(false);

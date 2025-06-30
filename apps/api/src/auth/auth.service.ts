@@ -20,7 +20,7 @@ import {
 } from './refresh-token-storage';
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
-import type { User } from '@prisma/client';
+import  { User,UserStatus  } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -30,9 +30,37 @@ export class AuthService {
     private config: ConfigService,
     private refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
+
+  //signup and Account Setup 
   async signup(dto: SignupDto) {
     try {
-      const hash = await argon.hash(dto.password);
+        const { email, password, fullName, workPlace, phoneNumber } = dto;
+      const hash = await argon.hash(password);
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          email,
+          status: UserStatus.INVITED,
+        },
+      });
+
+      
+    if (existingUser) {
+      //Existing and invited user need to updated setup account here
+      const updatedUser = await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          fullName,
+          workPlace,
+          phoneNumber: phoneNumber || undefined,
+          hash,
+          status: UserStatus.ACTIVE,
+        },
+      });
+
+      return this.generateTokens(updatedUser);
+    }
+      
+    //create user 
       const user = await this.prisma.user.create({
         data: {
           email: dto.email,
@@ -40,10 +68,12 @@ export class AuthService {
           fullName: dto.fullName,
           workPlace: dto.workPlace,
           phoneNumber: dto.phoneNumber || undefined,
+          status: UserStatus.ACTIVE,
+
         },
       });
-
       return this.generateTokens(user);
+
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {

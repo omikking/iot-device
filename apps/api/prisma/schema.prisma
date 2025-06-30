@@ -53,11 +53,7 @@ enum BoltType {
 }
 enum UserStatus {
   INVITED
-  PENDING_VERIFICATION
   ACTIVE
-  INACTIVE
-  SUSPENDED
-  DEACTIVATED
   DELETED
 }
 

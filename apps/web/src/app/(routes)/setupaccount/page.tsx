@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Form,
@@ -18,7 +18,7 @@ import {
 } from '@/components/schemas/SetupAccountFormSchema';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Role } from '@/gql/graphql';
@@ -38,6 +38,8 @@ const getUserQuery = graphql(`
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const userRole = session?.user?.globalRole;
   const userId = session?.user?.id as string;
@@ -81,11 +83,81 @@ export default function Page(): JSX.Element {
     },
   });
 
-  const onSubmit = async (data: SetupAccountFormWithConfirmValues) => {
-    console.log('Data from setup form: ', data);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword, ...submissionData } = data;
-    console.log('Data from setup form: ', submissionData);
+  // SetupAccountFormWithConfirmValues
+  const onSubmit: SubmitHandler<SetupAccountFormWithConfirmValues> = (data) => {
+    setIsLoading(true);
+    console.log(data);
+
+    // TODO make query work later with BE. Commented out for now.
+    // createAccountSetup({ createAccountSetupInput: data })
+    //   .then((result) => {
+    //     // Error handling
+    //     if (result.error) {
+    //       const accountAlreadyExistsInfo = result.error?.graphQLErrors?.find(
+    //         (err) =>
+    //           err.message.includes(responses.accountAlreadyRegisteredInfo),
+    //       );
+
+    //       const passwordMismatchError = result.error?.graphQLErrors?.find(
+    //         (err) => err.message.includes(responses.passwordsMismatchError),
+    //       );
+
+    //       const invitationExpiredError = result.error?.graphQLErrors?.find(
+    //         (err) =>
+    //           err.message.includes(responses.requestNewInvitationWarning),
+    //       );
+
+    //       if (accountAlreadyExistsInfo) {
+    //         showAlertToast({
+    //           title: responses.accountAlreadySetupInfo,
+    //           description: responses.accountAlreadyRegisteredInfo,
+    //           variant: 'info',
+    //         });
+    //         return;
+    //       }
+
+    //     if (passwordMismatchError) {
+    //       showAlertToast({
+    //         title: responses.failedToSetupAccountError,
+    //         description: responses.passwordsMismatchError,
+    //         variant: 'error',
+    //       });
+    //       return;
+    //     }
+
+    //     if (invitationExpiredError) {
+    //       showAlertToast({
+    //         title: responses.failedToSetupAccountError,
+    //         description: responses.requestNewInvitationWarning,
+    //         variant: 'warning',
+    //       });
+    //       return;
+    //     }
+
+    //     showAlertToast({
+    //       title: responses.serverError,
+    //       description: responses.contactSupportErrorTryAgain,
+    //       variant: 'error',
+    //     });
+    //     return;
+    //   }
+    //   // Success
+    //   if (result.data) {
+    //     showAlertToast({
+    //       title: responses.createAccountSetupSuccess,
+    //       variant: 'success',
+    //     });
+    //   } else {
+    //     showAlertToast({
+    //       title: responses.serverError,
+    //       description: responses.contactSupportErrorTryAgain,
+    //       variant: 'error',
+    //     });
+    //   }
+    // })
+    // .finally(() => {
+    //   setIsLoading(false);
+    // });
   };
 
   const formValues = setupForm.watch();
@@ -244,10 +316,11 @@ export default function Page(): JSX.Element {
               size="large"
               isWide
               disabled={isAnyFieldEmty}
+              isLoading={isLoading}
             >
-              <LucideUserRoundCog /> Sign up
+              {!isLoading && <LucideUserRoundCog />}
+              Sign up
             </Button>
-            {/* ADD TOAST */}
           </div>
         </form>
       </Form>

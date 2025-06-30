@@ -19,7 +19,7 @@ export class UsersService {
   findAll(roles?: GlobalRole[]): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
     const where: Prisma.UserWhereInput = {
-      status: 'ACTIVE', // ✅ Add this line
+      status: 'ACTIVE', 
     };
 
     if (roles && roles.length > 0) {
@@ -157,6 +157,7 @@ export class UsersService {
       });
     } catch (error) {
       // 3. Handle error: log it and optionally rethrow
+    console.log(error,"error")
       throw new Error('User created but failed to send invitation email.');
     }
 

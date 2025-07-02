@@ -3,6 +3,7 @@ import { Drive } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class DrivesService {
@@ -15,7 +16,12 @@ export class DrivesService {
   async findOne(id: string): Promise<Drive> {
     const drive = await this.prisma.drive.findUnique({ where: { id } });
     if (!drive) {
-      throw new UserInputError(`Drive #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_NOTFOUND_ERROR',
+          title: errorTexts.driveNotFound_title(id),
+        },
+      });
     }
     return drive;
   }
@@ -31,7 +37,12 @@ export class DrivesService {
     });
 
     if (!createdDrive) {
-      throw new UserInputError('Failed to create drive');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_CREATEFAILED_ERROR',
+          title: errorTexts.driveCreateError_title,
+        },
+      });
     }
     return createdDrive;
   }
@@ -49,14 +60,41 @@ export class DrivesService {
     });
 
     if (!updatedDrive) {
-      throw new UserInputError(`Drive #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_NOTFOUND_ERROR',
+          title: errorTexts.driveNotFound_title(id),
+        },
+      });
     }
     return updatedDrive;
   }
 
   async remove(id: string): Promise<Drive> {
-    return this.prisma.drive.delete({
+    const drive = await this.prisma.drive.findUnique({
       where: { id },
     });
+
+    if (!drive) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_NOTFOUND_ERROR',
+          title: errorTexts.driveNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.drive.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_DELETE_ERROR',
+          title: errorTexts.driveDeleteError_title,
+        },
+      });
+    }
   }
 }

@@ -3,6 +3,7 @@ import { Level } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class LevelsService {
@@ -15,7 +16,12 @@ export class LevelsService {
   async findOne(id: string): Promise<Level> {
     const level = await this.prisma.level.findUnique({ where: { id } });
     if (!level) {
-      throw new UserInputError(`Level #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LEVEL_NOTFOUND_ERROR',
+          title: errorTexts.levelNotFound_title(id),
+        },
+      });
     }
     return level;
   }
@@ -31,7 +37,12 @@ export class LevelsService {
     });
 
     if (!createdLevel) {
-      throw new UserInputError('Failed to create level');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LEVEL_CREATEFAILED_ERROR',
+          title: errorTexts.levelCreateError_title,
+        },
+      });
     }
     return createdLevel;
   }
@@ -49,14 +60,41 @@ export class LevelsService {
     });
 
     if (!updatedLevel) {
-      throw new UserInputError(`Level #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LEVEL_NOTFOUND_ERROR',
+          title: errorTexts.levelNotFound_title(id),
+        },
+      });
     }
     return updatedLevel;
   }
 
   async remove(id: string): Promise<Level> {
-    return this.prisma.level.delete({
+    const level = await this.prisma.level.findUnique({
       where: { id },
     });
+
+    if (!level) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LEVEL_NOTFOUND_ERROR',
+          title: errorTexts.levelNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.level.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LEVEL_DELETE_ERROR',
+          title: errorTexts.levelDeleteError_title,
+        },
+      });
+    }
   }
 }

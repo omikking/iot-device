@@ -11,6 +11,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -57,7 +58,12 @@ export class CompaniesService {
     });
 
     if (!company) {
-      throw new UserInputError(`Company #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'COMPANY_NOTFOUND_ERROR',
+          title: errorTexts.comapnyNotFound_title(id),
+        },
+      });
     }
 
     const sandvikAdminUserId = company.userPermission[0]?.userId;
@@ -73,24 +79,58 @@ export class CompaniesService {
   ): Promise<Company> {
     const { plans, sandvikAdminUserId, ...companyData } = createCompanyInput;
 
+    // Step 1: Validations
     const company = await prisma.$transaction(async (prisma) => {
-      // Step 1: Validate admin user
       if (!sandvikAdminUserId) {
-        throw new UserInputError('sandvikAdminUserId is required');
+        throw new UserInputError('', {
+          extensions: {
+            code: 'COMPANY_ADMINREQUIRED_ERROR',
+            title: errorTexts.companyAdminRequired_title,
+          },
+        });
       }
+
+      const existingCompany = await prisma.company.findFirst({
+        where: {
+          OR: [
+            { name: companyData.name },
+            { orgNumber: companyData.orgNumber },
+          ],
+        },
+      });
+
+      if (existingCompany) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'COMPANY_ALREADYEXISTS_INFO',
+            title: errorTexts.companyAlreadyExists_title,
+            message: errorTexts.companyAlreadyExists_message,
+            type: 'info',
+          },
+        });
+      }
+
       const user = await prisma.user.findUnique({
         where: { id: sandvikAdminUserId as string },
         select: { globalRole: true },
       });
 
       if (!user) {
-        throw new UserInputError(`User ${sandvikAdminUserId} does not exist`);
+        throw new UserInputError('', {
+          extensions: {
+            code: 'COMPANY_ADMINNOTFOUND_ERROR',
+            title: errorTexts.companyAdminNotFound_title,
+          },
+        });
       }
 
       if (user.globalRole !== Role.SANDVIK_ADMIN) {
-        throw new UserInputError(
-          `User ${sandvikAdminUserId} does not have global role SANDVIK_ADMIN`,
-        );
+        throw new UserInputError('', {
+          extensions: {
+            code: 'COMPANY_USERNOTADMIN_ERROR',
+            title: errorTexts.companyUserNotAdmin_title,
+          },
+        });
       }
 
       // Step 2: Create company with admin userPermission
@@ -134,7 +174,12 @@ export class CompaniesService {
     });
 
     if (!company) {
-      throw new UserInputError('Failed to create the company and plans');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'COMPANY_CREATE_ERROR',
+          title: errorTexts.companyCreateError_title,
+        },
+      });
     }
 
     return company;
@@ -257,7 +302,12 @@ export class CompaniesService {
     });
 
     if (!company) {
-      throw new UserInputError(`Company #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'COMPANY_CREATE_ERROR',
+          title: errorTexts.comapnyNotFound_title(id),
+        },
+      });
     }
 
     return company;

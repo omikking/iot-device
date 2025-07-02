@@ -3,6 +3,7 @@ import { Site } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class SitesService {
@@ -15,7 +16,12 @@ export class SitesService {
   async findOne(id: string): Promise<Site> {
     const site = await this.prisma.site.findUnique({ where: { id } });
     if (!site) {
-      throw new UserInputError(`Site #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
     }
     return site;
   }
@@ -29,7 +35,13 @@ export class SitesService {
     });
 
     if (existingSite) {
-      throw new UserInputError(`Site with name "${siteName}" already exists.`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_ALREADYEXISTS_INFO',
+          title: errorTexts.siteAlreadyExists_title,
+          type: 'info',
+        },
+      });
     }
 
     const createdSite = await this.prisma.site.create({
@@ -44,18 +56,39 @@ export class SitesService {
     });
 
     if (!createdSite) {
-      throw new UserInputError('Failed to create site');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_CREATE_ERROR',
+          title: errorTexts.siteCreateError_title,
+        },
+      });
     }
 
     return createdSite;
   }
+
   async update(
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,
   ): Promise<Site> {
-    const updatedSite = await this.prisma.site.update({
-      where: { id, companyId: updateSiteInput.companyId },
+    const existingSite = await this.prisma.site.findUnique({
+      where: {
+        id,
+        companyId: updateSiteInput.companyId,
+      },
+    });
 
+    if (!existingSite) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
+    }
+
+    return this.prisma.site.update({
+      where: { id, companyId: updateSiteInput.companyId },
       data: {
         siteName: updateSiteInput?.siteName || undefined,
         address: updateSiteInput?.address || undefined,
@@ -64,16 +97,33 @@ export class SitesService {
         country: updateSiteInput?.country || undefined,
       },
     });
-
-    if (!updatedSite) {
-      throw new UserInputError(`Site #${id} not found`);
-    }
-    return updatedSite;
   }
 
   async remove(id: string): Promise<Site> {
-    return this.prisma.site.delete({
+    const site = await this.prisma.site.findUnique({
       where: { id },
     });
+
+    if (!site) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.site.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_DELETE_ERROR',
+          title: errorTexts.siteDeleteError_title,
+        },
+      });
+    }
   }
 }

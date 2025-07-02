@@ -61,7 +61,7 @@ export class CompaniesService {
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_NOTFOUND_ERROR',
-          title: errorTexts.comapnyNotFound_title(id),
+          title: errorTexts.companyNotFound_title(id),
         },
       });
     }
@@ -305,7 +305,7 @@ export class CompaniesService {
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_CREATE_ERROR',
-          title: errorTexts.comapnyNotFound_title(id),
+          title: errorTexts.companyNotFound_title(id),
         },
       });
     }

@@ -180,7 +180,10 @@ export class BoltResultsService {
   }
 
   async remove(id: string): Promise<BoltResult> {
-    const boltResult = await this.prisma.boltResult.delete({ where: { id } });
+    const boltResult = await this.prisma.boltResult.findUnique({
+      where: { id },
+    });
+
     if (!boltResult) {
       throw new UserInputError('', {
         extensions: {
@@ -189,7 +192,19 @@ export class BoltResultsService {
         },
       });
     }
-    return boltResult;
+
+    try {
+      return await this.prisma.boltResult.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'BOLT_RESULT_DELETE_ERROR',
+          title: errorTexts.boltResultDeleteError_title,
+        },
+      });
+    }
   }
 
   async createBulk(

@@ -24,8 +24,10 @@ export const errorTexts = {
   boltResultsNotFoundError_message:
     'No bolt results found for the provided IDs.',
 
+  boltResultDeleteError_title: 'Failed to delete bolt result',
+
   // Company
-  comapnyNotFound_title: (id: string) => `Company #${id} not found`,
+  companyNotFound_title: (id: string) => `Company #${id} not found`,
 
   companyAdminRequired_title: 'Admin is required',
 

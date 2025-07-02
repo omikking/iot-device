@@ -78,7 +78,7 @@ export const errorTexts = {
   userNotFoundByEmail_message: (email: string) =>
     `User with email ${email} could not be found.`,
 
-  userPermissionAlreadyExists_title: 'Permissions already exists',
+  userPermissionAlreadyExists_title: 'Permissions already exist',
   userPermissionAlreadyExists_message:
     'User already has permissions for this company. Please edit existing permissions instead.',
 

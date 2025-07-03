@@ -166,7 +166,6 @@ export const CompanyForm = ({
         createCompanyInput: data,
       })
         .then((result) => {
-          console.log('result', result);
           const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
             err.message.includes('Unique constraint failed'),
           );

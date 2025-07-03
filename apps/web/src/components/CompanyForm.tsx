@@ -140,7 +140,7 @@ export const CompanyForm = ({
         updateCompanyInput: data,
       })
         .then((result) => {
-          if (result) {
+          if (result.data) {
             showAlertToast({
               title: responses.successfulCompanyUpdate,
               variant: 'success',
@@ -166,9 +166,12 @@ export const CompanyForm = ({
         createCompanyInput: data,
       })
         .then((result) => {
+          console.log('result', result);
           const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-            err.message.includes(responses.companyExistsError),
+            err.message.includes('Unique constraint failed'),
           );
+
+          console.log('alreadyExistsError', alreadyExistsError);
           if (alreadyExistsError) {
             showAlertToast({
               title: responses.companyExistsError,
@@ -177,6 +180,7 @@ export const CompanyForm = ({
             });
             return;
           }
+
           if (result.data) {
             showAlertToast({
               title: responses.successfulCompanyCreation,

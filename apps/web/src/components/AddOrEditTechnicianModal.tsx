@@ -25,15 +25,15 @@ import {
   UpdateTechnicianFormValues,
   updateTechnicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { SuccessMessage } from './SuccessMessage';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
-import { User } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { User } from '@/gql/graphql';
+import { useEffect, useState } from 'react';
+import { SuccessMessage } from './SuccessMessage';
 import { responses } from '@/app/uitexts/responses';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 
 // @TODO make the create user query later when BE is advanced.
 
@@ -99,13 +99,9 @@ export const AddOrEditTechnicianModal = ({
         updateUserInput: data,
       })
         .then((result) => {
-          // Question FELIX: When unsuccessful, should we have a short pause before closing the modal?
-          // Because there is a short pause when the modal closes after a successful submission.
           if (result.error) {
-            onOpenChange(false);
             showAlertToast({
               title: responses.techinicianUpdateFailedError,
-              description: responses.contactSupportError,
               variant: 'error',
             });
             return;
@@ -120,10 +116,8 @@ export const AddOrEditTechnicianModal = ({
           }
         })
         .catch(() => {
-          onOpenChange(false);
           showAlertToast({
             title: responses.techinicianUpdateFailedError,
-            description: responses.contactSupportError,
             variant: 'error',
           });
         })

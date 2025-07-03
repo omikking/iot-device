@@ -86,10 +86,8 @@ export const TechniciansTable = ({
         if (result.error) {
           showAlertToast({
             title: responses.deleteFailedError,
-            description: responses.contactSupportError,
             variant: 'error',
           });
-          closeDeleteModal();
           return false;
         }
 
@@ -105,10 +103,8 @@ export const TechniciansTable = ({
       .catch(() => {
         showAlertToast({
           title: responses.deleteFailedError,
-          description: responses.contactSupportError,
           variant: 'error',
         });
-        closeDeleteModal();
         return false;
       })
       .finally(() => {

@@ -15,7 +15,11 @@ export const responses = {
   siteDeleteSuccess: 'Site has been deleted',
 
   //company
-  companyAlreadyExistsError: 'This company is already registered.',
+  companyInvitationFailed: 'Failed to send invitation to company',
+  companyExistsError: 'Company already exists',
+  companyAlreadyExistsErrorDescription: 'This company is already registered.',
+  companyInactivationFailed: 'Failed to inactivate company',
+  companyUpdateFailed: 'Failed to update company',
   successfulCompanyCreation: 'Invitation successfully sent',
   successfulCompanyUpdate: 'Company successfully updated',
   companyDeleteSuccess: 'Company account has been deactivated',

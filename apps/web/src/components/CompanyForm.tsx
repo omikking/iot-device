@@ -134,26 +134,31 @@ export const CompanyForm = ({
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
-    console.log('Submit');
-
     if (company) {
       updateCompany({
         id: company.id,
         updateCompanyInput: data,
-      }).then((result) => {
-        if (result) {
+      })
+        .then((result) => {
+          if (result) {
+            showAlertToast({
+              title: responses.successfulCompanyUpdate,
+              variant: 'success',
+            });
+          } else {
+            showAlertToast({
+              title: responses.companyUpdateFailed,
+              variant: 'error',
+            });
+          }
+        })
+        .catch(() => {
           showAlertToast({
-            title: responses.successfulCompanyUpdate,
-            variant: 'success',
-          });
-        } else {
-          showAlertToast({
-            title: responses.serverError,
-            description: responses.contactSupportErrorTryAgain,
+            title: responses.companyUpdateFailed,
             variant: 'error',
           });
-        }
-      });
+          return;
+        });
     }
 
     if (!company && isNewCompany) {
@@ -162,11 +167,12 @@ export const CompanyForm = ({
       })
         .then((result) => {
           const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-            err.message.includes(responses.companyAlreadyExistsError),
+            err.message.includes(responses.companyExistsError),
           );
           if (alreadyExistsError) {
             showAlertToast({
-              title: responses.companyAlreadyExistsError,
+              title: responses.companyExistsError,
+              description: responses.companyAlreadyExistsErrorDescription,
               variant: 'info',
             });
             return;
@@ -178,17 +184,14 @@ export const CompanyForm = ({
             });
           } else {
             showAlertToast({
-              title: responses.serverError,
-              description: responses.contactSupportErrorTryAgain,
+              title: responses.companyInvitationFailed,
               variant: 'error',
             });
           }
-          console.log(result);
         })
         .catch(() => {
           showAlertToast({
-            title: 'Something',
-            description: 'went wrong while creating the company',
+            title: responses.companyInvitationFailed,
             variant: 'error',
           });
           return;

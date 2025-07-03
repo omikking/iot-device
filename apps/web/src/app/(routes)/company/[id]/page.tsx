@@ -78,22 +78,20 @@ export default function Page({
       .then((result) => {
         if (result.error) {
           showAlertToast({
-            title: responses.deleteFailedError,
-            description: responses.contactSupportError,
+            title: responses.companyInactivationFailed,
             variant: 'error',
           });
           return false;
         }
         showAlertToast({
           title: responses.companyDeleteSuccess,
-          variant: 'success',
+          variant: 'info',
         });
         return true;
       })
       .catch(() => {
         showAlertToast({
-          title: responses.deleteFailedError,
-          description: responses.contactSupportError,
+          title: responses.companyInactivationFailed,
           variant: 'error',
         });
         return false;

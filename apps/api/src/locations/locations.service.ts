@@ -3,6 +3,7 @@ import { Location } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class LocationsService {
@@ -15,7 +16,12 @@ export class LocationsService {
   async findOne(id: string): Promise<Location> {
     const location = await this.prisma.location.findUnique({ where: { id } });
     if (!location) {
-      throw new UserInputError(`Location #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LOCATION_NOTFOUND_ERROR',
+          title: errorTexts.locationNotFound_title(id),
+        },
+      });
     }
     return location;
   }
@@ -31,7 +37,12 @@ export class LocationsService {
     });
 
     if (!createdLocation) {
-      throw new UserInputError('Failed to create location');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LOCATION_CREATE_ERROR',
+          title: errorTexts.locationCreateError_title,
+        },
+      });
     }
     return createdLocation;
   }
@@ -49,16 +60,41 @@ export class LocationsService {
     });
 
     if (!updatedLocation) {
-      throw new UserInputError(`Location #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LOCATION_NOTFOUND_ERROR',
+          title: errorTexts.locationNotFound_title(id),
+        },
+      });
     }
     return updatedLocation;
   }
 
   async remove(id: string): Promise<Location> {
-    const location = await this.prisma.location.delete({ where: { id } });
+    const location = await this.prisma.location.findUnique({
+      where: { id },
+    });
+
     if (!location) {
-      throw new UserInputError(`Location #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LOCATION_NOTFOUND_ERROR',
+          title: errorTexts.locationNotFound_title(id),
+        },
+      });
     }
-    return location;
+
+    try {
+      return await this.prisma.location.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'LOCATION_DELETE_ERROR',
+          title: errorTexts.locationDeleteError_title,
+        },
+      });
+    }
   }
 }

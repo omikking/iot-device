@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   RefreshTokenDto,
@@ -21,6 +17,9 @@ import {
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
+import { UserInputError } from '@nestjs/apollo';
+import { errorTexts } from 'src/errorTexts/errorTexts';
+import { isPasswordStrong } from 'src/utils/utils';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +31,16 @@ export class AuthService {
   ) {}
   async signup(dto: SignupDto) {
     try {
+      if (!isPasswordStrong(dto.password)) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'USER_PASSWORD_TOO_WEAK_ERROR',
+            title: errorTexts.userPasswordTooWeak_title,
+            message: errorTexts.userPasswordTooWeak_message,
+          },
+        });
+      }
+
       const hash = await argon.hash(dto.password);
       const user = await this.prisma.user.create({
         data: {
@@ -47,43 +56,81 @@ export class AuthService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials taken!');
+          throw new UserInputError('', {
+            extensions: {
+              code: 'USER_EMAIL_ALREADY_EXISTS',
+              title: errorTexts.authEmailExists_title,
+              message: errorTexts.authEmailExists_message,
+            },
+          });
         }
       }
+
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_SETUPACCOUNT_ERROR',
+          title: errorTexts.authSetupAccountError_title,
+        },
+      });
     }
   }
 
   async signin(dto: SigninDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
-      },
-    });
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      });
 
-    if (!user) throw new ForbiddenException('Credentials incorrect');
+      if (!user) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'USER_INVALID_CREDENTIALS_ERROR',
+            title: errorTexts.authInvalidCredentials_title,
+            message: errorTexts.authInvalidCredentials_message,
+          },
+        });
+      }
 
-    const passwordMatch = await argon.verify(user.hash, dto.password);
+      const passwordMatch = await argon.verify(user.hash, dto.password);
 
-    if (!passwordMatch) throw new ForbiddenException('Credentails incorrect');
+      if (!passwordMatch) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'USER_INVALID_CREDENTIALS_ERROR',
+            title: errorTexts.authInvalidCredentials_title,
+            message: errorTexts.authInvalidCredentials_message,
+          },
+        });
+      }
 
-    const tokens = await this.generateTokens(user);
+      const tokens = await this.generateTokens(user);
 
-    const userResponse: ActiveUserData = {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      globalRole: user.globalRole,
-    };
+      const userResponse: ActiveUserData = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        globalRole: user.globalRole,
+      };
 
-    return {
-      tokens: tokens,
-      userData: userResponse,
-    } as SignInResponseDto;
+      return {
+        tokens: tokens,
+        userData: userResponse,
+      } as SignInResponseDto;
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_SIGNIN_ERROR',
+          title: errorTexts.authInvalidCredentials_title,
+        },
+      });
+    }
   }
 
   async refreshTokens(dto: RefreshTokenDto) {
     try {
-      console.log('refresh token triggered');
+      console.log('Refresh token triggered');
       const payload = await this.jwt.verifyAsync(dto.refreshToken, {
         secret: this.config.get('JWT_SECRET'),
       });
@@ -105,7 +152,7 @@ export class AuthService {
           payload.refreshTokenId,
         );
       } else {
-        throw new Error('Invalid refresh token');
+        throw new Error(errorTexts.authRefreshTokenError_title);
       }
 
       return this.generateTokens(user);
@@ -113,7 +160,7 @@ export class AuthService {
       if (error instanceof InvalidatedRefreshTokenError) {
         // Log or notify that someone is trying to use invalidated refresh token.
         // This is a security measure to log potential replay attacks or other malicious activity.
-        throw new UnauthorizedException('Access denied');
+        throw new UnauthorizedException(errorTexts.authAccessDenied_title);
       }
       throw new UnauthorizedException();
     }

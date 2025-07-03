@@ -8,11 +8,12 @@ export const responses = {
   deleteFailedError: 'Deletion Failed',
   serverError: 'Server error',
 
-  //site
+  siteSuccessFullUpdate: 'Site successfully updated',
   createSiteError: 'Failed to add site',
   siteAlreadyExistsError: 'Site already exists',
   siteCreateSuccess: 'Site successfully added',
   siteDeleteSuccess: 'Site has been deleted',
+  updateSiteError: 'Failed to update site',
 
   //company
   companyInvitationFailed: 'Failed to send invitation to company',

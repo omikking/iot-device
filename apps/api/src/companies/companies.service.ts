@@ -314,8 +314,30 @@ export class CompaniesService {
   }
 
   async remove(id: string): Promise<Company> {
-    return this.prisma.company.delete({
+    const company = await this.prisma.company.findUnique({
       where: { id },
     });
+
+    if (!company) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'COMPANY_NOTFOUND_ERROR',
+          title: errorTexts.companyNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.company.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'COMPANY_DELETE_ERROR',
+          title: errorTexts.companyDeleteError_title,
+        },
+      });
+    }
   }
 }

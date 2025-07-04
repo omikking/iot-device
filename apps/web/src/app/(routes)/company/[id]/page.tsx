@@ -9,6 +9,7 @@ import { CompanyForm } from '@/components/CompanyForm';
 import { Text, Headline, showAlertToast } from '@gsp/ui';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -60,8 +61,10 @@ export default function Page({
         variables: { id: params.id },
       });
   const company = companyData?.data?.company as Company;
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [, deleteCompany] = useMutation(deleteCompanyMutation);
 
   const closeDeleteModal = () => {
@@ -72,33 +75,47 @@ export default function Page({
   const handleDelete = async (): Promise<boolean> => {
     setIsDeleting(true);
 
-    return deleteCompany({
-      id: company.id,
-    })
-      .then((result) => {
-        if (result.error) {
+    return (
+      deleteCompany({
+        id: company.id,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.companyDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
             title: responses.companyInactivationFailed,
+            description: responses.contactSupportError,
             variant: 'error',
           });
           return false;
-        }
-        showAlertToast({
-          title: responses.companyDeleteSuccess,
-          variant: 'info',
-        });
-        return true;
-      })
-      .catch(() => {
-        showAlertToast({
-          title: responses.companyInactivationFailed,
-          variant: 'error',
-        });
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   return (

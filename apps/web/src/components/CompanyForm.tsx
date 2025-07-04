@@ -30,6 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const allPlans = [
   { applicationName: 'PULL_TEST' },
@@ -140,24 +141,32 @@ export const CompanyForm = ({
         updateCompanyInput: data,
       })
         .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             showAlertToast({
               title: responses.successfulCompanyUpdate,
               variant: 'success',
             });
-          } else {
-            showAlertToast({
-              title: responses.companyUpdateFailed,
-              variant: 'error',
-            });
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
             title: responses.companyUpdateFailed,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-          return;
         });
     }
 
@@ -166,38 +175,33 @@ export const CompanyForm = ({
         createCompanyInput: data,
       })
         .then((result) => {
-          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-            err.message.includes('Unique constraint failed'),
-          );
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
-          console.log('alreadyExistsError', alreadyExistsError);
-          if (alreadyExistsError) {
             showAlertToast({
-              title: responses.companyExistsError,
-              description: responses.companyAlreadyExistsErrorDescription,
-              variant: 'info',
+              title: title,
+              description: message,
+              variant: type || 'error',
             });
-            return;
           }
 
+          // Success
           if (result.data) {
             showAlertToast({
               title: responses.successfulCompanyCreation,
               variant: 'success',
             });
-          } else {
-            showAlertToast({
-              title: responses.companyInvitationFailed,
-              variant: 'error',
-            });
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
             title: responses.companyInvitationFailed,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-          return;
         });
     }
   };

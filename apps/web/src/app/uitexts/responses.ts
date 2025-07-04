@@ -3,8 +3,6 @@ export const responses = {
 
   // misc error responses
   contactSupportError: 'Please contact our support team for assistance.',
-  contactSupportErrorTryAgain:
-    'Something went wrong. Please try again later or contact support.',
   deleteFailedError: 'Deletion Failed',
   serverError: 'Server error',
 
@@ -17,11 +15,9 @@ export const responses = {
 
   //company
   companyInvitationFailed: 'Failed to send invitation to company',
-  companyExistsError: 'Company already exists',
-  companyAlreadyExistsErrorDescription: 'This company is already registered.',
-  companyInactivationFailed: 'Failed to inactivate company',
-  companyUpdateFailed: 'Failed to update company',
   successfulCompanyCreation: 'Invitation successfully sent',
+  companyUpdateFailed: 'Failed to update company',
   successfulCompanyUpdate: 'Company successfully updated',
+  companyInactivationFailed: 'Failed to inactivate company',
   companyDeleteSuccess: 'Company account has been deactivated',
 };

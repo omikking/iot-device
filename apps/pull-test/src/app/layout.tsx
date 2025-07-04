@@ -6,6 +6,7 @@ import { NavBar } from '@/components/NavBar';
 import { authOptions } from '@/libs/authOptions';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
+import { Toaster } from '@gsp/ui';
 
 export const metadata: Metadata = {
   title: 'Pull Test Web',
@@ -22,6 +23,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className="min-h-screen">
         <NextAuthProvider session={session}>
+          <Toaster duration={8000} />
           <UrqlProvider>
             <NavBar />
             {children}

@@ -8,7 +8,7 @@ export const responses = {
   deleteFailedError: 'Deletion Failed',
   serverError: 'Server error',
 
-  siteSuccessFullUpdate: 'Site successfully updated',
+  siteSuccessfulUpdate: 'Site successfully updated',
   createSiteError: 'Failed to add site',
   siteAlreadyExistsError: 'Site already exists',
   siteCreateSuccess: 'Site successfully added',

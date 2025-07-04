@@ -29,6 +29,7 @@ import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -120,23 +121,35 @@ export const AddOrEditSiteModal = ({
     if (site) {
       updateSite({ id: site.id, updateSiteInput: data })
         .then((result) => {
-          if (result.error) {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
             showAlertToast({
-              title: responses.updateSiteError,
-              variant: 'error',
+              title: title,
+              description: message,
+              variant: type || 'error',
             });
+            return;
           }
+          // Success
           if (result.data) {
             onSuccessfulSubmit();
-            showAlertToast({
-              title: responses.siteSuccessFullUpdate,
-              variant: 'success',
-            });
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteSuccessfulUpdate,
+                variant: 'success',
+              });
+            }, 1500);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
             title: responses.updateSiteError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
           return;
@@ -149,24 +162,15 @@ export const AddOrEditSiteModal = ({
     if (!site) {
       createSite({ createSiteInput: data })
         .then((result) => {
-          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-            err.message.includes('already exists'),
-          );
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
-          if (alreadyExistsError) {
             showAlertToast({
-              title: responses.siteAlreadyExistsError,
-              variant: 'info',
-            });
-            return;
-          }
-
-          // General error
-          if (result.error) {
-            showAlertToast({
-              title: responses.createSiteError,
-              description: responses.contactSupportError,
-              variant: 'error',
+              title: title,
+              description: message,
+              variant: type || 'error',
             });
             return;
           }
@@ -174,21 +178,19 @@ export const AddOrEditSiteModal = ({
           // Success
           if (result.data) {
             onSuccessfulSubmit();
-            showAlertToast({
-              title: responses.siteCreateSuccess,
-              variant: 'success',
-            });
-          } else {
-            showAlertToast({
-              title: responses.createSiteError,
-              description: responses.contactSupportError,
-              variant: 'error',
-            });
             refreshSites();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteCreateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
           }
         })
+
+        // Fallback error
         .catch(() => {
-          // General error
           showAlertToast({
             title: responses.createSiteError,
             description: responses.contactSupportError,

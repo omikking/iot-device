@@ -55,11 +55,11 @@ export default function Page({
   const companyName = data?.company?.name;
 
   // Commented out since not in MVP
-  // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
+  // const [, setApp] = useState<'Pull Test' | 'Cyclops' | 'Banshee'>(
   //   'Pull Test',
   // );
 
-    const [sitesData, refetchSites] = useQuery({
+  const [sitesData, refetchSites] = useQuery({
     query: getCompanySitesQuery,
     variables: { id: companyId || '' },
   });
@@ -68,7 +68,7 @@ export default function Page({
   const refreshSite = () => {
     refetchSites({ requestPolicy: 'network-only' });
   };
-  
+
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -125,32 +125,14 @@ export default function Page({
             </Modal>
           </div>
 
-          <TabsContent value="pullTest">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
-
-          <TabsContent value="xCyclops">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
-
-          <TabsContent value="ultrabolts">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
+          {/* <TabsContent value="pullTest"> */}
+          <SitesTable
+            companyId={companyId}
+            onOpenChange={handleModalToggle}
+            onSelectSite={setSelectedSite}
+            sites={sites}
+          />
+          {/* </TabsContent> */}
         </Tabs>
       </div>
     </main>

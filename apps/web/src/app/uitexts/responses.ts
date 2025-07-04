@@ -3,7 +3,6 @@ export const responses = {
 
   // misc error responses
   contactSupportError: 'Please contact our support team for assistance.',
-  serverError: 'Server error',
 
   createSiteError: 'Failed to add site',
   siteCreateSuccess: 'Site successfully added',
@@ -14,12 +13,6 @@ export const responses = {
 
   // Account setup
   failedToSetupAccountError: 'Failed to set up account',
-  accountAlreadySetupInfo: 'Account already set up',
-  accountAlreadyRegisteredInfo: 'This email is already registered.',
-  passwordsMismatchError:
-    'Password mismatch. Please make sure both match exactly.',
-  requestNewInvitationWarning:
-    'Your invitation has expired. Please contact the company to request a new invitation.',
   createAccountSetupSuccess: 'Account successfully set up',
 
   // Technician

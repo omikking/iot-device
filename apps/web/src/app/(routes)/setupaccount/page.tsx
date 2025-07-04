@@ -83,81 +83,43 @@ export default function Page(): JSX.Element {
     },
   });
 
-  // SetupAccountFormWithConfirmValues
   const onSubmit: SubmitHandler<SetupAccountFormWithConfirmValues> = (data) => {
     setIsLoading(true);
-    console.log(data);
 
     // TODO make query work later with BE. Commented out for now.
     // createAccountSetup({ createAccountSetupInput: data })
     //   .then((result) => {
-    //     // Error handling
-    //     if (result.error) {
-    //       const accountAlreadyExistsInfo = result.error?.graphQLErrors?.find(
-    //         (err) =>
-    //           err.message.includes(responses.accountAlreadyRegisteredInfo),
-    //       );
+    //     // Backend errors
+    //     if (result.error?.graphQLErrors) {
+    //       const { title, message, type } = result.error.graphQLErrors[0]
+    //         .extensions as unknown as GraphQLErrorExtensions;
 
-    //       const passwordMismatchError = result.error?.graphQLErrors?.find(
-    //         (err) => err.message.includes(responses.passwordsMismatchError),
-    //       );
-
-    //       const invitationExpiredError = result.error?.graphQLErrors?.find(
-    //         (err) =>
-    //           err.message.includes(responses.requestNewInvitationWarning),
-    //       );
-
-    //       if (accountAlreadyExistsInfo) {
-    //         showAlertToast({
-    //           title: responses.accountAlreadySetupInfo,
-    //           description: responses.accountAlreadyRegisteredInfo,
-    //           variant: 'info',
-    //         });
-    //         return;
-    //       }
-
-    //     if (passwordMismatchError) {
     //       showAlertToast({
-    //         title: responses.failedToSetupAccountError,
-    //         description: responses.passwordsMismatchError,
+    //         title: title,
+    //         description: message,
     //         variant: 'error',
     //       });
     //       return;
     //     }
-
-    //     if (invitationExpiredError) {
+    //     // Success
+    //     if (result.data) {
     //       showAlertToast({
-    //         title: responses.failedToSetupAccountError,
-    //         description: responses.requestNewInvitationWarning,
-    //         variant: 'warning',
+    //         title: responses.createAccountSetupSuccess,
+    //         variant: 'success',
     //       });
-    //       return;
+    //       // TODO fix redirect to dashboard / overview
     //     }
-
+    //   })
+    //   .catch(() => {
     //     showAlertToast({
-    //       title: responses.serverError,
-    //       description: responses.contactSupportErrorTryAgain,
+    //       title: responses.failedToSetupAccountError,
+    //       description: responses.contactSupportError,
     //       variant: 'error',
     //     });
-    //     return;
-    //   }
-    //   // Success
-    //   if (result.data) {
-    //     showAlertToast({
-    //       title: responses.createAccountSetupSuccess,
-    //       variant: 'success',
-    //     });
-    //   } else {
-    //     showAlertToast({
-    //       title: responses.serverError,
-    //       description: responses.contactSupportErrorTryAgain,
-    //       variant: 'error',
-    //     });
-    //   }
-    // })
-    // .finally(() => {
-    //   setIsLoading(false);
-    // });
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });
   };
 
   const formValues = setupForm.watch();

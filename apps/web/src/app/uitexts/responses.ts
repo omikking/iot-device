@@ -1,15 +1,15 @@
 export const responses = {
   passwordMismatchError: 'Passwords do not match.',
 
-  contactSupportError: 'Please contact our support team for assistance',
-  deleteFailedError: 'Deletion Failed',
-  serverError: 'Server Error',
-  contactSupportErrorTryAgain:
-    'Something went wrong. Please try again later or contact support.',
+  // misc error responses
+  contactSupportError: 'Please contact our support team for assistance.',
+  serverError: 'Server error',
 
   createSiteError: 'Failed to add site',
-  siteAlreadyExistsError: 'Site already exists',
   siteCreateSuccess: 'Site successfully added',
+  updateSiteError: 'Failed to update site',
+  siteSuccessfulUpdate: 'Site successfully updated',
+  siteDeleteFailed: 'Failed to delete site',
   siteDeleteSuccess: 'Site has been deleted',
 
   // Account setup
@@ -21,4 +21,20 @@ export const responses = {
   requestNewInvitationWarning:
     'Your invitation has expired. Please contact the company to request a new invitation.',
   createAccountSetupSuccess: 'Account successfully set up',
+
+  // Technician
+  technicianInviteFailError: 'Failed to invite technician',
+  techicianInviteSuccess: 'Invitation successfully sent',
+  techinicianUpdateFailedError: 'Failed to update technician',
+  techincianUpdateSuccess: 'Technician successfully updated',
+  techinicianDeleteFailed: 'Failed to delete technician',
+  techinicianDeleteSuccess: 'Technician has been deleted',
+
+  //company
+  companyInvitationFailed: 'Failed to send invitation to company',
+  successfulCompanyCreation: 'Invitation successfully sent',
+  companyUpdateFailed: 'Failed to update company',
+  successfulCompanyUpdate: 'Company successfully updated',
+  companyInactivationFailed: 'Failed to inactivate company',
+  companyDeleteSuccess: 'Company account has been deactivated',
 };

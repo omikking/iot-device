@@ -2,12 +2,14 @@
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { Company } from '@/gql/graphql';
-import { Text, Headline } from '@gsp/ui';
 import { useMutation, useQuery } from 'urql';
 import { GoBack } from '@/components/GoBack';
+import { responses } from '@/app/uitexts/responses';
 import { CompanyForm } from '@/components/CompanyForm';
+import { Text, Headline, showAlertToast } from '@gsp/ui';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -59,34 +61,61 @@ export default function Page({
         variables: { id: params.id },
       });
   const company = companyData?.data?.company as Company;
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [, deleteCompany] = useMutation(deleteCompanyMutation);
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
   };
 
+  // TODO still not able to delete company, need to fix it in backend
   const handleDelete = async (): Promise<boolean> => {
     setIsDeleting(true);
 
-    return deleteCompany({
-      id: company.id,
-    })
-      .then((result) => {
-        if (result.error) {
-          console.error('Error deleting company:', result.error);
+    return (
+      deleteCompany({
+        id: company.id,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.companyDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyInactivationFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
-        }
-        return true;
-      })
-      .catch((error) => {
-        console.error('Error deleting company:', error);
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   return (
@@ -104,8 +133,6 @@ export default function Page({
         isNewCompany={isNewCompany}
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
-
-      {/* TODO Discuss how to deal with  */}
 
       <DeleteModalConfirmation
         deleteIcon="Company"

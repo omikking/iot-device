@@ -85,6 +85,7 @@ export default function Page(): JSX.Element {
 
   const onSubmit: SubmitHandler<SetupAccountFormWithConfirmValues> = (data) => {
     setIsLoading(true);
+    console.log(data); // remove later
 
     // TODO make query work later with BE. Commented out for now.
     // createAccountSetup({ createAccountSetupInput: data })

@@ -3,7 +3,6 @@ export const responses = {
 
   // misc error responses
   contactSupportError: 'Please contact our support team for assistance.',
-  serverError: 'Server error',
 
   createSiteError: 'Failed to add site',
   siteCreateSuccess: 'Site successfully added',
@@ -11,6 +10,10 @@ export const responses = {
   siteSuccessfulUpdate: 'Site successfully updated',
   siteDeleteFailed: 'Failed to delete site',
   siteDeleteSuccess: 'Site has been deleted',
+
+  // Account setup
+  failedToSetupAccountError: 'Failed to set up account',
+  createAccountSetupSuccess: 'Account successfully set up',
 
   // Technician
   technicianInviteFailError: 'Failed to invite technician',

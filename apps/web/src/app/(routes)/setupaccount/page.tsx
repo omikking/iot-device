@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Form,
@@ -18,7 +18,7 @@ import {
 } from '@/components/schemas/SetupAccountFormSchema';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Role } from '@/gql/graphql';
@@ -38,6 +38,8 @@ const getUserQuery = graphql(`
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const userRole = session?.user?.globalRole;
   const userId = session?.user?.id as string;
@@ -81,11 +83,44 @@ export default function Page(): JSX.Element {
     },
   });
 
-  const onSubmit = async (data: SetupAccountFormWithConfirmValues) => {
-    console.log('Data from setup form: ', data);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword, ...submissionData } = data;
-    console.log('Data from setup form: ', submissionData);
+  const onSubmit: SubmitHandler<SetupAccountFormWithConfirmValues> = (data) => {
+    setIsLoading(true);
+    console.log(data); // remove later
+
+    // TODO make query work later with BE. Commented out for now.
+    // createAccountSetup({ createAccountSetupInput: data })
+    //   .then((result) => {
+    //     // Backend errors
+    //     if (result.error?.graphQLErrors) {
+    //       const { title, message, type } = result.error.graphQLErrors[0]
+    //         .extensions as unknown as GraphQLErrorExtensions;
+
+    //       showAlertToast({
+    //         title: title,
+    //         description: message,
+    //         variant: 'error',
+    //       });
+    //       return;
+    //     }
+    //     // Success
+    //     if (result.data) {
+    //       showAlertToast({
+    //         title: responses.createAccountSetupSuccess,
+    //         variant: 'success',
+    //       });
+    //       // TODO fix redirect to dashboard / overview
+    //     }
+    //   })
+    //   .catch(() => {
+    //     showAlertToast({
+    //       title: responses.failedToSetupAccountError,
+    //       description: responses.contactSupportError,
+    //       variant: 'error',
+    //     });
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });
   };
 
   const formValues = setupForm.watch();
@@ -244,10 +279,11 @@ export default function Page(): JSX.Element {
               size="large"
               isWide
               disabled={isAnyFieldEmty}
+              isLoading={isLoading}
             >
-              <LucideUserRoundCog /> Sign up
+              {!isLoading && <LucideUserRoundCog />}
+              Sign up
             </Button>
-            {/* ADD TOAST */}
           </div>
         </form>
       </Form>

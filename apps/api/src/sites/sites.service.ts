@@ -29,20 +29,7 @@ export class SitesService {
   async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
     const siteName = createSiteInput.siteName.trim();
 
-    // Check if a site with the same name already exists
-    const existingSite = await this.prisma.site.findFirst({
-      where: { siteName },
-    });
-
-    if (existingSite) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'SITE_ALREADYEXISTS_INFO',
-          title: errorTexts.siteAlreadyExists_title,
-          type: 'info',
-        },
-      });
-    }
+    await this.checkSiteNameExists(createSiteInput.siteName);
 
     const createdSite = await this.prisma.site.create({
       data: {
@@ -71,20 +58,27 @@ export class SitesService {
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,
   ): Promise<Site> {
-    const existingSite = await this.prisma.site.findUnique({
+    const site = await this.prisma.site.findUnique({
       where: {
         id,
         companyId: updateSiteInput.companyId,
       },
     });
 
-    if (!existingSite) {
+    if (!site) {
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_NOTFOUND_ERROR',
           title: errorTexts.siteNotFound_title(id),
         },
       });
+    }
+
+    if (
+      updateSiteInput.siteName &&
+      updateSiteInput.siteName !== site.siteName
+    ) {
+      await this.checkSiteNameExists(updateSiteInput.siteName);
     }
 
     return this.prisma.site.update({
@@ -125,5 +119,28 @@ export class SitesService {
         },
       });
     }
+  }
+
+  // Check if a site with the same name already exists
+  private async checkSiteNameExists(siteName: string): Promise<Site | null> {
+    const trimmedName = siteName.trim();
+
+    const whereCondition: any = { siteName: trimmedName };
+
+    const existingSite = await this.prisma.site.findFirst({
+      where: whereCondition,
+    });
+
+    if (existingSite) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_ALREADYEXISTS_INFO',
+          title: errorTexts.siteAlreadyExists_title,
+          type: 'info',
+        },
+      });
+    }
+
+    return existingSite;
   }
 }

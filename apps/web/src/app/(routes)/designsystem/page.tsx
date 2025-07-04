@@ -901,7 +901,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Alerts 🦄
       </Headline>
-      <Toaster duration={500000} />
+      <Toaster duration={80000} />
       <Button
         onClick={() =>
           showAlertToast({

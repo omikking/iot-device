@@ -3,6 +3,7 @@ import { Site } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class SitesService {
@@ -15,7 +16,12 @@ export class SitesService {
   async findOne(id: string): Promise<Site> {
     const site = await this.prisma.site.findUnique({ where: { id } });
     if (!site) {
-      throw new UserInputError(`Site #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
     }
     return site;
   }
@@ -23,14 +29,7 @@ export class SitesService {
   async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
     const siteName = createSiteInput.siteName.trim();
 
-    // Check if a site with the same name already exists
-    const existingSite = await this.prisma.site.findFirst({
-      where: { siteName },
-    });
-
-    if (existingSite) {
-      throw new UserInputError(`Site with name "${siteName}" already exists.`);
-    }
+    await this.checkSiteNameExists(createSiteInput.siteName);
 
     const createdSite = await this.prisma.site.create({
       data: {
@@ -44,18 +43,46 @@ export class SitesService {
     });
 
     if (!createdSite) {
-      throw new UserInputError('Failed to create site');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_CREATE_ERROR',
+          title: errorTexts.siteCreateError_title,
+        },
+      });
     }
 
     return createdSite;
   }
+
   async update(
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,
   ): Promise<Site> {
-    const updatedSite = await this.prisma.site.update({
-      where: { id, companyId: updateSiteInput.companyId },
+    const site = await this.prisma.site.findUnique({
+      where: {
+        id,
+        companyId: updateSiteInput.companyId,
+      },
+    });
 
+    if (!site) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
+    }
+
+    if (
+      updateSiteInput.siteName &&
+      updateSiteInput.siteName !== site.siteName
+    ) {
+      await this.checkSiteNameExists(updateSiteInput.siteName);
+    }
+
+    return this.prisma.site.update({
+      where: { id, companyId: updateSiteInput.companyId },
       data: {
         siteName: updateSiteInput?.siteName || undefined,
         address: updateSiteInput?.address || undefined,
@@ -64,16 +91,56 @@ export class SitesService {
         country: updateSiteInput?.country || undefined,
       },
     });
-
-    if (!updatedSite) {
-      throw new UserInputError(`Site #${id} not found`);
-    }
-    return updatedSite;
   }
 
   async remove(id: string): Promise<Site> {
-    return this.prisma.site.delete({
+    const site = await this.prisma.site.findUnique({
       where: { id },
     });
+
+    if (!site) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.site.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_DELETE_ERROR',
+          title: errorTexts.siteDeleteError_title,
+        },
+      });
+    }
+  }
+
+  // Check if a site with the same name already exists
+  private async checkSiteNameExists(siteName: string): Promise<Site | null> {
+    const trimmedName = siteName.trim();
+
+    const whereCondition: any = { siteName: trimmedName };
+
+    const existingSite = await this.prisma.site.findFirst({
+      where: whereCondition,
+    });
+
+    if (existingSite) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_ALREADYEXISTS_INFO',
+          title: errorTexts.siteAlreadyExists_title,
+          type: 'info',
+        },
+      });
+    }
+
+    return existingSite;
   }
 }

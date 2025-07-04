@@ -3,6 +3,7 @@ import { Application, Role, UserPermission } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class UserPermissionsService {
@@ -17,7 +18,12 @@ export class UserPermissionsService {
       where: { id },
     });
     if (!userPermission) {
-      throw new UserInputError(`UserPermission #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_NOTFOUND_ERROR',
+          title: errorTexts.userPermissionNotFound_title(id),
+        },
+      });
     }
     return userPermission;
   }
@@ -30,9 +36,15 @@ export class UserPermissionsService {
     });
 
     if (!user) {
-      throw new UserInputError(
-        `User with email ${createUserPermissionInput.userEmail} will be invited to setup account, wont work now, tbd later...`,
-      );
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_NOTFOUND_ERROR',
+          title: errorTexts.userNotFoundByEmail_title,
+          message: errorTexts.userNotFoundByEmail_message(
+            createUserPermissionInput.userEmail,
+          ),
+        },
+      });
     }
 
     const existingUserPermission = await this.prisma.userPermission.findFirst({
@@ -43,9 +55,14 @@ export class UserPermissionsService {
     });
 
     if (existingUserPermission) {
-      throw new UserInputError(
-        `User already has permissions for this company. Please edit existing permissions instead.`,
-      );
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_ALREADYEXISTS_INFO',
+          title: errorTexts.userPermissionAlreadyExists_title,
+          message: errorTexts.userPermissionAlreadyExists_message,
+          type: 'info',
+        },
+      });
     }
 
     const createdUserPermission = await this.prisma.userPermission.create({
@@ -58,7 +75,12 @@ export class UserPermissionsService {
     });
 
     if (!createdUserPermission) {
-      throw new UserInputError('Failed to create userPermission');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_CREATE_ERROR',
+          title: errorTexts.userPermissionCreateError_title,
+        },
+      });
     }
     return createdUserPermission;
   }
@@ -78,18 +100,41 @@ export class UserPermissionsService {
     });
 
     if (!updatedUserPermission) {
-      throw new UserInputError(`UserPermission #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_NOTFOUND_ERROR',
+          title: errorTexts.userPermissionNotFound_title(id),
+        },
+      });
     }
     return updatedUserPermission;
   }
 
   async remove(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.delete({
+    const userPermission = await this.prisma.userPermission.findUnique({
       where: { id },
     });
+
     if (!userPermission) {
-      throw new UserInputError(`UserPermission #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_NOTFOUND_ERROR',
+          title: errorTexts.userPermissionNotFound_title(id),
+        },
+      });
     }
-    return userPermission;
+
+    try {
+      return await this.prisma.userPermission.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USERPERMISSION_DELETE_ERROR',
+          title: errorTexts.userPermissionDeleteError_title,
+        },
+      });
+    }
   }
 }

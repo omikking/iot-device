@@ -131,7 +131,6 @@ export const AddOrEditSiteModal = ({
               description: message,
               variant: type || 'error',
             });
-            return;
           }
           // Success
           if (result.data) {
@@ -152,7 +151,6 @@ export const AddOrEditSiteModal = ({
             description: responses.contactSupportError,
             variant: 'error',
           });
-          return;
         })
         .finally(() => {
           setIsLoading(false);

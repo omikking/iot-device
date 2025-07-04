@@ -34,6 +34,7 @@ import { responses } from '@/app/uitexts/responses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 // @TODO make the create user query later when BE is advanced.
 
@@ -99,25 +100,34 @@ export const AddOrEditTechnicianModal = ({
         updateUserInput: data,
       })
         .then((result) => {
-          if (result.error) {
-            showAlertToast({
-              title: responses.techinicianUpdateFailedError,
-              variant: 'error',
-            });
-            return;
-          }
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             onSuccessfulSubmit();
-            showAlertToast({
-              title: responses.techincianUpdateSuccess,
-              variant: 'success',
-            });
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.techincianUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
             title: responses.techinicianUpdateFailedError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
         })

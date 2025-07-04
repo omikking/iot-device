@@ -3,23 +3,22 @@ export const responses = {
 
   // misc error responses
   contactSupportError: 'Please contact our support team for assistance.',
-  deleteFailedError: 'Deletion Failed',
   serverError: 'Server error',
 
-  siteSuccessfulUpdate: 'Site successfully updated',
   createSiteError: 'Failed to add site',
-  siteAlreadyExistsError: 'Site already exists',
   siteCreateSuccess: 'Site successfully added',
-  siteDeleteSuccess: 'Site has been deleted',
   updateSiteError: 'Failed to update site',
+  siteSuccessfulUpdate: 'Site successfully updated',
+  siteDeleteFailed: 'Failed to delete site',
+  siteDeleteSuccess: 'Site has been deleted',
 
   // Technician
   technicianInviteFailError: 'Failed to invite technician',
-  technicianExistsError: 'Technician already exists',
-  techinicianUpdateFailedError: 'Failed to update technician',
-  techinicianDeleteSuccess: 'Technician has been deleted',
-  techincianUpdateSuccess: 'Technician successfully updated',
   techicianInviteSuccess: 'Invitation successfully sent',
+  techinicianUpdateFailedError: 'Failed to update technician',
+  techincianUpdateSuccess: 'Technician successfully updated',
+  techinicianDeleteFailed: 'Failed to delete technician',
+  techinicianDeleteSuccess: 'Technician has been deleted',
 
   //company
   companyInvitationFailed: 'Failed to send invitation to company',

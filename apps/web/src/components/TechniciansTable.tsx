@@ -9,6 +9,7 @@ import { LucideEyeOff, LucideView } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const getTechniciansQuery = graphql(`
   query getTechnicians {
@@ -68,48 +69,51 @@ export const TechniciansTable = ({
   };
 
   const handleDelete = async (): Promise<boolean> => {
-    const techFound = technicians.find(
-      (tech) => tech.id === technicianToDelete?.id,
-    );
-
-    const techId = techFound?.id;
-
-    if (!techId) {
-      console.error('No technician selected for deletion');
+    if (!technicianToDelete?.id) {
       return false;
     }
 
     setIsDeleting(true);
 
-    return deleteTechnician({ id: techId })
-      .then((result) => {
-        if (result.error) {
+    return (
+      deleteTechnician({ id: technicianToDelete.id })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.techinicianDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
-            title: responses.deleteFailedError,
+            title: responses.techinicianDeleteFailed,
+            description: responses.contactSupportError,
             variant: 'error',
           });
           return false;
-        }
-
-        if (result.data) {
-          showAlertToast({
-            title: responses.techinicianDeleteSuccess,
-            variant: 'info',
-          });
-        }
-
-        return true;
-      })
-      .catch(() => {
-        showAlertToast({
-          title: responses.deleteFailedError,
-          variant: 'error',
-        });
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (technicianId: string) => {

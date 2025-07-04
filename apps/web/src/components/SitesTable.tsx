@@ -98,7 +98,7 @@ export const SitesTable = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.deleteFailedError,
+            title: responses.siteDeleteFailed,
             description: responses.contactSupportError,
             variant: 'error',
           });

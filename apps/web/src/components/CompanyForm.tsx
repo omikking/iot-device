@@ -19,10 +19,17 @@ import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
-  createCompanyFormSchema,
-  updateCompanyFormSchema,
+  createCompanySchema,
+  updateCompanySchema,
 } from './schemas/CompanyFormSchema';
-import { Company, Plan } from '@/gql/graphql';
+import {
+  Company,
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables,
+  Plan,
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables,
+} from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -31,6 +38,7 @@ import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
 import { GraphQLErrorExtensions } from '@/libs/utils';
+import { useRouter } from 'next/navigation';
 
 const allPlans = [
   { applicationName: 'PULL_TEST' },
@@ -106,19 +114,22 @@ export const CompanyForm = ({
   const [isAdmin, setIsAdmin] = useState(true);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const [, createCompany] = useMutation<CreateCompanyFormValues>(
-    createCompanyMutation,
-  );
-  const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
-    updateCompanyMutation,
-  );
+  const router = useRouter();
+
+  const [, createCompany] = useMutation<
+    CreateCompanyMutation,
+    CreateCompanyMutationVariables
+  >(createCompanyMutation);
+
+  const [, updateCompany] = useMutation<
+    UpdateCompanyMutation,
+    UpdateCompanyMutationVariables
+  >(updateCompanyMutation);
 
   const companyForm = useForm<
     CreateCompanyFormValues | UpdateCompanyFormValues
   >({
-    resolver: zodResolver(
-      company ? updateCompanyFormSchema : createCompanyFormSchema,
-    ),
+    resolver: zodResolver(company ? updateCompanySchema : createCompanySchema),
     defaultValues: {
       name: company?.name || '',
       companyContactEmail: company?.companyContactEmail || '',
@@ -172,7 +183,7 @@ export const CompanyForm = ({
 
     if (!company && isNewCompany) {
       createCompany({
-        createCompanyInput: data,
+        createCompanyInput: data as CreateCompanyFormValues,
       })
         .then((result) => {
           // Backend errors
@@ -193,6 +204,7 @@ export const CompanyForm = ({
               title: responses.successfulCompanyCreation,
               variant: 'success',
             });
+            router.push(`/company/${result.data?.createCompany.id}`);
           }
         })
         // Fallback error
@@ -318,7 +330,6 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Inactivate buttons */}
-
           <div className="flex gap-6 justify-end self-end mt-[40px]">
             {!isNewCompany && (
               <Button

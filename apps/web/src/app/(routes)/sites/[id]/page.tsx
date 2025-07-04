@@ -1,13 +1,5 @@
 'use client';
-import {
-  Badge,
-  Button,
-  Headline,
-  Modal,
-  ModalTrigger,
-  Tabs,
-  TabsContent,
-} from '@gsp/ui';
+import { Badge, Button, Headline, Modal, ModalTrigger, Tabs } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Site } from '@/gql/graphql';

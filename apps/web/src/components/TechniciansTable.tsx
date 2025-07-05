@@ -5,7 +5,7 @@ import { User } from '@/gql/graphql';
 import { useMutation, useQuery } from 'urql';
 import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { LucideEyeOff, LucideView } from 'lucide-react';
+import { LucideEyeOff, LucideView, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
@@ -212,6 +212,7 @@ export const TechniciansTable = ({
         columns={columns}
         data={technicians}
         noResultMessage="There are no technicians added yet."
+        icon={<LucideSearchX color="gray" />}
       />
 
       {technicians?.length > 0 && (

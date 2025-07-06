@@ -27,70 +27,90 @@ export class SitesService {
   }
 
   async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
-    const siteName = createSiteInput.siteName.trim();
+    try {
+      const siteName = createSiteInput.siteName.trim();
 
-    await this.checkSiteNameExists(createSiteInput.siteName);
+      await this.checkSiteNameExists(createSiteInput.siteName);
 
-    const createdSite = await this.prisma.site.create({
-      data: {
-        siteName,
-        address: createSiteInput.address,
-        postalCode: createSiteInput.postalCode,
-        city: createSiteInput.city,
-        country: createSiteInput.country,
-        companyId: createSiteInput.companyId,
-      },
-    });
+      const createdSite = await this.prisma.site.create({
+        data: {
+          siteName,
+          address: createSiteInput.address,
+          postalCode: createSiteInput.postalCode,
+          city: createSiteInput.city,
+          country: createSiteInput.country,
+          companyId: createSiteInput.companyId,
+        },
+      });
 
-    if (!createdSite) {
+      if (!createdSite) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'SITE_CREATE_ERROR',
+            title: errorTexts.siteCreateError_title,
+          },
+        });
+      }
+
+      return createdSite;
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'SITE_CREATE_ERROR',
+          code: 'SITE_CREATE_ERROR_GENERIC',
           title: errorTexts.siteCreateError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-
-    return createdSite;
   }
 
   async update(
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,
   ): Promise<Site> {
-    const site = await this.prisma.site.findUnique({
-      where: {
-        id,
-        companyId: updateSiteInput.companyId,
-      },
-    });
+    try {
+      const site = await this.prisma.site.findUnique({
+        where: {
+          id,
+          companyId: updateSiteInput.companyId,
+        },
+      });
 
-    if (!site) {
+      if (!site) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'SITE_NOTFOUND_ERROR',
+            title: errorTexts.siteNotFound_title(id),
+          },
+        });
+      }
+
+      if (
+        updateSiteInput.siteName &&
+        updateSiteInput.siteName !== site.siteName
+      ) {
+        await this.checkSiteNameExists(updateSiteInput.siteName);
+      }
+
+      return this.prisma.site.update({
+        where: { id, companyId: updateSiteInput.companyId },
+        data: {
+          siteName: updateSiteInput?.siteName || undefined,
+          address: updateSiteInput?.address || undefined,
+          postalCode: updateSiteInput?.postalCode || undefined,
+          city: updateSiteInput?.city || undefined,
+          country: updateSiteInput?.country || undefined,
+        },
+      });
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'SITE_NOTFOUND_ERROR',
-          title: errorTexts.siteNotFound_title(id),
+          code: 'SITE_UPDATE_ERROR_GENERIC',
+          title: errorTexts.siteUpdateError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-
-    if (
-      updateSiteInput.siteName &&
-      updateSiteInput.siteName !== site.siteName
-    ) {
-      await this.checkSiteNameExists(updateSiteInput.siteName);
-    }
-
-    return this.prisma.site.update({
-      where: { id, companyId: updateSiteInput.companyId },
-      data: {
-        siteName: updateSiteInput?.siteName || undefined,
-        address: updateSiteInput?.address || undefined,
-        postalCode: updateSiteInput?.postalCode || undefined,
-        city: updateSiteInput?.city || undefined,
-        country: updateSiteInput?.country || undefined,
-      },
-    });
   }
 
   async remove(id: string): Promise<Site> {
@@ -116,6 +136,7 @@ export class SitesService {
         extensions: {
           code: 'SITE_DELETE_ERROR',
           title: errorTexts.siteDeleteError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }

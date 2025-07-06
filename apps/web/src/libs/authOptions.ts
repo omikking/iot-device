@@ -62,7 +62,18 @@ export const authOptions: NextAuthOptions = {
           body: JSON.stringify({ email, password }),
         });
 
-        if (!response.ok) throw new Error('Failed to sign in');
+        if (!response.ok) {
+          const errorData = await response.json();
+
+          throw new Error(
+            JSON.stringify({
+              code: errorData.code,
+              title: errorData.title,
+              message: errorData.message,
+              status: response.status,
+            }),
+          );
+        }
 
         const user = (await response.json()) as User;
         return user;

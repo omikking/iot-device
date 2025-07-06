@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   RefreshTokenDto,
@@ -17,7 +23,6 @@ import {
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
-import { UserInputError } from '@nestjs/apollo';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { isPasswordStrong } from 'src/utils/utils';
 
@@ -32,12 +37,10 @@ export class AuthService {
   async signup(dto: SignupDto) {
     try {
       if (!isPasswordStrong(dto.password)) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-            title: errorTexts.userPasswordTooWeak_title,
-            message: errorTexts.userPasswordTooWeak_message,
-          },
+        throw new BadRequestException({
+          code: 'USER_PASSWORD_TOO_WEAK_ERROR',
+          title: errorTexts.userPasswordTooWeak_title,
+          message: errorTexts.userPasswordTooWeak_message,
         });
       }
 
@@ -56,21 +59,18 @@ export class AuthService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new UserInputError('', {
-            extensions: {
-              code: 'USER_EMAIL_ALREADY_EXISTS',
-              title: errorTexts.authEmailExists_title,
-              message: errorTexts.authEmailExists_message,
-            },
+          throw new ConflictException({
+            code: 'USER_EMAIL_ALREADY_EXISTS',
+            title: errorTexts.authEmailExists_title,
+            message: errorTexts.authEmailExists_message,
           });
         }
       }
 
-      throw new UserInputError('', {
-        extensions: {
-          code: 'USER_SETUPACCOUNT_ERROR',
-          title: errorTexts.authSetupAccountError_title,
-        },
+      throw new InternalServerErrorException({
+        code: 'USER_SETUPACCOUNT_ERROR',
+        title: errorTexts.authSetupAccountError_title,
+        message: errorTexts.contactSupportError,
       });
     }
   }
@@ -84,24 +84,20 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_INVALID_CREDENTIALS_ERROR',
-            title: errorTexts.authInvalidCredentials_title,
-            message: errorTexts.authInvalidCredentials_message,
-          },
+        throw new UnauthorizedException({
+          code: 'USER_INVALID_CREDENTIALS_ERROR',
+          title: errorTexts.authInvalidCredentials_title,
+          message: errorTexts.authInvalidCredentials_message,
         });
       }
 
       const passwordMatch = await argon.verify(user.hash, dto.password);
 
       if (!passwordMatch) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_INVALID_CREDENTIALS_ERROR',
-            title: errorTexts.authInvalidCredentials_title,
-            message: errorTexts.authInvalidCredentials_message,
-          },
+        throw new UnauthorizedException({
+          code: 'USER_INVALID_CREDENTIALS_ERROR',
+          title: errorTexts.authInvalidCredentials_title,
+          message: errorTexts.authInvalidCredentials_message,
         });
       }
 
@@ -119,11 +115,13 @@ export class AuthService {
         userData: userResponse,
       } as SignInResponseDto;
     } catch (error) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'USER_SIGNIN_ERROR',
-          title: errorTexts.authInvalidCredentials_title,
-        },
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException({
+        code: 'USER_SIGNIN_ERROR',
+        title: errorTexts.authInvalidCredentials_title,
+        message: errorTexts.contactSupportError,
       });
     }
   }
@@ -152,7 +150,10 @@ export class AuthService {
           payload.refreshTokenId,
         );
       } else {
-        throw new Error(errorTexts.authRefreshTokenError_title);
+        throw new UnauthorizedException({
+          code: 'USER_INVALID_REFRESH_TOKEN',
+          title: errorTexts.authRefreshTokenError_title,
+        });
       }
 
       return this.generateTokens(user);
@@ -160,9 +161,15 @@ export class AuthService {
       if (error instanceof InvalidatedRefreshTokenError) {
         // Log or notify that someone is trying to use invalidated refresh token.
         // This is a security measure to log potential replay attacks or other malicious activity.
-        throw new UnauthorizedException(errorTexts.authAccessDenied_title);
+        throw new UnauthorizedException({
+          code: 'USER_SESSION_EXPIRED',
+          title: errorTexts.authAccessDenied_title,
+        });
       }
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        code: 'USER_AUTHENTICATION_ERROR',
+        title: errorTexts.authUserError_title,
+      });
     }
   }
 

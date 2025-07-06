@@ -29,45 +29,65 @@ export class LocationsService {
   async create(
     createLocationInput: GraphQLTypes.CreateLocationInput,
   ): Promise<Location> {
-    const createdLocation = await this.prisma.location.create({
-      data: {
-        locationName: createLocationInput.locationName,
-        driveId: createLocationInput.driveId,
-      },
-    });
+    try {
+      const createdLocation = await this.prisma.location.create({
+        data: {
+          locationName: createLocationInput.locationName,
+          driveId: createLocationInput.driveId,
+        },
+      });
 
-    if (!createdLocation) {
+      if (!createdLocation) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'LOCATION_CREATE_ERROR',
+            title: errorTexts.locationCreateError_title,
+          },
+        });
+      }
+      return createdLocation;
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'LOCATION_CREATE_ERROR',
+          code: 'LOCATION_CREATE_ERROR_GENERIC',
           title: errorTexts.locationCreateError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-    return createdLocation;
   }
 
   async update(
     id: string,
     updateLocationInput: GraphQLTypes.UpdateLocationInput,
   ): Promise<Location> {
-    const updatedLocation = await this.prisma.location.update({
-      where: { id },
+    try {
+      const updatedLocation = await this.prisma.location.update({
+        where: { id },
 
-      data: {
-        locationName: updateLocationInput?.locationName || undefined,
-      },
-    });
+        data: {
+          locationName: updateLocationInput?.locationName || undefined,
+        },
+      });
 
-    if (!updatedLocation) {
+      if (!updatedLocation) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'LOCATION_NOTFOUND_ERROR',
+            title: errorTexts.locationNotFound_title(id),
+          },
+        });
+      }
+      return updatedLocation;
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'LOCATION_NOTFOUND_ERROR',
-          title: errorTexts.locationNotFound_title(id),
+          code: 'LOCATION_UPDATE_ERROR_GENERIC',
+          title: errorTexts.locationUpdateError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-    return updatedLocation;
   }
 
   async remove(id: string): Promise<Location> {
@@ -93,6 +113,7 @@ export class LocationsService {
         extensions: {
           code: 'LOCATION_DELETE_ERROR',
           title: errorTexts.locationDeleteError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }

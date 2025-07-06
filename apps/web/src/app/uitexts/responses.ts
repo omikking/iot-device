@@ -30,4 +30,7 @@ export const responses = {
   successfulCompanyUpdate: 'Company successfully updated',
   companyInactivationFailed: 'Failed to inactivate company',
   companyDeleteSuccess: 'Company account has been deactivated',
+
+  // Sign in
+  signInFailed: 'Failed to sign in',
 };

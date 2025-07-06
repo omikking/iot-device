@@ -23,6 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
+import { responses } from '@/app/uitexts/responses';
 
 export default function SignIn() {
   const router = useRouter();
@@ -34,8 +35,7 @@ export default function SignIn() {
     if (status === 'authenticated') {
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       const redirectTo = isAdmin ? '/overview' : '/selectcompany';
-      const callbackUrl = searchParams.get('callbackUrl') || redirectTo;
-      router.push(callbackUrl);
+      router.push(redirectTo);
     }
   }, [status, router, searchParams]);
 
@@ -59,21 +59,31 @@ export default function SignIn() {
   });
 
   const handleSignIn = async (values: z.infer<typeof formSchema>) => {
-    const result = await signIn('credentials', {
+    await signIn('credentials', {
       email: values.emailAddress,
       password: values.password,
       redirect: false,
-    });
+    })
+      // Backend errors
+      .then((result) => {
+        if (!result?.ok && result?.error) {
+          const errorData = JSON.parse(result.error);
 
-    if (!result?.ok && result?.error) {
-      const errorData = JSON.parse(result.error);
-
-      showAlertToast({
-        title: errorData?.title,
-        description: errorData?.message,
-        variant: errorData?.type || 'error',
+          showAlertToast({
+            title: errorData?.title,
+            description: errorData?.message,
+            variant: errorData?.type || 'error',
+          });
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.signInFailed,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
       });
-    }
   };
 
   const formValues = form.watch();

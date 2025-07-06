@@ -84,7 +84,7 @@ export default function Page() {
   };
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
+    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
       <GoBack />
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -213,7 +213,7 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">               
+              <Button variant="primary" size="large" isWide type="submit">
                 <CircleCheckBig />
                 Confirm
               </Button>

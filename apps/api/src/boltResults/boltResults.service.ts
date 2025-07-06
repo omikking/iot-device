@@ -107,76 +107,97 @@ export class BoltResultsService {
   async create(
     createBoltResultInput: GraphQLTypes.CreateBoltResultInput,
   ): Promise<BoltResult> {
-    const createdBoltResult = await this.prisma.boltResult.create({
-      data: {
-        boltNumber: createBoltResultInput.boltNumber,
-        boltType: createBoltResultInput.boltType as BoltType,
-        peakLoad: createBoltResultInput.peakLoad,
-        peakDisplacement: createBoltResultInput.peakDisplacement,
-        positionInRing: createBoltResultInput.positionInRing as RingPosition,
-        result: createBoltResultInput.result as Result,
-        isHazard: createBoltResultInput.isHazard,
-        abortReason:
-          (createBoltResultInput.abortReason as PullTestAbortReason) ||
-          undefined,
-        comment: createBoltResultInput.comment || undefined,
-        image: createBoltResultInput.image || undefined,
+    try {
+      const createdBoltResult = await this.prisma.boltResult.create({
+        data: {
+          boltNumber: createBoltResultInput.boltNumber,
+          boltType: createBoltResultInput.boltType as BoltType,
+          peakLoad: createBoltResultInput.peakLoad,
+          peakDisplacement: createBoltResultInput.peakDisplacement,
+          positionInRing: createBoltResultInput.positionInRing as RingPosition,
+          result: createBoltResultInput.result as Result,
+          isHazard: createBoltResultInput.isHazard,
+          abortReason:
+            (createBoltResultInput.abortReason as PullTestAbortReason) ||
+            undefined,
+          comment: createBoltResultInput.comment || undefined,
+          image: createBoltResultInput.image || undefined,
 
-        siteId: createBoltResultInput.siteId,
-        levelId: createBoltResultInput.levelId,
-        driveId: createBoltResultInput.driveId,
-        locationId: createBoltResultInput.locationId,
-        userId: createBoltResultInput.userId,
-      },
-    });
+          siteId: createBoltResultInput.siteId,
+          levelId: createBoltResultInput.levelId,
+          driveId: createBoltResultInput.driveId,
+          locationId: createBoltResultInput.locationId,
+          userId: createBoltResultInput.userId,
+        },
+      });
 
-    if (!createdBoltResult) {
+      if (!createdBoltResult) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'BOLT_RESULT_CREATION_ERROR',
+            title: errorTexts.boltResultCreationError_title,
+          },
+        });
+      }
+      return createdBoltResult;
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'BOLT_RESULT_CREATION_ERROR',
+          code: 'BOLT_RESULT_CREATION_ERROR_GENERIC',
           title: errorTexts.boltResultCreationError_title,
-          message: errorTexts.boltResultCreationError_message,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-    return createdBoltResult;
   }
 
   async update(
     id: string,
     updateBoltResultInput: GraphQLTypes.UpdateBoltResultInput,
   ): Promise<BoltResult> {
-    const updatedBoltResult = await this.prisma.boltResult.update({
-      where: { id },
+    try {
+      const updatedBoltResult = await this.prisma.boltResult.update({
+        where: { id },
 
-      data: {
-        boltNumber: updateBoltResultInput?.boltNumber || undefined,
-        boltType: (updateBoltResultInput?.boltType as BoltType) || undefined,
-        peakLoad: updateBoltResultInput?.peakLoad || undefined,
-        peakDisplacement: updateBoltResultInput?.peakDisplacement || undefined,
-        positionInRing:
-          (updateBoltResultInput?.positionInRing as RingPosition) || undefined,
-        result: (updateBoltResultInput?.result as Result) || undefined,
-        isHazard: updateBoltResultInput?.isHazard ?? undefined,
-        hazardCompletedDate:
-          updateBoltResultInput?.hazardCompletedDate ?? undefined,
-        abortReason:
-          (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
-          undefined,
-        comment: updateBoltResultInput?.comment || undefined,
-        image: updateBoltResultInput?.image || undefined,
-      },
-    });
+        data: {
+          boltNumber: updateBoltResultInput?.boltNumber || undefined,
+          boltType: (updateBoltResultInput?.boltType as BoltType) || undefined,
+          peakLoad: updateBoltResultInput?.peakLoad || undefined,
+          peakDisplacement:
+            updateBoltResultInput?.peakDisplacement || undefined,
+          positionInRing:
+            (updateBoltResultInput?.positionInRing as RingPosition) ||
+            undefined,
+          result: (updateBoltResultInput?.result as Result) || undefined,
+          isHazard: updateBoltResultInput?.isHazard ?? undefined,
+          hazardCompletedDate:
+            updateBoltResultInput?.hazardCompletedDate ?? undefined,
+          abortReason:
+            (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
+            undefined,
+          comment: updateBoltResultInput?.comment || undefined,
+          image: updateBoltResultInput?.image || undefined,
+        },
+      });
 
-    if (!updatedBoltResult) {
+      if (!updatedBoltResult) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'BOLT_RESULT_NOTFOUND_ERROR',
+            title: errorTexts.boltResultNotFound_title(id),
+          },
+        });
+      }
+      return updatedBoltResult;
+    } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'BOLT_RESULT_NOTFOUND_ERROR',
-          title: errorTexts.boltResultNotFound_title(id),
+          code: 'BOLT_RESULT_UPDATE_ERROR_GENERIC',
+          title: errorTexts.boltResultUpdateError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }
-    return updatedBoltResult;
   }
 
   async remove(id: string): Promise<BoltResult> {
@@ -200,8 +221,9 @@ export class BoltResultsService {
     } catch (error) {
       throw new UserInputError('', {
         extensions: {
-          code: 'BOLT_RESULT_DELETE_ERROR',
+          code: 'BOLT_RESULT_DELETE_ERROR_GENERIC',
           title: errorTexts.boltResultDeleteError_title,
+          message: errorTexts.contactSupportError,
         },
       });
     }

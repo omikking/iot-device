@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Role } from '@/gql/graphql'
+import { Role } from '@/gql/graphql';
 import {
   Button,
   Form,
@@ -15,6 +15,7 @@ import {
   Input,
   Anchor,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -22,19 +23,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
+import { responses } from '@/app/uitexts/responses';
 
 export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const { data: session, status } = useSession();
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (status === 'authenticated') {
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       const redirectTo = isAdmin ? '/overview' : '/selectcompany';
-      const callbackUrl = searchParams.get('callbackUrl') || redirectTo;
-      router.push(callbackUrl);
+      router.push(redirectTo);
     }
   }, [status, router, searchParams]);
 
@@ -58,34 +59,43 @@ export default function SignIn() {
   });
 
   const handleSignIn = async (values: z.infer<typeof formSchema>) => {
-    const result = await signIn('credentials', {
+    await signIn('credentials', {
       email: values.emailAddress,
       password: values.password,
       redirect: false,
-    });
+    })
+      // Backend errors
+      .then((result) => {
+        if (!result?.ok && result?.error) {
+          const errorData = JSON.parse(result.error);
 
-    result?.error && setError(result.error);
+          showAlertToast({
+            title: errorData?.title,
+            description: errorData?.message,
+            variant: errorData?.type || 'error',
+          });
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.signInFailed,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+      });
   };
 
-  console.log('Session from sign in page: ', session);
-  console.log('Status from sign in page: ', status);
+  const formValues = form.watch();
+  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password;
 
-  const formValues = form.watch(); 
-  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
-      {/* @TODO is this page ground support platform login only or login for all apps? */}
       <Headline as="h1" variant="xl" color="foreground" className="text-center">
         Ground Support Platform
       </Headline>
 
       <div className="min-w-96 h-96 flex flex-col items-center">
-        {/* @TODO fix better displaying of this error later */}
-        {error && (
-          <Text variant="xs" color="destructive">
-            {error}
-          </Text>
-        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((e) => handleSignIn(e))}
@@ -133,20 +143,24 @@ export default function SignIn() {
               />
               <div className="flex items-center gap-2 pt-4 pb-2">
                 <Text variant="small" color="foreground">
-                  Forgot your password? {/* Will lead to a reset page later */}
+                  Forgot your password?
                 </Text>
-
-                <Text variant="small" color="foreground">
-                  {/* @TODO update link */}
+                <Text variant="small" color="accent">
                   <Link href="/api/auth/reset-password" passHref legacyBehavior>
-                    <Anchor isUnderline color="foreground">
+                    <Anchor isUnderline color="accent">
                       Click here to reset.
                     </Anchor>
                   </Link>
                 </Text>
               </div>
             </div>
-            <Button variant="primary" size="large" isWide type="submit" disabled={isAnyFieldEmpty}>
+            <Button
+              variant="primary"
+              size="large"
+              isWide
+              type="submit"
+              disabled={isAnyFieldEmpty}
+            >
               <LucideLogIn />
               Login
             </Button>

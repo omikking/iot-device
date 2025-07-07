@@ -2,7 +2,12 @@
 import type { ColumnDef } from '@gsp/ui';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
+import {
+  LucideCheckCircle,
+  LucideXCircle,
+  LucideSearchX,
+  ClipboardList,
+} from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { BoltResultSchema } from '@/app/mock/mock';
@@ -153,6 +158,13 @@ export const BoltResultsTable = ({
           !site
             ? 'Select site to view bolt results.'
             : 'There are no bolt results found for your search.'
+        }
+        icon={
+          !site ? (
+            <ClipboardList color="gray" />
+          ) : (
+            <LucideSearchX color="gray" />
+          )
         }
       />
       {!!boltResults?.length && boltResults?.length > 0 && (

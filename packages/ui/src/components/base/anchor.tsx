@@ -17,6 +17,8 @@ const anchorVariants = cva(
           'ui-decoration-main-white/30 hover:ui-decoration-main-white',
         muted: 'ui-decoration-neutral-5/30 hover:ui-decoration-neutral-5',
         destructive: 'ui-decoration-error/30 hover:ui-decoration-error',
+        accent:
+          'ui-decoration-orange-primary/30 hover:ui-decoration-orange-primary',
       },
       isUnderline: {
         true: 'ui-underline ui-underline-offset-2',

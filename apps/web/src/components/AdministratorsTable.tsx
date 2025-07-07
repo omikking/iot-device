@@ -13,6 +13,7 @@ import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { LucideSearchX } from 'lucide-react';
 
 type Administrator = GetAdminsQuery['users'][0];
 
@@ -170,6 +171,7 @@ export const AdministratorsTable = () => {
         columns={columns}
         data={administrators}
         noResultMessage="There are no administrators added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {administrators?.length > 0 && (
         <Badge variant="neutral" className="self-start">

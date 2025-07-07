@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Headline, Text } from '@gsp/ui';
+import { Text } from '@gsp/ui';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { GetAllCompaniesQuery } from '@/gql/graphql';
 
@@ -12,28 +12,17 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
   return (
     <>
       {!companies?.length ? (
-        <section
-          aria-labelledby="no-companies-heading"
-          className="w-full flex flex-col items-center justify-center gap-4 border pl-6 pr-8 py-12 bg-main-white"
-          role="region"
-        >
-          <LucideSearchX
-            size={32}
-            className="text-gray-400"
-            aria-hidden="true"
-          />
-          <Headline
-            variant="medium"
-            color="foreground"
-            id="no-companies-heading"
-            as="h2"
-          >
-            No companies found
-          </Headline>
-          <Text variant="small" color="foreground" className="text-center">
-            You do not have permission to view any companies.
-          </Text>
-        </section>
+        <div className="flex h-60 flex-col justify-center items-center gap-5">
+          <div className="text-center">
+            <Text color="foreground" variant="medium">
+              You don't have access to any companies yet.
+            </Text>
+            <Text color="foreground" variant="medium">
+              Once you're added to a company, you'll see it here.
+            </Text>
+          </div>
+          <LucideSearchX color="gray" />
+        </div>
       ) : (
         <nav aria-label="Companies list">
           <ul>

@@ -22,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <Toaster duration={5000} />
+        <Toaster duration={8000} />
         <NextAuthProvider session={session}>
           <UrqlProvider>
             <NavBar />

@@ -13,7 +13,12 @@ import { useParams } from 'next/navigation';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
+import {
+  LucideKey,
+  LucidePickaxe,
+  LucideUser,
+  LucideSearchX,
+} from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 
 type UsersTableProps = {
@@ -236,6 +241,7 @@ export const UsersTable = ({
         columns={columns}
         data={users}
         noResultMessage="There are no users added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {users.length > 0 && (
         <Badge variant="neutral" className="self-start">

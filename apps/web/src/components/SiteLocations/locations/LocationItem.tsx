@@ -1,5 +1,5 @@
 'use client';
-import { Text } from '@gsp/ui';
+import { showAlertToast, Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Location } from '@/gql/graphql';
@@ -11,6 +11,7 @@ import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { responses } from '@/app/uitexts/responses';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -92,9 +93,11 @@ export const LocationItem = ({
   };
 
   const handleLocationSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    // @TODO fix these alerts with proper UI
-    if (!data.locationName) {
-      alert('Please enter a location name.');
+    if (!data.locationName || data.locationName.trim().length < 2) {
+      showAlertToast({
+        title: responses.siteLocationWhiteSpaceLocationError,
+        variant: 'warning',
+      });
       return;
     }
 
@@ -104,7 +107,11 @@ export const LocationItem = ({
       (location) => location.locationName === newLocationName,
     );
     if (isDuplicate) {
-      alert('This location already exists. Please enter a different location.');
+      showAlertToast({
+        title: responses.siteLocationDuplicateLocationError,
+        description: responses.siteLocationDuplicateLocationMessage,
+        variant: 'warning',
+      });
       return;
     }
 
@@ -117,17 +124,31 @@ export const LocationItem = ({
         },
       })
         .then((result) => {
+          // Backend errors
+          if (result.error) {
+            showAlertToast({
+              title: responses.siteLocationCreateLocationError,
+              variant: 'error',
+            });
+            return;
+          }
+
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationLocationCreateSuccess,
+              variant: 'success',
+            });
             setTimeout(() => setIsEditing(false), 30);
             locationsOptions.length === 1 && refreshSite();
           }
         })
-        .catch((error) => {
-          console.error('Error creating location:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationCreateLocationError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Create process completed');
-        });
+        .finally(() => {});
     }
 
     // To edit a location
@@ -139,16 +160,29 @@ export const LocationItem = ({
         },
       })
         .then((result) => {
+          if (result.error) {
+            showAlertToast({
+              title: responses.siteLocationLocationUpdateError,
+              variant: 'error',
+            });
+            return;
+          }
+
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationLocationUpdateSuccess,
+              variant: 'success',
+            });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
-        .catch((error) => {
-          console.error('Error updating location:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationLocationUpdateError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Update process completed');
-        });
+        .finally(() => {});
     }
   };
 
@@ -160,12 +194,28 @@ export const LocationItem = ({
       id: location.id,
     })
       .then((result) => {
-        if (result.error) {
-          return true;
+        if (result.error?.graphQLErrors) {
+          showAlertToast({
+            title: responses.siteLocationDeleteError,
+            variant: 'error',
+          });
+          setIsDeletingLocation(false);
+          return false;
+        }
+        // Success
+        if (result.data) {
+          showAlertToast({
+            title: responses.siteLocationLocationDeleteSuccess,
+            variant: 'success',
+          });
         }
         return true;
       })
       .catch(() => {
+        showAlertToast({
+          title: responses.siteLocationDeleteError,
+          variant: 'error',
+        });
         return false;
       })
       .finally(() => {

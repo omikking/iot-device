@@ -1,8 +1,9 @@
 'use client';
-import { Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Drive, Level } from '@/gql/graphql';
+import { Text, showAlertToast } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
@@ -94,9 +95,12 @@ export const LevelItem = ({
   };
 
   const handleLevelSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    // @TODO fix these alerts with proper UI
-    if (!data.levelName) {
-      alert('Please enter a level name.');
+    if (!data.levelName || data.levelName.trim().length < 2) {
+      showAlertToast({
+        title: responses.siteLocationWhiteLevelSpaceError,
+        variant: 'warning',
+      });
+
       return;
     }
 
@@ -105,7 +109,11 @@ export const LevelItem = ({
       (level) => level.levelName === newLevelName,
     );
     if (isDuplicate) {
-      alert('This level already exists. Please enter a different level.');
+      showAlertToast({
+        title: responses.siteLocationDuplicateLevelError,
+        description: responses.siteLocationDuplicateLevelMessage,
+        variant: 'warning',
+      });
       return;
     }
 
@@ -118,17 +126,35 @@ export const LevelItem = ({
         },
       })
         .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            // Felix: title, message & type are always undefined when trying to use them
+            // const { title, message, type } = result.error.graphQLErrors[0]
+            // .extensions as unknown as GraphQLErrorExtensions;
+            showAlertToast({
+              title: responses.siteLocationCreateLevelError,
+              variant: 'error',
+            });
+            return;
+          }
+
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationLevelCreateSuccess,
+              variant: 'success',
+            });
+
             levelsOptions.length === 1 && refreshSite();
             setTimeout(() => setIsEditing(false), 30);
           }
         })
-        .catch((error) => {
-          console.error('Error creating level:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationCreateLevelError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Creation process completed');
-        });
+        .finally(() => {});
     }
 
     // To edit a level
@@ -140,16 +166,29 @@ export const LevelItem = ({
         },
       })
         .then((result) => {
+          if (result.error?.graphQLErrors) {
+            showAlertToast({
+              title: responses.siteLocationLevelUpdateError,
+              variant: 'error',
+            });
+            return;
+          }
+          // Success
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationLevelUpdateSuccess,
+              variant: 'success',
+            });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
-        .catch((error) => {
-          console.error('Error updating level:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationLevelUpdateError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Update process completed');
-        });
+        .finally(() => {});
     }
   };
 
@@ -159,13 +198,28 @@ export const LevelItem = ({
 
     return deleteLevel({ id: level.id })
       .then((result) => {
-        if (result.error) {
+        if (result.error?.graphQLErrors) {
+          showAlertToast({
+            title: responses.siteLocationDeleteError,
+            variant: 'error',
+          });
           setSelectedLevel(undefined);
           return false;
+        }
+
+        if (result.data) {
+          showAlertToast({
+            title: responses.siteLocationLevelDeleteSuccess,
+            variant: 'info',
+          });
         }
         return true;
       })
       .catch(() => {
+        showAlertToast({
+          title: responses.siteLocationDeleteError,
+          variant: 'error',
+        });
         return false;
       })
       .finally(() => {

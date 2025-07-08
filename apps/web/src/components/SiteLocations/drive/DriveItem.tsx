@@ -1,5 +1,5 @@
 'use client';
-import { Text } from '@gsp/ui';
+import { Text, showAlertToast } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Drive } from '@/gql/graphql';
@@ -11,6 +11,7 @@ import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import { responses } from '@/app/uitexts/responses';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -93,9 +94,11 @@ export const DriveItem = ({
   };
 
   const handleDriveSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    // @TODO fix these alerts with proper UI
-    if (!data.driveName) {
-      alert('Please enter a drive name.');
+    if (!data.driveName || data.driveName.trim().length < 2) {
+      showAlertToast({
+        title: responses.siteLocationWhiteSpaceDriveError,
+        variant: 'warning',
+      });
       return;
     }
 
@@ -105,7 +108,11 @@ export const DriveItem = ({
       (drive) => drive.driveName === newDriveName,
     );
     if (isDuplicate) {
-      alert('This drive already exists. Please enter a different drive.');
+      showAlertToast({
+        title: responses.siteLocationDuplicateDriveError,
+        description: responses.siteLocationDuplicateDriveMessage,
+        variant: 'warning',
+      });
       return;
     }
 
@@ -118,17 +125,30 @@ export const DriveItem = ({
         },
       })
         .then((result) => {
+          if (result.error) {
+            showAlertToast({
+              title: responses.siteLocationCreateDriveError,
+              variant: 'error',
+            });
+            return;
+          }
+
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationDriveCreateSuccess,
+              variant: 'success',
+            });
             drivesOptions.length === 1 && refreshSite();
             setTimeout(() => setIsEditing(false), 30);
           }
         })
-        .catch((error) => {
-          console.error('Error creating drive:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationCreateDriveError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Creation process completed');
-        });
+        .finally(() => {});
     }
 
     // To edit a drive
@@ -140,16 +160,29 @@ export const DriveItem = ({
         },
       })
         .then((result) => {
+          if (result.error) {
+            showAlertToast({
+              title: responses.siteLocationDriveUpdateError,
+              variant: 'error',
+            });
+            return;
+          }
+
           if (result.data) {
+            showAlertToast({
+              title: responses.siteLocationDriveUpdateSuccess,
+              variant: 'success',
+            });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
-        .catch((error) => {
-          console.error('Error updating drive:', error);
+        .catch(() => {
+          showAlertToast({
+            title: responses.siteLocationDriveUpdateError,
+            variant: 'error',
+          });
         })
-        .finally(() => {
-          console.log('Update process completed');
-        });
+        .finally(() => {});
     }
   };
 
@@ -160,12 +193,28 @@ export const DriveItem = ({
     return deleteDrive({ id: drive.id })
       .then((result) => {
         if (result.error) {
+          showAlertToast({
+            title: responses.siteLocationDeleteError,
+            variant: 'error',
+          });
           setSelectedDrive(undefined);
           return false;
+        }
+        if (result.data) {
+          showAlertToast({
+            title: responses.siteLocationDriveDeleteSuccess,
+            variant: 'success',
+          });
+          setSelectedDrive(undefined);
+          refreshSite();
         }
         return true;
       })
       .catch(() => {
+        showAlertToast({
+          title: responses.siteLocationDeleteError,
+          variant: 'error',
+        });
         return false;
       })
       .finally(() => {

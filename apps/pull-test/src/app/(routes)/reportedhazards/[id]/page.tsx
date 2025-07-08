@@ -16,6 +16,8 @@ import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';
 import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
+import { Text } from '@gsp/ui';
+import { LucideSearchX } from 'lucide-react';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -107,6 +109,15 @@ export default function Page({
     }
   };
 
+  const NotFoundHazardMessage = () => (
+    <div className="flex h-80 flex-col justify-center items-center gap-5">
+      <Text color="foreground" variant="medium">
+        No reported hazards were found.
+      </Text>
+      <LucideSearchX color="gray" />
+    </div>
+  );
+
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
   return (
@@ -190,6 +201,8 @@ export default function Page({
           ))}
         </TabsContent>
       </Tabs>
+
+      {hazards.length === 0 && <NotFoundHazardMessage />}
 
       <Modal
         open={openDetailsModal}

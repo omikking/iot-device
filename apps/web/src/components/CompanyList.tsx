@@ -31,7 +31,7 @@ export const CompanyList = () => {
   if (!fetching && companies?.length === 0) {
     return (
       <Text variant="medium" color="muted">
-        No companies found.
+        No companies found
       </Text>
     );
   }

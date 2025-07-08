@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { LucideMoveRight } from 'lucide-react';
+import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
@@ -201,6 +201,7 @@ export const SitesTable = ({
         columns={columns}
         data={sites}
         noResultMessage="There are no sites added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {sites?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">

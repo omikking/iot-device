@@ -1,7 +1,12 @@
 'use client';
 import type { ColumnDef } from '@gsp/ui';
 import { MultiReadBadge } from './MultiReadBadge';
-import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import {
+  Badge,
+  DataTable,
+  TableHeadWithSorting,
+  showAlertToast,
+} from '@gsp/ui';
 import {
   LucideCheckCircle,
   LucideXCircle,
@@ -10,11 +15,12 @@ import {
 } from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
-import { BoltResultSchema } from '@/app/mock/mock';
+
+import { useEffect } from 'react';
+import { responses } from '@/app/uitexts/responses';
 
 type BoltResultsTableProps = {
-  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
-  boltResults?: BoltResult[] | BoltResultSchema[];
+  boltResults?: BoltResult[];
   site?: string;
 };
 
@@ -147,6 +153,15 @@ export const BoltResultsTable = ({
       ),
     },
   ];
+
+  useEffect(() => {
+    if (boltResults?.length === 0 && !boltResults?.length) {
+      showAlertToast({
+        title: responses.boltResultFetchError,
+        variant: 'error',
+      });
+    }
+  }, [boltResults?.length, site]);
 
   return (
     <>

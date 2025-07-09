@@ -59,4 +59,12 @@ export const responses = {
 
   // Sign in
   signInFailed: 'Failed to sign in',
+
+  // Administrator
+  adminInviteFailError: 'Failed to invite administrator',
+  adminInviteSuccess: 'Invitation successfully sent',
+  adminUpdateFailedError: 'Failed to update administrator',
+  adminUpdateSuccess: 'Administrator successfully updated',
+  adminDeleteFailed: 'Failed to delete administrator',
+  adminDeleteSuccess: 'Administrator has been deleted',
 };

@@ -165,7 +165,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data: boltResultsResponse, fetching }] = useQuery<{
+  const [{ data: boltResultsResponse, error, fetching }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
@@ -185,17 +185,13 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   useEffect(() => {
-    if (
-      !fetching &&
-      site?.id &&
-      boltResultsResponse?.boltResults?.results?.length === 0
-    ) {
+    if (error) {
       showAlertToast({
         title: responses.boltResultFetchError,
-        variant: 'info',
+        variant: 'error',
       });
     }
-  }, [boltResultsResponse?.boltResults?.results, fetching, site?.id]);
+  }, [error]);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

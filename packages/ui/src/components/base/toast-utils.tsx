@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
-import { Alert, AlertTitle, AlertDescription } from './alert';
 import { X } from 'lucide-react';
 import { Button } from './button';
+import { Alert, AlertTitle, AlertDescription } from './alert';
 
 const showAlertToast = ({
   title,
@@ -14,7 +14,7 @@ const showAlertToast = ({
 }) => {
   toast.custom((t) => (
     <Alert variant={variant} className="ui-w-full">
-      <div className="ui-flex ui-w-[430px]">
+      <div className="ui-flex ui-items-center ui-w-[430px]">
         <div className="ui-flex ui-flex-col ui-flex-grow">
           <AlertTitle color={variant} variant={variant}>
             {title}

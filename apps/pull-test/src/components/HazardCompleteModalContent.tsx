@@ -1,9 +1,10 @@
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { LucideCircleCheckBig } from 'lucide-react';
-import React, { useState } from 'react';
-import { Button, Text, Headline } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
+import { Button, Text, Headline, showAlertToast } from '@gsp/ui';
 
 type HazardCompleteModalContentProps = {
   boltResult: BoltResult;
@@ -64,12 +65,21 @@ export const HazardCompleteModalContent = ({
       },
     })
       .then((result) => {
+        if (result.error) {
+          showAlertToast({
+            title: responses.reportedHazardCompletingError,
+            variant: 'error',
+          });
+        }
         setIsLoading(true);
 
         // Handle success
         if (result.data) {
           handleViewTransition('success');
-
+          showAlertToast({
+            title: responses.reportedHazardCompletingSuccess,
+            variant: 'success',
+          });
           if (onSuccess) {
             setTimeout(() => {
               onSuccess();
@@ -85,9 +95,11 @@ export const HazardCompleteModalContent = ({
           }
         }
       })
-      .catch((error) => {
-        // TODO add error toaster
-        console.error('Error updating hazard:', error);
+      .catch(() => {
+        showAlertToast({
+          title: responses.reportedHazardCompletingError,
+          variant: 'error',
+        });
       })
       .finally(() => {
         setIsLoading(false);

@@ -37,7 +37,7 @@ const Alert = React.forwardRef<
       {...props}
     >
       <div className="ui-flex ui-items-center ui-space-x-3">
-        <div className="ui-flex h-full ui-pt-[5px]">
+        <div className="ui-flex">
           {variant === 'success' && <CheckCircle size={iconSize} />}
           {variant === 'info' && <Info size={iconSize} />}
           {variant === 'error' && <CircleX size={iconSize} />}

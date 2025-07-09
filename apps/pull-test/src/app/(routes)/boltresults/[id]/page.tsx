@@ -1,31 +1,33 @@
 'use client';
-
-import { useMemo, useState } from 'react';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { BoltSelection } from '@/components/BoltSelection';
-import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { GoBack } from '@/components/GoBack';
-import { gql, useQuery } from 'urql';
 import {
+  Text,
+  Tabs,
+  Modal,
+  Badge,
   Button,
   Headline,
-  Badge,
-  Modal,
-  ModalTrigger,
-  Tabs,
   TabsList,
+  DateRange,
+  Breadcrumb,
   TabsTrigger,
   TabsContent,
-  DateRange,
-  Text,
-  Breadcrumb,
+  ModalTrigger,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
+  showAlertToast,
 } from '@gsp/ui';
+import { gql, useQuery } from 'urql';
+import { useEffect, useMemo, useState } from 'react';
+import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
+import { BoltResult } from '@/gql/graphql';
+
+import { BoltSelection } from '@/components/BoltSelection';
+import { BoltResultsTable } from '@/components/BoltResultsTable';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { responses } from '@/app/uitexts/responses';
 
 interface Props {
   params: {
@@ -152,8 +154,7 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   const result = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { withComment, withImage, reportedHazard, ...rest } = filterState;
+    const { ...rest } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
@@ -164,8 +165,8 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data: boltResultsResponse }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResultSchema[] };
+  const [{ data: boltResultsResponse, error }] = useQuery<{
+    boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
     variables: {
@@ -182,6 +183,15 @@ export default function Page({ params }: Props): JSX.Element {
     },
     pause: !site?.id,
   });
+
+  useEffect(() => {
+    if (error) {
+      showAlertToast({
+        title: responses.boltResultFetchError,
+        variant: 'error',
+      });
+    }
+  }, [error]);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

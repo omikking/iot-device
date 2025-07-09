@@ -10,11 +10,9 @@ import {
 } from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
-import { BoltResultSchema } from '@/app/mock/mock';
 
 type BoltResultsTableProps = {
-  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
-  boltResults?: BoltResult[] | BoltResultSchema[];
+  boltResults?: BoltResult[];
   site?: string;
 };
 
@@ -152,8 +150,7 @@ export const BoltResultsTable = ({
     <>
       <DataTable
         columns={columns}
-        // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
-        data={(boltResults as BoltResult[]) || []}
+        data={boltResults || []}
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'

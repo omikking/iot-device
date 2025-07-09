@@ -192,8 +192,7 @@ export default function Page({ params }: Props): JSX.Element {
     ) {
       showAlertToast({
         title: responses.boltResultFetchError,
-        description: responses.contactSupportError,
-        variant: 'error',
+        variant: 'info',
       });
     }
   }, [boltResultsResponse?.boltResults?.results, fetching, site?.id]);

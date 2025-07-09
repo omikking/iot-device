@@ -165,7 +165,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data: boltResultsResponse, error, fetching }] = useQuery<{
+  const [{ data: boltResultsResponse, error }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,

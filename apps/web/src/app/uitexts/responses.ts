@@ -41,4 +41,14 @@ export const responses = {
   adminUpdateSuccess: 'Administrator successfully updated',
   adminDeleteFailed: 'Failed to delete administrator',
   adminDeleteSuccess: 'Administrator has been deleted',
+
+  // User
+  userAddError: "Failed to add user permissions",
+  userExistsError: "Permissions already exists",
+  userExistsErrorMessage: "User already has permissions for this company. Please edit existing permissions instead.",
+  userAddSuccess: "User permissions successfully added",
+  userUpdateError: "Failed to update user permissions",
+  userUpdateSuccess: "User permissions successfully updated",
+  userDeleteError: "Failed to delete user permissions",
+  userDeleteSuccess: "Permissions has been deleted",
 };

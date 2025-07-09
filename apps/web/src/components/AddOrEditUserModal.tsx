@@ -16,6 +16,7 @@ import {
   ModalTitle,
   Switch,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
@@ -31,6 +32,7 @@ import {
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
+import { responses } from '@/app/uitexts/responses';
 
 type AddOrEditUserModalProps = {
   user?: User;
@@ -186,42 +188,81 @@ export const AddOrEditUserModal = ({
   };
 
   const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
-    try {
-      setIsLoading(true);
-      // If there is a user then we are in EDIT MODE otherwise we are in ADD MODE
-      if (user) {
-        const permissionResult = await updateUserPermission({
-          id: permission?.id,
-          updateUserPermissionInput: {
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-          },
-        });
+    setIsLoading(true);
 
-        // TODO change to use toaster on all errors
-        if (!permissionResult.data) {
-          throw new Error('Permission update failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      } else {
-        const createdUser = await createUserPermission({
-          createUserPermissionInput: {
-            userEmail: data.email,
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-            companyId: companyId,
-          },
+    if (user) {
+      updateUserPermission({
+        id: permission?.id,
+        updateUserPermissionInput: {
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+        },
+      })
+        .then((result) => {
+          // Backend error
+          if (result.error?.graphQLErrors) {
+            showAlertToast({
+              title: responses.userAddError,
+              variant: 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+            onUserAdded();
+            showAlertToast({
+              title: responses.userUpdateSuccess,
+              variant: 'success',
+            });
+          }
+        })
+        .catch(() => {
+          showAlertToast({
+            title: responses.userUpdateError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        if (!createdUser.data) {
-          throw new Error('User creation failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setIsSuccessful(false);
+    }
+
+    if (!user) {
+      createUserPermission({
+        createUserPermissionInput: {
+          userEmail: data.email,
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+          companyId: companyId,
+        },
+      })
+        .then((result) => {
+          // Backend error
+          if (result.error?.graphQLErrors) {
+            showAlertToast({
+              title: responses.userAddError,
+              variant: 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+            onUserAdded();
+            showAlertToast({
+              title: responses.userAddSuccess,
+              variant: 'success',
+            });
+          }
+        })
+        .catch(() => {
+          showAlertToast({
+            title: responses.userAddError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 

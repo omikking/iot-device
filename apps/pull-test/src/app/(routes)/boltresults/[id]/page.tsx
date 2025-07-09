@@ -15,9 +15,10 @@ import {
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
+  showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
 import { BoltResult } from '@/gql/graphql';
@@ -26,6 +27,7 @@ import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { responses } from '@/app/uitexts/responses';
 
 interface Props {
   params: {
@@ -152,8 +154,7 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   const result = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { withComment, withImage, reportedHazard, ...rest } = filterState;
+    const { ...rest } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
@@ -164,7 +165,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data: boltResultsResponse }] = useQuery<{
+  const [{ data: boltResultsResponse, fetching }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
@@ -182,6 +183,20 @@ export default function Page({ params }: Props): JSX.Element {
     },
     pause: !site?.id,
   });
+
+  useEffect(() => {
+    if (
+      !fetching &&
+      site?.id &&
+      boltResultsResponse?.boltResults?.results?.length === 0
+    ) {
+      showAlertToast({
+        title: responses.boltResultFetchError,
+        description: responses.contactSupportError,
+        variant: 'error',
+      });
+    }
+  }, [boltResultsResponse?.boltResults?.results, fetching, site?.id]);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

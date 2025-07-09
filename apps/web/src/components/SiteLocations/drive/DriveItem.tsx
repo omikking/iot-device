@@ -9,9 +9,12 @@ import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { responses } from '@/app/uitexts/responses';
+import {
+  DriveValue,
+  siteLocationsSchema,
+} from '@/components/schemas/SiteLocationsFormSchema';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -69,14 +72,13 @@ export const DriveItem = ({
   const [, updateDrive] = useMutation(updateDriveMutation);
   const [, deleteDrive] = useMutation(deleteDriveMutation);
 
-  const driveForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: drive.id || '',
-        driveName: drive.driveName || '',
-      },
-    });
+  const driveForm: UseFormReturn<DriveValue> = useForm<DriveValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: drive.id || '',
+      driveName: drive.driveName || '',
+    },
+  });
 
   const handleEditDrive = () => {
     setIsEditing(true);
@@ -85,7 +87,6 @@ export const DriveItem = ({
 
   const handleCancelEdit = () => {
     if (!drive.id) {
-      // @TODO a bug here, check it and solve.
       drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
       refreshSite();
     }
@@ -93,96 +94,84 @@ export const DriveItem = ({
     setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleDriveSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    if (!data.driveName || data.driveName.trim().length < 2) {
-      showAlertToast({
-        title: responses.siteLocationWhiteSpaceDriveError,
-        variant: 'warning',
-      });
-      return;
-    }
-
-    // Checks that no other drive has the same name
-    const newDriveName = data.driveName;
-    const isDuplicate = drivesOptions.some(
-      (drive) => drive.driveName === newDriveName,
-    );
-    if (isDuplicate) {
-      showAlertToast({
-        title: responses.siteLocationDuplicateDriveError,
-        description: responses.siteLocationDuplicateDriveMessage,
-        variant: 'warning',
-      });
-      return;
-    }
-
-    // To create a new drive
-    if (!drive.id && newDriveName) {
+  const handleDriveSubmit: SubmitHandler<DriveValue> = (data) => {
+    // Create a drive
+    if (!drive.id) {
       createDrive({
         createDriveInput: {
-          driveName: newDriveName,
+          driveName: data.driveName,
           levelId: drive.levelId || '',
         },
       })
         .then((result) => {
-          if (result.error) {
-            showAlertToast({
-              title: responses.siteLocationCreateDriveError,
-              variant: 'error',
-            });
-            return;
-          }
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             showAlertToast({
-              title: responses.siteLocationDriveCreateSuccess,
+              title: responses.driveCreateSuccess,
               variant: 'success',
             });
             drivesOptions.length === 1 && refreshSite();
             setTimeout(() => setIsEditing(false), 30);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.siteLocationCreateDriveError,
+            title: responses.driveCreateError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-        })
-        .finally(() => {});
+        });
     }
 
-    // To edit a drive
-    if (drive.id && newDriveName) {
+    // Edit a drive
+    if (drive.id) {
       updateDrive({
         id: drive.id,
         updateDriveInput: {
-          driveName: newDriveName,
+          driveName: data.driveName,
         },
       })
         .then((result) => {
-          if (result.error) {
-            showAlertToast({
-              title: responses.siteLocationDriveUpdateError,
-              variant: 'error',
-            });
-            return;
-          }
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             showAlertToast({
-              title: responses.siteLocationDriveUpdateSuccess,
+              title: responses.driveUpdateSuccess,
               variant: 'success',
             });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.siteLocationDriveUpdateError,
+            title: responses.driveUpdateError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-        })
-        .finally(() => {});
+        });
     }
   };
 
@@ -190,40 +179,49 @@ export const DriveItem = ({
     setIsDeleting(true);
     setIsDeletingDrive(true);
 
-    return deleteDrive({ id: drive.id })
-      .then((result) => {
-        if (result.error) {
+    return (
+      deleteDrive({ id: drive.id })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            setSelectedDrive(undefined);
+            return false;
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.driveDeleteSuccess,
+              variant: 'info',
+            });
+            setSelectedDrive(undefined);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
-            title: responses.siteLocationDeleteError,
+            title: responses.driveDeleteError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-          setSelectedDrive(undefined);
           return false;
-        }
-        if (result.data) {
-          showAlertToast({
-            title: responses.siteLocationDriveDeleteSuccess,
-            variant: 'success',
-          });
-          setSelectedDrive(undefined);
-          refreshSite();
-        }
-        return true;
-      })
-      .catch(() => {
-        showAlertToast({
-          title: responses.siteLocationDeleteError,
-          variant: 'error',
-        });
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
+        })
+        .finally(() => {
+          setIsDeleting(false);
 
-        setTimeout(() => {
-          setIsDeletingDrive(false);
-        }, 1500);
-      });
+          setTimeout(() => {
+            setIsDeletingDrive(false);
+          }, 1500);
+        })
+    );
   };
 
   return (
@@ -233,7 +231,7 @@ export const DriveItem = ({
     >
       <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
         {!drive.id || isEditing ? (
-          <AddSiteLocationItemForm
+          <AddSiteLocationItemForm<'drive'>
             inputRef={inputRef}
             form={driveForm}
             type="drive"

@@ -10,8 +10,11 @@ import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
+import {
+  LevelValue,
+  siteLocationsSchema,
+} from '@/components/schemas/SiteLocationsFormSchema';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createLevelMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -71,14 +74,13 @@ export const LevelItem = ({
   const [, updateLevel] = useMutation(updateLevelMutation);
   const [, deleteLevel] = useMutation(deleteLevelMutation);
 
-  const levelForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: level.id || '',
-        levelName: level.levelName || '',
-      },
-    });
+  const levelForm: UseFormReturn<LevelValue> = useForm<LevelValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: level.id || '',
+      levelName: level.levelName || '',
+    },
+  });
 
   const handleEditLevel = () => {
     setIsEditing(true);
@@ -94,101 +96,84 @@ export const LevelItem = ({
     setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleLevelSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    if (!data.levelName || data.levelName.trim().length < 2) {
-      showAlertToast({
-        title: responses.siteLocationWhiteLevelSpaceError,
-        variant: 'warning',
-      });
-
-      return;
-    }
-
-    const newLevelName = data.levelName;
-    const isDuplicate = levelsOptions.some(
-      (level) => level.levelName === newLevelName,
-    );
-    if (isDuplicate) {
-      showAlertToast({
-        title: responses.siteLocationDuplicateLevelError,
-        description: responses.siteLocationDuplicateLevelMessage,
-        variant: 'warning',
-      });
-      return;
-    }
-
-    // To create a new level
-    if (!level.id && newLevelName) {
+  const handleLevelSubmit: SubmitHandler<LevelValue> = (data) => {
+    // Create a level
+    if (!level.id) {
       createLevel({
         createLevelInput: {
-          levelName: newLevelName,
+          levelName: data.levelName,
           siteId: level.siteId || '',
         },
       })
         .then((result) => {
           // Backend errors
           if (result.error?.graphQLErrors) {
-            // Felix: title, message & type are always undefined when trying to use them
-            // const { title, message, type } = result.error.graphQLErrors[0]
-            // .extensions as unknown as GraphQLErrorExtensions;
-            showAlertToast({
-              title: responses.siteLocationCreateLevelError,
-              variant: 'error',
-            });
-            return;
-          }
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
-          if (result.data) {
             showAlertToast({
-              title: responses.siteLocationLevelCreateSuccess,
-              variant: 'success',
+              title: title,
+              description: message,
+              variant: type || 'error',
             });
-
-            levelsOptions.length === 1 && refreshSite();
-            setTimeout(() => setIsEditing(false), 30);
-          }
-        })
-        .catch(() => {
-          showAlertToast({
-            title: responses.siteLocationCreateLevelError,
-            variant: 'error',
-          });
-        })
-        .finally(() => {});
-    }
-
-    // To edit a level
-    if (level.id && newLevelName) {
-      updateLevel({
-        id: level.id,
-        updateLevelInput: {
-          levelName: newLevelName,
-        },
-      })
-        .then((result) => {
-          if (result.error?.graphQLErrors) {
-            showAlertToast({
-              title: responses.siteLocationLevelUpdateError,
-              variant: 'error',
-            });
-            return;
           }
           // Success
           if (result.data) {
             showAlertToast({
-              title: responses.siteLocationLevelUpdateSuccess,
+              title: responses.levelCreateSuccess,
+              variant: 'success',
+            });
+            levelsOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.levelCreateError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
+    }
+
+    // Edit a level
+    if (level.id) {
+      updateLevel({
+        id: level.id,
+        updateLevelInput: {
+          levelName: data.levelName,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.levelUpdateSuccess,
               variant: 'success',
             });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.siteLocationLevelUpdateError,
+            title: responses.levelUpdateError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-        })
-        .finally(() => {});
+        });
     }
   };
 
@@ -196,39 +181,50 @@ export const LevelItem = ({
     setIsDeleting(true);
     setIsDeletingLevel(true);
 
-    return deleteLevel({ id: level.id })
-      .then((result) => {
-        if (result.error?.graphQLErrors) {
+    return (
+      deleteLevel({ id: level.id })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            setSelectedLevel(undefined);
+            return false;
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.levelDeleteSuccess,
+              variant: 'info',
+            });
+            setSelectedLevel(undefined);
+            refreshSite();
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
-            title: responses.siteLocationDeleteError,
+            title: responses.levelDeleteError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-          setSelectedLevel(undefined);
           return false;
-        }
+        })
+        .finally(() => {
+          setIsDeleting(false);
 
-        if (result.data) {
-          showAlertToast({
-            title: responses.siteLocationLevelDeleteSuccess,
-            variant: 'info',
-          });
-        }
-        return true;
-      })
-      .catch(() => {
-        showAlertToast({
-          title: responses.siteLocationDeleteError,
-          variant: 'error',
-        });
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-
-        setTimeout(() => {
-          setIsDeletingLevel(false);
-        }, 1500);
-      });
+          setTimeout(() => {
+            setIsDeletingLevel(false);
+          }, 1500);
+        })
+    );
   };
 
   return (
@@ -238,7 +234,7 @@ export const LevelItem = ({
     >
       <div className="py-3" onClick={() => !isEditing && handleSetLevel(level)}>
         {!level.id || isEditing ? (
-          <AddSiteLocationItemForm
+          <AddSiteLocationItemForm<'level'>
             inputRef={inputRef}
             form={levelForm}
             type="level"

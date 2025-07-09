@@ -9,9 +9,12 @@ import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
 import { responses } from '@/app/uitexts/responses';
+import {
+  LocationValue,
+  siteLocationsSchema,
+} from '@/components/schemas/SiteLocationsFormSchema';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -67,14 +70,13 @@ export const LocationItem = ({
   const [, updateLocation] = useMutation(updateLocationMutation);
   const [, deleteLocation] = useMutation(deleteLocationMutation);
 
-  const locationForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: location.id || '',
-        locationName: location.locationName || '',
-      },
-    });
+  const locationForm: UseFormReturn<LocationValue> = useForm<LocationValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: location.id || '',
+      locationName: location.locationName || '',
+    },
+  });
 
   const handleEditLocation = () => {
     setIsEditing(true);
@@ -92,97 +94,84 @@ export const LocationItem = ({
     setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleLocationSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    if (!data.locationName || data.locationName.trim().length < 2) {
-      showAlertToast({
-        title: responses.siteLocationWhiteSpaceLocationError,
-        variant: 'warning',
-      });
-      return;
-    }
-
-    // Checks that no other location has the same name
-    const newLocationName = data.locationName;
-    const isDuplicate = locationsOptions.some(
-      (location) => location.locationName === newLocationName,
-    );
-    if (isDuplicate) {
-      showAlertToast({
-        title: responses.siteLocationDuplicateLocationError,
-        description: responses.siteLocationDuplicateLocationMessage,
-        variant: 'warning',
-      });
-      return;
-    }
-
-    // To create a new location
-    if (!location.id && newLocationName) {
+  const handleLocationSubmit: SubmitHandler<LocationValue> = (data) => {
+    // Create a location
+    if (!location.id) {
       createLocation({
         createLocationInput: {
-          locationName: newLocationName,
+          locationName: data.locationName,
           driveId: location.driveId || '',
         },
       })
         .then((result) => {
           // Backend errors
-          if (result.error) {
-            showAlertToast({
-              title: responses.siteLocationCreateLocationError,
-              variant: 'error',
-            });
-            return;
-          }
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             showAlertToast({
-              title: responses.siteLocationLocationCreateSuccess,
+              title: responses.locationCreateSuccess,
               variant: 'success',
             });
-            setTimeout(() => setIsEditing(false), 30);
             locationsOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.siteLocationCreateLocationError,
+            title: responses.locationCreateError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-        })
-        .finally(() => {});
+        });
     }
 
     // To edit a location
-    if (location.id && newLocationName) {
+    if (location.id) {
       updateLocation({
         id: location.id,
         updateLocationInput: {
-          locationName: newLocationName,
+          locationName: data.locationName,
         },
       })
         .then((result) => {
-          if (result.error) {
-            showAlertToast({
-              title: responses.siteLocationLocationUpdateError,
-              variant: 'error',
-            });
-            return;
-          }
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
           if (result.data) {
             showAlertToast({
-              title: responses.siteLocationLocationUpdateSuccess,
+              title: responses.locationUpdateSuccess,
               variant: 'success',
             });
             setTimeout(() => setIsEditing(false), 30);
           }
         })
+        // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.siteLocationLocationUpdateError,
+            title: responses.locationUpdateError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-        })
-        .finally(() => {});
+        });
     }
   };
 
@@ -190,41 +179,50 @@ export const LocationItem = ({
     setIsDeleting(true);
     setIsDeletingLocation(true);
 
-    return deleteLocation({
-      id: location.id,
-    })
-      .then((result) => {
-        if (result.error?.graphQLErrors) {
+    return (
+      deleteLocation({
+        id: location.id,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            setIsDeletingLocation(false);
+            return false;
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.locationDeleteSuccess,
+              variant: 'info',
+            });
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
-            title: responses.siteLocationDeleteError,
+            title: responses.locationDeleteError,
+            description: responses.contactSupportError,
             variant: 'error',
           });
-          setIsDeletingLocation(false);
           return false;
-        }
-        // Success
-        if (result.data) {
-          showAlertToast({
-            title: responses.siteLocationLocationDeleteSuccess,
-            variant: 'success',
-          });
-        }
-        return true;
-      })
-      .catch(() => {
-        showAlertToast({
-          title: responses.siteLocationDeleteError,
-          variant: 'error',
-        });
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
+        })
+        .finally(() => {
+          setIsDeleting(false);
 
-        setTimeout(() => {
-          setIsDeletingLocation(false);
-        }, 1500);
-      });
+          setTimeout(() => {
+            setIsDeletingLocation(false);
+          }, 1500);
+        })
+    );
   };
 
   return (
@@ -234,7 +232,7 @@ export const LocationItem = ({
     >
       <div className="py-3">
         {!location.id || isEditing ? (
-          <AddSiteLocationItemForm
+          <AddSiteLocationItemForm<'location'>
             form={locationForm}
             onSubmit={handleLocationSubmit}
             onCancel={handleCancelEdit}

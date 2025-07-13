@@ -11,7 +11,7 @@ import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Level } from '@/gql/graphql';
 
-interface LevelsListProps {
+type LevelsListProps = {
   levelsOptions: Level[];
   selectedLevelId?: string;
   selectedSiteId?: string;
@@ -19,7 +19,7 @@ interface LevelsListProps {
   refreshSite: () => void;
   setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const LevelsList = ({
   levelsOptions,
@@ -33,6 +33,7 @@ export const LevelsList = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [levels, setLevels] = useState<Level[]>(levelsOptions);
+  const [isDeletingLevel, setIsDeletingLevel] = useState<boolean>(false);
 
   // Add a new empty level
   const addLevel = () => {
@@ -48,8 +49,10 @@ export const LevelsList = ({
   };
 
   useEffect(() => {
-    levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
-  }, [levelsOptions]);
+    if (!isDeletingLevel) {
+      levelsOptions.length > 0 ? setLevels(levelsOptions) : setLevels([]);
+    }
+  }, [levelsOptions, isDeletingLevel]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -68,7 +71,9 @@ export const LevelsList = ({
         {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available levels
+              {selectedSiteId
+                ? 'No levels found for this site'
+                : 'Select site to view available locations'}
             </Text>
           </div>
         )}
@@ -83,6 +88,7 @@ export const LevelsList = ({
             refreshSite={refreshSite}
             setSelectedDrive={setSelectedDrive}
             setSelectedLevel={setSelectedLevel}
+            setIsDeletingLevel={setIsDeletingLevel}
           />
         ))}
       </div>

@@ -1,14 +1,16 @@
-import { Application, UserSchema } from '@/app/mock/mock';
 import { z } from 'zod';
+import { Application, Role } from '@/gql/graphql';
 
 export type UserFormValues = {
   email?: string;
   technician?: string;
-  userPermissions: {
-    userId: string;
-    role: UserSchema['userPermissions']['role'];
-    appAccess: Application[];
-  };
+  userPermissions: [
+    {
+      userId?: string;
+      role: string;
+      appsAccess: Application[];
+    },
+  ];
 };
 
 export const userFormSchema = z
@@ -20,17 +22,27 @@ export const userFormSchema = z
       .max(50, { message: 'Email must be at most 50 characters.' })
       .optional(),
     technician: z.string().optional(),
-    userPermissions: z.object({
-      userId: z.string().optional(),
-      role: z.enum(['User', 'Technician', 'Admin']),
-      appAccess: z.array(
-        z.enum(['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS']),
-      ),
-    }),
+    userPermissions: z.array(
+      z.object({
+        userId: z.string().optional(),
+        role: z.enum(
+          [Role.CompanyUser, Role.CompanyAdmin, Role.SandvikTechnician],
+          { message: 'Role must be selected.' },
+        ),
+        appsAccess: z.array(
+          z.enum([
+            Application.PullTest,
+            Application.PullTestOperator,
+            Application.Ultrabolts,
+            Application.Xcyclops,
+          ]),
+        ),
+      }),
+    ),
   })
   .superRefine((data, ctx) => {
-    const { role } = data.userPermissions;
-    if (role === 'Technician') {
+    const { role } = data.userPermissions[0];
+    if (role === Role.SandvikTechnician) {
       if (!data.technician) {
         ctx.addIssue({
           path: ['technician'],
@@ -39,7 +51,7 @@ export const userFormSchema = z
         });
       }
     }
-    if (role === 'User') {
+    if (role !== Role.SandvikTechnician) {
       if (!data.email) {
         ctx.addIssue({
           path: ['email'],

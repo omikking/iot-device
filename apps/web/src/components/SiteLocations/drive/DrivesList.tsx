@@ -7,32 +7,33 @@ import React, {
   SetStateAction,
 } from 'react';
 import { DriveItem } from './DriveItem';
-import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Level } from '@/gql/graphql';
+import { Button, Headline, Text } from '@gsp/ui';
 
-interface DrivesListProps {
+type DrivesListProps = {
   drivesOptions: Drive[];
   selectedDriveId?: string;
   selectedLevelId?: string;
   levelsOptions: Level[];
-  handleSetDrive: () => void;
   refreshSite: () => void;
+  handleSetDrive: () => void;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
-}
+};
 
 export const DrivesList = ({
   drivesOptions,
+  levelsOptions,
   selectedDriveId,
   selectedLevelId,
-  levelsOptions,
-  handleSetDrive,
   refreshSite,
+  handleSetDrive,
   setSelectedDrive,
 }: DrivesListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [drives, setDrives] = useState<Drive[]>(drivesOptions);
+  const [isDeletingDrive, setIsDeletingDrive] = useState<boolean>(false);
 
   // Add a new empty drive
   const addDrive = () => {
@@ -48,8 +49,10 @@ export const DrivesList = ({
   };
 
   useEffect(() => {
-    drivesOptions.length > 0 ? setDrives(drivesOptions) : setDrives([]);
-  }, [drivesOptions]);
+    if (!isDeletingDrive) {
+      drivesOptions.length > 0 ? setDrives(drivesOptions) : setDrives([]);
+    }
+  }, [drivesOptions, isDeletingDrive]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -68,20 +71,23 @@ export const DrivesList = ({
         {drives.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available drives
+              {selectedLevelId
+                ? 'No drives found for the selected level'
+                : 'Select level to view available drives'}
             </Text>
           </div>
         )}
         {drives.map((drive) => (
           <DriveItem
-            inputRef={inputRef}
             key={drive.id}
             drive={drive}
+            inputRef={inputRef}
             drivesOptions={drives}
             selectedDriveId={selectedDriveId}
-            handleSetDrive={handleSetDrive}
             refreshSite={refreshSite}
+            handleSetDrive={handleSetDrive}
             setSelectedDrive={setSelectedDrive}
+            setIsDeletingDrive={setIsDeletingDrive}
           />
         ))}
       </div>

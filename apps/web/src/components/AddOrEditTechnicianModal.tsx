@@ -14,25 +14,27 @@ import {
   FormMessage,
   RadioGroupItem,
   RadioGroup,
-  LoadingSpinner,
   TooltipProvider,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   UpdateTechnicianFormValues,
   updateTechnicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { SuccessMessage } from './SuccessMessage';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
-import { User } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { User } from '@/gql/graphql';
+import { useEffect, useState } from 'react';
+import { SuccessMessage } from './SuccessMessage';
+import { responses } from '@/app/uitexts/responses';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 // @TODO make the create user query later when BE is advanced.
 
@@ -41,19 +43,15 @@ const updateTechnicianMutation = graphql(`
     updateUser(id: $id, updateUserInput: $updateUserInput) {
       id
       email
-      fullName
-      workPlace
-      phoneNumber
-      globalRole
       isGlobalVisibility
     }
   }
 `);
 
-interface AddOrEditTechnicianModalProps {
+type AddOrEditTechnicianModalProps = {
   onOpenChange: (open: boolean) => void;
   technician?: User;
-}
+};
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
@@ -69,20 +67,14 @@ export const AddOrEditTechnicianModal = ({
   const form = useForm<UpdateTechnicianFormValues>({
     resolver: zodResolver(updateTechnicianFormSchema),
     defaultValues: {
-      fullName: technician?.fullName || '',
-      workPlace: technician?.workPlace || '',
       email: technician?.email || '',
-      phoneNumber: technician?.phoneNumber || '',
       isGlobalVisibility: technician?.isGlobalVisibility || false,
     },
   });
 
   const resetFormValues = () => {
     form.reset({
-      fullName: '',
-      workPlace: '',
       email: '',
-      phoneNumber: '',
       isGlobalVisibility: false,
     });
   };
@@ -106,11 +98,42 @@ export const AddOrEditTechnicianModal = ({
       updateTechnician({
         id: technician.id,
         updateUserInput: data,
-      }).then((result) => {
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.techincianUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.techinicianUpdateFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!technician) {
@@ -122,14 +145,21 @@ export const AddOrEditTechnicianModal = ({
     if (technician) {
       form.reset({
         ...technician,
-        phoneNumber: technician.phoneNumber || '',
         isGlobalVisibility: technician.isGlobalVisibility || false,
       });
     }
   }, [technician, form]);
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty;
+  const isAnyFieldEmpty = !formValues.email;
+
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
   return (
-    <ModalContent onCloseAutoFocus={resetFormValues}>
+    <ModalContent
+      onCloseAutoFocus={resetFormValues}
+      onOpenAutoFocus={(event) => event.preventDefault()}
+    >
       <ModalHeader>
         <ModalTitle>
           {technician ? 'Edit technician' : 'Add technician'}
@@ -149,6 +179,7 @@ export const AddOrEditTechnicianModal = ({
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
+                          autoFocus
                           placeholder="Enter email"
                           {...field}
                           className="w-96"
@@ -195,7 +226,9 @@ export const AddOrEditTechnicianModal = ({
                       <FormControl>
                         <RadioGroup
                           value={String(field.value)}
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value === 'true');
+                          }}
                         >
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>
@@ -223,24 +256,17 @@ export const AddOrEditTechnicianModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isLoading}
+                disabled={isSubmitDisabled || isLoading}
+                isLoading={isLoading}
               >
                 {technician ? (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucideSquarePen />
-                    )}
+                    {!isLoading && <LucideSquarePen />}
                     Edit technician
                   </>
                 ) : (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucidePlus />
-                    )}
+                    {!isLoading && <LucidePlus />}
                     Add technician
                   </>
                 )}

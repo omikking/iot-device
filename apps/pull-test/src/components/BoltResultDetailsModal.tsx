@@ -1,270 +1,193 @@
 import {
   Button,
-  ModalContent,
+  ModalTitle,
+  ModalClose,
   ModalFooter,
   ModalHeader,
-  ModalTitle,
-  Textarea,
-  Text,
-  Badge,
-  Headline,
-  ModalClose,
-  LoadingSpinner,
-  Specification,
+  ModalContent,
 } from '@gsp/ui';
-import Image from 'next/image';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
 import React, { useState } from 'react';
-import { MultiBoltReadingTable } from './MultiBoltReadingTable';
-import { BoltResultSchema, boltSpecifications } from '@/app/mock/mock';
-import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { BoltResult } from '@/gql/graphql';
+import { LucideCircleCheckBig } from 'lucide-react';
+import { HazardCompleteModalContent } from './HazardCompleteModalContent';
+import { BoltResultDetailsModalContent } from './BoltResultDetailsModalContent';
 
-interface BoltResultDetailsModalProps {
-  modalTitle: string;
-  fullBoltData?: BoltResultSchema;
+type BoltResultDetailsModalProps = {
+  isModalOpen?: boolean;
+  boltResult: BoltResult;
   onClose?: () => void;
   isHazardCompletable?: boolean;
-}
+};
+
+const getLevelDetails = graphql(`
+  query getLevelDetails($id: String!) {
+    level(id: $id) {
+      id
+      levelName
+      siteId
+    }
+  }
+`);
+
+const getDriveDetails = graphql(`
+  query getDriveDetails($id: String!) {
+    drive(id: $id) {
+      id
+      driveName
+    }
+  }
+`);
+
+const getLocationDetails = graphql(`
+  query getLocationDetails($id: String!) {
+    location(id: $id) {
+      id
+      locationName
+    }
+  }
+`);
+
+const getNameDetails = graphql(`
+  query getNameDetails($id: String!) {
+    user(id: $id) {
+      fullName
+    }
+  }
+`);
+
+// Modal view states
+type ModalView = 'details' | 'confirmation' | 'success';
 
 export const BoltResultDetailsModal = ({
-  modalTitle,
   isHazardCompletable = false,
-  fullBoltData,
+  boltResult,
   onClose,
+  isModalOpen,
 }: BoltResultDetailsModalProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [isSuccessful, setIsSuccessful] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [currentView, setCurrentView] = useState<ModalView>('details');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const { image, isHazard, peakLoad, peakDisplacement, author } =
-    (fullBoltData as BoltResultSchema) || {};
-  // @TODO Just hardcoded for now, update later. Image should be here as well most likely
-  const boltDescription = 'Test description';
+  // Queries for related data
+  const [{ data: levelData }] = useQuery({
+    query: getLevelDetails,
+    variables: { id: boltResult?.levelId },
+    pause: !isModalOpen,
+  });
 
-  const completeHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event?.preventDefault();
-    setIsCompleted(true);
+  const [{ data: driveData }] = useQuery({
+    query: getDriveDetails,
+    variables: { id: boltResult?.driveId },
+    pause: !isModalOpen,
+  });
+
+  const [{ data: locationData }] = useQuery({
+    query: getLocationDetails,
+    variables: { id: boltResult?.locationId },
+    pause: !isModalOpen,
+  });
+
+  const [{ data: nameData }] = useQuery({
+    query: getNameDetails,
+    variables: { id: boltResult?.userId },
+    pause: !isModalOpen,
+  });
+
+  // Prepare site info for specs
+  const siteInfo = {
+    levelName: levelData?.level?.levelName || 'N/A',
+    driveName: driveData?.drive?.driveName || 'N/A',
+    locationName: locationData?.location?.locationName || 'N/A',
   };
 
-  const hazardConfirmed = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event?.preventDefault();
-    setIsLoading(true);
+  const handleViewTransition = (nextView: ModalView) => {
+    setIsTransitioning(true);
+
     setTimeout(() => {
-      !isConfirmed ? setIsConfirmed(true) : setIsSuccessful(true);
-      setIsLoading(false);
-
-      if (isCompleted) {
-        setTimeout(() => {
-          onClose?.();
-
-          setTimeout(() => {
-            resetConfirmation();
-          }, 200);
-        }, 1000);
-      }
-    }, 1000);
+      setCurrentView(nextView);
+      setIsTransitioning(false);
+    }, 100);
   };
 
-  const resetConfirmation = () => {
-    setIsCompleted(false);
-    setIsSuccessful(false);
-    setIsConfirmed(false);
-    setIsLoading(false);
+  const handleCompleteHazard = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    handleViewTransition('confirmation');
+  };
+
+  const resetModal = () => {
+    handleViewTransition('details');
   };
 
   return (
     <ModalContent
-      onEscapeKeyDown={resetConfirmation}
-      onPointerDownOutside={resetConfirmation}
-      className={`overflow-y-auto w-96 ${
-        isCompleted || isConfirmed ? 'h-[450px]' : ''
-      }`}
+      onEscapeKeyDown={currentView !== 'success' ? resetModal : undefined}
+      onPointerDownOutside={currentView !== 'success' ? resetModal : undefined}
+      className="overflow-y-auto w-96"
     >
       <ModalHeader>
-        <ModalTitle>{isCompleted ? 'Complete hazard' : modalTitle}</ModalTitle>
+        <ModalTitle>
+          {currentView === 'details'
+            ? `Bolt ${boltResult?.boltNumber}`
+            : 'Complete hazard'}
+        </ModalTitle>
       </ModalHeader>
 
-      {/* First View */}
+      {/* Modal content based on current view with animation */}
       <div
-        className={`transition-all duration-500 ${
-          isCompleted || isConfirmed ? 'hidden' : 'block'
-        }`}
+        className={`transition-all duration-100 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
       >
-        <div className="p-10 flex gap-10 flex-grow">
-          {image && (
-            <Image
-              src={image}
-              alt="Attached bolt result image"
-              width={390}
-              height={280}
-              className="rounded-md h-72"
-            />
-          )}
-          <div className="flex flex-col w-1/2 ">
-            {boltDescription && (
-              <div className="flex flex-col flex-grow">
-                <Text variant="small" color="foreground">
-                  Comment
-                </Text>
-                <Textarea
-                  value={boltDescription}
-                  className="mt-2 flex-grow"
-                  disabled
-                  readOnly
-                />
-              </div>
-            )}
-            {isHazard && (
-              <div className="flex justify-between pt-5">
-                <Badge variant={'attention'}>
-                  <LucideTriangleAlert />
-                  Reported hazard
-                </Badge>
-                {author && (
-                  <Text variant="small" color="foreground">
-                    Author: {author}
-                  </Text>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="px-10 pb-10">
-          <Headline
-            className="pb-4"
-            variant="small"
-            as="h3"
-            color="foreground"
-            isBold
-          >
-            Bolt specifications
-          </Headline>
-          <div className="flex flex-wrap">
-            {[...boltSpecifications.slice(1)].map((boltSpec, index) => (
-              <Specification
-                key={index}
-                title={boltSpec.title}
-                text={boltSpec.text}
-                className="w-1/2"
-              />
-            ))}
-            {boltSpecifications.length % 2 === 0 && (
-              <Specification title="" text="" className="w-1/2" />
-            )}
-          </div>
-          {/* BOLT RESULTS */}
-          <div>
-            <Headline
-              className="pt-10"
-              variant="small"
-              as="h3"
-              color="foreground"
-              isBold
-            >
-              Bolt results
-            </Headline>
-            <MultiBoltReadingTable
-              peakLoad={peakLoad}
-              peakDisplacement={peakDisplacement}
-            />
-          </div>
-        </div>
-        {/* Bolt plot */}
-        <div className="px-10">
-          <Headline
-            className="pb-4"
-            variant="small"
-            as="h3"
-            color="foreground"
-            isBold
-          >
-            Bolt plot Graph
-          </Headline>
-          <Text variant="small" color="foreground">
-            Graph will be shown here. Incoming feature...
-          </Text>
-        </div>
+        {currentView === 'details' && (
+          <BoltResultDetailsModalContent
+            boltResult={boltResult}
+            siteInfo={siteInfo}
+            fullName={nameData?.user?.fullName || 'N/A'}
+          />
+        )}
+        {currentView !== 'details' && (
+          <HazardCompleteModalContent
+            boltResult={boltResult}
+            onClose={resetModal}
+            onSuccess={() => {
+              onClose?.();
+              setTimeout(() => {
+                setCurrentView('details');
+              }, 300);
+            }}
+            initialView={
+              currentView === 'confirmation' ? 'confirmation' : 'success'
+            }
+          />
+        )}
       </div>
-      {isCompleted && (
-        <div className="relative h-[250px]">
-          {/* Second View */}
-          <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-              isCompleted && !isConfirmed ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <div className="flex flex-col items-center justify-center gap-6 p-4">
-              <div className="flex gap-4">
-                <LucideCircleCheckBig size={30} className="text-success" />
-                <Headline as="h3" color="foreground" variant="small" isBold>
-                  Confirm hazard completion
-                </Headline>
-              </div>
-              <Text
-                className="text-center w-2/3"
-                color="foreground"
-                variant="medium"
-              >
-                You are about to complete the selected hazard. Are you sure you
-                want to complete it?
-              </Text>
-            </div>
-          </div>
-          {/* Third View */}
-          <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-              isConfirmed && !isSuccessful
-                ? 'opacity-100 translate-y-[-10px] z-10'
-                : 'opacity-0 translate-y-0 z-0'
-            }`}
-          >
-            <div className="flex flex-col items-center justify-center gap-6 p-4">
-              <div className="flex gap-4">
-                <LucideCircleCheckBig size={30} className="text-success" />
-                <Headline as="h3" color="foreground" variant="small" isBold>
-                  Hazard completed
-                </Headline>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      <ModalFooter className="px-10 pb-5 pt-8">
-        <ModalClose asChild>
-          <div className="flex justify-end items-end gap-5">
-            {isHazard && isHazardCompletable && (
-              <Button
-                size="large"
-                variant="primary"
-                disabled={isConfirmed}
-                onClick={isCompleted ? hazardConfirmed : completeHazard}
-              >
-                {isLoading ? (
-                  <LoadingSpinner className="animate-spin" size={24} />
-                ) : (
+      {currentView === 'details' && (
+        <ModalFooter className="px-10 pb-5 pt-8">
+          <ModalClose asChild>
+            <div className="flex justify-end items-end gap-5">
+              {boltResult?.isHazard && isHazardCompletable && (
+                <Button
+                  size="large"
+                  variant="primary"
+                  onClick={handleCompleteHazard}
+                  disabled={isTransitioning}
+                >
                   <LucideCircleCheckBig />
-                )}
-                Complete
-              </Button>
-            )}
-            {isCompleted ? (
+                  Complete
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="large"
-                onClick={resetConfirmation}
+                onClick={onClose}
+                disabled={isTransitioning}
               >
-                {isConfirmed ? 'Close' : 'Cancel'}
-              </Button>
-            ) : (
-              <Button variant="outline" size="large">
                 Close
               </Button>
-            )}
-          </div>
-        </ModalClose>
-      </ModalFooter>
+            </div>
+          </ModalClose>
+        </ModalFooter>
+      )}
     </ModalContent>
   );
 };

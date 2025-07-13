@@ -1,5 +1,12 @@
 'use client';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import {
+  Button,
+  ContentHolder,
+  Form,
+  Headline,
+  Text,
+  showAlertToast,
+} from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
@@ -12,16 +19,26 @@ import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
-  createCompanyFormSchema,
-  updateCompanyFormSchema,
+  createCompanySchema,
+  updateCompanySchema,
 } from './schemas/CompanyFormSchema';
-import { Company, Plan } from '@/gql/graphql';
+import {
+  Company,
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables,
+  Plan,
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables,
+} from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
+import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
+import { useRouter } from 'next/navigation';
 
 const allPlans = [
   { applicationName: 'PULL_TEST' },
@@ -97,19 +114,22 @@ export const CompanyForm = ({
   const [isAdmin, setIsAdmin] = useState(true);
   const user = isAdmin ? 'Superadmin' : 'Client';
 
-  const [, createCompany] = useMutation<CreateCompanyFormValues>(
-    createCompanyMutation,
-  );
-  const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
-    updateCompanyMutation,
-  );
+  const router = useRouter();
+
+  const [, createCompany] = useMutation<
+    CreateCompanyMutation,
+    CreateCompanyMutationVariables
+  >(createCompanyMutation);
+
+  const [, updateCompany] = useMutation<
+    UpdateCompanyMutation,
+    UpdateCompanyMutationVariables
+  >(updateCompanyMutation);
 
   const companyForm = useForm<
     CreateCompanyFormValues | UpdateCompanyFormValues
   >({
-    resolver: zodResolver(
-      company ? updateCompanyFormSchema : createCompanyFormSchema,
-    ),
+    resolver: zodResolver(company ? updateCompanySchema : createCompanySchema),
     defaultValues: {
       name: company?.name || '',
       companyContactEmail: company?.companyContactEmail || '',
@@ -119,38 +139,82 @@ export const CompanyForm = ({
       address: company?.address || '',
       postalCode: company?.postalCode || '',
       plans: company?.plans || [],
-      // @TODO update this later when BE is fixed.
-      // Replace with [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }] to create company, make sure to have an admin with this id
-      userPermissions: company?.users?.map(() => ({
-        newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-        oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-      })),
+      sandvikAdminUserId: company?.sandvikAdminUserId || '',
     },
   });
 
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
-    console.log('Submit');
-    console.log(data);
-
     if (company) {
       updateCompany({
         id: company.id,
         updateCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyUpdate,
+              variant: 'success',
+            });
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyUpdateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
 
     if (!company && isNewCompany) {
       createCompany({
-        createCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+        createCompanyInput: data as CreateCompanyFormValues,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyCreation,
+              variant: 'success',
+            });
+            router.push(`/company/${result.data?.createCompany.id}`);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyInvitationFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
   };
 
@@ -159,17 +223,28 @@ export const CompanyForm = ({
     if (company) {
       companyForm.reset({
         ...company,
+        sandvikAdminUserId: company.sandvikAdminUserId ?? '',
         plans: company.plans || [],
-        // @TODO update this later when BE is fixed.
-        // Temporary. Make sure to have a user with this id and is sandvik_admin
-        userPermissions: company?.users?.map(() => ({
-          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-        })),
       });
     }
   }, [company]);
 
+  const formValues = companyForm.watch();
+  const isDirty = companyForm.formState.isDirty;
+
+  const isAnyFieldEmpty =
+    !formValues.name ||
+    !formValues.companyContactEmail ||
+    !formValues.orgNumber ||
+    !formValues.country ||
+    !formValues.city ||
+    !formValues.address ||
+    !formValues.sandvikAdminUserId ||
+    !formValues.postalCode;
+
+  const isSubmitDisabled = isNewCompany
+    ? isAnyFieldEmpty
+    : !isDirty || isAnyFieldEmpty;
   return (
     <>
       <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
@@ -247,12 +322,7 @@ export const CompanyForm = ({
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && (
-                <AdminForm
-                  isNewCompany={isNewCompany}
-                  companyForm={companyForm}
-                />
-              )}
+              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
               {user === 'Client' && (
                 <AssociateDetailsForm companyForm={companyForm} />
               )}
@@ -260,22 +330,28 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
-            <Button variant="primary" size="large" type="submit">
-              <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Update company details'}
-            </Button>
-
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
             {!isNewCompany && (
               <Button
                 variant="destructive"
                 size="large"
+                type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
               >
                 <LucideTrash2 />
                 Inactivate company
               </Button>
             )}
+
+            <Button
+              variant="primary"
+              size="large"
+              type="submit"
+              disabled={isSubmitDisabled}
+            >
+              <LucideCircleCheckBig />
+              {isNewCompany ? 'Send invitation' : 'Save changes'}
+            </Button>
           </div>
         </form>
       </Form>

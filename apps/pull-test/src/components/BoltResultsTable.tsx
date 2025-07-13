@@ -1,28 +1,33 @@
 'use client';
 import type { ColumnDef } from '@gsp/ui';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { BoltCommentBadge } from './BoltCommentBadge';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
+import {
+  LucideCheckCircle,
+  LucideXCircle,
+  LucideSearchX,
+  ClipboardList,
+} from 'lucide-react';
+import { BoltResult, Result } from '@/gql/graphql';
+import { BoltCommentBadge } from './BoltCommentBadge';
 
-interface BoltResultsTableProps {
-  boltResults?: BoltResultSchema[];
+type BoltResultsTableProps = {
+  boltResults?: BoltResult[];
   site?: string;
-}
+};
 
 const getBadge = (
-  result: 'Pass' | 'Fail' | 'Abort',
+  result: Result.Abort | Result.Pass | Result.Fail,
 ): {
   variant: 'success' | 'destructive' | 'warning';
   icon: React.ReactNode;
 } => {
   switch (result) {
-    case 'Pass':
+    case Result.Pass:
       return { variant: 'success', icon: <LucideCheckCircle /> };
-    case 'Fail':
+    case Result.Fail:
       return { variant: 'destructive', icon: <LucideXCircle /> };
-    case 'Abort':
+    case Result.Abort:
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
 };
@@ -31,7 +36,7 @@ export const BoltResultsTable = ({
   boltResults,
   site,
 }: BoltResultsTableProps) => {
-  const columns: ColumnDef<BoltResultSchema>[] = [
+  const columns: ColumnDef<BoltResult>[] = [
     {
       accessorKey: 'boltNumber',
       meta: { headerClassName: 'w-36' },
@@ -51,7 +56,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakLoad } = row.original;
         if (peakLoad.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakLoad.length === 1) {
           return peakLoad[0];
@@ -79,7 +84,7 @@ export const BoltResultsTable = ({
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
         if (peakDisplacement.length > 1) {
-          return <MultiReadBadge fullBoltData={row.original} />;
+          return <MultiReadBadge boltResult={row.original} />;
         }
         if (peakDisplacement.length === 1) {
           return peakDisplacement[0];
@@ -102,24 +107,27 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'level',
       header: 'Level',
+      cell: ({ row }) => row.original.level?.levelName,
     },
     {
       accessorKey: 'drive',
       header: 'Drive',
+      cell: ({ row }) => row.original.drive?.driveName,
     },
     {
       accessorKey: 'location',
       header: 'Location',
+      cell: ({ row }) => row.original.location?.locationName,
     },
     {
-      accessorKey: 'ring',
+      accessorKey: 'positionInRing',
       header: 'Position in ring',
     },
     {
       accessorKey: 'comment',
       header: 'Comment',
       cell: ({ row }) => {
-        return <BoltCommentBadge fullBoltData={row.original} />;
+        return <BoltCommentBadge boltResult={row.original} />;
       },
     },
     {
@@ -129,8 +137,8 @@ export const BoltResultsTable = ({
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
-          <Badge variant={getBadge(row.getValue('result')).variant}>
-            {getBadge(row.getValue('result')).icon}
+          <Badge variant={getBadge(row?.getValue('result'))?.variant}>
+            {getBadge(row?.getValue('result'))?.icon}
             {row.getValue('result')}
           </Badge>
         </div>
@@ -148,8 +156,15 @@ export const BoltResultsTable = ({
             ? 'Select site to view bolt results.'
             : 'There are no bolt results found for your search.'
         }
+        icon={
+          !site ? (
+            <ClipboardList color="gray" />
+          ) : (
+            <LucideSearchX color="gray" />
+          )
+        }
       />
-      {boltResults?.length && (
+      {!!boltResults?.length && boltResults?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">
           {boltResults?.length} total
         </Badge>

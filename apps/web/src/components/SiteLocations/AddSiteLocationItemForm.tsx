@@ -1,33 +1,36 @@
 import React from 'react';
-import { SubmitHandler, UseFormReturn } from 'react-hook-form';
+import { Path, SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { Button, Form, FormControl, FormField, FormItem, Input } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideX } from 'lucide-react';
-import { z } from 'zod';
+import {
+  DriveValue,
+  LevelValue,
+  LocationValue,
+} from '../schemas/SiteLocationsFormSchema';
 
-export const siteLocationsSchema = z.object({
-  id: z.string(),
-  levelName: z.string().optional(),
-  driveName: z.string().optional(),
-  locationName: z.string().optional(),
-});
+type FormValueMap = {
+  level: LevelValue;
+  drive: DriveValue;
+  location: LocationValue;
+};
 
-export type SiteLocationsValue = z.infer<typeof siteLocationsSchema>;
-
-interface AddSiteLocationItemFormProps {
-  form: UseFormReturn<SiteLocationsValue>;
+type AddSiteLocationItemFormProps<T extends 'level' | 'drive' | 'location'> = {
+  form: UseFormReturn<FormValueMap[T]>;
   type: 'level' | 'drive' | 'location';
   inputRef: React.RefObject<HTMLInputElement>;
-  onSubmit: SubmitHandler<SiteLocationsValue>;
+  onSubmit: SubmitHandler<FormValueMap[T]>;
   onCancel: () => void;
-}
+};
 
-export const AddSiteLocationItemForm = ({
+export const AddSiteLocationItemForm = <
+  T extends 'level' | 'drive' | 'location',
+>({
   form,
   type,
   inputRef,
   onSubmit,
   onCancel,
-}: AddSiteLocationItemFormProps) => {
+}: AddSiteLocationItemFormProps<T>) => {
   return (
     <Form {...form}>
       <form
@@ -36,7 +39,7 @@ export const AddSiteLocationItemForm = ({
       >
         <FormField
           control={form.control}
-          name={`${type}Name`}
+          name={`${type}Name` as Path<FormValueMap[T]>}
           render={({ field }) => {
             return (
               <FormItem className="w-full min-w-0 flex-1">

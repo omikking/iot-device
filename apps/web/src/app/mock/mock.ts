@@ -7,7 +7,7 @@ export type Application =
   | 'ULTRABOLTS'
   | 'XCYCLOPS';
 
-export interface SiteResultSchema {
+export type SiteResultSchema = {
   id: string;
   name: string;
   address: string;
@@ -15,13 +15,13 @@ export interface SiteResultSchema {
   passCriteria?: string;
   notification?: string;
   fooBar?: string;
-}
+};
 
-interface AppPlan {
+type AppPlan = {
   name: string;
   activePlan?: PlanLevel;
   id: string;
-}
+};
 
 export const siteResultMock: Site[] = [
   {
@@ -216,7 +216,7 @@ export const companiesMock = [
   },
 ];
 
-export interface UserSchema {
+export type UserSchema = {
   id: string;
   fullName: string;
   email: string;
@@ -230,7 +230,7 @@ export interface UserSchema {
     role: 'User' | 'Technician' | 'Admin';
     appAccess: string[];
   };
-}
+};
 
 export const usersMock: UserSchema[] = [
   {
@@ -293,14 +293,14 @@ export const usersMock: UserSchema[] = [
   },
 ];
 
-export interface TechniciansSchema {
+export type TechniciansSchema = {
   id: string;
   fullName: string;
   email: string;
   company: string;
   isGlobal: boolean;
   phoneNumber: string;
-}
+};
 
 export const techniciansMock: TechniciansSchema[] = [
   {
@@ -353,14 +353,14 @@ export const techniciansMock: TechniciansSchema[] = [
   },
 ];
 
-export interface AdministratorSchema {
+export type AdministratorSchema = {
   id: string;
   fullName: string;
   email: string;
   company: string;
   phoneNumber: string;
   role: string;
-}
+};
 
 export const administratorsMock: AdministratorSchema[] = [
   {

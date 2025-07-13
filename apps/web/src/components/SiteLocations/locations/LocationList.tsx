@@ -5,28 +5,23 @@ import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Location } from '@/gql/graphql';
 
-interface LocationsListProps {
+type LocationsListProps = {
   selectedDriveId?: string;
   locationsOptions: Location[];
   drivesOptions: Drive[];
   refreshSite: () => void;
-}
+};
 
 export const LocationsList = ({
+  drivesOptions,
   selectedDriveId,
   locationsOptions,
-  drivesOptions,
   refreshSite,
 }: LocationsListProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [locations, setLocations] = useState<Location[]>([]);
-
-  useEffect(() => {
-    locationsOptions.length > 0
-      ? setLocations(locationsOptions)
-      : setLocations([]);
-  }, [locationsOptions]);
+  const [isDeletingLocation, setIsDeletingLocation] = useState<boolean>(false);
 
   // Add a new empty location
   const addLocation = () => {
@@ -39,6 +34,14 @@ export const LocationsList = ({
     };
     setLocations((prevLocations) => [...prevLocations, newLocation]);
   };
+
+  useEffect(() => {
+    if (!isDeletingLocation) {
+      locationsOptions.length > 0
+        ? setLocations(locationsOptions)
+        : setLocations([]);
+    }
+  }, [locationsOptions, isDeletingLocation]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -57,7 +60,9 @@ export const LocationsList = ({
         {locations.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available locations
+              {selectedDriveId
+                ? 'No locations found for the selected drive'
+                : 'Select drive to view available locations'}
             </Text>
           </div>
         )}
@@ -65,9 +70,10 @@ export const LocationsList = ({
           <LocationItem
             key={location.id}
             location={location}
-            locationsOptions={locations}
             inputRef={inputRef}
+            locationsOptions={locations}
             refreshSite={refreshSite}
+            setIsDeletingLocation={setIsDeletingLocation}
           />
         ))}
       </div>

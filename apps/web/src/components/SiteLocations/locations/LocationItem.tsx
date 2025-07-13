@@ -1,16 +1,20 @@
 'use client';
-import React, { useState } from 'react';
-import { Text } from '@gsp/ui';
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { siteLocationsSchema } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { SiteLocationsValue } from '@/components/SiteLocations/AddSiteLocationItemForm';
-import { Location } from '@/gql/graphql';
+import { showAlertToast, Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import { Location } from '@/gql/graphql';
+import React, { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
+import {
+  LocationValue,
+  siteLocationsSchema,
+} from '@/components/schemas/SiteLocationsFormSchema';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -43,19 +47,22 @@ const deleteLocationMutation = graphql(`
   }
 `);
 
-interface LocationComponentProps {
+type LocationComponentProps = {
   location: Location;
   locationsOptions: Location[];
   inputRef: React.RefObject<HTMLInputElement>;
   refreshSite: () => void;
-}
+  setIsDeletingLocation: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 export const LocationItem = ({
   location,
-  locationsOptions,
   inputRef,
+  locationsOptions,
   refreshSite,
+  setIsDeletingLocation,
 }: LocationComponentProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -63,14 +70,13 @@ export const LocationItem = ({
   const [, updateLocation] = useMutation(updateLocationMutation);
   const [, deleteLocation] = useMutation(deleteLocationMutation);
 
-  const locationForm: UseFormReturn<SiteLocationsValue> =
-    useForm<SiteLocationsValue>({
-      resolver: zodResolver(siteLocationsSchema),
-      defaultValues: {
-        id: location.id || '',
-        locationName: location.locationName || '',
-      },
-    });
+  const locationForm: UseFormReturn<LocationValue> = useForm<LocationValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: location.id || '',
+      locationName: location.locationName || '',
+    },
+  });
 
   const handleEditLocation = () => {
     setIsEditing(true);
@@ -88,61 +94,137 @@ export const LocationItem = ({
     setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleLocationSubmit: SubmitHandler<SiteLocationsValue> = (data) => {
-    // @TODO fix these alerts with proper UI
-    if (!data.locationName) {
-      alert('Please enter a location name.');
-      return;
-    }
-
-    // Checks that no other location has the same name
-    const newLocationName = data.locationName;
-    const isDuplicate = locationsOptions.some(
-      (location) => location.locationName === newLocationName,
-    );
-    if (isDuplicate) {
-      alert('This location already exists. Please enter a different location.');
-      return;
-    }
-
-    // To create a new location
-    if (!location.id && newLocationName) {
+  const handleLocationSubmit: SubmitHandler<LocationValue> = (data) => {
+    // Create a location
+    if (!location.id) {
       createLocation({
         createLocationInput: {
-          locationName: newLocationName,
+          locationName: data.locationName,
           driveId: location.driveId || '',
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-          locationsOptions.length === 1 && refreshSite();
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.locationCreateSuccess,
+              variant: 'success',
+            });
+            locationsOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.locationCreateError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
 
     // To edit a location
-    if (location.id && newLocationName) {
+    if (location.id) {
       updateLocation({
         id: location.id,
         updateLocationInput: {
-          locationName: newLocationName,
+          locationName: data.locationName,
         },
-      }).then((result) => {
-        if (result.data) {
-          setTimeout(() => setIsEditing(false), 30);
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.locationUpdateSuccess,
+              variant: 'success',
+            });
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.locationUpdateError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
   };
 
   const handleDeleteLocation = () => {
-    deleteLocation({
-      id: location.id,
-    }).then((result) => {
-      if (result.data) {
-        // @TODO modal should be closed here but is closed somehow anyways. Fix it.
-      }
-    });
+    setIsDeleting(true);
+    setIsDeletingLocation(true);
+
+    return (
+      deleteLocation({
+        id: location.id,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            setIsDeletingLocation(false);
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.locationDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1200);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.locationDeleteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => {
+          setIsDeleting(false);
+
+          setTimeout(() => {
+            setIsDeletingLocation(false);
+          }, 1500);
+        })
+    );
   };
 
   return (
@@ -152,7 +234,7 @@ export const LocationItem = ({
     >
       <div className="py-3">
         {!location.id || isEditing ? (
-          <AddSiteLocationItemForm
+          <AddSiteLocationItemForm<'location'>
             form={locationForm}
             onSubmit={handleLocationSubmit}
             onCancel={handleCancelEdit}
@@ -169,23 +251,25 @@ export const LocationItem = ({
             </Text>
             <DeleteEditDropdown
               itemSelected={location.id}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
               handleEdit={handleEditLocation}
+              openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
-              modalTitle="Delete drive"
-              deleteButtonText="Delete drive"
               deleteIcon="Site"
+              modalTitle="Delete location"
+              modalDeleteButtonText="Delete location"
+              isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onOpenChange={setIsDeleteModalOpen}
               onDelete={handleDeleteLocation}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
             >
               <Text variant="medium" color={'foreground'}>
-                You are about to delete
+                You are about to delete location{' '}
                 <Text variant="medium" color={'foreground'} as="span" isBold>
                   {` ${location.locationName} `}
-                </Text>
-                from the list. Are you sure you want to delete?
+                </Text>{' '}
+                from your list. Are you sure you want to delete?
               </Text>
             </DeleteModalConfirmation>
           </div>

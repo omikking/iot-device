@@ -1,13 +1,15 @@
 'use client';
-import { Text, Headline } from '@gsp/ui';
-import { useState } from 'react';
-import { GoBack } from '@/components/GoBack';
-import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
-import { CompanyForm } from '@/components/CompanyForm';
 import { graphql } from '@/gql';
-import { useQuery } from 'urql';
+import { useState } from 'react';
 import { Company } from '@/gql/graphql';
+import { useMutation, useQuery } from 'urql';
+import { GoBack } from '@/components/GoBack';
+import { responses } from '@/app/uitexts/responses';
+import { CompanyForm } from '@/components/CompanyForm';
+import { Text, Headline, showAlertToast } from '@gsp/ui';
+import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -20,6 +22,7 @@ const getCompanyQuery = graphql(`
       city
       country
       companyContactEmail
+      sandvikAdminUserId
       plans {
         id
         companyId
@@ -35,6 +38,14 @@ const getCompanyQuery = graphql(`
   }
 `);
 
+const deleteCompanyMutation = graphql(`
+  mutation removeCompany($id: String!) {
+    removeCompany(id: $id) {
+      id
+    }
+  }
+`);
+
 export default function Page({
   params,
 }: {
@@ -45,10 +56,67 @@ export default function Page({
   // Does not call if it's new company flow.
   const [companyData] = isNewCompany
     ? []
-    : useQuery({ query: getCompanyQuery, variables: { id: params.id } });
+    : useQuery({
+        query: getCompanyQuery,
+        variables: { id: params.id },
+      });
   const company = companyData?.data?.company as Company;
 
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [, deleteCompany] = useMutation(deleteCompanyMutation);
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  // TODO still not able to delete company, need to fix it in backend
+  const handleDelete = async (): Promise<boolean> => {
+    setIsDeleting(true);
+
+    return (
+      deleteCompany({
+        id: company.id,
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.companyDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyInactivationFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -66,35 +134,33 @@ export default function Page({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
 
-      {company && (
-        <DeleteModalConfirmation
-          deleteIcon="Company"
-          deleteButtonText="Inactivate company"
-          modalTitle="Inactivate company"
-          modalText="Confirm inactivation"
-          isOpen={isDeleteModalOpen}
-          onOpenChange={setIsDeleteModalOpen}
-          onDelete={() => {
-            console.log('Deleting item...');
-          }}
-        >
-          <div className="flex flex-col gap-4">
+      <DeleteModalConfirmation
+        deleteIcon="Company"
+        modalTitle="Inactivate company"
+        modalDeleteButtonText="Inactivate company"
+        modalText="Confirm inactivation"
+        isLoading={isDeleting}
+        isOpen={isDeleteModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
+        onOpenChange={closeDeleteModal}
+      >
+        <div className="flex flex-col text-center gap-4 max-w-[420px]">
+          <Text variant="medium" color={'foreground'} as="span">
+            You are about to inactivate
+            <Text variant="medium" color={'foreground'} as="span" isBold>
+              {` ${company?.name}. `}
+            </Text>
             <Text variant="medium" color={'foreground'} as="span">
-              You are about to inactivate
-              <Text variant="medium" color={'foreground'} as="span" isBold>
-                {` ${company?.name}. `}
-              </Text>
-              <Text variant="medium" color={'foreground'} as="span">
-                Are you sure about this action?
-              </Text>
+              Are you sure about this action?
             </Text>
-            <Text color={'foreground'} variant={'medium'}>
-              The company will become inactive. The company data will not be
-              deleted and is recoverable.
-            </Text>
-          </div>
-        </DeleteModalConfirmation>
-      )}
+          </Text>
+          <Text color={'foreground'} variant={'medium'}>
+            The company will become inactive. The company data will not be
+            deleted and is recoverable.
+          </Text>
+        </div>
+      </DeleteModalConfirmation>
     </main>
   );
 }

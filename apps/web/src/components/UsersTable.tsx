@@ -1,55 +1,105 @@
 'use client';
-import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
+import {
+  Role,
+  User,
+  Application,
+  UserPermission,
+  GetCompanyUsersQuery,
+} from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useState } from 'react';
+import { useMutation } from 'urql';
+import { useParams } from 'next/navigation';
 import { Badge, DataTable, Text } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Application, UserSchema, usersMock } from '@/app/mock/mock';
-import { useState } from 'react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
+import {
+  LucideKey,
+  LucidePickaxe,
+  LucideUser,
+  LucideSearchX,
+} from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+
+type UsersTableProps = {
+  companyData?: GetCompanyUsersQuery;
+  onSelectUser: (user: User) => void;
+  onOpenChange: (open: boolean) => void;
+};
 
 // @TODO create a utils folder and add these kind of functions there
 export const formatAppName = (appName: string): string => {
   const appNames: Record<string, string> = {
     PULL_TEST: 'Pull Test',
     ULTRABOLTS: 'Ultrabolts',
-    XCYCLOPS: 'xCyclops',
+    XCYCLOPS: 'Cyclops',
     PULL_TEST_OPERATOR: 'Pull Test Operator',
   };
 
   return appNames[appName] || appName;
 };
 
-interface UsersTableProps {
-  onOpenChange: (open: boolean) => void;
-  onSelectUser: (user: UserSchema) => void;
-}
+export const formatRoleName = (role: string): string => {
+  const roleNames: Record<string, string> = {
+    COMPANY_USER: 'User',
+    COMPANY_ADMIN: 'Admin',
+    SANDVIK_TECHNICIAN: 'Technician',
+  };
 
-export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
-  const [users, setUsers] = useState(usersMock);
+  return roleNames[role] || role;
+};
+
+const deleteUserPermissionMutation = graphql(`
+  mutation deleteUserPermission($id: String!) {
+    removeUserPermission(id: $id) {
+      id
+    }
+  }
+`);
+
+export const UsersTable = ({
+  companyData,
+  onOpenChange,
+  onSelectUser,
+}: UsersTableProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+  const [isDeleting, setIsDeleting] = useState(false);
+  const users = (companyData?.company.users as User[]) || [];
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
+  const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
 
+  const fullNameOfUserToDelete = users.find(
+    (user) => user.id === userToDelete,
+  )?.fullName;
+
+  // TODO Move to utils
   const getBadge = (
-    role: UserSchema['userPermissions']['role'],
+    userPermissions?: UserPermission,
   ): {
     variant: 'neutral' | 'primary';
     icon: React.ReactNode;
   } => {
+    const role = userPermissions?.role || 'User';
     switch (role) {
-      case 'User':
+      case Role.CompanyUser:
         return { variant: 'neutral', icon: <LucideUser /> };
-      case 'Technician':
+      case Role.SandvikTechnician:
         return { variant: 'neutral', icon: <LucidePickaxe /> };
-      case 'Admin':
+      case Role.CompanyAdmin:
         return { variant: 'primary', icon: <LucideKey /> };
+      default:
+        return { variant: 'neutral', icon: <LucideUser /> };
     }
   };
 
   const getAppShortening = (appAccessValue: Application[]) => {
-    // @TODO hardcoded application count 4, we should get a dynamic number later to avoid bug
-    if (appAccessValue.length === 4) {
+    const applicationsCount = Object.keys(Application).length;
+
+    if (appAccessValue.length === applicationsCount) {
       return <Badge variant="primary">All Apps</Badge>;
     }
 
@@ -70,19 +120,46 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
     setUserToDelete(undefined);
   };
 
-  const handleDelete = () => {
-    // setUsers((currentUsers) => currentUsers.filter((item, i) => i !== index));
-    setUsers((currentUsers) => currentUsers);
+  const handleDelete = async (): Promise<boolean> => {
+    const userToDeleteFound = users.find((user) => user.id === userToDelete);
+    const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
+      (userPerm) => userPerm.companyId === companyId,
+    );
+
+    // check for userPermId, cant delete if type is undefined
+    if (!userPermissionToDelete?.id) {
+      console.log('No user permission found to delete');
+      return Promise.resolve(false);
+    }
+
+    setIsDeleting(true);
+
+    return deleteUserPermission({
+      id: userPermissionToDelete.id,
+    })
+      .then((result) => {
+        if (result.error) {
+          return false;
+        }
+        return true;
+      })
+      .catch(() => {
+        return false;
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
-  const openEditModal = (index: string) => {
-    console.log(index);
-    const userToEdit = users[0];
-    onSelectUser(userToEdit);
-    onOpenChange(true);
+  const openEditModal = (userId: string) => {
+    const userToEdit = users.find((user) => user.id === userId);
+    if (userToEdit) {
+      onSelectUser(userToEdit);
+      onOpenChange(true);
+    }
   };
 
-  const columns: ColumnDef<UserSchema>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'fullName',
       header: 'Full name',
@@ -92,25 +169,30 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       header: 'Email',
     },
     {
-      id: 'appAccess',
+      id: 'appsAccess',
       header: 'App access',
-      accessorFn: (row) => row.userPermissions.appAccess,
+      accessorFn: (row) => {
+        const allApps =
+          row.userPermissions?.flatMap((perm) => perm.appsAccess || []) || [];
+        return Array.from(new Set(allApps));
+      },
       cell: ({ row }) => {
-        const appAccessValue = row.getValue('appAccess') as Application[];
-        return getAppShortening(appAccessValue);
+        const appAccessValue = row.getValue('appsAccess') as Application[];
+        return getAppShortening(appAccessValue) || 'N/A';
       },
     },
     {
       accessorKey: 'userPermissions.role',
       header: 'Role',
       cell: ({ row }) => {
-        const role = row.original.userPermissions.role;
-        const { variant, icon } = getBadge(role);
+        const userPermission = row.original.userPermissions?.[0];
+        const role = userPermission?.role || 'N/A';
+        const { variant, icon } = getBadge(userPermission);
 
         return (
           <Badge variant={variant}>
             {icon}
-            {role}
+            {formatRoleName(role)}
           </Badge>
         );
       },
@@ -123,11 +205,9 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        const rowIndex = users.findIndex((user) => user.id === row.original.id);
-
         return (
           <DeleteEditDropdown
-            itemSelected={rowIndex.toString()}
+            itemSelected={row.original.id}
             openDeleteModal={openDeleteModal}
             handleEdit={openEditModal}
           />
@@ -139,20 +219,19 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
         deleteIcon="User"
         modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={isDeleting}
         isOpen={isDeleteUserModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
         onOpenChange={closeDeleteModal}
-        onDelete={() => {
-          handleDelete();
-          closeDeleteModal();
-        }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {userToDelete && ` ${users[0].fullName} `}
+            {` ${fullNameOfUserToDelete} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>
@@ -162,8 +241,9 @@ export const UsersTable = ({ onOpenChange, onSelectUser }: UsersTableProps) => {
         columns={columns}
         data={users}
         noResultMessage="There are no users added yet."
+        icon={<LucideSearchX color="gray" />}
       />
-      {users.length && (
+      {users.length > 0 && (
         <Badge variant="neutral" className="self-start">
           {users.length} total
         </Badge>

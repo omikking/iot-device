@@ -3,6 +3,7 @@ import { Drive } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class DrivesService {
@@ -15,7 +16,12 @@ export class DrivesService {
   async findOne(id: string): Promise<Drive> {
     const drive = await this.prisma.drive.findUnique({ where: { id } });
     if (!drive) {
-      throw new UserInputError(`Drive #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_NOTFOUND_ERROR',
+          title: errorTexts.driveNotFound_title(id),
+        },
+      });
     }
     return drive;
   }
@@ -23,42 +29,130 @@ export class DrivesService {
   async create(
     createDriveInput: GraphQLTypes.CreateDriveInput,
   ): Promise<Drive> {
-    const createdDrive = await this.prisma.drive.create({
-      data: {
-        driveName: createDriveInput.driveName,
-        levelId: createDriveInput.levelId,
-      },
-    });
+    try {
+      // Check duplicate drive name
+      const existingDrive = await this.prisma.drive.findFirst({
+        where: {
+          driveName: createDriveInput.driveName,
+          levelId: createDriveInput.levelId,
+        },
+      });
 
-    if (!createdDrive) {
-      throw new UserInputError('Failed to create drive');
+      if (existingDrive) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'DRIVE_DUPLICATE_NAME_ERROR',
+            title: errorTexts.duplicateDriveWarning_title,
+            message: errorTexts.duplicateSiteLocationWarning_message('drive'),
+            type: 'warning',
+          },
+        });
+      }
+
+      const createdDrive = await this.prisma.drive.create({
+        data: {
+          driveName: createDriveInput.driveName,
+          levelId: createDriveInput.levelId,
+        },
+      });
+
+      return createdDrive;
+    } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_CREATE_ERROR_GENERIC',
+          title: errorTexts.driveCreateError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
     }
-    return createdDrive;
   }
 
   async update(
     id: string,
     updateDriveInput: GraphQLTypes.UpdateDriveInput,
   ): Promise<Drive> {
-    const updatedDrive = await this.prisma.drive.update({
-      where: { id },
+    try {
+      const currentDrive = await this.prisma.drive.findUnique({
+        where: { id },
+      });
 
-      data: {
-        driveName: updateDriveInput?.driveName || undefined,
-      },
-    });
+      // Check duplicate drive name
+      if (
+        updateDriveInput?.driveName &&
+        updateDriveInput.driveName !== currentDrive?.driveName
+      ) {
+        const existingDrive = await this.prisma.drive.findFirst({
+          where: {
+            driveName: updateDriveInput.driveName,
+            levelId: currentDrive?.levelId,
+            id: { not: id },
+          },
+        });
 
-    if (!updatedDrive) {
-      throw new UserInputError(`Drive #${id} not found`);
+        if (existingDrive) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'DRIVE_DUPLICATE_NAME_ERROR',
+              title: errorTexts.duplicateDriveWarning_title,
+              message: errorTexts.duplicateSiteLocationWarning_message('drive'),
+              type: 'warning',
+            },
+          });
+        }
+      }
+
+      const updatedDrive = await this.prisma.drive.update({
+        where: { id },
+        data: {
+          driveName: updateDriveInput?.driveName || undefined,
+        },
+      });
+
+      return updatedDrive;
+    } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_UPDATE_ERROR_GENERIC',
+          title: errorTexts.driveUpdateError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
     }
-    return updatedDrive;
   }
 
   async remove(id: string): Promise<Drive> {
-    const drive = await this.prisma.drive.delete({ where: { id } });
+    const drive = await this.prisma.drive.findUnique({
+      where: { id },
+    });
+
     if (!drive) {
-      throw new UserInputError(`Drive #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_NOTFOUND_ERROR',
+          title: errorTexts.driveNotFound_title(id),
+        },
+      });
     }
-    return drive;
+
+    try {
+      return await this.prisma.drive.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'DRIVE_DELETE_ERROR_GENERIC',
+          title: errorTexts.driveDeleteError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
+    }
   }
 }

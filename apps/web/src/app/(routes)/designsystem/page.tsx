@@ -103,6 +103,8 @@ export default function Page(): JSX.Element {
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
+  const [siteIsDeleting, setSiteIsDeleting] = useState(false);
+  const [userIsDeleting, setUserIsDeleting] = useState(false);
 
   const getBadge = (
     role: Role,
@@ -130,9 +132,15 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  // const handleDelete = (index: string) => {
-  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  // };
+  const handleDeleteUser = () => {
+    setUserIsDeleting(true);
+    return true;
+  };
+
+  const handleDeleteSite = () => {
+    setSiteIsDeleting(true);
+    return true;
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -213,13 +221,14 @@ export default function Page(): JSX.Element {
         Delete item
       </Button>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        modalTitle="Delete Site"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={userIsDeleting}
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
-        onDelete={() => {
-          console.log('Deleting item...');
-        }}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
@@ -250,15 +259,14 @@ export default function Page(): JSX.Element {
           </div>
         ))}
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="Site"
-          modalTitle="Delete Site"
+          modalTitle="Delete site"
+          modalDeleteButtonText="Delete site"
+          isLoading={siteIsDeleting}
           isOpen={isDeleteSiteModalOpen}
+          onClose={closeDeleteModal}
           onOpenChange={closeDeleteModal}
-          onDelete={() => {
-            // handleDelete();
-            closeDeleteModal();
-          }}
+          onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete
@@ -329,6 +337,10 @@ export default function Page(): JSX.Element {
             <LucideMoveRight />
             Button used as link
           </Link>
+        </Button>
+
+        <Button isLoading={true} disabled variant="primary" size="large">
+          Button with loading spinner
         </Button>
       </div>
       <hr className="w-full border-neutral-2" />
@@ -889,7 +901,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Alerts 🦄
       </Headline>
-      <Toaster duration={500000} />
+      <Toaster duration={80000} />
       <Button
         onClick={() =>
           showAlertToast({

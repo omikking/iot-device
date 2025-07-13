@@ -7,11 +7,11 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  LoadingSpinner,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalTitle,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   updateAdministratorFormSchema,
@@ -25,6 +25,8 @@ import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucidePlus, LucideSquarePen } from 'lucide-react';
+import { GraphQLErrorExtensions } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -87,16 +89,47 @@ export const AddAdministratorModal = ({
 
   const onSubmit: SubmitHandler<UpdateAdministratorFormValues> = (data) => {
     if (administrator) {
+      setIsLoading(true);
+
       updateUser({
         id: administrator.id,
         updateUserInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.adminUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.adminUpdateFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -110,6 +143,9 @@ export const AddAdministratorModal = ({
       });
     }
   }, [administrator, form]);
+
+  const formValues = form.watch();
+  const isAnyFieldEmpty = !formValues.email;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
@@ -148,24 +184,17 @@ export const AddAdministratorModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isLoading}
+                disabled={isAnyFieldEmpty || isLoading}
+                isLoading={isLoading}
               >
                 {administrator ? (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucideSquarePen />
-                    )}
+                    {!isLoading && <LucideSquarePen />}
                     Edit administrator
                   </>
                 ) : (
                   <>
-                    {isLoading ? (
-                      <LoadingSpinner className="animate-spin" size={24} />
-                    ) : (
-                      <LucidePlus />
-                    )}
+                    {!isLoading && <LucidePlus />}
                     Add administrator
                   </>
                 )}

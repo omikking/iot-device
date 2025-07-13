@@ -4,10 +4,10 @@ import { MultiBoltReadingSchema } from '@/app/mock/mock';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 
-interface MultiBoltReadingTableProps {
-  peakLoad: string[];
-  peakDisplacement: string[];
-}
+type MultiBoltReadingTableProps = {
+  peakLoad: number[];
+  peakDisplacement: number[];
+};
 
 const columns: ColumnDef<MultiBoltReadingSchema>[] = [
   {

@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResult } from '@/gql/graphql';
 import { Badge, Modal, ModalTrigger } from '@gsp/ui';
-import { LucideScanSearch, LucideSquareStack } from 'lucide-react';
 import { BoltResultDetailsModal } from './BoltResultDetailsModal';
+import { LucideScanSearch, LucideSquareStack } from 'lucide-react';
 
-interface MultiReadBadgeProps {
-  fullBoltData: BoltResultSchema;
-}
+type MultiReadBadgeProps = {
+  boltResult: BoltResult;
+};
 
-export const MultiReadBadge = ({ fullBoltData }: MultiReadBadgeProps) => {
+export const MultiReadBadge = ({ boltResult }: MultiReadBadgeProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
       <ModalTrigger>
         <Badge variant="neutral">
           <LucideSquareStack />
-          {/* @TODO be able to use from the tailwind config */}
-          {/* <LucideScanSearch color="text-orange-primary" /> */}
           <LucideScanSearch className="text-orange-primary" />
         </Badge>
       </ModalTrigger>
       <BoltResultDetailsModal
-        modalTitle={`Bolt ${fullBoltData.boltNumber}`}
-        fullBoltData={fullBoltData}
+        isModalOpen={isModalOpen}
+        boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />
     </Modal>

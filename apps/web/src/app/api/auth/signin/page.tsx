@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Role } from '@/gql/graphql';
@@ -31,6 +31,8 @@ export default function SignIn() {
 
   const { data: session, status } = useSession();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (status === 'authenticated') {
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
@@ -59,6 +61,8 @@ export default function SignIn() {
   });
 
   const handleSignIn = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+
     await signIn('credentials', {
       email: values.emailAddress,
       password: values.password,
@@ -83,6 +87,9 @@ export default function SignIn() {
           description: responses.contactSupportError,
           variant: 'error',
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -159,9 +166,10 @@ export default function SignIn() {
               size="large"
               isWide
               type="submit"
+              isLoading={isLoading}
               disabled={isAnyFieldEmpty}
             >
-              <LucideLogIn />
+              {!isLoading && <LucideLogIn />}
               Login
             </Button>
           </form>

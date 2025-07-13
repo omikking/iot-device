@@ -59,7 +59,7 @@ export class BoltResultsService {
       ...(locationId ? { locationId } : {}),
       ...(result && result.length ? { result: { in: result } } : {}),
       ...(typeof isHazard === 'boolean' ? { isHazard } : {}),
-      ...(withImage === true ? { imageUrl: { not: null } } : {}),
+      ...(withImage === true ? { image: { not: null } } : {}),
       ...(withComment === true ? { comment: { not: null } } : {}),
       ...(startDate && endDate
         ? {

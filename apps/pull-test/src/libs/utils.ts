@@ -1,5 +1,12 @@
 import { BoltResult } from '@/gql/graphql';
 
+export interface GraphQLErrorExtensions {
+  code?: string;
+  title: string;
+  message?: string;
+  type?: 'error' | 'warning' | 'info' | 'success';
+}
+
 export const capitalizeFirstLetter = (
   text: string | null | undefined,
 ): string => {

@@ -29,6 +29,8 @@ export const errorTexts = {
 
   boltResultDeleteError_title: 'Failed to delete bolt result',
 
+  boltResultHazardCompletionError_title: 'Failed to complete hazard',
+
   // Company
   companyNotFound_title: (id: string) => `Company #${id} not found`,
 

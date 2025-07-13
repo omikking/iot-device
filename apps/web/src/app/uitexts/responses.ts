@@ -67,4 +67,12 @@ export const responses = {
   adminUpdateSuccess: 'Administrator successfully updated',
   adminDeleteFailed: 'Failed to delete administrator',
   adminDeleteSuccess: 'Administrator has been deleted',
+
+  // User permissions
+  userPermissionCreateFailed: 'Failed to add user permissions',
+  userPermissionCreateSuccess: 'User permissions successfully created',
+  userPermissionUpdateFailed: 'Failed to update user permissions',
+  userPermissionUpdateSuccess: 'User permissions successfully updated',
+  userPermissionDeleteFailed: 'Failed to delete user permissions',
+  userPermissionDeleteSuccess: 'User permissions has been deleted',
 };

@@ -30,6 +30,25 @@ export class LevelsService {
     createLevelInput: GraphQLTypes.CreateLevelInput,
   ): Promise<Level> {
     try {
+      // Check duplicate level name
+      const existingLevel = await this.prisma.level.findFirst({
+        where: {
+          levelName: createLevelInput.levelName,
+          siteId: createLevelInput.siteId,
+        },
+      });
+
+      if (existingLevel) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'LEVEL_DUPLICATE_NAME_ERROR',
+            title: errorTexts.duplicateLevelWarning_title,
+            message: errorTexts.duplicateSiteLocationWarning_message('level'),
+            type: 'warning',
+          },
+        });
+      }
+
       const createdLevel = await this.prisma.level.create({
         data: {
           levelName: createLevelInput.levelName,
@@ -37,16 +56,11 @@ export class LevelsService {
         },
       });
 
-      if (!createdLevel) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'LEVEL_CREATEFAILED_ERROR',
-            title: errorTexts.levelCreateError_title,
-          },
-        });
-      }
       return createdLevel;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LEVEL_CREATE_ERROR_GENERIC',
@@ -62,24 +76,47 @@ export class LevelsService {
     updateLevelInput: GraphQLTypes.UpdateLevelInput,
   ): Promise<Level> {
     try {
+      const currentLevel = await this.prisma.level.findUnique({
+        where: { id },
+      });
+
+      // Check duplicate level name
+      if (
+        updateLevelInput?.levelName &&
+        updateLevelInput.levelName !== currentLevel?.levelName
+      ) {
+        const existingLevel = await this.prisma.level.findFirst({
+          where: {
+            levelName: updateLevelInput.levelName,
+            siteId: currentLevel?.siteId,
+            id: { not: id },
+          },
+        });
+
+        if (existingLevel) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'LEVEL_DUPLICATE_NAME_ERROR',
+              title: errorTexts.duplicateLevelWarning_title,
+              message: errorTexts.duplicateSiteLocationWarning_message('level'),
+              type: 'warning',
+            },
+          });
+        }
+      }
+
       const updatedLevel = await this.prisma.level.update({
         where: { id },
-
         data: {
           levelName: updateLevelInput?.levelName || undefined,
         },
       });
 
-      if (!updatedLevel) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'LEVEL_NOTFOUND_ERROR',
-            title: errorTexts.levelNotFound_title(id),
-          },
-        });
-      }
       return updatedLevel;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LEVEL_UPDATE_ERROR_GENERIC',

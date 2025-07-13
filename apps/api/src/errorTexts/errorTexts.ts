@@ -56,6 +56,8 @@ export const errorTexts = {
 
   driveDeleteError_title: 'Failed to delete drive',
 
+  duplicateDriveWarning_title: 'Duplicated drive',
+
   // Level
   levelNotFound_title: (id: string) => `Level #${id} not found`,
 
@@ -65,6 +67,8 @@ export const errorTexts = {
 
   levelDeleteError_title: 'Failed to delete level',
 
+  duplicateLevelWarning_title: 'Duplicated level',
+
   // Location
   locationNotFound_title: (id: string) => `Location #${id} not found`,
 
@@ -73,6 +77,13 @@ export const errorTexts = {
   locationUpdateError_title: 'Failed to update location',
 
   locationDeleteError_title: 'Failed to delete location',
+
+  duplicateLocationWarning_title: 'Duplicated location',
+
+  duplicateSiteLocationWarning_message: (
+    siteLocationType: 'level' | 'drive' | 'location',
+  ) =>
+    `A ${siteLocationType} with this name already exists. Please choose a different name.`,
 
   // Site
   siteNotFound_title: (id: string) => `Site #${id} not found`,

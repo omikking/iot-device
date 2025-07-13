@@ -199,10 +199,12 @@ export const LocationItem = ({
           }
           // Success
           if (result.data) {
-            showAlertToast({
-              title: responses.locationDeleteSuccess,
-              variant: 'info',
-            });
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.locationDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1200);
           }
           return true;
         })

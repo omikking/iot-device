@@ -60,7 +60,9 @@ export const LocationsList = ({
         {locations.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available locations
+              {selectedDriveId
+                ? 'No locations found for the selected drive'
+                : 'Select drive to view available locations'}
             </Text>
           </div>
         )}

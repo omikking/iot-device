@@ -71,7 +71,9 @@ export const DrivesList = ({
         {drives.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available drives
+              {selectedLevelId
+                ? 'No drives found for the selected level'
+                : 'Select level to view available drives'}
             </Text>
           </div>
         )}

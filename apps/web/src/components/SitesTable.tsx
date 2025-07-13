@@ -13,11 +13,11 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {

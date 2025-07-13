@@ -1,12 +1,12 @@
 import './globals.css';
 import '@gsp/ui/styles.css';
+import { Toaster } from '@gsp/ui';
 import type { Metadata } from 'next';
-import { getServerSession } from 'next-auth/next';
 import { NavBar } from '@/components/NavBar';
 import { authOptions } from '@/libs/authOptions';
-import NextAuthProvider from '@/libs/providers/NextAuthProvider';
+import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
-import { Toaster } from '@gsp/ui';
+import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 
 export const metadata: Metadata = {
   title: 'Pull Test Web',

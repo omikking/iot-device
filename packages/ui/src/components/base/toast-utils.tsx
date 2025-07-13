@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
-import { Alert, AlertTitle, AlertDescription } from './alert';
 import { X } from 'lucide-react';
 import { Button } from './button';
+import { Alert, AlertTitle, AlertDescription } from './alert';
 
 const showAlertToast = ({
   title,

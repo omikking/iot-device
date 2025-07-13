@@ -197,11 +197,13 @@ export const DriveItem = ({
           }
           // Success
           if (result.data) {
-            showAlertToast({
-              title: responses.driveDeleteSuccess,
-              variant: 'info',
-            });
-            setSelectedDrive(undefined);
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.driveDeleteSuccess,
+                variant: 'info',
+              });
+              setSelectedDrive(undefined);
+            }, 1200);
           }
           return true;
         })

@@ -1,9 +1,11 @@
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
+import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { LucideCircleCheckBig } from 'lucide-react';
-import React, { useState } from 'react';
-import { Button, Text, Headline } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
+import { Button, Text, Headline, showAlertToast } from '@gsp/ui';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 type HazardCompleteModalContentProps = {
   boltResult: BoltResult;
@@ -64,30 +66,41 @@ export const HazardCompleteModalContent = ({
       },
     })
       .then((result) => {
-        setIsLoading(true);
+        // Backend errors
+        if (result.error?.graphQLErrors) {
+          const { title, message, type } = result.error.graphQLErrors[0]
+            .extensions as unknown as GraphQLErrorExtensions;
+
+          showAlertToast({
+            title: title,
+            description: message,
+            variant: type || 'error',
+          });
+        }
 
         // Handle success
         if (result.data) {
           handleViewTransition('success');
 
-          if (onSuccess) {
-            setTimeout(() => {
-              onSuccess();
-            }, 1200);
-          } else {
-            setTimeout(() => {
-              onClose();
-              // Reset to confirmation view for next time modal opens
-              setTimeout(() => {
-                setCurrentView('confirmation');
-              }, 300);
-            }, 1200);
-          }
+          setTimeout(() => {
+            onSuccess?.();
+            onClose();
+            setCurrentView('confirmation');
+
+            showAlertToast({
+              title: responses.reportedHazardCompletingSuccess,
+              variant: 'success',
+            });
+          }, 1200);
         }
       })
-      .catch((error) => {
-        // TODO add error toaster
-        console.error('Error updating hazard:', error);
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.reportedHazardCompletingError,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
       })
       .finally(() => {
         setIsLoading(false);

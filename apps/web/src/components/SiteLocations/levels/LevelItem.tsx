@@ -199,12 +199,14 @@ export const LevelItem = ({
           }
           // Success
           if (result.data) {
-            showAlertToast({
-              title: responses.levelDeleteSuccess,
-              variant: 'info',
-            });
-            setSelectedLevel(undefined);
-            refreshSite();
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.levelDeleteSuccess,
+                variant: 'info',
+              });
+              setSelectedLevel(undefined);
+              refreshSite();
+            }, 1200);
           }
           return true;
         })

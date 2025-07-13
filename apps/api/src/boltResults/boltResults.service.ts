@@ -180,14 +180,16 @@ export class BoltResultsService {
         },
       });
 
-      if (!updatedBoltResult) {
+      if (updateBoltResultInput?.hazardCompletedDate && !updatedBoltResult) {
         throw new UserInputError('', {
           extensions: {
-            code: 'BOLT_RESULT_NOTFOUND_ERROR',
-            title: errorTexts.boltResultNotFound_title(id),
+            code: 'BOLT_RESULT_HAZARD_COMPLETION_ERROR',
+            title: errorTexts.boltResultHazardCompletionError_title,
+            message: errorTexts.contactSupportError,
           },
         });
       }
+
       return updatedBoltResult;
     } catch (error) {
       throw new UserInputError('', {

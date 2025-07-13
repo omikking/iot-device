@@ -101,7 +101,7 @@ export const AddOrEditSiteModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -134,7 +134,7 @@ export const AddOrEditSiteModal = ({
           }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({
@@ -175,7 +175,7 @@ export const AddOrEditSiteModal = ({
 
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
             refreshSites();
 
             setTimeout(() => {

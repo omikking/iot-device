@@ -87,6 +87,10 @@ export class UserPermissionsService {
       }
       return createdUserPermission;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
+
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_CREATE_ERROR_GENERIC',

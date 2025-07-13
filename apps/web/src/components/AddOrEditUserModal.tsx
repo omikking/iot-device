@@ -176,7 +176,8 @@ export const AddOrEditUserModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
+    onUserAdded();
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -210,19 +211,16 @@ export const AddOrEditUserModal = ({
               description: message,
               variant: type || 'error',
             });
-            setIsSuccessful(false);
           }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({
                 title: responses.userPermissionUpdateSuccess,
                 variant: 'success',
               });
-              onSuccessfulSubmit();
-              onUserAdded();
             }, 1500);
           }
         })
@@ -233,7 +231,6 @@ export const AddOrEditUserModal = ({
             description: responses.contactSupportError,
             variant: 'error',
           });
-          setIsSuccessful(false);
         })
         .finally(() => {
           setIsLoading(false);
@@ -260,12 +257,11 @@ export const AddOrEditUserModal = ({
               description: message,
               variant: type || 'error',
             });
-            setIsSuccessful(false);
           }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
-            onUserAdded();
+            handleSuccess();
+
             setTimeout(() => {
               showAlertToast({
                 title: responses.userPermissionCreateSuccess,
@@ -276,7 +272,6 @@ export const AddOrEditUserModal = ({
         })
         // Fallback error
         .catch(() => {
-          setIsSuccessful(false);
           showAlertToast({
             title: responses.userPermissionCreateFailed,
             description: responses.contactSupportError,

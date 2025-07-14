@@ -20,7 +20,7 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
 
 type UsersTableProps = {
@@ -137,15 +137,8 @@ export const UsersTable = ({
       deleteUserPermission({ id: userPermissionToDelete.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             return false;
           }
           // Success

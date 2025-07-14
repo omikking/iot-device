@@ -75,4 +75,8 @@ export const responses = {
   userPermissionUpdateSuccess: 'User permissions successfully updated',
   userPermissionDeleteFailed: 'Failed to delete user permissions',
   userPermissionDeleteSuccess: 'User permissions has been deleted',
+
+  // Account settings
+  settingsUpdateFailed: 'Failed to update account settings',
+  settingsUpdateSuccess: 'Account settings successfully updated',
 };

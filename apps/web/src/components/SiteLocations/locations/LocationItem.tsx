@@ -14,7 +14,7 @@ import {
   LocationValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -105,16 +105,8 @@ export const LocationItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -145,16 +137,8 @@ export const LocationItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -185,15 +169,8 @@ export const LocationItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             setIsDeletingLocation(false);
             return false;
           }

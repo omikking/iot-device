@@ -37,7 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
 
 const allPlans = [
@@ -153,16 +153,8 @@ export const CompanyForm = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -187,16 +179,7 @@ export const CompanyForm = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
+          handleGraphQLErrors(result.error);
 
           // Success
           if (result.data) {

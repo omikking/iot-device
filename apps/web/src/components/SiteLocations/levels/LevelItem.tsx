@@ -14,7 +14,7 @@ import {
   LevelValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const createLevelMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -107,16 +107,8 @@ export const LevelItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -147,16 +139,8 @@ export const LevelItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -185,15 +169,8 @@ export const LevelItem = ({
       deleteLevel({ id: level.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             setSelectedLevel(undefined);
             return false;
           }

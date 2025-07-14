@@ -14,7 +14,7 @@ import {
   DriveValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -105,16 +105,8 @@ export const DriveItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -145,16 +137,8 @@ export const DriveItem = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -183,15 +167,8 @@ export const DriveItem = ({
       deleteDrive({ id: drive.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             setSelectedDrive(undefined);
             return false;
           }

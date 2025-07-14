@@ -91,17 +91,8 @@ export default function Page(): JSX.Element {
     // createAccountSetup({ createAccountSetupInput: data })
     //   .then((result) => {
     //     // Backend errors
-    //     if (result.error?.graphQLErrors) {
-    //       const { title, message, type } = result.error.graphQLErrors[0]
-    //         .extensions as unknown as GraphQLErrorExtensions;
+    //     handleGraphQLErrors(result.error);
 
-    //       showAlertToast({
-    //         title: title,
-    //         description: message,
-    //         variant: 'error',
-    //       });
-    //       return;
-    //     }
     //     // Success
     //     if (result.data) {
     //       showAlertToast({

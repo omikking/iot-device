@@ -75,7 +75,7 @@ export const AddAdministratorModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -109,7 +109,7 @@ export const AddAdministratorModal = ({
           }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({

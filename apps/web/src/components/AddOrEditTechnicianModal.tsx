@@ -79,7 +79,7 @@ export const AddOrEditTechnicianModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -113,7 +113,7 @@ export const AddOrEditTechnicianModal = ({
           }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({

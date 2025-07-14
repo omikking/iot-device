@@ -16,6 +16,7 @@ import {
   ModalTitle,
   Switch,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
@@ -31,6 +32,8 @@ import {
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
+import { GraphQLErrorExtensions } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AddOrEditUserModalProps = {
   user?: User;
@@ -173,7 +176,8 @@ export const AddOrEditUserModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
+    onUserAdded();
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -185,43 +189,98 @@ export const AddOrEditUserModal = ({
     }, 1700);
   };
 
-  const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
-    try {
-      setIsLoading(true);
-      // If there is a user then we are in EDIT MODE otherwise we are in ADD MODE
-      if (user) {
-        const permissionResult = await updateUserPermission({
-          id: permission?.id,
-          updateUserPermissionInput: {
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-          },
-        });
+  const onSubmit: SubmitHandler<UserFormValues> = (data) => {
+    setIsLoading(true);
 
-        // TODO change to use toaster on all errors
-        if (!permissionResult.data) {
-          throw new Error('Permission update failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      } else {
-        const createdUser = await createUserPermission({
-          createUserPermissionInput: {
-            userEmail: data.email,
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-            companyId: companyId,
-          },
+    if (user) {
+      updateUserPermission({
+        id: permission?.id,
+        updateUserPermissionInput: {
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.userPermissionUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionUpdateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-        if (!createdUser.data) {
-          throw new Error('User creation failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setIsSuccessful(false);
+    }
+
+    if (!user) {
+      createUserPermission({
+        createUserPermissionInput: {
+          userEmail: data.email,
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+          companyId,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.userPermissionCreateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionCreateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 

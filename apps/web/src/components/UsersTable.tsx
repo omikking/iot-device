@@ -10,7 +10,7 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import {
@@ -20,6 +20,8 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { GraphQLErrorExtensions } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type UsersTableProps = {
   companyData?: GetCompanyUsersQuery;
@@ -126,29 +128,52 @@ export const UsersTable = ({
       (userPerm) => userPerm.companyId === companyId,
     );
 
-    // check for userPermId, cant delete if type is undefined
     if (!userPermissionToDelete?.id) {
-      console.log('No user permission found to delete');
-      return Promise.resolve(false);
+      return false;
     }
 
     setIsDeleting(true);
+    return (
+      deleteUserPermission({ id: userPermissionToDelete.id })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
 
-    return deleteUserPermission({
-      id: userPermissionToDelete.id,
-    })
-      .then((result) => {
-        if (result.error) {
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              closeDeleteModal();
+
+              showAlertToast({
+                title: responses.userPermissionDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1200);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionDeleteFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
-        }
-        return true;
-      })
-      .catch(() => {
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (userId: string) => {

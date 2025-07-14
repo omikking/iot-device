@@ -108,7 +108,7 @@ export const errorTexts = {
 
   userPermissionAlreadyExists_title: 'Permissions already exist',
   userPermissionAlreadyExists_message:
-    'User already has permissions for this company. Please edit existing permissions instead.',
+    'User already has permissions for this company. Please edit the existing permissions instead.',
 
   userPermissionCreateError_title: 'Failed to add user permissions',
 

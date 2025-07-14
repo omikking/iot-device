@@ -15,7 +15,7 @@ import { GetAdminsQuery } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 import { LucideSearchX } from 'lucide-react';
 
 type Administrator = GetAdminsQuery['users'][0];
@@ -85,15 +85,8 @@ export const AdministratorsTable = () => {
       deleteAdmin({ id: administratorToDelete.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             return false;
           }
           // Success

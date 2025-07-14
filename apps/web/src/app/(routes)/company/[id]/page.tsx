@@ -9,7 +9,7 @@ import { CompanyForm } from '@/components/CompanyForm';
 import { Text, Headline, showAlertToast } from '@gsp/ui';
 import { CompanyNavigationCards } from '@/components/CompanyNavigationCards';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const getCompanyQuery = graphql(`
   query getCompany($id: String!) {
@@ -80,18 +80,7 @@ export default function Page({
         id: company.id,
       })
         .then((result) => {
-          // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-            return false;
-          }
+          handleGraphQLErrors(result.error);
           // Success
           if (result.data) {
             setTimeout(() => {

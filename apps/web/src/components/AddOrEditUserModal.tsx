@@ -32,7 +32,7 @@ import {
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
 
 type AddOrEditUserModalProps = {
@@ -202,16 +202,8 @@ export const AddOrEditUserModal = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             handleSuccess();
@@ -248,16 +240,8 @@ export const AddOrEditUserModal = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             handleSuccess();

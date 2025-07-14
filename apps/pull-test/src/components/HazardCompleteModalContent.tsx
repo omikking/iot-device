@@ -5,7 +5,7 @@ import { BoltResult } from '@/gql/graphql';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { responses } from '@/app/uitexts/responses';
 import { Button, Text, Headline, showAlertToast } from '@gsp/ui';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 type HazardCompleteModalContentProps = {
   boltResult: BoltResult;
@@ -67,16 +67,7 @@ export const HazardCompleteModalContent = ({
     })
       .then((result) => {
         // Backend errors
-        if (result.error?.graphQLErrors) {
-          const { title, message, type } = result.error.graphQLErrors[0]
-            .extensions as unknown as GraphQLErrorExtensions;
-
-          showAlertToast({
-            title: title,
-            description: message,
-            variant: type || 'error',
-          });
-        }
+        handleGraphQLErrors(result.error);
 
         // Handle success
         if (result.data) {

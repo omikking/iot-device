@@ -37,8 +37,7 @@ enum PullTestAbortReason {
 enum Application {
   PULL_TEST
   PULL_TEST_OPERATOR
-  XCYCLOPS
-  ULTRABOLTS
+  BANSHEE
 }
 
 enum PlanLevel {

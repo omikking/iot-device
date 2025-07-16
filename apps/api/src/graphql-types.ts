@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -43,8 +44,7 @@ export enum PullTestAbortReason {
 export enum Application {
     PULL_TEST = "PULL_TEST",
     PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
-    XCYCLOPS = "XCYCLOPS",
-    ULTRABOLTS = "ULTRABOLTS"
+    BANSHEE = "BANSHEE"
 }
 
 export enum PlanLevel {
@@ -203,9 +203,9 @@ export class UpdateUserInput {
 }
 
 export class UpdatePasswordInput {
-    oldPassword?:Nullable<string>;
-    newPassword?:Nullable<string>;
-    confirmPassword?:Nullable<string>;
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
 }
 
 export class BoltResult {
@@ -328,6 +328,7 @@ export class Company {
     users?: Nullable<User[]>;
     plans?: Nullable<Plan[]>;
     sites?: Nullable<Site[]>;
+    sandvikAdminUserId?: Nullable<string>;
 }
 
 export class Plan {
@@ -409,9 +410,6 @@ export class User {
     globalRole?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;
     userPermissions?: Nullable<UserPermission[]>;
-    oldPassword?: Nullable<string>;
-    newPassword?: Nullable<string>;
-    confirmPassword?: Nullable<string>;
 }
 
 export type DateTime = any;

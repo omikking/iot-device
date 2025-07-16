@@ -122,7 +122,11 @@ async function generateTechnicianUsers(count: number) {
 
 async function generateCompanies(count: number, adminUsers: any[]) {
   const companies = [];
-  const applications = [Application.XCYCLOPS, Application.ULTRABOLTS];
+  const applications = [
+    Application.PULL_TEST,
+    Application.PULL_TEST_OPERATOR,
+    Application.BANSHEE,
+  ];
   // TODO: Add inactive?
   const planLevels = [PlanLevel.GOLD, PlanLevel.SILVER, PlanLevel.BRONZE];
 
@@ -158,7 +162,7 @@ async function generateCompanies(count: number, adminUsers: any[]) {
         userId: adminUser.id,
         companyId: company.id,
         role: Role.COMPANY_ADMIN,
-        appsAccess: [Application.XCYCLOPS, Application.ULTRABOLTS],
+        appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
       },
     });
 

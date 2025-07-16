@@ -151,8 +151,7 @@ export class CompaniesService {
                 appsAccess: [
                   Application.PULL_TEST,
                   Application.PULL_TEST_OPERATOR,
-                  Application.ULTRABOLTS,
-                  Application.XCYCLOPS,
+                  Application.BANSHEE,
                 ],
               },
             },
@@ -247,8 +246,7 @@ export class CompaniesService {
               appsAccess: [
                 Application.PULL_TEST,
                 Application.PULL_TEST_OPERATOR,
-                Application.ULTRABOLTS,
-                Application.XCYCLOPS,
+                Application.BANSHEE,
               ],
             },
           });

@@ -92,7 +92,7 @@ export const AppPlansContainer = ({
 
       {/* Plan levels */}
       <AppPlan
-        planLevel="GOLD"
+        planLevel={PlanLevel.Gold}
         companyForm={companyForm}
         appPlan={appPlan}
         expiringDate={date}
@@ -101,7 +101,7 @@ export const AppPlansContainer = ({
         isAdmin={isAdmin}
       />
       <AppPlan
-        planLevel="SILVER"
+        planLevel={PlanLevel.Silver}
         companyForm={companyForm}
         appPlan={appPlan}
         expiringDate={date}
@@ -110,7 +110,7 @@ export const AppPlansContainer = ({
         isAdmin={isAdmin}
       />
       <AppPlan
-        planLevel="BRONZE"
+        planLevel={PlanLevel.Bronze}
         companyForm={companyForm}
         appPlan={appPlan}
         expiringDate={date}

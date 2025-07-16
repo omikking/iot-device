@@ -6,6 +6,8 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import Link from 'next/link';
 import { LucideCircuitBoard } from 'lucide-react';
 import { graphql } from '@/gql';
+import { getAppName } from '@/libs/utils';
+import { Application } from '@/gql/graphql';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -50,7 +52,7 @@ export default function Page({
           <Link href={`http://localhost:3001/overview/${companyId}`}>
             <NavigationCard size="small">
               <Headline as="h3" variant="medium" color="foreground" isBold>
-                Pull Test
+                {getAppName(Application.PullTest)}
               </Headline>
               <SandvikLogo width="32" height="32" />
             </NavigationCard>
@@ -58,7 +60,7 @@ export default function Page({
           {/* <Link href="http://localhost:3000/designsystem">
             <NavigationCard size="small">
               <Headline as="h3" variant="medium" color="foreground" isBold>
-                Banshee
+                {getAppName(Application.Banshee)}
               </Headline>
               <SandvikLogo width="32" height="32" />
             </NavigationCard>

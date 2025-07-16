@@ -9,17 +9,12 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { PlanLevel } from '@/app/mock/mock';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
-import { Plan } from '@/gql/graphql';
-
-// @TODO put in a utils folder
-export const capitalizeFirstLetter = (word: string) => {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-};
+import { Plan, PlanLevel } from '@/gql/graphql';
+import { capitalizeFirstLetter } from '@/libs/utils';
 
 type AppPlanProps = {
   appPlan: Plan;

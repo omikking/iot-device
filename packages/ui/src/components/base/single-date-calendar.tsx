@@ -16,7 +16,6 @@ interface SingleDateCalendarProps {
   onDateChange: (date?: Date) => void;
 }
 
-// @TODO move to utils?
 export const formattedDate = (timestamp: Date) => {
   const date = new Date(timestamp);
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;

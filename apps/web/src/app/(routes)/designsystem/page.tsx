@@ -70,7 +70,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
+import {
+  optionsDesignSystemMock,
+  usersDesignSystemMock,
+  sitesDesignSystemMock,
+} from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 
 type Role = 'User' | 'Technician' | 'Admin';
@@ -97,7 +101,7 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites] = useState(sitesMock);
+  const [sites] = useState(sitesDesignSystemMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
@@ -834,7 +838,7 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user) => {
+            {usersDesignSystemMock.map((user) => {
               const role = user.userPermissions.role;
               const { variant, icon } = getBadge(role);
               return (
@@ -860,7 +864,7 @@ export default function Page(): JSX.Element {
           </TableBody>
         </Table>
         <Badge variant="neutral" className="self-start">
-          {usersMock.length} total
+          {usersDesignSystemMock.length} total
         </Badge>
       </div>
       <hr className="w-full border-neutral-2" />

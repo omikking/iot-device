@@ -1,6 +1,29 @@
+import { Application } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
 
+// Function to capitalize the first letter of a word
+export const capitalizeFirstLetter = (word: string) => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+};
+
+// Function to format date from timestamp
+export const formattedDate = (timestamp: Date | number) => {
+  const date = new Date(timestamp);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+};
+
+// Function to get application name based on enum
+export const getAppName = (app: Application): string => {
+  const applicationNames = {
+    [Application.PullTest]: 'Pull Test',
+    [Application.PullTestOperator]: 'Pull Test Operator',
+    [Application.Banshee]: 'Banshee',
+  };
+  return applicationNames[app];
+};
+
+// Function to handle GraphQL errors
 interface NestJsValidationError {
   message: string | string[];
   statusCode?: number;

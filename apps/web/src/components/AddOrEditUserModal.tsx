@@ -32,7 +32,7 @@ import {
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { getAppName, handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
 
 type AddOrEditUserModalProps = {
@@ -517,7 +517,7 @@ export const AddOrEditUserModal = ({
                         variant={'medium'}
                         className="flex flex-grow"
                       >
-                        Pull Test
+                        {getAppName(Application.PullTest)}
                       </Text>
 
                       <FormField
@@ -548,7 +548,7 @@ export const AddOrEditUserModal = ({
                         variant={'medium'}
                         className="flex flex-grow"
                       >
-                        Pull Test Operator
+                        {getAppName(Application.PullTestOperator)}
                       </Text>
                       <FormField
                         control={form.control}
@@ -563,35 +563,6 @@ export const AddOrEditUserModal = ({
                                   )}
                                   onCheckedChange={handleAppsAccess(
                                     Application.PullTestOperator,
-                                  )}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
-                        color={'foreground'}
-                        variant={'medium'}
-                        className="flex flex-grow"
-                      >
-                        Ultrabolts
-                      </Text>
-                      <FormField
-                        control={form.control}
-                        name="userPermissions.0.appsAccess"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value?.includes(
-                                    Application.Ultrabolts,
-                                  )}
-                                  onCheckedChange={handleAppsAccess(
-                                    Application.Ultrabolts,
                                   )}
                                 />
                               </FormControl>
@@ -606,7 +577,7 @@ export const AddOrEditUserModal = ({
                         variant={'medium'}
                         className="flex flex-grow"
                       >
-                        xCyclops
+                        {getAppName(Application.Banshee)}
                       </Text>
                       <FormField
                         control={form.control}
@@ -617,10 +588,10 @@ export const AddOrEditUserModal = ({
                               <FormControl>
                                 <Switch
                                   checked={field.value?.includes(
-                                    Application.Xcyclops,
+                                    Application.Banshee,
                                   )}
                                   onCheckedChange={handleAppsAccess(
-                                    Application.Xcyclops,
+                                    Application.Banshee,
                                   )}
                                 />
                               </FormControl>

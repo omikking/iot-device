@@ -1,12 +1,3 @@
-// @TODO Currently ENUMS from backend are not able to access in the FE. Hardcode them here for now.
-export type PlanLevel = 'GOLD' | 'SILVER' | 'BRONZE' | 'INACTIVE';
-
-export type Application =
-  | 'PULL_TEST'
-  | 'PULL_TEST_OPERATOR'
-  | 'ULTRABOLTS'
-  | 'XCYCLOPS';
-
 export type SiteResultSchema = {
   id: string;
   name: string;
@@ -103,7 +94,7 @@ export const siteResultMock: Site[] = [
   },
 ];
 
-import { Site } from '@/gql/graphql';
+import { Application, PlanLevel, Site } from '@/gql/graphql';
 import type { DropdownItem } from '@gsp/ui';
 
 export const optionsDesignSystemMock = [
@@ -139,17 +130,17 @@ export const optionAdministratorRoleMock = [
 export const appPlansMock: AppPlan[] = [
   {
     name: 'Pull-test',
-    activePlan: 'GOLD',
+    activePlan: PlanLevel.Gold,
     id: '1',
   },
   {
-    name: 'xCyclops',
+    name: Application.Banshee,
     activePlan: undefined,
     id: '2',
   },
   {
     name: 'Ultrabolts',
-    activePlan: 'BRONZE',
+    activePlan: PlanLevel.Bronze,
     id: '3',
   },
 ];
@@ -244,7 +235,11 @@ export const usersMock: UserSchema[] = [
       id: '10',
       userId: '1',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [
+        Application.PullTest,
+        Application.PullTestOperator,
+        Application.Banshee,
+      ],
     },
     phoneNumber: '+4683729327',
   },
@@ -258,7 +253,7 @@ export const usersMock: UserSchema[] = [
       id: '11',
       userId: '2',
       role: 'Technician',
-      appAccess: ['ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },
@@ -273,7 +268,7 @@ export const usersMock: UserSchema[] = [
       id: '12',
       userId: '3',
       role: 'User',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },
@@ -287,7 +282,7 @@ export const usersMock: UserSchema[] = [
       id: '100',
       userId: '4',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },

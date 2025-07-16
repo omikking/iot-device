@@ -23,6 +23,7 @@ import {
   updateCompanySchema,
 } from './schemas/CompanyFormSchema';
 import {
+  Application,
   Company,
   CreateCompanyMutation,
   CreateCompanyMutationVariables,
@@ -39,12 +40,6 @@ import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
-
-const allPlans = [
-  { applicationName: 'PULL_TEST' },
-  { applicationName: 'XCYCLOPS' },
-  { applicationName: 'ULTRABOLTS' },
-];
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -273,13 +268,13 @@ export const CompanyForm = ({
               </div>
 
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlans.map((planType) => {
+                {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
-                    (plan) => plan.applicationName === planType.applicationName,
+                    (plan) => plan.applicationName === appName,
                   );
 
                   const appPlan = existingPlan || {
-                    applicationName: planType.applicationName,
+                    applicationName: appName,
                     planLevel: '',
                     expiringDate: 0,
                   };

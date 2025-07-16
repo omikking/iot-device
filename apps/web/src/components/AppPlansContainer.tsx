@@ -7,19 +7,13 @@ import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { AppPlan } from '@/components/AppPlan';
 import { Badge, FormLabel, Headline, SingleDateCalendar } from '@gsp/ui';
-import { Plan } from '@/gql/graphql';
-import { PlanLevel } from '@/app/mock/mock';
-import { formatAppName } from './UsersTable';
+import { Application, Plan, PlanLevel } from '@/gql/graphql';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
-
-// @TODO move to utils?
-export const formattedDate = (timestamp: Date | number) => {
-  const date = new Date(timestamp);
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-};
+import { formattedDate, getAppName } from '@/libs/utils';
+import { SandvikLogo } from 'public/SandvikLogo';
 
 type AppPlansContainerProps = {
   appPlan: Plan;
@@ -74,9 +68,12 @@ export const AppPlansContainer = ({
       className="w-1/3 max-w-[400px] bg-main-white ui-border-2 ui-border-b ui-border-neutral-2"
     >
       <div className="flex justify-between items-center ui-border-b ui-border-neutral-2 py-5 px-6">
-        <Headline variant="small" color="foreground" as="h3" isBold>
-          {formatAppName(applicationName)}
-        </Headline>
+        <div className="flex items-center gap-3">
+          <SandvikLogo />
+          <Headline variant="small" color="foreground" as="h3" isBold>
+            {getAppName(applicationName as Application)}
+          </Headline>
+        </div>
 
         {user === 'Superadmin' && activePlanLevel && (
           <Badge variant="attention">

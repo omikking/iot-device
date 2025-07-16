@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
+import { Application } from '@/gql/graphql';
+import { getAppName } from '@/libs/utils';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
@@ -61,7 +63,7 @@ export default function Page({
       )}
 
       <Headline as="h1" variant="xl" color="foreground">
-        Pull Test overview
+        {getAppName(Application.PullTest)} overview
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">

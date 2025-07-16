@@ -19,10 +19,9 @@ export type Scalars = {
 };
 
 export enum Application {
+  Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
-  PullTestOperator = 'PULL_TEST_OPERATOR',
-  Ultrabolts = 'ULTRABOLTS',
-  Xcyclops = 'XCYCLOPS'
+  PullTestOperator = 'PULL_TEST_OPERATOR'
 }
 
 /**

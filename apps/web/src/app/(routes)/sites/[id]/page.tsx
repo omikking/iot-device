@@ -47,8 +47,8 @@ export default function Page({
   const companyName = data?.company?.name;
 
   // Commented out since not in MVP
-  // const [, setApp] = useState<'Pull Test' | 'Cyclops' | 'Banshee'>(
-  //   'Pull Test',
+  // const [, setApp] = useState<'Application.PullTest' | 'Application.Banshee'>(
+  //   'Application.PullTest',
   // );
 
   const [sitesData, refetchSites] = useQuery({
@@ -88,17 +88,11 @@ export default function Page({
           <div className="w-full flex flex-row justify-end items-center pb-4">
             {/* // Commented out since not in MVP */}
             {/* <TabsList>
-              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
-                Pull Test
+              <TabsTrigger value="pullTest" onClick={() => setApp('Application.PullTest')}>
+                {getAppName(Application.PullTest)}
               </TabsTrigger>
-              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
-                xCyclops
-              </TabsTrigger>
-              <TabsTrigger
-                value="ultrabolts"
-                onClick={() => setApp('Ultrabolts')}
-              >
-                Ultrabolts
+              <TabsTrigger value="banshee" onClick={() => setApp('Application.Banshee')}>
+                {getAppName(Application.Banshee)}
               </TabsTrigger>
             </TabsList> */}
 

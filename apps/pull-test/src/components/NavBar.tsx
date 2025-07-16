@@ -7,6 +7,8 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import { Menu } from './Menu';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
+import { getAppName } from '@/libs/utils';
+import { Application } from '@/gql/graphql';
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
@@ -25,7 +27,7 @@ export const NavBar = () => {
             <SandvikLogo />
             <div className="h-6 border-l border-black mx-1" />
             <Headline variant="small" color="foreground" as="h3" isBold>
-              Pull Test
+              {getAppName(Application.PullTest)}
             </Headline>
           </div>
         </Link>

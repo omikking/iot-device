@@ -15,7 +15,7 @@ export default function Page(): JSX.Element {
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
-        Design system - Pull Test Portal 🦄
+        Design system - Pull Test 🦄
       </Headline>
 
       <hr className="w-full border-neutral-2" />

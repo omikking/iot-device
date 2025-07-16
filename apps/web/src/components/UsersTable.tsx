@@ -20,25 +20,13 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { getAppName, handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
 
 type UsersTableProps = {
   companyData?: GetCompanyUsersQuery;
   onSelectUser: (user: User) => void;
   onOpenChange: (open: boolean) => void;
-};
-
-// @TODO create a utils folder and add these kind of functions there
-export const formatAppName = (appName: string): string => {
-  const appNames: Record<string, string> = {
-    PULL_TEST: 'Pull Test',
-    ULTRABOLTS: 'Ultrabolts',
-    XCYCLOPS: 'Cyclops',
-    PULL_TEST_OPERATOR: 'Pull Test Operator',
-  };
-
-  return appNames[appName] || appName;
 };
 
 export const formatRoleName = (role: string): string => {
@@ -106,7 +94,7 @@ export const UsersTable = ({
     }
 
     const appName = appAccessValue
-      .map((app: string) => formatAppName(app) || app)
+      .map((app: string) => getAppName(app as Application) || app)
       .join(', ');
 
     return appName;

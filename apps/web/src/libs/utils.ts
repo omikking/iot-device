@@ -2,6 +2,11 @@ import { Application } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
 
+// Function to capitalize the first letter of a word
+export const capitalizeFirstLetter = (word: string) => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+};
+
 // Function to format date from timestamp
 export const formattedDate = (timestamp: Date | number) => {
   const date = new Date(timestamp);

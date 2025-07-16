@@ -29,7 +29,6 @@ type BoltResultsFilterProps = {
   onFilterChange: (filters: FilterState) => void;
 };
 
-// @TODO: Add filtering functionality, this is essentially a visual mockup currently.
 export const BoltResultsFilter = ({
   selectedTab,
   onFilterChange,

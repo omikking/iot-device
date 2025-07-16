@@ -9,8 +9,8 @@ import UrqlProvider from '@/libs/providers/UrqlProvider';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 
 export const metadata: Metadata = {
-  title: 'Pull Test Web',
-  description: 'The Sandvik GSP Pull Test Module',
+  title: 'Pull Test | Ground Support Platform | Sandvik',
+  description: 'For all your ground support needs.',
 };
 
 export default async function RootLayout({

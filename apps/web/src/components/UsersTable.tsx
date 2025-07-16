@@ -66,7 +66,6 @@ export const UsersTable = ({
     (user) => user.id === userToDelete,
   )?.fullName;
 
-  // TODO Move to utils
   const getBadge = (
     userPermissions?: UserPermission,
   ): {

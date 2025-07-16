@@ -101,7 +101,7 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites] = useState(sitesDesignSystemMock); // TODO remove default?
+  const [sites] = useState(sitesDesignSystemMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,

@@ -16,7 +16,7 @@ export const GoBack = () => {
         router.back();
       }}
     >
-      <LucideMoveLeft className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
+      <LucideMoveLeft className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-[-4px]" />
       Go back
     </Text>
   );

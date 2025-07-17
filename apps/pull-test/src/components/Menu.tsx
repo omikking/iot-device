@@ -67,7 +67,7 @@ export const Menu = () => {
                 >
                   <Link href={`/overview/${companyId}`} passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Pull Test Overview
                     </Anchor>
                   </Link>
@@ -85,7 +85,7 @@ export const Menu = () => {
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Bolt results
                     </Anchor>
                   </Link>
@@ -103,7 +103,7 @@ export const Menu = () => {
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Reported hazards
                     </Anchor>
                   </Link>
@@ -115,18 +115,20 @@ export const Menu = () => {
           )}
 
           <div className="flex flex-col gap-1 mb-16">
-            <Headline variant="medium" color="foreground" as="h3">
-              <Link
-                href={`http://localhost:3000/selectapplication/${companyId}`}
-                passHref
-                legacyBehavior
-              >
-                <Anchor color="foreground">
-                  <LucideLayoutGrid className="text-orange-600" />
-                  Browse apps
-                </Anchor>
-              </Link>
-            </Headline>
+            {companyId && (
+              <Headline variant="medium" color="foreground" as="h3">
+                <Link
+                  href={`http://localhost:3000/selectapplication/${companyId}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <Anchor color="foreground">
+                    <LucideLayoutGrid className="text-orange-600" />
+                    Browse apps
+                  </Anchor>
+                </Link>
+              </Headline>
+            )}
 
             <Headline variant="medium" color="foreground" as="h3">
               <Link

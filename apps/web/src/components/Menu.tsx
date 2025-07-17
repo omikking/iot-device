@@ -37,7 +37,6 @@ const getCompanyName = graphql(`
 export const Menu = () => {
   // @TODO fix colors on icons
   const { data: session } = useSession();
-  const sessionCompanyId = session?.company?.id;
 
   const params = useParams();
   const companyId = params?.id as string;
@@ -91,7 +90,7 @@ export const Menu = () => {
               >
                 <Link href={`/users/${companyId}`} passHref legacyBehavior>
                   <Anchor color="foreground">
-                    <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                     Users
                   </Anchor>
                 </Link>
@@ -105,7 +104,7 @@ export const Menu = () => {
               >
                 <Link href={`/sites/${companyId}`} passHref legacyBehavior>
                   <Anchor color="foreground">
-                    <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                     Sites
                   </Anchor>
                 </Link>
@@ -117,13 +116,32 @@ export const Menu = () => {
                 as="h3"
                 className="group"
               >
-                <Link href="/sitelocations/all" passHref legacyBehavior>
+                <Link
+                  href={`/sitelocations/${companyId}`}
+                  passHref
+                  legacyBehavior
+                >
                   <Anchor color="foreground">
-                    <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                     Site locations
                   </Anchor>
                 </Link>
               </Headline>
+
+              {companyId && (
+                <Headline variant="medium" color="foreground" as="h3">
+                  <Link
+                    href={`/selectapplication/${companyId}`}
+                    passHref
+                    legacyBehavior
+                  >
+                    <Anchor color="foreground">
+                      <LucideLayoutGrid className="text-orange-600" />
+                      Browse apps
+                    </Anchor>
+                  </Link>
+                </Headline>
+              )}
 
               <Link
                 href={
@@ -156,7 +174,7 @@ export const Menu = () => {
             >
               <Link href="/overview" passHref legacyBehavior>
                 <Anchor color="foreground">
-                  <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                  <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                   Administration Portal
                 </Anchor>
               </Link>
@@ -172,7 +190,7 @@ export const Menu = () => {
                 >
                   <Link href="/technicians" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Technicians
                     </Anchor>
                   </Link>
@@ -186,7 +204,7 @@ export const Menu = () => {
                 >
                   <Link href="company/new" passHref legacyBehavior>
                     <Anchor color="foreground">
-                      <LucidePlus className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:rotate-90" />
+                      <LucidePlus className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:rotate-90" />
                       Add new company
                     </Anchor>
                   </Link>
@@ -198,18 +216,21 @@ export const Menu = () => {
           <hr className="border-neutral-2" />
 
           <div className="flex flex-col gap-1 mb-16">
-            <Headline variant="medium" color="foreground" as="h3">
-              <Link
-                href={`/selectapplication/${sessionCompanyId}`}
-                passHref
-                legacyBehavior
+            {session?.user?.globalRole !== Role.SandvikAdmin && (
+              <Headline
+                variant="medium"
+                color="foreground"
+                as="h3"
+                className="group"
               >
-                <Anchor color="foreground">
-                  <LucideLayoutGrid className="text-orange-600" />
-                  Browse apps
-                </Anchor>
-              </Link>
-            </Headline>
+                <Link href="/selectcompany" passHref legacyBehavior>
+                  <Anchor color="foreground">
+                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                    Select company
+                  </Anchor>
+                </Link>
+              </Headline>
+            )}
 
             <Headline variant="medium" color="foreground" as="h3">
               <Link href="/accountsettings" passHref legacyBehavior>

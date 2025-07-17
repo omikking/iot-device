@@ -14,7 +14,7 @@ export default function Page(): JSX.Element {
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline as="h1" variant="xl" color="foreground">
-        Administration
+        Administration Portal
       </Headline>
 
       <div className="flex gap-8">

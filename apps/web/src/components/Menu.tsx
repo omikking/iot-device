@@ -92,7 +92,7 @@ export const Menu = () => {
                 <Link href={`/users/${companyId}`} passHref legacyBehavior>
                   <Anchor color="foreground">
                     <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    View users
+                    Users
                   </Anchor>
                 </Link>
               </Headline>
@@ -106,7 +106,7 @@ export const Menu = () => {
                 <Link href={`/sites/${companyId}`} passHref legacyBehavior>
                   <Anchor color="foreground">
                     <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    View sites
+                    Sites
                   </Anchor>
                 </Link>
               </Headline>
@@ -120,7 +120,7 @@ export const Menu = () => {
                 <Link href="/sitelocations/all" passHref legacyBehavior>
                   <Anchor color="foreground">
                     <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    View site locations
+                    Site locations
                   </Anchor>
                 </Link>
               </Headline>
@@ -157,7 +157,7 @@ export const Menu = () => {
               <Link href="/overview" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                  Overview
+                  Administration Portal
                 </Anchor>
               </Link>
             </Headline>

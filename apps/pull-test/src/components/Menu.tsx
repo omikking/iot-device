@@ -68,7 +68,7 @@ export const Menu = () => {
                   <Link href={`/overview/${companyId}`} passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      Overview
+                      Pull Test Overview
                     </Anchor>
                   </Link>
                 </Headline>
@@ -86,7 +86,7 @@ export const Menu = () => {
                   >
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View bolt results
+                      Bolt results
                     </Anchor>
                   </Link>
                 </Headline>
@@ -104,7 +104,7 @@ export const Menu = () => {
                   >
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View reported hazards
+                      Reported hazards
                     </Anchor>
                   </Link>
                 </Headline>

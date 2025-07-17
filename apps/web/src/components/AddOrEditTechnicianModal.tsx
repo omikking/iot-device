@@ -36,8 +36,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 import { handleGraphQLErrors } from '@/libs/utils';
 
-// @TODO make the create user query later when BE is advanced.
-
 const updateTechnicianMutation = graphql(`
   mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {
     updateUser(id: $id, updateUserInput: $updateUserInput) {
@@ -129,7 +127,7 @@ export const AddOrEditTechnicianModal = ({
     }
 
     if (!technician) {
-      // fix later for create technician flow
+      // TODO fix later for create technician flow
     }
   };
 

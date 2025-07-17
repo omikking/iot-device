@@ -19,6 +19,7 @@ type AssociateDetailsFormProps = {
 export const AssociateDetailsForm = ({
   companyForm,
 }: AssociateDetailsFormProps) => {
+  // TODO fix logic & BE data
   return (
     <>
       <FormField

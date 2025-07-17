@@ -173,7 +173,7 @@ export const Menu = () => {
                   <Link href="/technicians" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                      View technicians
+                      Technicians
                     </Anchor>
                   </Link>
                 </Headline>

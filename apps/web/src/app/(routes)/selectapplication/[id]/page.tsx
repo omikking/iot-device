@@ -62,7 +62,13 @@ export default function Page({
           <div className="flex flex-row gap-12 justify-center">
             <Link href={`http://localhost:3001/overview/${companyId}`}>
               <NavigationCard size="small">
-                <Headline as="h3" variant="medium" color="foreground" isBold>
+                <Headline
+                  as="h3"
+                  variant="medium"
+                  color="foreground"
+                  isBold
+                  className="text-center"
+                >
                   {getAppName(plan)}
                 </Headline>
                 <SandvikLogo width="32" height="32" />

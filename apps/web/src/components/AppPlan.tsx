@@ -19,7 +19,7 @@ import { capitalizeFirstLetter } from '@/libs/utils';
 type AppPlanProps = {
   appPlan: Plan;
   planLevel: PlanLevel;
-  isAdmin: boolean;
+  isUserSuperAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   activePlanLevel?: PlanLevel;
   expiringDate?: Date | number;
@@ -30,15 +30,14 @@ export const AppPlan = ({
   appPlan,
   planLevel,
   activePlanLevel,
-  isAdmin,
+  isUserSuperAdmin,
   companyForm,
   expiringDate,
   onPlanLevelChange,
 }: AppPlanProps) => {
-  const userRole = isAdmin ? 'Superadmin' : 'Client';
-  const isPlanActive = planLevel === activePlanLevel;
-
   const { applicationName } = appPlan;
+
+  const isPlanActive = planLevel === activePlanLevel;
 
   const handlePlanChange = (isChecked: boolean) => {
     const newPlanLevel = isChecked ? planLevel : undefined;
@@ -104,7 +103,7 @@ export const AppPlan = ({
               {capitalizeFirstLetter(planLevel)}
             </FormLabel>
 
-            {userRole === 'Superadmin' && (
+            {isUserSuperAdmin && (
               <FormControl>
                 <Switch
                   checked={activePlanLevel === planLevel}
@@ -113,7 +112,7 @@ export const AppPlan = ({
               </FormControl>
             )}
 
-            {userRole === 'Client' && isPlanActive && (
+            {!isUserSuperAdmin && isPlanActive && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
                 Your selected plan

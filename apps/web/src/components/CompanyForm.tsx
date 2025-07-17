@@ -14,7 +14,6 @@ import {
   LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
-import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
@@ -28,11 +27,12 @@ import {
   CreateCompanyMutation,
   CreateCompanyMutationVariables,
   Plan,
+  Role,
   UpdateCompanyMutation,
   UpdateCompanyMutationVariables,
 } from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
@@ -40,6 +40,7 @@ import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -105,9 +106,8 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  // Temporary state for devmode
-  const [isAdmin, setIsAdmin] = useState(true);
-  const user = isAdmin ? 'Superadmin' : 'Client';
+  const { data: session } = useSession();
+  const isUserSuperAdmin = session?.user?.globalRole === Role.SandvikAdmin;
 
   const router = useRouter();
 
@@ -225,8 +225,6 @@ export const CompanyForm = ({
     : !isDirty || isAnyFieldEmpty;
   return (
     <>
-      <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-
       <Form {...companyForm}>
         <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
@@ -242,10 +240,10 @@ export const CompanyForm = ({
                   variant="medium"
                   className="ml-8"
                 >
-                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
+                  {isUserSuperAdmin ? 'Plans' : 'Your plans'}
                 </Headline>
 
-                {user === 'Client' && (
+                {!isUserSuperAdmin && (
                   <div className="flex items-center">
                     <LucideSparkles size="20" />
                     <Headline
@@ -283,7 +281,7 @@ export const CompanyForm = ({
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
                       key={existingPlan?.id || appPlan.applicationName}
-                      isAdmin={isAdmin}
+                      isUserSuperAdmin={isUserSuperAdmin}
                       companyForm={companyForm}
                     />
                   );
@@ -295,13 +293,13 @@ export const CompanyForm = ({
             <ContentHolder
               variant="general"
               headlineText={
-                user === 'Superadmin'
-                  ? 'Admin'
+                isUserSuperAdmin
+                  ? 'Sandvik admin'
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
-              {user === 'Client' && (
+              {isUserSuperAdmin && <AdminForm companyForm={companyForm} />}
+              {!isUserSuperAdmin && (
                 <AssociateDetailsForm companyForm={companyForm} />
               )}
             </ContentHolder>

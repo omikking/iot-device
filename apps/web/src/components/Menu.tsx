@@ -34,19 +34,41 @@ const getCompanyName = graphql(`
   }
 `);
 
+const getAllCompaniesQuery = graphql(`
+  query GetAllCompanies($offset: Int, $limit: Int) {
+    companies(offset: $offset, limit: $limit) {
+      totalRecords
+      results {
+        id
+        name
+      }
+    }
+  }
+`);
+
 export const Menu = () => {
   // @TODO fix colors on icons
   const { data: session } = useSession();
+  const globalRole = session?.user?.globalRole;
 
   const params = useParams();
-  const companyId = params?.id as string;
+  const paramCompanyId = params?.id as string;
 
   const [companyResult] = useQuery({
     query: getCompanyName,
-    variables: { id: companyId },
+    variables: { id: paramCompanyId },
   });
-  const companyName = companyResult.data?.company?.name;
-  const role = session?.user?.globalRole;
+  const { id: companyId, name: companyName } =
+    companyResult.data?.company || {};
+
+  const [{ data }] = useQuery({
+    query: getAllCompaniesQuery,
+    variables: {
+      offset: 0,
+      limit: 100,
+    },
+  });
+  const companiesWithAccess = data?.companies?.results || [];
 
   return (
     <MenuWrapper>
@@ -66,7 +88,7 @@ export const Menu = () => {
             <MenuTitle className="sr-only">Menu</MenuTitle>
           )}
 
-          {!companyId && role === Role.SandvikAdmin && (
+          {!companyId && globalRole === Role.SandvikAdmin && (
             <Link href="/overview" passHref legacyBehavior>
               <Button
                 className="mt-4"
@@ -81,7 +103,7 @@ export const Menu = () => {
           )}
 
           {companyId && (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <Headline
                 variant="medium"
                 color="foreground"
@@ -128,60 +150,93 @@ export const Menu = () => {
                 </Link>
               </Headline>
 
-              {companyId && (
-                <Headline variant="medium" color="foreground" as="h3">
-                  <Link
-                    href={`/selectapplication/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600" />
-                      Browse apps
-                    </Anchor>
-                  </Link>
-                </Headline>
-              )}
-
-              <Link
-                href={
-                  role === Role.SandvikAdmin ? '/overview' : '/selectcompany'
-                }
-                passHref
-                legacyBehavior
-              >
-                <Button
-                  className="mt-4"
-                  variant="secondary"
-                  size="large"
-                  tabIndex={-1}
+              <Headline variant="medium" color="foreground" as="h3">
+                <Link
+                  href={`/selectapplication/${companyId}`}
+                  passHref
+                  legacyBehavior
                 >
-                  <LucideBuilding2 />
-                  Change company
-                </Button>
-              </Link>
+                  <Anchor color="foreground">
+                    <LucideLayoutGrid className="text-orange-600" />
+                    Browse apps
+                  </Anchor>
+                </Link>
+              </Headline>
+
+              {(globalRole === Role.SandvikAdmin ||
+                companiesWithAccess.length > 1) && (
+                <Link
+                  href={
+                    globalRole === Role.SandvikAdmin
+                      ? '/overview'
+                      : '/selectcompany'
+                  }
+                  passHref
+                  legacyBehavior
+                >
+                  <Button
+                    className="mt-4"
+                    variant="secondary"
+                    size="large"
+                    tabIndex={-1}
+                  >
+                    <LucideBuilding2 />
+                    Change company
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
 
           <hr className="border-neutral-2" />
 
-          <div className="flex flex-col gap-1">
-            <Headline
-              variant="medium"
-              color="foreground"
-              as="h3"
-              className="group"
-            >
-              <Link href="/overview" passHref legacyBehavior>
-                <Anchor color="foreground">
-                  <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                  Administration Portal
-                </Anchor>
-              </Link>
-            </Headline>
+          <div className="flex flex-col gap-1.5">
+            {globalRole !== Role.SandvikAdmin && (
+              <Headline
+                variant="medium"
+                color="foreground"
+                as="h3"
+                className="group"
+              >
+                <Link href={`/company/${companyId}`} passHref legacyBehavior>
+                  <Anchor color="foreground">
+                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                    Overview
+                  </Anchor>
+                </Link>
+              </Headline>
+            )}
 
-            {role === Role.SandvikAdmin && (
+            {globalRole === Role.SandvikAdmin && (
               <>
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
+                  <Link href="/overview" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      Administration Portal
+                    </Anchor>
+                  </Link>
+                </Headline>
+
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
+                  <Link href="/administrators" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      Administrators
+                    </Anchor>
+                  </Link>
+                </Headline>
+
                 <Headline
                   variant="medium"
                   color="foreground"
@@ -202,7 +257,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="company/new" passHref legacyBehavior>
+                  <Link href="/company/new" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucidePlus className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:rotate-90" />
                       Add new company
@@ -215,23 +270,7 @@ export const Menu = () => {
 
           <hr className="border-neutral-2" />
 
-          <div className="flex flex-col gap-1 mb-16">
-            {session?.user?.globalRole !== Role.SandvikAdmin && (
-              <Headline
-                variant="medium"
-                color="foreground"
-                as="h3"
-                className="group"
-              >
-                <Link href="/selectcompany" passHref legacyBehavior>
-                  <Anchor color="foreground">
-                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    Select company
-                  </Anchor>
-                </Link>
-              </Headline>
-            )}
-
+          <div className="flex flex-col gap-1.5 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
               <Link href="/accountsettings" passHref legacyBehavior>
                 <Anchor color="foreground">

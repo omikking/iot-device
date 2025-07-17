@@ -37,7 +37,6 @@ export default function Page(): JSX.Element {
           </Headline>
           <LucideUserCog />
           <Button variant="secondary" size="small" asChild>
-            {/*@TODO delete this todo when Link is working*/}
             <Link href="/administrators">
               <LucideMoveRight />
               View administrators

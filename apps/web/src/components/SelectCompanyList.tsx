@@ -38,7 +38,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
                   </Text>
                   <LucideMoveRight
                     aria-hidden="true"
-                    className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5"
+                    className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5"
                   />
                 </Link>
               </li>

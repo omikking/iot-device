@@ -49,7 +49,6 @@ export const MultiBoltReadingTable = ({
   }));
   return (
     <div>
-      {/* @TODO fix the important "!" modifier */}
       <DataTable
         columns={columns}
         data={multiReadingResults || []}

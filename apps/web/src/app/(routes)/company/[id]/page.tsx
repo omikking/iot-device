@@ -33,6 +33,8 @@ const getCompanyQuery = graphql(`
       users {
         id
         fullName
+        phoneNumber
+        email
       }
     }
   }

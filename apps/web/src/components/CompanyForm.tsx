@@ -223,6 +223,11 @@ export const CompanyForm = ({
   const isSubmitDisabled = isNewCompany
     ? isAnyFieldEmpty
     : !isDirty || isAnyFieldEmpty;
+
+  const sandvikAdminUserInfo = company?.users?.find(
+    (user) => user.id === company.sandvikAdminUserId,
+  );
+
   return (
     <>
       <Form {...companyForm}>
@@ -299,8 +304,10 @@ export const CompanyForm = ({
               }
             >
               {isUserSuperAdmin && <AdminForm companyForm={companyForm} />}
-              {!isUserSuperAdmin && (
-                <AssociateDetailsForm companyForm={companyForm} />
+              {!isUserSuperAdmin && sandvikAdminUserInfo && (
+                <AssociateDetailsForm
+                  sandvikAdminUserInfo={sandvikAdminUserInfo}
+                />
               )}
             </ContentHolder>
           </div>

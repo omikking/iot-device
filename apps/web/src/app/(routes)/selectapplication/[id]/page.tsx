@@ -58,8 +58,8 @@ export default function Page({
       </Headline>
 
       <div className="flex flex-row justify-center gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
-        {availableCompanyPlans.map((plan) => (
-          <div className="flex flex-row gap-12 justify-center">
+        {availableCompanyPlans.map((plan, index) => (
+          <div className="flex flex-row gap-12 justify-center" key={index}>
             <Link href={`http://localhost:3001/overview/${companyId}`}>
               <NavigationCard size="small">
                 <Headline

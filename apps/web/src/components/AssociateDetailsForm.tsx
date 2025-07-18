@@ -1,72 +1,24 @@
-import { UseFormReturn } from 'react-hook-form';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-} from '@gsp/ui';
-import {
-  CreateCompanyFormValues,
-  UpdateCompanyFormValues,
-} from './schemas/CompanyFormSchema';
+import { Specification } from '@gsp/ui';
+import { User } from '@/gql/graphql';
 
 type AssociateDetailsFormProps = {
-  companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
+  sandvikAdminUserInfo: User;
 };
 
 export const AssociateDetailsForm = ({
-  companyForm,
+  sandvikAdminUserInfo,
 }: AssociateDetailsFormProps) => {
-  // TODO fix logic & BE data
+  const { fullName, email, phoneNumber } = sandvikAdminUserInfo;
   return (
-    <>
-      <FormField
-        control={companyForm.control}
-        name="sandvikAdminUserId"
-        render={() => {
-          return (
-            <FormItem className="min-w-[31%]">
-              <FormLabel>Full name</FormLabel>
-              <FormControl>
-                <Input value="Darlene Alderson" className="w-full" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          );
-        }}
-      />
-      <FormField
-        control={companyForm.control}
-        name="sandvikAdminUserId"
-        render={() => {
-          return (
-            <FormItem className="min-w-[31%]">
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input value="darlene@gmail.com" className="w-full" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          );
-        }}
-      />
-      <FormField
-        control={companyForm.control}
-        name="sandvikAdminUserId"
-        render={() => {
-          return (
-            <FormItem className="min-w-[31%]">
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input value="+46701740621" className="w-full" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          );
-        }}
-      />
-    </>
+    <div className="flex w-full gap-12">
+      {fullName && (
+        <Specification title="Name" text={fullName} className="w-full" />
+      )}
+      {email && <Specification title="Email" text={email} className="w-full" />}
+      {/* Do they want to expose the phone number? */}
+      {phoneNumber && (
+        <Specification title="Phone" text={phoneNumber} className="w-full" />
+      )}
+    </div>
   );
 };

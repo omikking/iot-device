@@ -46,26 +46,28 @@ export const BoltResultDetailsModalContent = ({
                 </Text>
                 <Textarea
                   value={boltResult.comment}
-                  className="mt-2 flex-grow"
+                  className="mt-2 flex-grow min-h-48"
                   disabled
                   readOnly
                 />
               </div>
             )}
-            <div className="flex pt-5 gap-4 items-center">
-              {isHazard && (
-                <>
-                  <Badge variant={'attention'}>
-                    <LucideTriangleAlert />
-                    Reported hazard
-                  </Badge>
-                  <Text variant="small" color="foreground">
-                    Reported by: {fullName || 'N/A'}
-                  </Text>
-                </>
-              )}
-            </div>
           </div>
+        </div>
+      )}
+
+      {isHazard && (
+        <div className="flex flex-col px-10 pt-2 gap-2 w-full">
+          <Badge variant={'attention'}>
+            <LucideTriangleAlert />
+            Reported hazard
+          </Badge>
+          <Specification
+            title="Reported by"
+            text={fullName || 'N/A'}
+            className="w-full"
+            isWide
+          />
         </div>
       )}
 
@@ -97,12 +99,18 @@ export const BoltResultDetailsModalContent = ({
                 return (
                   <div key={index} className="flex flex-wrap">
                     <Specification
+                      isWide
                       key={index}
                       title={'Date'}
                       text={dateString}
                       className="w-1/2"
                     />
-                    <Specification title={''} text={''} className="w-1/2" />
+                    <Specification
+                      isWide
+                      title={''}
+                      text={''}
+                      className="w-1/2"
+                    />
                   </div>
                 );
               })}
@@ -126,6 +134,7 @@ export const BoltResultDetailsModalContent = ({
             {[...generateBoltSpecifications(boltResult, siteInfo).slice(1)].map(
               (boltSpec, index) => (
                 <Specification
+                  isWide
                   key={index}
                   title={boltSpec.title}
                   text={boltSpec.text}
@@ -134,7 +143,7 @@ export const BoltResultDetailsModalContent = ({
               ),
             )}
             {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              0 && <Specification title="" text="" className="w-1/2" />}
+              0 && <Specification isWide title="" text="" className="w-1/2" />}
           </div>
         )}
 

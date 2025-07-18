@@ -11,17 +11,19 @@ import {
   MenuTitle,
 } from '@gsp/ui';
 import {
+  LucideBuilding2,
   LucideLayoutGrid,
   LucideLogOut,
   LucideMenu,
   LucideMoveRight,
   LucideSettings,
 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { Role } from '@/gql/graphql';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -32,16 +34,41 @@ const getCompanyName = graphql(`
   }
 `);
 
+const getAllCompaniesQuery = graphql(`
+  query GetAllCompanies($offset: Int, $limit: Int) {
+    companies(offset: $offset, limit: $limit) {
+      totalRecords
+      results {
+        id
+        name
+      }
+    }
+  }
+`);
+
 export const Menu = () => {
   // @TODO fix colors on icons
+  const { data: session } = useSession();
+  const globalRole = session?.user?.globalRole;
+
   const params = useParams();
-  const companyId = params?.id as string;
+  const paramCompanyId = params?.id as string;
 
   const [companyResult] = useQuery({
     query: getCompanyName,
-    variables: { id: companyId },
+    variables: { id: paramCompanyId },
   });
-  const companyName = companyResult.data?.company?.name;
+  const { id: companyId, name: companyName } =
+    companyResult.data?.company || {};
+
+  const [{ data }] = useQuery({
+    query: getAllCompaniesQuery,
+    variables: {
+      offset: 0,
+      limit: 100,
+    },
+  });
+  const companiesWithAccess = data?.companies?.results || [];
 
   return (
     <MenuWrapper>
@@ -58,7 +85,7 @@ export const Menu = () => {
             <>
               <MenuTitle>{companyName}</MenuTitle>
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 <Headline
                   variant="medium"
                   color="foreground"
@@ -108,28 +135,49 @@ export const Menu = () => {
                     </Anchor>
                   </Link>
                 </Headline>
+
+                <Headline variant="medium" color="foreground" as="h3">
+                  <Link
+                    href={`http://localhost:3000/selectapplication/${companyId}`}
+                    passHref
+                    legacyBehavior
+                  >
+                    <Anchor color="foreground">
+                      <LucideLayoutGrid className="text-orange-600" />
+                      Browse apps
+                    </Anchor>
+                  </Link>
+                </Headline>
+
+                {(globalRole === Role.SandvikAdmin ||
+                  companiesWithAccess.length > 1) && (
+                  <Link
+                    href={
+                      globalRole === Role.SandvikAdmin
+                        ? 'http://localhost:3000/overview'
+                        : 'http://localhost:3000/selectcompany'
+                    }
+                    passHref
+                    legacyBehavior
+                  >
+                    <Button
+                      className="mt-4"
+                      variant="secondary"
+                      size="large"
+                      tabIndex={-1}
+                    >
+                      <LucideBuilding2 />
+                      Change company
+                    </Button>
+                  </Link>
+                )}
               </div>
 
               <hr className="border-neutral-2" />
             </>
           )}
 
-          <div className="flex flex-col gap-1 mb-16">
-            {companyId && (
-              <Headline variant="medium" color="foreground" as="h3">
-                <Link
-                  href={`http://localhost:3000/selectapplication/${companyId}`}
-                  passHref
-                  legacyBehavior
-                >
-                  <Anchor color="foreground">
-                    <LucideLayoutGrid className="text-orange-600" />
-                    Browse apps
-                  </Anchor>
-                </Link>
-              </Headline>
-            )}
-
+          <div className="flex flex-col gap-1.5 mb-16">
             <Headline variant="medium" color="foreground" as="h3">
               <Link
                 href="http://localhost:3000/accountsettings"

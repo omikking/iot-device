@@ -63,7 +63,7 @@ export default function Page({
       )}
 
       <Headline as="h1" variant="xl" color="foreground">
-        {getAppName(Application.PullTest)} overview
+        {getAppName(Application.PullTest)} Overview
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">

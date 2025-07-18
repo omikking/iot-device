@@ -18,21 +18,20 @@ import { SandvikLogo } from 'public/SandvikLogo';
 type AppPlansContainerProps = {
   appPlan: Plan;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-  isAdmin: boolean;
+  isUserSuperAdmin: boolean;
 };
 
 export const AppPlansContainer = ({
   appPlan,
-  isAdmin,
+  isUserSuperAdmin,
   companyForm,
 }: AppPlansContainerProps) => {
-  const user = isAdmin ? 'Superadmin' : 'Client';
-
   const {
     applicationName,
     expiringDate,
     planLevel: initialPlanLevel,
   } = appPlan as Plan;
+
   const [activePlanLevel, setActivePlanLevel] = useState<PlanLevel | undefined>(
     initialPlanLevel as PlanLevel,
   );
@@ -75,14 +74,14 @@ export const AppPlansContainer = ({
           </Headline>
         </div>
 
-        {user === 'Superadmin' && activePlanLevel && (
+        {isUserSuperAdmin && activePlanLevel && (
           <Badge variant="attention">
             <LucideCircleCheckBig size="14" />
             Active
           </Badge>
         )}
 
-        {user === 'Client' && !activePlanLevel && (
+        {!isUserSuperAdmin && !activePlanLevel && (
           <Badge variant="primary">
             <LucideSparkles size="14" />
             Available plans
@@ -98,7 +97,7 @@ export const AppPlansContainer = ({
         expiringDate={date}
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
-        isAdmin={isAdmin}
+        isUserSuperAdmin={isUserSuperAdmin}
       />
       <AppPlan
         planLevel={PlanLevel.Silver}
@@ -107,7 +106,7 @@ export const AppPlansContainer = ({
         expiringDate={date}
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
-        isAdmin={isAdmin}
+        isUserSuperAdmin={isUserSuperAdmin}
       />
       <AppPlan
         planLevel={PlanLevel.Bronze}
@@ -116,14 +115,14 @@ export const AppPlansContainer = ({
         expiringDate={date}
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
-        isAdmin={isAdmin}
+        isUserSuperAdmin={isUserSuperAdmin}
       />
 
       {/* Calendar */}
       {activePlanLevel && (
         <>
           {/* For Superadmin, always show */}
-          {user === 'Superadmin' && (
+          {isUserSuperAdmin && (
             <div className="py-5 px-6 border-b border-neutral-2">
               <FormLabel>Expiring date</FormLabel>
               <SingleDateCalendar
@@ -134,7 +133,7 @@ export const AppPlansContainer = ({
             </div>
           )}
 
-          {user === 'Client' && date !== 0 && date !== null && (
+          {!isUserSuperAdmin && date !== 0 && date !== null && (
             <div className="py-5 px-6 border-b border-neutral-2">
               <Badge variant="primary">
                 <LucideCalendar size="14" />

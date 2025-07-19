@@ -10,10 +10,15 @@ import {
 } from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
+import { Pagination } from './Pagination';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
   site?: string;
+  totalCount?: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
 };
 
 const getBadge = (
@@ -35,6 +40,10 @@ const getBadge = (
 export const BoltResultsTable = ({
   boltResults,
   site,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPageChange,
 }: BoltResultsTableProps) => {
   const columns: ColumnDef<BoltResult>[] = [
     {
@@ -164,10 +173,19 @@ export const BoltResultsTable = ({
           )
         }
       />
-      {!!boltResults?.length && boltResults?.length > 0 && (
-        <Badge variant="neutral" className="self-start mt-5">
-          {boltResults?.length} total
-        </Badge>
+      {!!boltResults?.length && boltResults?.length > 0 && totalCount && (
+        <div className="flex justify-between">
+          <Badge variant="neutral" className="self-start mt-5">
+            {totalCount} total
+          </Badge>
+
+          <Pagination
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+          />
+        </div>
       )}
     </>
   );

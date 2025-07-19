@@ -30,11 +30,11 @@ interface BoltSelectionProps {
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResult[];
-  companyByIdResponse: GetCompanyQuery;
+  companyData: GetCompanyQuery;
 }
 
 export const BoltSelection = ({
-  companyByIdResponse,
+  companyData,
   site,
   level,
   drive,
@@ -49,11 +49,12 @@ export const BoltSelection = ({
   onFilterChange,
 }: BoltSelectionProps) => {
   const siteOptions = useMemo(() => {
-    return companyByIdResponse?.company?.sites || [];
-  }, [companyByIdResponse]);
+    return companyData?.company?.sites || [];
+  }, [companyData]);
 
   const handleSetSite = (siteId?: string) => {
     const selectedSite = siteOptions.find((s) => s.id === siteId);
+    console.log(selectedSite);
     onSetSite(selectedSite);
     onSetDateRange({ from: undefined, to: undefined });
     onSetLevel(undefined);

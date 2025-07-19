@@ -34,7 +34,7 @@ export class BoltResultsService {
       endDate?: Date | undefined;
     },
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const { offset, limit } = pagination;
+    const { offset, limit = 50 } = pagination;
 
     const {
       siteId,
@@ -77,7 +77,7 @@ export class BoltResultsService {
 
     const results = await this.prisma.boltResult.findMany({
       skip: offset,
-      ...(limit !== undefined ? { take: limit } : {}),
+      take: limit,
       where: whereCondition,
       include: {
         site: true,
@@ -104,6 +104,7 @@ export class BoltResultsService {
     }
     return boltResult;
   }
+
   async create(
     createBoltResultInput: GraphQLTypes.CreateBoltResultInput,
   ): Promise<BoltResult> {

@@ -3,19 +3,19 @@ import React from 'react';
 import { Button, Text } from '@gsp/ui';
 import { LucideArrowLeft, LucideArrowRight } from 'lucide-react';
 
-type TableNavigationProps = {
+type PaginationProps = {
   totalCount: number;
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
 };
 
-export const TableNavigation = ({
+export const Pagination = ({
   totalCount,
   currentPage,
   pageSize,
   onPageChange,
-}: TableNavigationProps) => {
+}: PaginationProps) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   const handlePreviousPage = () => {

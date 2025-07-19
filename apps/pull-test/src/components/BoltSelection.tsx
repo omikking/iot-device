@@ -54,7 +54,6 @@ export const BoltSelection = ({
 
   const handleSetSite = (siteId?: string) => {
     const selectedSite = siteOptions.find((s) => s.id === siteId);
-    console.log(selectedSite);
     onSetSite(selectedSite);
     onSetDateRange({ from: undefined, to: undefined });
     onSetLevel(undefined);

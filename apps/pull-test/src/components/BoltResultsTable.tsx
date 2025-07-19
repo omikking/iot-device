@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
-import { TableNavigation } from './TableNavigation';
+import { Pagination } from './Pagination';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
@@ -179,7 +179,7 @@ export const BoltResultsTable = ({
             {totalCount} total
           </Badge>
 
-          <TableNavigation
+          <Pagination
             totalCount={totalCount}
             currentPage={currentPage}
             pageSize={pageSize}

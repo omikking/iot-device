@@ -140,8 +140,6 @@ export default function Page({ params }: Props): JSX.Element {
   const [drive, setDrive] = useState<DriveType | undefined>();
   const [location, setLocation] = useState<LocationType | undefined>();
 
-  console.log(site);
-
   const [selectedTab, setSelectedTab] = useState<'table' | 'graphs'>('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: undefined,

@@ -44,6 +44,7 @@ const getHazardDetails = graphql(`
     }
   }
 `);
+
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
     company(id: $id) {
@@ -52,6 +53,7 @@ const getCompanyName = graphql(`
     }
   }
 `);
+
 export default function Page({
   params,
 }: {
@@ -70,7 +72,6 @@ export default function Page({
     query: getCompanyName,
     variables: { id: companyId },
   });
-
   const companyName = data?.company?.name;
 
   const [openDetailsModal, setOpenDetailsModal] = useState<boolean>(false);
@@ -112,7 +113,7 @@ export default function Page({
   const NotFoundHazardMessage = () => (
     <div className="flex h-80 flex-col justify-center items-center gap-5">
       <Text color="foreground" variant="medium">
-        No reported hazards were found.
+        No hazards were found.
       </Text>
       <LucideSearchX color="gray" />
     </div>
@@ -146,63 +147,76 @@ export default function Page({
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="view all">View all</TabsTrigger>
         </TabsList>
+
         <TabsContent
           value="active"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazards.map(
-            (boltResult) =>
-              boltResult.isHazard && (
-                <HazardCard
-                  key={boltResult.id}
-                  boltResult={boltResult}
-                  onViewMore={() =>
-                    handleBoltDetailsModalToggle(true, boltResult.id)
-                  }
-                  onCompleteClick={() =>
-                    handleCompleteConfirmationModalToggle(true, boltResult.id)
-                  }
-                />
-              ),
+          {hazards.some((boltResult) => boltResult.isHazard) ? (
+            hazards.map(
+              (boltResult) =>
+                boltResult.isHazard && (
+                  <HazardCard
+                    key={boltResult.id}
+                    boltResult={boltResult}
+                    onViewMore={() =>
+                      handleBoltDetailsModalToggle(true, boltResult.id)
+                    }
+                    onCompleteClick={() =>
+                      handleCompleteConfirmationModalToggle(true, boltResult.id)
+                    }
+                  />
+                ),
+            )
+          ) : (
+            <NotFoundHazardMessage />
           )}
         </TabsContent>
+
         <TabsContent
           value="completed"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazards.map(
-            (boltResult) =>
-              !boltResult.isHazard && (
-                <HazardCard
-                  key={boltResult.id}
-                  boltResult={boltResult}
-                  onViewMore={() =>
-                    handleBoltDetailsModalToggle(true, boltResult.id)
-                  }
-                />
-              ),
+          {hazards.some((boltResult) => !boltResult.isHazard) ? (
+            hazards.map(
+              (boltResult) =>
+                !boltResult.isHazard && (
+                  <HazardCard
+                    key={boltResult.id}
+                    boltResult={boltResult}
+                    onViewMore={() =>
+                      handleBoltDetailsModalToggle(true, boltResult.id)
+                    }
+                  />
+                ),
+            )
+          ) : (
+            <NotFoundHazardMessage />
           )}
         </TabsContent>
+
         <TabsContent
           value="view all"
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
-          {hazards.map((boltResult) => (
-            <HazardCard
-              key={boltResult.id}
-              boltResult={boltResult}
-              onViewMore={() =>
-                handleBoltDetailsModalToggle(true, boltResult.id)
-              }
-              onCompleteClick={() =>
-                handleCompleteConfirmationModalToggle(true, boltResult.id)
-              }
-            />
-          ))}
+          {hazards.length > 0 ? (
+            hazards.map((boltResult) => (
+              <HazardCard
+                key={boltResult.id}
+                boltResult={boltResult}
+                onViewMore={() =>
+                  handleBoltDetailsModalToggle(true, boltResult.id)
+                }
+                onCompleteClick={() =>
+                  handleCompleteConfirmationModalToggle(true, boltResult.id)
+                }
+              />
+            ))
+          ) : (
+            <NotFoundHazardMessage />
+          )}
         </TabsContent>
       </Tabs>
-
-      {hazards.length === 0 && <NotFoundHazardMessage />}
 
       <Modal
         open={openDetailsModal}

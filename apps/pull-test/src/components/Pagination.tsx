@@ -1,4 +1,3 @@
-// Open empty react component
 import React from 'react';
 import { Button, Text } from '@gsp/ui';
 import { LucideArrowLeft, LucideArrowRight } from 'lucide-react';

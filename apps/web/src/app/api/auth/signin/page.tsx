@@ -35,12 +35,19 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-      const redirectTo = isAdmin ? '/overview' : '/selectcompany';
-      router.push(redirectTo);
+      const callbackUrl = searchParams.get('callbackUrl');
+
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+        const redirectTo = isAdmin ? '/overview' : '/selectcompany';
+        router.push(redirectTo);
+      }
     }
   }, [status, router, searchParams]);
 
+  // Move to a separate file
   const formSchema = z.object({
     emailAddress: z
       .string()

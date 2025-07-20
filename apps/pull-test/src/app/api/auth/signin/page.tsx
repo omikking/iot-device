@@ -14,6 +14,7 @@ import {
   Input,
   Anchor,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -21,20 +22,33 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
+import { responses } from '@/app/uitexts/responses';
+import { Role } from '@/gql/graphql';
 
 export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
-  const [error, setError] = useState('');
+
+  const { status, data: session } = useSession();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl') || '/overview';
-      router.push(callbackUrl);
+      const callbackUrl = searchParams.get('callbackUrl');
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+        const redirectTo = isAdmin
+          ? 'http://localhost:3000/overview'
+          : 'http://localhost:3000/selectcompany';
+        router.push(redirectTo);
+      }
     }
   }, [status, router, searchParams]);
 
+  // Move to a separate file
   const formSchema = z.object({
     emailAddress: z
       .string()
@@ -55,49 +69,84 @@ export default function SignIn() {
   });
 
   const handleSignIn = async (values: z.infer<typeof formSchema>) => {
-    const result = await signIn('credentials', {
+    setIsLoading(true);
+
+    await signIn('credentials', {
       email: values.emailAddress,
       password: values.password,
       redirect: false,
-    });
-    result?.error && setError(result.error);
+    })
+      // Backend errors
+      .then((result) => {
+        if (!result?.ok && result?.error) {
+          const errorData = JSON.parse(result.error);
+
+          showAlertToast({
+            title: errorData?.title,
+            description: errorData?.message,
+            variant: errorData?.type || 'error',
+          });
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.signInFailed,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  console.log('Session from sign in page: ', session);
-  console.log('Status from sign in page: ', status);
-  const formValues = form.watch(); 
-  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password
-  
+  const formValues = form.watch();
+  const isAnyFieldEmpty = !formValues.emailAddress || !formValues.password;
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
-      <div className="flex flex-col items-center gap-16">
-        {/* @TODO will have to fix one login page for all apps. */}
-        <Headline as="h1" variant="xl" color="foreground">
-          Pull Test Portal
-        </Headline>
+      <Headline as="h1" variant="xl" color="foreground" className="text-center">
+        Ground Support Platform
+      </Headline>
 
-        <div className="min-w-96 h-96 flex flex-col items-center">
-          {/* @TODO fix better displaying of this error later */}
-          {error && (
-            <Text variant="xs" color="destructive">
-              {error}
-            </Text>
-          )}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((e) => handleSignIn(e))}
-              className="w-full flex flex-col gap-8"
-            >
+      <div className="min-w-96 h-96 flex flex-col items-center">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((e) => handleSignIn(e))}
+            className="w-full flex flex-col gap-8"
+          >
+            <FormField
+              control={form.control}
+              name="emailAddress"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter email"
+                        {...field}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <div>
               <FormField
                 control={form.control}
-                name="emailAddress"
+                name="password"
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter email"
+                          type="password"
+                          placeholder="Enter password"
                           {...field}
                           className="w-full"
                         />
@@ -107,49 +156,36 @@ export default function SignIn() {
                   );
                 }}
               />
-              <div>
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter password"
-                            {...field}
-                            className="w-full"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <div className="flex items-center gap-2 pt-4 pb-2">
-                  <Text variant="small" color="foreground">
-                    Forgot your password?{' '}
-                    {/* @TODO Will lead to a reset page later */}
-                  </Text>
-                  {/* @TODO Link href should go where? */}
-                  <Text variant="small" color="foreground">
-                    <Link href="#" passHref legacyBehavior>
-                      <Anchor isUnderline color="foreground">
-                        Click here to reset.
-                      </Anchor>
-                    </Link>
-                  </Text>
-                </div>
+              <div className="flex items-center gap-2 pt-4 pb-2">
+                <Text variant="small" color="foreground">
+                  Forgot your password?
+                </Text>
+                <Text variant="small" color="accent">
+                  <Link
+                    href="http://localhost:3000/api/auth/reset-password"
+                    passHref
+                    legacyBehavior
+                  >
+                    <Anchor isUnderline color="accent">
+                      Click here to reset.
+                    </Anchor>
+                  </Link>
+                </Text>
               </div>
-              <Button variant="primary" size="large" isWide type="submit" disabled={isAnyFieldEmpty}>
-                <LucideLogIn />
-                Login
-              </Button>
-            </form>
-          </Form>
-        </div>
+            </div>
+            <Button
+              variant="primary"
+              size="large"
+              isWide
+              type="submit"
+              isLoading={isLoading}
+              disabled={isAnyFieldEmpty}
+            >
+              {!isLoading && <LucideLogIn />}
+              Login
+            </Button>
+          </form>
+        </Form>
       </div>
     </main>
   );

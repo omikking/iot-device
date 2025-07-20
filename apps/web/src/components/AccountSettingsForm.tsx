@@ -9,6 +9,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   UserAccountFormValues,
@@ -16,11 +17,13 @@ import {
 } from './schemas/AccountSettingsFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from '@/gql/graphql';
 import { LucideCheckCircle } from 'lucide-react';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AccountSettingsFormProps = {
   user: User;
@@ -49,6 +52,8 @@ const updateAccountUserMutation = graphql(`
 export default function AccountSettingsForm({
   user,
 }: AccountSettingsFormProps): JSX.Element {
+  const [isLoading, setIsLoading] = useState(false);
+
   const [, updateAccountUser] = useMutation<UserAccountFormValues>(
     updateAccountUserMutation,
   );
@@ -92,19 +97,34 @@ export default function AccountSettingsForm({
           }
         : undefined;
 
-    const result = await updateAccountUser({
+    updateAccountUser({
       id: user.id,
       updateUserInput,
       updatePasswordInput,
-    });
+    })
+      .then((result) => {
+        // Backend errors
+        handleGraphQLErrors(result.error);
 
-    if (result.error) {
-      console.error('Update failed:', result.error);
-      // You can show an error toast here
-    } else {
-      console.log('User updated:', result.data);
-      // You can show a success toast here
-    }
+        // Success
+        if (result.data) {
+          showAlertToast({
+            title: responses.settingsUpdateSuccess,
+            variant: 'success',
+          });
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.settingsUpdateFailed,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const formValues = settingsForm.getValues();
@@ -113,26 +133,26 @@ export default function AccountSettingsForm({
     !formValues.email ||
     !formValues.fullName ||
     !formValues.workPlace ||
-    !formValues.phoneNumber 
-    
-  const isSubmitDisabled = isAnyFieldEmpty || !isDirty
+    !formValues.phoneNumber;
+
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
   return (
     <Form {...settingsForm}>
-      <form onSubmit={settingsForm.handleSubmit(onSubmit)}>
-        <div className="w-full mt-4 mb-12 flex flex-col gap-16">
+      <form onSubmit={settingsForm.handleSubmit(onSubmit)} className="w-full">
+        <div className="w-full mt-4 flex flex-col gap-20">
           <ContentHolder variant="general" headlineText="Account settings">
             {/* Email */}
             <FormField
               control={settingsForm.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your email..."
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -145,13 +165,13 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="fullName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Full name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your full name..."
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -164,13 +184,13 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="workPlace"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Workplace</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your workplace..."
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -183,13 +203,13 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="phoneNumber"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Phone number</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your phone number..."
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -204,14 +224,14 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="oldPassword"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Old password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your old password..."
                       type="password"
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -224,14 +244,14 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="newPassword"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>New password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Enter your new password..."
                       type="password"
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -244,14 +264,14 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="confirmPassword"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="min-w-[31%]">
                   <FormLabel>Confirm password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="Confirm your password..."
                       type="password"
-                      className="min-w-[400px]"
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
@@ -267,6 +287,7 @@ export default function AccountSettingsForm({
             size="large"
             type="submit"
             disabled={isSubmitDisabled}
+            isLoading={isLoading}
           >
             <LucideCheckCircle />
             Save changes

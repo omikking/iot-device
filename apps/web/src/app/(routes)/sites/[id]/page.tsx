@@ -1,13 +1,5 @@
 'use client';
-import {
-  Badge,
-  Button,
-  Headline,
-  Modal,
-  ModalTrigger,
-  Tabs,
-  TabsContent,
-} from '@gsp/ui';
+import { Badge, Button, Headline, Modal, ModalTrigger, Tabs } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Site } from '@/gql/graphql';
@@ -55,11 +47,11 @@ export default function Page({
   const companyName = data?.company?.name;
 
   // Commented out since not in MVP
-  // const [, setApp] = useState<'Pull Test' | 'xCyclops' | 'Ultrabolts'>(
-  //   'Pull Test',
+  // const [, setApp] = useState<'Application.PullTest' | 'Application.Banshee'>(
+  //   'Application.PullTest',
   // );
 
-    const [sitesData, refetchSites] = useQuery({
+  const [sitesData, refetchSites] = useQuery({
     query: getCompanySitesQuery,
     variables: { id: companyId || '' },
   });
@@ -68,7 +60,7 @@ export default function Page({
   const refreshSite = () => {
     refetchSites({ requestPolicy: 'network-only' });
   };
-  
+
   const [openSiteModal, setOpenSiteModal] = useState<boolean>(false);
   const [selectedSite, setSelectedSite] = useState<Site | undefined>(undefined);
 
@@ -96,17 +88,11 @@ export default function Page({
           <div className="w-full flex flex-row justify-end items-center pb-4">
             {/* // Commented out since not in MVP */}
             {/* <TabsList>
-              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
-                Pull Test
+              <TabsTrigger value="pullTest" onClick={() => setApp('Application.PullTest')}>
+                {getAppName(Application.PullTest)}
               </TabsTrigger>
-              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
-                xCyclops
-              </TabsTrigger>
-              <TabsTrigger
-                value="ultrabolts"
-                onClick={() => setApp('Ultrabolts')}
-              >
-                Ultrabolts
+              <TabsTrigger value="banshee" onClick={() => setApp('Application.Banshee')}>
+                {getAppName(Application.Banshee)}
               </TabsTrigger>
             </TabsList> */}
 
@@ -125,32 +111,14 @@ export default function Page({
             </Modal>
           </div>
 
-          <TabsContent value="pullTest">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
-
-          <TabsContent value="xCyclops">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
-
-          <TabsContent value="ultrabolts">
-            <SitesTable
-              companyId={companyId}
-              onOpenChange={handleModalToggle}
-              onSelectSite={setSelectedSite}
-              sites = {sites}
-            />
-          </TabsContent>
+          {/* <TabsContent value="pullTest"> */}
+          <SitesTable
+            companyId={companyId}
+            onOpenChange={handleModalToggle}
+            onSelectSite={setSelectedSite}
+            sites={sites}
+          />
+          {/* </TabsContent> */}
         </Tabs>
       </div>
     </main>

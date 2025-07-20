@@ -71,7 +71,9 @@ export const LevelsList = ({
         {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available levels
+              {selectedSiteId
+                ? 'No levels found for this site'
+                : 'Select site to view available locations'}
             </Text>
           </div>
         )}

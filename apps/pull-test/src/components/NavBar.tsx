@@ -7,12 +7,31 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import { Menu } from './Menu';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
+import { getAppName } from '@/libs/utils';
+import { Application } from '@/gql/graphql';
+import { useQuery } from 'urql';
+import { graphql } from '@/gql';
+
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
 
 export const NavBar = () => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const params = useParams();
   const companyId = params?.id as string;
+
+  const [{ data }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+  });
+  const companyName = data?.company?.name;
 
   const excludedPaths = ['/api/auth/signin', '/forgot-password'];
   const isExcludedPath = excludedPaths.includes(pathname);
@@ -25,7 +44,7 @@ export const NavBar = () => {
             <SandvikLogo />
             <div className="h-6 border-l border-black mx-1" />
             <Headline variant="small" color="foreground" as="h3" isBold>
-              Pull Test
+              {getAppName(Application.PullTest)}
             </Headline>
           </div>
         </Link>
@@ -33,11 +52,13 @@ export const NavBar = () => {
         <div className="flex gap-10 items-center">
           {status === 'authenticated' && (
             <div className="flex items-center gap-2">
-              <div className="border border-gold-3 px-5 py-1.5">
-                <Text variant="medium" color="foreground">
-                  {session.company.name}
-                </Text>
-              </div>
+              {companyName && (
+                <div className="border border-gold-3 px-5 py-1.5">
+                  <Text variant="medium" color="foreground">
+                    {companyName}
+                  </Text>
+                </div>
+              )}
 
               <div className="flex items-center gap-1 border border-gold-3 px-5 py-1.5">
                 <LucideUser size="16" className="mr-2" />

@@ -23,12 +23,13 @@ import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { useParams } from 'next/navigation';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -69,7 +70,8 @@ export const AddOrEditSiteModal = ({
   onOpenChange,
   refreshSites,
 }: AddOrEditSiteModalProps) => {
-  const { data: session } = useSession();
+  const params = useParams();
+  const companyId = params.id as string;
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -85,7 +87,7 @@ export const AddOrEditSiteModal = ({
       postalCode: site?.postalCode || '',
       city: site?.city || '',
       country: site?.country || '',
-      companyId: site?.companyId || session?.company.id,
+      companyId: site?.companyId || companyId,
     },
   });
 
@@ -96,11 +98,11 @@ export const AddOrEditSiteModal = ({
       postalCode: '',
       city: '',
       country: '',
-      companyId: session?.company.id,
+      companyId: companyId,
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -118,58 +120,64 @@ export const AddOrEditSiteModal = ({
     setIsLoading(true);
 
     if (site) {
-      updateSite({
-        id: site.id,
-        updateSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      updateSite({ id: site.id, updateSiteInput: data })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteSuccessfulUpdate,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.updateSiteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!site) {
       createSite({ createSiteInput: data })
         .then((result) => {
-          const alreadyExistsError = result.error?.graphQLErrors?.find((err) =>
-            err.message.includes('already exists'),
-          );
-
-          if (alreadyExistsError) {
-            showAlertToast({
-              title: responses.siteAlreadyExistsError,
-              variant: 'info',
-            });
-            return;
-          }
-
-          // General error
-          if (result.error) {
-            showAlertToast({
-              title: responses.createSiteError,
-              description: responses.contactSupportError,
-              variant: 'error',
-            });
-            return;
-          }
+          // Backend errors
+          handleGraphQLErrors(result.error);
 
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
-            showAlertToast({
-              title: responses.siteCreateSuccess,
-              variant: 'success',
-            });
-          } else {
-            showAlertToast({
-              title: responses.createSiteError,
-              description: responses.contactSupportError,
-              variant: 'error',
-            });
+            handleSuccess();
             refreshSites();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteCreateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
           }
+        })
+
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.createSiteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return;
         })
         .finally(() => {
           setIsLoading(false);

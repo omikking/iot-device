@@ -11,6 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   updateAdministratorFormSchema,
@@ -24,6 +25,8 @@ import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucidePlus, LucideSquarePen } from 'lucide-react';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -72,7 +75,7 @@ export const AddAdministratorModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -86,16 +89,39 @@ export const AddAdministratorModal = ({
 
   const onSubmit: SubmitHandler<UpdateAdministratorFormValues> = (data) => {
     if (administrator) {
+      setIsLoading(true);
+
       updateUser({
         id: administrator.id,
         updateUserInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.adminUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.adminUpdateFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -111,7 +137,7 @@ export const AddAdministratorModal = ({
   }, [administrator, form]);
 
   const formValues = form.watch();
-  const isAnyFieldEmpty = !formValues.email
+  const isAnyFieldEmpty = !formValues.email;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

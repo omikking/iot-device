@@ -9,22 +9,17 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { PlanLevel } from '@/app/mock/mock';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
-import { Plan } from '@/gql/graphql';
-
-// @TODO put in a utils folder
-export const capitalizeFirstLetter = (word: string) => {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-};
+import { Plan, PlanLevel } from '@/gql/graphql';
+import { capitalizeFirstLetter } from '@/libs/utils';
 
 type AppPlanProps = {
   appPlan: Plan;
   planLevel: PlanLevel;
-  isAdmin: boolean;
+  isUserSuperAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   activePlanLevel?: PlanLevel;
   expiringDate?: Date | number;
@@ -35,15 +30,14 @@ export const AppPlan = ({
   appPlan,
   planLevel,
   activePlanLevel,
-  isAdmin,
+  isUserSuperAdmin,
   companyForm,
   expiringDate,
   onPlanLevelChange,
 }: AppPlanProps) => {
-  const userRole = isAdmin ? 'Superadmin' : 'Client';
-  const isPlanActive = planLevel === activePlanLevel;
-
   const { applicationName } = appPlan;
+
+  const isPlanActive = planLevel === activePlanLevel;
 
   const handlePlanChange = (isChecked: boolean) => {
     const newPlanLevel = isChecked ? planLevel : undefined;
@@ -109,7 +103,7 @@ export const AppPlan = ({
               {capitalizeFirstLetter(planLevel)}
             </FormLabel>
 
-            {userRole === 'Superadmin' && (
+            {isUserSuperAdmin && (
               <FormControl>
                 <Switch
                   checked={activePlanLevel === planLevel}
@@ -118,7 +112,7 @@ export const AppPlan = ({
               </FormControl>
             )}
 
-            {userRole === 'Client' && isPlanActive && (
+            {!isUserSuperAdmin && isPlanActive && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
                 Your selected plan

@@ -1,110 +1,4 @@
-// @TODO Currently ENUMS from backend are not able to access in the FE. Hardcode them here for now.
-export type PlanLevel = 'GOLD' | 'SILVER' | 'BRONZE' | 'INACTIVE';
-
-export type Application =
-  | 'PULL_TEST'
-  | 'PULL_TEST_OPERATOR'
-  | 'ULTRABOLTS'
-  | 'XCYCLOPS';
-
-export type SiteResultSchema = {
-  id: string;
-  name: string;
-  address: string;
-  totalSiteLocations: number;
-  passCriteria?: string;
-  notification?: string;
-  fooBar?: string;
-};
-
-type AppPlan = {
-  name: string;
-  activePlan?: PlanLevel;
-  id: string;
-};
-
-export const siteResultMock: Site[] = [
-  {
-    id: '1',
-    siteName: 'Garpenberg',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '2',
-    siteName: 'Garpenberg',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '3',
-    siteName: 'Berggarpen',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '4',
-    siteName: 'Berggarpen',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '5',
-    siteName: 'Garpenberg',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '6',
-    siteName: 'Garpenberg',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    id: '7',
-    siteName: 'Garpenberg',
-    address: 'Kaspersbo 20',
-    city: 'Göteborg',
-    country: 'Sverige',
-    postalCode: '77849',
-    companyId: '111',
-    createdAt: '',
-    updatedAt: '',
-  },
-];
-
-import { Site } from '@/gql/graphql';
-import type { DropdownItem } from '@gsp/ui';
+import { Application } from '@/gql/graphql';
 
 export const optionsDesignSystemMock = [
   {
@@ -125,97 +19,6 @@ export const optionsDesignSystemMock = [
   },
 ];
 
-export const optionAdministratorRoleMock = [
-  {
-    id: 'Sandvik admin',
-    name: 'Sandvik admin',
-  },
-  {
-    id: 'Sandvik Supah admin',
-    name: 'Sandvik Supah admin',
-  },
-];
-
-export const appPlansMock: AppPlan[] = [
-  {
-    name: 'Pull-test',
-    activePlan: 'GOLD',
-    id: '1',
-  },
-  {
-    name: 'xCyclops',
-    activePlan: undefined,
-    id: '2',
-  },
-  {
-    name: 'Ultrabolts',
-    activePlan: 'BRONZE',
-    id: '3',
-  },
-];
-
-export const adminsMock = [
-  {
-    id: '1',
-    name: 'Elliot Alderson',
-  },
-  {
-    id: '2',
-    name: 'Darlene Alderson',
-  },
-  {
-    id: '3',
-    name: 'Tyrell Wellick',
-  },
-  {
-    id: '4',
-    name: 'Joanna Wellick',
-  },
-  {
-    id: '5',
-    name: 'Angela Moss',
-  },
-  {
-    id: '6',
-    name: 'Whiterose',
-  },
-  {
-    id: '7',
-    name: 'Felix Östergren',
-  },
-  {
-    id: '8',
-    name: 'Jimmy Nwadinkpa',
-  },
-];
-
-export const companiesMock = [
-  {
-    name: 'E-Corp',
-    id: '1',
-  },
-  {
-    name: 'Vandelay Industries',
-    id: '2',
-  },
-  {
-    name: 'Valve Software',
-    id: '3',
-  },
-  {
-    name: 'Subset Games',
-    id: '4',
-  },
-  {
-    name: 'Bohemia Interactive',
-    id: '5',
-  },
-  {
-    name: 'Felix Industries',
-    id: '6',
-  },
-];
-
 export type UserSchema = {
   id: string;
   fullName: string;
@@ -232,7 +35,7 @@ export type UserSchema = {
   };
 };
 
-export const usersMock: UserSchema[] = [
+export const usersDesignSystemMock: UserSchema[] = [
   {
     id: '1',
     fullName: 'Elliot Alderson',
@@ -244,7 +47,11 @@ export const usersMock: UserSchema[] = [
       id: '10',
       userId: '1',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR', 'ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [
+        Application.PullTest,
+        Application.PullTestOperator,
+        Application.Banshee,
+      ],
     },
     phoneNumber: '+4683729327',
   },
@@ -258,7 +65,7 @@ export const usersMock: UserSchema[] = [
       id: '11',
       userId: '2',
       role: 'Technician',
-      appAccess: ['ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },
@@ -273,7 +80,7 @@ export const usersMock: UserSchema[] = [
       id: '12',
       userId: '3',
       role: 'User',
-      appAccess: ['PULL_TEST', 'PULL_TEST_OPERATOR'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },
@@ -287,149 +94,13 @@ export const usersMock: UserSchema[] = [
       id: '100',
       userId: '4',
       role: 'Admin',
-      appAccess: ['PULL_TEST', 'ULTRABOLTS', 'XCYCLOPS'],
+      appAccess: [Application.PullTest, Application.PullTestOperator],
     },
     phoneNumber: '+4683729327',
   },
 ];
 
-export type TechniciansSchema = {
-  id: string;
-  fullName: string;
-  email: string;
-  company: string;
-  isGlobal: boolean;
-  phoneNumber: string;
-};
-
-export const techniciansMock: TechniciansSchema[] = [
-  {
-    id: '1',
-    fullName: 'Elliot Alderson',
-    email: 'elliotalderson@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: true,
-    phoneNumber: '+4683729327',
-  },
-  {
-    id: '2',
-    fullName: 'Jimmy Nwadinkpa',
-    email: 'jimmy@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: false,
-    phoneNumber: '+4683729327',
-  },
-  {
-    id: '3',
-    fullName: 'Felix Östergren',
-    email: 'felix@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: false,
-    phoneNumber: '+4683729327',
-  },
-  {
-    id: '4',
-    fullName: 'Whiterose',
-    email: 'whiterose@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: true,
-    phoneNumber: '+4683729327',
-  },
-  {
-    id: '5',
-    fullName: 'Darlene Alderson',
-    email: 'darlenealderson@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: false,
-    phoneNumber: '+4683729327',
-  },
-  {
-    id: '6',
-    fullName: 'Tyrell Wellick',
-    email: 'tyrellwellick@sandvik.com',
-    company: 'Sandvik',
-    isGlobal: true,
-    phoneNumber: '+4683729327',
-  },
-];
-
-export type AdministratorSchema = {
-  id: string;
-  fullName: string;
-  email: string;
-  company: string;
-  phoneNumber: string;
-  role: string;
-};
-
-export const administratorsMock: AdministratorSchema[] = [
-  {
-    id: '1',
-    fullName: 'Elliot Alderson',
-    email: 'elliot@sandvik.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
-  },
-  {
-    id: '2',
-    fullName: 'Darlene Alderson',
-    email: 'darlenealderson@sandvik.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik Supah admin',
-  },
-  {
-    id: '3',
-    fullName: 'Tyrell Wellick',
-    email: 'tyrellwellick@sandvik.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
-  },
-  {
-    id: '4',
-    fullName: 'Joanna Wellick',
-    email: 'joanna@sandvik.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik Supah admin',
-  },
-  {
-    id: '5',
-    fullName: 'Angela Moss',
-    email: 'angela@moss.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
-  },
-  {
-    id: '6',
-    fullName: 'Whiterose',
-    email: 'whiterose.sandvik.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik Supah admin',
-  },
-  {
-    id: '7',
-    fullName: 'Felix Östergren',
-    email: 'felix@hackerboy.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
-  },
-  {
-    id: '8',
-    fullName: 'Jimmy Nwadinkpa',
-    email: 'jimmy@madchadlad.com',
-    company: 'Sandvik',
-    phoneNumber: '+4683729327',
-    role: 'Sandvik admin',
-  },
-];
-
-export const sitesMock = [
+export const sitesDesignSystemMock = [
   {
     id: '1',
     name: 'Garpenberg site',
@@ -694,74 +365,5 @@ export const sitesMock = [
     id: '3',
     name: 'Kiruna site',
     levels: [],
-  },
-];
-
-export const roles: DropdownItem[] = [
-  {
-    id: '1',
-    name: 'User',
-    background: 'neutral',
-  },
-  {
-    id: '2',
-    name: 'Technician',
-    background: 'neutral',
-  },
-  {
-    id: '3',
-    name: 'Admin',
-    background: 'primary',
-  },
-];
-
-export const technicians = [
-  {
-    id: '1',
-    userId: '1',
-    name: 'Elliot Alderson',
-    email: 'elliot@ecorp.com',
-  },
-  {
-    id: '2',
-    userId: '2',
-    name: 'Darlene Alderson',
-    email: 'dolores@haze.com',
-  },
-  {
-    id: '3',
-    userId: '3',
-    name: 'Tyrell Wellick',
-    email: 'tyrell@ecorp.com',
-  },
-  {
-    id: '4',
-    userId: '4',
-    name: 'Joanna Wellick',
-    email: 'joanna@ecorp.com',
-  },
-  {
-    id: '5',
-    userId: '5',
-    name: 'Angela Moss',
-    email: 'angela@ecorp.com',
-  },
-  {
-    id: '6',
-    userId: '6',
-    name: 'Whiterose',
-    email: 'dark@army.com',
-  },
-  {
-    id: '7',
-    userId: '7',
-    name: 'Felix Östergren',
-    email: 'felix@ecorp.com',
-  },
-  {
-    id: '8',
-    userId: '8',
-    name: 'Jimmy Nwadinkpa',
-    email: 'jimmy@sandvik.com',
   },
 ];

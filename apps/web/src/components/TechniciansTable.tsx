@@ -3,11 +3,13 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { User } from '@/gql/graphql';
 import { useMutation, useQuery } from 'urql';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { LucideEyeOff, LucideView } from 'lucide-react';
+import { LucideEyeOff, LucideView, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const getTechniciansQuery = graphql(`
   query getTechnicians {
@@ -67,32 +69,44 @@ export const TechniciansTable = ({
   };
 
   const handleDelete = async (): Promise<boolean> => {
-    const techFound = technicians.find(
-      (tech) => tech.id === technicianToDelete?.id,
-    );
-
-    const techId = techFound?.id;
-
-    if (!techId) {
-      console.error('No technician selected for deletion');
+    if (!technicianToDelete?.id) {
       return false;
     }
 
     setIsDeleting(true);
 
-    return deleteTechnician({ id: techId })
-      .then((result) => {
-        if (result.error) {
+    return (
+      deleteTechnician({ id: technicianToDelete.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.techinicianDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.techinicianDeleteFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
-        }
-        return true;
-      })
-      .catch(() => {
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (technicianId: string) => {
@@ -191,6 +205,7 @@ export const TechniciansTable = ({
         columns={columns}
         data={technicians}
         noResultMessage="There are no technicians added yet."
+        icon={<LucideSearchX color="gray" />}
       />
 
       {technicians?.length > 0 && (

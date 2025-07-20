@@ -1,5 +1,12 @@
 'use client';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import {
+  Button,
+  ContentHolder,
+  Form,
+  Headline,
+  Text,
+  showAlertToast,
+} from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
@@ -7,27 +14,33 @@ import {
   LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
-import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
-  createCompanyFormSchema,
-  updateCompanyFormSchema,
+  createCompanySchema,
+  updateCompanySchema,
 } from './schemas/CompanyFormSchema';
-import { Company, Plan } from '@/gql/graphql';
+import {
+  Application,
+  Company,
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables,
+  Plan,
+  Role,
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables,
+} from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { AssociateDetailsForm } from './AssociateDetailsForm';
-
-const allPlans = [
-  { applicationName: 'PULL_TEST' },
-  { applicationName: 'XCYCLOPS' },
-  { applicationName: 'ULTRABOLTS' },
-];
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -93,23 +106,25 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  // Temporary state for devmode
-  const [isAdmin, setIsAdmin] = useState(true);
-  const user = isAdmin ? 'Superadmin' : 'Client';
+  const { data: session } = useSession();
+  const isUserSuperAdmin = session?.user?.globalRole === Role.SandvikAdmin;
 
-  const [, createCompany] = useMutation<CreateCompanyFormValues>(
-    createCompanyMutation,
-  );
-  const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
-    updateCompanyMutation,
-  );
+  const router = useRouter();
+
+  const [, createCompany] = useMutation<
+    CreateCompanyMutation,
+    CreateCompanyMutationVariables
+  >(createCompanyMutation);
+
+  const [, updateCompany] = useMutation<
+    UpdateCompanyMutation,
+    UpdateCompanyMutationVariables
+  >(updateCompanyMutation);
 
   const companyForm = useForm<
     CreateCompanyFormValues | UpdateCompanyFormValues
   >({
-    resolver: zodResolver(
-      company ? updateCompanyFormSchema : createCompanyFormSchema,
-    ),
+    resolver: zodResolver(company ? updateCompanySchema : createCompanySchema),
     defaultValues: {
       name: company?.name || '',
       companyContactEmail: company?.companyContactEmail || '',
@@ -126,25 +141,58 @@ export const CompanyForm = ({
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
-    console.log('Submit');
-
     if (company) {
       updateCompany({
         id: company.id,
         updateCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyUpdate,
+              variant: 'success',
+            });
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyUpdateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
 
     if (!company && isNewCompany) {
       createCompany({
-        createCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+        createCompanyInput: data as CreateCompanyFormValues,
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyCreation,
+              variant: 'success',
+            });
+            router.push(`/company/${result.data?.createCompany.id}`);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyInvitationFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
   };
 
@@ -175,10 +223,13 @@ export const CompanyForm = ({
   const isSubmitDisabled = isNewCompany
     ? isAnyFieldEmpty
     : !isDirty || isAnyFieldEmpty;
+
+  const sandvikAdminUserInfo = company?.users?.find(
+    (user) => user.id === company.sandvikAdminUserId,
+  );
+
   return (
     <>
-      <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-
       <Form {...companyForm}>
         <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
@@ -194,10 +245,10 @@ export const CompanyForm = ({
                   variant="medium"
                   className="ml-8"
                 >
-                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
+                  {isUserSuperAdmin ? 'Plans' : 'Your plans'}
                 </Headline>
 
-                {user === 'Client' && (
+                {!isUserSuperAdmin && (
                   <div className="flex items-center">
                     <LucideSparkles size="20" />
                     <Headline
@@ -220,13 +271,13 @@ export const CompanyForm = ({
               </div>
 
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlans.map((planType) => {
+                {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
-                    (plan) => plan.applicationName === planType.applicationName,
+                    (plan) => plan.applicationName === appName,
                   );
 
                   const appPlan = existingPlan || {
-                    applicationName: planType.applicationName,
+                    applicationName: appName,
                     planLevel: '',
                     expiringDate: 0,
                   };
@@ -235,7 +286,7 @@ export const CompanyForm = ({
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
                       key={existingPlan?.id || appPlan.applicationName}
-                      isAdmin={isAdmin}
+                      isUserSuperAdmin={isUserSuperAdmin}
                       companyForm={companyForm}
                     />
                   );
@@ -247,20 +298,34 @@ export const CompanyForm = ({
             <ContentHolder
               variant="general"
               headlineText={
-                user === 'Superadmin'
-                  ? 'Admin'
+                isUserSuperAdmin
+                  ? 'Sandvik admin'
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
-              {user === 'Client' && (
-                <AssociateDetailsForm companyForm={companyForm} />
+              {isUserSuperAdmin && <AdminForm companyForm={companyForm} />}
+              {!isUserSuperAdmin && sandvikAdminUserInfo && (
+                <AssociateDetailsForm
+                  sandvikAdminUserInfo={sandvikAdminUserInfo}
+                />
               )}
             </ContentHolder>
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
+            {!isNewCompany && (
+              <Button
+                variant="destructive"
+                size="large"
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <LucideTrash2 />
+                Inactivate company
+              </Button>
+            )}
+
             <Button
               variant="primary"
               size="large"
@@ -268,19 +333,8 @@ export const CompanyForm = ({
               disabled={isSubmitDisabled}
             >
               <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Update company details'}
+              {isNewCompany ? 'Send invitation' : 'Save changes'}
             </Button>
-
-            {!isNewCompany && (
-              <Button
-                variant="destructive"
-                size="large"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <LucideTrash2 />
-                Inactivate company
-              </Button>
-            )}
           </div>
         </form>
       </Form>

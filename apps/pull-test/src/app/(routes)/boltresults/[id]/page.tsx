@@ -1,31 +1,33 @@
 'use client';
-
-import { useMemo, useState } from 'react';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { BoltResultsTable } from '@/components/BoltResultsTable';
-import { BoltSelection } from '@/components/BoltSelection';
-import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { GoBack } from '@/components/GoBack';
-import { gql, useQuery } from 'urql';
 import {
+  Text,
+  Tabs,
+  Modal,
+  Badge,
   Button,
   Headline,
-  Badge,
-  Modal,
-  ModalTrigger,
-  Tabs,
   TabsList,
+  DateRange,
+  Breadcrumb,
   TabsTrigger,
   TabsContent,
-  DateRange,
-  Text,
-  Breadcrumb,
+  ModalTrigger,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
+  showAlertToast,
 } from '@gsp/ui';
+import { gql, useQuery } from 'urql';
+import { useEffect, useMemo, useState } from 'react';
+import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
+import { BoltResult } from '@/gql/graphql';
+
+import { BoltSelection } from '@/components/BoltSelection';
+import { BoltResultsTable } from '@/components/BoltResultsTable';
+import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { responses } from '@/app/uitexts/responses';
 
 interface Props {
   params: {
@@ -38,98 +40,100 @@ type SiteType = NonNullable<CompanyType['sites']>[number];
 type LevelType = NonNullable<SiteType['levels']>[number];
 type DriveType = NonNullable<LevelType['drives']>[number];
 type LocationType = NonNullable<DriveType['locations']>[number];
-export default function Page({ params }: Props): JSX.Element {
-  const companyId = params.id;
 
-  const boltResultQuery = gql`
-    query GetBoltResult(
-      $offset: Int
-      $limit: Int
-      $siteId: String
-      $levelId: String
-      $driveId: String
-      $locationId: String
-      $result: [String!]
-      $isHazard: Boolean
-      $withImage: Boolean
-      $withComment: Boolean
-      $startDate: DateTime
-      $endDate: DateTime
+const boltResultQuery = gql`
+  query GetBoltResult(
+    $offset: Int
+    $limit: Int
+    $siteId: String
+    $levelId: String
+    $driveId: String
+    $locationId: String
+    $result: [String!]
+    $isHazard: Boolean
+    $withImage: Boolean
+    $withComment: Boolean
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    boltResults(
+      offset: $offset
+      limit: $limit
+      siteId: $siteId
+      levelId: $levelId
+      driveId: $driveId
+      locationId: $locationId
+      result: $result
+      isHazard: $isHazard
+      withImage: $withImage
+      withComment: $withComment
+      startDate: $startDate
+      endDate: $endDate
     ) {
-      boltResults(
-        offset: $offset
-        limit: $limit
-        siteId: $siteId
-        levelId: $levelId
-        driveId: $driveId
-        locationId: $locationId
-        result: $result
-        isHazard: $isHazard
-        withImage: $withImage
-        withComment: $withComment
-        startDate: $startDate
-        endDate: $endDate
-      ) {
-        totalRecords
-        results {
-          id
-          createdAt
-          updatedAt
-          boltNumber
-          boltType
-          peakLoad
-          peakDisplacement
-          positionInRing
-          result
-          isHazard
-          hazardCompletedDate
-          abortReason
-          comment
-          image
-          siteId
-          levelId
-          driveId
-          locationId
-          userId
-          site {
-            siteName
-          }
-          drive {
-            driveName
-          }
-          location {
-            locationName
-          }
-          level {
-            levelName
-          }
+      totalRecords
+      results {
+        id
+        createdAt
+        updatedAt
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        positionInRing
+        result
+        isHazard
+        hazardCompletedDate
+        abortReason
+        comment
+        image
+        siteId
+        levelId
+        driveId
+        locationId
+        userId
+        site {
+          siteName
+        }
+        drive {
+          driveName
+        }
+        location {
+          locationName
+        }
+        level {
+          levelName
         }
       }
     }
-  `;
-  const getCompanyQuery = gql`
-    query GetCompany($id: String!) {
-      company(id: $id) {
-        name
-        sites {
+  }
+`;
+
+const getCompanyQuery = gql`
+  query GetCompany($id: String!) {
+    company(id: $id) {
+      name
+      sites {
+        id
+        name: siteName
+        levels {
           id
-          name: siteName
-          levels {
+          name: levelName
+          drives {
             id
-            name: levelName
-            drives {
+            name: driveName
+            locations {
               id
-              name: driveName
-              locations {
-                id
-                name: locationName
-              }
+              name: locationName
             }
           }
         }
       }
     }
-  `;
+  }
+`;
+
+export default function Page({ params }: Props): JSX.Element {
+  const companyId = params.id;
 
   const [site, setSite] = useState<SiteType | undefined>();
   const [level, setLevel] = useState<LevelType | undefined>();
@@ -151,24 +155,29 @@ export default function Page({ params }: Props): JSX.Element {
     reportedHazard: false,
   });
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 50;
+
   const result = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { withComment, withImage, reportedHazard, ...rest } = filterState;
+    const { ...rest } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
 
-  const [{ data: companyByIdResponse }] = useQuery({
+  const [{ data: companyData }] = useQuery({
     query: getCompanyQuery,
     variables: { id: companyId },
   });
-  const [{ data: boltResultsResponse }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResultSchema[] };
+
+  const [{ data: boltResultsResponse, error }] = useQuery<{
+    boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
     variables: {
+      offset: (currentPage - 1) * pageSize,
+      pageSize: pageSize,
       siteId: site?.id,
       levelId: level?.id,
       driveId: drive?.id,
@@ -183,12 +192,26 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
+  useEffect(() => {
+    if (error) {
+      showAlertToast({
+        title: responses.boltResultFetchError,
+        variant: 'error',
+      });
+    }
+  }, [error]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [site, level, drive, location, filterState, dateRange]);
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
       <Badge variant="primary" size="large" className="absolute top-24">
-        {companyByIdResponse?.company?.name ?? 'Select company'}
+        {companyData?.company?.name ?? 'Select company'}
       </Badge>
 
       <Headline as="h1" variant="xl" color="foreground">
@@ -275,7 +298,7 @@ export default function Page({ params }: Props): JSX.Element {
         </div>
 
         <BoltSelection
-          companyByIdResponse={companyByIdResponse}
+          companyData={companyData}
           site={site}
           level={level}
           drive={drive}
@@ -295,7 +318,11 @@ export default function Page({ params }: Props): JSX.Element {
         <TabsContent value="table">
           <BoltResultsTable
             site={site?.id}
-            boltResults={boltResultsResponse?.boltResults?.results}
+            boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords || 0}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
           />
         </TabsContent>
 

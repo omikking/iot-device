@@ -31,7 +31,7 @@ export const CompanyList = () => {
   if (!fetching && companies?.length === 0) {
     return (
       <Text variant="medium" color="muted">
-        No companies found.
+        No companies found
       </Text>
     );
   }
@@ -50,13 +50,13 @@ export const CompanyList = () => {
             <Button size="small" variant="primary" asChild>
               <Link href={`/company/${company.id}`}>
                 <LucideMoveRight />
-                Administrate
+                View
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
               <Link href={`/selectapplication/${company.id}`}>
                 <LucideLayoutGrid />
-                View Apps
+                Browse Apps
               </Link>
             </Button>
           </div>

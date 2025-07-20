@@ -3,19 +3,13 @@
 import { BoltResultsFilter } from '@/components/BoltResultsFilter';
 import { Headline } from '@gsp/ui';
 import { HazardCard } from '@/components/HazardCard';
-import { mockBoltResult } from '@/app/mock/mock';
+import { boltResultDesignSystemMock } from '@/app/mock/mock';
 
 export default function Page(): JSX.Element {
-  // @TODO: Add filtering functionality, this is essentially a visual mockup currently.
-  // Mock filter function
-  const mockFilterChange = (filters: unknown) => {
-    console.log('Filters changed:', filters);
-  };
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
-        Design system - Pull Test Portal 🦄
+        Design system - Pull Test 🦄
       </Headline>
 
       <hr className="w-full border-neutral-2" />
@@ -24,7 +18,9 @@ export default function Page(): JSX.Element {
         Bolt results filter 🦄
       </Headline>
       <div className="flex flex-row flex-wrap justify-center gap-12">
-        <BoltResultsFilter onFilterChange={mockFilterChange} />
+        <BoltResultsFilter
+          onFilterChange={() => console.log('filter change')}
+        />
       </div>
 
       <hr className="w-full border-neutral-2" />
@@ -33,7 +29,7 @@ export default function Page(): JSX.Element {
         Hazard card 🦄
       </Headline>
       <div className="w-full flex flex-row flex-wrap justify-center gap-12">
-        {mockBoltResult.map(
+        {boltResultDesignSystemMock.map(
           (hazardCard, index) =>
             hazardCard.isHazard && (
               <HazardCard

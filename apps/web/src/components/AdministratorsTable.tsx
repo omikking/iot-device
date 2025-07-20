@@ -5,6 +5,7 @@ import {
   ColumnDef,
   DataTable,
   TableHeadWithSorting,
+  showAlertToast,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useState } from 'react';
@@ -13,6 +14,9 @@ import { LucideUserCog } from 'lucide-react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { LucideSearchX } from 'lucide-react';
 
 type Administrator = GetAdminsQuery['users'][0];
 
@@ -72,29 +76,43 @@ export const AdministratorsTable = () => {
 
   const handleDelete = async (): Promise<boolean> => {
     if (!administratorToDelete?.id) {
-      console.error('No administrator selected for deletion');
       return false;
     }
 
-    const adminId = administratorToDelete.id;
-    console.log('Deleting administrator with ID:', adminId);
-
     setIsDeleting(true);
-    return deleteAdmin({ id: adminId })
-      .then((result) => {
-        if (result.error) {
-          console.error('Error deleting administrator:', result.error);
+
+    return (
+      deleteAdmin({ id: administratorToDelete.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.adminDeleteSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.adminDeleteFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
-        }
-        return true;
-      })
-      .catch((error) => {
-        console.error('Error deleting administrator:', error);
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const columns: ColumnDef<Administrator>[] = [
@@ -170,6 +188,7 @@ export const AdministratorsTable = () => {
         columns={columns}
         data={administrators}
         noResultMessage="There are no administrators added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {administrators?.length > 0 && (
         <Badge variant="neutral" className="self-start">

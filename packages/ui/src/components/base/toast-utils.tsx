@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
-import { Alert, AlertTitle, AlertDescription } from './alert';
 import { X } from 'lucide-react';
 import { Button } from './button';
+import { Alert, AlertTitle, AlertDescription } from './alert';
 
 const showAlertToast = ({
   title,
@@ -19,18 +19,22 @@ const showAlertToast = ({
           <AlertTitle color={variant} variant={variant}>
             {title}
           </AlertTitle>
-          <AlertDescription color={variant} variant={variant}>
+          <AlertDescription
+            color={variant}
+            variant={variant}
+            className="ui-mt-1"
+          >
             {description}
           </AlertDescription>
         </div>
         <Button
           type="reset"
           onClick={() => toast.dismiss(t)}
-          className="ui-bg-white ui-h-fit ui-rounded-[12px] ui-mt-[5px] ui-p-[2px]"
+          className="ui-bg-white ui-h-fit ui-rounded-[12px] ui-p-[2px] ui-cursor-pointer"
           variant={null}
           size={null}
         >
-          <X size={14} />
+          <X size={16} />
         </Button>
       </div>
     </Alert>

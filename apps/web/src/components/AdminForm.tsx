@@ -44,8 +44,6 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
       id: user.id,
       name: user.fullName,
     })) ?? [];
-  // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
-  // Leave it for now, and will be worked on later.
 
   return (
     <FormField

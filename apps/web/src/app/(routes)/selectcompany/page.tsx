@@ -27,7 +27,6 @@ export default function Page(): JSX.Element | null {
       limit: 100,
     },
   });
-
   const companies = data?.companies?.results || [];
 
   useEffect(() => {

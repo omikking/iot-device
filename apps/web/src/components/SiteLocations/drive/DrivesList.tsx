@@ -7,9 +7,9 @@ import React, {
   SetStateAction,
 } from 'react';
 import { DriveItem } from './DriveItem';
-import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
 import { Drive, Level } from '@/gql/graphql';
+import { Button, Headline, Text } from '@gsp/ui';
 
 type DrivesListProps = {
   drivesOptions: Drive[];
@@ -71,19 +71,21 @@ export const DrivesList = ({
         {drives.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
-              Select site to view available drives
+              {selectedLevelId
+                ? 'No drives found for the selected level'
+                : 'Select level to view available drives'}
             </Text>
           </div>
         )}
         {drives.map((drive) => (
           <DriveItem
-            inputRef={inputRef}
             key={drive.id}
             drive={drive}
+            inputRef={inputRef}
             drivesOptions={drives}
             selectedDriveId={selectedDriveId}
-            handleSetDrive={handleSetDrive}
             refreshSite={refreshSite}
+            handleSetDrive={handleSetDrive}
             setSelectedDrive={setSelectedDrive}
             setIsDeletingDrive={setIsDeletingDrive}
           />

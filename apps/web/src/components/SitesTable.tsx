@@ -13,10 +13,11 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
-import { LucideMoveRight } from 'lucide-react';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/uitexts/responses';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -62,38 +63,44 @@ export const SitesTable = ({
   };
 
   const handleDelete = async (): Promise<boolean> => {
-    const siteFound = sites.find((site) => site.id === siteToDelete?.id);
-    const siteId = siteFound?.id;
-
-    if (!siteId) {
-      console.error('No site selected for deletion');
-      return Promise.resolve(false);
+    if (!siteToDelete?.id) {
+      return false;
     }
 
     setIsDeleting(true);
 
-    return deleteSite({ id: siteId })
-      .then((result) => {
-        if (result.error) {
+    return (
+      deleteSite({ id: siteToDelete.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
           showAlertToast({
-            title: responses.deleteFailedError,
+            title: responses.siteDeleteFailed,
             description: responses.contactSupportError,
             variant: 'error',
           });
           return false;
-        }
-        showAlertToast({
-          title: responses.siteDeleteSuccess,
-          variant: 'info',
-        });
-        return true;
-      })
-      .catch(() => {
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (siteId: string) => {
@@ -187,6 +194,7 @@ export const SitesTable = ({
         columns={columns}
         data={sites}
         noResultMessage="There are no sites added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {sites?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">

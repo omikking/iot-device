@@ -1,6 +1,9 @@
 export const errorTexts = {
   // General errors
   contactSupportError: 'Please contact our support team for assistance.',
+  userNotAuthenticated: 'User not authenticated',
+  accessDenied: 'Access denied',
+  permissionsDenied: 'Permission denied',
 
   // Bolt result
   boltResultNotFound_title: (id: string) => `Bolt result #${id} not found`,
@@ -48,6 +51,12 @@ export const errorTexts = {
   companyAlreadyExists_message: 'This company is already registered.',
 
   companyDeleteError_title: 'Failed to inactivate company',
+
+  companyUpdatePlansDenied_message:
+    'You do not have permission to update plans, contact your administrator',
+
+  companyUpdateSandvikAdminDenied_message:
+    'You do not have permission to change the admin assignment',
 
   // Drive
   driveNotFound_title: (id: string) => `Drive #${id} not found`,

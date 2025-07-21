@@ -14,17 +14,21 @@ import { BoltResultsService } from './boltResults.service';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
-import { BoltResult, Role } from '@prisma/client';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
-import { App } from 'src/auth/decorators/app-decorator';
+import { BoltResult } from '@prisma/client';
 import { Application } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import {
+  RequireApps,
+  RequireCompanyAccess,
+} from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, PermissionGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
@@ -67,8 +71,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 
-  @Roles(Role.COMPANY_USER, Role.SANDVIK_TECHNICIAN, Role.COMPANY_ADMIN)
-  @App(Application.PULL_TEST)
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query('boltResult')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -76,6 +80,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResult')
   async create(
     @Args('createBoltResultInput')
@@ -84,6 +90,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResult')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -93,6 +101,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResult')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,
@@ -100,6 +110,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -108,6 +120,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -120,6 +134,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

@@ -8,18 +8,21 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
 import { GlobalRole, Role } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import {
+  RequireCompanyAccess,
+  RequireRoles,
+} from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, PermissionGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
-  @Roles(GlobalRole.SANDVIK_ADMIN)
+
   @Query(() => GraphQLTypes.CompanyListResponse, { name: 'companies' })
   async findAll(
-    @ActiveUser() user: ActiveUserData,
+    @ActiveUser() currentUser: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
   ): Promise<GraphQLTypes.CompanyListResponse> {
@@ -28,22 +31,18 @@ export class CompaniesResolver {
       limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.findAll(user, pagination);
+    return this.companiesService.findAll(currentUser, pagination);
   }
-  @Roles(
-    Role.SANDVIK_ADMIN,
-    Role.COMPANY_ADMIN,
-    Role.COMPANY_USER,
-    Role.SANDVIK_TECHNICIAN,
-  )
+
+  @RequireCompanyAccess(true)
   @Query('company')
-  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
 
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN)
   @Mutation('createCompany')
   async create(
     @Args('createCompanyInput')
@@ -52,15 +51,20 @@ export class CompaniesResolver {
     return this.companiesService.create(createCompanyInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('updateCompany')
   async update(
+    @ActiveUser() currentUser: ActiveUserData,
     @Args('id', ParseUUIDPipe) id: string,
     @Args('updateCompanyInput')
     updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
-    return this.companiesService.update(id, updateCompanyInput);
+    return this.companiesService.update(currentUser, id, updateCompanyInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('removeCompany')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

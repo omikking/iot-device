@@ -2,18 +2,20 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { HazardsService } from './hazards.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
-import { Application, Role } from '@prisma/client';
-import { App } from 'src/auth/decorators/app-decorator';
+import { Application } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import {
+  RequireCompanyAccess,
+  RequireApps,
+} from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(RolesGuard)
+@UseGuards(PermissionGuard)
 export class HazardsResolver {
   constructor(private readonly hazardsService: HazardsService) {}
 
-  @Roles(Role.COMPANY_USER, Role.SANDVIK_TECHNICIAN, Role.COMPANY_ADMIN)
-  @App(Application.PULL_TEST)
+  @RequireCompanyAccess(true)
+  @RequireApps(Application.PULL_TEST)
   @Query('hazards')
   async findAll(
     @Args('companyId', ParseUUIDPipe) companyId: string,

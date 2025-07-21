@@ -6,14 +6,22 @@ import { UpdateUserPermissionInput } from './dto/update-userPermissions.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import {
+  RequireCompanyAccess,
+  RequireRoles,
+} from 'src/auth/decorators/permission.decorator';
+import { GlobalRole, Role } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, PermissionGuard)
 export class UserPermissionsResolver {
   constructor(
     private readonly userPermissionsService: UserPermissionsService,
   ) {}
 
+  // Not sure if RequiredRoles should be here.
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN)
   @Query('userPermissions')
   async findAll(): Promise<GraphQLTypes.UserPermission[]> {
     return this.userPermissionsService.findAll();
@@ -26,6 +34,8 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.findOne(id);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('createUserPermission')
   async create(
     @Args('createUserPermissionInput')
@@ -34,6 +44,8 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.create(createUserPermissionInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('updateUserPermission')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -43,6 +55,8 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.update(id, updateUserPermissionInput);
   }
 
+  @RequireCompanyAccess(true)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('removeUserPermission')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

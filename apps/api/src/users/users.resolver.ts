@@ -3,39 +3,39 @@ import { UsersService } from './users.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { GlobalRole, Role } from '@prisma/client';
+import { GlobalRole } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { ActiveUser } from 'src/auth/decorators';
-import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
 import { UpdatePasswordInput } from './dto/update-user-password.input';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import {
+  RequireCompanyAccess,
+  RequireRoles,
+} from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard, PermissionGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+  // TODO Not sure if RequiredRoles should be here.
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN)
   @Query('users')
   async findAll(
-    @ActiveUser() user: ActiveUserData,
     @Args('roles', { type: () => [String], nullable: true })
     roles?: GlobalRole[],
   ): Promise<GraphQLTypes.User[]> {
-    console.log('Authenticated User ', user);
     return this.usersService.findAll(roles);
   }
 
-  @Roles(Role.COMPANY_ADMIN, Role.SANDVIK_ADMIN)
   @Query('user')
-  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.User> {
     return this.usersService.findOne(id);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('updateUser')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -47,6 +47,7 @@ export class UsersResolver {
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('removeUser')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

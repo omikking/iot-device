@@ -6,26 +6,21 @@ import { UpdateLevelInput } from './dto/update-level.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
-import { Role } from '@prisma/client';
+import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
-@Roles(
-  Role.SANDVIK_ADMIN,
-  Role.COMPANY_ADMIN,
-  Role.COMPANY_USER,
-  Role.SANDVIK_TECHNICIAN,
-)
+@UseGuards(JwtGuard, PermissionGuard)
 export class LevelsResolver {
   constructor(private readonly levelsService: LevelsService) {}
 
+  @RequireCompanyAccess(true)
   @Query('levels')
   async findAll(): Promise<GraphQLTypes.Level[]> {
     return this.levelsService.findAll();
   }
 
+  @RequireCompanyAccess(true)
   @Query('level')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -33,6 +28,8 @@ export class LevelsResolver {
     return this.levelsService.findOne(id);
   }
 
+  // TODO Should this be restricted to just company admins in admin portal?
+  @RequireCompanyAccess(true)
   @Mutation('createLevel')
   async create(
     @Args('createLevelInput')
@@ -41,6 +38,7 @@ export class LevelsResolver {
     return this.levelsService.create(createLevelInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('updateLevel')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -50,6 +48,7 @@ export class LevelsResolver {
     return this.levelsService.update(id, updateLevelInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('removeLevel')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

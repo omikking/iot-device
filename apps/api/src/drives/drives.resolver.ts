@@ -6,26 +6,21 @@ import { UpdateDriveInput } from './dto/update-drive.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
-import { Role } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
-@Roles(
-  Role.SANDVIK_ADMIN,
-  Role.COMPANY_ADMIN,
-  Role.COMPANY_USER,
-  Role.SANDVIK_TECHNICIAN,
-)
+@UseGuards(JwtGuard, PermissionGuard)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 
+  @RequireCompanyAccess(true)
   @Query('drives')
   async findAll(): Promise<GraphQLTypes.Drive[]> {
     return this.drivesService.findAll();
   }
 
+  @RequireCompanyAccess(true)
   @Query('drive')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -33,6 +28,7 @@ export class DrivesResolver {
     return this.drivesService.findOne(id);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('createDrive')
   async create(
     @Args('createDriveInput')
@@ -41,6 +37,7 @@ export class DrivesResolver {
     return this.drivesService.create(createDriveInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('updateDrive')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -50,6 +47,7 @@ export class DrivesResolver {
     return this.drivesService.update(id, updateDriveInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('removeDrive')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

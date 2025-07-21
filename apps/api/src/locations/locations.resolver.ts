@@ -6,26 +6,21 @@ import { ParseUUIDPipe } from '@nestjs/common';
 import { UpdateLocationInput } from './dto/update-location.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
-import { Roles } from 'src/auth/decorators/roles-decorator';
-import { Role } from '@prisma/client';
+import { PermissionGuard } from 'src/auth/guard/permission.guard';
+import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
-@Roles(
-  Role.SANDVIK_ADMIN,
-  Role.COMPANY_ADMIN,
-  Role.COMPANY_USER,
-  Role.SANDVIK_TECHNICIAN,
-)
+@UseGuards(JwtGuard, PermissionGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 
+  @RequireCompanyAccess(true)
   @Query('locations')
   async findAll(): Promise<GraphQLTypes.Location[]> {
     return this.locationsService.findAll();
   }
 
+  @RequireCompanyAccess(true)
   @Query('location')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -33,6 +28,7 @@ export class LocationsResolver {
     return this.locationsService.findOne(id);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('createLocation')
   async create(
     @Args('createLocationInput')
@@ -41,6 +37,7 @@ export class LocationsResolver {
     return this.locationsService.create(createLocationInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('updateLocation')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -50,6 +47,7 @@ export class LocationsResolver {
     return this.locationsService.update(id, updateLocationInput);
   }
 
+  @RequireCompanyAccess(true)
   @Mutation('removeLocation')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

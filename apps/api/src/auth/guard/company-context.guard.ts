@@ -23,12 +23,7 @@ export class CompanyContextGuard implements CanActivate {
     const args = ctx.getArgs();
     let companyId = null;
 
-    // 1 - Check for direct companyId argument
-    if (typeof args.companyId === 'string') {
-      companyId = args.companyId;
-    }
-
-    // 2 - Dynamically check ALL input objects for companyId
+    // 1 - Dynamically check ALL input objects for companyId
     for (const [, value] of Object.entries(args)) {
       if (
         value &&
@@ -42,7 +37,7 @@ export class CompanyContextGuard implements CanActivate {
       }
     }
 
-    // 3 - Handle resource ID lookups with a more robust approach
+    // 2 - Handle resource ID lookups with a more robust approach
     if (!companyId && args.id) {
       const info = ctx.getInfo();
       const fieldName = info.fieldName; // ex: 'updateSite'
@@ -82,7 +77,7 @@ export class CompanyContextGuard implements CanActivate {
       }
     }
 
-    // 4 - Set companyId in context for PermissionGuard to use to know what company the user is accessing
+    // 3 - Set companyId in context for PermissionGuard to use to know what company the user is accessing
     if (companyId) {
       ctx.getContext().companyId = companyId;
     }

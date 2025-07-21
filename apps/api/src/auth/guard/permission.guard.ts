@@ -21,6 +21,10 @@ export class PermissionGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const currentUser = ctx.getContext().req.user;
 
+    // Remove later
+    const info = ctx.getInfo();
+    console.log('Resolver name:', info.fieldName);
+
     if (!currentUser) {
       throw new ForbiddenException(errorTexts.userNotAuthenticated);
     }
@@ -58,6 +62,7 @@ export class PermissionGuard implements CanActivate {
       ]) || false;
 
     let filteredPermissions = [...currentUser.userPermissions];
+
     // Filter by role if required
     if (requiredRoles.length > 0) {
       filteredPermissions = filteredPermissions.filter((permission) =>
@@ -96,6 +101,7 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!hasAccess) {
+      console.log('3');
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 

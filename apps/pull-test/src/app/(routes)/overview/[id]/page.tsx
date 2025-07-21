@@ -45,7 +45,6 @@ export default function Page({
   const [{ data: hazardData }] = useQuery({
     query: getHazardsIdQuery,
     variables: { id: companyId },
-    pause: !companyId,
   });
 
   const activeHazards = hazardData?.hazards?.filter(

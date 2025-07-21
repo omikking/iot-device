@@ -7,10 +7,11 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-// CompanyContextGuard provides the companyId the user is trying to access, into a context to be used in PermissionGuard etc.
-// To make it work, it must be placed before PermissionGuard in the UseGuards decorator, so the context is ready before the guards.
-// @UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
+// Order: It must be placed in this specific order, so JwtGuard gets the user session data,
+// CompanyContextGuard gets the companyId & adds into the context, and last it's used in PermissionGuard.
+// @UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
 
+// CompanyContextGuard provides the companyId the user is trying to access, into a context to be used in PermissionGuard etc.
 @Injectable()
 export class CompanyContextGuard implements CanActivate {
   constructor(private prisma: PrismaService) {}
@@ -22,7 +23,12 @@ export class CompanyContextGuard implements CanActivate {
     const args = ctx.getArgs();
     let companyId = null;
 
-    // 1. Dynamically check ALL input objects for companyId
+    // 1 - Check for direct companyId argument
+    if (typeof args.companyId === 'string') {
+      companyId = args.companyId;
+    }
+
+    // 2 - Dynamically check ALL input objects for companyId
     for (const [, value] of Object.entries(args)) {
       if (
         value &&
@@ -36,7 +42,7 @@ export class CompanyContextGuard implements CanActivate {
       }
     }
 
-    // 2. Handle resource ID lookups with a more robust approach
+    // 3 - Handle resource ID lookups with a more robust approach
     if (!companyId && args.id) {
       const info = ctx.getInfo();
       const fieldName = info.fieldName; // ex: 'updateSite'
@@ -76,7 +82,7 @@ export class CompanyContextGuard implements CanActivate {
       }
     }
 
-    // 3. Set companyId in context for PermissionGuard to use to know what company the user is accessing
+    // 4 - Set companyId in context for PermissionGuard to use to know what company the user is accessing
     if (companyId) {
       ctx.getContext().companyId = companyId;
     }

@@ -23,7 +23,7 @@ import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
 import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
 
 @Resolver()
-@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
+@UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 

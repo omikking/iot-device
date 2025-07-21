@@ -12,7 +12,7 @@ import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
 
 @Resolver()
-@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
+@UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 

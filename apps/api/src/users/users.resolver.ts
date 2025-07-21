@@ -17,7 +17,7 @@ import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
 
 // TODO Check if these RequireCompanyAccess etc even work here. Or should we use UserAccessGuard?
 @Resolver()
-@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
+@UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 

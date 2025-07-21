@@ -18,7 +18,7 @@ import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
 import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
 
 @Resolver()
-@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
+@UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 

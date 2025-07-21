@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { GlobalRole } from '@prisma/client';
+import { GlobalRole, Role } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { UpdatePasswordInput } from './dto/update-user-password.input';
@@ -12,6 +12,7 @@ import {
   RequireCompanyAccess,
   RequireRoles,
 } from 'src/auth/decorators/permission.decorator';
+import { UserAccessGuard } from 'src/auth/guard/user-access.guard';
 
 @Resolver()
 @UseGuards(JwtGuard, PermissionGuard)
@@ -19,7 +20,7 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   // TODO Not sure if RequiredRoles should be here.
-  @RequireRoles(GlobalRole.SANDVIK_ADMIN)
+  @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Query('users')
   async findAll(
     @Args('roles', { type: () => [String], nullable: true })
@@ -28,6 +29,8 @@ export class UsersResolver {
     return this.usersService.findAll(roles);
   }
 
+  // TODO Test if user access guard is working
+  @UseGuards(UserAccessGuard)
   @Query('user')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -35,6 +38,7 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
+  @UseGuards(UserAccessGuard)
   @RequireCompanyAccess(true)
   @Mutation('updateUser')
   async update(
@@ -47,6 +51,7 @@ export class UsersResolver {
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
+  @UseGuards(UserAccessGuard)
   @RequireCompanyAccess(true)
   @Mutation('removeUser')
   async remove(

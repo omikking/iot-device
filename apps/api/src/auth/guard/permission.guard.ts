@@ -36,7 +36,7 @@ export class PermissionGuard implements CanActivate {
       !currentUser.userPermissions ||
       currentUser.userPermissions.length === 0
     ) {
-      throw new ForbiddenException(errorTexts.accessDenied);
+      throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 
     // Get requirements from decorators
@@ -82,7 +82,7 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!hasAccess) {
-      throw new ForbiddenException(errorTexts.accessDenied);
+      throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 
     return true;

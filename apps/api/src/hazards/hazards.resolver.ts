@@ -4,17 +4,16 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Application } from '@prisma/client';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import {
-  RequireCompanyAccess,
-  RequireApps,
-} from 'src/auth/decorators/permission.decorator';
+import { RequireApps } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
 @UseGuards(PermissionGuard)
 export class HazardsResolver {
   constructor(private readonly hazardsService: HazardsService) {}
 
-  @RequireCompanyAccess(true)
+  // TODO Need to check how to handle require company access
+
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST)
   @Query('hazards')
   async findAll(

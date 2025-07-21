@@ -2,7 +2,6 @@ export const errorTexts = {
   // General errors
   contactSupportError: 'Please contact our support team for assistance.',
   userNotAuthenticated: 'User not authenticated',
-  accessDenied: 'Access denied',
   permissionsDenied: 'Permission denied',
 
   // Bolt result

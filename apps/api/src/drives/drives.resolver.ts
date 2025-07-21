@@ -7,20 +7,21 @@ import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
 @UseGuards(JwtGuard, PermissionGuard)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 
-  @RequireCompanyAccess(true)
+  // TODO How do we handle restrictions here?
+
+  // @RequireCompanyAccess(true)
   @Query('drives')
   async findAll(): Promise<GraphQLTypes.Drive[]> {
     return this.drivesService.findAll();
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Query('drive')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -28,7 +29,7 @@ export class DrivesResolver {
     return this.drivesService.findOne(id);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('createDrive')
   async create(
     @Args('createDriveInput')
@@ -37,7 +38,7 @@ export class DrivesResolver {
     return this.drivesService.create(createDriveInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('updateDrive')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -47,7 +48,7 @@ export class DrivesResolver {
     return this.drivesService.update(id, updateDriveInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('removeDrive')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

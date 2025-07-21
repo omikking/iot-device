@@ -7,20 +7,21 @@ import { UpdateLocationInput } from './dto/update-location.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
 @UseGuards(JwtGuard, PermissionGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 
-  @RequireCompanyAccess(true)
+  // TODO How do we handle restrictions here?
+
+  // @RequireCompanyAccess(true)
   @Query('locations')
   async findAll(): Promise<GraphQLTypes.Location[]> {
     return this.locationsService.findAll();
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Query('location')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -28,7 +29,7 @@ export class LocationsResolver {
     return this.locationsService.findOne(id);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('createLocation')
   async create(
     @Args('createLocationInput')
@@ -37,7 +38,7 @@ export class LocationsResolver {
     return this.locationsService.create(createLocationInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('updateLocation')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -47,7 +48,7 @@ export class LocationsResolver {
     return this.locationsService.update(id, updateLocationInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('removeLocation')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

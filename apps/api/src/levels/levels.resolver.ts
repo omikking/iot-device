@@ -6,7 +6,6 @@ import { UpdateLevelInput } from './dto/update-level.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
 
 @Resolver()
@@ -14,13 +13,15 @@ import { PermissionGuard } from 'src/auth/guard/permission.guard';
 export class LevelsResolver {
   constructor(private readonly levelsService: LevelsService) {}
 
-  @RequireCompanyAccess(true)
+  // TODO How do we handle restrictions here?
+
+  // @RequireCompanyAccess(true)
   @Query('levels')
   async findAll(): Promise<GraphQLTypes.Level[]> {
     return this.levelsService.findAll();
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Query('level')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -28,8 +29,7 @@ export class LevelsResolver {
     return this.levelsService.findOne(id);
   }
 
-  // TODO Should this be restricted to just company admins in admin portal?
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('createLevel')
   async create(
     @Args('createLevelInput')
@@ -38,7 +38,7 @@ export class LevelsResolver {
     return this.levelsService.create(createLevelInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('updateLevel')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -48,7 +48,7 @@ export class LevelsResolver {
     return this.levelsService.update(id, updateLevelInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @Mutation('removeLevel')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

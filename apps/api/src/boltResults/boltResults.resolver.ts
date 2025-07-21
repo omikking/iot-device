@@ -17,17 +17,16 @@ import { ActiveUser } from 'src/auth/decorators';
 import { BoltResult } from '@prisma/client';
 import { Application } from '@prisma/client';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import {
-  RequireApps,
-  RequireCompanyAccess,
-} from 'src/auth/decorators/permission.decorator';
+import { RequireApps } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
 @UseGuards(JwtGuard, PermissionGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @RequireCompanyAccess(true)
+  // TODO Need to check how to handle require company access
+
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
@@ -71,7 +70,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query('boltResult')
   async findOne(
@@ -80,7 +79,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResult')
   async create(
@@ -90,7 +89,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResult')
   async update(
@@ -101,7 +100,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResult')
   async remove(
@@ -110,7 +109,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResults')
   async createBulk(
@@ -120,7 +119,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResults')
   async updateBulk(
@@ -134,7 +133,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  @RequireCompanyAccess(true)
+  // @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResults')
   async removeBulk(

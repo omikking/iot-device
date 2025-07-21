@@ -5,12 +5,10 @@ import {
   PullTestAbortReason,
   BoltType,
   RingPosition,
-  GlobalRole,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
-import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
@@ -19,7 +17,8 @@ export class BoltResultsService {
   constructor(private prisma: PrismaService) {}
 
   async findMany(
-    user: ActiveUserData,
+    allowedCompanyIds: string[] | null,
+    isSandvikAdmin: boolean,
     pagination: { offset: number; limit?: number },
     filters: {
       siteId?: string | undefined;
@@ -35,7 +34,6 @@ export class BoltResultsService {
     },
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit = 50 } = pagination;
-
     const {
       siteId,
       levelId,
@@ -49,10 +47,40 @@ export class BoltResultsService {
       endDate,
     } = filters || {};
 
+    // Only Sandvik Admins can see all, others are filtered by allowedCompanyIds
+    if (!isSandvikAdmin) {
+      if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
+        return { totalRecords: 0, results: [] };
+      }
+      // Fetch the site to get its companyId
+      if (siteId) {
+        const site = await this.prisma.site.findUnique({
+          where: { id: siteId },
+          select: { companyId: true },
+        });
+        if (!site || !allowedCompanyIds.includes(site.companyId)) {
+          return { totalRecords: 0, results: [] };
+          // Fix throw error later
+        }
+      }
+    }
+
+    let siteIdCondition: Record<string, any> = {};
+
+    if (isSandvikAdmin) {
+      if (siteId) {
+        siteIdCondition = { siteId };
+      }
+    } else {
+      if (siteId) {
+        siteIdCondition = { siteId };
+      } else {
+        siteIdCondition = { siteId: { in: allowedCompanyIds } };
+      }
+    }
+
     const whereCondition: Record<string, any> = {
-      ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
-        ? { userId: user.id }
-        : {}),
+      ...siteIdCondition,
       ...(siteId ? { siteId } : {}),
       ...(levelId ? { levelId } : {}),
       ...(driveId ? { driveId } : {}),

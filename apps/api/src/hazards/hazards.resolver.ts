@@ -5,15 +5,16 @@ import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Application } from '@prisma/client';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
 import { RequireApps } from 'src/auth/decorators/permission.decorator';
+import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
+import { RequireCompanyAccess } from 'src/auth/decorators/permission.decorator';
 
 @Resolver()
-@UseGuards(PermissionGuard)
+@UseGuards(CompanyContextGuard, PermissionGuard)
 export class HazardsResolver {
   constructor(private readonly hazardsService: HazardsService) {}
 
-  // TODO Need to check how to handle require company access
-
-  // @RequireCompanyAccess(true)
+  // @TODO not sure if I should use CompaniesAccessGuard here or just RequireCompanyAccess. Test and change later.
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST)
   @Query('hazards')
   async findAll(

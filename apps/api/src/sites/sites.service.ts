@@ -10,18 +10,18 @@ export class SitesService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-    companyIds: string[] | null,
+    allowedCompanyIds: string[] | null,
     isSandvikAdmin: boolean,
   ): Promise<Site[]> {
-    // Return all sites for Sandvik Admins, or filter by company access for others
+    // Return all sites for Sandvik Admins, or filter by company access for users
     if (isSandvikAdmin) {
       return this.prisma.site.findMany();
     }
-    if (!companyIds || companyIds.length === 0) {
+    if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
       return [];
     }
     return this.prisma.site.findMany({
-      where: { companyId: { in: companyIds } },
+      where: { companyId: { in: allowedCompanyIds } },
     });
   }
 

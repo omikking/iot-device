@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Int, Context } from '@nestjs/graphql';
 import { CompaniesService } from './companies.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CreateCompanyInput } from './dto/create-company.input';
@@ -14,15 +14,18 @@ import {
   RequireCompanyAccess,
   RequireRoles,
 } from 'src/auth/decorators/permission.decorator';
+import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
+import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
 
 @Resolver()
-@UseGuards(JwtGuard, PermissionGuard)
+@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 
+  @UseGuards(CompaniesAccessGuard)
   @Query(() => GraphQLTypes.CompanyListResponse, { name: 'companies' })
   async findAll(
-    @ActiveUser() currentUser: ActiveUserData,
+    @Context() context: any,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
   ): Promise<GraphQLTypes.CompanyListResponse> {
@@ -31,7 +34,11 @@ export class CompaniesResolver {
       limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.findAll(currentUser, pagination);
+    return this.companiesService.findAll(
+      context.allowedCompanyIds,
+      context.isAdmin,
+      pagination,
+    );
   }
 
   @RequireCompanyAccess(true)

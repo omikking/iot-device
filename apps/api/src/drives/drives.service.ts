@@ -9,8 +9,29 @@ import { errorTexts } from 'src/errorTexts/errorTexts';
 export class DrivesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Drive[]> {
-    return this.prisma.drive.findMany();
+  findAll(
+    allowedCompanyIds: string[] | null,
+    isSandvikAdmin: boolean,
+  ): Promise<Drive[]> {
+    // Return all drives for Sandvik Admins, or filter by company access for users
+    if (isSandvikAdmin) {
+      return this.prisma.drive.findMany();
+    }
+
+    if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
+      return Promise.resolve([]);
+      // Fix throw error later
+    }
+
+    return this.prisma.drive.findMany({
+      where: {
+        level: {
+          site: {
+            companyId: { in: allowedCompanyIds },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Drive> {

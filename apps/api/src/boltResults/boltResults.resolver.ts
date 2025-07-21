@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver, Int } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Int, Context } from '@nestjs/graphql';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CreateBoltResultInput } from './dto/create-boltResult.input';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
@@ -12,25 +12,26 @@ import {
 import { BoltResultsService } from './boltResults.service';
 
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { ActiveUser } from 'src/auth/decorators';
 import { BoltResult } from '@prisma/client';
 import { Application } from '@prisma/client';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import { RequireApps } from 'src/auth/decorators/permission.decorator';
+import {
+  RequireApps,
+  RequireCompanyAccess,
+} from 'src/auth/decorators/permission.decorator';
+import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
+import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
 
 @Resolver()
-@UseGuards(JwtGuard, PermissionGuard)
+@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  // TODO Need to check how to handle require company access
-
-  // @RequireCompanyAccess(true)
+  @UseGuards(CompaniesAccessGuard)
   @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
-    @ActiveUser() user: ActiveUserData,
+    @Context() context: any,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('siteId', { type: () => String, nullable: true }) siteId?: string,
@@ -67,10 +68,15 @@ export class BoltResultsResolver {
       startDate,
       endDate,
     };
-    return this.boltResultsService.findMany(user, pagination, filters);
+    return this.boltResultsService.findMany(
+      context.allowedCompanyIds,
+      context.isSandvikAdmin,
+      pagination,
+      filters,
+    );
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST, Application.PULL_TEST_OPERATOR)
   @Query('boltResult')
   async findOne(
@@ -79,7 +85,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResult')
   async create(
@@ -89,7 +95,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResult')
   async update(
@@ -100,7 +106,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResult')
   async remove(
@@ -109,7 +115,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('createBoltResults')
   async createBulk(
@@ -119,7 +125,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('updateBoltResults')
   async updateBulk(
@@ -133,7 +139,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireApps(Application.PULL_TEST_OPERATOR)
   @Mutation('removeBoltResults')
   async removeBulk(

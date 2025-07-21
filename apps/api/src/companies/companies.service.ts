@@ -19,16 +19,18 @@ export class CompaniesService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-    currentUser: ActiveUserData,
+    allowedCompanyIds: string[] | null,
+    isSandvikAdmin: boolean,
     pagination: { offset: number; limit: number },
   ): Promise<GraphQLTypes.CompanyListResponse> {
     const { offset, limit } = pagination;
-    const whereCondition: Partial<Record<string, any>> = {};
+    let whereCondition: Partial<Record<string, any>> = {};
 
-    if (currentUser.globalRole !== GlobalRole.SANDVIK_ADMIN) {
-      whereCondition.userPermission = {
-        some: { userId: currentUser.id },
-      };
+    if (!isSandvikAdmin) {
+      if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
+        return { totalRecords: 0, results: [] };
+      }
+      whereCondition = { id: { in: allowedCompanyIds } };
     }
 
     const totalRecords = await this.prisma.company.count({

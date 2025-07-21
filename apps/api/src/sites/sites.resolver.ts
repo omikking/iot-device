@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SitesService } from './sites.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { CreateSiteInput } from './dto/create-site.input';
@@ -8,19 +8,28 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { GlobalRole, Role } from '@prisma/client';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import { RequireRoles } from 'src/auth/decorators/permission.decorator';
+import {
+  RequireRoles,
+  RequireCompanyAccess,
+} from 'src/auth/decorators/permission.decorator';
+import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
+import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
 
 @Resolver()
-@UseGuards(JwtGuard, PermissionGuard)
+@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 
-  // TODO Need checks/guards here?
   @Query('sites')
-  async findAll(): Promise<GraphQLTypes.Site[]> {
-    return this.sitesService.findAll();
+  @UseGuards(CompaniesAccessGuard)
+  async findAll(@Context() context: any): Promise<GraphQLTypes.Site[]> {
+    return this.sitesService.findAll(
+      context.allowedCompanyIds,
+      context.isSandvikAdmin,
+    );
   }
 
+  @RequireCompanyAccess(true)
   @Query('site')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -28,7 +37,7 @@ export class SitesResolver {
     return this.sitesService.findOne(id);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('createSite')
   async create(
@@ -38,7 +47,7 @@ export class SitesResolver {
     return this.sitesService.create(createSiteInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('updateSite')
   async update(
@@ -49,7 +58,7 @@ export class SitesResolver {
     return this.sitesService.update(id, updateSiteInput);
   }
 
-  // @RequireCompanyAccess(true)
+  @RequireCompanyAccess(true)
   @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Mutation('removeSite')
   async remove(

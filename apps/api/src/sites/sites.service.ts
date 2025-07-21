@@ -9,8 +9,20 @@ import { errorTexts } from 'src/errorTexts/errorTexts';
 export class SitesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Site[]> {
-    return this.prisma.site.findMany();
+  async findAll(
+    companyIds: string[] | null,
+    isSandvikAdmin: boolean,
+  ): Promise<Site[]> {
+    // Return all sites for Sandvik Admins, or filter by company access for others
+    if (isSandvikAdmin) {
+      return this.prisma.site.findMany();
+    }
+    if (!companyIds || companyIds.length === 0) {
+      return [];
+    }
+    return this.prisma.site.findMany({
+      where: { companyId: { in: companyIds } },
+    });
   }
 
   async findOne(id: string): Promise<Site> {

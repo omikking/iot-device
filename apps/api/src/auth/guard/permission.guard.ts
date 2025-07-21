@@ -20,7 +20,6 @@ export class PermissionGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
     const currentUser = ctx.getContext().req.user;
-    const companyId = ctx.getArgs().id;
 
     if (!currentUser) {
       throw new ForbiddenException(errorTexts.userNotAuthenticated);
@@ -67,7 +66,22 @@ export class PermissionGuard implements CanActivate {
     }
 
     // Check that user has access to company if required
-    if (requireCompanyAccess && companyId) {
+    if (requireCompanyAccess) {
+      // First try to get companyId from context (set by CompanyContextGuard)
+      let companyId = ctx.getContext().companyId;
+
+      if (!companyId) {
+        // Fallback for direct company operations where ID is company ID
+        const id = ctx.getArgs().id;
+        if (id) {
+          // For direct company operations
+          companyId = id;
+        } else {
+          // No company ID found - deny access
+          throw new ForbiddenException(errorTexts.permissionsDenied);
+        }
+      }
+      // Now filter permissions by company
       filteredPermissions = filteredPermissions.filter(
         (permission) => permission.companyId === companyId,
       );

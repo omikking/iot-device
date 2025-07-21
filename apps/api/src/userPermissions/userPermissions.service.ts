@@ -9,8 +9,22 @@ import { errorTexts } from 'src/errorTexts/errorTexts';
 export class UserPermissionsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<UserPermission[]> {
-    return this.prisma.userPermission.findMany();
+  findAll(
+    allowedCompanyIds: string[] | null,
+    isSandvikAdmin: boolean,
+  ): Promise<UserPermission[]> {
+    // Return all user permissions for Sandvik Admins, or filter by company access for users
+    if (isSandvikAdmin) {
+      return this.prisma.userPermission.findMany();
+    }
+    if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
+      return Promise.resolve([]);
+    }
+    return this.prisma.userPermission.findMany({
+      where: {
+        companyId: { in: allowedCompanyIds },
+      },
+    });
   }
 
   async findOne(id: string): Promise<UserPermission> {

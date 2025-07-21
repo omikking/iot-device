@@ -12,14 +12,16 @@ import {
   RequireCompanyAccess,
   RequireRoles,
 } from 'src/auth/decorators/permission.decorator';
-import { UserAccessGuard } from 'src/auth/guard/user-access.guard';
+import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
+import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
 
+// TODO Check if these RequireCompanyAccess etc even work here. Or should we use UserAccessGuard?
 @Resolver()
-@UseGuards(JwtGuard, PermissionGuard)
+@UseGuards(CompanyContextGuard, JwtGuard, PermissionGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  // TODO Not sure if RequiredRoles should be here.
+  @UseGuards(CompaniesAccessGuard)
   @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Query('users')
   async findAll(
@@ -29,8 +31,7 @@ export class UsersResolver {
     return this.usersService.findAll(roles);
   }
 
-  // TODO Test if user access guard is working
-  @UseGuards(UserAccessGuard)
+  @RequireCompanyAccess(true)
   @Query('user')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -38,7 +39,6 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
-  @UseGuards(UserAccessGuard)
   @RequireCompanyAccess(true)
   @Mutation('updateUser')
   async update(
@@ -51,7 +51,6 @@ export class UsersResolver {
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
-  @UseGuards(UserAccessGuard)
   @RequireCompanyAccess(true)
   @Mutation('removeUser')
   async remove(

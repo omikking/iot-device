@@ -21,10 +21,6 @@ export class PermissionGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const currentUser = ctx.getContext().req.user;
 
-    // Remove later
-    const info = ctx.getInfo();
-    console.log('Resolver name:', info.fieldName);
-
     if (!currentUser) {
       throw new ForbiddenException(errorTexts.userNotAuthenticated);
     }
@@ -39,6 +35,7 @@ export class PermissionGuard implements CanActivate {
       !currentUser.userPermissions ||
       currentUser.userPermissions.length === 0
     ) {
+      console.log('1'); // Keep for logging purposes
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 
@@ -83,6 +80,7 @@ export class PermissionGuard implements CanActivate {
           companyId = id;
         } else {
           // No company ID found - deny access
+          console.log('2'); // Keep for logging purposes
           throw new ForbiddenException(errorTexts.permissionsDenied);
         }
       }
@@ -101,6 +99,7 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!hasAccess) {
+      console.log('3'); // Keep for logging purposes
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 

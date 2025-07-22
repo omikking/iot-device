@@ -74,7 +74,8 @@ export class CompanyContextGuard implements CanActivate {
         try {
           // Dynamic lookup based on resource type
           // This uses the pattern that your Prisma models follow the same naming as your handlers
-          const resourceKey = resourceType.toLowerCase();
+          const resourceKey =
+            resourceType.charAt(0).toLowerCase() + resourceType.slice(1);
 
           const resourceModel =
             this.prisma[resourceKey as keyof typeof this.prisma];

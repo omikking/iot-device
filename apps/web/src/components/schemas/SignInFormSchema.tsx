@@ -1,13 +1,15 @@
+import { validations } from '@/app/uitexts/validations';
 import { z } from 'zod';
 
 export const signInFormSchema = z.object({
   emailAddress: z
     .string()
-    .email({ message: 'Email must be a valid email address.' })
-    .max(50, { message: 'Email must be at most 50 characters.' }),
+    .email({ message: validations.emailInvalid })
+    .max(50, { message: validations.max50Chars('Email') }),
   password: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters.' }),
+    .min(8, { message: validations.passwordMin8Chars })
+    .max(50, { message: validations.max50Chars('Password') }),
 });
 
 export type SignInFormValues = z.infer<typeof signInFormSchema>;

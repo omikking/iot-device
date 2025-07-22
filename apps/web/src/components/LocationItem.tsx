@@ -6,7 +6,7 @@ import { Location } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { AddSiteLocationItemForm } from '@/components/AddSiteLocationItemForm';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';

@@ -1,10 +1,17 @@
 'use client';
+import { Role } from '@/gql/graphql';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucideMoveRight } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function NotFound() {
-  const redirectPath =`http://localhost:3000/selectcompany`;
+  const { data: session } = useSession();
+  const globalRole = session?.user?.globalRole;
+  const isAdmin = globalRole === Role.SandvikAdmin;
+  const redirectPath = isAdmin
+    ? 'http://localhost:3000/overview'
+    : 'http://localhost:3000/selectcompany';
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

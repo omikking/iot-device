@@ -6,7 +6,7 @@ import {
   DriveValue,
   LevelValue,
   LocationValue,
-} from '../schemas/SiteLocationsFormSchema';
+} from '@/components/schemas/SiteLocationsFormSchema';
 
 type FormValueMap = {
   level: LevelValue;

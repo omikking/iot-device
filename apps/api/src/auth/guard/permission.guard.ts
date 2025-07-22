@@ -25,7 +25,7 @@ export class PermissionGuard implements CanActivate {
       throw new ForbiddenException(errorTexts.userNotAuthenticated);
     }
 
-    // SANDVIK_ADMIN bypass all checks
+    // Sandvik Admins bypass all checks
     if (currentUser.globalRole === GlobalRole.SANDVIK_ADMIN) {
       return true;
     }
@@ -35,7 +35,6 @@ export class PermissionGuard implements CanActivate {
       !currentUser.userPermissions ||
       currentUser.userPermissions.length === 0
     ) {
-      console.log('1'); // Keep for logging purposes
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 
@@ -72,25 +71,23 @@ export class PermissionGuard implements CanActivate {
       // First try to get companyId from context (set by CompanyContextGuard)
       let companyId = ctx.getContext().companyId;
 
+      // TODO Remove this check? Already done in CompanyContextGuard
       if (!companyId) {
         // Fallback for direct company operations where ID is company ID
         const id = ctx.getArgs().id;
         if (id) {
-          // For direct company operations
           companyId = id;
         } else {
-          // No company ID found - deny access
-          console.log('2'); // Keep for logging purposes
           throw new ForbiddenException(errorTexts.permissionsDenied);
         }
       }
-      // Now filter permissions by company
+      // Filter permissions by company
       filteredPermissions = filteredPermissions.filter(
         (permission) => permission.companyId === companyId,
       );
     }
 
-    // Check if any filtered permission has the required app access if required
+    // Check if any filtered permission has the required app access
     const hasAccess = filteredPermissions.some((permission) => {
       return (
         requiredApps.length === 0 ||
@@ -99,7 +96,6 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!hasAccess) {
-      console.log('3'); // Keep for logging purposes
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 

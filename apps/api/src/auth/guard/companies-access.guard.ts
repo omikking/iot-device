@@ -14,9 +14,9 @@ export class CompaniesAccessGuard implements CanActivate {
       return false;
     }
 
-    // Admins can access all companies
+    // Admins can access all data in list queries
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
-      ctx.allowedCompanyIds = null; // no filter
+      ctx.allowedCompanyIds = null;
       ctx.isSandvikAdmin = true;
       return true;
     }
@@ -28,7 +28,7 @@ export class CompaniesAccessGuard implements CanActivate {
     );
     ctx.isSandvikAdmin = false;
 
-    // Deny access if user has no companies
+    // Deny access if user has no access to any company
     return ctx.allowedCompanyIds.length > 0;
   }
 }

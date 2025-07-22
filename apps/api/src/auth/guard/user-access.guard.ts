@@ -28,6 +28,7 @@ export class UserAccessGuard implements CanActivate {
       return true;
     }
 
+    // TODO What is really needeed here?
     // Get companies where currentUser is a COMPANY_ADMIN
     const adminCompanies = await this.prisma.userPermission.findMany({
       where: {

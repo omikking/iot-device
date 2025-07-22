@@ -71,6 +71,7 @@ export default function AccountSettingsForm({
   });
 
   const onSubmit: SubmitHandler<UserAccountFormValues> = async (data) => {
+    setIsLoading(true);
     const {
       email,
       fullName,
@@ -293,7 +294,7 @@ export default function AccountSettingsForm({
             disabled={isSubmitDisabled}
             isLoading={isLoading}
           >
-            <LucideCheckCircle />
+            {!isLoading && <LucideCheckCircle />}
             Save changes
           </Button>
         </div>

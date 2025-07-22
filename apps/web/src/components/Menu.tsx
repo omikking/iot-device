@@ -202,7 +202,7 @@ export const Menu = () => {
                 <Link href={`/company/${companyId}`} passHref legacyBehavior>
                   <Anchor color="foreground">
                     <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    Overview
+                    Company overview
                   </Anchor>
                 </Link>
               </Headline>

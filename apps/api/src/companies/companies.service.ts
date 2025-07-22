@@ -1,4 +1,4 @@
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
 import {
   Application,
@@ -28,7 +28,7 @@ export class CompaniesService {
 
     if (!isSandvikAdmin) {
       if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-        return { totalRecords: 0, results: [] };
+        throw new ForbiddenError(errorTexts.permissionsDenied);
       }
       whereCondition = { id: { in: allowedCompanyIds } };
     }
@@ -186,6 +186,9 @@ export class CompaniesService {
 
       return company;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_CREATE_ERROR_GENERIC',
@@ -208,28 +211,6 @@ export class CompaniesService {
       const isSandvikAdmin =
         currentUser.globalRole === GlobalRole.SANDVIK_ADMIN;
 
-      // Deny non-sandvik admins from updating plans
-      if (plans && !isSandvikAdmin) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'COMPANY_PLANS_UPDATE_FORBIDDEN',
-            title: errorTexts.permissionsDenied,
-            message: errorTexts.companyUpdatePlansDenied_message,
-          },
-        });
-      }
-
-      // Deny non-sandvik admins from changing the assigned sandvik admin
-      if (sandvikAdminUserId && !isSandvikAdmin) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'COMPANY_ADMIN_UPDATE_FORBIDDEN',
-            title: errorTexts.permissionsDenied,
-            message: errorTexts.companyUpdateSandvikAdminDenied_message,
-          },
-        });
-      }
-
       // Update basic company info
       const company = await this.prisma.$transaction(async (prisma) => {
         const updatedCompany = await prisma.company.update({
@@ -245,7 +226,7 @@ export class CompaniesService {
           },
         });
 
-        //  Update SANDVIK_ADMIN assignment
+        // ONLY SANDVIK ADMIN - Update sandvik admin assignment
         if (isSandvikAdmin && sandvikAdminUserId) {
           const existingSandvikAdmins = await prisma.userPermission.findMany({
             where: {
@@ -297,8 +278,8 @@ export class CompaniesService {
           }
         }
 
+        // ONLY SANDVIK ADMIN - Delete all plans that are not in the request
         if (isSandvikAdmin) {
-          // Delete all plans that are not in the request
           if (plans) {
             const plansToKeepId = plans
               .map((plan) => plan.id)
@@ -368,6 +349,9 @@ export class CompaniesService {
 
       return company;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_UPDATE_ERROR_GENERIC',
@@ -397,6 +381,9 @@ export class CompaniesService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_DELETE_ERROR_GENERIC',

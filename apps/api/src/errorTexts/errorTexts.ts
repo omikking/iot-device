@@ -50,13 +50,6 @@ export const errorTexts = {
   companyAlreadyExists_message: 'This company is already registered.',
 
   companyDeleteError_title: 'Failed to inactivate company',
-
-  companyUpdatePlansDenied_message:
-    'You do not have permission to update plans, contact your administrator',
-
-  companyUpdateSandvikAdminDenied_message:
-    'You do not have permission to change the admin assignment',
-
   // Drive
   driveNotFound_title: (id: string) => `Drive #${id} not found`,
 

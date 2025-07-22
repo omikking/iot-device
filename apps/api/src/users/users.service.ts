@@ -12,6 +12,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   findAll(roles?: GlobalRole[]): Promise<User[]> {
+    // TODO add check so only SANDVIK_ADMIN can see all users? Or does it already exist?
     // If roles are provided, only the users with the provided roles will be returned
     const where: Prisma.UserWhereInput = {};
 
@@ -120,6 +121,9 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_UPDATE_ERROR',
@@ -144,6 +148,9 @@ export class UsersService {
     try {
       return await this.prisma.user.delete({ where: { id } });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_DELETE_ERROR',

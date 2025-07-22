@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Site } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
@@ -18,7 +18,7 @@ export class SitesService {
       return this.prisma.site.findMany();
     }
     if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-      return [];
+      throw new ForbiddenError(errorTexts.permissionsDenied);
     }
     return this.prisma.site.findMany({
       where: { companyId: { in: allowedCompanyIds } },
@@ -66,6 +66,9 @@ export class SitesService {
 
       return createdSite;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_CREATE_ERROR_GENERIC',
@@ -115,6 +118,9 @@ export class SitesService {
         },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_UPDATE_ERROR_GENERIC',
@@ -144,6 +150,9 @@ export class SitesService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_DELETE_ERROR',
@@ -165,6 +174,7 @@ export class SitesService {
     });
 
     if (existingSite) {
+      console.log('existingSite');
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_ALREADYEXISTS_INFO',

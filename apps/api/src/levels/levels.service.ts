@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Level } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
@@ -18,8 +18,7 @@ export class LevelsService {
       return this.prisma.level.findMany();
     }
     if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-      return Promise.resolve([]);
-      // Fix throw error later
+      throw new ForbiddenError(errorTexts.permissionsDenied);
     }
     return this.prisma.level.findMany({
       where: {
@@ -163,6 +162,9 @@ export class LevelsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LEVEL_DELETE_ERROR_GENERIC',

@@ -8,20 +8,15 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { UpdatePasswordInput } from './dto/update-user-password.input';
 import { PermissionGuard } from 'src/auth/guard/permission.guard';
-import {
-  RequireCompanyAccess,
-  RequireRoles,
-} from 'src/auth/decorators/permission.decorator';
-import { CompaniesAccessGuard } from 'src/auth/guard/companies-access.guard';
-import { CompanyContextGuard } from 'src/auth/guard/company-context.guard';
+import { RequireRoles } from 'src/auth/decorators/permission.decorator';
+import { UserAccessGuard } from 'src/auth/guard/user-access.guard';
 
 // TODO Check if these RequireCompanyAccess etc even work here. Or should we use UserAccessGuard?
 @Resolver()
-@UseGuards(JwtGuard, CompanyContextGuard, PermissionGuard)
+@UseGuards(JwtGuard, UserAccessGuard, PermissionGuard)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(CompaniesAccessGuard)
   @RequireRoles(GlobalRole.SANDVIK_ADMIN, Role.COMPANY_ADMIN)
   @Query('users')
   async findAll(
@@ -31,7 +26,6 @@ export class UsersResolver {
     return this.usersService.findAll(roles);
   }
 
-  @RequireCompanyAccess(true)
   @Query('user')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -39,7 +33,6 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
-  @RequireCompanyAccess(true)
   @Mutation('updateUser')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -51,7 +44,6 @@ export class UsersResolver {
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
   }
 
-  @RequireCompanyAccess(true)
   @Mutation('removeUser')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

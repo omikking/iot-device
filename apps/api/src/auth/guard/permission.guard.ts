@@ -101,7 +101,6 @@ export class PermissionGuard implements CanActivate {
     });
 
     if (!hasAccess) {
-      console.log('3');
       throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 

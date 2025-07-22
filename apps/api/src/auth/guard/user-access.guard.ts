@@ -9,7 +9,6 @@ import { GlobalRole, Role } from '@prisma/client';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-// Remove this?
 @Injectable()
 export class UserAccessGuard implements CanActivate {
   constructor(private prisma: PrismaService) {}

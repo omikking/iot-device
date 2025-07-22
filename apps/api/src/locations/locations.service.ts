@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Location } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
@@ -18,8 +18,7 @@ export class LocationsService {
       return this.prisma.location.findMany();
     }
     if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-      return Promise.resolve([]);
-      // Fix throw error later
+      throw new ForbiddenError(errorTexts.permissionsDenied);
     }
     return this.prisma.location.findMany({
       where: {
@@ -169,6 +168,9 @@ export class LocationsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_DELETE_ERROR',

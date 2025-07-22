@@ -7,7 +7,7 @@ import {
   RingPosition,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 import { errorTexts } from 'src/errorTexts/errorTexts';
@@ -50,7 +50,7 @@ export class BoltResultsService {
     // Only Sandvik Admins can see all, others are filtered by allowedCompanyIds
     if (!isSandvikAdmin) {
       if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-        return { totalRecords: 0, results: [] };
+        throw new ForbiddenError(errorTexts.permissionsDenied);
       }
       // Fetch the site to get its companyId
       if (siteId) {
@@ -59,8 +59,7 @@ export class BoltResultsService {
           select: { companyId: true },
         });
         if (!site || !allowedCompanyIds.includes(site.companyId)) {
-          return { totalRecords: 0, results: [] };
-          // Fix throw error later
+          throw new ForbiddenError(errorTexts.permissionsDenied);
         }
       }
     }
@@ -170,6 +169,9 @@ export class BoltResultsService {
       }
       return createdBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_CREATION_ERROR_GENERIC',
@@ -221,6 +223,9 @@ export class BoltResultsService {
 
       return updatedBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_UPDATE_ERROR_GENERIC',
@@ -250,6 +255,9 @@ export class BoltResultsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_DELETE_ERROR_GENERIC',

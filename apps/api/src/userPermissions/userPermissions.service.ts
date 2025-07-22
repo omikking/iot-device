@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Application, Role, UserPermission } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserInputError } from '@nestjs/apollo';
+import { ForbiddenError, UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
@@ -18,7 +18,7 @@ export class UserPermissionsService {
       return this.prisma.userPermission.findMany();
     }
     if (!allowedCompanyIds || allowedCompanyIds.length === 0) {
-      return Promise.resolve([]);
+      throw new ForbiddenError(errorTexts.permissionsDenied);
     }
     return this.prisma.userPermission.findMany({
       where: {
@@ -104,7 +104,6 @@ export class UserPermissionsService {
       if (error instanceof UserInputError) {
         throw error;
       }
-
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_CREATE_ERROR_GENERIC',
@@ -141,6 +140,9 @@ export class UserPermissionsService {
       }
       return updatedUserPermission;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_UPDATE_ERROR',
@@ -170,6 +172,9 @@ export class UserPermissionsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_DELETE_ERROR',

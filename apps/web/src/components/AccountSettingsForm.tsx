@@ -153,6 +153,7 @@ export default function AccountSettingsForm({
                       {...field}
                       placeholder="Enter your email..."
                       className="w-full"
+                      autoComplete="email"
                     />
                   </FormControl>
                   <FormMessage />
@@ -232,6 +233,7 @@ export default function AccountSettingsForm({
                       placeholder="Enter your old password..."
                       type="password"
                       className="w-full"
+                      autoComplete="current-password"
                     />
                   </FormControl>
                   <FormMessage />
@@ -252,6 +254,7 @@ export default function AccountSettingsForm({
                       placeholder="Enter your new password..."
                       type="password"
                       className="w-full"
+                      autoComplete="new-password"
                     />
                   </FormControl>
                   <FormMessage />
@@ -272,6 +275,7 @@ export default function AccountSettingsForm({
                       placeholder="Confirm your password..."
                       type="password"
                       className="w-full"
+                      autoComplete="new-password"
                     />
                   </FormControl>
                   <FormMessage />

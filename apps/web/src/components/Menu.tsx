@@ -184,14 +184,19 @@ export const Menu = () => {
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link
                     href={`/selectapplication/${companyId}`}
                     passHref
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600" />
+                      <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
                     </Anchor>
                   </Link>
@@ -288,10 +293,15 @@ export const Menu = () => {
           )}
 
           <div className="flex flex-col gap-1.5 mb-16">
-            <Headline variant="medium" color="foreground" as="h3">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
               <Link href="/accountsettings" passHref legacyBehavior>
                 <Anchor color="foreground">
-                  <LucideSettings />
+                  <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings
                 </Anchor>
               </Link>

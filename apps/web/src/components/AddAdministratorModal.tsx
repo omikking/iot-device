@@ -48,10 +48,7 @@ export const AddAdministratorModal = ({
 
   const resetFormValues = () => {
     form.reset({
-      fullName: '',
-      workPlace: '',
       email: '',
-      phoneNumber: '',
     });
   };
 

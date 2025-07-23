@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Application, Role } from '@/gql/graphql';
+import { validations } from '@/app/uitexts/validations';
 
 export type UserFormValues = {
   email?: string;
@@ -17,9 +18,8 @@ export const userFormSchema = z
   .object({
     email: z
       .string()
-      .email({ message: 'Email must be valid.' })
-      .min(2, { message: 'Email must be at least 2 characters.' })
-      .max(50, { message: 'Email must be at most 50 characters.' })
+      .email({ message: validations.emailInvalid })
+      .max(50, { message: validations.max50Chars('Email') })
       .optional(),
     technician: z.string().optional(),
     userPermissions: z.array(
@@ -27,7 +27,7 @@ export const userFormSchema = z
         userId: z.string().optional(),
         role: z.enum(
           [Role.CompanyUser, Role.CompanyAdmin, Role.SandvikTechnician],
-          { message: 'Role must be selected.' },
+          { message: validations.roleRequired },
         ),
         appsAccess: z.array(
           z.enum([
@@ -45,7 +45,7 @@ export const userFormSchema = z
       if (!data.technician) {
         ctx.addIssue({
           path: ['technician'],
-          message: 'Choose a technician.',
+          message: validations.technicianRequired,
           code: z.ZodIssueCode.custom,
         });
       }
@@ -54,7 +54,7 @@ export const userFormSchema = z
       if (!data.email) {
         ctx.addIssue({
           path: ['email'],
-          message: 'Email must be added.',
+          message: validations.emailRequired,
           code: z.ZodIssueCode.custom,
         });
       }

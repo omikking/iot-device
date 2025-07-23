@@ -14,7 +14,7 @@ export const updateAccountSettingsFormSchema = z
       .optional(),
     workPlace: z
       .string()
-      .max(50, { message: validations.max50Chars('Workplace') })
+      .max(50, { message: validations.max50Chars('Work place') })
       .optional(),
     phoneNumber: z
       .string()

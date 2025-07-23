@@ -3,14 +3,14 @@ import {
   IsArray,
   IsOptional,
   IsString,
-  Length,
+  MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class UpdateUserPermissionInput extends GraphQLTypes.UpdateUserPermissionInput {
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   role: string;
 
   @IsOptional()

@@ -1,36 +1,29 @@
 import { z } from 'zod';
+import { validations } from '@/app/uitexts/validations';
 
 export const createSiteFormSchema = z.object({
   siteName: z
     .string()
-    .min(2, { message: 'Site name must be at least 2 characters.' }),
-  address: z
-    .string()
-    .min(2, { message: 'Address must be at least 2 characters.' }),
+    .max(50, { message: validations.max50Chars('Site name') }),
+  address: z.string().max(50, { message: validations.max50Chars('Address') }),
   postalCode: z
     .string()
-    .min(5, { message: 'Postal code must be at least 5 characters.' }),
-  city: z.string().min(2, { message: 'City must be at least 2 characters.' }),
-  country: z
-    .string()
-    .min(2, { message: 'City must be at least 2 characters.' }),
+    .max(50, { message: validations.max50Chars('Postal code') }),
+  city: z.string().max(50, { message: validations.max50Chars('City') }),
+  country: z.string().max(50, { message: validations.max50Chars('Country') }),
   companyId: z.string(),
 });
 
 export const updateSiteFormSchema = z.object({
   siteName: z
     .string()
-    .min(2, { message: 'Site name must be at least 2 characters.' }),
-  address: z
-    .string()
-    .min(2, { message: 'Address must be at least 2 characters.' }),
+    .max(50, { message: validations.max50Chars('Site name') }),
+  address: z.string().max(50, { message: validations.max50Chars('Address') }),
   postalCode: z
     .string()
-    .min(5, { message: 'Postal code must be at least 2 characters.' }),
-  city: z.string().min(2, { message: 'City must be at least 2 characters.' }),
-  country: z
-    .string()
-    .min(2, { message: 'City must be at least 2 characters.' }),
+    .max(50, { message: validations.max50Chars('Postal code') }),
+  city: z.string().max(50, { message: validations.max50Chars('City') }),
+  country: z.string().max(50, { message: validations.max50Chars('Country') }),
   companyId: z.string(),
 });
 

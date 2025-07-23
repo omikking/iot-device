@@ -12,8 +12,8 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import {
-  UserAccountFormValues,
-  accountSettingsFormSchema,
+  UpdateAccountSettingsFormSchemaValues,
+  updateAccountSettingsFormSchema,
 } from './schemas/AccountSettingsFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
@@ -54,11 +54,12 @@ export default function AccountSettingsForm({
 }: AccountSettingsFormProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
-  const [, updateAccountUser] = useMutation<UserAccountFormValues>(
-    updateAccountUserMutation,
-  );
-  const settingsForm = useForm<UserAccountFormValues>({
-    resolver: zodResolver(accountSettingsFormSchema),
+  const [, updateAccountUser] =
+    useMutation<UpdateAccountSettingsFormSchemaValues>(
+      updateAccountUserMutation,
+    );
+  const settingsForm = useForm<UpdateAccountSettingsFormSchemaValues>({
+    resolver: zodResolver(updateAccountSettingsFormSchema),
     defaultValues: {
       email: user.email || '',
       fullName: user.fullName || '',
@@ -70,7 +71,9 @@ export default function AccountSettingsForm({
     },
   });
 
-  const onSubmit: SubmitHandler<UserAccountFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<UpdateAccountSettingsFormSchemaValues> = async (
+    data,
+  ) => {
     const {
       email,
       fullName,

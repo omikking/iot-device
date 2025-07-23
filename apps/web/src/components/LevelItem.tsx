@@ -1,106 +1,108 @@
 'use client';
-import { Text, showAlertToast } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import { Drive } from '@/gql/graphql';
+import { Drive, Level } from '@/gql/graphql';
+import { Text, showAlertToast } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { AddSiteLocationItemForm } from '../AddSiteLocationItemForm';
+import { AddSiteLocationItemForm } from '@/components/AddSiteLocationItemForm';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/uitexts/responses';
 import {
-  DriveValue,
+  LevelValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
 import { handleGraphQLErrors } from '@/libs/utils';
 
-const createDriveMutation = graphql(`
-  mutation createDrive($createDriveInput: CreateDriveInput!) {
-    createDrive(createDriveInput: $createDriveInput) {
+const createLevelMutation = graphql(`
+  mutation createLevel($createLevelInput: CreateLevelInput!) {
+    createLevel(createLevelInput: $createLevelInput) {
       id
-      driveName
-      levelId
+      levelName
+      siteId
     }
   }
 `);
 
-const updateDriveMutation = graphql(`
-  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {
-    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {
+const updateLevelMutation = graphql(`
+  mutation updateLevel($id: String!, $updateLevelInput: UpdateLevelInput!) {
+    updateLevel(id: $id, updateLevelInput: $updateLevelInput) {
       id
-      driveName
-      levelId
+      levelName
+      siteId
     }
   }
 `);
 
-const deleteDriveMutation = graphql(`
-  mutation deleteDrive($id: String!) {
-    removeDrive(id: $id) {
+const deleteLevelMutation = graphql(`
+  mutation deleteLevel($id: String!) {
+    removeLevel(id: $id) {
       id
     }
   }
 `);
 
-type DriveComponentProps = {
-  drive: Drive;
-  drivesOptions: Drive[];
-  selectedDriveId?: string;
+type LevelComponentProps = {
+  level: Level;
+  levelsOptions: Level[];
+  selectedLevelId?: string;
   inputRef: React.RefObject<HTMLInputElement>;
   refreshSite: () => void;
-  handleSetDrive: (drive: Drive) => void;
-  setIsDeletingDrive: Dispatch<SetStateAction<boolean>>;
+  handleSetLevel: (level: Level) => void;
+  setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;
+  setSelectedLevel: Dispatch<SetStateAction<Level | undefined>>;
   setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
 };
 
-export const DriveItem = ({
-  drive,
+export const LevelItem = ({
+  level,
   inputRef,
-  drivesOptions,
-  selectedDriveId,
+  levelsOptions,
+  selectedLevelId,
   refreshSite,
-  handleSetDrive,
-  setSelectedDrive,
-  setIsDeletingDrive,
-}: DriveComponentProps) => {
-  const [isEditing, setIsEditing] = useState(!drive.id);
+  handleSetLevel,
+  setSelectedLevel,
+  setIsDeletingLevel,
+}: LevelComponentProps) => {
+  const [isEditing, setIsEditing] = useState(!level.id);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [, createDrive] = useMutation(createDriveMutation);
-  const [, updateDrive] = useMutation(updateDriveMutation);
-  const [, deleteDrive] = useMutation(deleteDriveMutation);
+  const [, createLevel] = useMutation(createLevelMutation);
+  const [, updateLevel] = useMutation(updateLevelMutation);
+  const [, deleteLevel] = useMutation(deleteLevelMutation);
 
-  const driveForm: UseFormReturn<DriveValue> = useForm<DriveValue>({
+  const levelForm: UseFormReturn<LevelValue> = useForm<LevelValue>({
     resolver: zodResolver(siteLocationsSchema),
     defaultValues: {
-      id: drive.id || '',
-      driveName: drive.driveName || '',
+      id: level.id || '',
+      levelName: level.levelName || '',
     },
   });
 
-  const handleEditDrive = () => {
+  const handleEditLevel = () => {
     setIsEditing(true);
-    driveForm.setValue('driveName', drive.driveName);
+    levelForm.setValue('levelName', level.levelName);
   };
 
   const handleCancelEdit = () => {
-    if (!drive.id) {
-      drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
+    if (!level.id) {
+      levelsOptions.filter((emptyLevel) => emptyLevel.id !== level.id);
       refreshSite();
     }
-    driveForm.reset();
+    levelForm.reset();
     setTimeout(() => setIsEditing(false), 50);
   };
 
-  const handleDriveSubmit: SubmitHandler<DriveValue> = (data) => {
-    // Create a drive
-    if (!drive.id) {
-      createDrive({
-        createDriveInput: {
-          driveName: data.driveName,
-          levelId: drive.levelId || '',
+  const handleLevelSubmit: SubmitHandler<LevelValue> = (data) => {
+    // Create a level
+    if (!level.id) {
+      createLevel({
+        createLevelInput: {
+          levelName: data.levelName,
+          siteId: level.siteId || '',
         },
       })
         .then((result) => {
@@ -110,29 +112,29 @@ export const DriveItem = ({
           // Success
           if (result.data) {
             showAlertToast({
-              title: responses.driveCreateSuccess,
+              title: responses.levelCreateSuccess,
               variant: 'success',
             });
-            drivesOptions.length === 1 && refreshSite();
+            levelsOptions.length === 1 && refreshSite();
             setTimeout(() => setIsEditing(false), 30);
           }
         })
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.driveCreateError,
+            title: responses.levelCreateError,
             description: responses.contactSupportError,
             variant: 'error',
           });
         });
     }
 
-    // Edit a drive
-    if (drive.id) {
-      updateDrive({
-        id: drive.id,
-        updateDriveInput: {
-          driveName: data.driveName,
+    // Edit a level
+    if (level.id) {
+      updateLevel({
+        id: level.id,
+        updateLevelInput: {
+          levelName: data.levelName,
         },
       })
         .then((result) => {
@@ -142,7 +144,7 @@ export const DriveItem = ({
           // Success
           if (result.data) {
             showAlertToast({
-              title: responses.driveUpdateSuccess,
+              title: responses.levelUpdateSuccess,
               variant: 'success',
             });
             setTimeout(() => setIsEditing(false), 30);
@@ -151,7 +153,7 @@ export const DriveItem = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.driveUpdateError,
+            title: responses.levelUpdateError,
             description: responses.contactSupportError,
             variant: 'error',
           });
@@ -159,27 +161,28 @@ export const DriveItem = ({
     }
   };
 
-  const handleDeleteDrive = () => {
+  const handleDeleteLevel = () => {
     setIsDeleting(true);
-    setIsDeletingDrive(true);
+    setIsDeletingLevel(true);
 
     return (
-      deleteDrive({ id: drive.id })
+      deleteLevel({ id: level.id })
         .then((result) => {
           // Backend errors
           const hasGraphQLErrors = handleGraphQLErrors(result.error);
           if (hasGraphQLErrors) {
-            setSelectedDrive(undefined);
+            setSelectedLevel(undefined);
             return false;
           }
           // Success
           if (result.data) {
             setTimeout(() => {
               showAlertToast({
-                title: responses.driveDeleteSuccess,
+                title: responses.levelDeleteSuccess,
                 variant: 'info',
               });
-              setSelectedDrive(undefined);
+              setSelectedLevel(undefined);
+              refreshSite();
             }, 1200);
           }
           return true;
@@ -187,7 +190,7 @@ export const DriveItem = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.driveDeleteError,
+            title: responses.levelDeleteError,
             description: responses.contactSupportError,
             variant: 'error',
           });
@@ -197,7 +200,7 @@ export const DriveItem = ({
           setIsDeleting(false);
 
           setTimeout(() => {
-            setIsDeletingDrive(false);
+            setIsDeletingLevel(false);
           }, 1500);
         })
     );
@@ -205,39 +208,39 @@ export const DriveItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 cursor-pointer ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
-      key={drive.id}
+      className={`bg-main-white px-6 cursor-pointer ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
+      key={level.id}
     >
-      <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
-        {!drive.id || isEditing ? (
-          <AddSiteLocationItemForm<'drive'>
+      <div className="py-3" onClick={() => !isEditing && handleSetLevel(level)}>
+        {!level.id || isEditing ? (
+          <AddSiteLocationItemForm<'level'>
             inputRef={inputRef}
-            form={driveForm}
-            type="drive"
-            onSubmit={handleDriveSubmit}
+            form={levelForm}
+            type="level"
+            onSubmit={handleLevelSubmit}
             onCancel={handleCancelEdit}
           />
         ) : (
           <div
             className="flex flex-row w-full justify-between items-center gap-2"
-            key={drive.id}
+            key={level.id}
           >
             <Text variant="medium" color="foreground">
-              {drive.driveName}
+              {level.levelName}
             </Text>
 
             <DeleteEditDropdown
-              itemSelected={drive.id}
-              handleEdit={handleEditDrive}
+              itemSelected={level.id}
+              handleEdit={handleEditLevel}
               openDeleteModal={() => setIsDeleteModalOpen(true)}
             />
             <DeleteModalConfirmation
               deleteIcon="Site"
-              modalTitle="Delete drive"
-              modalDeleteButtonText="Delete drive"
+              modalTitle="Delete level"
+              modalDeleteButtonText="Delete level"
               isLoading={isDeleting}
               isOpen={isDeleteModalOpen}
-              onDelete={handleDeleteDrive}
+              onDelete={handleDeleteLevel}
               onClose={() => setIsDeleteModalOpen(false)}
               onOpenChange={() => setIsDeleteModalOpen(false)}
             >
@@ -246,15 +249,19 @@ export const DriveItem = ({
                 color={'foreground'}
                 className="max-w-[450px] text-center"
               >
-                You are about to delete drive
+                You are about to delete level
                 <Text variant="medium" color={'foreground'} as="span" isBold>
-                  {` ${drive.driveName} `}
+                  {` ${level.levelName} `}
                 </Text>
                 from your list. This action will also delete all the{' '}
                 <Text variant="medium" color={'foreground'} as="span" isBold>
+                  drives
+                </Text>{' '}
+                and{' '}
+                <Text variant="medium" color={'foreground'} as="span" isBold>
                   locations
                 </Text>{' '}
-                connected to this drive. Are you sure you want to delete?
+                connected to this level. Are you sure you want to delete?
               </Text>
             </DeleteModalConfirmation>
           </div>

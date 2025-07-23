@@ -3,34 +3,34 @@ import {
   IsEmail,
   IsOptional,
   IsString,
-  Length,
+  MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class UpdateUserInput extends GraphQLTypes.UpdateUserInput {
   @IsOptional()
   @IsEmail()
-  @Length(2, 35)
+  @MaxLength(50)
   email: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 95)
+  @MaxLength(50)
   fullName: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   workPlace: string;
 
   @IsOptional()
   @IsString()
-  @Length(10, 13)
+  @MaxLength(50)
   phoneNumber: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   globalRole: string;
 
   @IsOptional()

@@ -16,9 +16,9 @@ import {
   BreadcrumbSeparator,
 } from '@gsp/ui';
 import { GoBack } from '@/components/GoBack';
-import { LevelsList } from '@/components/SiteLocations/levels/LevelsList';
-import { DrivesList } from '@/components/SiteLocations/drive/DrivesList';
-import { LocationsList } from '@/components/SiteLocations/locations/LocationList';
+import { LevelsList } from '@/components/LevelsList';
+import { DrivesList } from '@/components/DrivesList';
+import { LocationsList } from '@/components/LocationList';
 
 const getCompanySitesNameQuery = graphql(`
   query getCompanySitesNames($id: String!) {

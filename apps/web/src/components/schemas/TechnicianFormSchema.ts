@@ -1,11 +1,11 @@
+import { validations } from '@/app/uitexts/validations';
 import { z } from 'zod';
 
 export const updateTechnicianFormSchema = z.object({
   email: z
     .string()
-    .email({ message: 'Email must be a valid email address.' })
-    .min(2, { message: 'Email must be at least 2 characters.' })
-    .max(50, { message: 'Email must be at most 50 characters.' }),
+    .email({ message: validations.emailInvalid })
+    .max(50, { message: validations.max50Chars('Email') }),
   isGlobalVisibility: z.boolean(),
 });
 

@@ -4,16 +4,17 @@ import {
   IsEmail,
   IsString,
   IsUUID,
-  Length,
+  MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateUserPermissionInput extends GraphQLTypes.CreateUserPermissionInput {
   @IsEmail()
+  @MaxLength(50)
   userEmail: string;
 
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   role: string;
 
   @IsArray()

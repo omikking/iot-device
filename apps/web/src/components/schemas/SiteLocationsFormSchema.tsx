@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validations } from '@/app/uitexts/validations';
 
 export const siteLocationsSchema = z.object({
   id: z.string(),
@@ -14,9 +15,9 @@ export const driveSchema = z.object({
   driveName: z
     .string()
     .trim() // This automatically trims whitespace
-    .min(2, { message: 'Drive name must be at least 2 characters.' })
+    .max(50, { message: validations.max50Chars('Drive') })
     .refine((val) => val.trim().length >= 2, {
-      message: 'Drive name cannot be mostly whitespace.',
+      message: validations.driveWhitespace,
     }),
 });
 
@@ -27,9 +28,9 @@ export const levelSchema = z.object({
   levelName: z
     .string()
     .trim()
-    .min(2, { message: 'Level name must be at least 2 characters.' })
+    .max(50, { message: validations.max50Chars('Level') })
     .refine((val) => val.trim().length >= 2, {
-      message: 'Level name cannot be mostly whitespace.',
+      message: validations.levelWhitespace,
     }),
 });
 
@@ -40,9 +41,9 @@ export const locationSchema = z.object({
   locationName: z
     .string()
     .trim()
-    .min(2, { message: 'Location name must be at least 2 characters.' })
+    .max(50, { message: validations.max50Chars('Location') })
     .refine((val) => val.trim().length >= 2, {
-      message: 'Location name cannot be mostly whitespace.',
+      message: validations.locationWhitespace,
     }),
 });
 

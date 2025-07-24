@@ -8,6 +8,7 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import { useParams, usePathname } from 'next/navigation';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Role } from '@/gql/graphql';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -37,7 +38,13 @@ export const NavBar = () => {
   return (
     <header className="px-10 h-16 flex flex-row justify-between border-b border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
-        <Link href="/overview">
+        <Link
+          href={
+            session?.user.globalRole !== Role.SandvikAdmin
+              ? '/selectcompany'
+              : '/overview'
+          }
+        >
           <div className="flex items-center justify-center gap-2">
             <SandvikLogo />
             <div className="h-6 border-l border-black mx-1" />

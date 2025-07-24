@@ -110,9 +110,9 @@ export default function Page({
   };
 
   const NotFoundHazardMessage = () => (
-    <div className="flex h-80 flex-col justify-center items-center gap-5">
+    <div className="w-full flex h-80 flex-col justify-center items-center gap-5">
       <Text color="foreground" variant="medium">
-        No hazards were found.
+        No reported hazards were found.
       </Text>
       <LucideSearchX color="gray" />
     </div>

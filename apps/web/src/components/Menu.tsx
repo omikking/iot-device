@@ -88,18 +88,51 @@ export const Menu = () => {
             <MenuTitle className="sr-only">Menu</MenuTitle>
           )}
 
-          {!companyId && globalRole === Role.SandvikAdmin && (
-            <Link href="/overview" passHref legacyBehavior>
-              <Button
-                className="mt-4"
-                variant="secondary"
-                size="large"
-                tabIndex={-1}
+          {!companyId && (
+            <>
+              <Link
+                href={
+                  globalRole === Role.SandvikAdmin
+                    ? '/overview'
+                    : '/selectcompany'
+                }
+                passHref
+                legacyBehavior
               >
-                <LucideBuilding2 />
-                Select company
-              </Button>
-            </Link>
+                <Button
+                  className="mt-4"
+                  variant="secondary"
+                  size="large"
+                  tabIndex={-1}
+                >
+                  <LucideBuilding2 />
+                  Select company
+                </Button>
+              </Link>
+              <hr className="border-neutral-2" />
+            </>
+          )}
+
+          {companyId && globalRole !== Role.SandvikAdmin && (
+            <>
+              <hr className="border-neutral-2" />
+              <div className="flex flex-col gap-1.5">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
+                  <Link href={`/company/${companyId}`} passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                      Company overview
+                    </Anchor>
+                  </Link>
+                </Headline>
+              </div>
+              <hr className="border-neutral-2" />
+            </>
           )}
 
           {companyId && (
@@ -151,14 +184,19 @@ export const Menu = () => {
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link
                     href={`/selectapplication/${companyId}`}
                     passHref
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600" />
+                      <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
                     </Anchor>
                   </Link>
@@ -191,25 +229,9 @@ export const Menu = () => {
             </>
           )}
 
-          <div className="flex flex-col gap-1.5">
-            {companyId && globalRole !== Role.SandvikAdmin && (
-              <Headline
-                variant="medium"
-                color="foreground"
-                as="h3"
-                className="group"
-              >
-                <Link href={`/company/${companyId}`} passHref legacyBehavior>
-                  <Anchor color="foreground">
-                    <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
-                    Overview
-                  </Anchor>
-                </Link>
-              </Headline>
-            )}
-
-            {globalRole === Role.SandvikAdmin && (
-              <>
+          {globalRole === Role.SandvikAdmin && (
+            <>
+              <div className="flex flex-col gap-1.5">
                 <Headline
                   variant="medium"
                   color="foreground"
@@ -265,17 +287,21 @@ export const Menu = () => {
                     </Anchor>
                   </Link>
                 </Headline>
-              </>
-            )}
-          </div>
-
-          <hr className="border-neutral-2" />
+              </div>
+              <hr className="border-neutral-2" />
+            </>
+          )}
 
           <div className="flex flex-col gap-1.5 mb-16">
-            <Headline variant="medium" color="foreground" as="h3">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
               <Link href="/accountsettings" passHref legacyBehavior>
                 <Anchor color="foreground">
-                  <LucideSettings />
+                  <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings
                 </Anchor>
               </Link>

@@ -6,17 +6,22 @@ import { UpdateSiteInput } from './dto/update-site.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 
+  // Fix here
   @Query('sites')
   async findAll(): Promise<GraphQLTypes.Site[]> {
     return this.sitesService.findAll();
   }
 
+  @Roles([], [], 'site')
   @Query('site')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -24,6 +29,7 @@ export class SitesResolver {
     return this.sitesService.findOne(id);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'site')
   @Mutation('createSite')
   async create(
     @Args('createSiteInput')
@@ -32,6 +38,7 @@ export class SitesResolver {
     return this.sitesService.create(createSiteInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'site')
   @Mutation('updateSite')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -41,6 +48,7 @@ export class SitesResolver {
     return this.sitesService.update(id, updateSiteInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'site')
   @Mutation('removeSite')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

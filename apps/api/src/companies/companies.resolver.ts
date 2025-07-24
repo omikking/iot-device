@@ -8,9 +8,12 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 
@@ -28,14 +31,15 @@ export class CompaniesResolver {
     return this.companiesService.findAll(user, pagination);
   }
 
+  @Roles([], [], 'company')
   @Query('company')
-  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
 
+  @Roles([Role.SANDVIK_ADMIN], [], 'company')
   @Mutation('createCompany')
   async create(
     @Args('createCompanyInput')
@@ -44,6 +48,7 @@ export class CompaniesResolver {
     return this.companiesService.create(createCompanyInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'company')
   @Mutation('updateCompany')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -53,6 +58,7 @@ export class CompaniesResolver {
     return this.companiesService.update(id, updateCompanyInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'company')
   @Mutation('removeCompany')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

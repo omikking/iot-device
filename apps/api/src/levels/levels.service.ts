@@ -146,6 +146,9 @@ export class LevelsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LEVEL_DELETE_ERROR_GENERIC',

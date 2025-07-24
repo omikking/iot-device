@@ -184,6 +184,9 @@ export class CompaniesService {
 
       return company;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_CREATE_ERROR_GENERIC',
@@ -321,6 +324,9 @@ export class CompaniesService {
 
       return company;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_UPDATE_ERROR_GENERIC',
@@ -350,6 +356,9 @@ export class CompaniesService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'COMPANY_DELETE_ERROR_GENERIC',

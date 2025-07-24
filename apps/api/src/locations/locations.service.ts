@@ -148,6 +148,9 @@ export class LocationsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_DELETE_ERROR',

@@ -54,6 +54,9 @@ export class SitesService {
 
       return createdSite;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_CREATE_ERROR_GENERIC',
@@ -103,6 +106,9 @@ export class SitesService {
         },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_UPDATE_ERROR_GENERIC',
@@ -132,6 +138,9 @@ export class SitesService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'SITE_DELETE_ERROR',

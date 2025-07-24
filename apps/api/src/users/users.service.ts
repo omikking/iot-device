@@ -120,6 +120,9 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_UPDATE_ERROR',
@@ -144,6 +147,9 @@ export class UsersService {
     try {
       return await this.prisma.user.delete({ where: { id } });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_DELETE_ERROR',

@@ -90,7 +90,6 @@ export class UserPermissionsService {
       if (error instanceof UserInputError) {
         throw error;
       }
-
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_CREATE_ERROR_GENERIC',
@@ -127,6 +126,9 @@ export class UserPermissionsService {
       }
       return updatedUserPermission;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_UPDATE_ERROR',
@@ -156,6 +158,9 @@ export class UserPermissionsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USERPERMISSION_DELETE_ERROR',

@@ -142,6 +142,9 @@ export class BoltResultsService {
       }
       return createdBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_CREATION_ERROR_GENERIC',
@@ -193,6 +196,9 @@ export class BoltResultsService {
 
       return updatedBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_UPDATE_ERROR_GENERIC',
@@ -222,6 +228,9 @@ export class BoltResultsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_DELETE_ERROR_GENERIC',

@@ -16,6 +16,7 @@ import {
   ROLES_KEY,
 } from '../decorators/roles.decorator';
 import { Application, Role } from '@prisma/client';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -125,7 +126,7 @@ export class RolesGuard implements CanActivate {
     });
 
     if (!hasRole) {
-      throw new ForbiddenException('Permission denied');
+      throw new ForbiddenException(errorTexts.permissionsDenied);
     }
 
     return true;

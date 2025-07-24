@@ -59,8 +59,7 @@ export default function Page({
 
   const [{ data: companyData }, executeQuery] = useQuery({
     query: getCompanyUsersQuery,
-    variables: { id: companyId || '' },
-    pause: !companyId,
+    variables: { id: companyId },
   });
 
   const companyPlans = companyData?.company.plans;

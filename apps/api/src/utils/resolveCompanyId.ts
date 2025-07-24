@@ -38,14 +38,12 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: 'companyId',
     parentModel: 'company',
   },
-  // TEST
   boltResult: {
     model: 'boltResult',
     idField: 'id',
     parentField: 'companyId',
     parentModel: 'company',
   },
-  // TEST
   company: {
     model: 'company',
     idField: 'id',

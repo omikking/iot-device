@@ -14,10 +14,12 @@ import { BoltResultsService } from './boltResults.service';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
-import { BoltResult } from '@prisma/client';
+import { Application, BoltResult } from '@prisma/client';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
@@ -63,6 +65,11 @@ export class BoltResultsResolver {
     return this.boltResultsService.findMany(user, pagination, filters);
   }
 
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Query('boltResult')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -70,6 +77,11 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Mutation('createBoltResult')
   async create(
     @Args('createBoltResultInput')
@@ -78,6 +90,11 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Mutation('updateBoltResult')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -87,6 +104,11 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Mutation('removeBoltResult')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,
@@ -94,6 +116,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
+  // TODO Not sure how to do here, when it has multiple ones
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -102,6 +125,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
+  // TODO Not sure how to do here, when it has multiple ones
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -114,6 +138,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
+  // TODO Not sure how to do here, when it has multiple ones
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

@@ -15,6 +15,7 @@ import { UpdatePasswordInput } from './dto/update-user-password.input';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+  // TODO Fix all of here
   @Query('users')
   async findAll(
     @ActiveUser() user: ActiveUserData,
@@ -26,7 +27,6 @@ export class UsersResolver {
   }
 
   @Query('user')
-  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.User> {

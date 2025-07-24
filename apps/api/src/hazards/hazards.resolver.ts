@@ -7,6 +7,7 @@ import { ParseUUIDPipe } from '@nestjs/common';
 export class HazardsResolver {
   constructor(private readonly hazardsService: HazardsService) {}
 
+  // Fix here
   @Query('hazards')
   async findAll(
     @Args('companyId', ParseUUIDPipe) companyId: string,

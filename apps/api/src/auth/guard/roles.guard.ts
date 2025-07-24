@@ -94,8 +94,11 @@ export class RolesGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
+    // TODO here for now, this is here to not block the resolvers that are not specified.
+    // Should fix so these resolvers are not using this guard
     if (!modelKey) {
-      throw new ForbiddenException('Model key is missing, include in resolver');
+      return true;
+      // throw new ForbiddenException('Model key is missing, include in resolver');
     }
 
     // Securely resolve companyId

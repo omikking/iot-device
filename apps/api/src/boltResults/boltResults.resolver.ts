@@ -46,6 +46,9 @@ export class BoltResultsResolver {
     @Args('endDate', { type: () => Date })
     endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
+    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_OPERATOR];
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+
     const pagination: { offset: number; limit?: number } = {
       offset: Number(offset ?? 0),
       ...(limit !== undefined ? { limit: Number(limit) } : {}),
@@ -64,12 +67,12 @@ export class BoltResultsResolver {
       endDate,
     };
 
-    const allowedCompanyIds = getAllowedCompanyIds(user);
     return this.boltResultsService.findMany(
       user,
       pagination,
       filters,
       allowedCompanyIds,
+      allowedApps,
     );
   }
 

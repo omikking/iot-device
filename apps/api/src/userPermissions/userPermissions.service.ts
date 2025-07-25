@@ -1,16 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { Application, Role, UserPermission } from '@prisma/client';
+import { Application, GlobalRole, Role, UserPermission } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class UserPermissionsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<UserPermission[]> {
-    return this.prisma.userPermission.findMany();
+  findAll(
+    @ActiveUser() user: ActiveUserData,
+    allowedCompanyIds: string[],
+  ): Promise<UserPermission[]> {
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      return this.prisma.userPermission.findMany();
+    }
+    return this.prisma.userPermission.findMany({
+      where: {
+        companyId: { in: allowedCompanyIds },
+      },
+    });
   }
 
   async findOne(id: string): Promise<UserPermission> {

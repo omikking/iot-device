@@ -60,7 +60,7 @@ export class RolesGuard implements CanActivate {
       !!gqlContext.getContext().req || !!gqlContext.getContext().user;
 
     // TODO IMPLEMENT THIS
-    const application: Application = isGraphQL
+    const currentApplication: Application = isGraphQL
       ? gqlContext.getContext().application
       : context.switchToHttp().getRequest().application;
 
@@ -93,7 +93,7 @@ export class RolesGuard implements CanActivate {
     if (
       requiredApps &&
       requiredApps.length > 0 &&
-      !requiredApps.includes(application)
+      !requiredApps.includes(currentApplication)
     ) {
       throw new ForbiddenException(
         'This operation is not allowed for this application.',
@@ -107,6 +107,23 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('No company id found in context');
     }
 
+    if (currentApplication) {
+      const activePlan = await this.prisma.plan.findFirst({
+        where: {
+          companyId,
+          applicationName: currentApplication,
+          // Plan is not expired (expiringDate is null or in the future)
+          OR: [{ expiringDate: null }, { expiringDate: { gt: new Date() } }],
+        },
+      });
+
+      if (!activePlan) {
+        throw new ForbiddenException(
+          'Company does not have an active plan for this application.',
+        );
+      }
+    }
+
     // Check user's permission for this company including roles and apps if specified
     const hasRole = await this.prisma.userPermission.findFirst({
       where: {
@@ -118,7 +135,7 @@ export class RolesGuard implements CanActivate {
           : {}),
         // Check if user has the required app access
         ...(requiredApps && requiredApps.length > 0
-          ? { appsAccess: { has: application } }
+          ? { appsAccess: { has: currentApplication } }
           : {}),
       },
     });

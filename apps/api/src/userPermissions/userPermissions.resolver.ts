@@ -9,6 +9,9 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -19,8 +22,11 @@ export class UserPermissionsResolver {
 
   // Fix here, runs on RolesGuard anyways which we don't want.
   @Query('userPermissions')
-  async findAll(): Promise<GraphQLTypes.UserPermission[]> {
-    return this.userPermissionsService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.UserPermission[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.userPermissionsService.findAll(user, allowedCompanyIds);
   }
 
   @Roles([], [], 'userPermission')

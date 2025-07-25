@@ -10,8 +10,8 @@ export default function NotFound() {
   const globalRole = session?.user?.globalRole;
   const isAdmin = globalRole === Role.SandvikAdmin;
   const redirectPath = isAdmin
-    ? 'http://localhost:3000/overview'
-    : 'http://localhost:3000/selectcompany';
+    ? 'http://localhost:3000/administration-portal'
+    : 'http://localhost:3000/select-company';
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

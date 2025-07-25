@@ -93,8 +93,8 @@ export const Menu = () => {
               <Link
                 href={
                   globalRole === Role.SandvikAdmin
-                    ? '/overview'
-                    : '/selectcompany'
+                    ? '/administration-portal'
+                    : '/select-company'
                 }
                 passHref
                 legacyBehavior
@@ -207,8 +207,8 @@ export const Menu = () => {
                   <Link
                     href={
                       globalRole === Role.SandvikAdmin
-                        ? '/overview'
-                        : '/selectcompany'
+                        ? '/administration-portal'
+                        : '/select-company'
                     }
                     passHref
                     legacyBehavior
@@ -238,7 +238,7 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/overview" passHref legacyBehavior>
+                  <Link href="/administration-portal" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Administration Portal

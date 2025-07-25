@@ -40,9 +40,9 @@ export const NavBar = () => {
       <nav className="w-full flex flex-row justify-between items-center">
         <Link
           href={
-            session?.user.globalRole !== Role.SandvikAdmin
-              ? '/selectcompany'
-              : '/overview'
+            session?.user.globalRole === Role.SandvikAdmin
+              ? '/administration-portal'
+              : '/select-company'
           }
         >
           <div className="flex items-center justify-center gap-2">

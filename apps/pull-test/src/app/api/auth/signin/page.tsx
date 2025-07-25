@@ -44,8 +44,8 @@ export default function SignIn() {
       } else {
         const isAdmin = session.user.globalRole === Role.SandvikAdmin;
         const redirectTo = isAdmin
-          ? 'http://localhost:3000/overview'
-          : 'http://localhost:3000/selectcompany';
+          ? 'http://localhost:3000/administration-portal'
+          : 'http://localhost:3000/select-company';
         router.push(redirectTo);
       }
     }

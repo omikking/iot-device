@@ -159,8 +159,8 @@ export const Menu = () => {
                   <Link
                     href={
                       globalRole === Role.SandvikAdmin
-                        ? 'http://localhost:3000/overview'
-                        : 'http://localhost:3000/selectcompany'
+                        ? 'http://localhost:3000/administration-portal'
+                        : 'http://localhost:3000/select-company'
                     }
                     passHref
                     legacyBehavior

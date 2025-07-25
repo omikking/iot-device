@@ -25,7 +25,10 @@ export class UsersResolver {
   ): Promise<GraphQLTypes.User[]> {
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
-    if (allowedCompanyIds.length === 0) {
+    if (
+      user.globalRole !== GlobalRole.SANDVIK_ADMIN &&
+      allowedCompanyIds.length === 0
+    ) {
       throw new ForbiddenException('You do not have permission to list users.');
     }
 

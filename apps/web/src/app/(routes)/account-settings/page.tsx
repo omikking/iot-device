@@ -21,11 +21,12 @@ const getUserQuery = graphql(`
 
 export default function Page(): JSX.Element {
   const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const userId = session?.user?.id as string;
 
   const [{ data: getUser }] = useQuery({
     query: getUserQuery,
-    variables: { id: userId ?? '' },
+    variables: { id: userId },
+    pause: !userId,
   });
   const user = getUser?.user as User;
   return (

@@ -57,6 +57,7 @@ export const Menu = () => {
   const [companyResult] = useQuery({
     query: getCompanyName,
     variables: { id: paramCompanyId },
+    pause: !paramCompanyId,
   });
   const { id: companyId, name: companyName } =
     companyResult.data?.company || {};

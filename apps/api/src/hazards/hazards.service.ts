@@ -1,10 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
-import { errorTexts } from 'src/errorTexts/errorTexts';
 import { hasAppAccessForCompany } from 'src/utils';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { Application } from '@prisma/client';
+import { Application, GlobalRole } from '@prisma/client';
 
 @Injectable()
 export class HazardsService {
@@ -16,8 +15,11 @@ export class HazardsService {
     allowedCompanyIds: string[],
     allowedApps: Application[],
   ): Promise<GraphQLTypes.BoltResult[]> {
-    if (!allowedCompanyIds.includes(companyId)) {
-      throw new ForbiddenException(errorTexts.permissionsDenied);
+    if (
+      user.globalRole !== GlobalRole.SANDVIK_ADMIN &&
+      !allowedCompanyIds.includes(companyId)
+    ) {
+      throw new ForbiddenException('No access hazards on this company.');
     }
 
     const hasAccess = await hasAppAccessForCompany(

@@ -201,12 +201,13 @@ export class CompaniesService {
   async update(
     id: string,
     updateCompanyInput: GraphQLTypes.UpdateCompanyInput,
+    user: ActiveUserData,
   ): Promise<Company> {
     try {
       const { plans, sandvikAdminUserId, ...companyData } = updateCompanyInput;
 
       const company = await this.prisma.$transaction(async (prisma) => {
-        // Step 1: Update basic company info
+        // Update basic company info
         const updatedCompany = await prisma.company.update({
           where: { id },
           data: {
@@ -220,97 +221,99 @@ export class CompaniesService {
           },
         });
 
-        // Step 2: Update SANDVIK_ADMIN userPermission
-        const existingSandvikAdmins = await prisma.userPermission.findMany({
-          where: {
-            companyId: id,
-            role: Role.SANDVIK_ADMIN,
-          },
-        });
-
-        const isAlreadyAdmin = existingSandvikAdmins?.some(
-          (perm) => perm.userId === sandvikAdminUserId,
-        );
-
-        if (!isAlreadyAdmin) {
-          // Remove previous SANDVIK_ADMINs for this company
-          await prisma.userPermission.deleteMany({
+        // Only Sandvik Admin can re-assign admin & update plans
+        if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+          // Update SANDVIK_ADMIN userPermission
+          const existingSandvikAdmins = await prisma.userPermission.findMany({
             where: {
               companyId: id,
               role: Role.SANDVIK_ADMIN,
             },
           });
 
-          // Create new SANDVIK_ADMIN
-          await prisma.userPermission.create({
-            data: {
-              companyId: id,
-              userId: sandvikAdminUserId as string,
-              role: Role.SANDVIK_ADMIN,
-              appsAccess: [
-                Application.PULL_TEST,
-                Application.PULL_TEST_OPERATOR,
-                Application.BANSHEE,
-              ],
-            },
-          });
-        }
+          const isAlreadyAdmin = existingSandvikAdmins?.some(
+            (perm) => perm.userId === sandvikAdminUserId,
+          );
 
-        if (plans) {
-          // Delete all plans that are not in the request
-          const plansToKeepId = plans
-            .map((plan) => plan.id)
-            .filter((id): id is string => !id !== null && id !== undefined);
-
-          if (plansToKeepId.length > 0) {
-            await prisma.plan.deleteMany({
+          if (!isAlreadyAdmin) {
+            // Remove previous SANDVIK_ADMINs for this company
+            await prisma.userPermission.deleteMany({
               where: {
                 companyId: id,
-                NOT: {
-                  id: { in: plansToKeepId },
-                },
+                role: Role.SANDVIK_ADMIN,
               },
             });
-          } else {
-            // Handle case when no plans are left to keep
-            await prisma.plan.deleteMany({
-              where: { companyId: id },
+
+            // Create new SANDVIK_ADMIN
+            await prisma.userPermission.create({
+              data: {
+                companyId: id,
+                userId: sandvikAdminUserId as string,
+                role: Role.SANDVIK_ADMIN,
+                appsAccess: [
+                  Application.PULL_TEST,
+                  Application.PULL_TEST_OPERATOR,
+                  Application.BANSHEE,
+                ],
+              },
             });
           }
 
-          // Update existing plans or create new
-          for (const plan of plans) {
-            let existingPlan;
+          if (plans) {
+            // Delete all plans that are not in the request
+            const plansToKeepId = plans
+              .map((plan) => plan.id)
+              .filter((id): id is string => !id !== null && id !== undefined);
 
-            if (plan?.id) {
-              existingPlan = await prisma.plan.findUnique({
-                where: { id: plan.id },
-              });
-            }
-
-            if (existingPlan && plan?.id) {
-              // Update plan if it already exists
-              await prisma.plan.update({
-                where: { id: plan.id },
-                data: {
-                  planLevel: plan.planLevel as PlanLevel,
-                  expiringDate: plan.expiringDate || null,
+            if (plansToKeepId.length > 0) {
+              await prisma.plan.deleteMany({
+                where: {
+                  companyId: id,
+                  NOT: {
+                    id: { in: plansToKeepId },
+                  },
                 },
               });
             } else {
-              // Create new plan if new one was added
-              await prisma.plan.create({
-                data: {
-                  companyId: updatedCompany.id,
-                  applicationName: plan.applicationName as Application,
-                  planLevel: plan.planLevel as PlanLevel,
-                  expiringDate: plan.expiringDate || null,
-                },
+              // Handle case when no plans are left to keep
+              await prisma.plan.deleteMany({
+                where: { companyId: id },
               });
+            }
+
+            // Update existing plans or create new
+            for (const plan of plans) {
+              let existingPlan;
+
+              if (plan?.id) {
+                existingPlan = await prisma.plan.findUnique({
+                  where: { id: plan.id },
+                });
+              }
+
+              if (existingPlan && plan?.id) {
+                // Update plan if it already exists
+                await prisma.plan.update({
+                  where: { id: plan.id },
+                  data: {
+                    planLevel: plan.planLevel as PlanLevel,
+                    expiringDate: plan.expiringDate || null,
+                  },
+                });
+              } else {
+                // Create new plan if new one was added
+                await prisma.plan.create({
+                  data: {
+                    companyId: updatedCompany.id,
+                    applicationName: plan.applicationName as Application,
+                    planLevel: plan.planLevel as PlanLevel,
+                    expiringDate: plan.expiringDate || null,
+                  },
+                });
+              }
             }
           }
         }
-
         return updatedCompany;
       });
 

@@ -6,14 +6,32 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { isPasswordStrong } from 'src/utils/utils';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(roles?: GlobalRole[]): Promise<User[]> {
+  findAll(
+    user: ActiveUserData,
+    allowedCompanyIds: string[],
+    roles?: GlobalRole[],
+  ): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
     const where: Prisma.UserWhereInput = {};
+
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      if (roles && roles.length > 0) {
+        where.globalRole = { in: roles };
+      }
+      return this.prisma.user.findMany({ where });
+    }
+
+    where.userRole = {
+      some: {
+        companyId: { in: allowedCompanyIds },
+      },
+    };
 
     if (roles && roles.length > 0) {
       where.globalRole = { in: roles };

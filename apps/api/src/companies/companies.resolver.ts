@@ -55,9 +55,11 @@ export class CompaniesResolver {
   async update(
     @Args('id', ParseUUIDPipe) id: string,
     @Args('updateCompanyInput')
+    @ActiveUser()
+    user: ActiveUserData,
     updateCompanyInput: UpdateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
-    return this.companiesService.update(id, updateCompanyInput);
+    return this.companiesService.update(id, updateCompanyInput, user);
   }
 
   @Roles([Role.COMPANY_ADMIN], [], 'company')

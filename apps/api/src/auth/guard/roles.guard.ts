@@ -77,7 +77,7 @@ export class RolesGuard implements CanActivate {
     }
 
     if (!user || !user.id) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(errorTexts.authUserError_title);
     }
 
     if (
@@ -124,7 +124,9 @@ export class RolesGuard implements CanActivate {
     });
 
     if (!hasRole) {
-      throw new ForbiddenException(errorTexts.permissionsDenied);
+      throw new ForbiddenException(
+        'Missing company access, role or app permission.',
+      );
     }
 
     return true;

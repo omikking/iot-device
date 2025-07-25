@@ -1,3 +1,4 @@
+import { responses } from '@/app/uitexts/responses';
 import { Application } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
@@ -48,7 +49,16 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
   const extensions =
     graphQLError.extensions as unknown as GraphQLErrorExtensions;
 
-  // Validation errors from backend
+  if (extensions?.code === 'FORBIDDEN') {
+    showAlertToast({
+      title: responses.accessDeniedError_title,
+      description: responses.accessDeniedError_message,
+      variant: 'error',
+    });
+    return true;
+  }
+
+  // Validation custom errors from backend
   if (
     extensions?.code === 'BAD_REQUEST' &&
     extensions?.originalError?.message

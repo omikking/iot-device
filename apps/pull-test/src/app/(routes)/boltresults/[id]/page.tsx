@@ -210,9 +210,11 @@ export default function Page({ params }: Props): JSX.Element {
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
 
-      <Badge variant="primary" size="large" className="absolute top-24">
-        {companyData?.company?.name ?? 'Select company'}
-      </Badge>
+      {companyData?.company?.name && (
+        <Badge variant="primary" size="large" className="absolute top-24">
+          {companyData?.company?.name}
+        </Badge>
+      )}
 
       <Headline as="h1" variant="xl" color="foreground">
         Bolt results

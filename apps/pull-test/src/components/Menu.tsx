@@ -136,12 +136,16 @@ export const Menu = () => {
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link
                     href={`http://localhost:3000/selectapplication/${companyId}`}
                     passHref
                     legacyBehavior
-                    className="group"
                   >
                     <Anchor color="foreground">
                       <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />

@@ -37,8 +37,7 @@ export class SitesResolver {
   @Roles([Role.COMPANY_ADMIN], [], 'site')
   @Mutation('createSite')
   async create(
-    @Args('createSiteInput')
-    createSiteInput: CreateSiteInput,
+    @Args('createSiteInput') createSiteInput: CreateSiteInput,
   ): Promise<GraphQLTypes.Site> {
     return this.sitesService.create(createSiteInput);
   }
@@ -47,8 +46,7 @@ export class SitesResolver {
   @Mutation('updateSite')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
-    @Args('updateSiteInput')
-    updateSiteInput: UpdateSiteInput,
+    @Args('updateSiteInput') updateSiteInput: UpdateSiteInput,
   ): Promise<GraphQLTypes.Site> {
     return this.sitesService.update(id, updateSiteInput);
   }

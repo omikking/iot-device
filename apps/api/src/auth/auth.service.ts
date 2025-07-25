@@ -24,7 +24,7 @@ import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/utils';
+import { isPasswordStrong } from 'src/utils/';
 
 @Injectable()
 export class AuthService {

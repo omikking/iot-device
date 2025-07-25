@@ -44,8 +44,7 @@ export class CompaniesResolver {
   @Roles([Role.SANDVIK_ADMIN], [], 'company')
   @Mutation('createCompany')
   async create(
-    @Args('createCompanyInput')
-    createCompanyInput: CreateCompanyInput,
+    @Args('createCompanyInput') createCompanyInput: CreateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.create(createCompanyInput);
   }
@@ -54,10 +53,8 @@ export class CompaniesResolver {
   @Mutation('updateCompany')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
-    @Args('updateCompanyInput')
-    @ActiveUser()
-    user: ActiveUserData,
-    updateCompanyInput: UpdateCompanyInput,
+    @Args('updateCompanyInput') updateCompanyInput: UpdateCompanyInput,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.update(id, updateCompanyInput, user);
   }

@@ -68,7 +68,7 @@ export class BoltResultsService {
         companyId,
       );
 
-      if (!companyId || !hasAccess) {
+      if (!hasAccess) {
         throw new ForbiddenException(
           'User missing access to this application for this company.',
         );

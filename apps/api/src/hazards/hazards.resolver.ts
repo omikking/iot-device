@@ -6,11 +6,16 @@ import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
 import { JwtGuard } from 'src/auth/guard';
+import { Application } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Resolver()
 @UseGuards(JwtGuard)
 export class HazardsResolver {
-  constructor(private readonly hazardsService: HazardsService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly hazardsService: HazardsService,
+  ) {}
 
   @Query('hazards')
   async findAll(
@@ -18,6 +23,13 @@ export class HazardsResolver {
     @Args('companyId', ParseUUIDPipe) companyId: string,
   ): Promise<GraphQLTypes.BoltResult[]> {
     const allowedCompanyIds = getAllowedCompanyIds(user);
-    return this.hazardsService.findAll(companyId, allowedCompanyIds);
+    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_OPERATOR];
+
+    return this.hazardsService.findAll(
+      user,
+      companyId,
+      allowedCompanyIds,
+      allowedApps,
+    );
   }
 }

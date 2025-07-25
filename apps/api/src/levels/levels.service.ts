@@ -1,16 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { Level } from '@prisma/client';
+import { GlobalRole, Level } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class LevelsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Level[]> {
-    return this.prisma.level.findMany();
+  findAll(user: ActiveUserData, allowedCompanyIds: string[]): Promise<Level[]> {
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      return this.prisma.level.findMany();
+    }
+    return this.prisma.level.findMany({
+      where: {
+        site: {
+          companyId: { in: allowedCompanyIds },
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Level> {

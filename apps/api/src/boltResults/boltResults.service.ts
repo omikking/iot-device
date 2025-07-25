@@ -33,6 +33,7 @@ export class BoltResultsService {
       startDate?: Date | undefined;
       endDate?: Date | undefined;
     },
+    allowedCompanyIds: string[],
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit = 50 } = pagination;
 
@@ -50,8 +51,9 @@ export class BoltResultsService {
     } = filters || {};
 
     const whereCondition: Record<string, any> = {
-      ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
-        ? { userId: user.id }
+      // Only return results for companies the user has permission for
+      ...(user.globalRole !== GlobalRole.SANDVIK_ADMIN
+        ? { companyId: { in: allowedCompanyIds } }
         : {}),
       ...(siteId ? { siteId } : {}),
       ...(levelId ? { levelId } : {}),

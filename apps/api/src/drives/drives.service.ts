@@ -1,16 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { Drive } from '@prisma/client';
+import { Drive, GlobalRole } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { ActiveUser } from 'src/auth/decorators';
 
 @Injectable()
 export class DrivesService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Drive[]> {
-    return this.prisma.drive.findMany();
+  findAll(
+    @ActiveUser() user: ActiveUserData,
+    allowedCompanyIds: string[],
+  ): Promise<Drive[]> {
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      return this.prisma.drive.findMany();
+    }
+    return this.prisma.drive.findMany({
+      where: {
+        level: {
+          site: {
+            companyId: { in: allowedCompanyIds },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Drive> {

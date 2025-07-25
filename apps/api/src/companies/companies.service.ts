@@ -21,13 +21,14 @@ export class CompaniesService {
   async findAll(
     user: ActiveUserData,
     pagination: { offset: number; limit: number },
+    allowedCompanyIds: string[],
   ): Promise<GraphQLTypes.CompanyListResponse> {
     const { offset, limit } = pagination;
-    const whereCondition: Partial<Record<string, any>> = {};
+    let whereCondition: Partial<Record<string, any>> = {};
 
     if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
-      whereCondition.userPermission = {
-        some: { userId: user.id },
+      whereCondition = {
+        id: { in: allowedCompanyIds },
       };
     }
 

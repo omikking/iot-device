@@ -17,6 +17,7 @@ import { ActiveUser } from 'src/auth/decorators';
 import { Application, BoltResult } from '@prisma/client';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -62,7 +63,14 @@ export class BoltResultsResolver {
       startDate,
       endDate,
     };
-    return this.boltResultsService.findMany(user, pagination, filters);
+
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.boltResultsService.findMany(
+      user,
+      pagination,
+      filters,
+      allowedCompanyIds,
+    );
   }
 
   @Roles(
@@ -116,7 +124,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
-  // TODO Not sure how to do here, when it has multiple ones
+  // TODO Fix here later, need to be tested in mobile
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -125,7 +133,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
-  // TODO Not sure how to do here, when it has multiple ones
+  // TODO Fix here later, need to be tested in mobile
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -138,7 +146,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  // TODO Not sure how to do here, when it has multiple ones
+  // TODO Fix here later, need to be tested in mobile
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

@@ -11,6 +11,7 @@ import { ActiveUser } from 'src/auth/decorators';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Role } from '@prisma/client';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -28,7 +29,8 @@ export class CompaniesResolver {
       limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.findAll(user, pagination);
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.companiesService.findAll(user, pagination, allowedCompanyIds);
   }
 
   @Roles([], [], 'company')

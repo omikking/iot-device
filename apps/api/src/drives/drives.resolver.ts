@@ -9,16 +9,20 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Role } from '@prisma/client';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { ActiveUser } from 'src/auth/decorators';
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
 export class DrivesResolver {
   constructor(private readonly drivesService: DrivesService) {}
 
-  // Fix here
   @Query('drives')
-  async findAll(): Promise<GraphQLTypes.Drive[]> {
-    return this.drivesService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.Drive[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.drivesService.findAll(user, allowedCompanyIds);
   }
 
   @Roles([], [], 'drive')

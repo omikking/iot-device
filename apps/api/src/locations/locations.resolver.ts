@@ -9,16 +9,21 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Role } from '@prisma/client';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
 export class LocationsResolver {
   constructor(private readonly locationsService: LocationsService) {}
 
-  // FIx here
   @Query('locations')
-  async findAll(): Promise<GraphQLTypes.Location[]> {
-    return this.locationsService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.Location[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.locationsService.findAll(user, allowedCompanyIds);
   }
 
   @Roles([], [], 'location')

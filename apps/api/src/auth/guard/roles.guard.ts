@@ -30,6 +30,29 @@ export class RolesGuard implements CanActivate {
   // Also checks if specific role is needed etc.
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Get required roles from metadata, such as Role.COMPANY_ADMIN
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // Get required apps from metadata, such as Application.PULL_TEST
+    const requiredApps = this.reflector.getAllAndOverride<Application[]>(
+      APPS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    // Get prisma model
+    const modelKey = this.reflector.getAllAndOverride<string>(
+      PRISMA_MODEL_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    // If not provided, no rules, allow access
+    if (!requiredRoles && !requiredApps && !modelKey) {
+      return true;
+    }
+
     // Support both GraphQL and REST
     const gqlContext = GqlExecutionContext.create(context);
 
@@ -57,12 +80,6 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    // Get required roles from metadata, such as Role.COMPANY_ADMIN
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
     if (
       requiredRoles &&
       requiredRoles.length === 1 &&
@@ -73,12 +90,6 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    // Get required apps from metadata, such as Application.PULL_TEST
-    const requiredApps = this.reflector.getAllAndOverride<Application[]>(
-      APPS_KEY,
-      [context.getHandler(), context.getClass()],
-    );
-
     if (
       requiredApps &&
       requiredApps.length > 0 &&
@@ -87,19 +98,6 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException(
         'This operation is not allowed for this application.',
       );
-    }
-
-    // Get which model it should look after to find companyId
-    const modelKey = this.reflector.getAllAndOverride<string>(
-      PRISMA_MODEL_KEY,
-      [context.getHandler(), context.getClass()],
-    );
-
-    // TODO here for now, this is here to not block the resolvers that are not specified.
-    // Should fix so these resolvers are not using this guard
-    if (!modelKey) {
-      return true;
-      // throw new ForbiddenException('Model key is missing, include in resolver');
     }
 
     // Securely resolve companyId

@@ -9,16 +9,21 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
 export class LevelsResolver {
   constructor(private readonly levelsService: LevelsService) {}
 
-  // Fix here
   @Query('levels')
-  async findAll(): Promise<GraphQLTypes.Level[]> {
-    return this.levelsService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.Level[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.levelsService.findAll(user, allowedCompanyIds);
   }
 
   @Roles([], [], 'level')

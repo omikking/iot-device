@@ -85,11 +85,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
-  @Roles(
-    [],
-    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
-    'boltResult',
-  )
+  // TODO Test all resolvers below in insomnia
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResult')
   async create(
     @Args('createBoltResultInput')
@@ -98,11 +95,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
-  @Roles(
-    [],
-    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
-    'boltResult',
-  )
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('updateBoltResult')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -112,11 +105,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
-  @Roles(
-    [],
-    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
-    'boltResult',
-  )
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResult')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,
@@ -124,7 +113,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
-  // TODO Fix here later, need to be tested in mobile
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -133,7 +122,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
-  // TODO Fix here later, need to be tested in mobile
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -146,7 +135,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  // TODO Fix here later, need to be tested in mobile
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

@@ -53,7 +53,7 @@ export class BoltResultsService {
     const whereCondition: Record<string, any> = {
       // Only return results for companies the user has permission for
       ...(user.globalRole !== GlobalRole.SANDVIK_ADMIN
-        ? { companyId: { in: allowedCompanyIds } }
+        ? { site: { companyId: { in: allowedCompanyIds } } }
         : {}),
       ...(siteId ? { siteId } : {}),
       ...(levelId ? { levelId } : {}),

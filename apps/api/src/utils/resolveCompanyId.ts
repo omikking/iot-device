@@ -41,8 +41,8 @@ const parentChain: Record<string, ParentChainEntry> = {
   boltResult: {
     model: 'boltResult',
     idField: 'id',
-    parentField: 'companyId',
-    parentModel: 'company',
+    parentField: 'siteId',
+    parentModel: 'site',
   },
   company: {
     model: 'company',

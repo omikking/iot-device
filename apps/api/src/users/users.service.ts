@@ -5,7 +5,7 @@ import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/utils';
+import { isPasswordStrong } from 'src/utils/index';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()

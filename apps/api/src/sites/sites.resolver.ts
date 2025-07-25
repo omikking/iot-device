@@ -9,16 +9,21 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Role } from '@prisma/client';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
 export class SitesResolver {
   constructor(private readonly sitesService: SitesService) {}
 
-  // Fix here
   @Query('sites')
-  async findAll(): Promise<GraphQLTypes.Site[]> {
-    return this.sitesService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.Site[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.sitesService.findAll(user, allowedCompanyIds);
   }
 
   @Roles([], [], 'site')

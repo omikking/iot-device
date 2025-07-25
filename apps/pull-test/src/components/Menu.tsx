@@ -107,7 +107,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/boltresults/${companyId}`}
+                    href={`/bolt-results/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -125,7 +125,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/reportedhazards/${companyId}`}
+                    href={`/reported-hazards/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -143,7 +143,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`http://localhost:3000/selectapplication/${companyId}`}
+                    href={`http://localhost:3000/select-application/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -190,7 +190,7 @@ export const Menu = () => {
               className="group"
             >
               <Link
-                href="http://localhost:3000/accountsettings"
+                href="http://localhost:3000/account-settings"
                 passHref
                 legacyBehavior
               >

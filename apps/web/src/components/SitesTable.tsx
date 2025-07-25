@@ -126,7 +126,7 @@ export const SitesTable = ({
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
-                pathname: `/sitelocations/${companyId}`,
+                pathname: `/site-locations/${companyId}`,
                 query: { siteId: row.original.id },
               }}
             >

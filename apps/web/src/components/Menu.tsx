@@ -173,7 +173,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/sitelocations/${companyId}`}
+                    href={`/site-locations/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -191,7 +191,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/selectapplication/${companyId}`}
+                    href={`/select-application/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -299,7 +299,7 @@ export const Menu = () => {
               as="h3"
               className="group"
             >
-              <Link href="/accountsettings" passHref legacyBehavior>
+              <Link href="/account-settings" passHref legacyBehavior>
                 <Anchor color="foreground">
                   <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings

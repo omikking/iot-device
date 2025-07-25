@@ -1,4 +1,4 @@
-import { Application, PrismaClient } from '@prisma/client';
+import { Application, GlobalRole, PrismaClient } from '@prisma/client';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 export async function hasAppAccessForCompany(
@@ -7,6 +7,10 @@ export async function hasAppAccessForCompany(
   requiredApps: Application[],
   companyId?: string,
 ): Promise<boolean> {
+  if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+    return true;
+  }
+
   if (!companyId) {
     return false;
   }

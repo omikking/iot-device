@@ -38,6 +38,12 @@ export const AppPlansContainer = ({
 
   const [date, setDate] = useState<Date | number>(expiringDate);
 
+  const today = new Date().getTime();
+  const expirationTime = new Date(date).getTime();
+  const daysUntilExpiration = Math.ceil(
+    (expirationTime - today) / (1000 * 60 * 60 * 24),
+  );
+
   const handleDateChange = (date?: Date) => {
     const currentPlans = (companyForm.getValues('plans') as Plan[]) || [];
 
@@ -98,6 +104,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
+        isExpired={daysUntilExpiration < 0}
       />
       <AppPlan
         planLevel={PlanLevel.Silver}
@@ -107,6 +114,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
+        isExpired={daysUntilExpiration < 0}
       />
       <AppPlan
         planLevel={PlanLevel.Bronze}
@@ -116,6 +124,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
+        isExpired={daysUntilExpiration < 0}
       />
 
       {/* Calendar */}
@@ -134,11 +143,18 @@ export const AppPlansContainer = ({
           )}
 
           {!isUserSandvikAdmin && date !== 0 && date !== null && (
-            <div className="py-5 px-6 border-b border-neutral-2">
-              <Badge variant="primary">
-                <LucideCalendar size="14" />
-                Your plan expires {formattedDate(date)}
+            <div className="flex flex-wrap gap-2 py-5 px-6 border-b border-neutral-2">
+              <Badge variant={daysUntilExpiration < 0 ? 'warning' : 'primary'}>
+                <LucideCalendar />
+                Plan {daysUntilExpiration < 0 ? 'expired' : 'expires'}{' '}
+                {formattedDate(date)}
               </Badge>
+
+              {daysUntilExpiration <= 30 && daysUntilExpiration > 0 && (
+                <Badge variant="warning">
+                  {`${daysUntilExpiration} days left`}
+                </Badge>
+              )}
             </div>
           )}
         </>

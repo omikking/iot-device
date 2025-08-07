@@ -23,6 +23,7 @@ type AppPlanProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   activePlanLevel?: PlanLevel;
   expiringDate?: Date | number;
+  isExpired?: boolean;
   onPlanLevelChange: (planLevel?: PlanLevel) => void;
 };
 
@@ -33,6 +34,7 @@ export const AppPlan = ({
   isUserSandvikAdmin,
   companyForm,
   expiringDate,
+  isExpired,
   onPlanLevelChange,
 }: AppPlanProps) => {
   const { applicationName } = appPlan;
@@ -87,7 +89,7 @@ export const AppPlan = ({
   return (
     <div
       className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
-        isPlanActive ? 'bg-neutral-1' : ''
+        isPlanActive && !isExpired ? 'bg-neutral-1' : ''
       }`}
     >
       <FormField
@@ -112,7 +114,7 @@ export const AppPlan = ({
               </FormControl>
             )}
 
-            {!isUserSandvikAdmin && isPlanActive && (
+            {!isUserSandvikAdmin && isPlanActive && !isExpired && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
                 Your selected plan

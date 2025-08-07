@@ -318,7 +318,6 @@ export const AddOrEditSiteModal = ({
                 isLoading={isLoading}
               >
                 {!isLoading && <LucidePlus />}
-
                 {site ? 'Save changes' : 'Add site'}
               </Button>
             </ModalFooter>

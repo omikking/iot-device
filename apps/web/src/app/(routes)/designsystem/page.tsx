@@ -193,7 +193,7 @@ export default function Page(): JSX.Element {
           <BreadcrumbLink asChild>
             <BreadcrumbItem>
               <Text variant="small" color="foreground">
-                <Link href="/overview">With Link</Link>
+                <Link href="/administration-portal">With Link</Link>
               </Text>
             </BreadcrumbItem>
           </BreadcrumbLink>

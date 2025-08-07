@@ -45,7 +45,6 @@ export default function Page({
   const [{ data: hazardData }] = useQuery({
     query: getHazardsIdQuery,
     variables: { id: companyId },
-    pause: !companyId,
   });
 
   const activeHazards = hazardData?.hazards?.filter(
@@ -67,7 +66,7 @@ export default function Page({
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">
-        <Link href={`/boltresults/${companyId}`}>
+        <Link href={`/bolt-results/${companyId}`}>
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Bolt results
@@ -79,7 +78,7 @@ export default function Page({
             </Button>
           </NavigationCard>
         </Link>
-        <Link href={`/reportedhazards/${companyId}`}>
+        <Link href={`/reported-hazards/${companyId}`}>
           <NavigationCard className="relative">
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"

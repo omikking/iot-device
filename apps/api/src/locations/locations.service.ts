@@ -1,16 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { Location } from '@prisma/client';
+import { GlobalRole, Location } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class LocationsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Location[]> {
-    return this.prisma.location.findMany();
+  findAll(
+    @ActiveUser() user: ActiveUserData,
+    allowedCompanyIds: string[],
+  ): Promise<Location[]> {
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      return this.prisma.location.findMany();
+    }
+    return this.prisma.location.findMany({
+      where: {
+        drive: {
+          level: {
+            site: {
+              companyId: { in: allowedCompanyIds },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Location> {
@@ -148,6 +166,9 @@ export class LocationsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_DELETE_ERROR',

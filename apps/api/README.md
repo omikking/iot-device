@@ -41,6 +41,9 @@ $ pnpm run start
 # watch mode
 $ pnpm run start:dev
 
+# log all GraphQL requests
+$ pnpm run start:dev:logging
+
 # production mode
 $ pnpm run start:prod
 ```

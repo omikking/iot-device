@@ -57,6 +57,7 @@ export const Menu = () => {
   const [companyResult] = useQuery({
     query: getCompanyName,
     variables: { id: paramCompanyId },
+    pause: !paramCompanyId,
   });
   const { id: companyId, name: companyName } =
     companyResult.data?.company || {};
@@ -107,7 +108,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/boltresults/${companyId}`}
+                    href={`/bolt-results/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -125,7 +126,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`/reportedhazards/${companyId}`}
+                    href={`/reported-hazards/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -136,14 +137,19 @@ export const Menu = () => {
                   </Link>
                 </Headline>
 
-                <Headline variant="medium" color="foreground" as="h3">
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
                   <Link
-                    href={`http://localhost:3000/selectapplication/${companyId}`}
+                    href={`http://localhost:3000/select-application/${companyId}`}
                     passHref
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600" />
+                      <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
                     </Anchor>
                   </Link>
@@ -154,8 +160,8 @@ export const Menu = () => {
                   <Link
                     href={
                       globalRole === Role.SandvikAdmin
-                        ? 'http://localhost:3000/overview'
-                        : 'http://localhost:3000/selectcompany'
+                        ? 'http://localhost:3000/administration-portal'
+                        : 'http://localhost:3000/select-company'
                     }
                     passHref
                     legacyBehavior
@@ -178,14 +184,19 @@ export const Menu = () => {
           )}
 
           <div className="flex flex-col gap-1.5 mb-16">
-            <Headline variant="medium" color="foreground" as="h3">
+            <Headline
+              variant="medium"
+              color="foreground"
+              as="h3"
+              className="group"
+            >
               <Link
-                href="http://localhost:3000/accountsettings"
+                href="http://localhost:3000/account-settings"
                 passHref
                 legacyBehavior
               >
                 <Anchor color="foreground">
-                  <LucideSettings />
+                  <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings
                 </Anchor>
               </Link>

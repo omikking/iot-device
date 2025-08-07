@@ -43,6 +43,11 @@ declare module 'next-auth' {
       email: string;
       fullName: string;
       globalRole: Role;
+      userPermissions?: {
+        role: Role;
+        companyId: UUID;
+        appsAccess: Application[];
+      }[];
     };
     // TODO: Backend integration
     company: {

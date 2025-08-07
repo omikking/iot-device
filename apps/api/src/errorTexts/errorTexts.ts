@@ -1,6 +1,7 @@
 export const errorTexts = {
   // General errors
   contactSupportError: 'Please contact our support team for assistance.',
+  permissionsDenied: 'Permission denied',
 
   // Bolt result
   boltResultNotFound_title: (id: string) => `Bolt result #${id} not found`,

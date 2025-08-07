@@ -74,6 +74,8 @@ export default function AccountSettingsForm({
   const onSubmit: SubmitHandler<UpdateAccountSettingsFormSchemaValues> = async (
     data,
   ) => {
+    setIsLoading(true);
+
     const {
       email,
       fullName,
@@ -155,6 +157,7 @@ export default function AccountSettingsForm({
                     <Input
                       {...field}
                       placeholder="Enter your email..."
+                      autoComplete="email"
                       className="w-full"
                     />
                   </FormControl>
@@ -188,7 +191,7 @@ export default function AccountSettingsForm({
               name="workPlace"
               render={({ field }) => (
                 <FormItem className="min-w-[31%]">
-                  <FormLabel>Workplace</FormLabel>
+                  <FormLabel>Work place</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -228,12 +231,13 @@ export default function AccountSettingsForm({
               name="oldPassword"
               render={({ field }) => (
                 <FormItem className="min-w-[31%]">
-                  <FormLabel>Old password</FormLabel>
+                  <FormLabel>Current password</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your old password..."
+                      placeholder="Enter your current password..."
                       type="password"
+                      autoComplete="current-password"
                       className="w-full"
                     />
                   </FormControl>
@@ -254,6 +258,7 @@ export default function AccountSettingsForm({
                       {...field}
                       placeholder="Enter your new password..."
                       type="password"
+                      autoComplete="new-password"
                       className="w-full"
                     />
                   </FormControl>
@@ -274,6 +279,7 @@ export default function AccountSettingsForm({
                       {...field}
                       placeholder="Confirm your password..."
                       type="password"
+                      autoComplete="new-password"
                       className="w-full"
                     />
                   </FormControl>
@@ -292,7 +298,7 @@ export default function AccountSettingsForm({
             disabled={isSubmitDisabled}
             isLoading={isLoading}
           >
-            <LucideCheckCircle />
+            {!isLoading && <LucideCheckCircle />}
             Save changes
           </Button>
         </div>

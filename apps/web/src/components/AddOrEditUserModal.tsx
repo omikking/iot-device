@@ -43,8 +43,8 @@ type AddOrEditUserModalProps = {
 };
 
 const getTechniciansQuery = graphql(`
-  query getTechniciansByRole {
-    users(roles: "SANDVIK_TECHNICIAN") {
+  query getTechniciansByRole($roles: [String]!) {
+    users(roles: $roles) {
       id
       fullName
       email
@@ -118,6 +118,9 @@ export const AddOrEditUserModal = ({
 
   const [{ data: techniciansData }] = useQuery({
     query: getTechniciansQuery,
+    variables: {
+      roles: [Role.SandvikTechnician],
+    },
   });
   const technicians = (techniciansData?.users as User[]) || [];
 

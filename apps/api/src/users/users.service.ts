@@ -5,15 +5,33 @@ import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/utils';
+import { isPasswordStrong } from 'src/utils/';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(roles?: GlobalRole[]): Promise<User[]> {
+  findAll(
+    user: ActiveUserData,
+    allowedCompanyIds: string[],
+    roles?: GlobalRole[],
+  ): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
     const where: Prisma.UserWhereInput = {};
+
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      if (roles && roles.length > 0) {
+        where.globalRole = { in: roles };
+      }
+      return this.prisma.user.findMany({ where });
+    }
+
+    where.userRole = {
+      some: {
+        companyId: { in: allowedCompanyIds },
+      },
+    };
 
     if (roles && roles.length > 0) {
       where.globalRole = { in: roles };
@@ -120,6 +138,9 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_UPDATE_ERROR',
@@ -144,6 +165,9 @@ export class UsersService {
     try {
       return await this.prisma.user.delete({ where: { id } });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'USER_DELETE_ERROR',

@@ -54,7 +54,7 @@ export const CompanyList = () => {
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href={`/selectapplication/${company.id}`}>
+              <Link href={`/select-application/${company.id}`}>
                 <LucideLayoutGrid />
                 Browse Apps
               </Link>

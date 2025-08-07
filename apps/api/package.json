@@ -22,6 +22,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:dev:logging": "LOG_GRAPHQL=1 nest start --watch",
     "start:dev:setup": "npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy && npm run prisma:generate && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

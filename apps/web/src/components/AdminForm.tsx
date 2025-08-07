@@ -15,6 +15,7 @@ import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
+import { Role } from '@/gql/graphql';
 
 type AdminFormProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
@@ -35,7 +36,7 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
   const [{ data: adminsData }] = useQuery({
     query: getAdminsQuery,
     variables: {
-      roles: ['SANDVIK_ADMIN'],
+      roles: [Role.SandvikAdmin],
     },
     pause: !session?.company?.id,
   });

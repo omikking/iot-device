@@ -31,7 +31,7 @@ export default function Page(): JSX.Element | null {
 
   useEffect(() => {
     if (companies.length === 1) {
-      router.push(`/selectapplication/${companies[0].id}`);
+      router.push(`/select-application/${companies[0].id}`);
     }
   }, [companies]);
 

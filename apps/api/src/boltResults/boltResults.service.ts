@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
   BoltResult,
   Result,
@@ -6,6 +6,7 @@ import {
   BoltType,
   RingPosition,
   GlobalRole,
+  Application,
 } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
@@ -13,6 +14,7 @@ import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { hasAppAccessForCompany } from 'src/utils';
 
 @Injectable()
 export class BoltResultsService {
@@ -33,6 +35,8 @@ export class BoltResultsService {
       startDate?: Date | undefined;
       endDate?: Date | undefined;
     },
+    allowedCompanyIds: string[],
+    allowedApps: Application[],
   ): Promise<GraphQLTypes.BoltResultResponse> {
     const { offset, limit = 50 } = pagination;
 
@@ -49,9 +53,32 @@ export class BoltResultsService {
       endDate,
     } = filters || {};
 
+    // Extract companyId and check if the user has access to the any of the applications
+    if (siteId) {
+      const site = await this.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { companyId: true },
+      });
+      const companyId = site?.companyId;
+
+      const hasAccess = await hasAppAccessForCompany(
+        this.prisma,
+        user,
+        allowedApps,
+        companyId,
+      );
+
+      if (!hasAccess) {
+        throw new ForbiddenException(
+          'User missing access to this application for this company.',
+        );
+      }
+    }
+
     const whereCondition: Record<string, any> = {
-      ...(user.globalRole === GlobalRole.SANDVIK_TECHNICIAN
-        ? { userId: user.id }
+      // Only return results for companies the user has permission for
+      ...(user.globalRole !== GlobalRole.SANDVIK_ADMIN
+        ? { site: { companyId: { in: allowedCompanyIds } } }
         : {}),
       ...(siteId ? { siteId } : {}),
       ...(levelId ? { levelId } : {}),
@@ -142,6 +169,9 @@ export class BoltResultsService {
       }
       return createdBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_CREATION_ERROR_GENERIC',
@@ -193,6 +223,9 @@ export class BoltResultsService {
 
       return updatedBoltResult;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_UPDATE_ERROR_GENERIC',
@@ -222,6 +255,9 @@ export class BoltResultsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BOLT_RESULT_DELETE_ERROR_GENERIC',

@@ -30,6 +30,7 @@ export const NavBar = () => {
   const [{ data }] = useQuery({
     query: getCompanyName,
     variables: { id: companyId },
+    pause: !companyId,
   });
   const companyName = data?.company?.name;
 

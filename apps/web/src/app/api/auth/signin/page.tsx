@@ -44,7 +44,9 @@ export default function SignIn() {
         router.push(callbackUrl);
       } else {
         const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-        const redirectTo = isAdmin ? '/overview' : '/selectcompany';
+        const redirectTo = isAdmin
+          ? '/administration-portal'
+          : '/select-company';
         router.push(redirectTo);
       }
     }

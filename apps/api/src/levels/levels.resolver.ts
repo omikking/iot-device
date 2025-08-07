@@ -6,17 +6,27 @@ import { UpdateLevelInput } from './dto/update-level.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class LevelsResolver {
   constructor(private readonly levelsService: LevelsService) {}
 
   @Query('levels')
-  async findAll(): Promise<GraphQLTypes.Level[]> {
-    return this.levelsService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.Level[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.levelsService.findAll(user, allowedCompanyIds);
   }
 
+  @Roles([], [], 'level')
   @Query('level')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -24,6 +34,7 @@ export class LevelsResolver {
     return this.levelsService.findOne(id);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'level')
   @Mutation('createLevel')
   async create(
     @Args('createLevelInput')
@@ -32,6 +43,7 @@ export class LevelsResolver {
     return this.levelsService.create(createLevelInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'level')
   @Mutation('updateLevel')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -41,6 +53,7 @@ export class LevelsResolver {
     return this.levelsService.update(id, updateLevelInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'level')
   @Mutation('removeLevel')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

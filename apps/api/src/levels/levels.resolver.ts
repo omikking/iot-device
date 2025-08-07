@@ -27,9 +27,9 @@ export class LevelsResolver {
   }
 
   @Roles([], [], 'level')
-  @Query(() => GraphQLTypes.Level, { name: 'level' })
+  @Query('level')
   async findOne(
-    @Args('id', { type: () => String }, ParseUUIDPipe) id: string,
+    @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.Level> {
     return this.levelsService.findOne(id);
   }

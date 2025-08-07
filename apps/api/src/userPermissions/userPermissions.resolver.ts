@@ -20,7 +20,6 @@ export class UserPermissionsResolver {
     private readonly userPermissionsService: UserPermissionsService,
   ) {}
 
-  // Fix here, runs on RolesGuard anyways which we don't want.
   @Query('userPermissions')
   async findAll(
     @ActiveUser() user: ActiveUserData,

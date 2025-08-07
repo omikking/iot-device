@@ -1,4 +1,3 @@
-// apps/api/src/auth/guard/roles.guard.ts
 import {
   Injectable,
   CanActivate,
@@ -56,15 +55,11 @@ export class RolesGuard implements CanActivate {
     // Support both GraphQL and REST
     const gqlContext = GqlExecutionContext.create(context);
 
-    const isGraphQL =
-      !!gqlContext.getContext().req || !!gqlContext.getContext().user;
-
     const args = gqlContext.getArgs();
 
     // Get user data
-    const user = isGraphQL
-      ? gqlContext.getContext().req.user
-      : context.switchToHttp().getRequest().user; // TODO check if user really exists there or should be req.user
+    const req = gqlContext.getContext().req;
+    const user = req && req.user;
 
     // Bypass everything for SANDVIK ADMINS
     if (user?.globalRole === Role.SANDVIK_ADMIN) {
@@ -85,7 +80,6 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    // Securely resolve companyId
     const companyId = await resolveCompanyId(this.prisma, args, modelKey);
 
     if (!companyId) {

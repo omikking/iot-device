@@ -52,12 +52,12 @@ const parentChain: Record<string, ParentChainEntry> = {
   },
 };
 
+// TODO: Look over this function, check any potential security or performance issues
 export async function resolveCompanyId(
   prisma: PrismaService,
   args: Record<string, any>,
   modelKey: string,
 ): Promise<string | null> {
-  // TODO Is this fully safe? Getting the companyId from args? Is it safe for create mutations where id is missing?
   const modelKeyId = typeof args.id === 'string' ? args.id : undefined;
   let currentModel = modelKey as keyof typeof parentChain;
   let currentId = modelKeyId;
@@ -67,7 +67,6 @@ export async function resolveCompanyId(
       parentChain[currentModel];
 
     // If no existing id (create mutations), try to jump to parent model and id
-    // TODO Should we trust in the args input to jump to parent?
     if (!currentId && args && parentModel) {
       let parentId = args[parentField as string];
 

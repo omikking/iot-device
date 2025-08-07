@@ -1,12 +1,12 @@
-import { Application } from '@prisma/client';
+import { Application, GlobalRole, Role } from '@prisma/client';
 
 export interface ActiveUserData {
   id: string;
   email: string;
   fullName: string;
-  globalRole: string | null;
+  globalRole: GlobalRole | null;
   userPermissions?: {
-    role: string;
+    role: Role;
     companyId: string;
     appsAccess: Application[];
   }[];

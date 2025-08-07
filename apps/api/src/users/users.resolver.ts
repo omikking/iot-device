@@ -16,7 +16,6 @@ import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  // TODO Fix all of here
   @Query('users')
   async findAll(
     @ActiveUser() user: ActiveUserData,
@@ -55,7 +54,7 @@ export class UsersResolver {
     @Args('updatePasswordInput', { nullable: true })
     updatePasswordInput?: UpdatePasswordInput,
   ): Promise<GraphQLTypes.User> {
-    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN && user.id !== id) {
+    if (user.id !== id) {
       throw new ForbiddenException('You can only update your own user data.');
     }
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
@@ -66,7 +65,7 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @ActiveUser() user: ActiveUserData,
   ): Promise<GraphQLTypes.User> {
-    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN && user.id !== id) {
+    if (user.id !== id) {
       throw new ForbiddenException('You can only remove your own user.');
     }
     return this.usersService.remove(id);

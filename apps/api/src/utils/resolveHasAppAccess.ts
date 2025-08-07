@@ -14,22 +14,9 @@ export async function hasAppAccessForCompany(
   if (!companyId) {
     return false;
   }
-  // Check user permission for the company and app(s)
-  const hasPermission = Array.isArray(user.userPermissions)
-    ? user.userPermissions.some(
-        (permission) =>
-          permission.companyId === companyId &&
-          Array.isArray(permission.appsAccess) &&
-          requiredApps.some((app) => permission.appsAccess.includes(app)),
-      )
-    : false;
-
-  if (!hasPermission) {
-    return false;
-  }
 
   // Check company has an active plan for at least one of the required apps
-  const hasActivePlan = await prisma.plan.findFirst({
+  const activePlans = await prisma.plan.findMany({
     where: {
       companyId,
       applicationName: { in: requiredApps },
@@ -37,5 +24,21 @@ export async function hasAppAccessForCompany(
     },
   });
 
-  return !!hasActivePlan;
+  const planNames = activePlans.map((plan) => plan.applicationName);
+
+  // Check if user has permissions for the required apps in the specified company
+  const hasPermission = Array.isArray(user.userPermissions)
+    ? user.userPermissions.some(
+        (permission) =>
+          permission.companyId === companyId &&
+          Array.isArray(permission.appsAccess) &&
+          planNames.some((app) => permission.appsAccess.includes(app)),
+      )
+    : false;
+
+  if (!hasPermission) {
+    return false;
+  }
+
+  return !!activePlans;
 }

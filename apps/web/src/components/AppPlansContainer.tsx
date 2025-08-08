@@ -104,7 +104,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={daysUntilExpiration < 0}
+        isExpired={!!(date && daysUntilExpiration < 0)}
       />
       <AppPlan
         planLevel={PlanLevel.Silver}
@@ -114,7 +114,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={daysUntilExpiration < 0}
+        isExpired={!!(date && daysUntilExpiration < 0)}
       />
       <AppPlan
         planLevel={PlanLevel.Bronze}
@@ -124,7 +124,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={daysUntilExpiration < 0}
+        isExpired={!!(date && daysUntilExpiration < 0)}
       />
 
       {/* Calendar */}
@@ -152,7 +152,7 @@ export const AppPlansContainer = ({
 
               {daysUntilExpiration <= 30 && daysUntilExpiration > 0 && (
                 <Badge variant="warning">
-                  {`${daysUntilExpiration} days left`}
+                  {`${daysUntilExpiration} ${daysUntilExpiration === 1 ? 'day' : 'days'} left`}
                 </Badge>
               )}
             </div>

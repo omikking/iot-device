@@ -12,6 +12,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { handleExpiringDate } from 'src/utils';
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -166,7 +167,7 @@ export class CompaniesService {
               companyId: createdCompany.id,
               applicationName: plan.applicationName as Application,
               planLevel: plan.planLevel as PlanLevel,
-              expiringDate: plan.expiringDate || null,
+              expiringDate: handleExpiringDate(plan.expiringDate),
             })),
           });
         }
@@ -297,7 +298,7 @@ export class CompaniesService {
                   where: { id: plan.id },
                   data: {
                     planLevel: plan.planLevel as PlanLevel,
-                    expiringDate: plan.expiringDate || null,
+                    expiringDate: handleExpiringDate(plan.expiringDate),
                   },
                 });
               } else {
@@ -307,7 +308,7 @@ export class CompaniesService {
                     companyId: updatedCompany.id,
                     applicationName: plan.applicationName as Application,
                     planLevel: plan.planLevel as PlanLevel,
-                    expiringDate: plan.expiringDate || null,
+                    expiringDate: handleExpiringDate(plan.expiringDate),
                   },
                 });
               }

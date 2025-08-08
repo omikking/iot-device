@@ -9,7 +9,9 @@ import React, {
 import { LevelItem } from './LevelItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { Drive, Level } from '@/gql/graphql';
+import { Drive, Level, Role } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 type LevelsListProps = {
   levelsOptions: Level[];
@@ -30,6 +32,17 @@ export const LevelsList = ({
   setSelectedLevel,
   setSelectedDrive,
 }: LevelsListProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = session?.user?.userPermissions?.some(
+    (permission) =>
+      permission.role === Role.CompanyAdmin &&
+      permission.companyId === companyId,
+  );
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [levels, setLevels] = useState<Level[]>(levelsOptions);
@@ -67,7 +80,11 @@ export const LevelsList = ({
           Levels
         </Headline>
       </div>
-      <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+      <div
+        className={`flex flex-col gap-1 w-full h-full ${
+          isUserSandvikAdmin || isUserCompanyAdmin ? 'border-y' : 'border-t'
+        } py-6 px-6 overflow-auto`}
+      >
         {levels.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
@@ -92,22 +109,24 @@ export const LevelsList = ({
           />
         ))}
       </div>
-      <div className="flex justify-end w-full p-3">
-        {selectedSiteId ? (
-          <Button
-            size={'small'}
-            variant={'primary'}
-            onClick={addLevel}
-            disabled={levels.some((level) => level.levelName === '')}
-          >
-            <LucidePlus /> Add level
-          </Button>
-        ) : (
-          <Button size={'small'} variant={'primary'} disabled>
-            <LucidePlus /> Add level
-          </Button>
-        )}
-      </div>
+      {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+        <div className="flex justify-end w-full p-3">
+          {selectedSiteId ? (
+            <Button
+              size={'small'}
+              variant={'primary'}
+              onClick={addLevel}
+              disabled={levels.some((level) => level.levelName === '')}
+            >
+              <LucidePlus /> Add level
+            </Button>
+          ) : (
+            <Button size={'small'} variant={'primary'} disabled>
+              <LucidePlus /> Add level
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 };

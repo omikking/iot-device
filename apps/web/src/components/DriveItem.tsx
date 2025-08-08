@@ -2,7 +2,7 @@
 import { Text, showAlertToast } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import { Drive } from '@/gql/graphql';
+import { Drive, Role } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { AddSiteLocationItemForm } from '@/components/AddSiteLocationItemForm';
@@ -14,7 +14,9 @@ import {
   DriveValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 const createDriveMutation = graphql(`
   mutation createDrive($createDriveInput: CreateDriveInput!) {
@@ -65,6 +67,16 @@ export const DriveItem = ({
   setSelectedDrive,
   setIsDeletingDrive,
 }: DriveComponentProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -205,10 +217,13 @@ export const DriveItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 cursor-pointer ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
+      className={`bg-main-white px-6 cursor-pointer flex items-center h-16 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
       key={drive.id}
     >
-      <div className="py-3" onClick={() => !isEditing && handleSetDrive(drive)}>
+      <div
+        className="py-3 w-full"
+        onClick={() => !isEditing && handleSetDrive(drive)}
+      >
         {!drive.id || isEditing ? (
           <AddSiteLocationItemForm<'drive'>
             inputRef={inputRef}
@@ -226,11 +241,14 @@ export const DriveItem = ({
               {drive.driveName}
             </Text>
 
-            <DeleteEditDropdown
-              itemSelected={drive.id}
-              handleEdit={handleEditDrive}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
-            />
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <DeleteEditDropdown
+                itemSelected={drive.id}
+                handleEdit={handleEditDrive}
+                openDeleteModal={() => setIsDeleteModalOpen(true)}
+              />
+            )}
+
             <DeleteModalConfirmation
               deleteIcon="Site"
               modalTitle="Delete drive"

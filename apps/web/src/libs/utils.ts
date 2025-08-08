@@ -1,6 +1,7 @@
 import { responses } from '@/app/uitexts/responses';
-import { Application } from '@/gql/graphql';
+import { Application, Role } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
+import { Session } from 'next-auth';
 import { CombinedError } from 'urql';
 
 // Function to capitalize the first letter of a word
@@ -22,6 +23,22 @@ export const getAppName = (app: Application): string => {
     [Application.Banshee]: 'Banshee',
   };
   return applicationNames[app];
+};
+
+// Function to check if the user is a Company Admin
+export const isCompanyAdmin = (
+  userPermissions: Session['user']['userPermissions'] | undefined,
+  companyId: string,
+): boolean => {
+  if (!userPermissions) {
+    return false;
+  }
+
+  return userPermissions.some(
+    (permission) =>
+      permission.role === Role.CompanyAdmin &&
+      permission.companyId === companyId,
+  );
 };
 
 // Function to handle GraphQL errors

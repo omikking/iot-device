@@ -8,8 +8,11 @@ import React, {
 } from 'react';
 import { DriveItem } from './DriveItem';
 import { LucidePlus } from 'lucide-react';
-import { Drive, Level } from '@/gql/graphql';
+import { Drive, Level, Role } from '@/gql/graphql';
 import { Button, Headline, Text } from '@gsp/ui';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { isCompanyAdmin } from '@/libs/utils';
 
 type DrivesListProps = {
   drivesOptions: Drive[];
@@ -30,6 +33,16 @@ export const DrivesList = ({
   handleSetDrive,
   setSelectedDrive,
 }: DrivesListProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [drives, setDrives] = useState<Drive[]>(drivesOptions);
@@ -67,7 +80,11 @@ export const DrivesList = ({
           Drives
         </Headline>
       </div>
-      <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+      <div
+        className={`flex flex-col gap-1 w-full h-full ${
+          isUserSandvikAdmin || isUserCompanyAdmin ? 'border-y' : 'border-t'
+        } py-6 px-6 overflow-auto`}
+      >
         {drives.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
@@ -91,25 +108,27 @@ export const DrivesList = ({
           />
         ))}
       </div>
-      <div className="flex justify-end w-full p-3">
-        {selectedLevelId ? (
-          <Button
-            size={'small'}
-            variant={'primary'}
-            onClick={addDrive}
-            disabled={
-              levelsOptions.length === 0 ||
-              drives.some((drive) => drive.driveName === '')
-            }
-          >
-            <LucidePlus /> Add drive
-          </Button>
-        ) : (
-          <Button size={'small'} variant={'primary'} disabled>
-            <LucidePlus /> Add drive
-          </Button>
-        )}
-      </div>
+      {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+        <div className="flex justify-end w-full p-3">
+          {selectedLevelId ? (
+            <Button
+              size={'small'}
+              variant={'primary'}
+              onClick={addDrive}
+              disabled={
+                levelsOptions.length === 0 ||
+                drives.some((drive) => drive.driveName === '')
+              }
+            >
+              <LucidePlus /> Add drive
+            </Button>
+          ) : (
+            <Button size={'small'} variant={'primary'} disabled>
+              <LucidePlus /> Add drive
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 };

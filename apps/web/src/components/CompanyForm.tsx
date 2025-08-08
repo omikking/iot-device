@@ -37,7 +37,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
 import { responses } from '@/app/uitexts/responses';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { AssociateDetails } from './AssociateDetails';
@@ -109,9 +109,9 @@ export const CompanyForm = ({
 }: CompanyFormProps) => {
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
-  const isUserCompanyAdmin = session?.user?.userPermissions?.some(
-    (permission) => permission.role === Role.CompanyAdmin,
-  );
+  const isUserCompanyAdmin = company
+    ? isCompanyAdmin(session?.user?.userPermissions, company?.id)
+    : false;
 
   const router = useRouter();
 
@@ -321,29 +321,31 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex gap-6 justify-end self-end mt-[40px]">
-            {!isNewCompany && (
-              <Button
-                variant="destructive"
-                size="large"
-                type="button"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <LucideTrash2 />
-                Inactivate company
-              </Button>
-            )}
+          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            <div className="flex gap-6 justify-end self-end mt-[40px]">
+              {!isNewCompany && (
+                <Button
+                  variant="destructive"
+                  size="large"
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <LucideTrash2 />
+                  Inactivate company
+                </Button>
+              )}
 
-            <Button
-              variant="primary"
-              size="large"
-              type="submit"
-              disabled={isSubmitDisabled}
-            >
-              <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Save changes'}
-            </Button>
-          </div>
+              <Button
+                variant="primary"
+                size="large"
+                type="submit"
+                disabled={isSubmitDisabled}
+              >
+                <LucideCircleCheckBig />
+                {isNewCompany ? 'Send invitation' : 'Save changes'}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </>

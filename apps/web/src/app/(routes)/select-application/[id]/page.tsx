@@ -34,8 +34,8 @@ export default function Page({
   const { data: session } = useSession();
 
   const displayPlans = (
-    companyPlans: Plan[] | undefined,
     companyId: string,
+    companyPlans?: Plan[],
     user?: Session['user'],
   ): Application[] => {
     if (!companyPlans || companyPlans.length === 0) {
@@ -83,7 +83,7 @@ export default function Page({
   const companyPlans = companyResult?.data?.company.plans as Plan[];
 
   // Get filtered plans based on user permissions
-  const availableApps = displayPlans(companyPlans, companyId, user);
+  const availableApps = displayPlans(companyId, companyPlans, user);
 
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center py-28 gap-16 bg-neutral-1 overflow-y-auto">

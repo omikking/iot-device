@@ -72,8 +72,19 @@ export default function Page({
   });
 
   const companyPlans = companyData?.company.plans;
+  const currentDate = new Date();
+
   const availableCompanyPlans = (companyPlans ?? [])
-    .filter((plan) => plan.planLevel)
+    .filter((plan) => {
+      if (!plan.planLevel) {
+        return false;
+      }
+      if (plan.expiringDate) {
+        const expiryDate = new Date(plan.expiringDate);
+        return expiryDate > currentDate;
+      }
+      return true;
+    })
     .map((plan) => plan.applicationName) as Application[];
 
   const [{ data }] = useQuery({

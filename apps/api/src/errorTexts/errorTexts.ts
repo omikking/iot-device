@@ -1,6 +1,7 @@
 export const errorTexts = {
   // General errors
   contactSupportError: 'Please contact our support team for assistance.',
+  permissionsDenied: 'Permission denied',
 
   // Bolt result
   boltResultNotFound_title: (id: string) => `Bolt result #${id} not found`,
@@ -29,6 +30,8 @@ export const errorTexts = {
 
   boltResultDeleteError_title: 'Failed to delete bolt result',
 
+  boltResultHazardCompletionError_title: 'Failed to complete hazard',
+
   // Company
   companyNotFound_title: (id: string) => `Company #${id} not found`,
 
@@ -56,6 +59,8 @@ export const errorTexts = {
 
   driveDeleteError_title: 'Failed to delete drive',
 
+  duplicateDriveWarning_title: 'Duplicated drive',
+
   // Level
   levelNotFound_title: (id: string) => `Level #${id} not found`,
 
@@ -65,6 +70,8 @@ export const errorTexts = {
 
   levelDeleteError_title: 'Failed to delete level',
 
+  duplicateLevelWarning_title: 'Duplicated level',
+
   // Location
   locationNotFound_title: (id: string) => `Location #${id} not found`,
 
@@ -73,6 +80,13 @@ export const errorTexts = {
   locationUpdateError_title: 'Failed to update location',
 
   locationDeleteError_title: 'Failed to delete location',
+
+  duplicateLocationWarning_title: 'Duplicated location',
+
+  duplicateSiteLocationWarning_message: (
+    siteLocationType: 'level' | 'drive' | 'location',
+  ) =>
+    `A ${siteLocationType} with this name already exists. Please choose a different name.`,
 
   // Site
   siteNotFound_title: (id: string) => `Site #${id} not found`,
@@ -95,7 +109,7 @@ export const errorTexts = {
 
   userPermissionAlreadyExists_title: 'Permissions already exist',
   userPermissionAlreadyExists_message:
-    'User already has permissions for this company. Please edit existing permissions instead.',
+    'User already has permissions for this company. Please edit the existing permissions instead.',
 
   userPermissionCreateError_title: 'Failed to add user permissions',
 

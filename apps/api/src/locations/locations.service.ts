@@ -1,16 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { Location } from '@prisma/client';
+import { GlobalRole, Location } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
 export class LocationsService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(): Promise<Location[]> {
-    return this.prisma.location.findMany();
+  findAll(
+    @ActiveUser() user: ActiveUserData,
+    allowedCompanyIds: string[],
+  ): Promise<Location[]> {
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      return this.prisma.location.findMany();
+    }
+    return this.prisma.location.findMany({
+      where: {
+        drive: {
+          level: {
+            site: {
+              companyId: { in: allowedCompanyIds },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Location> {
@@ -30,6 +48,26 @@ export class LocationsService {
     createLocationInput: GraphQLTypes.CreateLocationInput,
   ): Promise<Location> {
     try {
+      // Check duplicate location name
+      const existingLocation = await this.prisma.location.findFirst({
+        where: {
+          locationName: createLocationInput.locationName,
+          driveId: createLocationInput.driveId,
+        },
+      });
+
+      if (existingLocation) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'LOCATION_DUPLICATE_NAME_ERROR',
+            title: errorTexts.duplicateLocationWarning_title,
+            message:
+              errorTexts.duplicateSiteLocationWarning_message('location'),
+            type: 'warning',
+          },
+        });
+      }
+
       const createdLocation = await this.prisma.location.create({
         data: {
           locationName: createLocationInput.locationName,
@@ -37,16 +75,11 @@ export class LocationsService {
         },
       });
 
-      if (!createdLocation) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'LOCATION_CREATE_ERROR',
-            title: errorTexts.locationCreateError_title,
-          },
-        });
-      }
       return createdLocation;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_CREATE_ERROR_GENERIC',
@@ -62,24 +95,48 @@ export class LocationsService {
     updateLocationInput: GraphQLTypes.UpdateLocationInput,
   ): Promise<Location> {
     try {
+      const currentLocation = await this.prisma.location.findUnique({
+        where: { id },
+      });
+
+      // Check duplicate location name
+      if (
+        updateLocationInput?.locationName &&
+        updateLocationInput.locationName !== currentLocation?.locationName
+      ) {
+        const existingLocation = await this.prisma.location.findFirst({
+          where: {
+            locationName: updateLocationInput.locationName,
+            driveId: currentLocation?.driveId,
+            id: { not: id },
+          },
+        });
+
+        if (existingLocation) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'LOCATION_DUPLICATE_NAME_ERROR',
+              title: errorTexts.duplicateLocationWarning_title,
+              message:
+                errorTexts.duplicateSiteLocationWarning_message('location'),
+              type: 'warning',
+            },
+          });
+        }
+      }
+
       const updatedLocation = await this.prisma.location.update({
         where: { id },
-
         data: {
           locationName: updateLocationInput?.locationName || undefined,
         },
       });
 
-      if (!updatedLocation) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'LOCATION_NOTFOUND_ERROR',
-            title: errorTexts.locationNotFound_title(id),
-          },
-        });
-      }
       return updatedLocation;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_UPDATE_ERROR_GENERIC',
@@ -109,6 +166,9 @@ export class LocationsService {
         where: { id },
       });
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'LOCATION_DELETE_ERROR',

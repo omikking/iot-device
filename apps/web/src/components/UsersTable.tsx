@@ -10,7 +10,7 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
-import { Badge, DataTable, Text } from '@gsp/ui';
+import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import {
@@ -20,33 +20,55 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { getAppName, handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type UsersTableProps = {
+  availableCompanyPlans: Application[];
   companyData?: GetCompanyUsersQuery;
   onSelectUser: (user: User) => void;
   onOpenChange: (open: boolean) => void;
 };
 
-// @TODO create a utils folder and add these kind of functions there
-export const formatAppName = (appName: string): string => {
-  const appNames: Record<string, string> = {
-    PULL_TEST: 'Pull Test',
-    ULTRABOLTS: 'Ultrabolts',
-    XCYCLOPS: 'Cyclops',
-    PULL_TEST_OPERATOR: 'Pull Test Operator',
-  };
-
-  return appNames[appName] || appName;
-};
-
-export const formatRoleName = (role: string): string => {
+const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
     COMPANY_USER: 'User',
     COMPANY_ADMIN: 'Admin',
     SANDVIK_TECHNICIAN: 'Technician',
   };
-
   return roleNames[role] || role;
+};
+
+const getBadge = (
+  userPermissions?: UserPermission,
+): {
+  variant: 'neutral' | 'primary';
+  icon: React.ReactNode;
+} => {
+  const role = userPermissions?.role || 'User';
+  switch (role) {
+    case Role.CompanyUser:
+      return { variant: 'neutral', icon: <LucideUser /> };
+    case Role.SandvikTechnician:
+      return { variant: 'neutral', icon: <LucidePickaxe /> };
+    case Role.CompanyAdmin:
+      return { variant: 'primary', icon: <LucideKey /> };
+    default:
+      return { variant: 'neutral', icon: <LucideUser /> };
+  }
+};
+
+const getAppShortening = (
+  appAccessValue: Application[],
+  availableCompanyPlans: Application[],
+) => {
+  if (appAccessValue.length === availableCompanyPlans.length) {
+    return <Badge variant="primary">All Apps</Badge>;
+  }
+  const appName = appAccessValue
+    .map((app: string) => getAppName(app as Application) || app)
+    .join(', ');
+  return appName;
 };
 
 const deleteUserPermissionMutation = graphql(`
@@ -58,57 +80,30 @@ const deleteUserPermissionMutation = graphql(`
 `);
 
 export const UsersTable = ({
+  availableCompanyPlans,
   companyData,
   onOpenChange,
   onSelectUser,
 }: UsersTableProps) => {
   const params = useParams();
   const companyId = params.id as string;
+
+  // Show all users except Sandvik Admin
+  const users = (companyData?.company?.users?.filter(
+    (user) => user.globalRole !== Role.SandvikAdmin,
+  ) || []) as User[];
+
   const [isDeleting, setIsDeleting] = useState(false);
-  const users = (companyData?.company.users as User[]) || [];
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
+
   const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
 
   const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
   )?.fullName;
-
-  // TODO Move to utils
-  const getBadge = (
-    userPermissions?: UserPermission,
-  ): {
-    variant: 'neutral' | 'primary';
-    icon: React.ReactNode;
-  } => {
-    const role = userPermissions?.role || 'User';
-    switch (role) {
-      case Role.CompanyUser:
-        return { variant: 'neutral', icon: <LucideUser /> };
-      case Role.SandvikTechnician:
-        return { variant: 'neutral', icon: <LucidePickaxe /> };
-      case Role.CompanyAdmin:
-        return { variant: 'primary', icon: <LucideKey /> };
-      default:
-        return { variant: 'neutral', icon: <LucideUser /> };
-    }
-  };
-
-  const getAppShortening = (appAccessValue: Application[]) => {
-    const applicationsCount = Object.keys(Application).length;
-
-    if (appAccessValue.length === applicationsCount) {
-      return <Badge variant="primary">All Apps</Badge>;
-    }
-
-    const appName = appAccessValue
-      .map((app: string) => formatAppName(app) || app)
-      .join(', ');
-
-    return appName;
-  };
 
   const openDeleteModal = (index: string) => {
     setUserToDelete(index);
@@ -126,29 +121,45 @@ export const UsersTable = ({
       (userPerm) => userPerm.companyId === companyId,
     );
 
-    // check for userPermId, cant delete if type is undefined
     if (!userPermissionToDelete?.id) {
-      console.log('No user permission found to delete');
-      return Promise.resolve(false);
+      return false;
     }
 
     setIsDeleting(true);
+    return (
+      deleteUserPermission({ id: userPermissionToDelete.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              closeDeleteModal();
 
-    return deleteUserPermission({
-      id: userPermissionToDelete.id,
-    })
-      .then((result) => {
-        if (result.error) {
+              showAlertToast({
+                title: responses.userPermissionDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1200);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionDeleteFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
           return false;
-        }
-        return true;
-      })
-      .catch(() => {
-        return false;
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (userId: string) => {
@@ -178,7 +189,7 @@ export const UsersTable = ({
       },
       cell: ({ row }) => {
         const appAccessValue = row.getValue('appsAccess') as Application[];
-        return getAppShortening(appAccessValue) || 'N/A';
+        return getAppShortening(appAccessValue, availableCompanyPlans) || 'N/A';
       },
     },
     {

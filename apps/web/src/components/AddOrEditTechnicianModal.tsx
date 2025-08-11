@@ -34,9 +34,7 @@ import { responses } from '@/app/uitexts/responses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
-import { GraphQLErrorExtensions } from '@/libs/utils';
-
-// @TODO make the create user query later when BE is advanced.
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const updateTechnicianMutation = graphql(`
   mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {
@@ -79,7 +77,7 @@ export const AddOrEditTechnicianModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -101,19 +99,11 @@ export const AddOrEditTechnicianModal = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({
@@ -137,7 +127,7 @@ export const AddOrEditTechnicianModal = ({
     }
 
     if (!technician) {
-      // fix later for create technician flow
+      // TODO fix later for create technician flow
     }
   };
 

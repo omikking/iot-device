@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "prisma:generate": "prisma generate",
     "prisma:dev:deploy": "prisma migrate deploy",
@@ -12,10 +15,14 @@
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
+    "seed": "prisma db seed",
+    "seed:dev": "NODE_ENV=development prisma db seed",
+    "db:seed": "pnpm seed",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:dev:logging": "LOG_GRAPHQL=1 nest start --watch",
     "start:dev:setup": "npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy && npm run prisma:generate && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -48,6 +55,7 @@
     "ts-morph": "^23.0.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.7.0",
     "@gsp/eslint-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",
     "@nestjs/cli": "^10.0.0",

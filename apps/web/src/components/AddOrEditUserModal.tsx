@@ -16,6 +16,7 @@ import {
   ModalTitle,
   Switch,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
@@ -31,16 +32,19 @@ import {
   UpdateUserPermissionFormValues,
 } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
+import { getAppName, handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AddOrEditUserModalProps = {
   user?: User;
+  availableCompanyPlans: Application[];
   onOpenChange: (open: boolean) => void;
   onUserAdded: () => void;
 };
 
 const getTechniciansQuery = graphql(`
-  query getTechniciansByRole {
-    users(roles: "SANDVIK_TECHNICIAN") {
+  query getTechniciansByRole($roles: [String]!) {
+    users(roles: $roles) {
       id
       fullName
       email
@@ -83,40 +87,15 @@ const updateUserPermissionsMutation = graphql(`
   }
 `);
 
-export const getRoles = (user?: User): DropdownItem[] => [
-  {
-    id: Role.CompanyUser,
-    name: 'User',
-    iconLabel: 'company user',
-    background: 'neutral',
-  },
-  ...(!user || user?.globalRole === Role.SandvikTechnician
-    ? [
-        {
-          id: Role.SandvikTechnician,
-          name: 'Technician',
-          iconLabel: 'sandvik technician',
-          background: 'neutral' as const,
-        },
-      ]
-    : []),
-  {
-    id: Role.CompanyAdmin,
-    name: 'Admin',
-    iconLabel: 'company admin',
-    background: 'primary',
-  },
-];
-
 export const AddOrEditUserModal = ({
   user,
+  availableCompanyPlans,
   onOpenChange,
   onUserAdded,
 }: AddOrEditUserModalProps) => {
   const params = useParams();
   const companyId = params.id;
 
-  const allApplications = Object.values(Application);
   const permission = user?.userPermissions?.[0];
 
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +118,9 @@ export const AddOrEditUserModal = ({
 
   const [{ data: techniciansData }] = useQuery({
     query: getTechniciansQuery,
+    variables: {
+      roles: [Role.SandvikTechnician],
+    },
   });
   const technicians = (techniciansData?.users as User[]) || [];
 
@@ -158,6 +140,19 @@ export const AddOrEditUserModal = ({
     },
   });
 
+  const technicianDropdownOptions = technicians.map(
+    ({ id, fullName, workPlace }) => ({
+      id,
+      name: workPlace ? `${fullName} (${workPlace})` : fullName,
+    }),
+  );
+
+  const formValues = form.watch();
+  const isAnyFieldEmpty =
+    !formValues.email ||
+    !formValues.userPermissions[0]?.appsAccess.length ||
+    !role;
+
   const resetFormValues = () => {
     setRole(undefined);
     setSelectedTechnician(undefined);
@@ -173,7 +168,8 @@ export const AddOrEditUserModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
+    onUserAdded();
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -183,46 +179,6 @@ export const AddOrEditUserModal = ({
       setIsSuccessful(false);
       resetFormValues();
     }, 1700);
-  };
-
-  const onSubmit: SubmitHandler<UserFormValues> = async (data) => {
-    try {
-      setIsLoading(true);
-      // If there is a user then we are in EDIT MODE otherwise we are in ADD MODE
-      if (user) {
-        const permissionResult = await updateUserPermission({
-          id: permission?.id,
-          updateUserPermissionInput: {
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-          },
-        });
-
-        // TODO change to use toaster on all errors
-        if (!permissionResult.data) {
-          throw new Error('Permission update failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      } else {
-        const createdUser = await createUserPermission({
-          createUserPermissionInput: {
-            userEmail: data.email,
-            role: data.userPermissions[0].role,
-            appsAccess: data.userPermissions[0].appsAccess,
-            companyId: companyId,
-          },
-        });
-        if (!createdUser.data) {
-          throw new Error('User creation failed');
-        }
-        onSuccessfulSubmit();
-        onUserAdded();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      setIsSuccessful(false);
-    }
   };
 
   const handleSelectRole = (e: UserPermission['role']) => {
@@ -235,7 +191,7 @@ export const AddOrEditUserModal = ({
 
     if (e === Role.CompanyAdmin) {
       setFullAccess(true);
-      form.setValue('userPermissions.0.appsAccess', allApplications);
+      form.setValue('userPermissions.0.appsAccess', availableCompanyPlans);
     }
 
     if (e === Role.SandvikTechnician) {
@@ -253,7 +209,7 @@ export const AddOrEditUserModal = ({
   const handleGlobalAccess = (checked: boolean) => {
     setFullAccess(checked);
     if (checked) {
-      form.setValue('userPermissions.0.appsAccess', allApplications);
+      form.setValue('userPermissions.0.appsAccess', availableCompanyPlans);
     } else {
       form.setValue('userPermissions.0.appsAccess', []);
     }
@@ -271,14 +227,122 @@ export const AddOrEditUserModal = ({
     }
   };
 
+  const getRoles = (user?: User): DropdownItem[] => [
+    {
+      id: Role.CompanyUser,
+      name: 'User',
+      iconLabel: 'company user',
+      background: 'neutral',
+    },
+    ...(!user || user?.userPermissions?.[0].role === Role.SandvikTechnician
+      ? [
+          {
+            id: Role.SandvikTechnician,
+            name: 'Technician',
+            iconLabel: 'sandvik technician',
+            background: 'neutral' as const,
+          },
+        ]
+      : []),
+    {
+      id: Role.CompanyAdmin,
+      name: 'Admin',
+      iconLabel: 'company admin',
+      background: 'primary',
+    },
+  ];
+
+  const onSubmit: SubmitHandler<UserFormValues> = (data) => {
+    setIsLoading(true);
+
+    if (user) {
+      updateUserPermission({
+        id: permission?.id,
+        updateUserPermissionInput: {
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.userPermissionUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionUpdateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    if (!user) {
+      createUserPermission({
+        createUserPermissionInput: {
+          userEmail: data.email,
+          role: data.userPermissions[0].role,
+          appsAccess: data.userPermissions[0].appsAccess,
+          companyId,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.userPermissionCreateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionCreateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  };
+
   const watchAppAccess = form.watch('userPermissions.0.appsAccess');
 
   useEffect(() => {
     const appAccess = watchAppAccess || [];
-    const allAppsSelected = allApplications.every((app) =>
-      appAccess.includes(app as Application),
-    );
-    setFullAccess(allAppsSelected);
+
+    const allCompanyAppsSelected =
+      availableCompanyPlans.length > 0 &&
+      availableCompanyPlans.every((app) =>
+        appAccess.includes(app as Application),
+      );
+
+    setFullAccess(allCompanyAppsSelected);
   }, [watchAppAccess]);
 
   useEffect(() => {
@@ -311,20 +375,6 @@ export const AddOrEditUserModal = ({
       });
     }
   }, [user, technicians]);
-
-  const technicianDropdownOptions = technicians.map(
-    ({ id, fullName, workPlace }) => ({
-      id,
-      name: workPlace ? `${fullName} (${workPlace})` : fullName,
-    }),
-  );
-
-  const formValues = form.watch();
-
-  const isAnyFieldEmpty =
-    !formValues.email ||
-    !formValues.userPermissions[0]?.appsAccess.length ||
-    !role;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
@@ -432,9 +482,9 @@ export const AddOrEditUserModal = ({
                 )}
               </div>
 
-              <div className="flex flex-col flex-grow w-full border-2 border-neutral-2">
+              <div className="flex flex-col h-fit w-full mt-4 border-2 border-neutral-2">
                 <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
-                  <div className="flex flex-grow  items-center gap-2">
+                  <div className="flex flex-grow items-center gap-2">
                     <LucideLayoutGrid size={20} className="text-orange-600" />
                     <Headline
                       color={'foreground'}
@@ -452,7 +502,7 @@ export const AddOrEditUserModal = ({
                 </div>
 
                 {role === Role.CompanyAdmin ? (
-                  <div className="flex items-center justify-center h-full max-w-[390px] px-6 py-3">
+                  <div className="flex items-center justify-center h-full px-6 py-7">
                     <Text color={'foreground'} variant={'medium'}>
                       The administrator will have
                       <Text
@@ -468,124 +518,41 @@ export const AddOrEditUserModal = ({
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
-                        color={'foreground'}
-                        variant={'medium'}
-                        className="flex flex-grow"
+                    {availableCompanyPlans.map((app, index) => (
+                      <div
+                        key={app}
+                        className={`flex items-center px-6 py-3 ${
+                          index < availableCompanyPlans.length - 1 &&
+                          'border-b border-neutral-2'
+                        }`}
                       >
-                        Pull Test
-                      </Text>
+                        <Text
+                          color={'foreground'}
+                          variant={'medium'}
+                          className="flex flex-grow"
+                        >
+                          {getAppName(app)}
+                        </Text>
 
-                      <FormField
-                        control={form.control}
-                        name="userPermissions.0.appsAccess"
-                        render={({ field }) => {
-                          return (
+                        <FormField
+                          control={form.control}
+                          name="userPermissions.0.appsAccess"
+                          render={({ field }) => (
                             <FormItem>
                               <FormControl>
                                 <Switch
                                   checked={
                                     Array.isArray(field.value) &&
-                                    field.value.includes(Application.PullTest)
+                                    field.value.includes(app)
                                   }
-                                  onCheckedChange={handleAppsAccess(
-                                    Application.PullTest,
-                                  )}
+                                  onCheckedChange={handleAppsAccess(app)}
                                 />
                               </FormControl>
                             </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
-                        color={'foreground'}
-                        variant={'medium'}
-                        className="flex flex-grow"
-                      >
-                        Pull Test Operator
-                      </Text>
-                      <FormField
-                        control={form.control}
-                        name="userPermissions.0.appsAccess"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value?.includes(
-                                    Application.PullTestOperator,
-                                  )}
-                                  onCheckedChange={handleAppsAccess(
-                                    Application.PullTestOperator,
-                                  )}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center px-6 py-3 border-b border-neutral-2">
-                      <Text
-                        color={'foreground'}
-                        variant={'medium'}
-                        className="flex flex-grow"
-                      >
-                        Ultrabolts
-                      </Text>
-                      <FormField
-                        control={form.control}
-                        name="userPermissions.0.appsAccess"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value?.includes(
-                                    Application.Ultrabolts,
-                                  )}
-                                  onCheckedChange={handleAppsAccess(
-                                    Application.Ultrabolts,
-                                  )}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center px-6 py-3 border-b border-neutral-1">
-                      <Text
-                        color={'foreground'}
-                        variant={'medium'}
-                        className="flex flex-grow"
-                      >
-                        xCyclops
-                      </Text>
-                      <FormField
-                        control={form.control}
-                        name="userPermissions.0.appsAccess"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value?.includes(
-                                    Application.Xcyclops,
-                                  )}
-                                  onCheckedChange={handleAppsAccess(
-                                    Application.Xcyclops,
-                                  )}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
+                          )}
+                        />
+                      </div>
+                    ))}
                   </>
                 )}
               </div>

@@ -2,7 +2,7 @@
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-import { User } from '@/gql/graphql';
+import { Application, User } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
@@ -28,9 +28,16 @@ const getCompanyUsersQuery = graphql(`
           appsAccess
         }
       }
+      plans {
+        id
+        applicationName
+        planLevel
+        expiringDate
+      }
     }
   }
 `);
+
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
     company(id: $id) {
@@ -39,6 +46,7 @@ const getCompanyName = graphql(`
     }
   }
 `);
+
 export default function Page({
   params,
 }: {
@@ -51,15 +59,20 @@ export default function Page({
 
   const [{ data: companyData }, executeQuery] = useQuery({
     query: getCompanyUsersQuery,
-    variables: { id: companyId || '' },
-    pause: !companyId,
+    variables: { id: companyId },
   });
+
+  const companyPlans = companyData?.company.plans;
+  const availableCompanyPlans = (companyPlans ?? [])
+    .filter((plan) => plan.planLevel)
+    .map((plan) => plan.applicationName) as Application[];
+
   const [{ data }] = useQuery({
     query: getCompanyName,
     variables: { id: companyId },
   });
-
   const companyName = data?.company?.name;
+
   const refetchUsers = () => {
     executeQuery({ requestPolicy: 'network-only' });
   };
@@ -98,13 +111,15 @@ export default function Page({
             </Button>
           </ModalTrigger>
           <AddOrEditUserModal
-            onOpenChange={handleModalClose}
             user={selectedUser}
+            availableCompanyPlans={availableCompanyPlans}
+            onOpenChange={handleModalClose}
             onUserAdded={refetchUsers}
           />
         </Modal>
         <UsersTable
           companyData={companyData}
+          availableCompanyPlans={availableCompanyPlans}
           onOpenChange={handleModalClose}
           onSelectUser={setSelectedUser}
         />

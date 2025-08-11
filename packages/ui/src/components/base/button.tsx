@@ -5,7 +5,7 @@ import { LoadingSpinner } from './loading-spinner';
 import { cn } from '../../lib/utils';
 
 const buttonVariants = cva(
-  'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-cursor-not-allowed disabled:ui-pointer-events-none disabled:ui-border-none',
+  'ui-font-sandvik-text ui-inline-flex ui-items-center ui-justify-center ui-whitespace-nowrap ui-rounded-sm ui-transition ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-cursor-not-allowed disabled:ui-pointer-events-none disabled:ui-border-neutral-2',
   {
     variants: {
       variant: {

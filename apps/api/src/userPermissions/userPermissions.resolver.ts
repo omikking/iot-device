@@ -6,19 +6,29 @@ import { UpdateUserPermissionInput } from './dto/update-userPermissions.input';
 import { ParseUUIDPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+import { ActiveUser } from 'src/auth/decorators';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class UserPermissionsResolver {
   constructor(
     private readonly userPermissionsService: UserPermissionsService,
   ) {}
 
   @Query('userPermissions')
-  async findAll(): Promise<GraphQLTypes.UserPermission[]> {
-    return this.userPermissionsService.findAll();
+  async findAll(
+    @ActiveUser() user: ActiveUserData,
+  ): Promise<GraphQLTypes.UserPermission[]> {
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.userPermissionsService.findAll(user, allowedCompanyIds);
   }
 
+  @Roles([], [], 'userPermission')
   @Query('userPermission')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -26,6 +36,7 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.findOne(id);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'userPermission')
   @Mutation('createUserPermission')
   async create(
     @Args('createUserPermissionInput')
@@ -34,6 +45,7 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.create(createUserPermissionInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'userPermission')
   @Mutation('updateUserPermission')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -43,6 +55,7 @@ export class UserPermissionsResolver {
     return this.userPermissionsService.update(id, updateUserPermissionInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'userPermission')
   @Mutation('removeUserPermission')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

@@ -85,7 +85,6 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
       }
     }, [selectedId, options]);
 
-    // @TODO move to utils
     const iconHandler = (iconLabel: string) => {
       switch (iconLabel) {
         case 'company user':

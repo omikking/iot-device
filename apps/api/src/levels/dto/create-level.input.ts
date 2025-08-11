@@ -1,9 +1,9 @@
-import { IsString, IsUUID, Length } from 'class-validator';
+import { IsString, IsUUID, MaxLength } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateLevelInput extends GraphQLTypes.CreateLevelInput {
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   levelName: string;
 
   @IsUUID()

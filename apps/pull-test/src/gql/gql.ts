@@ -25,6 +25,7 @@ const documents = {
     "\n  query getNameDetails($id: String!) {\n    user(id: $id) {\n      fullName\n    }\n  }\n": types.GetNameDetailsDocument,
     "\n  query getSiteName($id: String!) {\n    site(id: $id) {\n      siteName\n    }\n  }\n": types.GetSiteNameDocument,
     "\n  mutation updatedHazard(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n": types.UpdatedHazardDocument,
+    "\n  query GetAllCompanies($offset: Int, $limit: Int) {\n    companies(offset: $offset, limit: $limit) {\n      totalRecords\n      results {\n        id\n        name\n      }\n    }\n  }\n": types.GetAllCompaniesDocument,
     "\n  mutation createCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
 };
@@ -87,6 +88,10 @@ export function graphql(source: "\n  query getSiteName($id: String!) {\n    site
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation updatedHazard(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n"): (typeof documents)["\n  mutation updatedHazard(\n    $id: String!\n    $updateBoltResultInput: UpdateBoltResultInput!\n  ) {\n    updateBoltResult(id: $id, updateBoltResultInput: $updateBoltResultInput) {\n      isHazard\n      hazardCompletedDate\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetAllCompanies($offset: Int, $limit: Int) {\n    companies(offset: $offset, limit: $limit) {\n      totalRecords\n      results {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetAllCompanies($offset: Int, $limit: Int) {\n    companies(offset: $offset, limit: $limit) {\n      totalRecords\n      results {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

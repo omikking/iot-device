@@ -16,6 +16,9 @@ import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
 import { HazardsModule } from './hazards/hazards.module';
 import { EnumModule } from './enums/enum.module';
+import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
+
+const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { EnumModule } from './enums/enum.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
+      plugins: enableGraphQLLog ? [LogGraphQLPlugin] : [],
     }),
     CoffeesModule,
     UsersModule,

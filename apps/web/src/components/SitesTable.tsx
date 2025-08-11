@@ -13,11 +13,11 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -73,15 +73,8 @@ export const SitesTable = ({
       deleteSite({ id: siteToDelete.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             return false;
           }
           // Success
@@ -133,7 +126,7 @@ export const SitesTable = ({
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
-                pathname: `/sitelocations/${companyId}`,
+                pathname: `/site-locations/${companyId}`,
                 query: { siteId: row.original.id },
               }}
             >

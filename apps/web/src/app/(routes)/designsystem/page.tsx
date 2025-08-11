@@ -70,14 +70,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import {
-  optionsDesignSystemMock,
-  usersMock,
-  sitesMock,
-  pdfComponentMockData,
-} from '@/app/mock/mock';
+import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
-import PdfComponent from '@/components/pdf';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -907,7 +901,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Alerts 🦄
       </Headline>
-      <Toaster duration={500000} />
+      <Toaster duration={80000} />
       <Button
         onClick={() =>
           showAlertToast({
@@ -959,24 +953,6 @@ export default function Page(): JSX.Element {
       >
         Show success Alert
       </Button>
-      <hr className="w-full border-neutral-2" />
-      <Headline variant="large" as="h1" color="foreground">
-        download pdf 🦄
-      </Headline>
-      <PdfComponent
-        objList={pdfComponentMockData.pdfTablemockData}
-        reportDetails={pdfComponentMockData.reportDetails}
-        layout={{
-          logo: pdfComponentMockData.Layout.logo,
-          authorImage: pdfComponentMockData.Layout.authorImage,
-          authorSignature: pdfComponentMockData.Layout.authorSignature,
-          contactHtml: '<strong>John Doe</strong> - Site Manager',
-        }}
-        parentUrl={'https://yourdomain.com'}
-        pdfName={'pull_test_report.pdf'}
-        pdfPageTitle={pdfComponentMockData.pdfPageTitle}
-        currentDate={new Date().toLocaleDateString()}
-      />
     </main>
   );
 }

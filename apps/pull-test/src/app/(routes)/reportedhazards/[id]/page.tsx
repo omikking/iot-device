@@ -10,13 +10,14 @@ import {
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
 import { HazardCompleteModal } from '@/components/HazardCompleteModal';
 import { BoltResultDetailsModal } from '@/components/BoltResultDetailsModal';
+import { Text } from '@gsp/ui';
+import { LucideSearchX } from 'lucide-react';
 
 const getHazardDetails = graphql(`
   query getHazardDetails($id: String!) {
@@ -56,18 +57,18 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
-  const { data: session } = useSession();
-  const companyId = session?.company?.id || '';
-  const paramsCompanyId = params.id;
+  const companyId = params.id;
+
   const [{ data: hazardData }] = useQuery({
     query: getHazardDetails,
     variables: { id: companyId },
     pause: !companyId,
   });
+
   const hazards = (hazardData?.hazards as BoltResult[]) || [];
-    const [{ data }] = useQuery({
+  const [{ data }] = useQuery({
     query: getCompanyName,
-    variables: { id: paramsCompanyId },
+    variables: { id: companyId },
   });
 
   const companyName = data?.company?.name;
@@ -107,6 +108,15 @@ export default function Page({
       }, 200);
     }
   };
+
+  const NotFoundHazardMessage = () => (
+    <div className="flex h-80 flex-col justify-center items-center gap-5">
+      <Text color="foreground" variant="medium">
+        No reported hazards were found.
+      </Text>
+      <LucideSearchX color="gray" />
+    </div>
+  );
 
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
@@ -191,6 +201,8 @@ export default function Page({
           ))}
         </TabsContent>
       </Tabs>
+
+      {hazards.length === 0 && <NotFoundHazardMessage />}
 
       <Modal
         open={openDetailsModal}

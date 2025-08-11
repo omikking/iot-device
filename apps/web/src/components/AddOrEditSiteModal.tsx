@@ -11,6 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalTitle,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   createSiteFormSchema,
@@ -27,6 +28,8 @@ import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { responses } from '@/app/uitexts/responses';
+import { GraphQLErrorExtensions } from '@/libs/utils';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -116,29 +119,86 @@ export const AddOrEditSiteModal = ({
     setIsLoading(true);
 
     if (site) {
-      updateSite({
-        id: site.id,
-        updateSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      updateSite({ id: site.id, updateSiteInput: data })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+          }
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteSuccessfulUpdate,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.updateSiteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!site) {
-      createSite({
-        createSiteInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-          refreshSites();
-        }
-      });
+      createSite({ createSiteInput: data })
+        .then((result) => {
+          // Backend errors
+          if (result.error?.graphQLErrors) {
+            const { title, message, type } = result.error.graphQLErrors[0]
+              .extensions as unknown as GraphQLErrorExtensions;
+
+            showAlertToast({
+              title: title,
+              description: message,
+              variant: type || 'error',
+            });
+            return;
+          }
+
+          // Success
+          if (result.data) {
+            onSuccessfulSubmit();
+            refreshSites();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.siteCreateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.createSiteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return;
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 

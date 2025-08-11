@@ -1,21 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 
 import { BoltResultSchema } from '@/app/mock/mock';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
-import PdfComponent from '@/components/pdf';
 import { pdfComponentMockData } from '@/app/mock/mock';
 
 import { gql, useQuery } from 'urql';
 import {
   Headline,
   Badge,
-  Modal,
   Tabs,
   TabsList,
   TabsTrigger,
@@ -26,8 +24,10 @@ import {
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
+  Button,
 } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   params: {
@@ -40,98 +40,101 @@ type SiteType = NonNullable<CompanyType['sites']>[number];
 type LevelType = NonNullable<SiteType['levels']>[number];
 type DriveType = NonNullable<LevelType['drives']>[number];
 type LocationType = NonNullable<DriveType['locations']>[number];
-export default function Page({ params }: Props): JSX.Element {
-  const companyId = params.id;
 
-  const boltResultQuery = gql`
-    query GetBoltResult(
-      $offset: Int
-      $limit: Int
-      $siteId: String
-      $levelId: String
-      $driveId: String
-      $locationId: String
-      $result: [String!]
-      $isHazard: Boolean
-      $withImage: Boolean
-      $withComment: Boolean
-      $startDate: DateTime
-      $endDate: DateTime
+const boltResultQuery = gql`
+  query GetBoltResult(
+    $offset: Int
+    $limit: Int
+    $siteId: String
+    $levelId: String
+    $driveId: String
+    $locationId: String
+    $result: [String!]
+    $isHazard: Boolean
+    $withImage: Boolean
+    $withComment: Boolean
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    boltResults(
+      offset: $offset
+      limit: $limit
+      siteId: $siteId
+      levelId: $levelId
+      driveId: $driveId
+      locationId: $locationId
+      result: $result
+      isHazard: $isHazard
+      withImage: $withImage
+      withComment: $withComment
+      startDate: $startDate
+      endDate: $endDate
     ) {
-      boltResults(
-        offset: $offset
-        limit: $limit
-        siteId: $siteId
-        levelId: $levelId
-        driveId: $driveId
-        locationId: $locationId
-        result: $result
-        isHazard: $isHazard
-        withImage: $withImage
-        withComment: $withComment
-        startDate: $startDate
-        endDate: $endDate
-      ) {
-        totalRecords
-        results {
-          id
-          createdAt
-          updatedAt
-          boltNumber
-          boltType
-          peakLoad
-          peakDisplacement
-          positionInRing
-          result
-          isHazard
-          hazardCompletedDate
-          abortReason
-          comment
-          image
-          siteId
-          levelId
-          driveId
-          locationId
-          userId
-          site {
-            siteName
-          }
-          drive {
-            driveName
-          }
-          location {
-            locationName
-          }
-          level {
-            levelName
-          }
+      totalRecords
+      results {
+        id
+        createdAt
+        updatedAt
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        positionInRing
+        result
+        isHazard
+        hazardCompletedDate
+        abortReason
+        comment
+        image
+        siteId
+        levelId
+        driveId
+        locationId
+        userId
+        site {
+          siteName
+        }
+        drive {
+          driveName
+        }
+        location {
+          locationName
+        }
+        level {
+          levelName
         }
       }
     }
-  `;
-  const getCompanyQuery = gql`
-    query GetCompany($id: String!) {
-      company(id: $id) {
-        name
-        sites {
+  }
+`;
+
+const getCompanyQuery = gql`
+  query GetCompany($id: String!) {
+    company(id: $id) {
+      name
+      sites {
+        id
+        name: siteName
+        levels {
           id
-          name: siteName
-          levels {
+          name: levelName
+          drives {
             id
-            name: levelName
-            drives {
+            name: driveName
+            locations {
               id
-              name: driveName
-              locations {
-                id
-                name: locationName
-              }
+              name: locationName
             }
           }
         }
       }
     }
-  `;
+  }
+`;
+
+export default function Page({ params }: Props): JSX.Element {
+  const companyId = params.id;
+  const router = useRouter();
 
   const [site, setSite] = useState<SiteType | undefined>();
   const [level, setLevel] = useState<LevelType | undefined>();
@@ -154,8 +157,7 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   const result = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { withComment, withImage, reportedHazard, ...rest } = filterState;
+    const { ...rest } = filterState;
 
     return Object.entries(rest)
       .filter(([, value]) => value === true)
@@ -261,23 +263,30 @@ export default function Page({ params }: Props): JSX.Element {
             </Breadcrumb>
           </div>
 
-          <Modal>
-            <PdfComponent
-              disabled={false}
-              objList={boltResultsResponse?.boltResults}
-              reportDetails={pdfComponentMockData.mockBoltResult}
-              layout={{
-                logo: pdfComponentMockData.Layout.logo,
-                authorImage: pdfComponentMockData.Layout.authorImage,
-                authorSignature: pdfComponentMockData.Layout.authorSignature,
-                contactHtml: '<strong>John Doe</strong> - Site Manager',
-              }}
-              parentUrl={window.parent.location.toString()}
-              pdfName={'pull_test_report.pdf'}
-              pdfPageTitle={'Bolt Result'}
-              currentDate={new Date().toLocaleDateString()}
-            />
-          </Modal>
+          <Button
+            onClick={() => {
+              // Save the data to session storage
+              sessionStorage.setItem(
+                'pullTestReportPDF',
+                JSON.stringify({
+                  objList: boltResultsResponse?.boltResults,
+                  reportDetails: pdfComponentMockData.mockBoltResult,
+                  layout: pdfComponentMockData.Layout,
+                  pdfName: 'pull_test_report.pdf',
+                  pdfPageTitle: 'Bolt Result',
+                  currentDate: new Date().toLocaleDateString(),
+                }),
+              );
+              router.push(`/pulltestreport/${companyId}`);
+            }}
+            size="large"
+            variant="primary"
+          >
+            <>
+              <LucideFileDown className="mr-2" />
+              View PDF
+            </>
+          </Button>
         </div>
 
         <BoltSelection

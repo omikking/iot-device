@@ -79,30 +79,22 @@ export const DeleteModalConfirmation = ({
   ) => {
     event.preventDefault();
 
-    await Promise.resolve(onDelete())
-      .then((result) => {
-        if (result !== false) {
-          handleViewTransition('deleteSuccess');
+    await Promise.resolve(onDelete()).then((result) => {
+      if (result) {
+        handleViewTransition('deleteSuccess');
 
-          if (onSuccess) {
-            setTimeout(() => {
-              onSuccess();
-            }, 1500);
-          } else {
-            setTimeout(() => {
-              setCurrentView('confirmDelete');
-              onClose();
-            }, 1200);
-          }
+        if (onSuccess) {
+          setTimeout(() => {
+            onSuccess();
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            setCurrentView('confirmDelete');
+            onClose();
+          }, 1200);
         }
-      })
-      .catch((error) => {
-        console.error('Error during deletion:', error);
-      })
-      .finally(() => {
-        //remove later
-        console.log('Deletion process completed');
-      });
+      }
+    });
   };
 
   return (
@@ -149,23 +141,23 @@ export const DeleteModalConfirmation = ({
 
         <div className="px-10 pb-5 pt-8">
           <div className="flex justify-end items-end gap-5">
-            {currentView === 'confirmDelete' && (
-              <Button
-                size="large"
-                variant="destructive"
-                disabled={isLoading || isTransitioning}
-                onClick={handleDeleteConfirm}
-                isLoading={isLoading}
-              >
-                <LucideTrash2 />
-                {modalDeleteButtonText}
-              </Button>
-            )}
+            <Button
+              size="large"
+              variant="destructive"
+              disabled={
+                isLoading || isTransitioning || currentView === 'deleteSuccess'
+              }
+              onClick={handleDeleteConfirm}
+              isLoading={isLoading}
+            >
+              {!isLoading && <LucideTrash2 />}
+              {modalDeleteButtonText}
+            </Button>
             <Button
               variant="outline"
               size="large"
               onClick={onClose}
-              disabled={isTransitioning && currentView !== 'deleteSuccess'}
+              disabled={isTransitioning || currentView === 'deleteSuccess'}
             >
               {currentView === 'deleteSuccess' ? 'Close' : 'Cancel'}
             </Button>

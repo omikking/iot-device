@@ -15,17 +15,19 @@ export const NavBar = () => {
   const isExcludedPath = excludedPaths.includes(pathname);
 
   return (
-    <header className="px-10 h-16 flex flex-row justify-between border-b-[2px] border-gold-3">
+    <header className="px-10 h-16 flex flex-row justify-between border-b border-gold-3">
       <nav className="w-full flex flex-row justify-between items-center">
         <Link href="/overview">
-          <SandvikLogo />
+          <div className="flex items-center justify-center gap-2">
+            <SandvikLogo />
+            <div className="h-6 border-l border-black mx-1" />
+            <Headline variant="small" color="foreground" as="h3" isBold>
+              Ground Support Platform
+            </Headline>
+          </div>
         </Link>
 
         <div className="flex gap-10 items-center">
-          <Headline variant="small" color="foreground" as="h3" isBold>
-            Ground Support Platform
-          </Headline>
-
           {status === 'authenticated' && (
             <div className="flex items-center gap-2">
               <div className="border border-gold-3 px-5 py-1.5">

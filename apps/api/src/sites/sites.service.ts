@@ -3,6 +3,7 @@ import { Site } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class SitesService {
@@ -15,54 +16,152 @@ export class SitesService {
   async findOne(id: string): Promise<Site> {
     const site = await this.prisma.site.findUnique({ where: { id } });
     if (!site) {
-      throw new UserInputError(`Site #${id} not found`);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
     }
     return site;
   }
 
   async create(createSiteInput: GraphQLTypes.CreateSiteInput): Promise<Site> {
-    const createdSite = await this.prisma.site.create({
-      data: {
-        siteName: createSiteInput.siteName,
-        address: createSiteInput.address,
-        postalCode: createSiteInput.postalCode,
-        city: createSiteInput.city,
-        country: createSiteInput.country,
-        companyId: createSiteInput.companyId,
-      },
-    });
+    try {
+      const siteName = createSiteInput.siteName.trim();
 
-    if (!createdSite) {
-      throw new UserInputError('Failed to create site');
+      await this.checkSiteNameExists(createSiteInput.siteName);
+
+      const createdSite = await this.prisma.site.create({
+        data: {
+          siteName,
+          address: createSiteInput.address,
+          postalCode: createSiteInput.postalCode,
+          city: createSiteInput.city,
+          country: createSiteInput.country,
+          companyId: createSiteInput.companyId,
+        },
+      });
+
+      if (!createdSite) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'SITE_CREATE_ERROR',
+            title: errorTexts.siteCreateError_title,
+          },
+        });
+      }
+
+      return createdSite;
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_CREATE_ERROR_GENERIC',
+          title: errorTexts.siteCreateError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
     }
-    return createdSite;
   }
 
   async update(
     id: string,
     updateSiteInput: GraphQLTypes.UpdateSiteInput,
   ): Promise<Site> {
-    const updatedSite = await this.prisma.site.update({
-      where: { id, companyId: updateSiteInput.companyId },
+    try {
+      const site = await this.prisma.site.findUnique({
+        where: {
+          id,
+          companyId: updateSiteInput.companyId,
+        },
+      });
 
-      data: {
-        siteName: updateSiteInput?.siteName || undefined,
-        address: updateSiteInput?.address || undefined,
-        postalCode: updateSiteInput?.postalCode || undefined,
-        city: updateSiteInput?.city || undefined,
-        country: updateSiteInput?.country || undefined,
-      },
-    });
+      if (!site) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'SITE_NOTFOUND_ERROR',
+            title: errorTexts.siteNotFound_title(id),
+          },
+        });
+      }
 
-    if (!updatedSite) {
-      throw new UserInputError(`Site #${id} not found`);
+      if (
+        updateSiteInput.siteName &&
+        updateSiteInput.siteName !== site.siteName
+      ) {
+        await this.checkSiteNameExists(updateSiteInput.siteName);
+      }
+
+      return this.prisma.site.update({
+        where: { id, companyId: updateSiteInput.companyId },
+        data: {
+          siteName: updateSiteInput?.siteName || undefined,
+          address: updateSiteInput?.address || undefined,
+          postalCode: updateSiteInput?.postalCode || undefined,
+          city: updateSiteInput?.city || undefined,
+          country: updateSiteInput?.country || undefined,
+        },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_UPDATE_ERROR_GENERIC',
+          title: errorTexts.siteUpdateError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
     }
-    return updatedSite;
   }
 
   async remove(id: string): Promise<Site> {
-    return this.prisma.site.delete({
+    const site = await this.prisma.site.findUnique({
       where: { id },
     });
+
+    if (!site) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_NOTFOUND_ERROR',
+          title: errorTexts.siteNotFound_title(id),
+        },
+      });
+    }
+
+    try {
+      return await this.prisma.site.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_DELETE_ERROR',
+          title: errorTexts.siteDeleteError_title,
+          message: errorTexts.contactSupportError,
+        },
+      });
+    }
+  }
+
+  // Check if a site with the same name already exists
+  private async checkSiteNameExists(siteName: string): Promise<Site | null> {
+    const trimmedName = siteName.trim();
+
+    const whereCondition: any = { siteName: trimmedName };
+
+    const existingSite = await this.prisma.site.findFirst({
+      where: whereCondition,
+    });
+
+    if (existingSite) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'SITE_ALREADYEXISTS_INFO',
+          title: errorTexts.siteAlreadyExists_title,
+          type: 'info',
+        },
+      });
+    }
+
+    return existingSite;
   }
 }

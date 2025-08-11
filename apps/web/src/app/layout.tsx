@@ -6,6 +6,7 @@ import { NavBar } from '@/components/NavBar';
 import { authOptions } from '@/libs/authOptions';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
+import { Toaster } from '@gsp/ui';
 
 export const metadata: Metadata = {
   title: 'Ground Support Platform',
@@ -21,6 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
+        <Toaster duration={8000} />
         <NextAuthProvider session={session}>
           <UrqlProvider>
             <NavBar />

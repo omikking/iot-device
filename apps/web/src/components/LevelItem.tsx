@@ -1,7 +1,7 @@
 'use client';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import { Drive, Level } from '@/gql/graphql';
+import { Drive, Level, Role } from '@/gql/graphql';
 import { Text, showAlertToast } from '@gsp/ui';
 import { responses } from '@/app/uitexts/responses';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,9 @@ import {
   LevelValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 const createLevelMutation = graphql(`
   mutation createLevel($createLevelInput: CreateLevelInput!) {
@@ -66,6 +68,16 @@ export const LevelItem = ({
   setSelectedLevel,
   setIsDeletingLevel,
 }: LevelComponentProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [isEditing, setIsEditing] = useState(!level.id);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -208,10 +220,13 @@ export const LevelItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 cursor-pointer ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
+      className={`bg-main-white px-6 cursor-pointer flex items-center h-16 ${selectedLevelId === level.id ? 'border-2 border-blue-primary ' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
       key={level.id}
     >
-      <div className="py-3" onClick={() => !isEditing && handleSetLevel(level)}>
+      <div
+        className="py-3 w-full"
+        onClick={() => !isEditing && handleSetLevel(level)}
+      >
         {!level.id || isEditing ? (
           <AddSiteLocationItemForm<'level'>
             inputRef={inputRef}
@@ -229,11 +244,14 @@ export const LevelItem = ({
               {level.levelName}
             </Text>
 
-            <DeleteEditDropdown
-              itemSelected={level.id}
-              handleEdit={handleEditLevel}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
-            />
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <DeleteEditDropdown
+                itemSelected={level.id}
+                handleEdit={handleEditLevel}
+                openDeleteModal={() => setIsDeleteModalOpen(true)}
+              />
+            )}
+
             <DeleteModalConfirmation
               deleteIcon="Site"
               modalTitle="Delete level"

@@ -36,11 +36,12 @@ import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
-import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { AssociateDetails } from './AssociateDetails';
+import { CompanyDetails } from './CompanyDetails';
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -107,7 +108,10 @@ export const CompanyForm = ({
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
   const { data: session } = useSession();
-  const isUserSuperAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = company
+    ? isCompanyAdmin(session?.user?.userPermissions, company?.id)
+    : false;
 
   const router = useRouter();
 
@@ -234,7 +238,13 @@ export const CompanyForm = ({
         <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
-            <CompanyDetailsForm companyForm={companyForm} />
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <CompanyDetailsForm companyForm={companyForm} />
+            )}
+
+            {company && !isUserSandvikAdmin && !isUserCompanyAdmin && (
+              <CompanyDetails company={company} />
+            )}
 
             {/* App plans */}
             <div>
@@ -245,10 +255,10 @@ export const CompanyForm = ({
                   variant="medium"
                   className="ml-8"
                 >
-                  {isUserSuperAdmin ? 'Plans' : 'Your plans'}
+                  {isUserSandvikAdmin ? 'Plans' : 'Your plans'}
                 </Headline>
 
-                {!isUserSuperAdmin && (
+                {!isUserSandvikAdmin && (
                   <div className="flex items-center">
                     <LucideSparkles size="20" />
                     <Headline
@@ -286,7 +296,7 @@ export const CompanyForm = ({
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
                       key={existingPlan?.id || appPlan.applicationName}
-                      isUserSuperAdmin={isUserSuperAdmin}
+                      isUserSandvikAdmin={isUserSandvikAdmin}
                       companyForm={companyForm}
                     />
                   );
@@ -298,44 +308,44 @@ export const CompanyForm = ({
             <ContentHolder
               variant="general"
               headlineText={
-                isUserSuperAdmin
+                isUserSandvikAdmin
                   ? 'Sandvik admin'
                   : 'Sandvik associate contact details'
               }
             >
-              {isUserSuperAdmin && <AdminForm companyForm={companyForm} />}
-              {!isUserSuperAdmin && sandvikAdminUserInfo && (
-                <AssociateDetailsForm
-                  sandvikAdminUserInfo={sandvikAdminUserInfo}
-                />
+              {isUserSandvikAdmin && <AdminForm companyForm={companyForm} />}
+              {!isUserSandvikAdmin && (
+                <AssociateDetails sandvikAdminUserInfo={sandvikAdminUserInfo} />
               )}
             </ContentHolder>
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex gap-6 justify-end self-end mt-[40px]">
-            {!isNewCompany && (
-              <Button
-                variant="destructive"
-                size="large"
-                type="button"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <LucideTrash2 />
-                Inactivate company
-              </Button>
-            )}
+          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            <div className="flex gap-6 justify-end self-end mt-[40px]">
+              {!isNewCompany && (
+                <Button
+                  variant="destructive"
+                  size="large"
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <LucideTrash2 />
+                  Inactivate company
+                </Button>
+              )}
 
-            <Button
-              variant="primary"
-              size="large"
-              type="submit"
-              disabled={isSubmitDisabled}
-            >
-              <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Save changes'}
-            </Button>
-          </div>
+              <Button
+                variant="primary"
+                size="large"
+                type="submit"
+                disabled={isSubmitDisabled}
+              >
+                <LucideCircleCheckBig />
+                {isNewCompany ? 'Send invitation' : 'Save changes'}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </>

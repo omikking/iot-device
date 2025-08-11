@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
 import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { CellContext, ColumnDef } from '@tanstack/react-table';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import {
   LucideKey,
@@ -20,8 +20,9 @@ import {
   LucideSearchX,
 } from 'lucide-react';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { getAppName, handleGraphQLErrors } from '@/libs/utils';
+import { getAppName, handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { useSession } from 'next-auth/react';
 
 type UsersTableProps = {
   availableCompanyPlans: Application[];
@@ -87,6 +88,13 @@ export const UsersTable = ({
 }: UsersTableProps) => {
   const params = useParams();
   const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
 
   // Show all users except Sandvik Admin
   const users = (companyData?.company?.users?.filter(
@@ -215,7 +223,10 @@ export const UsersTable = ({
     {
       accessorKey: 'settings',
       header: '',
-      cell: ({ row }) => {
+      cell: ({ row }: CellContext<User, unknown>) => {
+        if (!isUserSandvikAdmin && !isUserCompanyAdmin) {
+          return null;
+        }
         return (
           <DeleteEditDropdown
             itemSelected={row.original.id}

@@ -2,7 +2,7 @@
 import { showAlertToast, Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import { Location } from '@/gql/graphql';
+import { Location, Role } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
@@ -14,7 +14,9 @@ import {
   LocationValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 
 const createLocationMutation = graphql(`
   mutation createLocation($createLocationInput: CreateLocationInput!) {
@@ -62,6 +64,16 @@ export const LocationItem = ({
   refreshSite,
   setIsDeletingLocation,
 }: LocationComponentProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(!location.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -206,10 +218,10 @@ export const LocationItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 border-2 border-transparent ${isEditing && 'bg-main-white/50'}`}
+      className={`bg-main-white px-6 border-2 border-transparent flex items-center h-16 ${isEditing && 'bg-main-white/50'}`}
       key={location.id}
     >
-      <div className="py-3">
+      <div className="py-3 w-full">
         {!location.id || isEditing ? (
           <AddSiteLocationItemForm<'location'>
             form={locationForm}
@@ -226,11 +238,15 @@ export const LocationItem = ({
             <Text variant="medium" color="foreground">
               {location.locationName}
             </Text>
-            <DeleteEditDropdown
-              itemSelected={location.id}
-              handleEdit={handleEditLocation}
-              openDeleteModal={() => setIsDeleteModalOpen(true)}
-            />
+
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <DeleteEditDropdown
+                itemSelected={location.id}
+                handleEdit={handleEditLocation}
+                openDeleteModal={() => setIsDeleteModalOpen(true)}
+              />
+            )}
+
             <DeleteModalConfirmation
               deleteIcon="Site"
               modalTitle="Delete location"

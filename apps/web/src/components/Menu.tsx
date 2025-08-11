@@ -114,7 +114,7 @@ export const Menu = () => {
             </>
           )}
 
-          {companyId && globalRole !== Role.SandvikAdmin && (
+          {companyId && (
             <>
               <hr className="border-neutral-2" />
               <div className="flex flex-col gap-1.5">

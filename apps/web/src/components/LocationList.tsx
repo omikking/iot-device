@@ -3,7 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LocationItem } from './LocationItem';
 import { Button, Headline, Text } from '@gsp/ui';
 import { LucidePlus } from 'lucide-react';
-import { Drive, Location } from '@/gql/graphql';
+import { Drive, Location, Role } from '@/gql/graphql';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { isCompanyAdmin } from '@/libs/utils';
 
 type LocationsListProps = {
   selectedDriveId?: string;
@@ -18,6 +21,16 @@ export const LocationsList = ({
   locationsOptions,
   refreshSite,
 }: LocationsListProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [locations, setLocations] = useState<Location[]>([]);
@@ -56,7 +69,11 @@ export const LocationsList = ({
           Locations
         </Headline>
       </div>
-      <div className="flex flex-col gap-1 w-full h-full border-y py-6 px-6 overflow-auto">
+      <div
+        className={`flex flex-col gap-1 w-full h-full ${
+          isUserSandvikAdmin || isUserCompanyAdmin ? 'border-y' : 'border-t'
+        } py-6 px-6 overflow-auto`}
+      >
         {locations.length === 0 && (
           <div className="flex h-full justify-center items-center">
             <Text variant="small" color="foreground">
@@ -77,25 +94,27 @@ export const LocationsList = ({
           />
         ))}
       </div>
-      <div className="flex justify-end w-full p-3">
-        {selectedDriveId ? (
-          <Button
-            size={'small'}
-            variant={'primary'}
-            onClick={addLocation}
-            disabled={
-              drivesOptions.length === 0 ||
-              locations.some((location) => location.locationName === '')
-            }
-          >
-            <LucidePlus /> Add location
-          </Button>
-        ) : (
-          <Button size={'small'} variant={'primary'} disabled>
-            <LucidePlus /> Add location
-          </Button>
-        )}
-      </div>
+      {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+        <div className="flex justify-end w-full p-3">
+          {selectedDriveId ? (
+            <Button
+              size={'small'}
+              variant={'primary'}
+              onClick={addLocation}
+              disabled={
+                drivesOptions.length === 0 ||
+                locations.some((location) => location.locationName === '')
+              }
+            >
+              <LucidePlus /> Add location
+            </Button>
+          ) : (
+            <Button size={'small'} variant={'primary'} disabled>
+              <LucidePlus /> Add location
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 };

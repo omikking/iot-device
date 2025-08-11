@@ -159,9 +159,12 @@ export default function Page({ params }: Props): JSX.Element {
   const pageSize = 50;
 
   const result = useMemo(() => {
-    const { ...rest } = filterState;
-
-    return Object.entries(rest)
+    const resultFilters = {
+      pass: filterState.pass,
+      fail: filterState.fail,
+      abort: filterState.abort,
+    };
+    return Object.entries(resultFilters)
       .filter(([, value]) => value === true)
       .map(([key]) => key.toUpperCase());
   }, [filterState]);
@@ -187,7 +190,7 @@ export default function Page({ params }: Props): JSX.Element {
       withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
       endDate: dateRange?.to,
-      result: result.length ? result : undefined,
+      result: result.length > 0 ? result : undefined,
     },
     pause: !site?.id,
   });

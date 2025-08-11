@@ -2,12 +2,14 @@
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-import { Application, User } from '@/gql/graphql';
+import { Application, Role, User } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
 import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
+import { useSession } from 'next-auth/react';
+import { isCompanyAdmin } from '@/libs/utils';
 
 const getCompanyUsersQuery = graphql(`
   query getCompanyUsers($id: String!) {
@@ -54,6 +56,13 @@ export default function Page({
 }): JSX.Element {
   const companyId = params.id;
 
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
@@ -63,8 +72,19 @@ export default function Page({
   });
 
   const companyPlans = companyData?.company.plans;
+  const currentDate = new Date();
+
   const availableCompanyPlans = (companyPlans ?? [])
-    .filter((plan) => plan.planLevel)
+    .filter((plan) => {
+      if (!plan.planLevel) {
+        return false;
+      }
+      if (plan.expiringDate) {
+        const expiryDate = new Date(plan.expiringDate);
+        return expiryDate > currentDate;
+      }
+      return true;
+    })
     .map((plan) => plan.applicationName) as Application[];
 
   const [{ data }] = useQuery({
@@ -103,20 +123,22 @@ export default function Page({
       </Headline>
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
-        <Modal open={openUserModal} onOpenChange={handleModalClose}>
-          <ModalTrigger asChild>
-            <Button variant="primary" size="large">
-              <LucidePlus />
-              Add user
-            </Button>
-          </ModalTrigger>
-          <AddOrEditUserModal
-            user={selectedUser}
-            availableCompanyPlans={availableCompanyPlans}
-            onOpenChange={handleModalClose}
-            onUserAdded={refetchUsers}
-          />
-        </Modal>
+        {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+          <Modal open={openUserModal} onOpenChange={handleModalClose}>
+            <ModalTrigger asChild>
+              <Button variant="primary" size="large">
+                <LucidePlus />
+                Add user
+              </Button>
+            </ModalTrigger>
+            <AddOrEditUserModal
+              user={selectedUser}
+              availableCompanyPlans={availableCompanyPlans}
+              onOpenChange={handleModalClose}
+              onUserAdded={refetchUsers}
+            />
+          </Modal>
+        )}
         <UsersTable
           companyData={companyData}
           availableCompanyPlans={availableCompanyPlans}

@@ -23,13 +23,13 @@ import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Site } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { SuccessMessage } from './SuccessMessage';
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { useParams } from 'next/navigation';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -70,7 +70,8 @@ export const AddOrEditSiteModal = ({
   onOpenChange,
   refreshSites,
 }: AddOrEditSiteModalProps) => {
-  const { data: session } = useSession();
+  const params = useParams();
+  const companyId = params.id as string;
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -86,7 +87,7 @@ export const AddOrEditSiteModal = ({
       postalCode: site?.postalCode || '',
       city: site?.city || '',
       country: site?.country || '',
-      companyId: site?.companyId || session?.company.id,
+      companyId: site?.companyId || companyId,
     },
   });
 
@@ -97,11 +98,11 @@ export const AddOrEditSiteModal = ({
       postalCode: '',
       city: '',
       country: '',
-      companyId: session?.company.id,
+      companyId: companyId,
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -122,19 +123,11 @@ export const AddOrEditSiteModal = ({
       updateSite({ id: site.id, updateSiteInput: data })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
 
             setTimeout(() => {
               showAlertToast({
@@ -161,21 +154,11 @@ export const AddOrEditSiteModal = ({
       createSite({ createSiteInput: data })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-            return;
-          }
+          handleGraphQLErrors(result.error);
 
           // Success
           if (result.data) {
-            onSuccessfulSubmit();
+            handleSuccess();
             refreshSites();
 
             setTimeout(() => {
@@ -335,7 +318,6 @@ export const AddOrEditSiteModal = ({
                 isLoading={isLoading}
               >
                 {!isLoading && <LucidePlus />}
-
                 {site ? 'Save changes' : 'Add site'}
               </Button>
             </ModalFooter>

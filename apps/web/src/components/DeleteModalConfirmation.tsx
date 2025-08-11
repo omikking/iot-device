@@ -50,8 +50,8 @@ export const DeleteModalConfirmation = ({
   const [currentView, setCurrentView] = useState<ModalView>(initialView);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const getDeleteIcon = (role: 'User' | 'Site' | 'Company') => {
-    switch (role) {
+  const getDeleteIcon = (iconType: 'User' | 'Site' | 'Company') => {
+    switch (iconType) {
       case 'User':
         return <LucideUserMinus className="text-error" size="32" />;
       case 'Site':

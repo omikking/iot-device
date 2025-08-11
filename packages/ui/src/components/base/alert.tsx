@@ -37,7 +37,7 @@ const Alert = React.forwardRef<
       {...props}
     >
       <div className="ui-flex ui-items-center ui-space-x-3">
-        <div className="ui-flex h-full ui-pt-[5px]">
+        <div className="ui-flex ui-h-full ui-pt-[5px]">
           {variant === 'success' && <CheckCircle size={iconSize} />}
           {variant === 'info' && <Info size={iconSize} />}
           {variant === 'error' && <CircleX size={iconSize} />}
@@ -62,8 +62,8 @@ interface AlertTextProps extends React.HTMLAttributes<HTMLElement> {
 const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTextProps>(
   ({ className, children }, ref) => (
     <Text
-      variant="medium"
-      className={(cn(className), 'ui-text-lg ui-mt-0.5')}
+      variant="large"
+      className={(cn(className), 'ui-mt-0.5')}
       ref={ref}
       as="span"
       color={null}

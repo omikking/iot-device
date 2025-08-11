@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  Length,
+  MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
@@ -16,10 +16,11 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
 
   @IsOptional()
   @IsNumber()
+  @MaxLength(50)
   boltNumber: number;
 
   @IsOptional()
-  @Length(2, 35)
+  @MaxLength(50)
   @IsString()
   boltType: string;
 
@@ -27,16 +28,18 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
+  @MaxLength(50)
   peakLoad: number[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
+  @MaxLength(50)
   peakDisplacement: number[];
 
   @IsOptional()
-  @Length(2, 35)
+  @MaxLength(50)
   @IsString()
   positionInRing: string;
 
@@ -58,6 +61,7 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
 
   @IsOptional()
   @IsString()
+  @MaxLength(500)
   comment: string;
 
   @IsOptional()

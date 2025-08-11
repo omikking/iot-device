@@ -13,34 +13,20 @@ import {
   ModalTitle,
 } from '@gsp/ui';
 import {
-  updateAdministratorFormSchema,
-  UpdateAdministratorFormValues,
+  createAdministratorFormSchema,
+  CreateAdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
-import { graphql } from '@/gql';
-import { useMutation } from 'urql';
 import { useEffect, useState } from 'react';
 import { GetAdminsQuery } from '@/gql/graphql';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { LucidePlus, LucideSquarePen } from 'lucide-react';
+import { LucidePlus } from 'lucide-react';
 
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
   administrator?: GetAdminsQuery['users'][0];
 };
-
-const updateAdministratorsMutation = graphql(`
-  mutation UpdateUser($id: String!, $updateUserInput: UpdateUserInput!) {
-    updateUser(id: $id, updateUserInput: $updateUserInput) {
-      email
-      fullName
-      workPlace
-      phoneNumber
-      globalRole
-    }
-  }
-`);
 
 export const AddAdministratorModal = ({
   onOpenChange,
@@ -49,30 +35,24 @@ export const AddAdministratorModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  const [, updateUser] = useMutation<UpdateAdministratorFormValues>(
-    updateAdministratorsMutation,
-  );
+  // const [, updateUser] = useMutation<CreateAdministratorFormValues>(
+  //   createAdministratorFormSchema,
+  // );
 
-  const form = useForm<UpdateAdministratorFormValues>({
-    resolver: zodResolver(updateAdministratorFormSchema),
+  const form = useForm<CreateAdministratorFormValues>({
+    resolver: zodResolver(createAdministratorFormSchema),
     defaultValues: {
-      fullName: administrator?.fullName || '',
-      workPlace: administrator?.workPlace || '',
       email: administrator?.email || '',
-      phoneNumber: administrator?.phoneNumber || '',
     },
   });
 
   const resetFormValues = () => {
     form.reset({
-      fullName: '',
-      workPlace: '',
       email: '',
-      phoneNumber: '',
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -84,41 +64,30 @@ export const AddAdministratorModal = ({
     }, 1700);
   };
 
-  const onSubmit: SubmitHandler<UpdateAdministratorFormValues> = (data) => {
+  const onSubmit: SubmitHandler<CreateAdministratorFormValues> = (data) => {
     if (administrator) {
-      updateUser({
-        id: administrator.id,
-        updateUserInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling error
-        console.log(result);
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      setIsLoading(true);
+      console.log(data);
+      handleSuccess();
+      // TODO make add logic here later and use handleSuccess
     }
   };
 
   useEffect(() => {
     if (administrator) {
       form.reset({
-        fullName: administrator.fullName || '',
         email: administrator.email || '',
-        workPlace: administrator.workPlace || '',
-        phoneNumber: administrator.phoneNumber || '',
       });
     }
   }, [administrator, form]);
 
   const formValues = form.watch();
-  const isAnyFieldEmpty = !formValues.email
+  const isAnyFieldEmpty = !formValues.email;
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>
       <ModalHeader>
-        <ModalTitle>
-          {administrator ? 'Edit Administrator' : 'Add administrator'}
-        </ModalTitle>
+        <ModalTitle>Add administrator</ModalTitle>
       </ModalHeader>
       <SuccessMessage isVisible={isSuccessful}>
         <Form {...form}>
@@ -153,17 +122,8 @@ export const AddAdministratorModal = ({
                 disabled={isAnyFieldEmpty || isLoading}
                 isLoading={isLoading}
               >
-                {administrator ? (
-                  <>
-                    {!isLoading && <LucideSquarePen />}
-                    Edit administrator
-                  </>
-                ) : (
-                  <>
-                    {!isLoading && <LucidePlus />}
-                    Add administrator
-                  </>
-                )}
+                {!isLoading && <LucidePlus />}
+                Add administrator
               </Button>
             </ModalFooter>
           </form>

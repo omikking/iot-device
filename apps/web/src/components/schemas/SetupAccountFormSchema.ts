@@ -1,29 +1,25 @@
 import { z } from 'zod';
+import { validations } from '@/app/uitexts/validations';
 
 export const setupAccountFormSchema = z.object({
   fullName: z
     .string()
-    .min(3, { message: 'Full name must be at least 3 characters.' })
-    .max(50, { message: 'Full name must be at most 50 characters.' }),
+    .max(50, { message: validations.max50Chars('Full name') }),
   workPlace: z
     .string()
-    .min(3, { message: 'Company must be at least 3 characters.' })
-    .max(50, { message: 'Company must be at most 50 characters.' }),
+    .max(50, { message: validations.max50Chars('Work place') }),
   phoneNumber: z
     .string()
-    .min(10, { message: 'Phone number must be at least 10 numbers.' })
-    .max(20, { message: 'Phone number must be at most 20 numbers.' }),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters.' }),
+    .max(20, { message: validations.max50Chars('Phone number') }),
+  password: z.string().min(8, { message: validations.passwordMin8Chars }),
 });
 
 export const setupAccountFormWithConfirmSchema = setupAccountFormSchema
   .extend({
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
+    confirmPassword: z.string().min(1, validations.confirmPasswordRequired),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: validations.passwordsMismatch,
     path: ['confirmPassword'],
   });
 

@@ -8,9 +8,13 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Role } from '@prisma/client';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class CompaniesResolver {
   constructor(private readonly companiesService: CompaniesService) {}
 
@@ -25,34 +29,37 @@ export class CompaniesResolver {
       limit: Number(limit ?? 20),
     };
 
-    return this.companiesService.findAll(user, pagination);
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    return this.companiesService.findAll(user, pagination, allowedCompanyIds);
   }
 
+  @Roles([], [], 'company')
   @Query('company')
-  // @TODO if we decide to go back using number instead of string for id change to ParseIntPipe
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.findOne(id);
   }
 
+  @Roles([Role.SANDVIK_ADMIN], [], 'company')
   @Mutation('createCompany')
   async create(
-    @Args('createCompanyInput')
-    createCompanyInput: CreateCompanyInput,
+    @Args('createCompanyInput') createCompanyInput: CreateCompanyInput,
   ): Promise<GraphQLTypes.Company> {
     return this.companiesService.create(createCompanyInput);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'company')
   @Mutation('updateCompany')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
-    @Args('updateCompanyInput')
-    updateCompanyInput: UpdateCompanyInput,
+    @Args('updateCompanyInput') updateCompanyInput: UpdateCompanyInput,
+    @ActiveUser() user: ActiveUserData,
   ): Promise<GraphQLTypes.Company> {
-    return this.companiesService.update(id, updateCompanyInput);
+    return this.companiesService.update(id, updateCompanyInput, user);
   }
 
+  @Roles([Role.COMPANY_ADMIN], [], 'company')
   @Mutation('removeCompany')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

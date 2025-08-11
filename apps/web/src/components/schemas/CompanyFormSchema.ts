@@ -1,19 +1,19 @@
 import { z } from 'zod';
 import { CreateCompanyInput, UpdateCompanyInput } from '@/gql/graphql';
+import { validations } from '@/app/uitexts/validations';
 
-// Create Zod schemas that validate according to GraphQL types
 export const createCompanySchema = z.object({
-  name: z.string().min(3, 'Company name must be at least 3 characters'),
-  orgNumber: z
+  name: z.string().max(50, validations.max50Chars('Company name')),
+  orgNumber: z.string().max(50, validations.max50Chars('Organisation number')),
+  address: z.string().max(50, validations.max50Chars('Address')),
+  postalCode: z.string().max(50, validations.max50Chars('Postal code')),
+  city: z.string().max(50, validations.max50Chars('City')),
+  country: z.string().max(50, validations.max50Chars('Country')),
+  companyContactEmail: z
     .string()
-    .min(10)
-    .max(10, 'Organization number must be 10 characters'),
-  address: z.string().min(3, 'Address must be at least 3 characters'),
-  postalCode: z.string().min(5, 'Postal code must be at least 5 characters'),
-  city: z.string().min(3, 'City must be at least 3 characters'),
-  country: z.string().min(3, 'Country must be at least 3 characters'),
-  companyContactEmail: z.string().email('Must be a valid email address'),
-  sandvikAdminUserId: z.string().min(1, 'Admin user is required'),
+    .email(validations.emailInvalid)
+    .max(50, validations.max50Chars('Email')),
+  sandvikAdminUserId: z.string().min(1, validations.adminRequired),
   plans: z
     .array(
       z.object({
@@ -26,31 +26,22 @@ export const createCompanySchema = z.object({
 }) satisfies z.ZodType<CreateCompanyInput>;
 
 export const updateCompanySchema = z.object({
-  name: z
-    .string()
-    .min(3, 'Company name must be at least 3 characters')
-    .optional(),
+  name: z.string().max(50, validations.max50Chars('Company name')).optional(),
   orgNumber: z
     .string()
-    .min(10)
-    .max(10, 'Organization number must be 10 characters')
+    .max(50, validations.max50Chars('Organisation number'))
     .optional(),
-  address: z
-    .string()
-    .min(3, 'Address must be at least 3 characters')
-    .optional(),
+  address: z.string().max(50, validations.max50Chars('Address')).optional(),
   postalCode: z
     .string()
-    .min(5, 'Postal code must be at least 5 characters')
+    .max(50, validations.max50Chars('Postal code'))
     .optional(),
-  city: z.string().min(3, 'City must be at least 3 characters').optional(),
-  country: z
-    .string()
-    .min(3, 'Country must be at least 3 characters')
-    .optional(),
+  city: z.string().max(50, validations.max50Chars('City')).optional(),
+  country: z.string().max(50, validations.max50Chars('Country')).optional(),
   companyContactEmail: z
     .string()
-    .email('Must be a valid email address')
+    .email(validations.emailInvalid)
+    .max(50, validations.max50Chars('Email'))
     .optional(),
   sandvikAdminUserId: z.string().optional(),
   plans: z
@@ -65,6 +56,5 @@ export const updateCompanySchema = z.object({
     .optional(),
 }) satisfies z.ZodType<UpdateCompanyInput>;
 
-// Typed versions that incorporate Zod validation
 export type CreateCompanyFormValues = z.infer<typeof createCompanySchema>;
 export type UpdateCompanyFormValues = z.infer<typeof updateCompanySchema>;

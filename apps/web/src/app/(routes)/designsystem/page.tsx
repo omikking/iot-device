@@ -70,7 +70,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
+import {
+  optionsDesignSystemMock,
+  usersDesignSystemMock,
+  sitesDesignSystemMock,
+} from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 
 type Role = 'User' | 'Technician' | 'Admin';
@@ -97,7 +101,7 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites] = useState(sitesMock);
+  const [sites] = useState(sitesDesignSystemMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
@@ -189,7 +193,7 @@ export default function Page(): JSX.Element {
           <BreadcrumbLink asChild>
             <BreadcrumbItem>
               <Text variant="small" color="foreground">
-                <Link href="/overview">With Link</Link>
+                <Link href="/administration-portal">With Link</Link>
               </Text>
             </BreadcrumbItem>
           </BreadcrumbLink>
@@ -457,7 +461,7 @@ export default function Page(): JSX.Element {
         <Headline variant="medium" color="foreground" as="h2" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+              <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
               Link with icon and no underline
             </Anchor>
           </Link>
@@ -834,7 +838,7 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user) => {
+            {usersDesignSystemMock.map((user) => {
               const role = user.userPermissions.role;
               const { variant, icon } = getBadge(role);
               return (
@@ -860,7 +864,7 @@ export default function Page(): JSX.Element {
           </TableBody>
         </Table>
         <Badge variant="neutral" className="self-start">
-          {usersMock.length} total
+          {usersDesignSystemMock.length} total
         </Badge>
       </div>
       <hr className="w-full border-neutral-2" />

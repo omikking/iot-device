@@ -14,7 +14,6 @@ import {
   LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
-import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
@@ -23,28 +22,26 @@ import {
   updateCompanySchema,
 } from './schemas/CompanyFormSchema';
 import {
+  Application,
   Company,
   CreateCompanyMutation,
   CreateCompanyMutationVariables,
   Plan,
+  Role,
   UpdateCompanyMutation,
   UpdateCompanyMutationVariables,
 } from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
-import { AssociateDetailsForm } from './AssociateDetailsForm';
 import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useRouter } from 'next/navigation';
-
-const allPlans = [
-  { applicationName: 'PULL_TEST' },
-  { applicationName: 'XCYCLOPS' },
-  { applicationName: 'ULTRABOLTS' },
-];
+import { useSession } from 'next-auth/react';
+import { AssociateDetails } from './AssociateDetails';
+import { CompanyDetails } from './CompanyDetails';
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -110,9 +107,11 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  // Temporary state for devmode
-  const [isAdmin, setIsAdmin] = useState(true);
-  const user = isAdmin ? 'Superadmin' : 'Client';
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = company
+    ? isCompanyAdmin(session?.user?.userPermissions, company?.id)
+    : false;
 
   const router = useRouter();
 
@@ -153,16 +152,8 @@ export const CompanyForm = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
+          handleGraphQLErrors(result.error);
 
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
           // Success
           if (result.data) {
             showAlertToast({
@@ -187,16 +178,7 @@ export const CompanyForm = ({
       })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
-          }
+          handleGraphQLErrors(result.error);
 
           // Success
           if (result.data) {
@@ -245,15 +227,24 @@ export const CompanyForm = ({
   const isSubmitDisabled = isNewCompany
     ? isAnyFieldEmpty
     : !isDirty || isAnyFieldEmpty;
+
+  const sandvikAdminUserInfo = company?.users?.find(
+    (user) => user.id === company.sandvikAdminUserId,
+  );
+
   return (
     <>
-      <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-
       <Form {...companyForm}>
         <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
-            <CompanyDetailsForm companyForm={companyForm} />
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <CompanyDetailsForm companyForm={companyForm} />
+            )}
+
+            {company && !isUserSandvikAdmin && !isUserCompanyAdmin && (
+              <CompanyDetails company={company} />
+            )}
 
             {/* App plans */}
             <div>
@@ -264,10 +255,10 @@ export const CompanyForm = ({
                   variant="medium"
                   className="ml-8"
                 >
-                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
+                  {isUserSandvikAdmin ? 'Plans' : 'Your plans'}
                 </Headline>
 
-                {user === 'Client' && (
+                {!isUserSandvikAdmin && (
                   <div className="flex items-center">
                     <LucideSparkles size="20" />
                     <Headline
@@ -290,13 +281,13 @@ export const CompanyForm = ({
               </div>
 
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlans.map((planType) => {
+                {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
-                    (plan) => plan.applicationName === planType.applicationName,
+                    (plan) => plan.applicationName === appName,
                   );
 
                   const appPlan = existingPlan || {
-                    applicationName: planType.applicationName,
+                    applicationName: appName,
                     planLevel: '',
                     expiringDate: 0,
                   };
@@ -305,7 +296,7 @@ export const CompanyForm = ({
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
                       key={existingPlan?.id || appPlan.applicationName}
-                      isAdmin={isAdmin}
+                      isUserSandvikAdmin={isUserSandvikAdmin}
                       companyForm={companyForm}
                     />
                   );
@@ -317,42 +308,44 @@ export const CompanyForm = ({
             <ContentHolder
               variant="general"
               headlineText={
-                user === 'Superadmin'
-                  ? 'Admin'
+                isUserSandvikAdmin
+                  ? 'Sandvik admin'
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && <AdminForm companyForm={companyForm} />}
-              {user === 'Client' && (
-                <AssociateDetailsForm companyForm={companyForm} />
+              {isUserSandvikAdmin && <AdminForm companyForm={companyForm} />}
+              {!isUserSandvikAdmin && (
+                <AssociateDetails sandvikAdminUserInfo={sandvikAdminUserInfo} />
               )}
             </ContentHolder>
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex gap-6 justify-end self-end mt-[40px]">
-            {!isNewCompany && (
-              <Button
-                variant="destructive"
-                size="large"
-                type="button"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <LucideTrash2 />
-                Inactivate company
-              </Button>
-            )}
+          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            <div className="flex gap-6 justify-end self-end mt-[40px]">
+              {!isNewCompany && (
+                <Button
+                  variant="destructive"
+                  size="large"
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <LucideTrash2 />
+                  Inactivate company
+                </Button>
+              )}
 
-            <Button
-              variant="primary"
-              size="large"
-              type="submit"
-              disabled={isSubmitDisabled}
-            >
-              <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Save changes'}
-            </Button>
-          </div>
+              <Button
+                variant="primary"
+                size="large"
+                type="submit"
+                disabled={isSubmitDisabled}
+              >
+                <LucideCircleCheckBig />
+                {isNewCompany ? 'Send invitation' : 'Save changes'}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </>

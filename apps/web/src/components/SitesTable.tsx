@@ -11,13 +11,16 @@ import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation } from 'urql';
-import { Site } from '@/gql/graphql';
+import { Role, Site } from '@/gql/graphql';
 import type { ColumnDef } from '@gsp/ui';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { LucideMoveRight, LucideSearchX } from 'lucide-react';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { responses } from '@/app/uitexts/responses';
-import { GraphQLErrorExtensions } from '@/libs/utils';
+import { useSession } from 'next-auth/react';
+import { CellContext } from '@tanstack/react-table';
+import { useParams } from 'next/navigation';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -35,17 +38,25 @@ const deleteSiteMutation = graphql(`
 
 type SitesTableProps = {
   sites: Site[];
-  companyId: string;
   onSelectSite: (site?: Site) => void;
   onOpenChange: (isOpen: boolean) => void;
 };
 
 export const SitesTable = ({
   sites,
-  companyId,
   onOpenChange,
   onSelectSite,
 }: SitesTableProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteSiteModalOpen, setDeleteSiteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<Site | undefined>(undefined);
@@ -73,15 +84,8 @@ export const SitesTable = ({
       deleteSite({ id: siteToDelete.id })
         .then((result) => {
           // Backend errors
-          if (result.error?.graphQLErrors) {
-            const { title, message, type } = result.error.graphQLErrors[0]
-              .extensions as unknown as GraphQLErrorExtensions;
-
-            showAlertToast({
-              title: title,
-              description: message,
-              variant: type || 'error',
-            });
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
             return false;
           }
           // Success
@@ -133,7 +137,7 @@ export const SitesTable = ({
           <Button variant="outline" size="small" asChild>
             <Link
               href={{
-                pathname: `/sitelocations/${companyId}`,
+                pathname: `/site-locations/${companyId}`,
                 query: { siteId: row.original.id },
               }}
             >
@@ -161,7 +165,10 @@ export const SitesTable = ({
     {
       accessorKey: 'settings',
       header: '',
-      cell: ({ row }) => {
+      cell: ({ row }: CellContext<Site, unknown>) => {
+        if (!isUserSandvikAdmin && !isUserCompanyAdmin) {
+          return null;
+        }
         const site = sites.find((site) => site.id === row.original.id);
         return (
           site && (

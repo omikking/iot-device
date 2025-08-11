@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Role } from '@/gql/graphql';
@@ -17,13 +17,16 @@ import {
   Text,
   showAlertToast,
 } from '@gsp/ui';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import { LucideLogIn } from 'lucide-react';
 import Link from 'next/link';
 import { responses } from '@/app/uitexts/responses';
+import {
+  SignInFormValues,
+  signInFormSchema,
+} from '@/components/schemas/SignInFormSchema';
 
 export default function SignIn() {
   const router = useRouter();
@@ -31,34 +34,35 @@ export default function SignIn() {
 
   const { data: session, status } = useSession();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (status === 'authenticated') {
-      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-      const redirectTo = isAdmin ? '/overview' : '/selectcompany';
-      router.push(redirectTo);
+      const callbackUrl = searchParams.get('callbackUrl');
+
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+        const redirectTo = isAdmin
+          ? '/administration-portal'
+          : '/select-company';
+        router.push(redirectTo);
+      }
     }
   }, [status, router, searchParams]);
 
-  const formSchema = z.object({
-    emailAddress: z
-      .string()
-      .email({ message: 'Email must be a valid email address.' })
-      .min(2, { message: 'Email must be at least 2 characters.' })
-      .max(50, { message: 'Email must be at most 50 characters.' }),
-    password: z
-      .string()
-      .min(8, { message: 'Password must be at least 8 characters.' }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInFormSchema),
     defaultValues: {
       emailAddress: '',
       password: '',
     },
   });
 
-  const handleSignIn = async (values: z.infer<typeof formSchema>) => {
+  const handleSignIn = async (values: SignInFormValues) => {
+    setIsLoading(true);
+
     await signIn('credentials', {
       email: values.emailAddress,
       password: values.password,
@@ -83,6 +87,9 @@ export default function SignIn() {
           description: responses.contactSupportError,
           variant: 'error',
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -159,9 +166,10 @@ export default function SignIn() {
               size="large"
               isWide
               type="submit"
+              isLoading={isLoading}
               disabled={isAnyFieldEmpty}
             >
-              <LucideLogIn />
+              {!isLoading && <LucideLogIn />}
               Login
             </Button>
           </form>

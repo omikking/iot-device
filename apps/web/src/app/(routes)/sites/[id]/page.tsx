@@ -2,12 +2,14 @@
 import { Badge, Button, Headline, Modal, ModalTrigger, Tabs } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { Site } from '@/gql/graphql';
+import { Role, Site } from '@/gql/graphql';
 import React, { useState } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
 import { AddOrEditSiteModal } from '@/components/AddOrEditSiteModal';
+import { useSession } from 'next-auth/react';
+import { isCompanyAdmin } from '@/libs/utils';
 
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
@@ -39,6 +41,13 @@ export default function Page({
 }): JSX.Element {
   const companyId = params.id;
 
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
   const [{ data }] = useQuery({
     query: getCompanyName,
     variables: { id: companyId },
@@ -47,8 +56,8 @@ export default function Page({
   const companyName = data?.company?.name;
 
   // Commented out since not in MVP
-  // const [, setApp] = useState<'Pull Test' | 'Cyclops' | 'Banshee'>(
-  //   'Pull Test',
+  // const [, setApp] = useState<'Application.PullTest' | 'Application.Banshee'>(
+  //   'Application.PullTest',
   // );
 
   const [sitesData, refetchSites] = useQuery({
@@ -85,41 +94,36 @@ export default function Page({
 
       <div className="flex flex-col items-end gap-5 w-full max-w-[1320px]">
         <Tabs defaultValue="pullTest" className="w-full">
-          <div className="w-full flex flex-row justify-end items-center pb-4">
-            {/* // Commented out since not in MVP */}
-            {/* <TabsList>
-              <TabsTrigger value="pullTest" onClick={() => setApp('Pull Test')}>
-                Pull Test
+          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            <div className="w-full flex flex-row justify-end items-center pb-4">
+              {/* // Commented out since not in MVP */}
+              {/* <TabsList>
+              <TabsTrigger value="pullTest" onClick={() => setApp('Application.PullTest')}>
+                {getAppName(Application.PullTest)}
               </TabsTrigger>
-              <TabsTrigger value="xCyclops" onClick={() => setApp('xCyclops')}>
-                xCyclops
-              </TabsTrigger>
-              <TabsTrigger
-                value="ultrabolts"
-                onClick={() => setApp('Ultrabolts')}
-              >
-                Ultrabolts
+              <TabsTrigger value="banshee" onClick={() => setApp('Application.Banshee')}>
+                {getAppName(Application.Banshee)}
               </TabsTrigger>
             </TabsList> */}
 
-            <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
-              <ModalTrigger asChild>
-                <Button variant="primary" size="large">
-                  <LucidePlus />
-                  Add site
-                </Button>
-              </ModalTrigger>
-              <AddOrEditSiteModal
-                onOpenChange={handleModalToggle}
-                site={selectedSite}
-                refreshSites={refreshSite}
-              />
-            </Modal>
-          </div>
+              <Modal open={openSiteModal} onOpenChange={handleModalToggle}>
+                <ModalTrigger asChild>
+                  <Button variant="primary" size="large">
+                    <LucidePlus />
+                    Add site
+                  </Button>
+                </ModalTrigger>
+                <AddOrEditSiteModal
+                  onOpenChange={handleModalToggle}
+                  site={selectedSite}
+                  refreshSites={refreshSite}
+                />
+              </Modal>
+            </div>
+          )}
 
           {/* <TabsContent value="pullTest"> */}
           <SitesTable
-            companyId={companyId}
             onOpenChange={handleModalToggle}
             onSelectSite={setSelectedSite}
             sites={sites}

@@ -1,32 +1,26 @@
+import { validations } from '@/app/uitexts/validations';
 import { z } from 'zod';
 
-export type UserAccountFormValues = {
-  email?: string;
-  fullName?: string;
-  workPlace?: string;
-  phoneNumber?: string;
-  oldPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
-};
-
-export const accountSettingsFormSchema = z
+export const updateAccountSettingsFormSchema = z
   .object({
     email: z
       .string()
-      .email({ message: 'Email must be valid.' })
-      .min(2, { message: 'Email must be at least 2 characters.' })
-      .max(50, { message: 'Email must be at most 50 characters.' })
+      .email({ message: validations.emailInvalid })
+      .max(50, { message: validations.max50Chars('Email') })
       .optional(),
     fullName: z
       .string()
-      .min(2, { message: 'Full name must be at least 2 characters.' })
-      .max(50, { message: 'Full name must be at most 50 characters.' })
+      .max(50, { message: validations.max50Chars('Full name') })
       .optional(),
-    workPlace: z.string().optional(),
-    phoneNumber: z.string().optional(),
+    workPlace: z
+      .string()
+      .max(50, { message: validations.max50Chars('Work place') })
+      .optional(),
+    phoneNumber: z
+      .string()
+      .max(50, { message: validations.max50Chars('Phone number') })
+      .optional(),
     oldPassword: z.string().optional(),
-    //@TODO regex expreation for password?
     newPassword: z.string().optional(),
     confirmPassword: z.string().optional(),
   })
@@ -36,7 +30,11 @@ export const accountSettingsFormSchema = z
       return data.newPassword === data.confirmPassword;
     },
     {
-      message: 'Passwords do not match',
+      message: validations.passwordsMismatch,
       path: ['confirmPassword'],
     },
   );
+
+export type UpdateAccountSettingsFormSchemaValues = z.infer<
+  typeof updateAccountSettingsFormSchema
+>;

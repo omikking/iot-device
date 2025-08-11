@@ -24,7 +24,7 @@ import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/utils';
+import { isPasswordStrong } from 'src/utils/';
 
 @Injectable()
 export class AuthService {
@@ -81,6 +81,15 @@ export class AuthService {
         where: {
           email: dto.email,
         },
+        include: {
+          userRole: {
+            select: {
+              role: true,
+              companyId: true,
+              appsAccess: true,
+            },
+          },
+        },
       });
 
       if (!user) {
@@ -108,6 +117,11 @@ export class AuthService {
         email: user.email,
         fullName: user.fullName,
         globalRole: user.globalRole,
+        userPermissions: user.userRole.map((permission) => ({
+          role: permission.role,
+          companyId: permission.companyId,
+          appsAccess: permission.appsAccess,
+        })),
       };
 
       return {

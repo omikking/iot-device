@@ -6,9 +6,8 @@ import {
   Label,
   RangeCalendar,
 } from '@gsp/ui';
+import { GetCompanyQuery, BoltResult } from '@/gql/graphql';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
-import { BoltResultSchema } from '@/app/mock/mock';
-import { GetCompanyQuery } from '@/gql/graphql';
 
 type CompanyType = GetCompanyQuery['company'];
 type SiteType = NonNullable<CompanyType['sites']>[number];
@@ -30,12 +29,12 @@ interface BoltSelectionProps {
   onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
   onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   onFilterChange: (filters: FilterState) => void;
-  boltResults: BoltResultSchema[];
-  companyByIdResponse: GetCompanyQuery;
+  boltResults: BoltResult[];
+  companyData: GetCompanyQuery;
 }
 
 export const BoltSelection = ({
-  companyByIdResponse,
+  companyData,
   site,
   level,
   drive,
@@ -50,8 +49,8 @@ export const BoltSelection = ({
   onFilterChange,
 }: BoltSelectionProps) => {
   const siteOptions = useMemo(() => {
-    return companyByIdResponse?.company?.sites || [];
-  }, [companyByIdResponse]);
+    return companyData?.company?.sites || [];
+  }, [companyData]);
 
   const handleSetSite = (siteId?: string) => {
     const selectedSite = siteOptions.find((s) => s.id === siteId);

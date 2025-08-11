@@ -15,6 +15,7 @@ import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
+import { Role } from '@/gql/graphql';
 
 type AdminFormProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
@@ -35,7 +36,7 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
   const [{ data: adminsData }] = useQuery({
     query: getAdminsQuery,
     variables: {
-      roles: ['SANDVIK_ADMIN'],
+      roles: [Role.SandvikAdmin],
     },
     pause: !session?.company?.id,
   });
@@ -44,8 +45,6 @@ export const AdminForm = ({ companyForm }: AdminFormProps) => {
       id: user.id,
       name: user.fullName,
     })) ?? [];
-  // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
-  // Leave it for now, and will be worked on later.
 
   return (
     <FormField

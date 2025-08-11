@@ -10,12 +10,15 @@ import {
 } from 'lucide-react';
 import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
-import { BoltResultSchema } from '@/app/mock/mock';
+import { Pagination } from './Pagination';
 
 type BoltResultsTableProps = {
-  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
-  boltResults?: BoltResult[] | BoltResultSchema[];
+  boltResults?: BoltResult[];
   site?: string;
+  totalCount?: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
 };
 
 const getBadge = (
@@ -37,6 +40,10 @@ const getBadge = (
 export const BoltResultsTable = ({
   boltResults,
   site,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPageChange,
 }: BoltResultsTableProps) => {
   const columns: ColumnDef<BoltResult>[] = [
     {
@@ -152,8 +159,7 @@ export const BoltResultsTable = ({
     <>
       <DataTable
         columns={columns}
-        // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
-        data={(boltResults as BoltResult[]) || []}
+        data={boltResults || []}
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'
@@ -167,10 +173,19 @@ export const BoltResultsTable = ({
           )
         }
       />
-      {!!boltResults?.length && boltResults?.length > 0 && (
-        <Badge variant="neutral" className="self-start mt-5">
-          {boltResults?.length} total
-        </Badge>
+      {!!boltResults?.length && boltResults?.length > 0 && totalCount && (
+        <div className="flex justify-between">
+          <Badge variant="neutral" className="self-start mt-5">
+            {totalCount} total
+          </Badge>
+
+          <Pagination
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+          />
+        </div>
       )}
     </>
   );

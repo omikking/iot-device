@@ -3,44 +3,45 @@ import {
   IsEmail,
   IsOptional,
   IsString,
-  Length,
+  MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   name: string;
 
   @IsOptional()
   @IsString()
-  @Length(10)
+  @MaxLength(50)
   orgNumber: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 95)
+  @MaxLength(50)
   address: string;
 
   @IsOptional()
   @IsString()
-  @Length(5) // @TODO Need to update in the future, might not be 5 in countries outside of SWE
+  @MaxLength(50)
   postalCode: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   city: string;
 
   @IsOptional()
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   country: string;
 
   @IsOptional()
   @IsString()
   @IsEmail()
+  @MaxLength(50)
   companyContactEmail: string;
 
   @IsString()

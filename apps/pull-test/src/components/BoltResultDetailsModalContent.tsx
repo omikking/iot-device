@@ -22,95 +22,112 @@ export const BoltResultDetailsModalContent = ({
   siteInfo,
   fullName,
 }: BoltResultDetailsModalContentProps) => {
-  const { image, isHazard, peakLoad, peakDisplacement } = boltResult || {};
+  const {
+    image,
+    comment,
+    isHazard,
+    peakLoad,
+    peakDisplacement,
+    hazardCompletedDate,
+  } = boltResult || {};
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-10 pt-10">
       {/* Image, Comment and Hazard Status */}
-      {(image || boltResult.comment || isHazard) && (
-        <div className="flex flex-grow pb-5 px-10 gap-10">
+      {(image || comment || isHazard) && (
+        <div className="flex flex-grow gap-10 pb-10">
           {image && (
             <Image
               src={'/capybara.jpg'}
               alt="Attached bolt result image"
               width={390}
               height={280}
-              className="rounded-md h-72 mt-10"
+              className="rounded-md h-72"
             />
           )}
           <div className="flex flex-col w-1/2">
-            {boltResult.comment && (
-              <div className="flex flex-col flex-grow pt-10">
+            {comment && (
+              <div className="flex flex-col flex-grow">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>
                 <Textarea
-                  value={boltResult.comment}
-                  className="mt-2 flex-grow"
+                  value={comment}
+                  className="mt-2 flex-grow min-h-48"
                   disabled
                   readOnly
                 />
               </div>
             )}
-            <div className="flex pt-5 gap-4 items-center">
-              {isHazard && (
-                <>
-                  <Badge variant={'attention'}>
-                    <LucideTriangleAlert />
-                    Reported hazard
-                  </Badge>
-                  <Text variant="small" color="foreground">
-                    Reported by: {fullName || 'N/A'}
-                  </Text>
-                </>
-              )}
-            </div>
           </div>
         </div>
       )}
 
-      {!isHazard && (
-        <div className="px-10">
-          <Badge variant="success">
-            <LucideCircleCheckBig />
-            Completed
-          </Badge>
-        </div>
-      )}
-
-      <div className="px-10 pt-10">
-        {/* Hazard Completion History */}
-        {!boltResult?.isHazard && (
-          <>
-            <Headline
-              className="pb-4"
-              variant="small"
-              as="h3"
-              color="foreground"
-              isBold
-            >
-              Hazard completion history
-            </Headline>
+      <div>
+        {!isHazard &&
+          hazardCompletedDate &&
+          hazardCompletedDate?.length > 0 && (
             <div className="pb-10">
-              {boltResult?.hazardCompletedDate?.map((date, index) => {
+              <Badge variant="success">
+                <LucideCircleCheckBig />
+                Completed
+              </Badge>
+
+              <Headline
+                className="py-4"
+                variant="small"
+                as="h3"
+                color="foreground"
+                isBold
+              >
+                Hazard completion history
+              </Headline>
+              {hazardCompletedDate?.map((date, index) => {
                 const dateString = new Date(date).toISOString().split('T')[0];
                 return (
                   <div key={index} className="flex flex-wrap">
                     <Specification
+                      isWide
                       key={index}
                       title={'Date'}
                       text={dateString}
                       className="w-1/2"
                     />
-                    <Specification title={''} text={''} className="w-1/2" />
+                    <Specification
+                      isWide
+                      title={''}
+                      text={''}
+                      className="w-1/2"
+                    />
                   </div>
                 );
               })}
             </div>
-          </>
-        )}
+          )}
+        <div className="flex flex-col gap-2 w-full">
+          {isHazard && (
+            <div className="pb-10">
+              <Badge variant={'attention'}>
+                <LucideTriangleAlert />
+                Reported hazard
+              </Badge>
 
-        {/* Bolt Specifications */}
+              {(isHazard ||
+                (hazardCompletedDate && hazardCompletedDate.length > 0)) && (
+                <Specification
+                  title="Reported by"
+                  text={fullName || 'N/A'}
+                  className="w-full mt-4"
+                  isWide
+                />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bolt Specifications */}
+      <div className="pb-10">
         <Headline
           className="pb-4"
           variant="small"
@@ -126,6 +143,7 @@ export const BoltResultDetailsModalContent = ({
             {[...generateBoltSpecifications(boltResult, siteInfo).slice(1)].map(
               (boltSpec, index) => (
                 <Specification
+                  isWide
                   key={index}
                   title={boltSpec.title}
                   text={boltSpec.text}
@@ -134,26 +152,20 @@ export const BoltResultDetailsModalContent = ({
               ),
             )}
             {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              0 && <Specification title="" text="" className="w-1/2" />}
+              0 && <Specification isWide title="" text="" className="w-1/2" />}
           </div>
         )}
+      </div>
 
-        {/* Bolt Results */}
-        <div>
-          <Headline
-            className="pt-10"
-            variant="small"
-            as="h3"
-            color="foreground"
-            isBold
-          >
-            Bolt results
-          </Headline>
-          <MultiBoltReadingTable
-            peakLoad={peakLoad}
-            peakDisplacement={peakDisplacement}
-          />
-        </div>
+      {/* Bolt Results */}
+      <div>
+        <Headline variant="small" as="h3" color="foreground" isBold>
+          Bolt results
+        </Headline>
+        <MultiBoltReadingTable
+          peakLoad={peakLoad}
+          peakDisplacement={peakDisplacement}
+        />
       </div>
     </div>
   );

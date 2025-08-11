@@ -11,6 +11,7 @@ import { pdfComponentMockData } from '@/app/mock/mock';
 import { gql, useQuery } from 'urql';
 import { Headline, Badge, DateRange } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
+import { SandvikLogo } from 'public/SandvikLogo';
 
 interface Props {
   params: {
@@ -230,7 +231,13 @@ export default function Page({ params }: Props): JSX.Element {
           </>
         )}
 
-        <div className="w-full border-2 border-gray-200 shadow-md rounded-lg">
+        <div className="w-full border-2 border-gray-200 shadow-2xl rounded-lg mx-">
+          <div className="flex">
+            <SandvikLogo />
+            <Headline as="h2" variant="large" color="foreground" isBold>
+              Ground Support Platform
+            </Headline>
+          </div>
           <Headline as="h2" variant="large" color="foreground">
             PULL TEST REPORT
           </Headline>

@@ -145,6 +145,21 @@ export class UpdateDriveInput {
     driveName?: Nullable<string>;
 }
 
+export class CreateInvitationInput {
+    email: string;
+    companyId: string;
+    role: string;
+    appsAccess: string[];
+}
+
+export class CompleteInvitationInput {
+    token: string;
+    fullName: string;
+    password: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
+}
+
 export class CreateLevelInput {
     levelName: string;
     siteId: string;
@@ -256,6 +271,7 @@ export abstract class IQuery {
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
+    validateInvitation?: InvitationValidation;
     levels: Level[];
     level?: Level;
     locations: Location[];
@@ -284,6 +300,8 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createInvitation?: InvitationResponse;
+    completeInvitation?: User;
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
@@ -354,6 +372,27 @@ export class Drive {
     levelId: string;
     locations?: Nullable<Location[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Invitation {
+    id: string;
+    email: string;
+    token: string;
+    expiresAt: DateTime;
+    used: boolean;
+    companyId: string;
+}
+
+export class InvitationResponse {
+    invitationId?: Nullable<string>;
+    userId?: Nullable<string>;
+    isNewUser: boolean;
+}
+
+export class InvitationValidation {
+    valid: boolean;
+    reason?: Nullable<string>;
+    invitation?: Nullable<Invitation>;
 }
 
 export class Level {

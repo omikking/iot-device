@@ -25,6 +25,7 @@ import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { isPasswordStrong } from 'src/utils/';
+import { InvitationService } from '../invitation/invitation.service';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
     private jwt: JwtService,
     private config: ConfigService,
     private refreshTokenIdsStorage: RefreshTokenIdsStorage,
+    private invitationService: InvitationService,
   ) {}
   async signup(dto: SignupDto) {
     try {

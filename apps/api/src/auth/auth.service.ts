@@ -140,6 +140,25 @@ export class AuthService {
     }
   }
 
+  async completeInvitationSignup(
+    token: string,
+    userData: {
+      fullName: string;
+      password: string;
+      workPlace: string;
+      phoneNumber?: string;
+    },
+  ) {
+    // Delegate to the invitation service
+    const user = await this.invitationService.completeInvitation(
+      token,
+      userData,
+    );
+
+    // Generate tokens for immediate login
+    return this.generateTokens(user);
+  }
+
   async refreshTokens(dto: RefreshTokenDto) {
     try {
       console.log('Refresh token triggered');

@@ -88,6 +88,7 @@ model Company {
   plan           Plan[]
   site           Site[]
   userPermission UserPermission[]
+  Invitation     Invitation[]
 
   @@map("companies")
 }
@@ -143,6 +144,22 @@ model UserPermission {
   companyId String
 
   @@map("user_permissions")
+}
+
+model Invitation {
+  id         String        @id @default(uuid())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  email      String
+  token      String        @unique
+  expiresAt  DateTime
+  used       Boolean       @default(false)
+  companyId  String
+  company    Company       @relation(fields: [companyId], references: [id])
+  role       Role
+  appsAccess Application[]
+
+  @@map("invitations")
 }
 
 model Site {

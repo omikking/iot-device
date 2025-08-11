@@ -1,0 +1,44 @@
+type Invitation {
+  id: String!
+  email: String!
+  token: String!
+  expiresAt: DateTime!
+  used: Boolean!
+  companyId: String!
+}
+
+type InvitationResponse {
+  invitationId: String
+  userId: String
+  isNewUser: Boolean!
+}
+
+type InvitationValidation {
+  valid: Boolean!
+  reason: String
+  invitation: Invitation
+}
+
+input CreateInvitationInput {
+  email: String!
+  companyId: String!
+  role: String!
+  appsAccess: [String!]!
+}
+
+input CompleteInvitationInput {
+  token: String!
+  fullName: String!
+  password: String!
+  workPlace: String!
+  phoneNumber: String
+}
+
+type Mutation {
+  createInvitation(input: CreateInvitationInput!): InvitationResponse!
+  completeInvitation(input: CompleteInvitationInput!): User!
+}
+
+type Query {
+  validateInvitation(token: String!): InvitationValidation!
+}

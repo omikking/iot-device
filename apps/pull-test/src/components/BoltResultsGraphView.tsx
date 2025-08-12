@@ -1,17 +1,42 @@
+import { BoltResult, Result } from '@/gql/graphql';
 import { Badge, BoltResultCard, Text } from '@gsp/ui';
 import {
   ClipboardList,
   LucideBolt,
+  LucideCheckCircle,
   LucideGoal,
   LucideSearchX,
   LucideWeight,
+  LucideXCircle,
 } from 'lucide-react';
 import React from 'react';
 
-export const BoltResultsGraphView = () => {
+type BoltResultsGraphProps = {
+  boltResults?: BoltResult[];
+  site?: string;
+};
+
+const getBadge = (
+  result: Result.Abort | Result.Pass | Result.Fail,
+): {
+  variant: 'success' | 'destructive' | 'warning';
+  icon: React.ReactNode;
+} => {
+  switch (result) {
+    case Result.Pass:
+      return { variant: 'success', icon: <LucideCheckCircle /> };
+    case Result.Fail:
+      return { variant: 'destructive', icon: <LucideXCircle /> };
+    case Result.Abort:
+      return { variant: 'warning', icon: <LucideSearchX /> };
+  }
+};
+
+export const BoltResultsGraphView = ({
+  boltResults,
+  site,
+}: BoltResultsGraphProps) => {
   // TODO Fix propperly later
-  const boltResults = false;
-  const site = true;
   return (
     <>
       {site && boltResults && (

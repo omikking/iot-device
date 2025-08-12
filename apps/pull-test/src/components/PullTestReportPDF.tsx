@@ -4,12 +4,10 @@ import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
 import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResult } from '@/gql/graphql';
 
 interface PullTestReportPDFProps {
-  objList?: {
-    totalRecords: number;
-    results: BoltResultSchema[];
-  };
+  objList?: BoltResult;
   reportDetails: {
     startDate: string;
     companyName: string;
@@ -36,8 +34,9 @@ interface PullTestReportPDFProps {
 }
 
 export const PullTestReportPDF = ({
-  objList = { totalRecords: 0, results: [] },
+  objList,
   // layout,
+  reportDetails,
   parentUrl = '',
   pdfName = 'report.pdf',
   pdfPageTitle = 'Pull Test Report',
@@ -46,6 +45,8 @@ export const PullTestReportPDF = ({
 }: PullTestReportPDFProps) => {
   // const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
+
+  console.log('PullTestReportPDF objList:', objList);
 
   const pdfRef = useRef(new jsPDF({ orientation: 'portrait', compress: true }));
 
@@ -182,7 +183,7 @@ export const PullTestReportPDF = ({
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['peakDisplacement'].join(' ')}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['level']['levelName']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['drive']['driveName']}</td>
-                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;"></td>
+                  <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['positionInRing']['position']}</td>
                   <td style="text-align: center; padding: 10px; border-bottom: 1px solid black;">${item['result']}</td>
                 </tr>`,
             )
@@ -248,7 +249,7 @@ export const PullTestReportPDF = ({
       >
         <>
           {!isLoading && <LucideFileDown />}
-          Export PDF
+          Export PDF test
         </>
       </Button>
     </>

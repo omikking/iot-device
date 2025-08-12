@@ -23,26 +23,26 @@ export const boltResultDesignSystemMock = [
 ];
 
 // TODO Fix mock data
-export interface BoltResultSchema {
-  id: string;
-  boltNumber: string;
-  boltType: string;
-  peakLoad: string[];
-  peakDisplacement: string[];
-  bitSize: string;
-  rotations: string;
-  displacementPerTonnage: string;
-  level: { levelName: string };
-  drive: { driveName: string };
-  location: { locationName: string };
-  ring: string;
-  comment?: string;
-  result: 'PASS' | 'FAIL' | 'ABORT';
-  image?: string;
-  isHazard?: boolean;
-  createdDate: Date;
-  author?: string;
-}
+// export interface BoltResultSchema {
+//   id: string;
+//   boltNumber: string;
+//   boltType: string;
+//   peakLoad: string[];
+//   peakDisplacement: string[];
+//   bitSize: string;
+//   rotations: string;
+//   displacementPerTonnage: string;
+//   level: { levelName: string };
+//   drive: { driveName: string };
+//   location: { locationName: string };
+//   ring: string;
+//   comment?: string;
+//   result: 'PASS' | 'FAIL' | 'ABORT';
+//   image?: string;
+//   isHazard?: boolean;
+//   createdDate: Date;
+//   author?: string;
+// }
 
 // TODO Fix mock data
 export const pdfComponentMockData = {

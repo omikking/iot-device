@@ -11,6 +11,7 @@ import { pdfComponentMockData } from '@/app/mock/mock';
 import { gql, useQuery } from 'urql';
 import { Headline, Badge, DateRange } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
+import { SandvikLogo } from 'public/SandvikLogo';
 
 interface Props {
   params: {
@@ -137,11 +138,6 @@ export default function Page({ params }: Props): JSX.Element {
     reportedHazard: false,
   });
 
-  // type PdfRefType = {
-  //   generatePdf: () => void;
-  // };
-
-  // const pdfRef = useRef<PdfRefType | null>(null);
   const [pdfData, setPdfData] = useState(null);
 
   console.log(pdfData);
@@ -186,6 +182,13 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
+  console.log('Stored PDF Data:', pdfData);
+
+  console.log(
+    'objlist sent to pdf component',
+    boltResultsResponse?.boltResults,
+  );
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -203,7 +206,7 @@ export default function Page({ params }: Props): JSX.Element {
           <>
             <PullTestReportPDF
               disabled={false}
-              objList={boltResultsResponse?.boltResults}
+              objList={pdfData.objList}
               reportDetails={pdfComponentMockData.reportDetails}
               layout={{
                 // logo: pdfComponentMockData.Layout.logo,
@@ -214,27 +217,25 @@ export default function Page({ params }: Props): JSX.Element {
               pdfPageTitle={'Bolt Result'}
               currentDate={new Date().toLocaleDateString()}
             />
-
-            {/* <Button
-              onClick={generatePdfContent}
-              disabled={disabled}
-              size="large"
-              variant="primary"
-              isLoading={isLoading}
-            >
-              <>
-                {!isLoading && <LucideFileDown />}
-                Export PDF
-              </>
-            </Button> */}
           </>
         )}
 
-        <div className="w-full border-2 border-gray-200 shadow-md rounded-lg">
-          <Headline as="h2" variant="large" color="foreground">
+        <div className="w-full pt-8 bg-neutral-1 border-2 rounded-lg border-neutral-3 shadow-[0_-4px_8px_-1px_rgba(0,0,0,0.1),0_8px_15px_-3px_rgba(0,0,0,0.2)]">
+          <div className="flex gap-4 px-12 pt-5 items-center">
+            <SandvikLogo height="35" width="35" />
+            <Headline as="h2" variant="large" color="foreground" isBold>
+              Ground Support Platform
+            </Headline>
+          </div>
+          <Headline
+            as="h2"
+            variant="xl"
+            color="foreground"
+            className="px-12 pt-16"
+            isBold
+          >
             PULL TEST REPORT
           </Headline>
-
           <BoltResultsGraphView />
         </div>
       </div>

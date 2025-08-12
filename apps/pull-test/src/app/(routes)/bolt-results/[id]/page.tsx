@@ -208,6 +208,11 @@ export default function Page({ params }: Props): JSX.Element {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
 
+  console.log(
+    'boltResultsResponse?.boltResults?.results',
+    boltResultsResponse?.boltResults?.results,
+  );
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -342,7 +347,10 @@ export default function Page({ params }: Props): JSX.Element {
         </TabsContent>
 
         <TabsContent value="graphs">
-          <BoltResultsGraphView />
+          <BoltResultsGraphView
+            site={site?.id}
+            boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+          />
         </TabsContent>
       </Tabs>
     </main>

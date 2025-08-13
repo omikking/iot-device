@@ -337,6 +337,7 @@ export type Mutation = {
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
+  removeInvitation: Invitation;
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
@@ -496,6 +497,15 @@ export type MutationRemoveCompanyArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationRemoveDriveArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationRemoveInvitationArgs = {
   id: Scalars['String']['input'];
 };
 

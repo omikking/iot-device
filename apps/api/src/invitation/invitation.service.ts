@@ -190,6 +190,26 @@ export class InvitationService {
     return updatedInvitation;
   }
 
+  async removeInvitation(id: string) {
+    const invitation = await this.prisma.invitation.findUnique({
+      where: { id },
+    });
+
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (invitation.used) {
+      throw new Error('Cannot remove invitation that has already been used');
+    }
+
+    const deletedInvitation = await this.prisma.invitation.delete({
+      where: { id },
+    });
+
+    return deletedInvitation;
+  }
+
   // TODO: Temp update to authservice
   private async hashPassword(password: string): Promise<string> {
     return password;

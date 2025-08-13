@@ -43,6 +43,7 @@ type Mutation {
   createInvitation(input: CreateInvitationInput!): InvitationResponse!
   completeInvitation(input: CompleteInvitationInput!): User!
   resendInvitation(id: String!): Invitation!
+  removeInvitation(id: String!): Invitation!
 }
 
 type Query {

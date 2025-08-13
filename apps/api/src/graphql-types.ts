@@ -304,6 +304,7 @@ export abstract class IMutation {
     createInvitation?: InvitationResponse;
     completeInvitation?: User;
     resendInvitation?: Invitation;
+    removeInvitation?: Invitation;
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;

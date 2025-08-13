@@ -47,4 +47,9 @@ export class InvitationResolver {
   async resendInvitation(@Args('id') id: string) {
     return this.invitationService.resendInvitation(id);
   }
+
+  @Mutation('removeInvitation')
+  async removeInvitation(@Args('id') id: string) {
+    return this.invitationService.removeInvitation(id);
+  }
 }

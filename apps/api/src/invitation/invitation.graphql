@@ -42,8 +42,10 @@ input CompleteInvitationInput {
 type Mutation {
   createInvitation(input: CreateInvitationInput!): InvitationResponse!
   completeInvitation(input: CompleteInvitationInput!): User!
+  resendInvitation(id: String!): Invitation!
 }
 
 type Query {
   validateInvitation(token: String!): InvitationValidation!
+  pendingInvitations(companyId: String!): [Invitation!]!
 }

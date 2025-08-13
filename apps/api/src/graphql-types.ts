@@ -272,6 +272,7 @@ export abstract class IQuery {
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
     validateInvitation?: InvitationValidation;
+    pendingInvitations?: Invitation[];
     levels: Level[];
     level?: Level;
     locations: Location[];
@@ -302,6 +303,7 @@ export abstract class IMutation {
     removeDrive?: Drive;
     createInvitation?: InvitationResponse;
     completeInvitation?: User;
+    resendInvitation?: Invitation;
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
@@ -346,6 +348,7 @@ export class Company {
     users?: Nullable<User[]>;
     plans?: Nullable<Plan[]>;
     sites?: Nullable<Site[]>;
+    pendingInvitations?: Nullable<Invitation[]>;
     sandvikAdminUserId?: Nullable<string>;
 }
 

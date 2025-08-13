@@ -4,6 +4,7 @@ import { CompaniesService } from './companies.service';
 import { CompanyPlansResolver } from './company-plans.resolver';
 import { CompanyUsersResolver } from './company-users.resolver';
 import { CompanySitesResolver } from './company-sites.resolver';
+import { CompanyInvitationsResolver } from './company-invitations.resolver';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { CompanySitesResolver } from './company-sites.resolver';
     CompanyPlansResolver,
     CompanyUsersResolver,
     CompanySitesResolver,
+    CompanyInvitationsResolver,
   ],
 })
 export class CompaniesModule {}

@@ -98,6 +98,7 @@ export type Company = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   orgNumber: Scalars['String']['output'];
+  pendingInvitations?: Maybe<Array<Invitation>>;
   plans?: Maybe<Array<Plan>>;
   postalCode: Scalars['String']['output'];
   sandvikAdminUserId?: Maybe<Scalars['String']['output']>;
@@ -341,6 +342,7 @@ export type Mutation = {
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -547,6 +549,15 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationResendInvitationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
@@ -695,6 +706,7 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  pendingInvitations: Array<Invitation>;
   site: Site;
   sites: Array<Site>;
   user: User;
@@ -796,6 +808,15 @@ export type QueryLevelArgs = {
  */
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryPendingInvitationsArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 

@@ -4,12 +4,12 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import * as GraphQLTypes from 'src/graphql-types';
 
-@Resolver('Invitation')
+@Resolver()
+@UseGuards(JwtGuard)
 export class InvitationResolver {
   constructor(private invitationService: InvitationService) {}
 
   @Mutation('createInvitation')
-  @UseGuards(JwtGuard)
   async createInvitation(
     @Args('input') input: GraphQLTypes.CreateInvitationInput,
   ) {
@@ -26,6 +26,11 @@ export class InvitationResolver {
     return this.invitationService.validateInvitation(token);
   }
 
+  @Query('pendingInvitations')
+  async getPendingInvitations(@Args('companyId') companyId: string) {
+    return this.invitationService.getPendingInvitations(companyId);
+  }
+
   @Mutation('completeInvitation')
   async completeInvitation(
     @Args('input') input: GraphQLTypes.CompleteInvitationInput,
@@ -36,5 +41,10 @@ export class InvitationResolver {
       workPlace: input.workPlace,
       phoneNumber: input.phoneNumber || undefined,
     });
+  }
+
+  @Mutation('resendInvitation')
+  async resendInvitation(@Args('id') id: string) {
+    return this.invitationService.resendInvitation(id);
   }
 }

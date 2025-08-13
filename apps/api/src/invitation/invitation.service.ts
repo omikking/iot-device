@@ -143,6 +143,53 @@ export class InvitationService {
     return user;
   }
 
+  async getPendingInvitations(companyId: string) {
+    return this.prisma.invitation.findMany({
+      where: {
+        companyId,
+        used: false,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async resendInvitation(id: string) {
+    const invitation = await this.prisma.invitation.findUnique({
+      where: { id },
+      include: { company: true },
+    });
+
+    if (!invitation) {
+      throw new Error('Invitation not found');
+    }
+
+    if (invitation.used) {
+      throw new Error('Invitation has already been used');
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48);
+
+    const updatedInvitation = await this.prisma.invitation.update({
+      where: { id },
+      data: { expiresAt },
+    });
+
+    // Resend email invitation
+    await this.emailService.sendInvitationEmail(
+      invitation.email,
+      invitation.token,
+      invitation.company.name,
+    );
+
+    return updatedInvitation;
+  }
+
   // TODO: Temp update to authservice
   private async hashPassword(password: string): Promise<string> {
     return password;

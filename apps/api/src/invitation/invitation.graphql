@@ -6,7 +6,6 @@
 type Invitation {
   id: String!
   email: String!
-  token: String!
   expiresAt: DateTime!
   used: Boolean!
   companyId: String!

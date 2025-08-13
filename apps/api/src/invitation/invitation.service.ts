@@ -145,7 +145,7 @@ export class InvitationService {
   }
 
   async getPendingInvitations(companyId: string) {
-    return this.prisma.invitation.findMany({
+    const invitations = await this.prisma.invitation.findMany({
       where: {
         companyId,
         used: false,
@@ -157,6 +157,15 @@ export class InvitationService {
         createdAt: 'desc',
       },
     });
+
+    // Transform to PendingInvitation format (without token)
+    return invitations.map((invitation) => ({
+      id: invitation.id,
+      email: invitation.email,
+      expiresAt: invitation.expiresAt,
+      used: invitation.used,
+      companyId: invitation.companyId,
+    }));
   }
 
   async resendInvitation(id: string) {

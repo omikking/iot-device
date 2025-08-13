@@ -268,7 +268,6 @@ export type Invitation = {
   email: Scalars['String']['output'];
   expiresAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
-  token: Scalars['String']['output'];
   used: Scalars['Boolean']['output'];
 };
 

@@ -381,7 +381,6 @@ export class Drive {
 export class Invitation {
     id: string;
     email: string;
-    token: string;
     expiresAt: DateTime;
     used: boolean;
     companyId: string;

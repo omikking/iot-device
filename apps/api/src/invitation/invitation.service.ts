@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { Application, Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
+import * as argon from 'argon2';
 
 @Injectable()
 export class InvitationService {
@@ -109,7 +110,7 @@ export class InvitationService {
       throw new Error('Invitation not found');
     }
 
-    const hash = await this.hashPassword(userData.password);
+    const hash = await argon.hash(userData.password);
 
     // Create user in transaction
     const { user } = await this.prisma.$transaction(async (tx) => {
@@ -208,10 +209,5 @@ export class InvitationService {
     });
 
     return deletedInvitation;
-  }
-
-  // TODO: Temp update to authservice
-  private async hashPassword(password: string): Promise<string> {
-    return password;
   }
 }

@@ -84,6 +84,29 @@ $ pnpm run db:dev:restart
 $ pnpm run prisma:studio
 ```
 
+## Email Testing (SMTP4Dev)
+
+For local email testing, we use SMTP4Dev which catches all emails without sending them.
+
+```bash
+# start SMTP4Dev container
+$ pnpm run smtp:up
+
+# stop SMTP4Dev container
+$ pnpm run smtp:down
+
+# restart SMTP4Dev container
+$ pnpm run smtp:restart
+
+# view SMTP4Dev logs
+$ pnpm run smtp:logs
+```
+
+**SMTP4Dev Web Interface:** http://localhost:5555
+**SMTP Server:** localhost:2525
+
+Copy `.env.example` to `.env` and update the SMTP configuration for local development.
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).

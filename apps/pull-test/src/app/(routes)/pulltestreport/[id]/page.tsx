@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-
-import { BoltResultSchema } from '@/app/mock/mock';
+import { BoltResult, BoltResultResponse } from '@/gql/graphql';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
 import { PullTestReportPDF } from '@/components/PullTestReportPDF';
@@ -12,6 +11,7 @@ import { gql, useQuery } from 'urql';
 import { Headline, Badge, DateRange } from '@gsp/ui';
 import { GetCompanyQuery } from '@/gql/graphql';
 import { SandvikLogo } from 'public/SandvikLogo';
+// import { Location } from '@/gql/graphql';
 
 interface Props {
   params: {
@@ -19,6 +19,34 @@ interface Props {
   };
 }
 
+type pdfDataType = {
+  objList?: BoltResultResponse;
+  reportDetails: {
+    startDate: string;
+    companyName: string;
+    mine: string;
+    contractor: string;
+    commodity: string;
+    contactPerson: { name: string; designation: string }[];
+    author: string;
+    designation: string;
+    email: string;
+    contactNumber: string;
+  };
+  layout: {
+    contactHtml: string;
+    // logo: {
+    //   src: string;
+    // };
+  };
+  parentUrl?: string;
+  pdfName?: string;
+  pdfPageTitle?: string;
+  currentDate?: string;
+  disabled?: boolean;
+};
+
+// TODO: Replace with gql types
 type CompanyType = GetCompanyQuery['company'];
 type SiteType = NonNullable<CompanyType['sites']>[number];
 type LevelType = NonNullable<SiteType['levels']>[number];
@@ -138,7 +166,7 @@ export default function Page({ params }: Props): JSX.Element {
     reportedHazard: false,
   });
 
-  const [pdfData, setPdfData] = useState(null);
+  const [pdfData, setPdfData] = useState<pdfDataType>();
 
   console.log(pdfData);
 
@@ -164,7 +192,7 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   const [{ data: boltResultsResponse }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResultSchema[] };
+    boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
     variables: {

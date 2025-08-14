@@ -4,10 +4,9 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy';
 import { RefreshTokenIdsStorage } from './refresh-token-storage';
-import { InvitationModule } from '../invitation/invitation.module';
 
 @Module({
-  imports: [JwtModule.register({}), InvitationModule],
+  imports: [JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, RefreshTokenIdsStorage],
 })

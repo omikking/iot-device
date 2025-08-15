@@ -168,7 +168,7 @@ export default function Page({ params }: Props): JSX.Element {
 
   const [pdfData, setPdfData] = useState<pdfDataType>();
 
-  console.log(pdfData);
+  console.log('Company Name:', pdfData?.reportDetails);
 
   // TODO fix later
   useEffect(() => {
@@ -210,12 +210,11 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
-  console.log('Stored PDF Data:', pdfData);
-
-  console.log(
-    'objlist sent to pdf component',
-    boltResultsResponse?.boltResults,
-  );
+  console.log('PDF DATA:', pdfData);
+  // console.log(
+  //   'objlist sent to pdf component',
+  //   boltResultsResponse?.boltResults,
+  // );
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -235,7 +234,8 @@ export default function Page({ params }: Props): JSX.Element {
             <PullTestReportPDF
               disabled={false}
               objList={pdfData.objList}
-              reportDetails={pdfComponentMockData.reportDetails}
+              // reportDetails={pdfComponentMockData.reportDetails}
+              reportDetails={pdfData.reportDetails}
               layout={{
                 // logo: pdfComponentMockData.Layout.logo,
                 contactHtml: '<strong>John Doe</strong> - Site Manager',

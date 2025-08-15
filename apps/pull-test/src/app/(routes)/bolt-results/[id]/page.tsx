@@ -293,12 +293,37 @@ export default function Page({ params }: Props): JSX.Element {
 
           <Button
             onClick={() => {
+              // Calculate the earliest start date from bolt results
+              const earliestStartDate =
+                boltResultsResponse?.boltResults?.results?.reduce(
+                  (earliest, result) => {
+                    const currentDate = new Date(result.createdAt);
+                    return !earliest || currentDate < earliest
+                      ? currentDate
+                      : earliest;
+                  },
+                  null as Date | null,
+                );
+
               // Save the data to session storage
               sessionStorage.setItem(
                 'pullTestReportPDF',
                 JSON.stringify({
                   objList: boltResultsResponse?.boltResults,
-                  reportDetails: pdfComponentMockData.mockBoltResult,
+                  // reportDetails: pdfComponentMockData.mockBoltResult,
+                  // reportDetails: boltResultsResponse?.boltResults,
+                  reportDetails: {
+                    startDate: earliestStartDate
+                      ? earliestStartDate.toLocaleDateString()
+                      : new Date().toLocaleDateString(),
+                    companyName: companyData?.company?.name || '',
+                    siteName: site?.name || '',
+                    mine: site?.name || '',
+                    contractor: '',
+                    // commodity: '',
+                    // contactPerson: [{ name: '', designation: '' }],
+                    // author: '',
+                  },
                   layout: pdfComponentMockData.Layout,
                   pdfName: 'pull_test_report.pdf',
                   pdfPageTitle: 'Bolt Result',

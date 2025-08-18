@@ -3,7 +3,6 @@ import {
   Text,
   Tabs,
   Badge,
-  Button,
   Headline,
   TabsList,
   DateRange,
@@ -16,7 +15,6 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
@@ -24,8 +22,7 @@ import { BoltResult } from '@/gql/graphql';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { pdfComponentMockData } from '@/app/mock/mock';
+import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { responses } from '@/app/uitexts/responses';
 import { PullTestReportPDF } from '@/components/PullTestReportPDF';
 interface Props {
@@ -132,7 +129,6 @@ const getCompanyQuery = gql`
 `;
 
 export default function Page({ params }: Props): JSX.Element {
-  const router = useRouter();
   const companyId = params.id;
 
   const [site, setSite] = useState<SiteType | undefined>();

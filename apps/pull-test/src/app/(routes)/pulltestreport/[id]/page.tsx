@@ -1,17 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { BoltResult, BoltResultResponse } from '@/gql/graphql';
+import { useEffect, useState } from 'react';
+import { BoltResultResponse } from '@/gql/graphql';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { GoBack } from '@/components/GoBack';
 import { PullTestReportPDF } from '@/components/PullTestReportPDF';
-import { pdfComponentMockData } from '@/app/mock/mock';
 
 import { gql, useQuery } from 'urql';
-import { Headline, Badge, DateRange } from '@gsp/ui';
-import { GetCompanyQuery } from '@/gql/graphql';
+import { Headline, Badge } from '@gsp/ui';
 import { SandvikLogo } from 'public/SandvikLogo';
-// import { Location } from '@/gql/graphql';
 
 interface Props {
   params: {
@@ -46,80 +43,6 @@ type pdfDataType = {
   disabled?: boolean;
 };
 
-// TODO: Replace with gql types
-type CompanyType = GetCompanyQuery['company'];
-type SiteType = NonNullable<CompanyType['sites']>[number];
-type LevelType = NonNullable<SiteType['levels']>[number];
-type DriveType = NonNullable<LevelType['drives']>[number];
-type LocationType = NonNullable<DriveType['locations']>[number];
-
-const boltResultQuery = gql`
-  query GetBoltResult(
-    $offset: Int
-    $limit: Int
-    $siteId: String
-    $levelId: String
-    $driveId: String
-    $locationId: String
-    $result: [String!]
-    $isHazard: Boolean
-    $withImage: Boolean
-    $withComment: Boolean
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    boltResults(
-      offset: $offset
-      limit: $limit
-      siteId: $siteId
-      levelId: $levelId
-      driveId: $driveId
-      locationId: $locationId
-      result: $result
-      isHazard: $isHazard
-      withImage: $withImage
-      withComment: $withComment
-      startDate: $startDate
-      endDate: $endDate
-    ) {
-      totalRecords
-      results {
-        id
-        createdAt
-        updatedAt
-        boltNumber
-        boltType
-        peakLoad
-        peakDisplacement
-        positionInRing
-        result
-        isHazard
-        hazardCompletedDate
-        abortReason
-        comment
-        image
-        siteId
-        levelId
-        driveId
-        locationId
-        userId
-        site {
-          siteName
-        }
-        drive {
-          driveName
-        }
-        location {
-          locationName
-        }
-        level {
-          levelName
-        }
-      }
-    }
-  }
-`;
-
 const getCompanyQuery = gql`
   query GetCompany($id: String!) {
     company(id: $id) {
@@ -147,24 +70,24 @@ const getCompanyQuery = gql`
 export default function Page({ params }: Props): JSX.Element {
   const companyId = params.id;
 
-  const [site] = useState<SiteType | undefined>();
-  const [level] = useState<LevelType | undefined>();
-  const [drive] = useState<DriveType | undefined>();
-  const [location] = useState<LocationType | undefined>();
+  // const [site] = useState<SiteType | undefined>();
+  // const [level] = useState<LevelType | undefined>();
+  // const [drive] = useState<DriveType | undefined>();
+  // const [location] = useState<LocationType | undefined>();
 
-  const [dateRange] = useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined,
-  });
+  // const [dateRange] = useState<DateRange | undefined>({
+  //   from: undefined,
+  //   to: undefined,
+  // });
 
-  const [filterState] = useState({
-    pass: false,
-    fail: false,
-    abort: false,
-    withComment: false,
-    withImage: false,
-    reportedHazard: false,
-  });
+  // const [filterState] = useState({
+  //   pass: false,
+  //   fail: false,
+  //   abort: false,
+  //   withComment: false,
+  //   withImage: false,
+  //   reportedHazard: false,
+  // });
 
   const [pdfData, setPdfData] = useState<pdfDataType>();
 
@@ -178,37 +101,37 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, []);
 
-  const result = useMemo(() => {
-    const { ...rest } = filterState;
+  // const result = useMemo(() => {
+  //   const { ...rest } = filterState;
 
-    return Object.entries(rest)
-      .filter(([, value]) => value === true)
-      .map(([key]) => key.toUpperCase());
-  }, [filterState]);
+  //   return Object.entries(rest)
+  //     .filter(([, value]) => value === true)
+  //     .map(([key]) => key.toUpperCase());
+  // }, [filterState]);
 
   const [{ data: companyByIdResponse }] = useQuery({
     query: getCompanyQuery,
     variables: { id: companyId },
   });
 
-  const [{ data: boltResultsResponse }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResult[] };
-  }>({
-    query: boltResultQuery,
-    variables: {
-      siteId: site?.id,
-      levelId: level?.id,
-      driveId: drive?.id,
-      locationId: location?.id,
-      isHazard: filterState.reportedHazard || undefined,
-      withImage: filterState.withImage || undefined,
-      withComment: filterState.withComment || undefined,
-      startDate: dateRange?.from,
-      endDate: dateRange?.to,
-      result: result.length ? result : undefined,
-    },
-    pause: !site?.id,
-  });
+  // const [{ data: boltResultsResponse }] = useQuery<{
+  //   boltResults: { totalRecords: number; results: BoltResult[] };
+  // }>({
+  //   query: boltResultQuery,
+  //   variables: {
+  //     siteId: site?.id,
+  //     levelId: level?.id,
+  //     driveId: drive?.id,
+  //     locationId: location?.id,
+  //     isHazard: filterState.reportedHazard || undefined,
+  //     withImage: filterState.withImage || undefined,
+  //     withComment: filterState.withComment || undefined,
+  //     startDate: dateRange?.from,
+  //     endDate: dateRange?.to,
+  //     result: result.length ? result : undefined,
+  //   },
+  //   pause: !site?.id,
+  // });
 
   console.log('PDF DATA:', pdfData);
 

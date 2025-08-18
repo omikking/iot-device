@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
@@ -43,12 +43,13 @@ export const PullTestReportPDF = ({
   disabled,
 }: PullTestReportPDFProps) => {
   const [isLoading, setLoading] = useState(false);
-  console.log('PullTestReportPDF objList:', objList);
-  const pdfRef = useRef(new jsPDF({ orientation: 'portrait', compress: true }));
 
+  // TODO Fix white space issue
+  // TODO Remove black top border if past row is hazardous
   const generateTextBasedPdfTest = async () => {
     setLoading(true);
-    const pdf = pdfRef.current;
+    const pdf = new jsPDF({ orientation: 'portrait', compress: true });
+    // const pdf = pdfRef.current;
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;

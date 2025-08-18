@@ -27,6 +27,7 @@ import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { pdfComponentMockData } from '@/app/mock/mock';
 import { responses } from '@/app/uitexts/responses';
+import { PullTestReportPDF } from '@/components/PullTestReportPDF';
 interface Props {
   params: {
     id: string;
@@ -213,6 +214,14 @@ export default function Page({ params }: Props): JSX.Element {
     boltResultsResponse?.boltResults?.results,
   );
 
+  const earliestStartDate = boltResultsResponse?.boltResults?.results?.reduce(
+    (earliest, result) => {
+      const currentDate = new Date(result.createdAt);
+      return !earliest || currentDate < earliest ? currentDate : earliest;
+    },
+    null as Date | null,
+  );
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />
@@ -243,7 +252,6 @@ export default function Page({ params }: Props): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
-
           <div className="flex-1 flex justify-start">
             <Breadcrumb>
               <BreadcrumbList>
@@ -291,55 +299,37 @@ export default function Page({ params }: Props): JSX.Element {
             </Breadcrumb>
           </div>
 
-          <Button
-            onClick={() => {
-              // Calculate the earliest start date from bolt results
-              const earliestStartDate =
-                boltResultsResponse?.boltResults?.results?.reduce(
-                  (earliest, result) => {
-                    const currentDate = new Date(result.createdAt);
-                    return !earliest || currentDate < earliest
-                      ? currentDate
-                      : earliest;
-                  },
-                  null as Date | null,
-                );
-
-              // Save the data to session storage
-              sessionStorage.setItem(
-                'pullTestReportPDF',
-                JSON.stringify({
-                  objList: boltResultsResponse?.boltResults,
-                  // reportDetails: pdfComponentMockData.mockBoltResult,
-                  // reportDetails: boltResultsResponse?.boltResults,
-                  reportDetails: {
-                    startDate: earliestStartDate
-                      ? earliestStartDate.toLocaleDateString()
-                      : new Date().toLocaleDateString(),
-                    companyName: companyData?.company?.name || '',
-                    siteName: site?.name || '',
-                    mine: site?.name || '',
-                    contractor: '',
-                    // commodity: '',
-                    // contactPerson: [{ name: '', designation: '' }],
-                    // author: '',
-                  },
-                  layout: pdfComponentMockData.Layout,
-                  pdfName: 'pull_test_report.pdf',
-                  pdfPageTitle: 'Bolt Result',
-                  currentDate: new Date().toLocaleDateString(),
-                }),
-              );
-              router.push(`/pulltestreport/${companyId}`);
-            }}
-            size="large"
-            variant="primary"
-          >
+          {boltResultsResponse && (
             <>
-              <LucideFileDown className="mr-2" />
-              View PDF
+              <PullTestReportPDF
+                disabled={false}
+                objList={boltResultsResponse?.boltResults}
+                // reportDetails={pdfComponentMockData.reportDetails}
+                reportDetails={{
+                  startDate: earliestStartDate
+                    ? earliestStartDate.toLocaleDateString()
+                    : new Date().toLocaleDateString(),
+                  companyName: companyData?.company?.name || '',
+                  mine: site?.name || '',
+                  contractor: '',
+                  commodity: '',
+                  contactPerson: [{ name: '', designation: '' }],
+                  author: '',
+                  designation: '',
+                  email: '',
+                  contactNumber: '',
+                }}
+                layout={{
+                  // logo: pdfComponentMockData.Layout.logo,
+                  contactHtml: '<strong>John Doe</strong> - Site Manager',
+                }}
+                parentUrl={window.parent.location.toString()}
+                pdfName={'pull_test_report.pdf'}
+                pdfPageTitle={'Bolt Result'}
+                currentDate={new Date().toLocaleDateString()}
+              />
             </>
-          </Button>
+          )}
         </div>
 
         <BoltSelection

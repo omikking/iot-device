@@ -191,7 +191,7 @@ export const PullTestReportPDF = ({
     });
 
     // Add table pages with text-based tables
-    const itemsPerPage = 8; // Reduced to account for images
+    const itemsPerPage = 6; // Reduced to account for images
     for (let i = 0; i < results.length; i += itemsPerPage) {
       pdf.addPage();
       const pageItems = results.slice(i, i + itemsPerPage);
@@ -293,21 +293,37 @@ export const PullTestReportPDF = ({
           item['level']?.['levelName'] || '',
           item['drive']?.['driveName'] || '',
           item['positionInRing'],
-          item['result'],
+          item['isHazard'] ? 'HAZARD' : item['result'],
         ];
 
-        // pdf.setFillColor(255, 255, 255);
         if (item['isHazard']) {
-          pdf.setFillColor(255, 240, 240); // Light red for hazardous
+          pdf.setFillColor(255, 204, 204);
         } else {
-          pdf.setFillColor(255, 255, 255); // White for normal
+          pdf.setFillColor(255, 255, 255);
         }
         pdf.rect(margin, pageY - 3, pageWidth - margin * 2, rowHeight, 'F');
 
-        // Draw top border for each row
-        pdf.setDrawColor(0, 0, 0);
-        pdf.setLineWidth(0.1);
-        pdf.line(margin, pageY - 4, pageWidth - margin, pageY - 4);
+        // Draw red border ONLY for hazardous rows
+        // Draw borders based on hazard status
+        if (item['isHazard']) {
+          // For hazard rows: draw top and bottom borders (red)
+          pdf.setDrawColor(255, 0, 0);
+          pdf.setLineWidth(1);
+          // Top border
+          pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+          // Bottom border
+          pdf.line(
+            margin,
+            pageY + rowHeight - 3,
+            pageWidth - margin,
+            pageY + rowHeight - 3,
+          );
+        } else {
+          // For normal rows: draw top separator line (black)
+          pdf.setDrawColor(0, 0, 0);
+          pdf.setLineWidth(0.1);
+          pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+        }
 
         // Draw cell values with proper alignment
         pdf.setFontSize(9);
@@ -315,23 +331,18 @@ export const PullTestReportPDF = ({
         values.forEach((value, colIndex) => {
           const cellCenterX = currentX + colWidths[colIndex] / 2;
 
-          // Special handling for peak load (index 2) and peak displacement (index 3)
           if (colIndex === 2 || colIndex === 3) {
             const valuesArray = Array.isArray(value) ? value : [value];
             valuesArray.forEach((val, lineIndex) => {
-              pdf.text(
-                String(val),
-                cellCenterX,
-                pageY + 5 + lineIndex * 8, // Stack values vertically
-                { align: 'center' },
-              );
+              pdf.text(String(val), cellCenterX, pageY + 5 + lineIndex * 8, {
+                align: 'center',
+              });
             });
           } else {
-            // Regular single-line values
             pdf.text(
               String(value),
               cellCenterX,
-              pageY + 5 + (maxLines - 1) * 4, // Center vertically in the expanded cell
+              pageY + 5 + (maxLines - 1) * 4,
               { align: 'center' },
             );
           }

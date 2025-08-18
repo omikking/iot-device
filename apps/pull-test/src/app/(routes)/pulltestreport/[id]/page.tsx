@@ -211,10 +211,6 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   console.log('PDF DATA:', pdfData);
-  // console.log(
-  //   'objlist sent to pdf component',
-  //   boltResultsResponse?.boltResults,
-  // );
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

@@ -82,8 +82,6 @@ export const PullTestReportPDF = ({
       console.warn('Could not load logo:', error);
     }
 
-    // Set up first page
-    // Set up first page
     let currentY = 20;
 
     // Add logo if available
@@ -97,9 +95,8 @@ export const PullTestReportPDF = ({
     // Add blue header section
     pdf.setFillColor(24, 183, 249);
     pdf.rect(margin, currentY, pageWidth - margin * 2, 60, 'F');
-
     pdf.setFontSize(10);
-    pdf.setTextColor(255, 255, 255); // White text on blue background
+    pdf.setTextColor(255, 255, 255);
     pdf.text('Metric/Imperial', margin + 10, currentY + 10);
     pdf.text('SANDVIK LOGO', margin + 10, currentY + 20);
     pdf.setFontSize(20);
@@ -107,20 +104,17 @@ export const PullTestReportPDF = ({
 
     currentY += 80;
 
-    // Reset text color for details section
     pdf.setTextColor(0, 0, 0);
 
-    // Left column details
     const leftColumnX = margin;
     const rightColumnX = pageWidth / 2 + 10;
 
     // Left column
     pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0); // Orange color for labels
+    pdf.setTextColor(255, 165, 0);
     pdf.text('START DATE', 85, currentY);
     pdf.setTextColor(24, 183, 249);
     pdf.setFontSize(12);
-    // pdf.text(reportDetails.startDate, leftColumnX, currentY + 5);
     pdf.text(reportDetails.startDate, 85, currentY + 5);
 
     currentY += 30;
@@ -141,8 +135,7 @@ export const PullTestReportPDF = ({
     pdf.setFontSize(12);
     pdf.text(reportDetails.mine, leftColumnX, currentY + 5);
 
-    // Reset currentY for right column
-    let rightColumnY = currentY - 30; // Start at same level as left column
+    let rightColumnY = currentY - 30;
 
     // Right column
     pdf.setFontSize(10);
@@ -174,14 +167,6 @@ export const PullTestReportPDF = ({
     }
 
     rightColumnY += 30;
-
-    // pdf.setFontSize(10);
-    // pdf.setTextColor(255, 165, 0);
-    // pdf.text('COMMODITY', rightColumnX, rightColumnY);
-    // pdf.setTextColor(0, 0, 0);
-    // pdf.setFontSize(12);
-    // pdf.text(reportDetails.commodity, rightColumnX, rightColumnY + 10);
-
     // Add footer for first page
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0);
@@ -245,8 +230,6 @@ export const PullTestReportPDF = ({
         const maxWidth = colWidths[index] - 4;
         const lines = pdf.splitTextToSize(header, maxWidth);
         const lineHeight = 3;
-        // const totalTextHeight = lines.length * lineHeight;
-        // const startY = pageY + 9 + (18 - totalTextHeight) / 2;
         const startY = pageY + 9;
 
         lines.forEach((line: string, lineIndex: number) => {
@@ -264,7 +247,7 @@ export const PullTestReportPDF = ({
       /* ROWS DRAWING */
       pdf.setFont('helvetica', 'normal');
       pageY += 28;
-      pageItems.forEach((item, rowIndex) => {
+      pageItems.forEach((item) => {
         // Check if peak load or displacement have multiple values
         const peakLoadValues = Array.isArray(item['peakLoad'])
           ? item['peakLoad']
@@ -303,7 +286,6 @@ export const PullTestReportPDF = ({
         }
         pdf.rect(margin, pageY - 3, pageWidth - margin * 2, rowHeight, 'F');
 
-        // Draw red border ONLY for hazardous rows
         // Draw borders based on hazard status
         if (item['isHazard']) {
           // For hazard rows: draw top and bottom borders (red)
@@ -419,7 +401,6 @@ export const PullTestReportPDF = ({
   return (
     <>
       <Button
-        // onClick={generatePdfContent}
         onClick={generateTextBasedPdfTest}
         disabled={disabled}
         size="large"

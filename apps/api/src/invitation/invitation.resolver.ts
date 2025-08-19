@@ -4,8 +4,12 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role, GlobalRole } from '@prisma/client';
-import * as GraphQLTypes from 'src/graphql-types';
+import { Role } from '@prisma/client';
+import {
+  CreateInvitationInput,
+  CreateGlobalInvitationInput,
+  CompleteInvitationInput,
+} from './dto';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -14,25 +18,23 @@ export class InvitationResolver {
 
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Mutation('createInvitation')
-  async createInvitation(
-    @Args('input') input: GraphQLTypes.CreateInvitationInput,
-  ) {
+  async createInvitation(@Args('input') input: CreateInvitationInput) {
     return this.invitationService.createInvitation(
       input.email,
       input.companyId,
-      input.role as any,
-      input.appsAccess as any[],
+      input.role,
+      input.appsAccess,
     );
   }
 
   @Roles([Role.SANDVIK_ADMIN], [], '')
   @Mutation('createGlobalInvitation')
   async createGlobalInvitation(
-    @Args('input') input: GraphQLTypes.CreateGlobalInvitationInput,
+    @Args('input') input: CreateGlobalInvitationInput,
   ) {
     return this.invitationService.createGlobalInvitation(
       input.email,
-      input.globalRole as GlobalRole,
+      input.globalRole,
     );
   }
 
@@ -54,9 +56,7 @@ export class InvitationResolver {
   }
 
   @Mutation('completeInvitation')
-  async completeInvitation(
-    @Args('input') input: GraphQLTypes.CompleteInvitationInput,
-  ) {
+  async completeInvitation(@Args('input') input: CompleteInvitationInput) {
     return this.invitationService.completeInvitation(input.token, {
       fullName: input.fullName,
       password: input.password,

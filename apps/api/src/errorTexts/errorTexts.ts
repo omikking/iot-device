@@ -153,4 +153,41 @@ export const errorTexts = {
   authAccessDenied_title: 'Access denied',
 
   authUserError_title: 'Authentication failed',
+
+  // Invitation
+  invitationNotFound_title: (id: string) => `Invitation #${id} not found`,
+
+  invitationCompanyNotFound_title: 'Company not found',
+  invitationCompanyNotFound_message:
+    'The company specified in the invitation does not exist.',
+
+  invitationAlreadyUsed_title: 'Invitation already used',
+  invitationAlreadyUsed_message: 'This invitation has already been used.',
+
+  invitationExpired_title: 'Invitation expired',
+  invitationExpired_message:
+    'This invitation has expired. Please request a new one.',
+
+  invitationInvalidToken_title: 'Invalid invitation',
+  invitationInvalidToken_message: 'The invitation token is invalid.',
+
+  invitationDuplicate_title: 'Invitation already exists',
+  invitationDuplicate_message:
+    'A pending invitation already exists for this email.',
+
+  invitationUserExists_title: 'User already exists',
+  invitationUserExists_message:
+    'A user with this email already has access to this company.',
+
+  invitationCreateError_title: 'Failed to create invitation',
+
+  invitationCompleteError_title: 'Failed to complete invitation',
+
+  invitationResendError_title: 'Failed to resend invitation',
+
+  invitationRemoveError_title: 'Failed to remove invitation',
+
+  invitationRateLimit_title: 'Too many invitations',
+  invitationRateLimit_message:
+    'Please wait before sending another invitation to this email.',
 };

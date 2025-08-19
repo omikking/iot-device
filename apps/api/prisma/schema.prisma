@@ -156,11 +156,12 @@ model Invitation {
   expiresAt DateTime
   used      Boolean  @default(false)
 
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id])
-
-  role       Role
+  companyId  String?
+  company    Company?      @relation(fields: [companyId], references: [id])
+  role       Role?
   appsAccess Application[]
+
+  globalRole GlobalRole?
 
   @@map("invitations")
 }

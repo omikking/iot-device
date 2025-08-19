@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
-import { Application, Role } from '@prisma/client';
+import { Application, GlobalRole, Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as argon from 'argon2';
 
@@ -68,6 +68,42 @@ export class InvitationService {
     return { invitationId: invitation.id, isNewUser: true };
   }
 
+  async createGlobalInvitation(email: string, globalRole: GlobalRole) {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48);
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      // If user exists, update their global role
+      await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: { globalRole },
+      });
+
+      // We could send a notification email here if desired
+      return { userId: existingUser.id, isNewUser: false };
+    }
+
+    // Create invitation record for global role
+    const invitation = await this.prisma.invitation.create({
+      data: {
+        email,
+        token,
+        expiresAt,
+        globalRole,
+      },
+    });
+
+    // Send global role invitation email
+    await this.emailService.sendGlobalInvitationEmail(email, token, globalRole);
+
+    return { invitationId: invitation.id, isNewUser: true };
+  }
+
   async validateInvitation(token: string) {
     const invitation = await this.prisma.invitation.findUnique({
       where: { token },
@@ -121,17 +157,22 @@ export class InvitationService {
           fullName: userData.fullName,
           workPlace: userData.workPlace,
           phoneNumber: userData.phoneNumber,
+          // Set global role if this is a global invitation
+          globalRole: invitation.globalRole || undefined,
         },
       });
 
-      await tx.userPermission.create({
-        data: {
-          userId: user.id,
-          companyId: invitation.companyId,
-          role: invitation.role,
-          appsAccess: invitation.appsAccess,
-        },
-      });
+      // Create company permission if this is a company invitation
+      if (invitation.companyId && invitation.role) {
+        await tx.userPermission.create({
+          data: {
+            userId: user.id,
+            companyId: invitation.companyId,
+            role: invitation.role,
+            appsAccess: invitation.appsAccess,
+          },
+        });
+      }
 
       await tx.invitation.update({
         where: { id: invitation.id },
@@ -165,6 +206,32 @@ export class InvitationService {
       expiresAt: invitation.expiresAt,
       used: invitation.used,
       companyId: invitation.companyId,
+      globalRole: null, // Company invitations don't have global roles
+    }));
+  }
+
+  async getPendingGlobalInvitations() {
+    const invitations = await this.prisma.invitation.findMany({
+      where: {
+        globalRole: { not: null }, // Global invitations have a globalRole
+        used: false,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Transform to PendingInvitation format (without token)
+    return invitations.map((invitation) => ({
+      id: invitation.id,
+      email: invitation.email,
+      expiresAt: invitation.expiresAt,
+      used: invitation.used,
+      companyId: null,
+      globalRole: invitation.globalRole,
     }));
   }
 
@@ -190,12 +257,24 @@ export class InvitationService {
       data: { expiresAt },
     });
 
-    // Resend email invitation
-    await this.emailService.sendInvitationEmail(
-      invitation.email,
-      invitation.token,
-      invitation.company.name,
-    );
+    // Send appropriate email based on invitation type
+    if (invitation.globalRole) {
+      // Global role invitation
+      await this.emailService.sendGlobalInvitationEmail(
+        invitation.email,
+        invitation.token,
+        invitation.globalRole,
+      );
+    } else if (invitation.company) {
+      // Company invitation
+      await this.emailService.sendInvitationEmail(
+        invitation.email,
+        invitation.token,
+        invitation.company.name,
+      );
+    } else {
+      throw new Error('Invalid invitation type');
+    }
 
     return updatedInvitation;
   }

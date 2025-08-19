@@ -52,9 +52,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    // Support both GraphQL and REST
     const gqlContext = GqlExecutionContext.create(context);
-
     const args = gqlContext.getArgs();
 
     // Get user data

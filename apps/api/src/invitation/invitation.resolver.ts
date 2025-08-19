@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role, GlobalRole } from '@prisma/client';
 import * as GraphQLTypes from 'src/graphql-types';
 
 @Resolver()
@@ -25,6 +25,17 @@ export class InvitationResolver {
     );
   }
 
+  @Roles([Role.SANDVIK_ADMIN], [], '')
+  @Mutation('createGlobalInvitation')
+  async createGlobalInvitation(
+    @Args('input') input: GraphQLTypes.CreateGlobalInvitationInput,
+  ) {
+    return this.invitationService.createGlobalInvitation(
+      input.email,
+      input.globalRole as GlobalRole,
+    );
+  }
+
   @Query('validateInvitation')
   async validateInvitation(@Args('token') token: string) {
     return this.invitationService.validateInvitation(token);
@@ -34,6 +45,12 @@ export class InvitationResolver {
   @Query('pendingInvitations')
   async getPendingInvitations(@Args('companyId') companyId: string) {
     return this.invitationService.getPendingInvitations(companyId);
+  }
+
+  @Roles([Role.SANDVIK_ADMIN], [], '')
+  @Query('pendingGlobalInvitations')
+  async getPendingGlobalInvitations() {
+    return this.invitationService.getPendingGlobalInvitations();
   }
 
   @Mutation('completeInvitation')

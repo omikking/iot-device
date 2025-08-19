@@ -182,6 +182,11 @@ export type CreateDriveInput = {
   levelId: Scalars['String']['input'];
 };
 
+export type CreateGlobalInvitationInput = {
+  email: Scalars['String']['input'];
+  globalRole: Scalars['String']['input'];
+};
+
 export type CreateInvitationInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
@@ -264,9 +269,10 @@ export type Flavor = {
 
 export type Invitation = {
   __typename?: 'Invitation';
-  companyId: Scalars['String']['output'];
+  companyId?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   expiresAt: Scalars['DateTime']['output'];
+  globalRole?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   used: Scalars['Boolean']['output'];
 };
@@ -326,6 +332,7 @@ export type Mutation = {
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
+  createGlobalInvitation: InvitationResponse;
   createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
@@ -407,6 +414,15 @@ export type MutationCreateCompanyArgs = {
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateGlobalInvitationArgs = {
+  input: CreateGlobalInvitationInput;
 };
 
 
@@ -715,6 +731,7 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  pendingGlobalInvitations: Array<Invitation>;
   pendingInvitations: Array<Invitation>;
   site: Site;
   sites: Array<Site>;

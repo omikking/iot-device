@@ -31,7 +31,7 @@ export const BoltResultDetailsModalContent = ({
     peakDisplacement,
     hazardCompletedDate,
   } = boltResult || {};
-
+  console.log('BOLT RESULT DETAILS', boltResult);
   return (
     <div className="flex flex-col px-10 pt-10">
       {/* Image, Comment and Hazard Status */}
@@ -173,9 +173,11 @@ export const BoltResultDetailsModalContent = ({
         <Headline variant="small" as="h3" color="foreground" isBold>
           Bolt plot
         </Headline>
+
         <MultiBoltGraphView
           peakLoad={peakLoad}
           peakDisplacement={peakDisplacement}
+          boltNumber={boltResult?.boltNumber}
         />
       </div>
     </div>

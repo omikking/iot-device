@@ -4,54 +4,53 @@ import {
   Card,
   CardContent,
   ChartConfig,
-  ChartContainer,
   ChartTooltip,
+  ChartContainer,
   ChartTooltipContent,
-  CardFooter,
 } from '@gsp/ui';
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from 'recharts';
-
-const chartData = [
-  { displacement: '0', kilonewton: '0', desktop: 186, mobile: 80 },
-  { displacement: '10', kilonewton: '50', desktop: 350, mobile: 200 },
-  { displacement: '20', kilonewton: '100', desktop: 237, mobile: 120 },
-  { displacement: '30', kilonewton: '150', desktop: 73, mobile: 190 },
-  { displacement: '40', kilonewton: '200', desktop: 209, mobile: 130 },
-  { displacement: '50', kilonewton: '250', desktop: 214, mobile: 140 },
-  { displacement: '60', kilonewton: '300', desktop: 150, mobile: 90 },
-  { displacement: '70', kilonewton: '350', desktop: 300, mobile: 200 },
-];
-
-const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--chart-1)',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--chart-2)',
-  },
-} satisfies ChartConfig;
 
 type MultiBoltGraphViewProps = {
   peakLoad: number[];
   peakDisplacement: number[];
+  boltNumber?: number;
 };
+
+const chartConfig = {
+  desktop: {
+    label: 'Peak Load',
+    color: 'var(--chart-1)',
+  },
+} satisfies ChartConfig;
 
 export const MultiBoltGraphView = ({
   peakLoad,
   peakDisplacement,
+  boltNumber,
 }: MultiBoltGraphViewProps) => {
+  const chartData = peakDisplacement.map((displacement, index) => ({
+    displacement: displacement.toString(),
+    kilonewton: peakLoad[index]?.toString() || '0',
+    desktop: peakLoad[index] || 0,
+  }));
+
+  const maxLoad = Math.max(...peakLoad);
+  const tickInterval = 50;
+  const maxTick = Math.ceil(maxLoad / tickInterval) * tickInterval;
+  const yAxisTicks = [];
+  for (let i = 0; i <= maxTick; i += tickInterval) {
+    yAxisTicks.push(i);
+  }
   return (
     //TODO Fix why I need to use !important
     <Card className="!bg-transparent border-none !shadow-none">
-      <CardContent>
+      <CardContent className="!p-0 !pt-12">
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
             data={chartData}
             margin={{
-              left: 25,
+              left: 15,
               right: 12,
             }}
           >
@@ -59,24 +58,39 @@ export const MultiBoltGraphView = ({
             <XAxis
               dataKey="displacement"
               tickFormatter={(value) => value.slice(0, 3)}
+              tickLine={{ strokeWidth: 0 }}
+              axisLine={{ stroke: '#E6E6E6' }}
+              tick={{ fill: '#E6E6E6', fontSize: 12 }}
+              domain={[0, 'dataMax']}
+              label={{
+                value: 'Displacement (mm)',
+                position: 'insideBottom',
+                offset: -10,
+                style: {
+                  textAnchor: 'middle',
+                  fill: '#000000',
+                  fontSize: 20,
+                  fontFamily: 'SandvikSansText',
+                },
+              }}
             />
             <YAxis
-              // dataKey="kilonewton"
-              tick={{ fill: '#666', fontSize: 12 }} // Style the tick text
-              ticks={chartData.map((item) => item.kilonewton)}
-              axisLine={{ stroke: '#999' }} // Style the axis line
-              tickLine={{ stroke: '#999' }} // Style the tick lines
+              tick={{ fill: '#E6E6E6', fontSize: 12 }}
+              ticks={yAxisTicks}
+              axisLine={{ stroke: '#E6E6E6' }}
+              tickLine={{ strokeWidth: 0 }}
+              domain={[0, maxTick]}
               tickMargin={8}
               label={{
                 value: 'Kilonewton',
                 angle: -90,
                 position: 'insideLeft',
-                offset: -5,
+                offset: 10,
                 style: {
                   textAnchor: 'middle',
                   fill: '#000000',
                   fontSize: 20,
-                  //   fontWeight: 'bold',
+                  fontFamily: 'SandvikSansText',
                 },
               }}
             />
@@ -86,9 +100,9 @@ export const MultiBoltGraphView = ({
             />
             <Line
               dataKey="desktop"
-              type="natural"
+              type="linear"
               stroke="var(--color-desktop)"
-              name="Bolt name"
+              name="Peak Load"
               strokeWidth={2}
               dot={{
                 fill: 'var(--color-desktop)',
@@ -101,13 +115,11 @@ export const MultiBoltGraphView = ({
             <Legend
               align="left"
               iconType="rect"
-              wrapperStyle={{ left: 65, top: 420 }}
+              wrapperStyle={{ left: 65, top: 455 }}
+              formatter={(value) => `Bolt ${boltNumber}`}
             />
           </LineChart>
         </ChartContainer>
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex leading-none font-medium">Displacement (mm)</div>
-        </CardFooter>
       </CardContent>
     </Card>
   );

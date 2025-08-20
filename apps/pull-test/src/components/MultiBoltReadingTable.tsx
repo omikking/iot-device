@@ -55,11 +55,11 @@ export const MultiBoltReadingTable = ({
         variant="noBorder"
         className="!p-0 !pt-5"
       />
-      {multiReadingResults?.length && (
+      {/* {multiReadingResults?.length && (
         <Badge variant="neutral" className="self-start mt-5">
           {multiReadingResults?.length} total
         </Badge>
-      )}
+      )} */}
     </div>
   );
 };

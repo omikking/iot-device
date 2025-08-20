@@ -116,7 +116,7 @@ export const MultiBoltGraphView = ({
               align="left"
               iconType="rect"
               wrapperStyle={{ left: 65, top: 455 }}
-              formatter={(value) => `Bolt ${boltNumber}`}
+              formatter={() => `Bolt ${boltNumber}`}
             />
           </LineChart>
         </ChartContainer>

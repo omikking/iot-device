@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 
 export type MultiBoltReading = {

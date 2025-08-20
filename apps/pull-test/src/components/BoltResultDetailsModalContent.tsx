@@ -6,6 +6,7 @@ import { generateBoltSpecifications } from '@/libs/utils';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { Textarea, Text, Badge, Headline, Specification } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { MultiBoltGraphView } from './MultiBoltGraphView';
 
 type BoltResultDetailsModalContentProps = {
   boltResult: BoltResult;
@@ -158,11 +159,21 @@ export const BoltResultDetailsModalContent = ({
       </div>
 
       {/* Bolt Results */}
-      <div>
+      <div className="pb-10">
         <Headline variant="small" as="h3" color="foreground" isBold>
           Bolt results
         </Headline>
         <MultiBoltReadingTable
+          peakLoad={peakLoad}
+          peakDisplacement={peakDisplacement}
+        />
+      </div>
+      {/* Bolt plot */}
+      <div>
+        <Headline variant="small" as="h3" color="foreground" isBold>
+          Bolt plot
+        </Headline>
+        <MultiBoltGraphView
           peakLoad={peakLoad}
           peakDisplacement={peakDisplacement}
         />

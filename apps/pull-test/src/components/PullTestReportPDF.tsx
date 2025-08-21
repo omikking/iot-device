@@ -46,10 +46,10 @@ export const PullTestReportPDF = ({
 
   // TODO Fix white space issue
   // TODO Remove black top border if past row is hazardous
+  // TODO Fix page number issue
   const generateTextBasedPdfTest = async () => {
     setLoading(true);
     const pdf = new jsPDF({ orientation: 'portrait', compress: true });
-    // const pdf = pdfRef.current;
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;

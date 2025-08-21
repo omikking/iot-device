@@ -152,7 +152,13 @@ export class CreateInvitationInput {
     appsAccess: string[];
 }
 
+export class CreateGlobalInvitationInput {
+    email: string;
+    globalRole: string;
+}
+
 export class CompleteInvitationInput {
+    id: string;
     token: string;
     fullName: string;
     password: string;
@@ -273,6 +279,7 @@ export abstract class IQuery {
     hazards?: Nullable<BoltResult[]>;
     validateInvitation?: InvitationValidation;
     pendingInvitations?: Invitation[];
+    pendingGlobalInvitations: Invitation[];
     levels: Level[];
     level?: Level;
     locations: Location[];
@@ -302,6 +309,7 @@ export abstract class IMutation {
     updateDrive?: Drive;
     removeDrive?: Drive;
     createInvitation?: InvitationResponse;
+    createGlobalInvitation?: InvitationResponse;
     completeInvitation?: User;
     resendInvitation?: Invitation;
     removeInvitation?: Invitation;
@@ -383,7 +391,8 @@ export class Invitation {
     email: string;
     expiresAt: DateTime;
     used: boolean;
-    companyId: string;
+    companyId?: Nullable<string>;
+    globalRole?: Nullable<string>;
 }
 
 export class InvitationResponse {

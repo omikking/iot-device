@@ -1,12 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
-import { Application, Role } from '@prisma/client';
+import { Application, GlobalRole, Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as argon from 'argon2';
+import { errorTexts } from '../errorTexts/errorTexts';
+import { isPasswordStrong } from '../utils';
 
 @Injectable()
 export class InvitationService {
+  // Rate limiting: max 3 invitations per email per hour
+  private readonly RATE_LIMIT_MAX_INVITATIONS = 3;
+  private readonly RATE_LIMIT_WINDOW_HOURS = 1;
+
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
@@ -18,63 +30,224 @@ export class InvitationService {
     role: Role,
     appsAccess: Application[],
   ) {
-    const token = randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 48);
-
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
+    // Check if company exists
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
       select: { name: true },
     });
 
     if (!company) {
-      throw new Error('Company not found');
+      throw new NotFoundException({
+        code: 'INVITATION_COMPANY_NOT_FOUND_ERROR',
+        title: errorTexts.invitationCompanyNotFound_title,
+        message: errorTexts.invitationCompanyNotFound_message,
+      });
     }
 
+    // Check if user already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
     if (existingUser) {
-      // If user exists, just add permission for the company
-      await this.prisma.userPermission.create({
-        data: {
+      // Check if user already has permissions for this company
+      const existingPermission = await this.prisma.userPermission.findFirst({
+        where: {
           userId: existingUser.id,
+          companyId,
+        },
+      });
+
+      if (existingPermission) {
+        throw new ConflictException({
+          code: 'INVITATION_USER_EXISTS_ERROR',
+          title: errorTexts.invitationUserExists_title,
+          message: errorTexts.invitationUserExists_message,
+        });
+      }
+
+      // Add permission for the existing user
+      try {
+        await this.prisma.userPermission.create({
+          data: {
+            userId: existingUser.id,
+            companyId,
+            role,
+            appsAccess,
+          },
+        });
+
+        return { userId: existingUser.id, isNewUser: false };
+      } catch (error) {
+        throw new InternalServerErrorException({
+          code: 'INVITATION_CREATE_ERROR',
+          title: errorTexts.invitationCreateError_title,
+          message: errorTexts.contactSupportError,
+        });
+      }
+    }
+
+    // Check for existing pending invitation
+    const existingInvitation = await this.prisma.invitation.findFirst({
+      where: {
+        email,
+        companyId,
+        used: false,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (existingInvitation) {
+      throw new ConflictException({
+        code: 'INVITATION_DUPLICATE_ERROR',
+        title: errorTexts.invitationDuplicate_title,
+        message: errorTexts.invitationDuplicate_message,
+      });
+    }
+
+    // Rate limiting check
+    await this.checkRateLimit(email);
+
+    // Generate secure token and hash it
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = await argon.hash(token);
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48);
+
+    try {
+      // Create invitation record with hashed token
+      const invitation = await this.prisma.invitation.create({
+        data: {
+          email,
+          token: tokenHash,
+          expiresAt,
           companyId,
           role,
           appsAccess,
         },
       });
 
-      // We could send a notification email here if desired
-      return { userId: existingUser.id, isNewUser: false };
+      // Send email invitation with id and plain token
+      await this.emailService.sendInvitationEmail(
+        email,
+        invitation.id,
+        token,
+        company.name,
+      );
+
+      return {
+        invitationId: invitation.id,
+        isNewUser: true,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_CREATE_ERROR',
+        title: errorTexts.invitationCreateError_title,
+        message: errorTexts.contactSupportError,
+      });
+    }
+  }
+
+  async createGlobalInvitation(email: string, globalRole: GlobalRole) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      try {
+        // Update existing user's global role
+        await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: { globalRole },
+        });
+
+        return { userId: existingUser.id, isNewUser: false };
+      } catch (error) {
+        throw new InternalServerErrorException({
+          code: 'INVITATION_CREATE_ERROR',
+          title: errorTexts.invitationCreateError_title,
+          message: errorTexts.contactSupportError,
+        });
+      }
     }
 
-    // Create invitation record
-    const invitation = await this.prisma.invitation.create({
-      data: {
+    // Check for existing pending global invitation
+    const existingInvitation = await this.prisma.invitation.findFirst({
+      where: {
         email,
-        token,
-        expiresAt,
-        companyId,
-        role,
-        appsAccess,
+        globalRole: { not: null },
+        used: false,
+        expiresAt: { gt: new Date() },
       },
     });
 
-    // Send email invitation
-    await this.emailService.sendInvitationEmail(email, token, company.name);
+    if (existingInvitation) {
+      throw new ConflictException({
+        code: 'INVITATION_DUPLICATE_ERROR',
+        title: errorTexts.invitationDuplicate_title,
+        message: errorTexts.invitationDuplicate_message,
+      });
+    }
 
-    return { invitationId: invitation.id, isNewUser: true };
+    // Rate limiting check
+    await this.checkRateLimit(email);
+
+    // Generate secure token and hash it
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = await argon.hash(token);
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48);
+
+    try {
+      // Create invitation record with hashed token
+      const invitation = await this.prisma.invitation.create({
+        data: {
+          email,
+          token: tokenHash,
+          expiresAt,
+          globalRole,
+        },
+      });
+
+      // Send global role invitation email with plain token
+      await this.emailService.sendGlobalInvitationEmail(
+        email,
+        invitation.id,
+        token,
+        globalRole,
+      );
+
+      return {
+        invitationId: invitation.id,
+        isNewUser: true,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_CREATE_ERROR',
+        title: errorTexts.invitationCreateError_title,
+        message: errorTexts.contactSupportError,
+      });
+    }
   }
 
-  async validateInvitation(token: string) {
+  async validateInvitation(id: string, token: string) {
     const invitation = await this.prisma.invitation.findUnique({
-      where: { token },
+      where: { id },
       include: { company: true },
     });
 
     if (!invitation) {
+      return { valid: false, reason: 'invalid_token' };
+    }
+
+    try {
+      const isValidToken = await argon.verify(invitation.token, token);
+      if (!isValidToken) {
+        return { valid: false, reason: 'invalid_token' };
+      }
+    } catch (error) {
       return { valid: false, reason: 'invalid_token' };
     }
 
@@ -90,6 +263,7 @@ export class InvitationService {
   }
 
   async completeInvitation(
+    id: string,
     token: string,
     userData: {
       fullName: string;
@@ -98,74 +272,177 @@ export class InvitationService {
       phoneNumber?: string;
     },
   ) {
-    const validation = await this.validateInvitation(token);
+    // Validate password strength
+    if (!isPasswordStrong(userData.password)) {
+      throw new BadRequestException({
+        code: 'USER_PASSWORD_TOO_WEAK_ERROR',
+        title: errorTexts.userPasswordTooWeak_title,
+        message: errorTexts.userPasswordTooWeak_message,
+      });
+    }
+
+    const validation = await this.validateInvitation(id, token);
 
     if (!validation.valid) {
-      throw new Error(`Invalid invitation: ${validation.reason}`);
+      let errorDetails;
+      switch (validation.reason) {
+        case 'invalid_token':
+          errorDetails = {
+            title: errorTexts.invitationInvalidToken_title,
+            message: errorTexts.invitationInvalidToken_message,
+          };
+          break;
+        case 'already_used':
+          errorDetails = {
+            title: errorTexts.invitationAlreadyUsed_title,
+            message: errorTexts.invitationAlreadyUsed_message,
+          };
+          break;
+        case 'expired':
+          errorDetails = {
+            title: errorTexts.invitationExpired_title,
+            message: errorTexts.invitationExpired_message,
+          };
+          break;
+        default:
+          errorDetails = {
+            title: errorTexts.invitationInvalidToken_title,
+            message: errorTexts.invitationInvalidToken_message,
+          };
+      }
+
+      throw new BadRequestException({
+        code: 'INVITATION_VALIDATION_ERROR',
+        ...errorDetails,
+      });
     }
 
     const invitation = validation.invitation;
 
     if (!invitation) {
-      throw new Error('Invitation not found');
+      throw new NotFoundException({
+        code: 'INVITATION_NOT_FOUND_ERROR',
+        title: errorTexts.invitationInvalidToken_title,
+        message: errorTexts.invitationInvalidToken_message,
+      });
     }
 
     const hash = await argon.hash(userData.password);
 
-    // Create user in transaction
-    const { user } = await this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: invitation.email,
-          hash,
-          fullName: userData.fullName,
-          workPlace: userData.workPlace,
-          phoneNumber: userData.phoneNumber,
+    try {
+      // Create user in transaction with proper error handling
+      const result = await this.prisma.$transaction(
+        async (tx) => {
+          const user = await tx.user.create({
+            data: {
+              email: invitation.email,
+              hash,
+              fullName: userData.fullName,
+              workPlace: userData.workPlace,
+              phoneNumber: userData.phoneNumber,
+              // Set global role if this is a global invitation
+              globalRole: invitation.globalRole || undefined,
+            },
+          });
+
+          // Create company permission if this is a company invitation
+          if (invitation.companyId && invitation.role) {
+            await tx.userPermission.create({
+              data: {
+                userId: user.id,
+                companyId: invitation.companyId,
+                role: invitation.role,
+                appsAccess: invitation.appsAccess,
+              },
+            });
+          }
+
+          await tx.invitation.update({
+            where: { id: invitation.id },
+            data: { used: true },
+          });
+
+          return user;
         },
-      });
-
-      await tx.userPermission.create({
-        data: {
-          userId: user.id,
-          companyId: invitation.companyId,
-          role: invitation.role,
-          appsAccess: invitation.appsAccess,
+        {
+          timeout: 10000, // 10 second timeout
         },
+      );
+
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_COMPLETE_ERROR',
+        title: errorTexts.invitationCompleteError_title,
+        message: errorTexts.contactSupportError,
       });
-
-      await tx.invitation.update({
-        where: { id: invitation.id },
-        data: { used: true },
-      });
-
-      return { user };
-    });
-
-    return user;
+    }
   }
 
   async getPendingInvitations(companyId: string) {
-    const invitations = await this.prisma.invitation.findMany({
-      where: {
-        companyId,
-        used: false,
-        expiresAt: {
-          gt: new Date(),
+    try {
+      const invitations = await this.prisma.invitation.findMany({
+        where: {
+          companyId,
+          used: false,
+          expiresAt: {
+            gt: new Date(),
+          },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
 
-    // Transform to PendingInvitation format (without token)
-    return invitations.map((invitation) => ({
-      id: invitation.id,
-      email: invitation.email,
-      expiresAt: invitation.expiresAt,
-      used: invitation.used,
-      companyId: invitation.companyId,
-    }));
+      // Transform to PendingInvitation format (without token)
+      return invitations.map((invitation) => ({
+        id: invitation.id,
+        email: invitation.email,
+        expiresAt: invitation.expiresAt,
+        used: invitation.used,
+        companyId: invitation.companyId,
+        globalRole: null, // Company invitations don't have global roles
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_FETCH_ERROR',
+        title: 'Failed to fetch invitations',
+        message: errorTexts.contactSupportError,
+      });
+    }
+  }
+
+  async getPendingGlobalInvitations() {
+    try {
+      const invitations = await this.prisma.invitation.findMany({
+        where: {
+          globalRole: { not: null }, // Global invitations have a globalRole
+          used: false,
+          expiresAt: {
+            gt: new Date(),
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // Transform to PendingInvitation format (without token)
+      return invitations.map((invitation) => ({
+        id: invitation.id,
+        email: invitation.email,
+        expiresAt: invitation.expiresAt,
+        used: invitation.used,
+        companyId: null,
+        globalRole: invitation.globalRole,
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_FETCH_ERROR',
+        title: 'Failed to fetch invitations',
+        message: errorTexts.contactSupportError,
+      });
+    }
   }
 
   async resendInvitation(id: string) {
@@ -175,29 +452,73 @@ export class InvitationService {
     });
 
     if (!invitation) {
-      throw new Error('Invitation not found');
+      throw new NotFoundException({
+        code: 'INVITATION_NOT_FOUND_ERROR',
+        title: errorTexts.invitationNotFound_title(id),
+        message: errorTexts.contactSupportError,
+      });
     }
 
     if (invitation.used) {
-      throw new Error('Invitation has already been used');
+      throw new BadRequestException({
+        code: 'INVITATION_ALREADY_USED_ERROR',
+        title: errorTexts.invitationAlreadyUsed_title,
+        message: errorTexts.invitationAlreadyUsed_message,
+      });
     }
+
+    // Rate limiting check
+    await this.checkRateLimit(invitation.email);
+
+    // Generate new token and hash
+    const newToken = randomBytes(32).toString('hex');
+    const newTokenHash = await argon.hash(newToken);
 
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 48);
 
-    const updatedInvitation = await this.prisma.invitation.update({
-      where: { id },
-      data: { expiresAt },
-    });
+    try {
+      const updatedInvitation = await this.prisma.invitation.update({
+        where: { id },
+        data: {
+          token: newTokenHash,
+          expiresAt,
+        },
+      });
 
-    // Resend email invitation
-    await this.emailService.sendInvitationEmail(
-      invitation.email,
-      invitation.token,
-      invitation.company.name,
-    );
+      // Send appropriate email based on invitation type with plain token
+      if (invitation.globalRole) {
+        // Global role invitation
+        await this.emailService.sendGlobalInvitationEmail(
+          invitation.email,
+          invitation.id,
+          newToken,
+          invitation.globalRole,
+        );
+      } else if (invitation.company) {
+        // Company invitation
+        await this.emailService.sendInvitationEmail(
+          invitation.email,
+          invitation.id,
+          newToken,
+          invitation.company.name,
+        );
+      } else {
+        throw new BadRequestException({
+          code: 'INVITATION_INVALID_TYPE_ERROR',
+          title: 'Invalid invitation type',
+          message: errorTexts.contactSupportError,
+        });
+      }
 
-    return updatedInvitation;
+      return updatedInvitation;
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_RESEND_ERROR',
+        title: errorTexts.invitationResendError_title,
+        message: errorTexts.contactSupportError,
+      });
+    }
   }
 
   async removeInvitation(id: string) {
@@ -206,17 +527,55 @@ export class InvitationService {
     });
 
     if (!invitation) {
-      throw new Error('Invitation not found');
+      throw new NotFoundException({
+        code: 'INVITATION_NOT_FOUND_ERROR',
+        title: errorTexts.invitationNotFound_title(id),
+        message: errorTexts.contactSupportError,
+      });
     }
 
     if (invitation.used) {
-      throw new Error('Cannot remove invitation that has already been used');
+      throw new BadRequestException({
+        code: 'INVITATION_ALREADY_USED_ERROR',
+        title: 'Cannot remove used invitation',
+        message: 'Cannot remove invitation that has already been used',
+      });
     }
 
-    const deletedInvitation = await this.prisma.invitation.delete({
-      where: { id },
+    try {
+      const deletedInvitation = await this.prisma.invitation.delete({
+        where: { id },
+      });
+
+      return deletedInvitation;
+    } catch (error) {
+      throw new InternalServerErrorException({
+        code: 'INVITATION_REMOVE_ERROR',
+        title: errorTexts.invitationRemoveError_title,
+        message: errorTexts.contactSupportError,
+      });
+    }
+  }
+
+  private async checkRateLimit(email: string) {
+    const oneHourAgo = new Date();
+    oneHourAgo.setHours(oneHourAgo.getHours() - this.RATE_LIMIT_WINDOW_HOURS);
+
+    const recentInvitations = await this.prisma.invitation.count({
+      where: {
+        email,
+        createdAt: {
+          gte: oneHourAgo,
+        },
+      },
     });
 
-    return deletedInvitation;
+    if (recentInvitations >= this.RATE_LIMIT_MAX_INVITATIONS) {
+      throw new BadRequestException({
+        code: 'INVITATION_RATE_LIMIT_ERROR',
+        title: errorTexts.invitationRateLimit_title,
+        message: errorTexts.invitationRateLimit_message,
+      });
+    }
   }
 }

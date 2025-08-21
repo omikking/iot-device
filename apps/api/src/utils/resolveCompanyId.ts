@@ -44,6 +44,12 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: 'siteId',
     parentModel: 'site',
   },
+  invitation: {
+    model: 'invitation',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
   company: {
     model: 'company',
     idField: 'id',

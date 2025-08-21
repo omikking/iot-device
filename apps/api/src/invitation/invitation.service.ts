@@ -138,7 +138,6 @@ export class InvitationService {
 
       return {
         invitationId: invitation.id,
-        invitationToken: token,
         isNewUser: true,
       };
     } catch (error) {
@@ -222,7 +221,6 @@ export class InvitationService {
 
       return {
         invitationId: invitation.id,
-        invitationToken: token,
         isNewUser: true,
       };
     } catch (error) {

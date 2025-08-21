@@ -4,7 +4,6 @@ import {
   MinLength,
   MaxLength,
   Matches,
-  IsPhoneNumber,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
@@ -35,6 +34,5 @@ export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInpu
 
   @IsOptional()
   @IsString()
-  @IsPhoneNumber(undefined, { message: 'Invalid phone number format' })
   phoneNumber?: string;
 }

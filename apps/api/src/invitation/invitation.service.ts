@@ -128,10 +128,19 @@ export class InvitationService {
         },
       });
 
-      // Send email invitation with plain token
-      await this.emailService.sendInvitationEmail(email, token, company.name);
+      // Send email invitation with id and plain token
+      await this.emailService.sendInvitationEmail(
+        email,
+        invitation.id,
+        token,
+        company.name,
+      );
 
-      return { invitationId: invitation.id, isNewUser: true };
+      return {
+        invitationId: invitation.id,
+        invitationToken: token,
+        isNewUser: true,
+      };
     } catch (error) {
       throw new InternalServerErrorException({
         code: 'INVITATION_CREATE_ERROR',
@@ -206,11 +215,16 @@ export class InvitationService {
       // Send global role invitation email with plain token
       await this.emailService.sendGlobalInvitationEmail(
         email,
+        invitation.id,
         token,
         globalRole,
       );
 
-      return { invitationId: invitation.id, isNewUser: true };
+      return {
+        invitationId: invitation.id,
+        invitationToken: token,
+        isNewUser: true,
+      };
     } catch (error) {
       throw new InternalServerErrorException({
         code: 'INVITATION_CREATE_ERROR',
@@ -220,27 +234,22 @@ export class InvitationService {
     }
   }
 
-  async validateInvitation(token: string) {
-    const invitations = await this.prisma.invitation.findMany({
+  async validateInvitation(id: string, token: string) {
+    const invitation = await this.prisma.invitation.findUnique({
+      where: { id },
       include: { company: true },
     });
 
-    // Find invitation by comparing hashed tokens
-    let invitation = null;
-    for (const inv of invitations) {
-      try {
-        const isValidToken = await argon.verify(inv.token, token);
-        if (isValidToken) {
-          invitation = inv;
-          break;
-        }
-      } catch (error) {
-        // Continue to next invitation if verification fails
-        continue;
-      }
+    if (!invitation) {
+      return { valid: false, reason: 'invalid_token' };
     }
 
-    if (!invitation) {
+    try {
+      const isValidToken = await argon.verify(invitation.token, token);
+      if (!isValidToken) {
+        return { valid: false, reason: 'invalid_token' };
+      }
+    } catch (error) {
       return { valid: false, reason: 'invalid_token' };
     }
 
@@ -256,6 +265,7 @@ export class InvitationService {
   }
 
   async completeInvitation(
+    id: string,
     token: string,
     userData: {
       fullName: string;
@@ -273,7 +283,7 @@ export class InvitationService {
       });
     }
 
-    const validation = await this.validateInvitation(token);
+    const validation = await this.validateInvitation(id, token);
 
     if (!validation.valid) {
       let errorDetails;
@@ -483,6 +493,7 @@ export class InvitationService {
         // Global role invitation
         await this.emailService.sendGlobalInvitationEmail(
           invitation.email,
+          invitation.id,
           newToken,
           invitation.globalRole,
         );
@@ -490,6 +501,7 @@ export class InvitationService {
         // Company invitation
         await this.emailService.sendInvitationEmail(
           invitation.email,
+          invitation.id,
           newToken,
           invitation.company.name,
         );

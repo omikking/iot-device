@@ -39,8 +39,11 @@ export class InvitationResolver {
   }
 
   @Query('validateInvitation')
-  async validateInvitation(@Args('token') token: string) {
-    return this.invitationService.validateInvitation(token);
+  async validateInvitation(
+    @Args('id') id: string,
+    @Args('token') token: string,
+  ) {
+    return this.invitationService.validateInvitation(id, token);
   }
 
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
@@ -57,7 +60,7 @@ export class InvitationResolver {
 
   @Mutation('completeInvitation')
   async completeInvitation(@Args('input') input: CompleteInvitationInput) {
-    return this.invitationService.completeInvitation(input.token, {
+    return this.invitationService.completeInvitation(input.id, input.token, {
       fullName: input.fullName,
       password: input.password,
       workPlace: input.workPlace,

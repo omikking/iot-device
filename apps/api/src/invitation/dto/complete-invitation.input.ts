@@ -10,6 +10,9 @@ import * as GraphQLTypes from '../../graphql-types';
 
 export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInput {
   @IsString()
+  id: string;
+
+  @IsString()
   token: string;
 
   @IsString()

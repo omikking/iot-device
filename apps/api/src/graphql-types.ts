@@ -158,6 +158,7 @@ export class CreateGlobalInvitationInput {
 }
 
 export class CompleteInvitationInput {
+    id: string;
     token: string;
     fullName: string;
     password: string;

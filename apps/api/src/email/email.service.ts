@@ -20,8 +20,13 @@ export class EmailService {
     });
   }
 
-  async sendInvitationEmail(email: string, token: string, companyName: string) {
-    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?token=${token}`;
+  async sendInvitationEmail(
+    email: string,
+    invitationId: string,
+    token: string,
+    companyName: string,
+  ) {
+    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?id=${invitationId}&token=${token}`;
 
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
@@ -38,10 +43,11 @@ export class EmailService {
 
   async sendGlobalInvitationEmail(
     email: string,
+    invitationId: string,
     token: string,
     globalRole: GlobalRole,
   ) {
-    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?token=${token}`;
+    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?id=${invitationId}&token=${token}`;
 
     const roleDisplayName =
       globalRole === GlobalRole.SANDVIK_ADMIN

@@ -110,16 +110,7 @@ export const BoltSelection = ({
         <Label>Date range</Label>
         <RangeCalendar
           selected={dateRange}
-          onSelect={(range) => {
-            if (
-              range &&
-              typeof range === 'object' &&
-              'from' in range &&
-              'to' in range
-            ) {
-              onSetDateRange;
-            }
-          }}
+          onSelect={onSetDateRange}
           disabled={!site}
           className="w-72"
         />

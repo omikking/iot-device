@@ -209,6 +209,8 @@ export default function Page({ params }: Props): JSX.Element {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
 
+  console.log('boltResultsResponse', boltResultsResponse);
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <GoBack />

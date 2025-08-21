@@ -25,7 +25,8 @@ export const RangeCalendar = ({
   onSelect,
   disabled,
   className,
-}: React.HTMLAttributes<HTMLDivElement> & RangeCalendarProps) => {
+}: Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> &
+  RangeCalendarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [date, setDate] = React.useState<DateRange | undefined>({

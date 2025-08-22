@@ -98,6 +98,7 @@ export type Company = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   orgNumber: Scalars['String']['output'];
+  pendingInvitations?: Maybe<Array<Invitation>>;
   plans?: Maybe<Array<Plan>>;
   postalCode: Scalars['String']['output'];
   sandvikAdminUserId?: Maybe<Scalars['String']['output']>;
@@ -114,6 +115,15 @@ export type CompanyListResponse = {
   __typename?: 'CompanyListResponse';
   results: Array<Company>;
   totalRecords: Scalars['Int']['output'];
+};
+
+export type CompleteInvitationInput = {
+  fullName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  token: Scalars['String']['input'];
+  workPlace: Scalars['String']['input'];
 };
 
 /**
@@ -317,6 +327,7 @@ export type Location = {
  */
 export type Mutation = {
   __typename?: 'Mutation';
+  completeInvitation: User;
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -333,11 +344,13 @@ export type Mutation = {
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
+  removeInvitation: Invitation;
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -348,6 +361,15 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCompleteInvitationArgs = {
+  input: CompleteInvitationInput;
 };
 
 
@@ -499,6 +521,15 @@ export type MutationRemoveDriveArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRemoveInvitationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
@@ -536,6 +567,15 @@ export type MutationRemoveUserArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationRemoveUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationResendInvitationArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -700,6 +740,7 @@ export type Query = {
   userPermission: UserPermission;
   userPermissions: Array<UserPermission>;
   users: Array<User>;
+  validateInvitation: InvitationValidation;
 };
 
 
@@ -801,6 +842,15 @@ export type QueryLocationArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
+export type QueryPendingInvitationsArgs = {
+  companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
 export type QuerySiteArgs = {
   id: Scalars['String']['input'];
 };
@@ -830,6 +880,16 @@ export type QueryUserPermissionArgs = {
  */
 export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryValidateInvitationArgs = {
+  id: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export enum Result {

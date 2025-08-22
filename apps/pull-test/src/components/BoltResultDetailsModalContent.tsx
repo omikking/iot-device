@@ -35,7 +35,7 @@ export const BoltResultDetailsModalContent = ({
     <div className="flex flex-col px-10 pt-10">
       {/* Image, Comment and Hazard Status */}
       {(image || comment || isHazard) && (
-        <div className="flex flex-grow gap-10 pb-10">
+        <div className="flex flex-grow gap-10 pb-4">
           {image && (
             <Image
               src={'/capybara.jpg'}
@@ -67,7 +67,7 @@ export const BoltResultDetailsModalContent = ({
         {!isHazard &&
           hazardCompletedDate &&
           hazardCompletedDate?.length > 0 && (
-            <div className="pb-10">
+            <div>
               <Badge variant="success">
                 <LucideCircleCheckBig />
                 Completed
@@ -105,29 +105,35 @@ export const BoltResultDetailsModalContent = ({
             </div>
           )}
         <div className="flex flex-col gap-2 w-full">
-          {isHazard && (
-            <div className="pb-10">
+          {(isHazard && (
+            <div className="pb-2">
               <Badge variant={'attention'}>
                 <LucideTriangleAlert />
                 Reported hazard
               </Badge>
-
-              {(isHazard ||
-                (hazardCompletedDate && hazardCompletedDate.length > 0)) && (
+              <Specification
+                title="Reported by"
+                text={fullName || 'N/A'}
+                className="w-1/2 mt-4"
+                isWide
+              />
+            </div>
+          )) ||
+            (!isHazard && hazardCompletedDate?.length === 0 && (
+              <div className="pb-2">
                 <Specification
                   title="Reported by"
                   text={fullName || 'N/A'}
-                  className="w-full mt-4"
+                  className="w-1/2"
                   isWide
                 />
-              )}
-            </div>
-          )}
+              </div>
+            ))}
         </div>
       </div>
 
       {/* Bolt Specifications */}
-      <div className="pb-10">
+      <div className="py-10">
         <Headline
           className="pb-4"
           variant="small"

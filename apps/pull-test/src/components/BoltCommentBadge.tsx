@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Modal, ModalTrigger } from '@gsp/ui';
-import { Badge } from '@gsp/ui';
 import {
   LucideImage,
   LucideMessageSquareText,
   LucideMessageSquareWarning,
 } from 'lucide-react';
-import { BoltResultDetailsModal } from './BoltResultDetailsModal';
+import { Badge } from '@gsp/ui';
+import React, { useState } from 'react';
 import { BoltResult } from '@/gql/graphql';
+import { Modal, ModalTrigger } from '@gsp/ui';
+import { BoltResultDetailsModal } from './BoltResultDetailsModal';
 
 type BoltCommentBadgeProps = {
   boltResult: BoltResult;
@@ -39,6 +39,7 @@ export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
       )}
 
       <BoltResultDetailsModal
+        isModalOpen={isModalOpen}
         boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
       />

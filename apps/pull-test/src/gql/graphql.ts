@@ -173,6 +173,18 @@ export type CreateDriveInput = {
   levelId: Scalars['String']['input'];
 };
 
+export type CreateGlobalInvitationInput = {
+  email: Scalars['String']['input'];
+  globalRole: Scalars['String']['input'];
+};
+
+export type CreateInvitationInput = {
+  appsAccess: Array<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  role: Scalars['String']['input'];
+};
+
 /**
  * CreateLevelInput
  * Define the input fields to create a new level
@@ -246,6 +258,30 @@ export type Flavor = {
   name: Scalars['String']['output'];
 };
 
+export type Invitation = {
+  __typename?: 'Invitation';
+  companyId?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  expiresAt: Scalars['DateTime']['output'];
+  globalRole?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  used: Scalars['Boolean']['output'];
+};
+
+export type InvitationResponse = {
+  __typename?: 'InvitationResponse';
+  invitationId?: Maybe<Scalars['String']['output']>;
+  isNewUser: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvitationValidation = {
+  __typename?: 'InvitationValidation';
+  invitation?: Maybe<Invitation>;
+  reason?: Maybe<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
 /**
  * Level model
  * Define the Level model and its fields
@@ -286,6 +322,8 @@ export type Mutation = {
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
+  createGlobalInvitation: InvitationResponse;
+  createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
   createSite: Site;
@@ -355,6 +393,24 @@ export type MutationCreateCompanyArgs = {
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateGlobalInvitationArgs = {
+  input: CreateGlobalInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateInvitationArgs = {
+  input: CreateInvitationInput;
 };
 
 
@@ -636,6 +692,8 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  pendingGlobalInvitations: Array<Invitation>;
+  pendingInvitations: Array<Invitation>;
   site: Site;
   sites: Array<Site>;
   user: User;

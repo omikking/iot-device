@@ -5,7 +5,11 @@ import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-import * as GraphQLTypes from 'src/graphql-types';
+import {
+  CreateInvitationInput,
+  CreateGlobalInvitationInput,
+  CompleteInvitationInput,
+} from './dto';
 
 @Resolver()
 @UseGuards(JwtGuard, RolesGuard)
@@ -14,20 +18,32 @@ export class InvitationResolver {
 
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Mutation('createInvitation')
-  async createInvitation(
-    @Args('input') input: GraphQLTypes.CreateInvitationInput,
-  ) {
+  async createInvitation(@Args('input') input: CreateInvitationInput) {
     return this.invitationService.createInvitation(
       input.email,
       input.companyId,
-      input.role as any,
-      input.appsAccess as any[],
+      input.role,
+      input.appsAccess,
+    );
+  }
+
+  @Roles([Role.SANDVIK_ADMIN], [], '')
+  @Mutation('createGlobalInvitation')
+  async createGlobalInvitation(
+    @Args('input') input: CreateGlobalInvitationInput,
+  ) {
+    return this.invitationService.createGlobalInvitation(
+      input.email,
+      input.globalRole,
     );
   }
 
   @Query('validateInvitation')
-  async validateInvitation(@Args('token') token: string) {
-    return this.invitationService.validateInvitation(token);
+  async validateInvitation(
+    @Args('id') id: string,
+    @Args('token') token: string,
+  ) {
+    return this.invitationService.validateInvitation(id, token);
   }
 
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
@@ -36,11 +52,15 @@ export class InvitationResolver {
     return this.invitationService.getPendingInvitations(companyId);
   }
 
+  @Roles([Role.SANDVIK_ADMIN], [], '')
+  @Query('pendingGlobalInvitations')
+  async getPendingGlobalInvitations() {
+    return this.invitationService.getPendingGlobalInvitations();
+  }
+
   @Mutation('completeInvitation')
-  async completeInvitation(
-    @Args('input') input: GraphQLTypes.CompleteInvitationInput,
-  ) {
-    return this.invitationService.completeInvitation(input.token, {
+  async completeInvitation(@Args('input') input: CompleteInvitationInput) {
+    return this.invitationService.completeInvitation(input.id, input.token, {
       fullName: input.fullName,
       password: input.password,
       workPlace: input.workPlace,

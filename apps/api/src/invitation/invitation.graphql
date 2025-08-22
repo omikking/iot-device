@@ -8,7 +8,8 @@ type Invitation {
   email: String!
   expiresAt: DateTime!
   used: Boolean!
-  companyId: String!
+  companyId: String
+  globalRole: String
 }
 
 type InvitationResponse {
@@ -30,7 +31,13 @@ input CreateInvitationInput {
   appsAccess: [String!]!
 }
 
+input CreateGlobalInvitationInput {
+  email: String!
+  globalRole: String!
+}
+
 input CompleteInvitationInput {
+  id: String!
   token: String!
   fullName: String!
   password: String!
@@ -40,12 +47,16 @@ input CompleteInvitationInput {
 
 type Mutation {
   createInvitation(input: CreateInvitationInput!): InvitationResponse!
+  createGlobalInvitation(
+    input: CreateGlobalInvitationInput!
+  ): InvitationResponse!
   completeInvitation(input: CompleteInvitationInput!): User!
   resendInvitation(id: String!): Invitation!
   removeInvitation(id: String!): Invitation!
 }
 
 type Query {
-  validateInvitation(token: String!): InvitationValidation!
+  validateInvitation(id: String!, token: String!): InvitationValidation!
   pendingInvitations(companyId: String!): [Invitation!]!
+  pendingGlobalInvitations: [Invitation!]!
 }

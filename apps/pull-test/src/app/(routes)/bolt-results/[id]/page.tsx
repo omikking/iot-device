@@ -195,6 +195,10 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
+  const handleSetDateRange = (newDateRange: DateRange | undefined) => {
+    setDateRange(newDateRange);
+  };
+
   useEffect(() => {
     if (error) {
       showAlertToast({
@@ -204,12 +208,9 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [error]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
-
-  console.log('boltResultsResponse', boltResultsResponse);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -317,7 +318,7 @@ export default function Page({ params }: Props): JSX.Element {
           onSetLevel={setLevel}
           onSetDrive={setDrive}
           onSetLocation={setLocation}
-          onSetDateRange={setDateRange}
+          onSetDateRange={handleSetDateRange}
           onFilterChange={setFilterState}
           boltResults={boltResultsResponse?.boltResults?.results || []}
         />

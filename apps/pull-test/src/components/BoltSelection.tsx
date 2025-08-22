@@ -27,7 +27,7 @@ interface BoltSelectionProps {
   onSetLevel: React.Dispatch<React.SetStateAction<LevelType | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<DriveType | undefined>>;
   onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
-  onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  onSetDateRange: (dateRange: DateRange | undefined) => void;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResult[];
   companyData: GetCompanyQuery;

@@ -1,10 +1,8 @@
 'use client';
-
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DateRange as DateRangeProps } from 'react-day-picker';
 import { LucideCalendar } from 'lucide-react';
-
 import { cn } from '../../lib/utils';
 import { buttonStyling } from './dropdown';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
@@ -17,7 +15,7 @@ export type DateRange = DateRangeProps;
 interface RangeCalendarProps {
   disabled?: boolean;
   selected?: DateRange;
-  onSelect?: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  onSelect?: (dateRange: DateRange | undefined) => void;
 }
 
 export const RangeCalendar = ({
@@ -41,7 +39,15 @@ export const RangeCalendar = ({
       const formatDate = (date: Date) =>
         `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
-      return `${formatDate(from)} to ${formatDate(to)}`;
+      const fromFormatted = formatDate(from);
+      const toFormatted = formatDate(to);
+
+      // If same day, show just one date
+      if (fromFormatted === toFormatted) {
+        return fromFormatted;
+      }
+
+      return `${fromFormatted} to ${toFormatted}`;
     }
     return 'Select dates';
   };
@@ -114,3 +120,23 @@ export const RangeCalendar = ({
     </div>
   );
 };
+// <Calendar
+//   initialFocus
+//   mode="range"
+//   defaultMonth={date?.from}
+//   selected={date}
+//   onSelect={(e) => {
+//     if (e?.from) {
+//       const newRange = {
+//         from: e.from,
+//         to: e.to || e.from,
+//       };
+//       setDate(newRange);
+//       onSelect?.(newRange);
+//     } else {
+//       setDate(e);
+//       onSelect?.(e);
+//     }
+//   }}
+//   numberOfMonths={2}
+// />

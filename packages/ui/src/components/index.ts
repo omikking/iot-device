@@ -31,7 +31,6 @@ export * from './base/alert';
 export * from './base/toast-utils';
 export * from './base/sonner';
 export * from './base/chart';
-export * from './base/card';
 
 export * from './shared-custom/navigation-card';
 export * from './shared-custom/content-holder';

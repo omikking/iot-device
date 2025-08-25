@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import {
-  Card,
-  CardContent,
   ChartConfig,
   ChartTooltip,
   ChartContainer,
@@ -42,9 +40,8 @@ export const MultiBoltGraphView = ({
     yAxisTicks.push(i);
   }
   return (
-    //TODO Fix why I need to use !important
-    <Card className="!bg-transparent border-none !shadow-none">
-      <CardContent className="!p-0 !pt-12">
+    <div className="bg-transparent">
+      <div className="pt-12">
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
@@ -120,7 +117,7 @@ export const MultiBoltGraphView = ({
             />
           </LineChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

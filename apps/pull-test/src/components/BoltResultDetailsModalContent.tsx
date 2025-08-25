@@ -31,7 +31,7 @@ export const BoltResultDetailsModalContent = ({
     peakDisplacement,
     hazardCompletedDate,
   } = boltResult || {};
-  console.log('BOLT RESULT DETAILS', boltResult);
+
   return (
     <div className="flex flex-col px-10 pt-10">
       {/* Image, Comment and Hazard Status */}

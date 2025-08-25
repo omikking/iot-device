@@ -1,24 +1,33 @@
-import { Badge, BoltResultCard, Text } from '@gsp/ui';
 import {
-  ClipboardList,
   LucideBolt,
   LucideGoal,
-  LucideSearchX,
   LucideWeight,
+  LucideSearchX,
+  ClipboardList,
 } from 'lucide-react';
 import React from 'react';
+import { BoltResult } from '@/gql/graphql';
+import { Badge, BoltResultCard, Text } from '@gsp/ui';
 
-export const BoltResultsGraphView = () => {
-  // TODO Fix propperly later
-  const boltResults = false;
-  const site = true;
+type BoltResultsGraphViewProps = {
+  boltResults?: BoltResult[];
+  site?: string;
+  totalCount?: number;
+};
+
+export const BoltResultsGraphView = ({
+  boltResults,
+  site,
+  totalCount,
+}: BoltResultsGraphViewProps) => {
+  // get average tons
   return (
     <>
       {site && boltResults && (
         <div className="flex justify-center gap-10 py-20 flex-wrap">
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              182 tests
+              {totalCount} tests
             </Badge>
             <Text variant="medium" color="foreground">
               Total numbers of tests

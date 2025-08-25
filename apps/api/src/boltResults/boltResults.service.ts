@@ -102,6 +102,27 @@ export class BoltResultsService {
       where: whereCondition,
     });
 
+    const failedCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        result: 'FAIL',
+      },
+    });
+
+    const hazardCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        isHazard: true,
+      },
+    });
+
+    const passedCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        result: 'PASS',
+      },
+    });
+
     const results = await this.prisma.boltResult.findMany({
       skip: offset,
       take: limit,
@@ -114,7 +135,7 @@ export class BoltResultsService {
       },
     });
 
-    return { totalRecords, results };
+    return { totalRecords, results, failedCount, passedCount, hazardCount };
   }
 
   async findOne(id: string): Promise<BoltResult> {

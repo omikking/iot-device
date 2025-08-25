@@ -4,6 +4,7 @@ import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
 import { BoltResultResponse } from '@/gql/graphql';
 import { capitalizeFirstLetter } from '@/libs/utils';
+import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
   objList?: BoltResultResponse;
@@ -19,155 +20,128 @@ interface PullTestReportPDFProps {
     email: string;
     contactNumber: string;
   };
-  layout: {
-    contactHtml: string;
-    // logo: {
-    //   src: string;
-    // };
-  };
   parentUrl?: string;
-  pdfName?: string;
-  pdfPageTitle?: string;
-  currentDate?: string;
   disabled?: boolean;
 }
 
+const loadImageAsBase64 = (imagePath: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = imagePath;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas context not available'));
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = reject;
+  });
+
 export const PullTestReportPDF = ({
   objList,
-  // layout,
   reportDetails,
   parentUrl = '',
-  pdfName = 'report.pdf',
-  pdfPageTitle = 'Pull Test Report',
-  currentDate = new Date().toLocaleDateString(),
   disabled,
 }: PullTestReportPDFProps) => {
   const [isLoading, setLoading] = useState(false);
 
-  // TODO Fix white space issue
   // TODO Remove black top border if past row is hazardous
   // TODO Fix page number issue
   const generateTextBasedPdfTest = async () => {
     setLoading(true);
     const pdf = new jsPDF({ orientation: 'portrait', compress: true });
+
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
     const results = objList?.results || [];
     const totalPages = Math.ceil(results.length / 8) + 2;
+    const currentDate = new Date().toLocaleDateString();
 
-    // Load image as base64 (you can use your commented loadImageAsBase64 function)
-    const loadImageAsBase64 = (imagePath: string): Promise<string> =>
-      new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = imagePath;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return reject(new Error('Canvas context not available'));
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = reject;
-      });
-
-    // Load your logo or any other image
     let logoDataUrl: string | null = null;
-    try {
-      // Replace with your actual logo path
-      logoDataUrl = await loadImageAsBase64('/path/to/your/logo.png');
-    } catch (error) {
-      console.warn('Could not load logo:', error);
-    }
+    logoDataUrl = await loadImageAsBase64(sandvikLogo.src);
 
-    let currentY = 20;
+    let currentY = 0;
+    const headerHeight = 60;
 
-    // Add logo if available
+    pdf.setFillColor(248, 248, 248);
+    pdf.rect(0, currentY, pageWidth, headerHeight, 'F');
+
+    currentY = 10;
+
+    // Sandvik logo
     if (logoDataUrl) {
-      const logoWidth = 30;
-      const logoHeight = 20;
+      const logoWidth = 34;
+      const logoHeight = 6;
       pdf.addImage(logoDataUrl, 'PNG', margin, currentY, logoWidth, logoHeight);
-      currentY += logoHeight + 10;
     }
 
-    // Add blue header section
-    pdf.setFillColor(24, 183, 249);
-    pdf.rect(margin, currentY, pageWidth - margin * 2, 60, 'F');
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text('Metric/Imperial', margin + 10, currentY + 10);
-    pdf.text('SANDVIK LOGO', margin + 10, currentY + 20);
-    pdf.setFontSize(20);
-    pdf.text('PULL TEST REPORT', margin + 10, currentY + 45);
+    // Pull Test Report text
+    pdf.setFontSize(22);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('PULL TEST REPORT', margin, currentY + 40);
 
-    currentY += 80;
+    currentY += headerHeight + 10;
 
+    // Report headlines
+    pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0);
 
-    const leftColumnX = margin;
-    const rightColumnX = pageWidth / 2 + 10;
+    const headings = [
+      'START DATE',
+      'COMPANY NAME',
+      'CONTRACTOR',
+      'CONTACT PERSON',
+      'MINE',
+      'COMMODITY',
+    ];
 
-    // Left column
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0);
-    pdf.text('START DATE', 85, currentY);
-    pdf.setTextColor(24, 183, 249);
-    pdf.setFontSize(12);
-    pdf.text(reportDetails.startDate, 85, currentY + 5);
+    const values = [
+      reportDetails.startDate,
+      reportDetails.companyName,
+      reportDetails.contractor,
+      reportDetails.contactPerson?.map((p) => p.name).join(', ') || '',
+      reportDetails.mine || '',
+      reportDetails.commodity || '',
+    ];
 
-    currentY += 30;
+    const colsPerRow = 3;
+    const colWidth = (pageWidth - margin * 2) / colsPerRow;
 
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0);
-    pdf.text('COMPANY NAME', leftColumnX, currentY);
-    pdf.setTextColor(24, 183, 249);
-    pdf.setFontSize(12);
-    pdf.text(reportDetails.companyName, leftColumnX, currentY + 5);
+    // Draw headings and values in rows of 3
+    for (let row = 0; row < Math.ceil(headings.length / colsPerRow); row++) {
+      const startIndex = row * colsPerRow;
+      const endIndex = Math.min(startIndex + colsPerRow, headings.length);
 
-    currentY += 30;
+      // Draw headings for this row
+      pdf.setFont('helvetica', 'bold');
+      for (let i = startIndex; i < endIndex; i++) {
+        const col = i - startIndex;
+        const x = margin + col * colWidth;
+        pdf.text(headings[i], x, currentY);
+      }
 
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0);
-    pdf.text('MINE', leftColumnX, currentY);
-    pdf.setTextColor(24, 183, 249);
-    pdf.setFontSize(12);
-    pdf.text(reportDetails.mine, leftColumnX, currentY + 5);
+      // Draw values for this row
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      for (let i = startIndex; i < endIndex; i++) {
+        const col = i - startIndex;
+        const x = margin + col * colWidth;
+        if (values[i]) {
+          pdf.text(values[i], x, currentY + 10);
+        }
+      }
 
-    let rightColumnY = currentY - 30;
-
-    // Right column
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0);
-    pdf.text('CONTRACTOR', rightColumnX, rightColumnY);
-    pdf.setTextColor(24, 183, 249);
-    pdf.setFontSize(12);
-    pdf.text(reportDetails.contractor, rightColumnX, rightColumnY + 5);
-
-    rightColumnY += 30;
-
-    pdf.setFontSize(10);
-    pdf.setTextColor(255, 165, 0);
-    pdf.text('CONTACT PERSON', rightColumnX, rightColumnY);
-    pdf.setTextColor(24, 183, 249);
-    pdf.setFontSize(12);
-    // Handle multiple contact persons
-    if (reportDetails.contactPerson && reportDetails.contactPerson.length > 0) {
-      reportDetails.contactPerson.forEach((contact, index) => {
-        pdf.text(contact.name, rightColumnX, rightColumnY + 10 + index * 12);
-        pdf.setFontSize(10);
-        pdf.text(
-          contact.designation,
-          rightColumnX,
-          rightColumnY + 20 + index * 12,
-        );
-        pdf.setFontSize(12);
-      });
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      currentY += 30;
     }
 
-    rightColumnY += 30;
     // Add footer for first page
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0);
@@ -177,7 +151,7 @@ export const PullTestReportPDF = ({
     });
 
     // Add table pages with text-based tables
-    const itemsPerPage = 6; // Reduced to account for images
+    const itemsPerPage = 6;
     for (let i = 0; i < results.length; i += itemsPerPage) {
       pdf.addPage();
       const pageItems = results.slice(i, i + itemsPerPage);
@@ -185,17 +159,10 @@ export const PullTestReportPDF = ({
 
       let pageY = 20;
 
-      // Add logo on each page if available
-      if (logoDataUrl) {
-        const logoWidth = 25;
-        const logoHeight = 15;
-        pdf.addImage(logoDataUrl, 'PNG', margin, pageY, logoWidth, logoHeight);
-        pageY += logoHeight + 5;
-      }
-
       // Add header
-      pdf.setFontSize(14);
-      pdf.text(pdfPageTitle, pageWidth / 2, 10, { align: 'center' });
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Bolting Pull Test', pageWidth - margin, 10, { align: 'right' });
       pdf.text(currentDate, margin, 10);
       pdf.setTextColor(0, 0, 0);
 
@@ -207,8 +174,8 @@ export const PullTestReportPDF = ({
         'Peak displacement (mm)',
         'Level',
         'Drive',
-        'Position in the ring',
-        'Results',
+        'Position in ring',
+        'Result',
       ];
 
       const customColWidths = [25, 15, 25, 30, 20, 20, 25, 20];
@@ -219,7 +186,7 @@ export const PullTestReportPDF = ({
       const scaleFactor = (pageWidth - margin * 2) / totalCustomWidth;
       const colWidths = customColWidths.map((width) => width * scaleFactor);
 
-      pdf.setFillColor(230, 230, 230);
+      pdf.setFillColor(248, 248, 248);
       pdf.rect(margin, pageY, pageWidth - margin * 2, 18, 'F');
 
       /* HEADER DRAWING */
@@ -395,7 +362,7 @@ export const PullTestReportPDF = ({
       );
     }
 
-    pdf.save(pdfName);
+    pdf.save('pull-test-report.pdf');
     setLoading(false);
   };
 

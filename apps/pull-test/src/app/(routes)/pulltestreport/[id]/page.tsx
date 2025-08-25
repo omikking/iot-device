@@ -37,8 +37,6 @@ type pdfDataType = {
     // };
   };
   parentUrl?: string;
-  pdfName?: string;
-  pdfPageTitle?: string;
   currentDate?: string;
   disabled?: boolean;
 };
@@ -92,6 +90,8 @@ export default function Page({ params }: Props): JSX.Element {
   const [pdfData, setPdfData] = useState<pdfDataType>();
 
   console.log('Company Name:', pdfData?.reportDetails);
+
+  // DELETE THIS ROUTE
 
   // TODO fix later
   useEffect(() => {
@@ -149,22 +149,17 @@ export default function Page({ params }: Props): JSX.Element {
 
       <div className="w-full max-w-[1400px] flex flex-col items-end gap-6">
         {pdfData && (
-          <>
-            <PullTestReportPDF
-              disabled={false}
-              objList={pdfData.objList}
-              // reportDetails={pdfComponentMockData.reportDetails}
-              reportDetails={pdfData.reportDetails}
-              layout={{
-                // logo: pdfComponentMockData.Layout.logo,
-                contactHtml: '<strong>John Doe</strong> - Site Manager',
-              }}
-              parentUrl={window.parent.location.toString()}
-              pdfName={'pull_test_report.pdf'}
-              pdfPageTitle={'Bolt Result'}
-              currentDate={new Date().toLocaleDateString()}
-            />
-          </>
+          <PullTestReportPDF
+            disabled={false}
+            objList={pdfData.objList}
+            // reportDetails={pdfComponentMockData.reportDetails}
+            reportDetails={pdfData.reportDetails}
+            layout={{
+              contactHtml: '<strong>John Doe</strong> - Site Manager',
+            }}
+            parentUrl={window.parent.location.toString()}
+            currentDate={new Date().toLocaleDateString()}
+          />
         )}
 
         <div className="w-full pt-8 bg-neutral-1 border-2 rounded-lg border-neutral-3 shadow-[0_-4px_8px_-1px_rgba(0,0,0,0.1),0_8px_15px_-3px_rgba(0,0,0,0.2)]">

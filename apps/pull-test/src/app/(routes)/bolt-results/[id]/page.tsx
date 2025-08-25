@@ -315,14 +315,7 @@ export default function Page({ params }: Props): JSX.Element {
                   email: '',
                   contactNumber: '',
                 }}
-                layout={{
-                  // logo: pdfComponentMockData.Layout.logo,
-                  contactHtml: '<strong>John Doe</strong> - Site Manager',
-                }}
                 parentUrl={window.parent.location.toString()}
-                pdfName={'pull_test_report.pdf'}
-                pdfPageTitle={'Bolt Result'}
-                currentDate={new Date().toLocaleDateString()}
               />
             </>
           )}

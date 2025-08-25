@@ -1,14 +1,14 @@
 'use client';
-import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { DateRange as DateRangeProps } from 'react-day-picker';
-import { LucideCalendar } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { buttonStyling } from './dropdown';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { Calendar } from './calendar';
-import { Button } from './button';
 import { Text } from './text';
+import * as React from 'react';
+import { Button } from './button';
+import { cn } from '../../lib/utils';
+import { Calendar } from './calendar';
+import { buttonStyling } from './dropdown';
+import { useEffect, useState } from 'react';
+import { LucideCalendar } from 'lucide-react';
+import { DateRange as DateRangeProps } from 'react-day-picker';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export type DateRange = DateRangeProps;
 
@@ -120,23 +120,3 @@ export const RangeCalendar = ({
     </div>
   );
 };
-// <Calendar
-//   initialFocus
-//   mode="range"
-//   defaultMonth={date?.from}
-//   selected={date}
-//   onSelect={(e) => {
-//     if (e?.from) {
-//       const newRange = {
-//         from: e.from,
-//         to: e.to || e.from,
-//       };
-//       setDate(newRange);
-//       onSelect?.(newRange);
-//     } else {
-//       setDate(e);
-//       onSelect?.(e);
-//     }
-//   }}
-//   numberOfMonths={2}
-// />

@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
 import {
-  ContentHolder,
-  DateRange,
-  Dropdown,
   Label,
+  Dropdown,
+  DateRange,
   RangeCalendar,
+  ContentHolder,
 } from '@gsp/ui';
+import { useMemo } from 'react';
 import { GetCompanyQuery, BoltResult } from '@/gql/graphql';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 
@@ -110,7 +110,16 @@ export const BoltSelection = ({
         <Label>Date range</Label>
         <RangeCalendar
           selected={dateRange}
-          onSelect={onSetDateRange}
+          onSelect={(range) => {
+            if (
+              range &&
+              typeof range === 'object' &&
+              'from' in range &&
+              'to' in range
+            ) {
+              onSetDateRange(range);
+            }
+          }}
           disabled={!site}
           className="w-72"
         />

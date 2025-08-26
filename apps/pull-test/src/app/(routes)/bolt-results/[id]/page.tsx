@@ -300,20 +300,15 @@ export default function Page({ params }: Props): JSX.Element {
               <PullTestReportPDF
                 disabled={false}
                 objList={boltResultsResponse?.boltResults}
-                // reportDetails={pdfComponentMockData.reportDetails}
                 reportDetails={{
                   startDate: earliestStartDate
                     ? earliestStartDate.toLocaleDateString()
                     : new Date().toLocaleDateString(),
                   companyName: companyData?.company?.name || '',
-                  mine: site?.name || '',
                   contractor: '',
-                  commodity: '',
                   contactPerson: [{ name: '', designation: '' }],
-                  author: '',
-                  designation: '',
-                  email: '',
-                  contactNumber: '',
+                  mine: site?.name || '',
+                  commodity: '',
                 }}
                 parentUrl={window.parent.location.toString()}
               />

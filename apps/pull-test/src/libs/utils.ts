@@ -1,5 +1,5 @@
 import { responses } from '@/app/uitexts/responses';
-import { Application, BoltResult } from '@/gql/graphql';
+import { Application, BoltResult, RingPosition } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
 
@@ -134,4 +134,21 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
     });
     return true;
   }
+};
+
+const ringPositionDisplayMap: Record<RingPosition, string> = {
+  [RingPosition.CenterBacks]: 'Center Backs',
+  [RingPosition.LhBacks]: 'L/H Backs',
+  [RingPosition.LhShoulder]: 'L/H Shoulder',
+  [RingPosition.LhWallUpper]: 'L/H Wall Upper',
+  [RingPosition.RhBacks]: 'R/H Backs',
+  [RingPosition.RhShoulder]: 'R/H Shoulder',
+  [RingPosition.RhWallUpper]: 'R/H Wall Upper',
+};
+
+export const convertRingPosition = (position: RingPosition): string => {
+  if (position in ringPositionDisplayMap) {
+    return ringPositionDisplayMap[position as RingPosition];
+  }
+  return position.toString();
 };

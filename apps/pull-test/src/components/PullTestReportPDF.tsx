@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
@@ -7,12 +7,13 @@ import { capitalizeFirstLetter, convertRingPosition } from '@/libs/utils';
 import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
-  objList?: BoltResultResponse;
+  allBoltResults?: BoltResultResponse;
+  fetchAllResults: () => void;
   reportDetails: {
     startDate: string;
     companyName: string;
     contractor: string;
-    contactPerson: { name: string; designation: string }[];
+    contactPerson: { name: string }[];
     mine: string;
     commodity: string;
   };
@@ -20,13 +21,20 @@ interface PullTestReportPDFProps {
   disabled?: boolean;
 }
 
-export const PullTestReportPDF: React.FC<PullTestReportPDFProps> = ({
-  objList,
+export const PullTestReportPDF = ({
+  allBoltResults,
+  fetchAllResults,
   reportDetails,
   parentUrl = '',
   disabled = false,
-}) => {
+}: PullTestReportPDFProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isLoading && allBoltResults?.results?.length) {
+      generatePDF();
+    }
+  }, [allBoltResults]);
 
   const loadImageAsBase64 = useCallback(
     (imagePath: string): Promise<string> => {
@@ -56,16 +64,17 @@ export const PullTestReportPDF: React.FC<PullTestReportPDFProps> = ({
     [],
   );
 
-  const generateTextBasedPdfTest = useCallback(async (): Promise<void> => {
+  const generatePDF = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
     const pdf = new jsPDF({ orientation: 'portrait', compress: true });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
-    const results = objList?.results || [];
 
-    const itemsPerPage = 8;
+    const results = allBoltResults?.results || [];
+
+    const itemsPerPage = 9;
     const totalPages = Math.ceil(results.length / itemsPerPage) + 1;
     const currentDate = new Date().toLocaleDateString();
 
@@ -88,7 +97,7 @@ export const PullTestReportPDF: React.FC<PullTestReportPDFProps> = ({
     }
 
     // Pull Test Report
-    pdf.setFontSize(22);
+    pdf.setFontSize(26);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(0, 0, 0);
     pdf.text('PULL TEST REPORT', margin, currentY + 40);
@@ -376,13 +385,18 @@ export const PullTestReportPDF: React.FC<PullTestReportPDFProps> = ({
       );
     }
 
-    pdf.save('pull-test-report.pdf');
+    pdf.save(`pull-test-report-${Date.now()}.pdf`);
     setIsLoading(false);
-  }, [objList, reportDetails, parentUrl, loadImageAsBase64]);
+  }, [allBoltResults, reportDetails, parentUrl, loadImageAsBase64]);
+
+  const handleGeneratePDF = () => {
+    setIsLoading(true);
+    fetchAllResults();
+  };
 
   return (
     <Button
-      onClick={generateTextBasedPdfTest}
+      onClick={handleGeneratePDF}
       disabled={disabled || isLoading}
       size="large"
       variant="primary"
@@ -390,7 +404,7 @@ export const PullTestReportPDF: React.FC<PullTestReportPDFProps> = ({
       className="flex items-center gap-2"
     >
       {!isLoading && <LucideFileDown />}
-      Export PDF test
+      Export PDF
     </Button>
   );
 };

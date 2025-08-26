@@ -104,6 +104,57 @@ const boltResultQuery = gql`
   }
 `;
 
+const allBoltResultQuery = gql`
+  query GetAllBoltResults(
+    $siteId: String
+    $levelId: String
+    $driveId: String
+    $locationId: String
+    $result: [String!]
+    $isHazard: Boolean
+    $withImage: Boolean
+    $withComment: Boolean
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    boltResults(
+      siteId: $siteId
+      levelId: $levelId
+      driveId: $driveId
+      locationId: $locationId
+      result: $result
+      isHazard: $isHazard
+      withImage: $withImage
+      withComment: $withComment
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      totalRecords
+      results {
+        id
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        level {
+          levelName
+        }
+        drive {
+          driveName
+        }
+        location {
+          locationName
+        }
+        positionInRing
+        result
+        comment
+        isHazard
+        abortReason
+      }
+    }
+  }
+`;
+
 const getCompanyQuery = gql`
   query GetCompany($id: String!) {
     company(id: $id) {
@@ -142,6 +193,8 @@ export default function Page({ params }: Props): JSX.Element {
     to: undefined,
   });
 
+  const [shouldFetchAllResults, setShouldFetchAllResults] = useState(false);
+
   const [filterState, setFilterState] = useState({
     pass: false,
     fail: false,
@@ -170,13 +223,14 @@ export default function Page({ params }: Props): JSX.Element {
     variables: { id: companyId },
   });
 
+  // Bolt results for table
   const [{ data: boltResultsResponse, error }] = useQuery<{
     boltResults: { totalRecords: number; results: BoltResult[] };
   }>({
     query: boltResultQuery,
     variables: {
       offset: (currentPage - 1) * pageSize,
-      pageSize: pageSize,
+      limit: pageSize,
       siteId: site?.id,
       levelId: level?.id,
       driveId: drive?.id,
@@ -191,6 +245,50 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
+  // All bolt results for PDF
+  const [{ data: allBoltResultsResponse, fetching: isLoadingAllResults }] =
+    useQuery<{
+      boltResults: { totalRecords: number; results: BoltResult[] };
+    }>({
+      query: allBoltResultQuery,
+      variables: {
+        siteId: site?.id,
+        levelId: level?.id,
+        driveId: drive?.id,
+        locationId: location?.id,
+        isHazard: filterState.reportedHazard || undefined,
+        withImage: filterState.withImage || undefined,
+        withComment: filterState.withComment || undefined,
+        startDate: dateRange?.from,
+        endDate: dateRange?.to,
+        result: result.length > 0 ? result : undefined,
+      },
+      pause: !shouldFetchAllResults || !site?.id,
+    });
+
+  // TODO test if it works
+  const earliestStartDate =
+    allBoltResultsResponse?.boltResults?.results?.reduce(
+      (earliest, result) => {
+        const currentDate = new Date(result.createdAt);
+        return !earliest || currentDate < earliest ? currentDate : earliest;
+      },
+      null as Date | null,
+    );
+
+  const handleFetchAllResults = () => {
+    setShouldFetchAllResults(true);
+    setTimeout(() => {
+      setShouldFetchAllResults(true);
+    }, 50);
+  };
+
+  useEffect(() => {
+    if (!isLoadingAllResults && allBoltResultsResponse) {
+      setShouldFetchAllResults(false);
+    }
+  }, [isLoadingAllResults, allBoltResultsResponse]);
+
   useEffect(() => {
     if (error) {
       showAlertToast({
@@ -204,19 +302,6 @@ export default function Page({ params }: Props): JSX.Element {
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
-
-  console.log(
-    'boltResultsResponse?.boltResults?.results',
-    boltResultsResponse?.boltResults?.results,
-  );
-
-  const earliestStartDate = boltResultsResponse?.boltResults?.results?.reduce(
-    (earliest, result) => {
-      const currentDate = new Date(result.createdAt);
-      return !earliest || currentDate < earliest ? currentDate : earliest;
-    },
-    null as Date | null,
-  );
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -299,14 +384,15 @@ export default function Page({ params }: Props): JSX.Element {
             <>
               <PullTestReportPDF
                 disabled={false}
-                objList={boltResultsResponse?.boltResults}
+                allBoltResults={allBoltResultsResponse?.boltResults}
+                fetchAllResults={handleFetchAllResults}
                 reportDetails={{
                   startDate: earliestStartDate
                     ? earliestStartDate.toLocaleDateString()
                     : new Date().toLocaleDateString(),
                   companyName: companyData?.company?.name || '',
                   contractor: '',
-                  contactPerson: [{ name: '', designation: '' }],
+                  contactPerson: [{ name: '' }],
                   mine: site?.name || '',
                   commodity: '',
                 }}

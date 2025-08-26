@@ -390,6 +390,7 @@ export default function Page({ params }: Props): JSX.Element {
                   startDate: earliestStartDate
                     ? earliestStartDate.toLocaleDateString()
                     : new Date().toLocaleDateString(),
+                  // TODO fix this data
                   companyName: companyData?.company?.name || '',
                   contractor: '',
                   contactPerson: [{ name: '' }],

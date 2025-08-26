@@ -74,7 +74,7 @@ export const PullTestReportPDF = ({
 
     const results = allBoltResults?.results || [];
 
-    const itemsPerPage = 9;
+    const itemsPerPage = 8;
     const totalPages = Math.ceil(results.length / itemsPerPage) + 1;
     const currentDate = new Date().toLocaleDateString();
 

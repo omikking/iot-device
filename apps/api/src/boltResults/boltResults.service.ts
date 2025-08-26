@@ -135,7 +135,34 @@ export class BoltResultsService {
       },
     });
 
-    return { totalRecords, results, failedCount, passedCount, hazardCount };
+    const allResultsForAverage = await this.prisma.boltResult.findMany({
+      where: whereCondition,
+      select: {
+        peakLoad: true,
+      },
+    });
+
+    let averageTons: number | null = null;
+    if (allResultsForAverage.length > 0) {
+      const allPeakLoads = allResultsForAverage
+        .map((result) => result.peakLoad)
+        .flat()
+        .filter((load) => load !== null && load !== undefined);
+
+      if (allPeakLoads.length > 0) {
+        const sum = allPeakLoads.reduce((acc, load) => acc + load, 0);
+        averageTons = Math.round(sum / allPeakLoads.length);
+      }
+    }
+
+    return {
+      totalRecords,
+      results,
+      failedCount,
+      passedCount,
+      hazardCount,
+      averageTons,
+    };
   }
 
   async findOne(id: string): Promise<BoltResult> {

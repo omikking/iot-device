@@ -13,14 +13,17 @@ type BoltResultsGraphViewProps = {
   boltResults?: BoltResult[];
   site?: string;
   totalCount?: number;
+  averageTons?: number;
+  successRate: string;
 };
 
 export const BoltResultsGraphView = ({
   boltResults,
   site,
   totalCount,
+  averageTons,
+  successRate,
 }: BoltResultsGraphViewProps) => {
-  // get average tons
   return (
     <>
       {site && boltResults && (
@@ -36,7 +39,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              19.5 tons
+              {averageTons} tons
             </Badge>
             <Text variant="medium" color="foreground">
               Average tons
@@ -45,7 +48,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              94.4%
+              {successRate}
             </Badge>
             <Text variant="medium" color="foreground">
               Success rate

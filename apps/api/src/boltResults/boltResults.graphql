@@ -89,6 +89,7 @@ type BoltResultResponse {
   hazardCount: Int!
   passedCount: Int!
   totalRecords: Int!
+  averageTons: Float
   results: [BoltResult!]!
 }
 

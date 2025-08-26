@@ -18,16 +18,15 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useEffect, useMemo, useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
-import { BoltResult } from '@/gql/graphql';
-
+import { responses } from '@/app/uitexts/responses';
+import { useEffect, useMemo, useState } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { responses } from '@/app/uitexts/responses';
 
 interface Props {
   params: {
@@ -74,6 +73,7 @@ const boltResultQuery = gql`
       failedCount
       hazardCount
       passedCount
+      averageTons
       results {
         id
         createdAt
@@ -182,6 +182,7 @@ export default function Page({ params }: Props): JSX.Element {
       failedCount: number;
       hazardCount: number;
       passedCount: number;
+      averageTons: number;
       results: BoltResult[];
     };
   }>({
@@ -203,6 +204,19 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
+  const getSuccessRate = () => {
+    const { passedCount, totalRecords } =
+      boltResultsResponse?.boltResults || {};
+
+    if (!passedCount || !totalRecords) {
+      return 'N/A';
+    }
+
+    const rate = (passedCount / totalRecords) * 100;
+
+    return `${Math.round(rate * 10) / 10}%`;
+  };
+
   useEffect(() => {
     if (error) {
       showAlertToast({
@@ -211,8 +225,6 @@ export default function Page({ params }: Props): JSX.Element {
       });
     }
   }, [error]);
-
-  console.log('Bolt results response:', boltResultsResponse);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -346,6 +358,10 @@ export default function Page({ params }: Props): JSX.Element {
             site={site?.id}
             boltResults={site ? boltResultsResponse?.boltResults?.results : []}
             totalCount={boltResultsResponse?.boltResults?.totalRecords || 0}
+            averageTons={
+              boltResultsResponse?.boltResults?.averageTons || undefined
+            }
+            successRate={getSuccessRate()}
           />
         </TabsContent>
       </Tabs>

@@ -260,6 +260,7 @@ export class BoltResultResponse {
     hazardCount: number;
     passedCount: number;
     totalRecords: number;
+    averageTons?: Nullable<number>;
     results: BoltResult[];
 }
 

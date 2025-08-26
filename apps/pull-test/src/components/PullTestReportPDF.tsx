@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
@@ -8,7 +8,9 @@ import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
   allBoltResults?: BoltResultResponse;
-  fetchAllResults: () => void;
+  generateTrigger: number;
+  isLoading: boolean;
+  onRequestPDF: () => void;
   reportDetails: {
     testingStartDate: string;
     testingEndDate: string;
@@ -21,18 +23,14 @@ interface PullTestReportPDFProps {
 
 export const PullTestReportPDF = ({
   allBoltResults,
-  fetchAllResults,
+  generateTrigger,
+  isLoading,
+  onRequestPDF,
   reportDetails,
   parentUrl = '',
   disabled = false,
 }: PullTestReportPDFProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isLoading && allBoltResults?.results?.length) {
-      generatePDF();
-    }
-  }, [allBoltResults]);
+  const lastProcessedTrigger = useRef(0);
 
   const loadImageAsBase64 = useCallback(
     (imagePath: string): Promise<string> => {
@@ -63,7 +61,9 @@ export const PullTestReportPDF = ({
   );
 
   const generatePDF = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
+    if (!allBoltResults?.results?.length) {
+      return;
+    }
 
     const pdf = new jsPDF({ orientation: 'portrait', compress: true });
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -380,17 +380,21 @@ export const PullTestReportPDF = ({
     }
 
     pdf.save(`pull-test-report-${Date.now()}.pdf`);
-    setIsLoading(false);
   }, [allBoltResults, reportDetails, parentUrl, loadImageAsBase64]);
 
-  const handleGeneratePDF = () => {
-    setIsLoading(true);
-    fetchAllResults();
-  };
+  useEffect(() => {
+    if (
+      generateTrigger > lastProcessedTrigger.current &&
+      allBoltResults?.results?.length
+    ) {
+      lastProcessedTrigger.current = generateTrigger;
+      generatePDF();
+    }
+  }, [generateTrigger, allBoltResults, generatePDF]);
 
   return (
     <Button
-      onClick={handleGeneratePDF}
+      onClick={onRequestPDF}
       disabled={disabled || isLoading}
       size="large"
       variant="primary"

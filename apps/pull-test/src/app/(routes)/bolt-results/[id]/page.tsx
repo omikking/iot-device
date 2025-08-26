@@ -197,6 +197,8 @@ export default function Page({ params }: Props): JSX.Element {
   });
 
   const [shouldFetchAllResults, setShouldFetchAllResults] = useState(false);
+  const [pdfGenTrigger, setPdfGenTrigger] = useState(0);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   const [filterState, setFilterState] = useState({
     pass: false,
@@ -273,18 +275,23 @@ export default function Page({ params }: Props): JSX.Element {
     allBoltResultsResponse?.boltResults?.results || [],
   );
 
-  const handleFetchAllResults = () => {
+  const handleExportPDF = () => {
+    setIsPdfLoading(true);
+    // Forces a fresh fetch of all bolt results
     setShouldFetchAllResults(true);
-    setTimeout(() => {
-      setShouldFetchAllResults(true);
-    }, 50);
   };
 
   useEffect(() => {
-    if (!isLoadingAllResults && allBoltResultsResponse) {
+    if (
+      shouldFetchAllResults &&
+      !isLoadingAllResults &&
+      allBoltResultsResponse?.boltResults?.results?.length
+    ) {
+      setPdfGenTrigger((prev) => prev + 1);
       setShouldFetchAllResults(false);
+      setIsPdfLoading(false);
     }
-  }, [isLoadingAllResults, allBoltResultsResponse]);
+  }, [shouldFetchAllResults, isLoadingAllResults, allBoltResultsResponse]);
 
   useEffect(() => {
     if (error) {
@@ -378,20 +385,20 @@ export default function Page({ params }: Props): JSX.Element {
           </div>
 
           {boltResultsResponse && (
-            <>
-              <PullTestReportPDF
-                disabled={false}
-                allBoltResults={allBoltResultsResponse?.boltResults}
-                fetchAllResults={handleFetchAllResults}
-                reportDetails={{
-                  testingStartDate: testingStartDate,
-                  testingEndDate: testingEndDate,
-                  companyName: companyData?.company?.name || '',
-                  mine: site?.name || '',
-                }}
-                parentUrl={window.parent.location.toString()}
-              />
-            </>
+            <PullTestReportPDF
+              disabled={false}
+              allBoltResults={allBoltResultsResponse?.boltResults}
+              generateTrigger={pdfGenTrigger}
+              isLoading={isPdfLoading}
+              onRequestPDF={handleExportPDF}
+              reportDetails={{
+                testingStartDate: testingStartDate,
+                testingEndDate: testingEndDate,
+                companyName: companyData?.company?.name || '',
+                mine: site?.name || '',
+              }}
+              parentUrl={window.parent.location.toString()}
+            />
           )}
         </div>
 

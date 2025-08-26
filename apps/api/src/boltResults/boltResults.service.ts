@@ -111,7 +111,7 @@ export class BoltResultsService {
         location: true,
       },
       orderBy: {
-        boltNumber: 'asc',
+        createdAt: 'asc',
       },
     };
 

@@ -25,6 +25,7 @@ import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { responses } from '@/app/uitexts/responses';
 import { PullTestReportPDF } from '@/components/PullTestReportPDF';
+import { getEarliestAndLatestDates } from '@/libs/utils';
 interface Props {
   params: {
     id: string;
@@ -132,6 +133,8 @@ const allBoltResultQuery = gql`
       totalRecords
       results {
         id
+        createdAt
+        updatedAt
         boltNumber
         boltType
         peakLoad
@@ -266,15 +269,9 @@ export default function Page({ params }: Props): JSX.Element {
       pause: !shouldFetchAllResults || !site?.id,
     });
 
-  // TODO test if it works
-  const earliestStartDate =
-    allBoltResultsResponse?.boltResults?.results?.reduce(
-      (earliest, result) => {
-        const currentDate = new Date(result.createdAt);
-        return !earliest || currentDate < earliest ? currentDate : earliest;
-      },
-      null as Date | null,
-    );
+  const { testingStartDate, testingEndDate } = getEarliestAndLatestDates(
+    allBoltResultsResponse?.boltResults?.results || [],
+  );
 
   const handleFetchAllResults = () => {
     setShouldFetchAllResults(true);
@@ -387,15 +384,10 @@ export default function Page({ params }: Props): JSX.Element {
                 allBoltResults={allBoltResultsResponse?.boltResults}
                 fetchAllResults={handleFetchAllResults}
                 reportDetails={{
-                  startDate: earliestStartDate
-                    ? earliestStartDate.toLocaleDateString()
-                    : new Date().toLocaleDateString(),
-                  // TODO fix this data
+                  testingStartDate: testingStartDate,
+                  testingEndDate: testingEndDate,
                   companyName: companyData?.company?.name || '',
-                  contractor: '',
-                  contactPerson: [{ name: '' }],
                   mine: site?.name || '',
-                  commodity: '',
                 }}
                 parentUrl={window.parent.location.toString()}
               />

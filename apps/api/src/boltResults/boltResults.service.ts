@@ -110,6 +110,9 @@ export class BoltResultsService {
         drive: true,
         location: true,
       },
+      orderBy: {
+        boltNumber: 'asc',
+      },
     };
 
     if (typeof offset === 'number') {

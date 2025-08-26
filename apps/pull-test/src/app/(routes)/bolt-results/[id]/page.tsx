@@ -176,12 +176,11 @@ export default function Page({ params }: Props): JSX.Element {
   const getAdjustedEndDate = (
     dateRange: DateRange | undefined,
   ): Date | undefined => {
-    if (!dateRange?.to) return undefined;
-
+    if (!dateRange?.to) {
+      return undefined;
+    }
     const endDate = new Date(dateRange.to);
-
     endDate.setHours(23, 59, 59, 999);
-
     return endDate;
   };
 
@@ -205,10 +204,6 @@ export default function Page({ params }: Props): JSX.Element {
     },
     pause: !site?.id,
   });
-
-  const handleSetDateRange = (newDateRange: DateRange | undefined) => {
-    setDateRange(newDateRange);
-  };
 
   useEffect(() => {
     if (error) {
@@ -329,7 +324,7 @@ export default function Page({ params }: Props): JSX.Element {
           onSetLevel={setLevel}
           onSetDrive={setDrive}
           onSetLocation={setLocation}
-          onSetDateRange={handleSetDateRange}
+          onSetDateRange={setDateRange}
           onFilterChange={setFilterState}
           boltResults={boltResultsResponse?.boltResults?.results || []}
         />

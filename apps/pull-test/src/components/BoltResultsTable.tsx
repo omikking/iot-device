@@ -8,9 +8,10 @@ import {
   LucideSearchX,
   ClipboardList,
 } from 'lucide-react';
-import { BoltResult, Result } from '@/gql/graphql';
+import { BoltResult, Result, RingPosition } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { Pagination } from './Pagination';
+import { convertRingPosition } from '@/libs/utils';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
@@ -131,6 +132,8 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'positionInRing',
       header: 'Position in ring',
+      cell: ({ row }) =>
+        convertRingPosition(row.original.positionInRing as RingPosition),
     },
     {
       accessorKey: 'comment',

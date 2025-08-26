@@ -10,12 +10,10 @@ interface PullTestReportPDFProps {
   allBoltResults?: BoltResultResponse;
   fetchAllResults: () => void;
   reportDetails: {
-    startDate: string;
+    testingStartDate: string;
+    testingEndDate: string;
     companyName: string;
-    contractor: string;
-    contactPerson: { name: string }[];
     mine: string;
-    commodity: string;
   };
   parentUrl?: string;
   disabled?: boolean;
@@ -109,27 +107,23 @@ export const PullTestReportPDF = ({
     pdf.setTextColor(0, 0, 0);
 
     const headings = [
-      'START DATE',
       'COMPANY NAME',
-      'CONTRACTOR',
-      'CONTACT PERSON',
       'MINE',
-      'COMMODITY',
+      'TESTING START DATE',
+      'TESTING END DATE',
     ];
 
     const values = [
-      reportDetails.startDate,
       reportDetails.companyName,
-      reportDetails.contractor,
-      reportDetails.contactPerson?.map((p) => p.name).join(', ') || '',
-      reportDetails.mine || '',
-      reportDetails.commodity || '',
+      reportDetails.mine,
+      reportDetails.testingStartDate,
+      reportDetails.testingEndDate,
     ];
 
-    const colsPerRow = 3;
+    const colsPerRow = 2;
     const colWidth = (pageWidth - margin * 2) / colsPerRow;
 
-    // Draw headings and values in rows of 3
+    // Draw headings and values in rows of 2
     for (let row = 0; row < Math.ceil(headings.length / colsPerRow); row++) {
       const startIndex = row * colsPerRow;
       const endIndex = Math.min(startIndex + colsPerRow, headings.length);

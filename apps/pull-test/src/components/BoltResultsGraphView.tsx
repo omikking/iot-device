@@ -26,8 +26,11 @@ export const BoltResultsGraphView = ({
   passedCount,
   totalRecords,
 }: BoltResultsGraphViewProps) => {
-  const rate = (passedCount / totalRecords) * 100;
-  const successRatePercentage = `${Math.round(rate * 10) / 10}%`;
+  const rate =
+    passedCount && totalRecords
+      ? (passedCount / totalRecords) * 100
+      : undefined;
+  const successRatePercentage = rate ? `${Math.round(rate * 10) / 10}%` : 'N/A';
 
   return (
     <>
@@ -53,7 +56,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              {successRatePercentage || 'N/A'}
+              {successRatePercentage}
             </Badge>
             <Text variant="medium" color="foreground">
               Success rate

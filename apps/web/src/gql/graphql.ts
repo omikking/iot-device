@@ -119,6 +119,7 @@ export type CompanyListResponse = {
 
 export type CompleteInvitationInput = {
   fullName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   token: Scalars['String']['input'];
@@ -887,6 +888,7 @@ export type QueryUsersArgs = {
  * Define the queries that can be made to the User model
  */
 export type QueryValidateInvitationArgs = {
+  id: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
 

@@ -320,6 +320,8 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
               : null,
           comment: faker.datatype.boolean(0.6) ? faker.lorem.sentence() : null,
           image: faker.datatype.boolean(0.3) ? faker.image.url() : null,
+          createdAt: faker.date.recent({ days: 30 }),
+          updatedAt: faker.date.recent({ days: 30 }),
           siteId: site.id,
           levelId: level.id,
           driveId: drive.id,

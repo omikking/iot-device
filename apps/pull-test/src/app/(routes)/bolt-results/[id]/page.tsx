@@ -176,6 +176,17 @@ export default function Page({ params }: Props): JSX.Element {
     variables: { id: companyId },
   });
 
+  const getAdjustedEndDate = (
+    dateRange: DateRange | undefined,
+  ): Date | undefined => {
+    if (!dateRange?.to) {
+      return undefined;
+    }
+    const endDate = new Date(dateRange.to);
+    endDate.setHours(23, 59, 59, 999);
+    return endDate;
+  };
+
   const [{ data: boltResultsResponse, error }] = useQuery<{
     boltResults: {
       totalRecords: number;
@@ -198,7 +209,7 @@ export default function Page({ params }: Props): JSX.Element {
       withImage: filterState.withImage || undefined,
       withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
-      endDate: dateRange?.to,
+      endDate: getAdjustedEndDate(dateRange),
       result: result.length > 0 ? result : undefined,
     },
     pause: !site?.id,
@@ -213,7 +224,6 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [error]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);

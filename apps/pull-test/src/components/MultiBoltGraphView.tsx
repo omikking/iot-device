@@ -19,6 +19,9 @@ const chartConfig = {
     label: 'Peak Load',
     color: 'var(--chart-1)',
   },
+  displacement: {
+    label: 'Peak Displacement',
+  },
 } satisfies ChartConfig;
 
 export const MultiBoltGraphView = ({
@@ -26,19 +29,40 @@ export const MultiBoltGraphView = ({
   peakDisplacement,
   boltNumber,
 }: MultiBoltGraphViewProps) => {
+  // Prepare chart data
   const chartData = peakDisplacement.map((displacement, index) => ({
-    displacement: displacement.toString(),
-    kilonewton: peakLoad[index]?.toString() || '0',
+    displacement: displacement,
+    peakLoad: peakLoad[index]?.toString() || '0',
     desktop: peakLoad[index] || 0,
   }));
 
-  const maxLoad = Math.max(...peakLoad);
-  const tickInterval = 50;
-  const maxTick = Math.ceil(maxLoad / tickInterval) * tickInterval;
+  // --- Y Axis (Peak Load) ---
+  const maxLoad = Math.max(...peakLoad, 0);
+  const yTickInterval = 5;
+  const yMaxBase = 25;
+  const yMax =
+    maxLoad > yMaxBase
+      ? Math.ceil((maxLoad + yTickInterval) / yTickInterval) * yTickInterval
+      : yMaxBase;
   const yAxisTicks = [];
-  for (let i = 0; i <= maxTick; i += tickInterval) {
+  for (let i = 0; i <= yMax; i += yTickInterval) {
     yAxisTicks.push(i);
   }
+
+  // --- X Axis (Displacement) ---
+  const maxDisplacement = Math.max(...peakDisplacement, 0);
+  const xTickInterval = 5;
+  const xMaxBase = 40;
+  const xMax =
+    maxDisplacement > xMaxBase
+      ? Math.ceil((maxDisplacement + xTickInterval) / xTickInterval) *
+        xTickInterval
+      : xMaxBase;
+  const xAxisTicks = [];
+  for (let i = 0; i <= xMax; i += xTickInterval) {
+    xAxisTicks.push(i.toString());
+  }
+
   return (
     <div className="bg-transparent">
       <div className="pt-12">
@@ -49,24 +73,27 @@ export const MultiBoltGraphView = ({
             margin={{
               left: 15,
               right: 12,
+              bottom: 20,
             }}
           >
             <CartesianGrid vertical={true} />
             <XAxis
               dataKey="displacement"
-              tickFormatter={(value) => value.slice(0, 3)}
+              type="number"
+              domain={[0, xMax]}
+              ticks={xAxisTicks.map(Number)}
+              tickFormatter={(value) => value.toString()}
               tickLine={{ strokeWidth: 0 }}
               axisLine={{ stroke: '#E6E6E6' }}
               tick={{ fill: '#E6E6E6', fontSize: 12 }}
-              domain={[0, 'dataMax']}
               label={{
-                value: 'Displacement (mm)',
+                value: 'Displacement at Peak Load (mm)',
                 position: 'insideBottom',
-                offset: -10,
+                offset: -30,
                 style: {
                   textAnchor: 'middle',
                   fill: '#000000',
-                  fontSize: 20,
+                  fontSize: 18,
                   fontFamily: 'SandvikSansText',
                 },
               }}
@@ -76,17 +103,17 @@ export const MultiBoltGraphView = ({
               ticks={yAxisTicks}
               axisLine={{ stroke: '#E6E6E6' }}
               tickLine={{ strokeWidth: 0 }}
-              domain={[0, maxTick]}
+              domain={['dataMin', yMax]}
               tickMargin={8}
               label={{
-                value: 'Kilonewton',
+                value: 'Peak Load (tons)',
                 angle: -90,
                 position: 'insideLeft',
-                offset: 10,
+                offset: -6,
                 style: {
                   textAnchor: 'middle',
                   fill: '#000000',
-                  fontSize: 20,
+                  fontSize: 18,
                   fontFamily: 'SandvikSansText',
                 },
               }}
@@ -107,13 +134,29 @@ export const MultiBoltGraphView = ({
               activeDot={{
                 r: 6,
               }}
+              isAnimationActive={false}
             />
 
+            <Line
+              dataKey="displacement"
+              type="linear"
+              name="Peak Displacement"
+              strokeWidth={0}
+              dot={false}
+              activeDot={false}
+              isAnimationActive={false}
+            />
             <Legend
               align="left"
               iconType="rect"
               wrapperStyle={{ left: 65, top: 455 }}
-              formatter={() => `Bolt ${boltNumber}`}
+              payload={[
+                {
+                  value: `Bolt ${boltNumber}`,
+                  type: 'rect',
+                  color: 'var(--color-desktop)',
+                },
+              ]}
             />
           </LineChart>
         </ChartContainer>

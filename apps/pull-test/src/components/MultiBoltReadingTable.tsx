@@ -22,14 +22,14 @@ const columns: ColumnDef<MultiBoltReading>[] = [
   {
     accessorKey: 'peakLoad',
     header: ({ column }) => (
-      <TableHeadWithSorting column={column} header="Peak load" />
+      <TableHeadWithSorting column={column} header="Peak load (tons)" />
     ),
   },
 
   {
     accessorKey: 'peakDisplacement',
     header: ({ column }) => (
-      <TableHeadWithSorting column={column} header="Peak displacement" />
+      <TableHeadWithSorting column={column} header="Peak displacement (mm)" />
     ),
   },
   {

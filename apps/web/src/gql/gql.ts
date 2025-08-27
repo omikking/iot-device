@@ -28,7 +28,7 @@ const documents = {
     "\n  mutation createSite($createSiteInput: CreateSiteInput!) {\n    createSite(createSiteInput: $createSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.CreateSiteDocument,
     "\n  mutation updateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {\n    updateSite(id: $id, updateSiteInput: $updateSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.UpdateSiteDocument,
     "\n  mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      isGlobalVisibility\n    }\n  }\n": types.UpdateTechnicianDocument,
-    "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n": types.GetTechniciansByRoleDocument,
+    "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n    }\n  }\n": types.GetTechniciansByRoleDocument,
     "\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.CreateUserPermissionDocument,
     "\n  mutation updateUserPermission(\n    $id: String!\n    $updateUserPermissionInput: UpdateUserPermissionInput!\n  ) {\n    updateUserPermission(\n      id: $id\n      updateUserPermissionInput: $updateUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.UpdateUserPermissionDocument,
     "\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n": types.GetUsersDocument,
@@ -127,7 +127,7 @@ export function graphql(source: "\n  mutation updateTechnician($id: String!, $up
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"): (typeof documents)["\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"];
+export function graphql(source: "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n    }\n  }\n"): (typeof documents)["\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

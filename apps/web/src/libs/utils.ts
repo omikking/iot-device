@@ -34,6 +34,8 @@ export const isCompanyAdmin = (
     return false;
   }
 
+  console.log('userPermissions in util', userPermissions, companyId);
+
   return userPermissions.some(
     (permission) =>
       permission.role === Role.CompanyAdmin &&

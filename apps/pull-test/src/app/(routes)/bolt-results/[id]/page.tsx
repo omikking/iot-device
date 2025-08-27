@@ -70,6 +70,10 @@ const boltResultQuery = gql`
       endDate: $endDate
     ) {
       totalRecords
+      failedCount
+      hazardCount
+      passedCount
+      averageTons
       results {
         id
         createdAt
@@ -106,7 +110,6 @@ const boltResultQuery = gql`
     }
   }
 `;
-
 const getCompanyQuery = gql`
   query GetCompany($id: String!) {
     company(id: $id) {
@@ -185,7 +188,14 @@ export default function Page({ params }: Props): JSX.Element {
   };
 
   const [{ data: boltResultsResponse, error }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResult[] };
+    boltResults: {
+      totalRecords: number;
+      failedCount: number;
+      hazardCount: number;
+      passedCount: number;
+      averageTons: number;
+      results: BoltResult[];
+    };
   }>({
     query: boltResultQuery,
     variables: {
@@ -341,7 +351,14 @@ export default function Page({ params }: Props): JSX.Element {
         </TabsContent>
 
         <TabsContent value="graphs">
-          <BoltResultsGraphView />
+          <BoltResultsGraphView
+            site={site?.id}
+            boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords}
+            averageTons={boltResultsResponse?.boltResults?.averageTons}
+            passedCount={boltResultsResponse?.boltResults?.passedCount}
+            totalRecords={boltResultsResponse?.boltResults?.totalRecords}
+          />
         </TabsContent>
       </Tabs>
     </main>

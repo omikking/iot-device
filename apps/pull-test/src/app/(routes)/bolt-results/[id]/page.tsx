@@ -204,19 +204,6 @@ export default function Page({ params }: Props): JSX.Element {
     pause: !site?.id,
   });
 
-  const getSuccessRate = () => {
-    const { passedCount, totalRecords } =
-      boltResultsResponse?.boltResults || {};
-
-    if (!passedCount || !totalRecords) {
-      return 'N/A';
-    }
-
-    const rate = (passedCount / totalRecords) * 100;
-
-    return `${Math.round(rate * 10) / 10}%`;
-  };
-
   useEffect(() => {
     if (error) {
       showAlertToast({
@@ -357,11 +344,10 @@ export default function Page({ params }: Props): JSX.Element {
           <BoltResultsGraphView
             site={site?.id}
             boltResults={site ? boltResultsResponse?.boltResults?.results : []}
-            totalCount={boltResultsResponse?.boltResults?.totalRecords || 0}
-            averageTons={
-              boltResultsResponse?.boltResults?.averageTons || undefined
-            }
-            successRate={getSuccessRate()}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords}
+            averageTons={boltResultsResponse?.boltResults?.averageTons}
+            passedCount={boltResultsResponse?.boltResults?.passedCount}
+            totalRecords={boltResultsResponse?.boltResults?.totalRecords}
           />
         </TabsContent>
       </Tabs>

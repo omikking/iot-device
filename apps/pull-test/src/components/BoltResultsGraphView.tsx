@@ -14,7 +14,8 @@ type BoltResultsGraphViewProps = {
   site?: string;
   totalCount?: number;
   averageTons?: number;
-  successRate: string;
+  passedCount?: number;
+  totalRecords?: number;
 };
 
 export const BoltResultsGraphView = ({
@@ -22,15 +23,19 @@ export const BoltResultsGraphView = ({
   site,
   totalCount,
   averageTons,
-  successRate,
+  passedCount,
+  totalRecords,
 }: BoltResultsGraphViewProps) => {
+  const rate = (passedCount / totalRecords) * 100;
+  const successRatePercentage = `${Math.round(rate * 10) / 10}%`;
+
   return (
     <>
       {site && boltResults && (
         <div className="flex justify-center gap-10 py-20 flex-wrap">
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              {totalCount} tests
+              {totalCount ? `${totalCount} tests` : 'N/A'}
             </Badge>
             <Text variant="medium" color="foreground">
               Total numbers of tests
@@ -39,7 +44,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              {averageTons} tons
+              {averageTons ? `${averageTons} tons` : 'N/A'}
             </Badge>
             <Text variant="medium" color="foreground">
               Average tons
@@ -48,7 +53,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              {successRate}
+              {successRatePercentage || 'N/A'}
             </Badge>
             <Text variant="medium" color="foreground">
               Success rate

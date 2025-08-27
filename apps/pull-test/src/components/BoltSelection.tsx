@@ -6,27 +6,34 @@ import {
   ContentHolder,
 } from '@gsp/ui';
 import { useMemo } from 'react';
-import { GetCompanyQuery, BoltResult } from '@/gql/graphql';
+import {
+  GetCompanyQuery,
+  BoltResult,
+  Drive,
+  Level,
+  Site,
+  Location,
+} from '@/gql/graphql';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 
-type CompanyType = GetCompanyQuery['company'];
-type SiteType = NonNullable<CompanyType['sites']>[number];
-type LevelType = NonNullable<SiteType['levels']>[number];
-type DriveType = NonNullable<LevelType['drives']>[number];
-type LocationType = NonNullable<DriveType['locations']>[number];
+// type CompanyType = GetCompanyQuery['company'];
+// type SiteType = NonNullable<CompanyType['sites']>[number];
+// type LevelType = NonNullable<SiteType['levels']>[number];
+// type DriveType = NonNullable<LevelType['drives']>[number];
+// type LocationType = NonNullable<DriveType['locations']>[number];
 
 interface BoltSelectionProps {
-  site?: SiteType;
-  level?: LevelType;
-  drive?: DriveType;
-  location?: LocationType;
+  site?: Site;
+  level?: Level;
+  drive?: Drive;
+  location?: Location;
   dateRange?: DateRange;
   selectedTab?: string;
   filterState: FilterState;
-  onSetSite: React.Dispatch<React.SetStateAction<SiteType | undefined>>;
-  onSetLevel: React.Dispatch<React.SetStateAction<LevelType | undefined>>;
-  onSetDrive: React.Dispatch<React.SetStateAction<DriveType | undefined>>;
-  onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
+  onSetSite: React.Dispatch<React.SetStateAction<Site | undefined>>;
+  onSetLevel: React.Dispatch<React.SetStateAction<Level | undefined>>;
+  onSetDrive: React.Dispatch<React.SetStateAction<Drive | undefined>>;
+  onSetLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
   onSetDateRange: (dateRange: DateRange | undefined) => void;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResult[];
@@ -53,39 +60,60 @@ export const BoltSelection = ({
   }, [companyData]);
 
   const handleSetSite = (siteId?: string) => {
-    const selectedSite = siteOptions.find((s) => s.id === siteId);
-    onSetSite(selectedSite);
+    const selectedSite = companyData?.company?.sites?.find(
+      (s) => s.id === siteId,
+    );
+    onSetSite(selectedSite as Site | undefined);
     onSetDateRange({ from: undefined, to: undefined });
     onSetLevel(undefined);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
-  const levelsOptions = useMemo(() => {
-    return site?.levels || [];
-  }, [site]);
+  // const levelsOptions = useMemo(() => {
+  //   return site?.levels || [];
+  // }, [site]);
 
+  const levelsOptions = useMemo(() => {
+    return (
+      site?.levels?.map((level) => ({
+        id: level.id,
+        name: level.levelName, // or whatever property contains the level name
+      })) || []
+    );
+  }, [site]);
   const handleSetLevel = (levelId?: string) => {
-    const selectedLevel = levelsOptions.find((l) => l.id === levelId);
-    onSetLevel(selectedLevel);
+    const selectedLevel = site?.levels?.find((l) => l.id === levelId);
+    onSetLevel(selectedLevel as Level | undefined);
     onSetDrive(undefined);
     onSetLocation(undefined);
   };
 
   const drivesOptions = useMemo(() => {
-    return level?.drives || [];
+    return (
+      level?.drives?.map((drive) => ({
+        id: drive.id,
+        name: drive.driveName, // or whatever property contains the drive name
+      })) || []
+    );
   }, [level]);
 
   const handleSetDrive = (driveId?: string) => {
-    const selectedDrive = drivesOptions.find((d) => d.id === driveId);
+    const selectedDrive = level?.drives?.find((d) => d.id === driveId);
     onSetDrive(selectedDrive);
     onSetLocation(undefined);
   };
 
   const locationsOptions = useMemo(() => {
-    return drive?.locations || [];
+    return (
+      drive?.locations?.map((location) => ({
+        id: location.id,
+        name: location.locationName, // or whatever property contains the location name
+      })) || []
+    );
   }, [drive]);
 
+  console.log('levelsOptions', levelsOptions);
   return (
     <ContentHolder variant="filter">
       <BoltResultsFilter
@@ -163,7 +191,7 @@ export const BoltSelection = ({
           selectedId={location?.id}
           options={locationsOptions}
           onSelect={(locationId) => {
-            const selectedLocation = locationsOptions.find(
+            const selectedLocation = drive?.locations?.find(
               (loc) => loc.id === locationId,
             );
             onSetLocation(selectedLocation);

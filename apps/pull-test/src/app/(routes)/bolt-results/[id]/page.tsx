@@ -18,7 +18,7 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { BoltResult } from '@/gql/graphql';
+import { BoltResult, Drive, Level, Site, Location } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
 import { responses } from '@/app/uitexts/responses';
@@ -28,17 +28,20 @@ import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
 
-interface Props {
+type BoltResultsProps = {
   params: {
     id: string;
   };
-}
+};
 
 type CompanyType = GetCompanyQuery['company'];
-type SiteType = NonNullable<CompanyType['sites']>[number];
-type LevelType = NonNullable<SiteType['levels']>[number];
-type DriveType = NonNullable<LevelType['drives']>[number];
-type LocationType = NonNullable<DriveType['locations']>[number];
+// type SiteType = NonNullable<CompanyType['sites']>[number];
+// type LevelType = NonNullable<SiteType['levels']>[number];
+type LevelType = NonNullable<Site['levels']>[number];
+// type DriveType = NonNullable<LevelType['drives']>[number];
+type DriveType = NonNullable<Level['drives']>[number];
+// type LocationType = NonNullable<DriveType['locations']>[number];
+type LocationType = NonNullable<Drive['locations']>[number];
 
 const boltResultQuery = gql`
   query GetBoltResult(
@@ -134,13 +137,17 @@ const getCompanyQuery = gql`
   }
 `;
 
-export default function Page({ params }: Props): JSX.Element {
+export default function Page({ params }: BoltResultsProps): JSX.Element {
   const companyId = params.id;
 
-  const [site, setSite] = useState<SiteType | undefined>();
-  const [level, setLevel] = useState<LevelType | undefined>();
-  const [drive, setDrive] = useState<DriveType | undefined>();
-  const [location, setLocation] = useState<LocationType | undefined>();
+  // const [site, setSite] = useState<SiteType | undefined>();
+  // const [level, setLevel] = useState<LevelType | undefined>();
+  // const [drive, setDrive] = useState<DriveType | undefined>();
+  // const [location, setLocation] = useState<LocationType | undefined>();
+  const [site, setSite] = useState<Site | undefined>();
+  const [level, setLevel] = useState<Level | undefined>();
+  const [drive, setDrive] = useState<Drive | undefined>();
+  const [location, setLocation] = useState<Location | undefined>();
 
   const [selectedTab, setSelectedTab] = useState<'table' | 'graphs'>('table');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -267,7 +274,7 @@ export default function Page({ params }: Props): JSX.Element {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
-                        {site.name}
+                        {site.siteName}
                       </Text>
                     </BreadcrumbItem>
                   </>
@@ -277,7 +284,7 @@ export default function Page({ params }: Props): JSX.Element {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
-                        {level.name}
+                        {level.levelName}
                       </Text>
                     </BreadcrumbItem>
                   </>
@@ -287,7 +294,7 @@ export default function Page({ params }: Props): JSX.Element {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
-                        {drive.name}
+                        {drive.driveName}
                       </Text>
                     </BreadcrumbItem>
                   </>
@@ -297,7 +304,7 @@ export default function Page({ params }: Props): JSX.Element {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <Text variant="medium" color="foreground">
-                        {location.name}
+                        {location.locationName}
                       </Text>
                     </BreadcrumbItem>
                   </>

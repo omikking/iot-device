@@ -395,6 +395,7 @@ export const AddOrEditUserModal = ({
   }, [user, technicians]);
 
   console.log('technicianDropdownOptions', technicianDropdownOptions);
+  console.log('technicians', technicians);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

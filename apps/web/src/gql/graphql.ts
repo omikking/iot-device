@@ -61,10 +61,6 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  averageTons?: Maybe<Scalars['Float']['output']>;
-  failedCount: Scalars['Int']['output'];
-  hazardCount: Scalars['Int']['output'];
-  passedCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
   totalRecords: Scalars['Int']['output'];
 };

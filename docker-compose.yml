@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  dev-db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  test-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data-test
+  # smtp4dev:
+  #   image: rnwood/smtp4dev:v3
+  #   ports:
+  #     - 5555:80 # Web UI - access at http://localhost:5555
+  #     - 2525:25 # SMTP port application
+  #   environment:
+  #     - ServerOptions__HostName=smtp4dev
+  #     - ServerOptions__LockSettings=false
+  #   volumes:
+  #     - smtp4dev-data:/smtp4dev
+  #   networks:
+  #     - playground
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      - test-db
+      - dev-db
+    environment:
+      DATABASE_URL: postgresql://postgres:123@localhost:5434/nest?schema=public
+    ports:
+      - '4000:4000'
+    command: pnpm start:prod
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    depends_on:
+      - api
+    ports:
+      - '3000:3000'
+    command: pnpm start
+
+  pull-test:
+    build:
+      context: .
+      dockerfile: apps/pull-test/Dockerfile
+    depends_on:
+      - api
+    ports:
+      - '3001:3001'
+    command: pnpm start
+
+networks:
+  playground:
+volumes:
+  postgres_data:
+  postgres-data-test:
+  # smtp4dev-data:
+# command to build and run: docker-compose up --build

@@ -173,6 +173,22 @@ export class UpdateLocationInput {
     locationName?: Nullable<string>;
 }
 
+export class RequestPasswordResetInput {
+    email: string;
+}
+
+export class ValidateResetTokenInput {
+    email: string;
+    token: string;
+}
+
+export class ConfirmPasswordResetInput {
+    token: string;
+    email: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
 export class CreateSiteInput {
     siteName: string;
     address: string;
@@ -290,6 +306,9 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    requestPasswordReset?: boolean;
+    validateResetToken?: boolean;
+    confirmPasswordReset?: boolean;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;

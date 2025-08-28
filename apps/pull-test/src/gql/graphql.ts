@@ -19,10 +19,9 @@ export type Scalars = {
 };
 
 export enum Application {
+  Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
-  PullTestOperator = 'PULL_TEST_OPERATOR',
-  Ultrabolts = 'ULTRABOLTS',
-  Xcyclops = 'XCYCLOPS'
+  PullTestOperator = 'PULL_TEST_OPERATOR'
 }
 
 /**
@@ -36,17 +35,21 @@ export type BoltResult = {
   boltType: Scalars['String']['output'];
   comment?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  drive?: Maybe<Drive>;
   driveId: Scalars['String']['output'];
   hazardCompletedDate?: Maybe<Array<Scalars['DateTime']['output']>>;
   id: Scalars['String']['output'];
   image?: Maybe<Scalars['String']['output']>;
   isHazard: Scalars['Boolean']['output'];
+  level?: Maybe<Level>;
   levelId: Scalars['String']['output'];
+  location?: Maybe<Location>;
   locationId: Scalars['String']['output'];
   peakDisplacement: Array<Scalars['Int']['output']>;
   peakLoad: Array<Scalars['Int']['output']>;
   positionInRing: Scalars['String']['output'];
   result: Scalars['String']['output'];
+  site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
@@ -58,6 +61,10 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
+  averageTons?: Maybe<Scalars['Float']['output']>;
+  failedCount: Scalars['Int']['output'];
+  hazardCount: Scalars['Int']['output'];
+  passedCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
   totalRecords: Scalars['Int']['output'];
 };
@@ -95,8 +102,10 @@ export type Company = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   orgNumber: Scalars['String']['output'];
+  pendingInvitations?: Maybe<Array<Invitation>>;
   plans?: Maybe<Array<Plan>>;
   postalCode: Scalars['String']['output'];
+  sandvikAdminUserId?: Maybe<Scalars['String']['output']>;
   sites?: Maybe<Array<Site>>;
   updatedAt: Scalars['DateTime']['output'];
   users?: Maybe<Array<User>>;
@@ -112,19 +121,13 @@ export type CompanyListResponse = {
   totalRecords: Scalars['Int']['output'];
 };
 
-export type ConfirmPasswordResetInput = {
-  confirmPassword: Scalars['String']['input'];
-  email: Scalars['String']['input'];
-  newPassword: Scalars['String']['input'];
+export type CompleteInvitationInput = {
+  fullName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
   token: Scalars['String']['input'];
-};
-
-/**
- * CreateAdminPermissionInput
- * Define the input fields to create a new userPermission
- */
-export type CreateAdminPermissionInput = {
-  userId: Scalars['String']['input'];
+  workPlace: Scalars['String']['input'];
 };
 
 /**
@@ -172,7 +175,7 @@ export type CreateCompanyInput = {
   orgNumber: Scalars['String']['input'];
   plans?: InputMaybe<Array<CreatePlanInput>>;
   postalCode: Scalars['String']['input'];
-  userPermissions: Array<CreateAdminPermissionInput>;
+  sandvikAdminUserId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -182,6 +185,18 @@ export type CreateCompanyInput = {
 export type CreateDriveInput = {
   driveName: Scalars['String']['input'];
   levelId: Scalars['String']['input'];
+};
+
+export type CreateGlobalInvitationInput = {
+  email: Scalars['String']['input'];
+  globalRole: Scalars['String']['input'];
+};
+
+export type CreateInvitationInput = {
+  appsAccess: Array<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  role: Scalars['String']['input'];
 };
 
 /**
@@ -257,6 +272,30 @@ export type Flavor = {
   name: Scalars['String']['output'];
 };
 
+export type Invitation = {
+  __typename?: 'Invitation';
+  companyId?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  expiresAt: Scalars['DateTime']['output'];
+  globalRole?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  used: Scalars['Boolean']['output'];
+};
+
+export type InvitationResponse = {
+  __typename?: 'InvitationResponse';
+  invitationId?: Maybe<Scalars['String']['output']>;
+  isNewUser: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvitationValidation = {
+  __typename?: 'InvitationValidation';
+  invitation?: Maybe<Invitation>;
+  reason?: Maybe<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
 /**
  * Level model
  * Define the Level model and its fields
@@ -292,12 +331,14 @@ export type Location = {
  */
 export type Mutation = {
   __typename?: 'Mutation';
-  confirmPasswordReset: Scalars['Boolean']['output'];
+  completeInvitation: User;
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
+  createGlobalInvitation: InvitationResponse;
+  createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
   createSite: Site;
@@ -307,12 +348,13 @@ export type Mutation = {
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
+  removeInvitation: Invitation;
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
-  requestPasswordReset: Scalars['Boolean']['output'];
+  resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -323,7 +365,6 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
-  validateResetToken: Scalars['Boolean']['output'];
 };
 
 
@@ -331,8 +372,8 @@ export type Mutation = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
-export type MutationConfirmPasswordResetArgs = {
-  confirmPasswordResetInput: ConfirmPasswordResetInput;
+export type MutationCompleteInvitationArgs = {
+  input: CompleteInvitationInput;
 };
 
 
@@ -378,6 +419,24 @@ export type MutationCreateCompanyArgs = {
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateGlobalInvitationArgs = {
+  input: CreateGlobalInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateInvitationArgs = {
+  input: CreateInvitationInput;
 };
 
 
@@ -466,6 +525,15 @@ export type MutationRemoveDriveArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRemoveInvitationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
@@ -511,8 +579,8 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
-export type MutationRequestPasswordResetArgs = {
-  requestPasswordResetInput: RequestPasswordResetInput;
+export type MutationResendInvitationArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -601,6 +669,7 @@ export type MutationUpdateSiteArgs = {
  */
 export type MutationUpdateUserArgs = {
   id: Scalars['String']['input'];
+  updatePasswordInput?: InputMaybe<UpdatePasswordInput>;
   updateUserInput: UpdateUserInput;
 };
 
@@ -612,15 +681,6 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserPermissionArgs = {
   id: Scalars['String']['input'];
   updateUserPermissionInput: UpdateUserPermissionInput;
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
-export type MutationValidateResetTokenArgs = {
-  validateResetTokenInput: ValidateResetTokenInput;
 };
 
 /**
@@ -676,12 +736,15 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  pendingGlobalInvitations: Array<Invitation>;
+  pendingInvitations: Array<Invitation>;
   site: Site;
   sites: Array<Site>;
   user: User;
   userPermission: UserPermission;
   userPermissions: Array<UserPermission>;
   users: Array<User>;
+  validateInvitation: InvitationValidation;
 };
 
 
@@ -700,13 +763,17 @@ export type QueryBoltResultArgs = {
  */
 export type QueryBoltResultsArgs = {
   driveId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   levelId?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   locationId?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  result?: InputMaybe<Scalars['String']['input']>;
+  result?: InputMaybe<Array<Scalars['String']['input']>>;
   siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  withComment?: InputMaybe<Scalars['Boolean']['input']>;
+  withImage?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -779,6 +846,15 @@ export type QueryLocationArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
+export type QueryPendingInvitationsArgs = {
+  companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
 export type QuerySiteArgs = {
   id: Scalars['String']['input'];
 };
@@ -810,8 +886,14 @@ export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
-export type RequestPasswordResetInput = {
-  email: Scalars['String']['input'];
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryValidateInvitationArgs = {
+  id: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export enum Result {
@@ -854,15 +936,6 @@ export type Site = {
   postalCode: Scalars['String']['output'];
   siteName: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
-};
-
-/**
- * UpdateAdminPermissionInput
- * Define the input fields to update the sandvik admin to new admin
- */
-export type UpdateAdminPermissionInput = {
-  newUserId: Scalars['String']['input'];
-  oldUserId: Scalars['String']['input'];
 };
 
 /**
@@ -910,7 +983,7 @@ export type UpdateCompanyInput = {
   orgNumber?: InputMaybe<Scalars['String']['input']>;
   plans?: InputMaybe<Array<UpdatePlanInput>>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
-  userPermissions?: InputMaybe<Array<UpdateAdminPermissionInput>>;
+  sandvikAdminUserId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -938,6 +1011,12 @@ export type UpdateLevelInput = {
  */
 export type UpdateLocationInput = {
   locationName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdatePasswordInput = {
+  confirmPassword?: InputMaybe<Scalars['String']['input']>;
+  newPassword?: InputMaybe<Scalars['String']['input']>;
+  oldPassword?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -1020,11 +1099,6 @@ export type UserPermission = {
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
-};
-
-export type ValidateResetTokenInput = {
-  email: Scalars['String']['input'];
-  token: Scalars['String']['input'];
 };
 
 export type GetHazardsIdQueryVariables = Exact<{

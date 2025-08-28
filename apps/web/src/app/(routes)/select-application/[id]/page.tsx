@@ -64,6 +64,11 @@ export default function Page({
             return false;
           }
         }
+
+        //hide pullTestOperator
+        if (plan.applicationName === Application.PullTestOperator) {
+          return false;
+        }
         return (
           allPlansForAdmin || userAppsAccess.includes(plan.applicationName)
         );

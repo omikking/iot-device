@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
+import { DataTable, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@gsp/ui';
 
 export type MultiBoltReading = {
@@ -22,14 +22,14 @@ const columns: ColumnDef<MultiBoltReading>[] = [
   {
     accessorKey: 'peakLoad',
     header: ({ column }) => (
-      <TableHeadWithSorting column={column} header="Peak load" />
+      <TableHeadWithSorting column={column} header="Peak load (tons)" />
     ),
   },
 
   {
     accessorKey: 'peakDisplacement',
     header: ({ column }) => (
-      <TableHeadWithSorting column={column} header="Peak displacement" />
+      <TableHeadWithSorting column={column} header="Peak displacement (mm)" />
     ),
   },
   {
@@ -55,11 +55,6 @@ export const MultiBoltReadingTable = ({
         variant="noBorder"
         className="!p-0 !pt-5"
       />
-      {multiReadingResults?.length && (
-        <Badge variant="neutral" className="self-start mt-5">
-          {multiReadingResults?.length} total
-        </Badge>
-      )}
     </div>
   );
 };

@@ -18,16 +18,15 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useEffect, useMemo, useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
-import { BoltResult } from '@/gql/graphql';
-
+import { responses } from '@/app/uitexts/responses';
+import { useEffect, useMemo, useState } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
 import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { responses } from '@/app/uitexts/responses';
 
 interface Props {
   params: {
@@ -71,6 +70,10 @@ const boltResultQuery = gql`
       endDate: $endDate
     ) {
       totalRecords
+      failedCount
+      hazardCount
+      passedCount
+      averageTons
       results {
         id
         createdAt
@@ -107,7 +110,6 @@ const boltResultQuery = gql`
     }
   }
 `;
-
 const getCompanyQuery = gql`
   query GetCompany($id: String!) {
     company(id: $id) {
@@ -174,8 +176,26 @@ export default function Page({ params }: Props): JSX.Element {
     variables: { id: companyId },
   });
 
+  const getAdjustedEndDate = (
+    dateRange: DateRange | undefined,
+  ): Date | undefined => {
+    if (!dateRange?.to) {
+      return undefined;
+    }
+    const endDate = new Date(dateRange.to);
+    endDate.setHours(23, 59, 59, 999);
+    return endDate;
+  };
+
   const [{ data: boltResultsResponse, error }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResult[] };
+    boltResults: {
+      totalRecords: number;
+      failedCount: number;
+      hazardCount: number;
+      passedCount: number;
+      averageTons: number;
+      results: BoltResult[];
+    };
   }>({
     query: boltResultQuery,
     variables: {
@@ -189,7 +209,7 @@ export default function Page({ params }: Props): JSX.Element {
       withImage: filterState.withImage || undefined,
       withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
-      endDate: dateRange?.to,
+      endDate: getAdjustedEndDate(dateRange),
       result: result.length > 0 ? result : undefined,
     },
     pause: !site?.id,
@@ -204,7 +224,6 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [error]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
@@ -332,7 +351,14 @@ export default function Page({ params }: Props): JSX.Element {
         </TabsContent>
 
         <TabsContent value="graphs">
-          <BoltResultsGraphView />
+          <BoltResultsGraphView
+            site={site?.id}
+            boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords}
+            averageTons={boltResultsResponse?.boltResults?.averageTons}
+            passedCount={boltResultsResponse?.boltResults?.passedCount}
+            totalRecords={boltResultsResponse?.boltResults?.totalRecords}
+          />
         </TabsContent>
       </Tabs>
     </main>

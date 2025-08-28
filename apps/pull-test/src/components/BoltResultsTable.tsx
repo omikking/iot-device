@@ -60,7 +60,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakLoad',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak load(tons)" />
+        <TableHeadWithSorting column={column} header="Peak load (tons)" />
       ),
       cell: ({ row }) => {
         const { peakLoad } = row.original;
@@ -88,7 +88,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakDisplacement',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak displacement(mm)" />
+        <TableHeadWithSorting column={column} header="Peak displacement (mm)" />
       ),
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;

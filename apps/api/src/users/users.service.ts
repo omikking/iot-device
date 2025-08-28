@@ -12,7 +12,7 @@ import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(
+  async findAll(
     user: ActiveUserData,
     allowedCompanyIds: string[],
     roles?: GlobalRole[],
@@ -27,6 +27,29 @@ export class UsersService {
       return this.prisma.user.findMany({ where });
     }
 
+    // Check if requesting SANDVIK_TECHNICIAN with global visibility
+    const isRequestingGlobalTechnicians =
+      roles?.includes(GlobalRole.SANDVIK_TECHNICIAN) && roles.length === 1;
+
+    if (isRequestingGlobalTechnicians) {
+      // Return global visibility technicians with limited fields for all users
+      return this.prisma.user.findMany({
+        where: {
+          globalRole: GlobalRole.SANDVIK_TECHNICIAN,
+          isGlobalVisibility: true,
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+          fullName: true,
+          workPlace: true,
+        },
+      }) as Promise<User[]>;
+    }
+
+    // Original logic for company-based access
     where.userRole = {
       some: {
         companyId: { in: allowedCompanyIds },

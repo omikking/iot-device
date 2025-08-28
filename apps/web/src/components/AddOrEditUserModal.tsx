@@ -21,7 +21,7 @@ import {
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
 import { SuccessMessage } from './SuccessMessage';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, UserPermission, Application, Role } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -34,7 +34,6 @@ import {
 import { useParams } from 'next/navigation';
 import { getAppName, handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
-import { useSession } from 'next-auth/react';
 
 type AddOrEditUserModalProps = {
   user?: User;
@@ -50,7 +49,6 @@ const getTechniciansQuery = graphql(`
       fullName
       email
       workPlace
-      isGlobalVisibility
     }
   }
 `);
@@ -98,9 +96,6 @@ export const AddOrEditUserModal = ({
   const params = useParams();
   const companyId = params.id;
 
-  const { data: session } = useSession();
-  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
-
   const permission = user?.userPermissions?.[0];
 
   const [isLoading, setIsLoading] = useState(false);
@@ -127,8 +122,7 @@ export const AddOrEditUserModal = ({
       roles: [Role.SandvikTechnician],
     },
   });
-
-  // const technicians = (techniciansData?.users as User[]) || [];
+  const technicians = (techniciansData?.users as User[]) || [];
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -145,18 +139,6 @@ export const AddOrEditUserModal = ({
       ],
     },
   });
-
-  const technicians = useMemo(() => {
-    const allTechnicians = (techniciansData?.users as User[]) || [];
-
-    // Admins see all technicians
-    if (isUserSandvikAdmin) {
-      return allTechnicians;
-    }
-
-    // Clients only see globally visible technicians
-    return allTechnicians.filter((tech) => tech.isGlobalVisibility === true);
-  }, [techniciansData?.users, isUserSandvikAdmin]);
 
   const technicianDropdownOptions = technicians.map(
     ({ id, fullName, workPlace }) => ({
@@ -393,9 +375,6 @@ export const AddOrEditUserModal = ({
       });
     }
   }, [user, technicians]);
-
-  console.log('technicianDropdownOptions', technicianDropdownOptions);
-  console.log('technicians', technicians);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

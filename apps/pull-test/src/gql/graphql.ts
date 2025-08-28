@@ -61,10 +61,6 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
-  averageTons?: Maybe<Scalars['Float']['output']>;
-  failedCount: Scalars['Int']['output'];
-  hazardCount: Scalars['Int']['output'];
-  passedCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
   totalRecords: Scalars['Int']['output'];
 };
@@ -123,7 +119,6 @@ export type CompanyListResponse = {
 
 export type CompleteInvitationInput = {
   fullName: Scalars['String']['input'];
-  id: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   token: Scalars['String']['input'];
@@ -892,7 +887,6 @@ export type QueryUsersArgs = {
  * Define the queries that can be made to the User model
  */
 export type QueryValidateInvitationArgs = {
-  id: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
 

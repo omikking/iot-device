@@ -1,0 +1,283 @@
+'use client';
+import { Text, showAlertToast } from '@gsp/ui';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { Drive, Role } from '@/gql/graphql';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { AddSiteLocationItemForm } from '@/components/AddSiteLocationItemForm';
+import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
+import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
+import { responses } from '@/app/uitexts/responses';
+import {
+  DriveValue,
+  siteLocationsSchema,
+} from '@/components/schemas/SiteLocationsFormSchema';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+
+const createDriveMutation = graphql(`
+  mutation createDrive($createDriveInput: CreateDriveInput!) {
+    createDrive(createDriveInput: $createDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const updateDriveMutation = graphql(`
+  mutation updateDrive($id: String!, $updateDriveInput: UpdateDriveInput!) {
+    updateDrive(id: $id, updateDriveInput: $updateDriveInput) {
+      id
+      driveName
+      levelId
+    }
+  }
+`);
+
+const deleteDriveMutation = graphql(`
+  mutation deleteDrive($id: String!) {
+    removeDrive(id: $id) {
+      id
+    }
+  }
+`);
+
+type DriveComponentProps = {
+  drive: Drive;
+  drivesOptions: Drive[];
+  selectedDriveId?: string;
+  inputRef: React.RefObject<HTMLInputElement>;
+  refreshSite: () => void;
+  handleSetDrive: (drive: Drive) => void;
+  setIsDeletingDrive: Dispatch<SetStateAction<boolean>>;
+  setSelectedDrive: Dispatch<SetStateAction<Drive | undefined>>;
+};
+
+export const DriveItem = ({
+  drive,
+  inputRef,
+  drivesOptions,
+  selectedDriveId,
+  refreshSite,
+  handleSetDrive,
+  setSelectedDrive,
+  setIsDeletingDrive,
+}: DriveComponentProps) => {
+  const params = useParams();
+  const companyId = params.id as string;
+
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
+  const [isEditing, setIsEditing] = useState(!drive.id);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [, createDrive] = useMutation(createDriveMutation);
+  const [, updateDrive] = useMutation(updateDriveMutation);
+  const [, deleteDrive] = useMutation(deleteDriveMutation);
+
+  const driveForm: UseFormReturn<DriveValue> = useForm<DriveValue>({
+    resolver: zodResolver(siteLocationsSchema),
+    defaultValues: {
+      id: drive.id || '',
+      driveName: drive.driveName || '',
+    },
+  });
+
+  const handleEditDrive = () => {
+    setIsEditing(true);
+    driveForm.setValue('driveName', drive.driveName);
+  };
+
+  const handleCancelEdit = () => {
+    if (!drive.id) {
+      drivesOptions.filter((emptyDrive) => emptyDrive.id !== drive.id);
+      refreshSite();
+    }
+    driveForm.reset();
+    setTimeout(() => setIsEditing(false), 50);
+  };
+
+  const handleDriveSubmit: SubmitHandler<DriveValue> = (data) => {
+    // Create a drive
+    if (!drive.id) {
+      createDrive({
+        createDriveInput: {
+          driveName: data.driveName,
+          levelId: drive.levelId || '',
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.driveCreateSuccess,
+              variant: 'success',
+            });
+            drivesOptions.length === 1 && refreshSite();
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.driveCreateError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
+    }
+
+    // Edit a drive
+    if (drive.id) {
+      updateDrive({
+        id: drive.id,
+        updateDriveInput: {
+          driveName: data.driveName,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.driveUpdateSuccess,
+              variant: 'success',
+            });
+            setTimeout(() => setIsEditing(false), 30);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.driveUpdateError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
+    }
+  };
+
+  const handleDeleteDrive = () => {
+    setIsDeleting(true);
+    setIsDeletingDrive(true);
+
+    return (
+      deleteDrive({ id: drive.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            setSelectedDrive(undefined);
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.driveDeleteSuccess,
+                variant: 'info',
+              });
+              setSelectedDrive(undefined);
+            }, 1200);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.driveDeleteError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => {
+          setIsDeleting(false);
+
+          setTimeout(() => {
+            setIsDeletingDrive(false);
+          }, 1500);
+        })
+    );
+  };
+
+  return (
+    <div
+      className={`bg-main-white px-6 cursor-pointer flex items-center h-16 ${selectedDriveId === drive.id ? 'border-2 border-blue-primary' : 'border-2 border-transparent'} ${isEditing && 'bg-main-white/50'}`}
+      key={drive.id}
+    >
+      <div
+        className="py-3 w-full"
+        onClick={() => !isEditing && handleSetDrive(drive)}
+      >
+        {!drive.id || isEditing ? (
+          <AddSiteLocationItemForm<'drive'>
+            inputRef={inputRef}
+            form={driveForm}
+            type="drive"
+            onSubmit={handleDriveSubmit}
+            onCancel={handleCancelEdit}
+          />
+        ) : (
+          <div
+            className="flex flex-row w-full justify-between items-center gap-2"
+            key={drive.id}
+          >
+            <Text variant="medium" color="foreground">
+              {drive.driveName}
+            </Text>
+
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <DeleteEditDropdown
+                itemSelected={drive.id}
+                handleEdit={handleEditDrive}
+                openDeleteModal={() => setIsDeleteModalOpen(true)}
+              />
+            )}
+
+            <DeleteModalConfirmation
+              deleteIcon="Site"
+              modalTitle="Delete drive"
+              modalDeleteButtonText="Delete drive"
+              isLoading={isDeleting}
+              isOpen={isDeleteModalOpen}
+              onDelete={handleDeleteDrive}
+              onClose={() => setIsDeleteModalOpen(false)}
+              onOpenChange={() => setIsDeleteModalOpen(false)}
+            >
+              <Text
+                variant="medium"
+                color={'foreground'}
+                className="max-w-[450px] text-center"
+              >
+                You are about to delete drive
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  {` ${drive.driveName} `}
+                </Text>
+                from your list. This action will also delete all the{' '}
+                <Text variant="medium" color={'foreground'} as="span" isBold>
+                  locations
+                </Text>{' '}
+                connected to this drive. Are you sure you want to delete?
+              </Text>
+            </DeleteModalConfirmation>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

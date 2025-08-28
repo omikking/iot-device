@@ -19,21 +19,22 @@ import {
   TooltipContent,
   TooltipTrigger,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   UpdateTechnicianFormValues,
   updateTechnicianFormSchema,
 } from './schemas/TechnicianFormSchema';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { SuccessMessage } from './SuccessMessage';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
-import { User } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-
-// @TODO make the create user query later when BE is advanced.
+import { User } from '@/gql/graphql';
+import { useEffect, useState } from 'react';
+import { SuccessMessage } from './SuccessMessage';
+import { responses } from '@/app/uitexts/responses';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const updateTechnicianMutation = graphql(`
   mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {
@@ -45,10 +46,10 @@ const updateTechnicianMutation = graphql(`
   }
 `);
 
-interface AddOrEditTechnicianModalProps {
+type AddOrEditTechnicianModalProps = {
   onOpenChange: (open: boolean) => void;
   technician?: User;
-}
+};
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
@@ -76,7 +77,7 @@ export const AddOrEditTechnicianModal = ({
     });
   };
 
-  const onSuccessfulSubmit = () => {
+  const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -95,15 +96,38 @@ export const AddOrEditTechnicianModal = ({
       updateTechnician({
         id: technician.id,
         updateUserInput: data,
-      }).then((result) => {
-        if (result.data) {
-          onSuccessfulSubmit();
-        }
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.techincianUpdateSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.techinicianUpdateFailedError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
     if (!technician) {
-      // fix later for create technician flow
+      // TODO fix later for create technician flow
     }
   };
 
@@ -116,8 +140,16 @@ export const AddOrEditTechnicianModal = ({
     }
   }, [technician, form]);
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty;
+  const isAnyFieldEmpty = !formValues.email;
+
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
   return (
-    <ModalContent onCloseAutoFocus={resetFormValues}>
+    <ModalContent
+      onCloseAutoFocus={resetFormValues}
+      onOpenAutoFocus={(event) => event.preventDefault()}
+    >
       <ModalHeader>
         <ModalTitle>
           {technician ? 'Edit technician' : 'Add technician'}
@@ -137,6 +169,7 @@ export const AddOrEditTechnicianModal = ({
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
+                          autoFocus
                           placeholder="Enter email"
                           {...field}
                           className="w-96"
@@ -213,7 +246,7 @@ export const AddOrEditTechnicianModal = ({
                 type="submit"
                 size="large"
                 variant="primary"
-                disabled={isLoading}
+                disabled={isSubmitDisabled || isLoading}
                 isLoading={isLoading}
               >
                 {technician ? (

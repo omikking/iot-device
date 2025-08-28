@@ -1,5 +1,4 @@
 'use client';
-import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
 import {
   LucideClipboardCheck,
   LucideMoveRight,
@@ -8,11 +7,15 @@ import {
 import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Badge, Button, Headline, NavigationCard } from '@gsp/ui';
+import { Application } from '@/gql/graphql';
+import { getAppName } from '@/libs/utils';
 
 const getHazardsIdQuery = graphql(`
   query getHazardsId($id: String!) {
     hazards(companyId: $id) {
       id
+      isHazard
     }
   }
 `);
@@ -42,8 +45,13 @@ export default function Page({
   const [{ data: hazardData }] = useQuery({
     query: getHazardsIdQuery,
     variables: { id: companyId },
-    pause: !companyId,
   });
+
+  const activeHazards = hazardData?.hazards?.filter(
+    (hazard) => hazard.isHazard,
+  );
+
+  const totalActiveHazards = activeHazards?.length ?? 0;
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -54,11 +62,11 @@ export default function Page({
       )}
 
       <Headline as="h1" variant="xl" color="foreground">
-        Pull Test overview
+        {getAppName(Application.PullTest)} Overview
       </Headline>
 
       <div className="flex flex-wrap gap-12 w-full justify-center">
-        <Link href={`/boltresults/${companyId}`}>
+        <Link href={`/bolt-results/${companyId}`}>
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Bolt results
@@ -70,14 +78,14 @@ export default function Page({
             </Button>
           </NavigationCard>
         </Link>
-        <Link href={`/reportedhazards/${companyId}`}>
+        <Link href={`/reported-hazards/${companyId}`}>
           <NavigationCard className="relative">
             <Badge
               className="absolute top-2 right-2 flex border-neutral-3 border"
               variant="neutral"
               size="small"
             >
-              {`${hazardData?.hazards?.length ?? 0} active`}
+              {`${totalActiveHazards} active`}
             </Badge>
             <Headline as="h3" variant="medium" color="foreground">
               Hazards

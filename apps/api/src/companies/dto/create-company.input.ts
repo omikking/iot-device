@@ -1,46 +1,38 @@
-import {
-  ArrayMaxSize,
-  ArrayNotEmpty,
-  IsArray,
-  IsEmail,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsArray, IsEmail, IsString, MaxLength } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   name: string;
 
   @IsString()
-  @Length(10)
+  @MaxLength(50)
   orgNumber: string;
 
   @IsString()
-  @Length(2, 95)
+  @MaxLength(50)
   address: string;
 
   @IsString()
-  @Length(5) // @TODO Need to update in the future, might not be 5 in countries outside of SWE
+  @MaxLength(50)
   postalCode: string;
 
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   city: string;
 
   @IsString()
-  @Length(2, 35)
+  @MaxLength(50)
   country: string;
 
   @IsString()
   @IsEmail()
+  @MaxLength(50)
   companyContactEmail: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @ArrayMaxSize(1)
-  userPermissions: GraphQLTypes.CreateAdminPermissionInput[];
+  @IsString()
+  sandvikAdminUserId: string;
 
   @IsArray()
   plans: GraphQLTypes.CreatePlanInput[];

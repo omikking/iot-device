@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  seed     = "ts-node prisma/seed.ts"
 }
 
 datasource db {
@@ -36,8 +37,7 @@ enum PullTestAbortReason {
 enum Application {
   PULL_TEST
   PULL_TEST_OPERATOR
-  XCYCLOPS
-  ULTRABOLTS
+  BANSHEE
 }
 
 enum PlanLevel {
@@ -88,6 +88,7 @@ model Company {
   plan           Plan[]
   site           Site[]
   userPermission UserPermission[]
+  Invitation     Invitation[]
 
   @@map("companies")
 }
@@ -101,7 +102,7 @@ model Plan {
   planLevel       PlanLevel
   expiringDate    DateTime?
 
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
   @@map("plans")
@@ -146,13 +147,33 @@ model UserPermission {
 
   appsAccess Application[]
 
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
   @@map("user_permissions")
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  companyId  String?
+  company    Company?      @relation(fields: [companyId], references: [id])
+  role       Role?
+  appsAccess Application[]
+
+  globalRole GlobalRole?
+
+  @@map("invitations")
 }
 
 model Site {
@@ -160,13 +181,13 @@ model Site {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  siteName   String
+  siteName   String @unique
   address    String
   postalCode String
   city       String
   country    String
 
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
   level      Level[]
@@ -182,7 +203,7 @@ model Level {
 
   levelName String
 
-  site   Site   @relation(fields: [siteId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId String
 
   drive      Drive[]
@@ -198,7 +219,7 @@ model Drive {
 
   driveName String
 
-  level   Level  @relation(fields: [levelId], references: [id])
+  level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
   levelId String
 
   location   Location[]
@@ -214,7 +235,7 @@ model Location {
 
   locationName String
 
-  drive   Drive  @relation(fields: [driveId], references: [id])
+  drive   Drive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   driveId String
 
   boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
@@ -240,16 +261,16 @@ model BoltResult {
   comment             String?
   image               String? // base64
 
-  site   Site   @relation(fields: [siteId], references: [id])
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId String
 
-  level   Level  @relation(fields: [levelId], references: [id])
+  level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
   levelId String
 
-  drive   Drive  @relation(fields: [driveId], references: [id])
+  drive   Drive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   driveId String
 
-  location   Location @relation(fields: [locationId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId String
 
   user   User   @relation(fields: [userId], references: [id])

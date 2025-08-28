@@ -14,14 +14,17 @@ import { BoltResultsService } from './boltResults.service';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { ActiveUser } from 'src/auth/decorators';
-import { BoltResult } from '@prisma/client';
+import { Application, BoltResult } from '@prisma/client';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 
 @Resolver()
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RolesGuard)
 export class BoltResultsResolver {
   constructor(private readonly boltResultsService: BoltResultsService) {}
 
-  @Query(() => GraphQLTypes.BoltResultResponse, { name: 'boltResults' })
+  @Query(() => GraphQLTypes.BoltResult, { name: 'boltResults' })
   async findMany(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
@@ -31,26 +34,53 @@ export class BoltResultsResolver {
     @Args('driveId', { type: () => String, nullable: true }) driveId?: string,
     @Args('locationId', { type: () => String, nullable: true })
     locationId?: string,
-    @Args('result', { type: () => String, nullable: true }) result?: string,
+    @Args('result', { type: () => [String] }) result?: string[],
     @Args('isHazard', { type: () => Boolean, nullable: true })
     isHazard?: boolean,
+    @Args('withComment', { type: () => Boolean, nullable: true })
+    withComment?: boolean,
+    @Args('withImage', { type: () => Boolean, nullable: true })
+    withImage?: boolean,
+    @Args('startDate', { type: () => Date })
+    startDate?: Date,
+    @Args('endDate', { type: () => Date })
+    endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const pagination = {
+    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_OPERATOR];
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+
+    const pagination: { offset: number; limit?: number } = {
       offset: Number(offset ?? 0),
-      limit: Number(limit ?? 20),
+      ...(limit !== undefined ? { limit: Number(limit) } : {}),
     };
-    const filters: Partial<Record<string, string | boolean>> = {
+
+    const filters = {
       siteId,
       levelId,
       driveId,
       locationId,
       result,
       isHazard,
+      withImage,
+      withComment,
+      startDate,
+      endDate,
     };
 
-    return this.boltResultsService.findMany(user, pagination, filters);
+    return this.boltResultsService.findMany(
+      user,
+      pagination,
+      filters,
+      allowedCompanyIds,
+      allowedApps,
+    );
   }
 
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Query('boltResult')
   async findOne(
     @Args('id', ParseUUIDPipe) id: string,
@@ -58,6 +88,8 @@ export class BoltResultsResolver {
     return this.boltResultsService.findOne(id);
   }
 
+  // TODO Test all resolvers below in insomnia
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResult')
   async create(
     @Args('createBoltResultInput')
@@ -66,6 +98,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('updateBoltResult')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -75,6 +108,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResult')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,
@@ -82,6 +116,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResults')
   async createBulk(
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -90,6 +125,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -102,6 +138,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

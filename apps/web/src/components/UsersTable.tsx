@@ -1,47 +1,75 @@
 'use client';
-import { graphql } from '@/gql';
-import { useState } from 'react';
 import {
-  Application,
-  GetCompanyUsersQuery,
   Role,
   User,
+  Application,
   UserPermission,
+  GetCompanyUsersQuery,
 } from '@/gql/graphql';
-import { Badge, DataTable, Text } from '@gsp/ui';
-import type { ColumnDef } from '@tanstack/react-table';
-import { DeleteEditDropdown } from './DeleteEditDropdown';
-import { DeleteModalConfirmation } from './DeleteModalConfirmation';
-import { LucideKey, LucidePickaxe, LucideUser } from 'lucide-react';
+import { graphql } from '@/gql';
+import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
+import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
+import type { CellContext, ColumnDef } from '@tanstack/react-table';
+import { DeleteEditDropdown } from './DeleteEditDropdown';
+import {
+  LucideKey,
+  LucidePickaxe,
+  LucideUser,
+  LucideSearchX,
+} from 'lucide-react';
+import { DeleteModalConfirmation } from './DeleteModalConfirmation';
+import { getAppName, handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
+import { useSession } from 'next-auth/react';
 
 type UsersTableProps = {
+  availableCompanyPlans: Application[];
   companyData?: GetCompanyUsersQuery;
-  onOpenChange: (open: boolean) => void;
   onSelectUser: (user: User) => void;
+  onOpenChange: (open: boolean) => void;
 };
 
-// @TODO create a utils folder and add these kind of functions there
-export const formatAppName = (appName: string): string => {
-  const appNames: Record<string, string> = {
-    PULL_TEST: 'Pull Test',
-    ULTRABOLTS: 'Ultrabolts',
-    XCYCLOPS: 'Cyclops',
-    PULL_TEST_OPERATOR: 'Pull Test Operator',
-  };
-
-  return appNames[appName] || appName;
-};
-
-export const formatRoleName = (role: string): string => {
+const formatRoleName = (role: string): string => {
   const roleNames: Record<string, string> = {
-    SANDVIK_TECHNICIAN: 'Technician',
-    COMPANY_ADMIN: 'Admin',
     COMPANY_USER: 'User',
+    COMPANY_ADMIN: 'Admin',
+    SANDVIK_TECHNICIAN: 'Technician',
   };
-
   return roleNames[role] || role;
+};
+
+const getBadge = (
+  userPermissions?: UserPermission,
+): {
+  variant: 'neutral' | 'primary';
+  icon: React.ReactNode;
+} => {
+  const role = userPermissions?.role || 'User';
+  switch (role) {
+    case Role.CompanyUser:
+      return { variant: 'neutral', icon: <LucideUser /> };
+    case Role.SandvikTechnician:
+      return { variant: 'neutral', icon: <LucidePickaxe /> };
+    case Role.CompanyAdmin:
+      return { variant: 'primary', icon: <LucideKey /> };
+    default:
+      return { variant: 'neutral', icon: <LucideUser /> };
+  }
+};
+
+const getAppShortening = (
+  appAccessValue: Application[],
+  availableCompanyPlans: Application[],
+) => {
+  if (appAccessValue.length === availableCompanyPlans.length) {
+    return <Badge variant="primary">All Apps</Badge>;
+  }
+  const appName = appAccessValue
+    .map((app: string) => getAppName(app as Application) || app)
+    .join(', ');
+  return appName;
 };
 
 const deleteUserPermissionMutation = graphql(`
@@ -53,59 +81,37 @@ const deleteUserPermissionMutation = graphql(`
 `);
 
 export const UsersTable = ({
+  availableCompanyPlans,
   companyData,
   onOpenChange,
   onSelectUser,
 }: UsersTableProps) => {
   const params = useParams();
   const companyId = params.id as string;
-  const users = (companyData?.company.users as User[]) || [];
 
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+
+  // Show all users except Sandvik Admin
+  const users = (companyData?.company?.users?.filter(
+    (user) => user.globalRole !== Role.SandvikAdmin,
+  ) || []) as User[];
+
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
-
-  const [, deleteUser] = useMutation(deleteUserPermissionMutation);
-
   const [userToDelete, setUserToDelete] = useState<string | undefined>(
     undefined,
   );
 
-  const userToDeleteName = users.find(
+  const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
+
+  const fullNameOfUserToDelete = users.find(
     (user) => user.id === userToDelete,
   )?.fullName;
-
-  // TODO Move to utils
-  const getBadge = (
-    userPermissions?: UserPermission,
-  ): {
-    variant: 'neutral' | 'primary';
-    icon: React.ReactNode;
-  } => {
-    const role = userPermissions?.role || 'User';
-    switch (role) {
-      case Role.CompanyUser:
-        return { variant: 'neutral', icon: <LucideUser /> };
-      case Role.SandvikTechnician:
-        return { variant: 'neutral', icon: <LucidePickaxe /> };
-      case Role.CompanyAdmin:
-        return { variant: 'primary', icon: <LucideKey /> };
-      default:
-        return { variant: 'neutral', icon: <LucideUser /> };
-    }
-  };
-
-  const getAppShortening = (appAccessValue: Application[]) => {
-    const applicationsCount = Object.keys(Application).length;
-
-    if (appAccessValue.length === applicationsCount) {
-      return <Badge variant="primary">All Apps</Badge>;
-    }
-
-    const appName = appAccessValue
-      .map((app: string) => formatAppName(app) || app)
-      .join(', ');
-
-    return appName;
-  };
 
   const openDeleteModal = (index: string) => {
     setUserToDelete(index);
@@ -117,23 +123,51 @@ export const UsersTable = ({
     setUserToDelete(undefined);
   };
 
-  const handleDelete = (userId: string) => {
-    const userToDelete = users.find((user) => user.id === userId);
+  const handleDelete = async (): Promise<boolean> => {
+    const userToDeleteFound = users.find((user) => user.id === userToDelete);
+    const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
+      (userPerm) => userPerm.companyId === companyId,
+    );
 
-    if (userToDelete) {
-      const userPermissionToDelete = userToDelete.userPermissions?.find(
-        (userPerm) => userPerm.companyId === companyId,
-      );
-
-      if (userPermissionToDelete) {
-        deleteUser({
-          id: userPermissionToDelete.id,
-        }).catch((error) => {
-          // TODO add toaster
-          console.log('error deleting user permission', error);
-        });
-      }
+    if (!userPermissionToDelete?.id) {
+      return false;
     }
+
+    setIsDeleting(true);
+    return (
+      deleteUserPermission({ id: userPermissionToDelete.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              closeDeleteModal();
+
+              showAlertToast({
+                title: responses.userPermissionDeleteSuccess,
+                variant: 'info',
+              });
+            }, 1200);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.userPermissionDeleteFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        })
+    );
   };
 
   const openEditModal = (userId: string) => {
@@ -163,7 +197,7 @@ export const UsersTable = ({
       },
       cell: ({ row }) => {
         const appAccessValue = row.getValue('appsAccess') as Application[];
-        return getAppShortening(appAccessValue) || 'N/A';
+        return getAppShortening(appAccessValue, availableCompanyPlans) || 'N/A';
       },
     },
     {
@@ -189,7 +223,10 @@ export const UsersTable = ({
     {
       accessorKey: 'settings',
       header: '',
-      cell: ({ row }) => {
+      cell: ({ row }: CellContext<User, unknown>) => {
+        if (!isUserSandvikAdmin && !isUserCompanyAdmin) {
+          return null;
+        }
         return (
           <DeleteEditDropdown
             itemSelected={row.original.id}
@@ -204,22 +241,19 @@ export const UsersTable = ({
   return (
     <>
       <DeleteModalConfirmation
-        deleteButtonText="Delete user"
         deleteIcon="User"
         modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={isDeleting}
         isOpen={isDeleteUserModalOpen}
+        onDelete={handleDelete}
+        onClose={closeDeleteModal}
         onOpenChange={closeDeleteModal}
-        onDelete={() => {
-          if (userToDelete) {
-            handleDelete(userToDelete);
-          }
-          closeDeleteModal();
-        }}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
           <Text variant="medium" color={'foreground'} isBold as="span">
-            {` ${userToDeleteName} `}
+            {` ${fullNameOfUserToDelete} `}
           </Text>
           from the list. Are you sure you want to delete?
         </Text>
@@ -229,6 +263,7 @@ export const UsersTable = ({
         columns={columns}
         data={users}
         noResultMessage="There are no users added yet."
+        icon={<LucideSearchX color="gray" />}
       />
       {users.length > 0 && (
         <Badge variant="neutral" className="self-start">

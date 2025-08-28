@@ -20,5 +20,19 @@ services:
       POSTGRES_DB: nest
     networks:
       - playground
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    ports:
+      - 5555:80 # Web UI - access at http://localhost:5555
+      - 2525:25 # SMTP port application
+    environment:
+      - ServerOptions__HostName=smtp4dev
+      - ServerOptions__LockSettings=false
+    volumes:
+      - smtp4dev-data:/smtp4dev
+    networks:
+      - playground
 networks:
   playground:
+volumes:
+  smtp4dev-data:

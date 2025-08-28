@@ -4,6 +4,7 @@ import { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { User } from 'next-auth';
 import { UUID } from 'crypto';
+import { Role } from '@/gql/graphql';
 
 declare module 'next-auth/jwt' {
   interface JWT {
@@ -41,6 +42,7 @@ declare module 'next-auth' {
       id: UUID;
       email: string;
       fullName: string;
+      globalRole: Role;
     };
     // TODO: Backend integration
     company: {

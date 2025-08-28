@@ -23,6 +23,8 @@ type Company {
   users: [User!]
   plans: [Plan!]
   sites: [Site!]
+  pendingInvitations: [Invitation!]
+  sandvikAdminUserId: String
 }
 
 """
@@ -51,16 +53,8 @@ input CreateCompanyInput {
   city: String!
   country: String!
   companyContactEmail: String!
-  userPermissions: [CreateAdminPermissionInput!]!
+  sandvikAdminUserId: String
   plans: [CreatePlanInput!]
-}
-
-"""
-CreateAdminPermissionInput
-Define the input fields to create a new userPermission
-"""
-input CreateAdminPermissionInput {
-  userId: String!
 }
 
 """
@@ -86,7 +80,7 @@ input UpdateCompanyInput {
   city: String
   country: String
   companyContactEmail: String
-  userPermissions: [UpdateAdminPermissionInput!]
+  sandvikAdminUserId: String
   plans: [UpdatePlanInput!]
 }
 
@@ -99,15 +93,6 @@ input UpdatePlanInput {
   applicationName: String!
   planLevel: String
   expiringDate: DateTime
-}
-
-"""
-UpdateAdminPermissionInput
-Define the input fields to update the sandvik admin to new admin
-"""
-input UpdateAdminPermissionInput {
-  oldUserId: String!
-  newUserId: String!
 }
 
 """

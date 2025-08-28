@@ -46,7 +46,7 @@ export const CompanyNavigationCards = () => {
           </Headline>
           <LucidePyramid />
           <Button variant="secondary" size="small" asChild>
-            <Link href={`/sitelocations/${companyId}`}>
+            <Link href={`/site-locations/${companyId}`}>
               <LucideMoveRight />
               View site locations
             </Link>

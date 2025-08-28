@@ -9,35 +9,42 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  showAlertToast,
 } from '@gsp/ui';
 import {
-  UserAccountFormValues,
-  accountSettingsFormSchema,
+  UpdateAccountSettingsFormSchemaValues,
+  updateAccountSettingsFormSchema,
 } from './schemas/AccountSettingsFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import React from 'react';
-import { useSession } from 'next-auth/react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from '@/gql/graphql';
 import { LucideCheckCircle } from 'lucide-react';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 type AccountSettingsFormProps = {
   user: User;
 };
 
 const updateAccountUserMutation = graphql(`
-  mutation updateAccountUser($id: String!, $updateUserInput: UpdateUserInput!) {
-    updateUser(id: $id, updateUserInput: $updateUserInput) {
+  mutation updateAccountUser(
+    $id: String!
+    $updateUserInput: UpdateUserInput!
+    $updatePasswordInput: UpdatePasswordInput
+  ) {
+    updateUser(
+      id: $id
+      updateUserInput: $updateUserInput
+      updatePasswordInput: $updatePasswordInput
+    ) {
       id
       email
       fullName
       workPlace
       phoneNumber
-      # oldPassword
-      # newPassword
-      # confirmPassword
     }
   }
 `);
@@ -45,202 +52,253 @@ const updateAccountUserMutation = graphql(`
 export default function AccountSettingsForm({
   user,
 }: AccountSettingsFormProps): JSX.Element {
-  //Will beu used later, so disabling eslint for now
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: session } = useSession();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, updateAccountUser] = useMutation<UserAccountFormValues>(
-    updateAccountUserMutation,
-  );
+  const [isLoading, setIsLoading] = useState(false);
 
-  const settingsForm = useForm<UserAccountFormValues>({
-    resolver: zodResolver(accountSettingsFormSchema),
+  const [, updateAccountUser] =
+    useMutation<UpdateAccountSettingsFormSchemaValues>(
+      updateAccountUserMutation,
+    );
+  const settingsForm = useForm<UpdateAccountSettingsFormSchemaValues>({
+    resolver: zodResolver(updateAccountSettingsFormSchema),
     defaultValues: {
-      email: user?.email || 'heyo@sup.com',
-      fullName: user?.fullName || 'Jimmy-Cannon Nwadinkpa',
-      workPlace: user?.workPlace || 'Edvirt AB',
-      phoneNumber: user?.phoneNumber || '+46701234567',
+      email: user.email || '',
+      fullName: user.fullName || '',
+      workPlace: user.workPlace || '',
+      phoneNumber: user.phoneNumber || '',
       oldPassword: '',
       newPassword: '',
       confirmPassword: '',
     },
   });
 
-  const onSubmit: SubmitHandler<UserAccountFormValues> = (data) => {
-    console.log('Data', data);
+  const onSubmit: SubmitHandler<UpdateAccountSettingsFormSchemaValues> = async (
+    data,
+  ) => {
+    setIsLoading(true);
+
+    const {
+      email,
+      fullName,
+      workPlace,
+      phoneNumber,
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    } = data;
+
+    const updateUserInput = {
+      email,
+      fullName,
+      workPlace,
+      phoneNumber,
+    };
+
+    const updatePasswordInput =
+      oldPassword || newPassword || confirmPassword
+        ? {
+            oldPassword,
+            newPassword,
+            confirmPassword,
+          }
+        : undefined;
+
+    updateAccountUser({
+      id: user.id,
+      updateUserInput,
+      updatePasswordInput,
+    })
+      .then((result) => {
+        // Backend errors
+        handleGraphQLErrors(result.error);
+
+        // Success
+        if (result.data) {
+          showAlertToast({
+            title: responses.settingsUpdateSuccess,
+            variant: 'success',
+          });
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.settingsUpdateFailed,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const formValues = settingsForm.getValues();
+  const isDirty = settingsForm.formState.isDirty;
+  const isAnyFieldEmpty =
+    !formValues.email ||
+    !formValues.fullName ||
+    !formValues.workPlace ||
+    !formValues.phoneNumber;
 
-  const areAllFieldsEmpty =
-    !formValues.email &&
-    !formValues.fullName &&
-    !formValues.workPlace &&
-    !formValues.phoneNumber &&
-    !formValues.oldPassword &&
-    !formValues.newPassword &&
-    !formValues.confirmPassword;
-
+  const isSubmitDisabled = isAnyFieldEmpty || !isDirty;
   return (
     <Form {...settingsForm}>
-      <form onSubmit={settingsForm.handleSubmit(onSubmit)}>
-        <div className="w-full mt-4 mb-12 flex flex-col gap-16">
+      <form onSubmit={settingsForm.handleSubmit(onSubmit)} className="w-full">
+        <div className="w-full mt-4 flex flex-col gap-20">
           <ContentHolder variant="general" headlineText="Account settings">
+            {/* Email */}
             <FormField
               control={settingsForm.control}
               name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your email..."
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your email..."
+                      autoComplete="email"
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            {/* Full Name */}
             <FormField
               control={settingsForm.control}
               name="fullName"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Full name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your full name..."
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Full name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your full name..."
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            {/* Workplace */}
             <FormField
               control={settingsForm.control}
               name="workPlace"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Workplace</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your workplace..."
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Work place</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your workplace..."
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            {/* Phone Number */}
             <FormField
               control={settingsForm.control}
               name="phoneNumber"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Phone number</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your phone number..."
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Phone number</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your phone number..."
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </ContentHolder>
+
           <ContentHolder variant="general" headlineText="Password">
+            {/* Old Password */}
             <FormField
               control={settingsForm.control}
               name="oldPassword"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Old password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your old password..."
-                        type="password"
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Current password</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your current password..."
+                      type="password"
+                      autoComplete="current-password"
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            {/* New Password */}
             <FormField
               control={settingsForm.control}
               name="newPassword"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>New password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Enter your new password..."
-                        type="password"
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>New password</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter your new password..."
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            {/* Confirm Password */}
             <FormField
               control={settingsForm.control}
               name="confirmPassword"
-              render={({ field }) => {
-                return (
-                  <FormItem className=" ">
-                    <FormLabel>Confirm password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="Confirm your password..."
-                        type="password"
-                        className="min-w-[400px]"
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="min-w-[31%]">
+                  <FormLabel>Confirm password</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Confirm your password..."
+                      type="password"
+                      autoComplete="new-password"
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </ContentHolder>
         </div>
+
         <div className="flex justify-end">
           <Button
             variant="primary"
             size="large"
             type="submit"
-            disabled={areAllFieldsEmpty}
+            disabled={isSubmitDisabled}
+            isLoading={isLoading}
           >
-            <LucideCheckCircle />
+            {!isLoading && <LucideCheckCircle />}
             Save changes
           </Button>
         </div>

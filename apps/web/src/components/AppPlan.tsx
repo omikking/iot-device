@@ -9,41 +9,37 @@ import {
 } from '@gsp/ui';
 import { LucideCircleCheckBig } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import { PlanLevel } from '@/app/mock/mock';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
-import { Plan } from '@/gql/graphql';
+import { Plan, PlanLevel } from '@/gql/graphql';
+import { capitalizeFirstLetter } from '@/libs/utils';
 
-// @TODO put in a utils folder
-export const capitalizeFirstLetter = (word: string) => {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-};
-
-interface AppPlanProps {
+type AppPlanProps = {
   appPlan: Plan;
   planLevel: PlanLevel;
-  isAdmin: boolean;
+  isUserSandvikAdmin: boolean;
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
   activePlanLevel?: PlanLevel;
   expiringDate?: Date | number;
+  isExpired?: boolean;
   onPlanLevelChange: (planLevel?: PlanLevel) => void;
-}
+};
 
 export const AppPlan = ({
   appPlan,
   planLevel,
   activePlanLevel,
-  isAdmin,
+  isUserSandvikAdmin,
   companyForm,
   expiringDate,
+  isExpired,
   onPlanLevelChange,
 }: AppPlanProps) => {
-  const userRole = isAdmin ? 'Superadmin' : 'Client';
-  const isPlanActive = planLevel === activePlanLevel;
-
   const { applicationName } = appPlan;
+
+  const isPlanActive = planLevel === activePlanLevel;
 
   const handlePlanChange = (isChecked: boolean) => {
     const newPlanLevel = isChecked ? planLevel : undefined;
@@ -93,7 +89,7 @@ export const AppPlan = ({
   return (
     <div
       className={`flex justify-between items-center h-14 border-b border-gray-200 py-3 px-6 ${
-        isPlanActive ? 'bg-neutral-1' : ''
+        isPlanActive && !isExpired ? 'bg-neutral-1' : ''
       }`}
     >
       <FormField
@@ -109,7 +105,7 @@ export const AppPlan = ({
               {capitalizeFirstLetter(planLevel)}
             </FormLabel>
 
-            {userRole === 'Superadmin' && (
+            {isUserSandvikAdmin && (
               <FormControl>
                 <Switch
                   checked={activePlanLevel === planLevel}
@@ -118,7 +114,7 @@ export const AppPlan = ({
               </FormControl>
             )}
 
-            {userRole === 'Client' && isPlanActive && (
+            {!isUserSandvikAdmin && isPlanActive && !isExpired && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
                 Your selected plan

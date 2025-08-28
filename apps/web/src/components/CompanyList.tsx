@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { Button, Text } from '@gsp/ui';
-import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { Button, Text, LoadingSpinner } from '@gsp/ui';
+import { LucideLayoutGrid, LucideMoveRight } from 'lucide-react';
 
 const getCompaniesQuery = graphql(`
   query getCompanies {
@@ -17,8 +17,24 @@ const getCompaniesQuery = graphql(`
 `);
 
 export const CompanyList = () => {
-  const [{ data }] = useQuery({ query: getCompaniesQuery });
-  const companies = data?.companies?.results;
+  const [{ data, fetching }] = useQuery({ query: getCompaniesQuery });
+  const companies = data?.companies?.results || [];
+
+  if (fetching) {
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!fetching && companies?.length === 0) {
+    return (
+      <Text variant="medium" color="muted">
+        No companies found
+      </Text>
+    );
+  }
 
   return (
     <>
@@ -34,13 +50,13 @@ export const CompanyList = () => {
             <Button size="small" variant="primary" asChild>
               <Link href={`/company/${company.id}`}>
                 <LucideMoveRight />
-                Administrate
+                View
               </Link>
             </Button>
             <Button size="small" variant="outline" asChild>
-              <Link href={`/selectapplication/${company.id}`}>
+              <Link href={`/select-application/${company.id}`}>
                 <LucideLayoutGrid />
-                View Apps
+                Browse Apps
               </Link>
             </Button>
           </div>

@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
@@ -16,11 +15,11 @@ import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
+import { Role } from '@/gql/graphql';
 
-interface AdminFormProps {
-  isNewCompany: boolean;
+type AdminFormProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
-}
+};
 
 const getAdminsQuery = graphql(`
   query GetUsers($roles: [String]!) {
@@ -31,16 +30,13 @@ const getAdminsQuery = graphql(`
   }
 `);
 
-export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
+export const AdminForm = ({ companyForm }: AdminFormProps) => {
   const { data: session } = useSession();
-  const [administrator, setAdministrator] = useState<string | undefined>(
-    undefined,
-  );
 
   const [{ data: adminsData }] = useQuery({
     query: getAdminsQuery,
     variables: {
-      roles: ['SANDVIK_ADMIN'],
+      roles: [Role.SandvikAdmin],
     },
     pause: !session?.company?.id,
   });
@@ -49,13 +45,11 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
       id: user.id,
       name: user.fullName,
     })) ?? [];
-  // @TODO this logic might needs some modification. Having trouble when the update mutation differs with users vs userPermissions etc.
-  // Leave it for now, and will be worked on later.
 
   return (
     <FormField
       control={companyForm.control}
-      name="userPermissions"
+      name="sandvikAdminUserId"
       render={({ field }) => {
         return (
           <FormItem className="w-96">
@@ -64,20 +58,9 @@ export const AdminForm = ({ isNewCompany, companyForm }: AdminFormProps) => {
               <Dropdown
                 id="person"
                 placeholder="Select Sandvik administrator"
-                selectedId={administrator}
+                selectedId={field.value}
                 options={admins}
-                onSelect={(e) => {
-                  setAdministrator(e);
-                  field.onChange([
-                    // @TODO Fix
-                    isNewCompany
-                      ? { userId: '87506bef-5283-44d8-ab42-a668ea616975' }
-                      : {
-                          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-                          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-                        },
-                  ]);
-                }}
+                onSelect={(e) => field.onChange(e)}
               />
             </FormControl>
             <FormMessage />

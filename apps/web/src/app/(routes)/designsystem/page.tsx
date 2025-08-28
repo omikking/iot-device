@@ -70,7 +70,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
-import { optionsDesignSystemMock, usersMock, sitesMock } from '@/app/mock/mock';
+import {
+  optionsDesignSystemMock,
+  usersDesignSystemMock,
+  sitesDesignSystemMock,
+} from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 
 type Role = 'User' | 'Technician' | 'Admin';
@@ -97,12 +101,14 @@ export default function Page(): JSX.Element {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-  const [sites] = useState(sitesMock);
+  const [sites] = useState(sitesDesignSystemMock);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [siteToDelete, setSiteToDelete] = useState<string | undefined>(
     undefined,
   );
   const [isDeleteSiteModalOpen, setIsDeleteSiteModalOpen] = useState(false);
+  const [siteIsDeleting, setSiteIsDeleting] = useState(false);
+  const [userIsDeleting, setUserIsDeleting] = useState(false);
 
   const getBadge = (
     role: Role,
@@ -130,9 +136,15 @@ export default function Page(): JSX.Element {
     setSiteToDelete(undefined);
   };
 
-  // const handleDelete = (index: string) => {
-  //   setSites((sites) => sites.filter((item, i) => i.toString() !== index));
-  // };
+  const handleDeleteUser = () => {
+    setUserIsDeleting(true);
+    return true;
+  };
+
+  const handleDeleteSite = () => {
+    setSiteIsDeleting(true);
+    return true;
+  };
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -181,7 +193,7 @@ export default function Page(): JSX.Element {
           <BreadcrumbLink asChild>
             <BreadcrumbItem>
               <Text variant="small" color="foreground">
-                <Link href="/overview">With Link</Link>
+                <Link href="/administration-portal">With Link</Link>
               </Text>
             </BreadcrumbItem>
           </BreadcrumbLink>
@@ -213,13 +225,14 @@ export default function Page(): JSX.Element {
         Delete item
       </Button>
       <DeleteModalConfirmation
-        deleteButtonText="Confirm deletion"
-        modalTitle="Delete Site"
+        deleteIcon="User"
+        modalTitle="Delete user"
+        modalDeleteButtonText="Delete user"
+        isLoading={userIsDeleting}
         isOpen={isDeleteModalOpen}
         onOpenChange={setIsDeleteModalOpen}
-        onDelete={() => {
-          console.log('Deleting item...');
-        }}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
           You are about to delete
@@ -250,15 +263,14 @@ export default function Page(): JSX.Element {
           </div>
         ))}
         <DeleteModalConfirmation
-          deleteButtonText="Confirm deletion"
           deleteIcon="Site"
-          modalTitle="Delete Site"
+          modalTitle="Delete site"
+          modalDeleteButtonText="Delete site"
+          isLoading={siteIsDeleting}
           isOpen={isDeleteSiteModalOpen}
+          onClose={closeDeleteModal}
           onOpenChange={closeDeleteModal}
-          onDelete={() => {
-            // handleDelete();
-            closeDeleteModal();
-          }}
+          onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
             You are about to delete
@@ -449,7 +461,7 @@ export default function Page(): JSX.Element {
         <Headline variant="medium" color="foreground" as="h2" className="group">
           <Link href="#" passHref legacyBehavior>
             <Anchor color="foreground">
-              <LucideMoveRight className="transition-all ease-in-out opacity-50 group-hover:opacity-100 group-hover:translate-x-1.5" />
+              <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
               Link with icon and no underline
             </Anchor>
           </Link>
@@ -826,7 +838,7 @@ export default function Page(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersMock.map((user) => {
+            {usersDesignSystemMock.map((user) => {
               const role = user.userPermissions.role;
               const { variant, icon } = getBadge(role);
               return (
@@ -852,7 +864,7 @@ export default function Page(): JSX.Element {
           </TableBody>
         </Table>
         <Badge variant="neutral" className="self-start">
-          {usersMock.length} total
+          {usersDesignSystemMock.length} total
         </Badge>
       </div>
       <hr className="w-full border-neutral-2" />
@@ -893,7 +905,7 @@ export default function Page(): JSX.Element {
       <Headline variant="large" as="h1" color="foreground">
         Alerts 🦄
       </Headline>
-      <Toaster duration={500000} />
+      <Toaster duration={80000} />
       <Button
         onClick={() =>
           showAlertToast({

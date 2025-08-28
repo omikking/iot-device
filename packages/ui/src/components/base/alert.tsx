@@ -4,7 +4,7 @@ import { CheckCircle, Info, TriangleAlert, CircleX } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Text } from './text';
 
-const iconSize = 18;
+const iconSize = 20;
 
 const alertVariants = cva(
   'ui-w-[430px] ui-p-4 ui-flex justify-between ui-space-x-3 ui-rounded-lg ui-shadow-custom',
@@ -37,7 +37,7 @@ const Alert = React.forwardRef<
       {...props}
     >
       <div className="ui-flex ui-items-center ui-space-x-3">
-        <div className="ui-flex h-full ui-pt-[5px]">
+        <div className="ui-flex ui-h-full ui-pt-[5px]">
           {variant === 'success' && <CheckCircle size={iconSize} />}
           {variant === 'info' && <Info size={iconSize} />}
           {variant === 'error' && <CircleX size={iconSize} />}
@@ -62,8 +62,8 @@ interface AlertTextProps extends React.HTMLAttributes<HTMLElement> {
 const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTextProps>(
   ({ className, children }, ref) => (
     <Text
-      variant="medium"
-      className={cn(className)}
+      variant="large"
+      className={(cn(className), 'ui-mt-0.5')}
       ref={ref}
       as="span"
       color={null}
@@ -77,7 +77,7 @@ AlertTitle.displayName = 'AlertTitle';
 const AlertDescription = React.forwardRef<HTMLParagraphElement, AlertTextProps>(
   ({ className, children }, ref) => (
     <Text
-      variant="small"
+      variant="medium"
       className={cn(className)}
       ref={ref}
       as="p"

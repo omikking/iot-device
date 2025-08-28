@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "prisma:generate": "prisma generate",
     "prisma:dev:deploy": "prisma migrate deploy",
@@ -12,10 +15,18 @@
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
+    "smtp:up": "docker compose up smtp4dev -d",
+    "smtp:down": "docker compose stop smtp4dev",
+    "smtp:restart": "npm run smtp:down && npm run smtp:up",
+    "smtp:logs": "docker compose logs smtp4dev -f",
+    "seed": "prisma db seed",
+    "seed:dev": "NODE_ENV=development prisma db seed",
+    "db:seed": "pnpm seed",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:dev:logging": "LOG_GRAPHQL=1 nest start --watch",
     "start:dev:setup": "npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy && npm run prisma:generate && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -41,7 +52,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "graphql": "^16.8.1",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
@@ -49,6 +60,7 @@
     "ts-morph": "^23.0.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.7.0",
     "@gsp/eslint-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",
     "@nestjs/cli": "^10.0.0",

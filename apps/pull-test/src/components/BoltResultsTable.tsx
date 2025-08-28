@@ -2,29 +2,37 @@
 import type { ColumnDef } from '@gsp/ui';
 import { MultiReadBadge } from './MultiReadBadge';
 import { Badge, DataTable, TableHeadWithSorting } from '@gsp/ui';
-import { LucideCheckCircle, LucideXCircle, LucideSearchX } from 'lucide-react';
-import { BoltResult } from '@/gql/graphql';
+import {
+  LucideCheckCircle,
+  LucideXCircle,
+  LucideSearchX,
+  ClipboardList,
+} from 'lucide-react';
+import { BoltResult, Result } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
-import { BoltResultSchema } from '@/app/mock/mock';
+import { Pagination } from './Pagination';
 
 type BoltResultsTableProps = {
-  // TODO: Remove BoltResultSchema mock type when backend integration for BoltResults page is done
-  boltResults?: BoltResult[] | BoltResultSchema[];
+  boltResults?: BoltResult[];
   site?: string;
+  totalCount?: number;
+  currentPage: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
 };
 
 const getBadge = (
-  result: 'Pass' | 'Fail' | 'Abort',
+  result: Result.Abort | Result.Pass | Result.Fail,
 ): {
   variant: 'success' | 'destructive' | 'warning';
   icon: React.ReactNode;
 } => {
   switch (result) {
-    case 'Pass':
+    case Result.Pass:
       return { variant: 'success', icon: <LucideCheckCircle /> };
-    case 'Fail':
+    case Result.Fail:
       return { variant: 'destructive', icon: <LucideXCircle /> };
-    case 'Abort':
+    case Result.Abort:
       return { variant: 'warning', icon: <LucideSearchX /> };
   }
 };
@@ -32,6 +40,10 @@ const getBadge = (
 export const BoltResultsTable = ({
   boltResults,
   site,
+  totalCount,
+  currentPage,
+  pageSize,
+  onPageChange,
 }: BoltResultsTableProps) => {
   const columns: ColumnDef<BoltResult>[] = [
     {
@@ -48,7 +60,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakLoad',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak load(tons)" />
+        <TableHeadWithSorting column={column} header="Peak load (tons)" />
       ),
       cell: ({ row }) => {
         const { peakLoad } = row.original;
@@ -76,7 +88,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakDisplacement',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak displacement(mm)" />
+        <TableHeadWithSorting column={column} header="Peak displacement (mm)" />
       ),
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
@@ -104,17 +116,20 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'level',
       header: 'Level',
+      cell: ({ row }) => row.original.level?.levelName,
     },
     {
       accessorKey: 'drive',
       header: 'Drive',
+      cell: ({ row }) => row.original.drive?.driveName,
     },
     {
       accessorKey: 'location',
       header: 'Location',
+      cell: ({ row }) => row.original.location?.locationName,
     },
     {
-      accessorKey: 'ring',
+      accessorKey: 'positionInRing',
       header: 'Position in ring',
     },
     {
@@ -131,8 +146,8 @@ export const BoltResultsTable = ({
       ),
       cell: ({ row }) => (
         <div className="flex justify-end w-16">
-          <Badge variant={getBadge(row.getValue('result')).variant}>
-            {getBadge(row.getValue('result')).icon}
+          <Badge variant={getBadge(row?.getValue('result'))?.variant}>
+            {getBadge(row?.getValue('result'))?.icon}
             {row.getValue('result')}
           </Badge>
         </div>
@@ -144,18 +159,33 @@ export const BoltResultsTable = ({
     <>
       <DataTable
         columns={columns}
-        // TODO: Remove as BoltResult as code when backend integration is done for boltResults page
-        data={(boltResults as BoltResult[]) || []}
+        data={boltResults || []}
         noResultMessage={
           !site
             ? 'Select site to view bolt results.'
             : 'There are no bolt results found for your search.'
         }
+        icon={
+          !site ? (
+            <ClipboardList color="gray" />
+          ) : (
+            <LucideSearchX color="gray" />
+          )
+        }
       />
-      {boltResults?.length && (
-        <Badge variant="neutral" className="self-start mt-5">
-          {boltResults?.length} total
-        </Badge>
+      {!!boltResults?.length && boltResults?.length > 0 && totalCount && (
+        <div className="flex justify-between">
+          <Badge variant="neutral" className="self-start mt-5">
+            {totalCount} total
+          </Badge>
+
+          <Pagination
+            totalCount={totalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
+          />
+        </div>
       )}
     </>
   );

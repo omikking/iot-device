@@ -1,5 +1,12 @@
 'use client';
-import { Button, ContentHolder, Form, Headline, Text } from '@gsp/ui';
+import {
+  Button,
+  ContentHolder,
+  Form,
+  Headline,
+  Text,
+  showAlertToast,
+} from '@gsp/ui';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
@@ -7,27 +14,34 @@ import {
   LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
-import { DevmodeToggle } from './DevmodeToggle';
 import { graphql } from '@/gql';
 import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
-  createCompanyFormSchema,
-  updateCompanyFormSchema,
+  createCompanySchema,
+  updateCompanySchema,
 } from './schemas/CompanyFormSchema';
-import { Company, Plan } from '@/gql/graphql';
+import {
+  Application,
+  Company,
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables,
+  Plan,
+  Role,
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables,
+} from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AdminForm } from './AdminForm';
-import { AssociateDetailsForm } from './AssociateDetailsForm';
-
-const allPlans = [
-  { applicationName: 'PULL_TEST' },
-  { applicationName: 'XCYCLOPS' },
-  { applicationName: 'ULTRABOLTS' },
-];
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { AssociateDetails } from './AssociateDetails';
+import { CompanyDetails } from './CompanyDetails';
 
 const createCompanyMutation = graphql(`
   mutation createCompany($createCompanyInput: CreateCompanyInput!) {
@@ -93,23 +107,28 @@ export const CompanyForm = ({
   isNewCompany,
   setIsDeleteModalOpen,
 }: CompanyFormProps) => {
-  // Temporary state for devmode
-  const [isAdmin, setIsAdmin] = useState(true);
-  const user = isAdmin ? 'Superadmin' : 'Client';
+  const { data: session } = useSession();
+  const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+  const isUserCompanyAdmin = company
+    ? isCompanyAdmin(session?.user?.userPermissions, company?.id)
+    : false;
 
-  const [, createCompany] = useMutation<CreateCompanyFormValues>(
-    createCompanyMutation,
-  );
-  const [, updateCompany] = useMutation<UpdateCompanyFormValues>(
-    updateCompanyMutation,
-  );
+  const router = useRouter();
+
+  const [, createCompany] = useMutation<
+    CreateCompanyMutation,
+    CreateCompanyMutationVariables
+  >(createCompanyMutation);
+
+  const [, updateCompany] = useMutation<
+    UpdateCompanyMutation,
+    UpdateCompanyMutationVariables
+  >(updateCompanyMutation);
 
   const companyForm = useForm<
     CreateCompanyFormValues | UpdateCompanyFormValues
   >({
-    resolver: zodResolver(
-      company ? updateCompanyFormSchema : createCompanyFormSchema,
-    ),
+    resolver: zodResolver(company ? updateCompanySchema : createCompanySchema),
     defaultValues: {
       name: company?.name || '',
       companyContactEmail: company?.companyContactEmail || '',
@@ -119,38 +138,65 @@ export const CompanyForm = ({
       address: company?.address || '',
       postalCode: company?.postalCode || '',
       plans: company?.plans || [],
-      // @TODO update this later when BE is fixed.
-      // Replace with [{ userId: '87506bef-5283-44d8-ab42-a668ea616975' }] to create company, make sure to have an admin with this id
-      userPermissions: company?.users?.map(() => ({
-        newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-        oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-      })),
+      sandvikAdminUserId: company?.sandvikAdminUserId || '',
     },
   });
 
   const onSubmit: SubmitHandler<
     CreateCompanyFormValues | UpdateCompanyFormValues
   > = (data) => {
-    console.log('Submit');
-    console.log(data);
-
     if (company) {
       updateCompany({
         id: company.id,
         updateCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyUpdate,
+              variant: 'success',
+            });
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyUpdateFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
 
     if (!company && isNewCompany) {
       createCompany({
-        createCompanyInput: data,
-      }).then((result) => {
-        // @TODO Add component later for handling success & error
-        console.log(result);
-      });
+        createCompanyInput: data as CreateCompanyFormValues,
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.successfulCompanyCreation,
+              variant: 'success',
+            });
+            router.push(`/company/${result.data?.createCompany.id}`);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.companyInvitationFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        });
     }
   };
 
@@ -159,26 +205,46 @@ export const CompanyForm = ({
     if (company) {
       companyForm.reset({
         ...company,
+        sandvikAdminUserId: company.sandvikAdminUserId ?? '',
         plans: company.plans || [],
-        // @TODO update this later when BE is fixed.
-        // Temporary. Make sure to have a user with this id and is sandvik_admin
-        userPermissions: company?.users?.map(() => ({
-          newUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-          oldUserId: '87506bef-5283-44d8-ab42-a668ea616975',
-        })),
       });
     }
   }, [company]);
 
+  const formValues = companyForm.watch();
+  const isDirty = companyForm.formState.isDirty;
+
+  const isAnyFieldEmpty =
+    !formValues.name ||
+    !formValues.companyContactEmail ||
+    !formValues.orgNumber ||
+    !formValues.country ||
+    !formValues.city ||
+    !formValues.address ||
+    !formValues.sandvikAdminUserId ||
+    !formValues.postalCode;
+
+  const isSubmitDisabled = isNewCompany
+    ? isAnyFieldEmpty
+    : !isDirty || isAnyFieldEmpty;
+
+  const sandvikAdminUserInfo = company?.users?.find(
+    (user) => user.id === company.sandvikAdminUserId,
+  );
+
   return (
     <>
-      <DevmodeToggle user={user} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-
       <Form {...companyForm}>
         <form onSubmit={companyForm.handleSubmit(onSubmit)}>
           <div className="w-full mt-4 flex flex-col gap-20">
             {/* Company details */}
-            <CompanyDetailsForm companyForm={companyForm} />
+            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <CompanyDetailsForm companyForm={companyForm} />
+            )}
+
+            {company && !isUserSandvikAdmin && !isUserCompanyAdmin && (
+              <CompanyDetails company={company} />
+            )}
 
             {/* App plans */}
             <div>
@@ -189,10 +255,10 @@ export const CompanyForm = ({
                   variant="medium"
                   className="ml-8"
                 >
-                  {user === 'Superadmin' ? 'Plans' : 'Your plans'}
+                  {isUserSandvikAdmin ? 'Plans' : 'Your plans'}
                 </Headline>
 
-                {user === 'Client' && (
+                {!isUserSandvikAdmin && (
                   <div className="flex items-center">
                     <LucideSparkles size="20" />
                     <Headline
@@ -215,13 +281,13 @@ export const CompanyForm = ({
               </div>
 
               <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
-                {allPlans.map((planType) => {
+                {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
-                    (plan) => plan.applicationName === planType.applicationName,
+                    (plan) => plan.applicationName === appName,
                   );
 
                   const appPlan = existingPlan || {
-                    applicationName: planType.applicationName,
+                    applicationName: appName,
                     planLevel: '',
                     expiringDate: 0,
                   };
@@ -230,7 +296,7 @@ export const CompanyForm = ({
                     <AppPlansContainer
                       appPlan={appPlan as Plan}
                       key={existingPlan?.id || appPlan.applicationName}
-                      isAdmin={isAdmin}
+                      isUserSandvikAdmin={isUserSandvikAdmin}
                       companyForm={companyForm}
                     />
                   );
@@ -242,41 +308,44 @@ export const CompanyForm = ({
             <ContentHolder
               variant="general"
               headlineText={
-                user === 'Superadmin'
-                  ? 'Admin'
+                isUserSandvikAdmin
+                  ? 'Sandvik admin'
                   : 'Sandvik associate contact details'
               }
             >
-              {user === 'Superadmin' && (
-                <AdminForm
-                  isNewCompany={isNewCompany}
-                  companyForm={companyForm}
-                />
-              )}
-              {user === 'Client' && (
-                <AssociateDetailsForm companyForm={companyForm} />
+              {isUserSandvikAdmin && <AdminForm companyForm={companyForm} />}
+              {!isUserSandvikAdmin && (
+                <AssociateDetails sandvikAdminUserInfo={sandvikAdminUserInfo} />
               )}
             </ContentHolder>
           </div>
 
           {/* Submit & Inactivate buttons */}
-          <div className="flex flex-col gap-6 items-end self-end mt-[40px]">
-            <Button variant="primary" size="large" type="submit">
-              <LucideCircleCheckBig />
-              {isNewCompany ? 'Send invitation' : 'Update company details'}
-            </Button>
+          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            <div className="flex gap-6 justify-end self-end mt-[40px]">
+              {!isNewCompany && (
+                <Button
+                  variant="destructive"
+                  size="large"
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <LucideTrash2 />
+                  Inactivate company
+                </Button>
+              )}
 
-            {!isNewCompany && (
               <Button
-                variant="destructive"
+                variant="primary"
                 size="large"
-                onClick={() => setIsDeleteModalOpen(true)}
+                type="submit"
+                disabled={isSubmitDisabled}
               >
-                <LucideTrash2 />
-                Inactivate company
+                <LucideCircleCheckBig />
+                {isNewCompany ? 'Send invitation' : 'Save changes'}
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </form>
       </Form>
     </>

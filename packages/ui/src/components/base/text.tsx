@@ -6,6 +6,7 @@ import { cn } from '../../lib/utils';
 const textVariants = cva('ui-font-sandvik-text', {
   variants: {
     variant: {
+      large: 'ui-text-lg',
       medium: 'ui-text-md',
       small: 'ui-text-sm ui-tracking-wide',
       xs: 'ui-text-xs ui-tracking-wide',

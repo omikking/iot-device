@@ -44,8 +44,7 @@ export enum PullTestAbortReason {
 export enum Application {
     PULL_TEST = "PULL_TEST",
     PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
-    XCYCLOPS = "XCYCLOPS",
-    ULTRABOLTS = "ULTRABOLTS"
+    BANSHEE = "BANSHEE"
 }
 
 export enum PlanLevel {
@@ -108,12 +107,8 @@ export class CreateCompanyInput {
     city: string;
     country: string;
     companyContactEmail: string;
-    userPermissions: CreateAdminPermissionInput[];
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<CreatePlanInput[]>;
-}
-
-export class CreateAdminPermissionInput {
-    userId: string;
 }
 
 export class CreatePlanInput {
@@ -130,7 +125,7 @@ export class UpdateCompanyInput {
     city?: Nullable<string>;
     country?: Nullable<string>;
     companyContactEmail?: Nullable<string>;
-    userPermissions?: Nullable<UpdateAdminPermissionInput[]>;
+    sandvikAdminUserId?: Nullable<string>;
     plans?: Nullable<UpdatePlanInput[]>;
 }
 
@@ -141,11 +136,6 @@ export class UpdatePlanInput {
     expiringDate?: Nullable<DateTime>;
 }
 
-export class UpdateAdminPermissionInput {
-    oldUserId: string;
-    newUserId: string;
-}
-
 export class CreateDriveInput {
     driveName: string;
     levelId: string;
@@ -153,6 +143,27 @@ export class CreateDriveInput {
 
 export class UpdateDriveInput {
     driveName?: Nullable<string>;
+}
+
+export class CreateInvitationInput {
+    email: string;
+    companyId: string;
+    role: string;
+    appsAccess: string[];
+}
+
+export class CreateGlobalInvitationInput {
+    email: string;
+    globalRole: string;
+}
+
+export class CompleteInvitationInput {
+    id: string;
+    token: string;
+    fullName: string;
+    password: string;
+    workPlace: string;
+    phoneNumber?: Nullable<string>;
 }
 
 export class CreateLevelInput {
@@ -228,6 +239,12 @@ export class UpdateUserInput {
     isGlobalVisibility?: Nullable<boolean>;
 }
 
+export class UpdatePasswordInput {
+    oldPassword?: Nullable<string>;
+    newPassword?: Nullable<string>;
+    confirmPassword?: Nullable<string>;
+}
+
 export class BoltResult {
     id: string;
     createdAt: DateTime;
@@ -248,10 +265,18 @@ export class BoltResult {
     driveId: string;
     locationId: string;
     userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
 }
 
 export class BoltResultResponse {
+    failedCount: number;
+    hazardCount: number;
+    passedCount: number;
     totalRecords: number;
+    averageTons?: Nullable<number>;
     results: BoltResult[];
 }
 
@@ -272,6 +297,9 @@ export abstract class IQuery {
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
+    validateInvitation?: InvitationValidation;
+    pendingInvitations?: Invitation[];
+    pendingGlobalInvitations: Invitation[];
     levels: Level[];
     level?: Level;
     locations: Location[];
@@ -300,6 +328,11 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createInvitation?: InvitationResponse;
+    createGlobalInvitation?: InvitationResponse;
+    completeInvitation?: User;
+    resendInvitation?: Invitation;
+    removeInvitation?: Invitation;
     createLevel?: Level;
     updateLevel?: Level;
     removeLevel?: Level;
@@ -347,6 +380,8 @@ export class Company {
     users?: Nullable<User[]>;
     plans?: Nullable<Plan[]>;
     sites?: Nullable<Site[]>;
+    pendingInvitations?: Nullable<Invitation[]>;
+    sandvikAdminUserId?: Nullable<string>;
 }
 
 export class Plan {
@@ -372,6 +407,27 @@ export class Drive {
     levelId: string;
     locations?: Nullable<Location[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class Invitation {
+    id: string;
+    email: string;
+    expiresAt: DateTime;
+    used: boolean;
+    companyId?: Nullable<string>;
+    globalRole?: Nullable<string>;
+}
+
+export class InvitationResponse {
+    invitationId?: Nullable<string>;
+    userId?: Nullable<string>;
+    isNewUser: boolean;
+}
+
+export class InvitationValidation {
+    valid: boolean;
+    reason?: Nullable<string>;
+    invitation?: Nullable<Invitation>;
 }
 
 export class Level {

@@ -7,12 +7,20 @@ import { LucideCheckCircle, LucideSearchX, LucideXCircle } from 'lucide-react';
 export interface SpecificationProps {
   title: string;
   text: string;
+  isWide?: boolean;
   className?: string;
 }
 
-const Specification = ({ title, text, className }: SpecificationProps) => {
+type ResultType = 'Pass' | 'Fail' | 'Abort';
+
+const Specification = ({
+  title,
+  text,
+  className,
+  isWide = false,
+}: SpecificationProps) => {
   const getBadge = (
-    result: 'Pass' | 'Fail' | 'Abort',
+    result: ResultType,
   ): {
     variant: 'success' | 'destructive' | 'warning';
     icon: React.ReactNode;
@@ -30,20 +38,24 @@ const Specification = ({ title, text, className }: SpecificationProps) => {
   return (
     <div
       className={cn(
-        'ui-flex ui-flex-row ui-items-center ui-px-2 ui-border-b ui-border-neutral-3 ui-py-2 ui-break-words',
+        'ui-flex ui-flex-row ui-items-center ui-px-2 ui-border-b ui-border-neutral-3 ui-py-2',
         className,
       )}
     >
-      <Text className="ui-w-32" variant="small" color="muted">
+      <Text
+        variant="small"
+        color="muted"
+        className={cn(isWide ? 'ui-w-36' : 'ui-w-24', 'ui-break-words ui-pr-4')}
+      >
         {title}
       </Text>
       {text === 'Pass' || text === 'Fail' || text === 'Abort' ? (
-        <Badge variant={getBadge(text as 'Pass' | 'Fail' | 'Abort').variant}>
-          {getBadge(text as 'Pass' | 'Fail' | 'Abort').icon}
+        <Badge variant={getBadge(text as ResultType).variant}>
+          {getBadge(text as ResultType).icon}
           {text}
         </Badge>
       ) : (
-        <Text className="ui-max-w-32" variant="small" color="foreground">
+        <Text className="ui-max-w-40" variant="small" color="foreground">
           {text}
         </Text>
       )}

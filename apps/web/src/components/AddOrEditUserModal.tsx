@@ -101,7 +101,6 @@ export const AddOrEditUserModal = ({
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
 
-  console.log('session', session);
   const permission = user?.userPermissions?.[0];
 
   const [isLoading, setIsLoading] = useState(false);

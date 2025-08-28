@@ -63,7 +63,6 @@ export default function Page({
     companyId,
   );
 
-  console.log('isUserCompanyAdmin', session?.user?.userPermissions);
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
@@ -104,8 +103,6 @@ export default function Page({
       setSelectedUser(undefined);
     }
   };
-
-  console.log("isUserCompanyAdmin's", isUserCompanyAdmin);
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">

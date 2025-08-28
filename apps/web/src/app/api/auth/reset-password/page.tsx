@@ -18,6 +18,8 @@ import {
   Input,
   Text,
   Anchor,
+  // Toaster,
+  // showAlertToast,
 } from '@gsp/ui';
 import Link from 'next/link';
 import { useMutation } from 'urql';
@@ -52,11 +54,11 @@ const CONFIRM_PASSWORD_RESET_MUTATION = graphql(`
 `);
 
 export type ResetCodeInput = {
-  email: string,
-  code : string,
-  newPassword: string,
-  confirmPassword: string,
-}
+  email: string;
+  code: string;
+  newPassword: string;
+  confirmPassword: string;
+};
 export default function Page() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -160,8 +162,14 @@ export default function Page() {
             return;
           }
 
-          alert('Password reset successful!');
-          // optionally we can send user to login page on success we can remove this later
+          // alert('Password reset successful!');
+          // <Toaster duration={80000} />;
+          // showAlertToast({
+          //   title: 'Password reset successful!',
+          //   description: 'Your password has been reset successfully.',
+          //   variant: 'success',
+          // });
+
           router.push('/api/auth/signin');
           break;
         }

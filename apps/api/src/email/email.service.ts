@@ -41,6 +41,16 @@ export class EmailService {
     });
   }
 
+  async sendOTP(to: string, otp: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: '"Support" <support@example.com>',
+      to,
+      subject: 'Password Reset OTP',
+      text: `Your password reset code is: ${otp}`,
+      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
+    });
+  }
+
   async sendGlobalInvitationEmail(
     email: string,
     invitationId: string,

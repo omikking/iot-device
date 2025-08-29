@@ -2,15 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as argon from 'argon2';
-import { MailService } from 'src/mail/mail.service';
+import { EmailService } from 'src/email/email.service';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class ResetPasswordService {
-  constructor(private prisma: PrismaService, private mailer: MailService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailer: EmailService,
+  ) {}
 
   private async generateUniqueOTP(): Promise<string> {
     while (true) {
-      const token = Math.floor(100000 + Math.random() * 900000).toString();
+      const randomBuffer = randomBytes(4);
+
+      // Generate a 6-digit OTP
+      const token = (
+        (randomBuffer.readUInt32BE(0) % 900000) +
+        100000
+      ).toString();
+
       const existing = await this.prisma.passwordResetRequest.findUnique({
         where: { token },
       });
@@ -20,50 +31,55 @@ export class ResetPasswordService {
   }
 
   // Step 1: Request password reset //
-async requestPasswordReset(requestPasswordResetInput: { email: string }): Promise<boolean> {
-  const { email } = requestPasswordResetInput;
- 
-  if (!email) {
-    throw new UserInputError('Email is required');
-  }
- 
-  const user = await this.prisma.user.findUnique({
-    where: { email },
-  });
- 
-  if (!user) {
-    throw new UserInputError('User not found with this email');
-  }
- 
-  const token = await this.generateUniqueOTP();
-  const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // for now its 30 minutes we can update it later accordingly
- 
-  const existingRequest = await this.prisma.passwordResetRequest.findFirst({
-    where: { userId: user.id },
-  });
- 
-  if (existingRequest) {
-    // Update existing token and expiry
-    await this.prisma.passwordResetRequest.updateMany({
+  async requestPasswordReset(requestPasswordResetInput: {
+    email: string;
+  }): Promise<boolean> {
+    const { email } = requestPasswordResetInput;
+
+    if (!email) {
+      throw new UserInputError('Email is required');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UserInputError('User not found with this email');
+    }
+
+    const token = await this.generateUniqueOTP();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // for now its 30 minutes we can update it later accordingly
+
+    const existingRequest = await this.prisma.passwordResetRequest.findFirst({
       where: { userId: user.id },
-      data: { token, expiresAt },
     });
-  } else {
-    // Create new request
-    await this.prisma.passwordResetRequest.create({
-      data: {
-        token,
-        expiresAt,
-        userId: user.id,
-      },
-    });
+
+    if (existingRequest) {
+      // Update existing token and expiry
+      await this.prisma.passwordResetRequest.updateMany({
+        where: { userId: user.id },
+        data: { token, expiresAt },
+      });
+    } else {
+      // Create new request
+      await this.prisma.passwordResetRequest.create({
+        data: {
+          token,
+          expiresAt,
+          userId: user.id,
+        },
+      });
+    }
+
+    await this.mailer.sendOTP(user.email, token);
+    return true;
   }
- 
-  await this.mailer.sendOTP(user.email, token);
-  return true;
-}
   // Step 2: Verify code with email  //
-  async validateResetToken(validateResetTokenInput: { token: string; email: string }): Promise<boolean> {
+  async validateResetToken(validateResetTokenInput: {
+    token: string;
+    email: string;
+  }): Promise<boolean> {
     const { token, email } = validateResetTokenInput;
 
     if (!token || !email) {
@@ -103,7 +119,8 @@ async requestPasswordReset(requestPasswordResetInput: { email: string }): Promis
     newPassword: string;
     confirmPassword: string;
   }): Promise<boolean> {
-    const { token, email, newPassword, confirmPassword } = confirmPasswordResetInput;
+    const { token, email, newPassword, confirmPassword } =
+      confirmPasswordResetInput;
 
     if (!token || !email || !newPassword || !confirmPassword) {
       throw new UserInputError('All fields are required');

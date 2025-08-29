@@ -130,6 +130,13 @@ export type CompleteInvitationInput = {
   workPlace: Scalars['String']['input'];
 };
 
+export type ConfirmPasswordResetInput = {
+  confirmPassword: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
 /**
  * CreateBoltResultInput
  * Define the input fields to create a new boltResult
@@ -332,6 +339,7 @@ export type Location = {
 export type Mutation = {
   __typename?: 'Mutation';
   completeInvitation: User;
+  confirmPasswordReset: Scalars['Boolean']['output'];
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -354,6 +362,7 @@ export type Mutation = {
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  requestPasswordReset: Scalars['Boolean']['output'];
   resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
@@ -365,6 +374,7 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
+  validateResetToken: Scalars['Boolean']['output'];
 };
 
 
@@ -374,6 +384,15 @@ export type Mutation = {
  */
 export type MutationCompleteInvitationArgs = {
   input: CompleteInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationConfirmPasswordResetArgs = {
+  confirmPasswordResetInput: ConfirmPasswordResetInput;
 };
 
 
@@ -579,6 +598,15 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRequestPasswordResetArgs = {
+  requestPasswordResetInput: RequestPasswordResetInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationResendInvitationArgs = {
   id: Scalars['String']['input'];
 };
@@ -681,6 +709,15 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserPermissionArgs = {
   id: Scalars['String']['input'];
   updateUserPermissionInput: UpdateUserPermissionInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationValidateResetTokenArgs = {
+  validateResetTokenInput: ValidateResetTokenInput;
 };
 
 /**
@@ -896,6 +933,10 @@ export type QueryValidateInvitationArgs = {
   token: Scalars['String']['input'];
 };
 
+export type RequestPasswordResetInput = {
+  email: Scalars['String']['input'];
+};
+
 export enum Result {
   Abort = 'ABORT',
   Fail = 'FAIL',
@@ -1099,6 +1140,11 @@ export type UserPermission = {
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
+};
+
+export type ValidateResetTokenInput = {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export type GetBoltResultQueryVariables = Exact<{

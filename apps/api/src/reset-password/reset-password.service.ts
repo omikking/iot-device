@@ -13,7 +13,8 @@ export class ResetPasswordService {
   ) {}
 
   private async generateUniqueOTP(): Promise<string> {
-    while (true) {
+    const MAX_RETRIES = 20;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       const randomBuffer = randomBytes(4);
 
       // Generate a 6-digit OTP
@@ -28,6 +29,8 @@ export class ResetPasswordService {
 
       if (!existing) return token;
     }
+
+    throw new Error('Failed to generate a unique OTP after maximum retries');
   }
 
   // Step 1: Request password reset //

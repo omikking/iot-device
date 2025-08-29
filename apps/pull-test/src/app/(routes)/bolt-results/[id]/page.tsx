@@ -2,32 +2,30 @@
 import {
   Text,
   Tabs,
-  Modal,
   Badge,
-  Button,
   Headline,
   TabsList,
   DateRange,
   Breadcrumb,
   TabsTrigger,
   TabsContent,
-  ModalTrigger,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useEffect, useMemo, useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
-import { BoltResult } from '@/gql/graphql';
-
+import { responses } from '@/app/uitexts/responses';
+import { useEffect, useMemo, useState } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { responses } from '@/app/uitexts/responses';
+import { PullTestReportPDF } from '@/components/PullTestReportPDF';
+import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { getEarliestAndLatestDates } from '@/libs/utils';
 
 interface Props {
   params: {
@@ -71,6 +69,10 @@ const boltResultQuery = gql`
       endDate: $endDate
     ) {
       totalRecords
+      failedCount
+      hazardCount
+      passedCount
+      averageTons
       results {
         id
         createdAt
@@ -103,6 +105,59 @@ const boltResultQuery = gql`
         level {
           levelName
         }
+      }
+    }
+  }
+`;
+
+const allBoltResultQuery = gql`
+  query GetAllBoltResults(
+    $siteId: String
+    $levelId: String
+    $driveId: String
+    $locationId: String
+    $result: [String!]
+    $isHazard: Boolean
+    $withImage: Boolean
+    $withComment: Boolean
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    boltResults(
+      siteId: $siteId
+      levelId: $levelId
+      driveId: $driveId
+      locationId: $locationId
+      result: $result
+      isHazard: $isHazard
+      withImage: $withImage
+      withComment: $withComment
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      totalRecords
+      results {
+        id
+        createdAt
+        updatedAt
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        level {
+          levelName
+        }
+        drive {
+          driveName
+        }
+        location {
+          locationName
+        }
+        positionInRing
+        result
+        comment
+        isHazard
+        abortReason
       }
     }
   }
@@ -146,6 +201,10 @@ export default function Page({ params }: Props): JSX.Element {
     to: undefined,
   });
 
+  const [shouldFetchAllResults, setShouldFetchAllResults] = useState(false);
+  const [pdfGenTrigger, setPdfGenTrigger] = useState(0);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
+
   const [filterState, setFilterState] = useState({
     pass: false,
     fail: false,
@@ -174,13 +233,32 @@ export default function Page({ params }: Props): JSX.Element {
     variables: { id: companyId },
   });
 
+  const getAdjustedEndDate = (
+    dateRange: DateRange | undefined,
+  ): Date | undefined => {
+    if (!dateRange?.to) {
+      return undefined;
+    }
+    const endDate = new Date(dateRange.to);
+    endDate.setHours(23, 59, 59, 999);
+    return endDate;
+  };
+
+  // Bolt results for table
   const [{ data: boltResultsResponse, error }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResult[] };
+    boltResults: {
+      totalRecords: number;
+      failedCount: number;
+      hazardCount: number;
+      passedCount: number;
+      averageTons: number;
+      results: BoltResult[];
+    };
   }>({
     query: boltResultQuery,
     variables: {
       offset: (currentPage - 1) * pageSize,
-      pageSize: pageSize,
+      limit: pageSize,
       siteId: site?.id,
       levelId: level?.id,
       driveId: drive?.id,
@@ -189,11 +267,61 @@ export default function Page({ params }: Props): JSX.Element {
       withImage: filterState.withImage || undefined,
       withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
-      endDate: dateRange?.to,
+      endDate: getAdjustedEndDate(dateRange),
       result: result.length > 0 ? result : undefined,
     },
     pause: !site?.id,
   });
+
+  // All bolt results for PDF
+  const [{ data: allBoltResultsResponse, fetching: isLoadingAllResults }] =
+    useQuery<{
+      boltResults: {
+        totalRecords: number;
+        failedCount: number;
+        hazardCount: number;
+        passedCount: number;
+        averageTons: number;
+        results: BoltResult[];
+      };
+    }>({
+      query: allBoltResultQuery,
+      variables: {
+        siteId: site?.id,
+        levelId: level?.id,
+        driveId: drive?.id,
+        locationId: location?.id,
+        isHazard: filterState.reportedHazard || undefined,
+        withImage: filterState.withImage || undefined,
+        withComment: filterState.withComment || undefined,
+        startDate: dateRange?.from,
+        endDate: dateRange?.to,
+        result: result.length > 0 ? result : undefined,
+      },
+      pause: !shouldFetchAllResults || !site?.id,
+    });
+
+  const { testingStartDate, testingEndDate } = getEarliestAndLatestDates(
+    allBoltResultsResponse?.boltResults?.results || [],
+  );
+
+  const handleExportPDF = () => {
+    setIsPdfLoading(true);
+    // Forces a fresh fetch of all bolt results
+    setShouldFetchAllResults(true);
+  };
+
+  useEffect(() => {
+    if (
+      shouldFetchAllResults &&
+      !isLoadingAllResults &&
+      allBoltResultsResponse?.boltResults?.results?.length
+    ) {
+      setPdfGenTrigger((prev) => prev + 1);
+      setShouldFetchAllResults(false);
+      setIsPdfLoading(false);
+    }
+  }, [shouldFetchAllResults, isLoadingAllResults, allBoltResultsResponse]);
 
   useEffect(() => {
     if (error) {
@@ -204,7 +332,6 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [error]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
@@ -239,7 +366,6 @@ export default function Page({ params }: Props): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
-
           <div className="flex-1 flex justify-start">
             <Breadcrumb>
               <BreadcrumbList>
@@ -287,19 +413,22 @@ export default function Page({ params }: Props): JSX.Element {
             </Breadcrumb>
           </div>
 
-          <Modal>
-            <ModalTrigger asChild>
-              <Button
-                disabled={!boltResultsResponse?.boltResults?.results?.length}
-                variant="primary"
-                size="large"
-              >
-                <LucideFileDown />
-                View PDF
-              </Button>
-            </ModalTrigger>
-            {/* TODO: Add modal content */}
-          </Modal>
+          {boltResultsResponse && (
+            <PullTestReportPDF
+              disabled={false}
+              allBoltResults={allBoltResultsResponse?.boltResults}
+              generateTrigger={pdfGenTrigger}
+              isLoading={isPdfLoading}
+              onRequestPDF={handleExportPDF}
+              reportDetails={{
+                testingStartDate: testingStartDate,
+                testingEndDate: testingEndDate,
+                companyName: companyData?.company?.name || '',
+                mine: site?.name || '',
+              }}
+              parentUrl={window.parent.location.toString()}
+            />
+          )}
         </div>
 
         <BoltSelection
@@ -332,7 +461,14 @@ export default function Page({ params }: Props): JSX.Element {
         </TabsContent>
 
         <TabsContent value="graphs">
-          <BoltResultsGraphView />
+          <BoltResultsGraphView
+            site={site?.id}
+            boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords}
+            averageTons={boltResultsResponse?.boltResults?.averageTons}
+            passedCount={boltResultsResponse?.boltResults?.passedCount}
+            totalRecords={boltResultsResponse?.boltResults?.totalRecords}
+          />
         </TabsContent>
       </Tabs>
     </main>

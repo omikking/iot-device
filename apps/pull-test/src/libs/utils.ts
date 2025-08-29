@@ -1,5 +1,5 @@
 import { responses } from '@/app/uitexts/responses';
-import { Application, BoltResult } from '@/gql/graphql';
+import { Application, BoltResult, RingPosition } from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
 
@@ -25,7 +25,6 @@ export const capitalizeFirstLetter = (
 export const generateBoltSpecifications = (
   boltData: BoltResult,
   names: {
-    siteName?: string;
     levelName?: string;
     driveName?: string;
     locationName?: string;
@@ -33,11 +32,11 @@ export const generateBoltSpecifications = (
 ) => {
   return [
     {
-      title: 'Site',
-      text: names.siteName || 'N/A',
+      title: 'Created at',
+      text: new Date(Number(boltData.createdAt)).toLocaleString() || 'N/A',
     },
     {
-      title: 'Bolt',
+      title: 'Bolt number',
       text: boltData.boltNumber?.toString() || 'N/A',
     },
     {
@@ -58,18 +57,24 @@ export const generateBoltSpecifications = (
     },
     {
       title: 'Position in ring',
-      text: boltData.positionInRing.replaceAll('_', '-') || 'N/A',
+      text:
+        convertRingPosition(boltData.positionInRing as RingPosition) || 'N/A',
     },
     {
       title: 'Result',
       text: capitalizeFirstLetter(boltData.result) || 'N/A',
     },
-    {
-      title: 'Abort Reason',
-      text:
-        capitalizeFirstLetter(boltData.abortReason).replaceAll('_', ' ') ||
-        'N/A',
-    },
+    ...(boltData.abortReason
+      ? [
+          {
+            title: 'Abort Reason',
+            text: capitalizeFirstLetter(boltData.abortReason).replaceAll(
+              '_',
+              ' ',
+            ),
+          },
+        ]
+      : []),
   ];
 };
 
@@ -134,4 +139,41 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
     });
     return true;
   }
+};
+
+const ringPositionDisplayMap: Record<RingPosition, string> = {
+  [RingPosition.CenterBacks]: 'Center Backs',
+  [RingPosition.LhBacks]: 'L/H Backs',
+  [RingPosition.LhShoulder]: 'L/H Shoulder',
+  [RingPosition.LhWallUpper]: 'L/H Wall Upper',
+  [RingPosition.RhBacks]: 'R/H Backs',
+  [RingPosition.RhShoulder]: 'R/H Shoulder',
+  [RingPosition.RhWallUpper]: 'R/H Wall Upper',
+};
+
+export const convertRingPosition = (position: RingPosition): string => {
+  if (position in ringPositionDisplayMap) {
+    return ringPositionDisplayMap[position as RingPosition];
+  }
+  return position.toString();
+};
+
+export const getEarliestAndLatestDates = (results: BoltResult[]) => {
+  if (!results || results.length === 0) {
+    return { testingStartDate: '', testingEndDate: '' };
+  }
+
+  let earliest = new Date(results[0].createdAt);
+  let latest = new Date(results[0].createdAt);
+
+  for (const result of results) {
+    const createdAt = new Date(result.createdAt);
+    if (createdAt < earliest) earliest = createdAt;
+    if (createdAt > latest) latest = createdAt;
+  }
+
+  return {
+    testingStartDate: earliest.toLocaleDateString(),
+    testingEndDate: latest.toLocaleDateString(),
+  };
 };

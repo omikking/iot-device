@@ -227,6 +227,7 @@ export default function Page({
             isModalOpen={openDetailsModal}
             boltResult={selectedHazard}
             onClose={() => handleBoltDetailsModalToggle(false)}
+            isModalOpen={openDetailsModal}
           />
         )}
       </Modal>

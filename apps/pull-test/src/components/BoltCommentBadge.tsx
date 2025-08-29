@@ -42,6 +42,7 @@ export const BoltCommentBadge = ({ boltResult }: BoltCommentBadgeProps) => {
         isModalOpen={isModalOpen}
         boltResult={boltResult}
         onClose={() => setIsModalOpen(false)}
+        isModalOpen={isModalOpen}
       />
     </Modal>
   );

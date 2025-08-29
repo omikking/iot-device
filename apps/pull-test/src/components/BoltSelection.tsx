@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
 import {
-  ContentHolder,
-  DateRange,
-  Dropdown,
   Label,
+  Dropdown,
+  DateRange,
   RangeCalendar,
+  ContentHolder,
 } from '@gsp/ui';
+import { useMemo } from 'react';
 import { GetCompanyQuery, BoltResult } from '@/gql/graphql';
 import { BoltResultsFilter, FilterState } from './BoltResultsFilter';
 
@@ -27,7 +27,7 @@ interface BoltSelectionProps {
   onSetLevel: React.Dispatch<React.SetStateAction<LevelType | undefined>>;
   onSetDrive: React.Dispatch<React.SetStateAction<DriveType | undefined>>;
   onSetLocation: React.Dispatch<React.SetStateAction<LocationType | undefined>>;
-  onSetDateRange: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  onSetDateRange: (dateRange: DateRange | undefined) => void;
   onFilterChange: (filters: FilterState) => void;
   boltResults: BoltResult[];
   companyData: GetCompanyQuery;
@@ -117,7 +117,7 @@ export const BoltSelection = ({
               'from' in range &&
               'to' in range
             ) {
-              onSetDateRange;
+              onSetDateRange(range);
             }
           }}
           disabled={!site}

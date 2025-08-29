@@ -61,6 +61,10 @@ export type BoltResult = {
  */
 export type BoltResultResponse = {
   __typename?: 'BoltResultResponse';
+  averageTons?: Maybe<Scalars['Float']['output']>;
+  failedCount: Scalars['Int']['output'];
+  hazardCount: Scalars['Int']['output'];
+  passedCount: Scalars['Int']['output'];
   results: Array<BoltResult>;
   totalRecords: Scalars['Int']['output'];
 };
@@ -114,6 +118,15 @@ export type CompanyListResponse = {
   __typename?: 'CompanyListResponse';
   results: Array<Company>;
   totalRecords: Scalars['Int']['output'];
+};
+
+export type CompleteInvitationInput = {
+  fullName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  token: Scalars['String']['input'];
+  workPlace: Scalars['String']['input'];
 };
 
 /**
@@ -772,6 +785,16 @@ export type QueryUserPermissionArgs = {
  */
 export type QueryUsersArgs = {
   roles?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryValidateInvitationArgs = {
+  id: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export enum Result {

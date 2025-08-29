@@ -6,6 +6,7 @@ import { generateBoltSpecifications } from '@/libs/utils';
 import { MultiBoltReadingTable } from './MultiBoltReadingTable';
 import { Textarea, Text, Badge, Headline, Specification } from '@gsp/ui';
 import { LucideCircleCheckBig, LucideTriangleAlert } from 'lucide-react';
+import { MultiBoltGraphView } from './MultiBoltGraphView';
 
 type BoltResultDetailsModalContentProps = {
   boltResult: BoltResult;
@@ -146,7 +147,7 @@ export const BoltResultDetailsModalContent = ({
 
         {boltResult && (
           <div className="flex flex-wrap">
-            {[...generateBoltSpecifications(boltResult, siteInfo).slice(1)].map(
+            {[...generateBoltSpecifications(boltResult, siteInfo)].map(
               (boltSpec, index) => (
                 <Specification
                   isWide
@@ -158,19 +159,31 @@ export const BoltResultDetailsModalContent = ({
               ),
             )}
             {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              0 && <Specification isWide title="" text="" className="w-1/2" />}
+              1 && <Specification isWide title="" text="" className="w-1/2" />}
           </div>
         )}
       </div>
 
       {/* Bolt Results */}
-      <div>
+      <div className="pb-10">
         <Headline variant="small" as="h3" color="foreground" isBold>
           Bolt results
         </Headline>
         <MultiBoltReadingTable
           peakLoad={peakLoad}
           peakDisplacement={peakDisplacement}
+        />
+      </div>
+      {/* Bolt plot */}
+      <div>
+        <Headline variant="small" as="h3" color="foreground" isBold>
+          Bolt plot
+        </Headline>
+
+        <MultiBoltGraphView
+          peakLoad={peakLoad}
+          peakDisplacement={peakDisplacement}
+          boltNumber={boltResult?.boltNumber}
         />
       </div>
     </div>

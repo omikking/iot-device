@@ -22,7 +22,7 @@ export class BoltResultsService {
 
   async findMany(
     user: ActiveUserData,
-    pagination: { offset: number; limit?: number },
+    pagination: { offset?: number; limit?: number },
     filters: {
       siteId?: string | undefined;
       levelId?: string | undefined;
@@ -38,7 +38,7 @@ export class BoltResultsService {
     allowedCompanyIds: string[],
     allowedApps: Application[],
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const { offset, limit = 50 } = pagination;
+    const { offset, limit } = pagination;
 
     const {
       siteId,
@@ -102,9 +102,28 @@ export class BoltResultsService {
       where: whereCondition,
     });
 
-    const results = await this.prisma.boltResult.findMany({
-      skip: offset,
-      take: limit,
+    const failedCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        result: 'FAIL',
+      },
+    });
+
+    const hazardCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        isHazard: true,
+      },
+    });
+
+    const passedCount = await this.prisma.boltResult.count({
+      where: {
+        ...whereCondition,
+        result: 'PASS',
+      },
+    });
+
+    const queryOptions: any = {
       where: whereCondition,
       include: {
         site: true,
@@ -112,9 +131,49 @@ export class BoltResultsService {
         drive: true,
         location: true,
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    };
+
+    if (typeof offset === 'number') {
+      queryOptions.skip = offset;
+    }
+
+    if (typeof limit === 'number') {
+      queryOptions.take = limit;
+    }
+
+    const results = await this.prisma.boltResult.findMany(queryOptions);
+
+    const allResultsForAverage = await this.prisma.boltResult.findMany({
+      where: whereCondition,
+      select: {
+        peakLoad: true,
+      },
     });
 
-    return { totalRecords, results };
+    let averageTons: number | null = null;
+    if (allResultsForAverage.length > 0) {
+      const allPeakLoads = allResultsForAverage
+        .map((result) => result.peakLoad)
+        .flat()
+        .filter((load) => load !== null && load !== undefined);
+
+      if (allPeakLoads.length > 0) {
+        const sum = allPeakLoads.reduce((acc, load) => acc + load, 0);
+        averageTons = Math.round(sum / allPeakLoads.length);
+      }
+    }
+
+    return {
+      totalRecords,
+      results,
+      failedCount,
+      passedCount,
+      hazardCount,
+      averageTons,
+    };
   }
 
   async findOne(id: string): Promise<BoltResult> {

@@ -8,9 +8,10 @@ import {
   LucideSearchX,
   ClipboardList,
 } from 'lucide-react';
-import { BoltResult, Result } from '@/gql/graphql';
+import { BoltResult, Result, RingPosition } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { Pagination } from './Pagination';
+import { convertRingPosition } from '@/libs/utils';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
@@ -60,7 +61,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakLoad',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak load(tons)" />
+        <TableHeadWithSorting column={column} header="Peak load (tons)" />
       ),
       cell: ({ row }) => {
         const { peakLoad } = row.original;
@@ -88,7 +89,7 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'peakDisplacement',
       header: ({ column }) => (
-        <TableHeadWithSorting column={column} header="Peak displacement(mm)" />
+        <TableHeadWithSorting column={column} header="Peak displacement (mm)" />
       ),
       cell: ({ row }) => {
         const { peakDisplacement } = row.original;
@@ -131,6 +132,8 @@ export const BoltResultsTable = ({
     {
       accessorKey: 'positionInRing',
       header: 'Position in ring',
+      cell: ({ row }) =>
+        convertRingPosition(row.original.positionInRing as RingPosition),
     },
     {
       accessorKey: 'comment',

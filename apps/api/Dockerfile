@@ -1,4 +1,4 @@
-FROM node:18-slim AS deps
+FROM node:20-slim AS deps
 WORKDIR /app
  
 RUN npm install -g pnpm
@@ -10,7 +10,7 @@ RUN pnpm install --frozen-lockfile --prod=false
  
 # Build (generate + compile)
  
-FROM node:18-slim AS build
+FROM node:20-slim AS build
 WORKDIR /app
  
 RUN npm install -g pnpm
@@ -33,7 +33,7 @@ RUN pnpm build
  
 # Production (slim runtime)
  
-FROM node:18-slim AS prod
+FROM node:20-slim AS prod
 WORKDIR /app
  
 RUN npm install -g pnpm

@@ -20,17 +20,25 @@ async function main() {
   // Clear existing data
   await cleanup();
 
+  // Create specific test users and companies for easy testing
+  await generateTestUsersAndCompanies();
+  console.log('✅ Created test users and companies with specific permissions');
+
   // Generate admin users
-  const adminUsers = await generateAdminUsers(3);
-  console.log(`✅ Created ${adminUsers.length} admin users`);
+  const adminUsers = await generateAdminUsers(2);
+  console.log(`✅ Created ${adminUsers.length} additional admin users`);
 
   // Generate technician users
-  const technicianUsers = await generateTechnicianUsers(10);
+  const technicianUsers = await generateTechnicianUsers(5);
   console.log(`✅ Created ${technicianUsers.length} technician users`);
 
+  // Generate regular users (no global role)
+  const regularUsers = await generateRegularUsers(10);
+  console.log(`✅ Created ${regularUsers.length} regular users`);
+
   // Generate companies with plans
-  const companies = await generateCompanies(5, adminUsers);
-  console.log(`✅ Created ${companies.length} companies`);
+  const companies = await generateCompanies(5, adminUsers, regularUsers);
+  console.log(`✅ Created ${companies.length} additional companies`);
 
   // Generate sites for each company
   const sites = await generateSites(companies);
@@ -53,6 +61,23 @@ async function main() {
   console.log(`✅ Created ${boltResults.length} bolt results`);
 
   console.log('✅ Seeding complete!');
+  printLoginInstructions();
+}
+
+function printLoginInstructions() {
+  console.log('\n🔑 TEST ACCOUNTS');
+  console.log('=====================================');
+  console.log('All passwords: 123123123');
+  console.log('-------------------------------------');
+  console.log('superadmin@mail.com     - Sandvik Admin (full access)');
+  console.log('technician@mail.com     - Sandvik Technician');
+  console.log('companyadmin@mail.com   - Company Admin');
+  console.log('regularuser@mail.com    - Regular user (no global role)');
+  console.log('operator@mail.com       - Pull Test Operator only');
+  console.log('multiadmin@mail.com     - Admin for multiple companies');
+  console.log('expired@mail.com        - User with expired plan access');
+  console.log('noapp@mail.com          - User with no app access');
+  console.log('=====================================');
 }
 
 async function cleanup() {
@@ -67,7 +92,385 @@ async function cleanup() {
   await prisma.userPermission.deleteMany();
   await prisma.plan.deleteMany();
   await prisma.company.deleteMany();
-  // Don't delete users as they might be created externally
+  await prisma.user.deleteMany(); // Clear all users for a fresh start
+}
+
+async function generateTestUsersAndCompanies() {
+  // Common password for all test users
+  const passwordHash = await argon.hash('123123123');
+
+  // ============ TEST USERS ============
+
+  // 1. Super Admin (Sandvik global admin)
+  const superAdmin = await prisma.user.create({
+    data: {
+      email: 'superadmin@mail.com',
+      hash: passwordHash,
+      fullName: 'Super Admin',
+      workPlace: 'Sandvik HQ',
+      phoneNumber: '+46123456789',
+      globalRole: GlobalRole.SANDVIK_ADMIN,
+      isGlobalVisibility: true,
+    },
+  });
+
+  // 2. Sandvik Technician
+  const sandvikTechnician = await prisma.user.create({
+    data: {
+      email: 'technician@mail.com',
+      hash: passwordHash,
+      fullName: 'Sandvik Technician',
+      workPlace: 'Sandvik Field Office',
+      phoneNumber: '+46987654321',
+      globalRole: GlobalRole.SANDVIK_TECHNICIAN,
+      isGlobalVisibility: true,
+    },
+  });
+
+  // 3. Company Admin (NO global role - typical customer admin)
+  const companyAdmin = await prisma.user.create({
+    data: {
+      email: 'companyadmin@mail.com',
+      hash: passwordHash,
+      fullName: 'Company Admin',
+      workPlace: 'Mining Corp HQ',
+      phoneNumber: '+46111222333',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // 4. Regular User (NO global role - typical end user)
+  const regularUser = await prisma.user.create({
+    data: {
+      email: 'regularuser@mail.com',
+      hash: passwordHash,
+      fullName: 'Regular User',
+      workPlace: 'Mining Corp',
+      phoneNumber: '+46444555666',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // 5. Multi-company Admin (NO global role, but admin in multiple companies)
+  const multiCompanyAdmin = await prisma.user.create({
+    data: {
+      email: 'multiadmin@mail.com',
+      hash: passwordHash,
+      fullName: 'Multi Company Admin',
+      workPlace: 'Consulting Group',
+      phoneNumber: '+46777888999',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // 6. Pull Test Operator (specialized app user)
+  const pullTestOperator = await prisma.user.create({
+    data: {
+      email: 'operator@mail.com',
+      hash: passwordHash,
+      fullName: 'Pull Test Operator',
+      workPlace: 'Testing Lab',
+      phoneNumber: '+46222333444',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // 7. User with expired plan access
+  const expiredUser = await prisma.user.create({
+    data: {
+      email: 'expired@mail.com',
+      hash: passwordHash,
+      fullName: 'Expired Plan User',
+      workPlace: 'Old Mining Corp',
+      phoneNumber: '+46555666777',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // 8. User with no app access
+  const noAppUser = await prisma.user.create({
+    data: {
+      email: 'noapp@mail.com',
+      hash: passwordHash,
+      fullName: 'No App Access User',
+      workPlace: 'Mining Corp',
+      phoneNumber: '+46888999000',
+      isGlobalVisibility: false,
+    },
+  });
+
+  // ============ TEST COMPANIES ============
+
+  // 1. Full Access Company (all apps, gold plan)
+  const goldMiningCorp = await prisma.company.create({
+    data: {
+      name: 'Test All Plans Gold Mining Corp',
+      orgNumber: '1111111111',
+      address: '123 Gold Street',
+      postalCode: '12345',
+      city: 'Stockholm',
+      country: 'Sweden',
+      companyContactEmail: 'contact@goldmining.com',
+    },
+  });
+
+  // Create full plans for Gold Mining Corp
+  for (const app of Object.values(Application)) {
+    await prisma.plan.create({
+      data: {
+        companyId: goldMiningCorp.id,
+        applicationName: app,
+        planLevel: PlanLevel.GOLD,
+        expiringDate: faker.date.future({ years: 1 }),
+      },
+    });
+  }
+
+  // 2. Silver Company (only pull test, silver plan)
+  const silverMiningCorp = await prisma.company.create({
+    data: {
+      name: 'Test Pull Test Silver Mining Corp',
+      orgNumber: '2222222222',
+      address: '456 Silver Street',
+      postalCode: '23456',
+      city: 'Gothenburg',
+      country: 'Sweden',
+      companyContactEmail: 'contact@silvermining.com',
+    },
+  });
+
+  // Create limited plans for Silver Mining Corp
+  await prisma.plan.create({
+    data: {
+      companyId: silverMiningCorp.id,
+      applicationName: Application.PULL_TEST,
+      planLevel: PlanLevel.SILVER,
+      expiringDate: faker.date.future({ years: 1 }),
+    },
+  });
+
+  await prisma.plan.create({
+    data: {
+      companyId: silverMiningCorp.id,
+      applicationName: Application.PULL_TEST_OPERATOR,
+      planLevel: PlanLevel.SILVER,
+      expiringDate: faker.date.future({ years: 1 }),
+    },
+  });
+
+  // 3. Expired Plan Company
+  const bronzeMiningCorp = await prisma.company.create({
+    data: {
+      name: 'Test Bronze Banshee & Expired Pull Test Mining Corp',
+      orgNumber: '3333333333',
+      address: '789 Bronze Street',
+      postalCode: '34567',
+      city: 'Malmö',
+      country: 'Sweden',
+      companyContactEmail: 'contact@bronzemining.com',
+    },
+  });
+
+  // Create expired plan for Bronze Mining Corp
+  await prisma.plan.create({
+    data: {
+      companyId: bronzeMiningCorp.id,
+      applicationName: Application.PULL_TEST,
+      planLevel: PlanLevel.BRONZE,
+      expiringDate: faker.date.past({ years: 1 }),
+    },
+  });
+
+  // Create another valid plan for Bronze Mining Corp
+  await prisma.plan.create({
+    data: {
+      companyId: bronzeMiningCorp.id,
+      applicationName: Application.BANSHEE,
+      planLevel: PlanLevel.BRONZE,
+      expiringDate: faker.date.future({ years: 1 }),
+    },
+  });
+
+  // 4. No Plans Company
+  const noPlanCompany = await prisma.company.create({
+    data: {
+      name: 'Test No Plan Mining',
+      orgNumber: '4444444444',
+      address: '101 No Plan Road',
+      postalCode: '45678',
+      city: 'Luleå',
+      country: 'Sweden',
+      companyContactEmail: 'contact@noplanmining.com',
+    },
+  });
+
+  // ============ USER PERMISSIONS ============
+
+  // 1. Company Admin for Gold Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: companyAdmin.id,
+      companyId: goldMiningCorp.id,
+      role: Role.COMPANY_ADMIN,
+      appsAccess: [
+        Application.PULL_TEST,
+        Application.PULL_TEST_OPERATOR,
+        Application.BANSHEE,
+      ],
+    },
+  });
+
+  // 2. Regular user for Gold Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: regularUser.id,
+      companyId: goldMiningCorp.id,
+      role: Role.COMPANY_USER,
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    },
+  });
+
+  // 3. Technician for Gold Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: sandvikTechnician.id,
+      companyId: goldMiningCorp.id,
+      role: Role.SANDVIK_TECHNICIAN,
+      appsAccess: [
+        Application.PULL_TEST,
+        Application.PULL_TEST_OPERATOR,
+        Application.BANSHEE,
+      ],
+    },
+  });
+
+  // 4. Multi-company admin (for all companies)
+  // For Gold Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: multiCompanyAdmin.id,
+      companyId: goldMiningCorp.id,
+      role: Role.COMPANY_ADMIN,
+      appsAccess: [
+        Application.PULL_TEST,
+        Application.PULL_TEST_OPERATOR,
+        Application.BANSHEE,
+      ],
+    },
+  });
+
+  // For Silver Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: multiCompanyAdmin.id,
+      companyId: silverMiningCorp.id,
+      role: Role.COMPANY_ADMIN,
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    },
+  });
+
+  // For Bronze Mining Corp
+  await prisma.userPermission.create({
+    data: {
+      userId: multiCompanyAdmin.id,
+      companyId: bronzeMiningCorp.id,
+      role: Role.COMPANY_ADMIN,
+      appsAccess: [Application.PULL_TEST, Application.BANSHEE],
+    },
+  });
+
+  // For No Plan Mining
+  await prisma.userPermission.create({
+    data: {
+      userId: multiCompanyAdmin.id,
+      companyId: noPlanCompany.id,
+      role: Role.COMPANY_ADMIN,
+      appsAccess: [],
+    },
+  });
+
+  // 5. Pull Test Operator specific user
+  await prisma.userPermission.create({
+    data: {
+      userId: pullTestOperator.id,
+      companyId: silverMiningCorp.id,
+      role: Role.COMPANY_USER,
+      appsAccess: [Application.PULL_TEST_OPERATOR],
+    },
+  });
+
+  // 6. User with expired plan access
+  await prisma.userPermission.create({
+    data: {
+      userId: expiredUser.id,
+      companyId: bronzeMiningCorp.id,
+      role: Role.COMPANY_USER,
+      appsAccess: [
+        Application.PULL_TEST, // Expired plan
+        Application.BANSHEE, // Valid plan
+      ],
+    },
+  });
+
+  // 7. User with permissions but no app access
+  await prisma.userPermission.create({
+    data: {
+      userId: noAppUser.id,
+      companyId: noPlanCompany.id,
+      role: Role.COMPANY_USER,
+      appsAccess: [], // No app access
+    },
+  });
+
+  // Create sites for test companies for better testing
+  // Gold Mining Corp sites
+  const goldSite1 = await prisma.site.create({
+    data: {
+      siteName: 'Gold Mine Alpha',
+      address: '1 Mining Road',
+      postalCode: '12345',
+      city: 'Stockholm',
+      country: 'Sweden',
+      companyId: goldMiningCorp.id,
+    },
+  });
+
+  const goldSite2 = await prisma.site.create({
+    data: {
+      siteName: 'Gold Mine Beta',
+      address: '2 Mining Road',
+      postalCode: '12346',
+      city: 'Uppsala',
+      country: 'Sweden',
+      companyId: goldMiningCorp.id,
+    },
+  });
+
+  // Silver Mining Corp sites
+  const silverSite = await prisma.site.create({
+    data: {
+      siteName: 'Silver Mine Main',
+      address: '10 Silver Road',
+      postalCode: '23456',
+      city: 'Gothenburg',
+      country: 'Sweden',
+      companyId: silverMiningCorp.id,
+    },
+  });
+
+  // Bronze Mining Corp sites
+  const bronzeSite = await prisma.site.create({
+    data: {
+      siteName: 'Bronze Mine South',
+      address: '15 Bronze Avenue',
+      postalCode: '34567',
+      city: 'Malmö',
+      country: 'Sweden',
+      companyId: bronzeMiningCorp.id,
+    },
+  });
+
+  return [goldMiningCorp, silverMiningCorp, bronzeMiningCorp, noPlanCompany];
 }
 
 async function generateAdminUsers(count: number) {
@@ -82,10 +485,35 @@ async function generateAdminUsers(count: number) {
         email: faker.internet.email({ firstName, lastName }).toLowerCase(),
         hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
-        workPlace: faker.company.name(),
+        workPlace: 'Sandvik ' + faker.company.name(),
         phoneNumber: faker.phone.number(),
         globalRole: GlobalRole.SANDVIK_ADMIN,
         isGlobalVisibility: true,
+      },
+    });
+
+    users.push(user);
+  }
+
+  return users;
+}
+
+async function generateRegularUsers(count: number) {
+  const users = [];
+
+  for (let i = 0; i < count; i++) {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+
+    const user = await prisma.user.create({
+      data: {
+        email: faker.internet.email({ firstName, lastName }).toLowerCase(),
+        hash: await argon.hash('123123123'),
+        fullName: `${firstName} ${lastName}`,
+        workPlace: faker.company.name(),
+        phoneNumber: faker.phone.number(),
+        // No globalRole for regular users
+        isGlobalVisibility: false,
       },
     });
 
@@ -105,9 +533,9 @@ async function generateTechnicianUsers(count: number) {
     const user = await prisma.user.create({
       data: {
         email: faker.internet.email({ firstName, lastName }).toLowerCase(),
-        hash: await argon.hash('Password123!'),
+        hash: await argon.hash('123123123'),
         fullName: `${firstName} ${lastName}`,
-        workPlace: faker.company.name(),
+        workPlace: 'Sandvik Field Office',
         phoneNumber: faker.phone.number(),
         globalRole: GlobalRole.SANDVIK_TECHNICIAN,
         isGlobalVisibility: false,
@@ -120,14 +548,17 @@ async function generateTechnicianUsers(count: number) {
   return users;
 }
 
-async function generateCompanies(count: number, adminUsers: any[]) {
+async function generateCompanies(
+  count: number,
+  adminUsers: any[],
+  regularUsers: any[],
+) {
   const companies = [];
   const applications = [
     Application.PULL_TEST,
     Application.PULL_TEST_OPERATOR,
     Application.BANSHEE,
   ];
-  // TODO: Add inactive?
   const planLevels = [PlanLevel.GOLD, PlanLevel.SILVER, PlanLevel.BRONZE];
 
   for (let i = 0; i < count; i++) {
@@ -143,28 +574,60 @@ async function generateCompanies(count: number, adminUsers: any[]) {
       },
     });
 
-    // Create plans for company
-    for (const app of applications) {
+    // Create plans for company - some companies might not have all applications
+    const appsToUse = faker.helpers.arrayElements(
+      applications,
+      faker.number.int({ min: 1, max: 3 }),
+    );
+
+    for (const app of appsToUse) {
+      // Add randomness - some plans might be expired
+      const isExpired = faker.datatype.boolean(0.2); // 20% chance of expired
+
       await prisma.plan.create({
         data: {
           companyId: company.id,
           applicationName: app,
           planLevel: faker.helpers.arrayElement(planLevels),
-          expiringDate: faker.date.future(),
+          expiringDate: isExpired ? faker.date.past() : faker.date.future(),
         },
       });
     }
 
-    // Assign admin users permissions
+    // Assign admin users permissions to company
     const adminUser = adminUsers[i % adminUsers.length];
     await prisma.userPermission.create({
       data: {
         userId: adminUser.id,
         companyId: company.id,
         role: Role.COMPANY_ADMIN,
-        appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+        appsAccess: appsToUse,
       },
     });
+
+    // Assign some regular users to this company with different permissions
+    const numRegularUsers = faker.number.int({ min: 1, max: 3 });
+    for (let j = 0; j < numRegularUsers; j++) {
+      if (regularUsers.length > 0) {
+        const regularUser =
+          regularUsers[
+            faker.number.int({ min: 0, max: regularUsers.length - 1 })
+          ];
+        const userAppsAccess = faker.helpers.arrayElements(
+          appsToUse,
+          faker.number.int({ min: 0, max: appsToUse.length }),
+        );
+
+        await prisma.userPermission.create({
+          data: {
+            userId: regularUser.id,
+            companyId: company.id,
+            role: Role.COMPANY_USER,
+            appsAccess: userAppsAccess,
+          },
+        });
+      }
+    }
 
     companies.push(company);
   }
@@ -246,9 +709,11 @@ async function generateLocations(drives: any[]) {
     const locationCount = faker.number.int({ min: 3, max: 8 });
 
     for (let i = 0; i < locationCount; i++) {
+      // More location references (chainage in meters)
+      const chainage = faker.number.int({ min: 5, max: 300 });
       const location = await prisma.location.create({
         data: {
-          locationName: `${faker.number.int({ min: 10, max: 50 })}, ${faker.number.int({ min: 20, max: 99 })}`,
+          locationName: `CH${chainage}`,
           driveId: drive.id,
         },
       });
@@ -312,7 +777,7 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
           isHazard: isHazard,
           hazardCompletedDate:
             isHazard && faker.datatype.boolean(0.5)
-              ? [faker.date.recent()]
+              ? [faker.date.recent({ days: 10 })]
               : [],
           abortReason:
             result === Result.ABORT
@@ -320,8 +785,8 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
               : null,
           comment: faker.datatype.boolean(0.6) ? faker.lorem.sentence() : null,
           image: faker.datatype.boolean(0.3) ? faker.image.url() : null,
-          createdAt: faker.date.recent({ days: 30 }),
-          updatedAt: faker.date.recent({ days: 30 }),
+          createdAt: faker.date.recent({ days: 60 }),
+          updatedAt: faker.date.recent({ days: 60 }),
           siteId: site.id,
           levelId: level.id,
           driveId: drive.id,

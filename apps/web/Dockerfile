@@ -1,4 +1,4 @@
-FROM node:18-slim AS deps
+FROM node:20-slim AS deps
 WORKDIR /app
 
 RUN npm install -g pnpm
@@ -8,10 +8,12 @@ COPY . .
 RUN pnpm install --frozen-lockfile --prod=false
 
 # Build
-FROM node:18-slim AS build
+FROM node:20-slim AS build
 WORKDIR /app
 
 RUN npm install -g pnpm
+
+RUN apt-get update && apt-get install -y procps
 
 RUN apt-get update && apt-get install -y \
     openssl \
@@ -26,7 +28,7 @@ WORKDIR /app/apps/web
 RUN pnpm build
 
 # Production
-FROM node:18-slim AS prod
+FROM node:20-slim AS prod
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \

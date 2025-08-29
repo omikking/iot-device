@@ -2,16 +2,13 @@
 import {
   Text,
   Tabs,
-  Modal,
   Badge,
-  Button,
   Headline,
   TabsList,
   DateRange,
   Breadcrumb,
   TabsTrigger,
   TabsContent,
-  ModalTrigger,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbSeparator,
@@ -26,7 +23,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { LucideFileDown, LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { PullTestReportPDF } from '@/components/PullTestReportPDF';
+import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
+import { getEarliestAndLatestDates } from '@/libs/utils';
 
 interface Props {
   params: {
@@ -110,6 +109,60 @@ const boltResultQuery = gql`
     }
   }
 `;
+
+const allBoltResultQuery = gql`
+  query GetAllBoltResults(
+    $siteId: String
+    $levelId: String
+    $driveId: String
+    $locationId: String
+    $result: [String!]
+    $isHazard: Boolean
+    $withImage: Boolean
+    $withComment: Boolean
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    boltResults(
+      siteId: $siteId
+      levelId: $levelId
+      driveId: $driveId
+      locationId: $locationId
+      result: $result
+      isHazard: $isHazard
+      withImage: $withImage
+      withComment: $withComment
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      totalRecords
+      results {
+        id
+        createdAt
+        updatedAt
+        boltNumber
+        boltType
+        peakLoad
+        peakDisplacement
+        level {
+          levelName
+        }
+        drive {
+          driveName
+        }
+        location {
+          locationName
+        }
+        positionInRing
+        result
+        comment
+        isHazard
+        abortReason
+      }
+    }
+  }
+`;
+
 const getCompanyQuery = gql`
   query GetCompany($id: String!) {
     company(id: $id) {
@@ -147,6 +200,10 @@ export default function Page({ params }: Props): JSX.Element {
     from: undefined,
     to: undefined,
   });
+
+  const [shouldFetchAllResults, setShouldFetchAllResults] = useState(false);
+  const [pdfGenTrigger, setPdfGenTrigger] = useState(0);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   const [filterState, setFilterState] = useState({
     pass: false,
@@ -187,6 +244,7 @@ export default function Page({ params }: Props): JSX.Element {
     return endDate;
   };
 
+  // Bolt results for table
   const [{ data: boltResultsResponse, error }] = useQuery<{
     boltResults: {
       totalRecords: number;
@@ -200,7 +258,7 @@ export default function Page({ params }: Props): JSX.Element {
     query: boltResultQuery,
     variables: {
       offset: (currentPage - 1) * pageSize,
-      pageSize: pageSize,
+      limit: pageSize,
       siteId: site?.id,
       levelId: level?.id,
       driveId: drive?.id,
@@ -214,6 +272,56 @@ export default function Page({ params }: Props): JSX.Element {
     },
     pause: !site?.id,
   });
+
+  // All bolt results for PDF
+  const [{ data: allBoltResultsResponse, fetching: isLoadingAllResults }] =
+    useQuery<{
+      boltResults: {
+        totalRecords: number;
+        failedCount: number;
+        hazardCount: number;
+        passedCount: number;
+        averageTons: number;
+        results: BoltResult[];
+      };
+    }>({
+      query: allBoltResultQuery,
+      variables: {
+        siteId: site?.id,
+        levelId: level?.id,
+        driveId: drive?.id,
+        locationId: location?.id,
+        isHazard: filterState.reportedHazard || undefined,
+        withImage: filterState.withImage || undefined,
+        withComment: filterState.withComment || undefined,
+        startDate: dateRange?.from,
+        endDate: dateRange?.to,
+        result: result.length > 0 ? result : undefined,
+      },
+      pause: !shouldFetchAllResults || !site?.id,
+    });
+
+  const { testingStartDate, testingEndDate } = getEarliestAndLatestDates(
+    allBoltResultsResponse?.boltResults?.results || [],
+  );
+
+  const handleExportPDF = () => {
+    setIsPdfLoading(true);
+    // Forces a fresh fetch of all bolt results
+    setShouldFetchAllResults(true);
+  };
+
+  useEffect(() => {
+    if (
+      shouldFetchAllResults &&
+      !isLoadingAllResults &&
+      allBoltResultsResponse?.boltResults?.results?.length
+    ) {
+      setPdfGenTrigger((prev) => prev + 1);
+      setShouldFetchAllResults(false);
+      setIsPdfLoading(false);
+    }
+  }, [shouldFetchAllResults, isLoadingAllResults, allBoltResultsResponse]);
 
   useEffect(() => {
     if (error) {
@@ -258,7 +366,6 @@ export default function Page({ params }: Props): JSX.Element {
               Graphs
             </TabsTrigger>
           </TabsList>
-
           <div className="flex-1 flex justify-start">
             <Breadcrumb>
               <BreadcrumbList>
@@ -306,19 +413,22 @@ export default function Page({ params }: Props): JSX.Element {
             </Breadcrumb>
           </div>
 
-          <Modal>
-            <ModalTrigger asChild>
-              <Button
-                disabled={!boltResultsResponse?.boltResults?.results?.length}
-                variant="primary"
-                size="large"
-              >
-                <LucideFileDown />
-                View PDF
-              </Button>
-            </ModalTrigger>
-            {/* TODO: Add modal content */}
-          </Modal>
+          {boltResultsResponse && (
+            <PullTestReportPDF
+              disabled={false}
+              allBoltResults={allBoltResultsResponse?.boltResults}
+              generateTrigger={pdfGenTrigger}
+              isLoading={isPdfLoading}
+              onRequestPDF={handleExportPDF}
+              reportDetails={{
+                testingStartDate: testingStartDate,
+                testingEndDate: testingEndDate,
+                companyName: companyData?.company?.name || '',
+                mine: site?.name || '',
+              }}
+              parentUrl={window.parent.location.toString()}
+            />
+          )}
         </div>
 
         <BoltSelection

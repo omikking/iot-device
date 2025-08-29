@@ -141,7 +141,7 @@ export const BoltResultDetailsModalContent = ({
 
         {boltResult && (
           <div className="flex flex-wrap">
-            {[...generateBoltSpecifications(boltResult, siteInfo).slice(1)].map(
+            {[...generateBoltSpecifications(boltResult, siteInfo)].map(
               (boltSpec, index) => (
                 <Specification
                   isWide
@@ -153,7 +153,7 @@ export const BoltResultDetailsModalContent = ({
               ),
             )}
             {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              0 && <Specification isWide title="" text="" className="w-1/2" />}
+              1 && <Specification isWide title="" text="" className="w-1/2" />}
           </div>
         )}
       </div>

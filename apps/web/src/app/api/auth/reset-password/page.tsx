@@ -62,13 +62,13 @@ export type ResetCodeInput = {
 export default function Page() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [, requestPasswordReset] = useMutation<RequestPasswordResetInput>(
+  const [, requestPasswordReset] = useMutation<RequestPasswordResetMutation>(
     REQUEST_RESET_MUTATION,
   );
-  const [, validateResetToken] = useMutation<ValidateResetTokenInput>(
+  const [, validateResetToken] = useMutation<ValidateResetTokenMutation>(
     VALIDATE_RESET_TOKEN_MUTATION,
   );
-  const [, confirmPasswordReset] = useMutation<ConfirmPasswordResetInput>(
+  const [, confirmPasswordReset] = useMutation<ConfirmPasswordResetMutation>(
     CONFIRM_PASSWORD_RESET_MUTATION,
   );
 

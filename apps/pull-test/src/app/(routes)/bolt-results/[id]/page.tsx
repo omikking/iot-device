@@ -15,17 +15,18 @@ import {
   showAlertToast,
 } from '@gsp/ui';
 import { gql, useQuery } from 'urql';
-import { useEffect, useMemo, useState } from 'react';
+import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
-import { BoltResult } from '@/gql/graphql';
+import { responses } from '@/app/uitexts/responses';
+import { useEffect, useMemo, useState } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
-import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
-import { responses } from '@/app/uitexts/responses';
 import { PullTestReportPDF } from '@/components/PullTestReportPDF';
+import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { getEarliestAndLatestDates } from '@/libs/utils';
+
 interface Props {
   params: {
     id: string;
@@ -68,6 +69,10 @@ const boltResultQuery = gql`
       endDate: $endDate
     ) {
       totalRecords
+      failedCount
+      hazardCount
+      passedCount
+      averageTons
       results {
         id
         createdAt
@@ -228,9 +233,27 @@ export default function Page({ params }: Props): JSX.Element {
     variables: { id: companyId },
   });
 
+  const getAdjustedEndDate = (
+    dateRange: DateRange | undefined,
+  ): Date | undefined => {
+    if (!dateRange?.to) {
+      return undefined;
+    }
+    const endDate = new Date(dateRange.to);
+    endDate.setHours(23, 59, 59, 999);
+    return endDate;
+  };
+
   // Bolt results for table
   const [{ data: boltResultsResponse, error }] = useQuery<{
-    boltResults: { totalRecords: number; results: BoltResult[] };
+    boltResults: {
+      totalRecords: number;
+      failedCount: number;
+      hazardCount: number;
+      passedCount: number;
+      averageTons: number;
+      results: BoltResult[];
+    };
   }>({
     query: boltResultQuery,
     variables: {
@@ -244,7 +267,7 @@ export default function Page({ params }: Props): JSX.Element {
       withImage: filterState.withImage || undefined,
       withComment: filterState.withComment || undefined,
       startDate: dateRange?.from,
-      endDate: dateRange?.to,
+      endDate: getAdjustedEndDate(dateRange),
       result: result.length > 0 ? result : undefined,
     },
     pause: !site?.id,
@@ -253,7 +276,14 @@ export default function Page({ params }: Props): JSX.Element {
   // All bolt results for PDF
   const [{ data: allBoltResultsResponse, fetching: isLoadingAllResults }] =
     useQuery<{
-      boltResults: { totalRecords: number; results: BoltResult[] };
+      boltResults: {
+        totalRecords: number;
+        failedCount: number;
+        hazardCount: number;
+        passedCount: number;
+        averageTons: number;
+        results: BoltResult[];
+      };
     }>({
       query: allBoltResultQuery,
       variables: {
@@ -302,7 +332,6 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [error]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [site, level, drive, location, filterState, dateRange]);
@@ -435,6 +464,10 @@ export default function Page({ params }: Props): JSX.Element {
           <BoltResultsGraphView
             site={site?.id}
             boltResults={site ? boltResultsResponse?.boltResults?.results : []}
+            totalCount={boltResultsResponse?.boltResults?.totalRecords}
+            averageTons={boltResultsResponse?.boltResults?.averageTons}
+            passedCount={boltResultsResponse?.boltResults?.passedCount}
+            totalRecords={boltResultsResponse?.boltResults?.totalRecords}
           />
         </TabsContent>
       </Tabs>

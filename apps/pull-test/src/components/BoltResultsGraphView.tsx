@@ -1,31 +1,44 @@
-import { BoltResult } from '@/gql/graphql';
-import { Badge, BoltResultCard, Text } from '@gsp/ui';
 import {
-  ClipboardList,
   LucideBolt,
   LucideGoal,
-  LucideSearchX,
   LucideWeight,
+  LucideSearchX,
+  ClipboardList,
 } from 'lucide-react';
 import React from 'react';
+import { BoltResult } from '@/gql/graphql';
+import { Badge, BoltResultCard, Text } from '@gsp/ui';
 
-type BoltResultsGraphProps = {
+type BoltResultsGraphViewProps = {
   boltResults?: BoltResult[];
   site?: string;
+  totalCount?: number;
+  averageTons?: number;
+  passedCount?: number;
+  totalRecords?: number;
 };
 
 export const BoltResultsGraphView = ({
   boltResults,
   site,
-}: BoltResultsGraphProps) => {
-  // TODO Fix propperly later
+  totalCount,
+  averageTons,
+  passedCount,
+  totalRecords,
+}: BoltResultsGraphViewProps) => {
+  const rate =
+    passedCount && totalRecords
+      ? (passedCount / totalRecords) * 100
+      : undefined;
+  const successRatePercentage = rate ? `${Math.round(rate * 10) / 10}%` : 'N/A';
+
   return (
     <>
       {site && boltResults && (
         <div className="flex justify-center gap-10 py-20 flex-wrap">
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              182 tests
+              {totalCount ? `${totalCount} tests` : 'N/A'}
             </Badge>
             <Text variant="medium" color="foreground">
               Total numbers of tests
@@ -34,7 +47,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              19.5 tons
+              {averageTons ? `${averageTons} tons` : 'N/A'}
             </Badge>
             <Text variant="medium" color="foreground">
               Average tons
@@ -43,7 +56,7 @@ export const BoltResultsGraphView = ({
           </BoltResultCard>
           <BoltResultCard>
             <Badge variant={'primary'} size={'large'}>
-              94.4%
+              {successRatePercentage}
             </Badge>
             <Text variant="medium" color="foreground">
               Success rate

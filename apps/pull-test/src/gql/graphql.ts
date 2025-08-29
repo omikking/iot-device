@@ -102,6 +102,7 @@ export type Company = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   orgNumber: Scalars['String']['output'];
+  pendingInvitations?: Maybe<Array<Invitation>>;
   plans?: Maybe<Array<Plan>>;
   postalCode: Scalars['String']['output'];
   sandvikAdminUserId?: Maybe<Scalars['String']['output']>;
@@ -186,6 +187,18 @@ export type CreateDriveInput = {
   levelId: Scalars['String']['input'];
 };
 
+export type CreateGlobalInvitationInput = {
+  email: Scalars['String']['input'];
+  globalRole: Scalars['String']['input'];
+};
+
+export type CreateInvitationInput = {
+  appsAccess: Array<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  role: Scalars['String']['input'];
+};
+
 /**
  * CreateLevelInput
  * Define the input fields to create a new level
@@ -259,6 +272,30 @@ export type Flavor = {
   name: Scalars['String']['output'];
 };
 
+export type Invitation = {
+  __typename?: 'Invitation';
+  companyId?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  expiresAt: Scalars['DateTime']['output'];
+  globalRole?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  used: Scalars['Boolean']['output'];
+};
+
+export type InvitationResponse = {
+  __typename?: 'InvitationResponse';
+  invitationId?: Maybe<Scalars['String']['output']>;
+  isNewUser: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvitationValidation = {
+  __typename?: 'InvitationValidation';
+  invitation?: Maybe<Invitation>;
+  reason?: Maybe<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
 /**
  * Level model
  * Define the Level model and its fields
@@ -294,11 +331,14 @@ export type Location = {
  */
 export type Mutation = {
   __typename?: 'Mutation';
+  completeInvitation: User;
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
   createCompany: Company;
   createDrive: Drive;
+  createGlobalInvitation: InvitationResponse;
+  createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
   createSite: Site;
@@ -308,11 +348,13 @@ export type Mutation = {
   removeCoffee: Coffee;
   removeCompany: Company;
   removeDrive: Drive;
+  removeInvitation: Invitation;
   removeLevel: Level;
   removeLocation: Location;
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -323,6 +365,15 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCompleteInvitationArgs = {
+  input: CompleteInvitationInput;
 };
 
 
@@ -368,6 +419,24 @@ export type MutationCreateCompanyArgs = {
  */
 export type MutationCreateDriveArgs = {
   createDriveInput: CreateDriveInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateGlobalInvitationArgs = {
+  input: CreateGlobalInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateInvitationArgs = {
+  input: CreateInvitationInput;
 };
 
 
@@ -456,6 +525,15 @@ export type MutationRemoveDriveArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRemoveInvitationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationRemoveLevelArgs = {
   id: Scalars['String']['input'];
 };
@@ -493,6 +571,15 @@ export type MutationRemoveUserArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationRemoveUserPermissionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationResendInvitationArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -649,12 +736,15 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  pendingGlobalInvitations: Array<Invitation>;
+  pendingInvitations: Array<Invitation>;
   site: Site;
   sites: Array<Site>;
   user: User;
   userPermission: UserPermission;
   userPermissions: Array<UserPermission>;
   users: Array<User>;
+  validateInvitation: InvitationValidation;
 };
 
 
@@ -749,6 +839,15 @@ export type QueryLevelArgs = {
  */
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryPendingInvitationsArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 

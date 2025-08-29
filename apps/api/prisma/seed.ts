@@ -67,8 +67,9 @@ async function main() {
 function printLoginInstructions() {
   console.log('\n🔑 TEST ACCOUNTS');
   console.log('=====================================');
-  console.log('All passwords: 123123123');
+  console.log('All passwords: Password123!');
   console.log('-------------------------------------');
+  console.log('felix@mail.com          - Sandvik Admin (full access)');
   console.log('superadmin@mail.com     - Sandvik Admin (full access)');
   console.log('technician@mail.com     - Sandvik Technician');
   console.log('companyadmin@mail.com   - Company Admin');
@@ -97,9 +98,22 @@ async function cleanup() {
 
 async function generateTestUsersAndCompanies() {
   // Common password for all test users
-  const passwordHash = await argon.hash('123123123');
+  const passwordHash = await argon.hash('Password123!');
 
   // ============ TEST USERS ============
+
+  // 0. Felix
+  const felix = await prisma.user.create({
+    data: {
+      email: 'felix@mail.com',
+      hash: passwordHash,
+      fullName: 'Felix Gren',
+      workPlace: 'Sandvik',
+      phoneNumber: '+4613374242',
+      globalRole: GlobalRole.SANDVIK_ADMIN,
+      isGlobalVisibility: true,
+    },
+  });
 
   // 1. Super Admin (Sandvik global admin)
   const superAdmin = await prisma.user.create({
@@ -508,7 +522,7 @@ async function generateRegularUsers(count: number) {
     const user = await prisma.user.create({
       data: {
         email: faker.internet.email({ firstName, lastName }).toLowerCase(),
-        hash: await argon.hash('123123123'),
+        hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
         workPlace: faker.company.name(),
         phoneNumber: faker.phone.number(),
@@ -533,7 +547,7 @@ async function generateTechnicianUsers(count: number) {
     const user = await prisma.user.create({
       data: {
         email: faker.internet.email({ firstName, lastName }).toLowerCase(),
-        hash: await argon.hash('123123123'),
+        hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
         workPlace: 'Sandvik Field Office',
         phoneNumber: faker.phone.number(),

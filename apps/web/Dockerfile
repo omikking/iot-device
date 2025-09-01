@@ -54,6 +54,3 @@ CMD ["node", "node_modules/next/dist/bin/next", "start"]
 
 # to build the image - docker build -t my-web:1.0.0 -f apps/web/Dockerfile .
 # to run the image - docker run -d --name web-container -p 3000:3000 my-web:1.0.0
-
-
-

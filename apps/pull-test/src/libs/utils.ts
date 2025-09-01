@@ -142,13 +142,21 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
 };
 
 const ringPositionDisplayMap: Record<RingPosition, string> = {
-  [RingPosition.CenterBacks]: 'Center Backs',
-  [RingPosition.LhBacks]: 'L/H Backs',
-  [RingPosition.LhShoulder]: 'L/H Shoulder',
-  [RingPosition.LhWallUpper]: 'L/H Wall Upper',
   [RingPosition.RhBacks]: 'R/H Backs',
   [RingPosition.RhShoulder]: 'R/H Shoulder',
   [RingPosition.RhWallUpper]: 'R/H Wall Upper',
+  [RingPosition.RhWallCenter]: 'R/H Wall Center',
+  [RingPosition.RhWallLower]: 'R/H Wall Lower',
+  [RingPosition.RhFaceHigh]: 'R/H Face High',
+  [RingPosition.RhFaceLow]: 'R/H Face Low',
+  [RingPosition.LhBacks]: 'L/H Backs',
+  [RingPosition.LhShoulder]: 'L/H Shoulder',
+  [RingPosition.LhWallUpper]: 'L/H Wall Upper',
+  [RingPosition.LhWallCenter]: 'L/H Wall Center',
+  [RingPosition.LhWallLower]: 'L/H Wall Lower',
+  [RingPosition.LhFaceHigh]: 'L/H Face High',
+  [RingPosition.LhFaceLow]: 'L/H Face Low',
+  [RingPosition.CenterBacks]: 'Center Backs',
 };
 
 export const convertRingPosition = (position: RingPosition): string => {

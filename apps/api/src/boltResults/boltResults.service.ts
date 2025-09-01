@@ -22,7 +22,7 @@ export class BoltResultsService {
 
   async findMany(
     user: ActiveUserData,
-    pagination: { offset: number; limit?: number },
+    pagination: { offset?: number; limit?: number },
     filters: {
       siteId?: string | undefined;
       levelId?: string | undefined;
@@ -38,7 +38,7 @@ export class BoltResultsService {
     allowedCompanyIds: string[],
     allowedApps: Application[],
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const { offset, limit = 50 } = pagination;
+    const { offset, limit } = pagination;
 
     const {
       siteId,
@@ -123,9 +123,7 @@ export class BoltResultsService {
       },
     });
 
-    const results = await this.prisma.boltResult.findMany({
-      skip: offset,
-      take: limit,
+    const queryOptions: any = {
       where: whereCondition,
       include: {
         site: true,
@@ -133,7 +131,20 @@ export class BoltResultsService {
         drive: true,
         location: true,
       },
-    });
+      orderBy: {
+        createdAt: 'asc',
+      },
+    };
+
+    if (typeof offset === 'number') {
+      queryOptions.skip = offset;
+    }
+
+    if (typeof limit === 'number') {
+      queryOptions.take = limit;
+    }
+
+    const results = await this.prisma.boltResult.findMany(queryOptions);
 
     const allResultsForAverage = await this.prisma.boltResult.findMany({
       where: whereCondition,

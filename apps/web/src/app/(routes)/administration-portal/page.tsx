@@ -49,7 +49,7 @@ export default function Page(): JSX.Element {
               Companies
             </Headline>
             <LucideBuilding2 />
-            <Button variant="primary" size="small" asChild>
+            <Button variant="secondary" size="small" asChild>
               <Link href="/company/new">
                 <LucidePlus />
                 Add new company

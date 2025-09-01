@@ -905,10 +905,18 @@ export enum Result {
 export enum RingPosition {
   CenterBacks = 'CENTER_BACKS',
   LhBacks = 'LH_BACKS',
+  LhFaceHigh = 'LH_FACE_HIGH',
+  LhFaceLow = 'LH_FACE_LOW',
   LhShoulder = 'LH_SHOULDER',
+  LhWallCenter = 'LH_WALL_CENTER',
+  LhWallLower = 'LH_WALL_LOWER',
   LhWallUpper = 'LH_WALL_UPPER',
   RhBacks = 'RH_BACKS',
+  RhFaceHigh = 'RH_FACE_HIGH',
+  RhFaceLow = 'RH_FACE_LOW',
   RhShoulder = 'RH_SHOULDER',
+  RhWallCenter = 'RH_WALL_CENTER',
+  RhWallLower = 'RH_WALL_LOWER',
   RhWallUpper = 'RH_WALL_UPPER'
 }
 

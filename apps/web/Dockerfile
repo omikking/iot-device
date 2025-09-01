@@ -4,6 +4,8 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 COPY . .
+# COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# COPY packages/typescript-config ./packages/typescript-config
 
 RUN pnpm install --frozen-lockfile --prod=false
 
@@ -13,9 +15,10 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-RUN apt-get update && apt-get install -y procps
+# RUN apt-get update && apt-get install -y procps
 
 RUN apt-get update && apt-get install -y \
+    procps \
     openssl \
     ca-certificates \
     && update-ca-certificates \

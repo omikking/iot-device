@@ -24,7 +24,7 @@ export class ResetPasswordService {
 
     if (!existing) return token;
 
-    throw new Error('Failed to generate a unique OTP after maximum retries');
+    throw new Error('Failed to generate a unique OTP');
   }
 
   // Step 1: Request password reset //
@@ -54,8 +54,8 @@ export class ResetPasswordService {
 
     if (existingRequest) {
       // Update existing token and expiry
-      await this.prisma.passwordResetRequest.updateMany({
-        where: { userId: user.id },
+      await this.prisma.passwordResetRequest.update({
+        where: { id: existingRequest.id },
         data: { token, expiresAt },
       });
     } else {

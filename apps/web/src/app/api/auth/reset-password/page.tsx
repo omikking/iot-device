@@ -25,9 +25,12 @@ import Link from 'next/link';
 import { useMutation } from 'urql';
 import { graphql } from '@/gql';
 import {
-  ConfirmPasswordResetInput,
-  RequestPasswordResetInput,
-  ValidateResetTokenInput,
+  RequestPasswordResetMutation,
+  RequestPasswordResetMutationVariables,
+  ValidateResetTokenMutation,
+  ValidateResetTokenMutationVariables,
+  ConfirmPasswordResetMutation,
+  ConfirmPasswordResetMutationVariables,
 } from '@/gql/graphql';
 import { useRouter } from 'next/navigation';
 
@@ -62,15 +65,18 @@ export type ResetCodeInput = {
 export default function Page() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [, requestPasswordReset] = useMutation<RequestPasswordResetInput>(
-    REQUEST_RESET_MUTATION,
-  );
-  const [, validateResetToken] = useMutation<ValidateResetTokenInput>(
-    VALIDATE_RESET_TOKEN_MUTATION,
-  );
-  const [, confirmPasswordReset] = useMutation<ConfirmPasswordResetInput>(
-    CONFIRM_PASSWORD_RESET_MUTATION,
-  );
+  const [, requestPasswordReset] = useMutation<
+    RequestPasswordResetMutation,
+    RequestPasswordResetMutationVariables
+  >(REQUEST_RESET_MUTATION);
+  const [, validateResetToken] = useMutation<
+    ValidateResetTokenMutation,
+    ValidateResetTokenMutationVariables
+  >(VALIDATE_RESET_TOKEN_MUTATION);
+  const [, confirmPasswordReset] = useMutation<
+    ConfirmPasswordResetMutation,
+    ConfirmPasswordResetMutationVariables
+  >(CONFIRM_PASSWORD_RESET_MUTATION);
 
   const getSchemaForStep = (step: number) => {
     switch (step) {
@@ -105,7 +111,7 @@ export default function Page() {
             path: ['confirmPassword'],
           });
       default:
-        throw new Error('Invalid step');
+        throw new Error(`Invalid step value: ${step}`);
     }
   };
 

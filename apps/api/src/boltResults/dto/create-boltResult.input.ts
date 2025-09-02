@@ -12,7 +12,6 @@ import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
   @IsNumber()
-  @MaxLength(50)
   boltNumber: number;
 
   @MaxLength(50)
@@ -22,13 +21,11 @@ export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
-  @MaxLength(50)
   peakLoad: number[];
 
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
-  @MaxLength(50)
   peakDisplacement: number[];
 
   @IsString()

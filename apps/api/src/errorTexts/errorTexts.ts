@@ -10,8 +10,12 @@ export const errorTexts = {
 
   boltResultUpdateError_title: 'Failed to update bolt result',
 
-  boltResultRequired_title: 'Bolt nesult required',
+  boltResultRequired_title: 'Bolt result required',
   boltResultRequired_message: 'At least one bolt result is required.',
+
+  boltResultSiteIdMismatch_title: 'Site ID mismatch',
+  boltResultSiteIdMismatch_message:
+    'All items must have the same siteId as the top-level argument.',
 
   boltResultsNoUpdates_title: 'No updates provided',
   boltResultsNoUpdates_message:

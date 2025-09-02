@@ -53,7 +53,7 @@ COPY . .
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 
-EXPOSE 4000
+EXPOSE 3333
 WORKDIR /app/apps/api
 CMD ["node", "dist/src/main.js"]
 

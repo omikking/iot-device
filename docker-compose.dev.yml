@@ -1,4 +1,4 @@
-# # command to build and run: docker-compose -f docker-compose.dev.yml up --build
+# command to build and run: docker-compose -f docker-compose.dev.yml up --build
 
 # version: '3.8'
 
@@ -13,16 +13,9 @@ services:
       POSTGRES_DB: nest
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
-  # test-db:
-  #   image: postgres:13
-  #   ports:
-  #     - 5435:5432
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: 123
-  #     POSTGRES_DB: nest
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data-test
+    networks:
+      - playground
+
   smtp4dev:
     image: rnwood/smtp4dev:v3
     ports:
@@ -33,22 +26,25 @@ services:
       - ServerOptions__LockSettings=false
     volumes:
       - smtp4dev-data:/smtp4dev
+    networks:
+      - playground
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     depends_on:
-      # - test-db
       - dev-db
+    command: >
+      sh -c "pnpm run prisma:dev:deploy && pnpm run seed:dev && pnpm run start:dev"
     environment:
       DATABASE_URL: postgresql://postgres:123@dev-db:5432/nest?schema=public
+    env_file:
+      - ./apps/api/.env
     ports:
-      - '4000:4000'
-    command: pnpm start:prod
-    # volumes:
-    #   - ./apps/api:/app/apps/api
-    #   - /app/node_modules
+      - '3333:3333'
+    networks:
+      - playground
 
   web:
     build:
@@ -58,12 +54,13 @@ services:
       - api
     ports:
       - '3000:3000'
-    # environment:
-    #   NEXT_PUBLIC_API_URL: http://localhost:4000
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:3333/graphql
+    env_file:
+      - ./apps/web/.env
     command: pnpm start
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
+    networks:
+      - playground
 
   pull-test:
     build:
@@ -73,16 +70,17 @@ services:
       - api
     ports:
       - '3001:3001'
-    # environment:
-    #   NEXT_PUBLIC_API_URL: http://localhost:4000
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:3333/graphql
+    env_file:
+      - ./apps/pull-test/.env
     command: pnpm start
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
+    networks:
+      - playground
 
 networks:
   playground:
+
 volumes:
   postgres_data_dev:
-  # postgres-data-test:
   smtp4dev-data:

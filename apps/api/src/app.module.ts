@@ -30,6 +30,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
+      playground: true,
+      introspection: true,
       plugins: enableGraphQLLog ? [LogGraphQLPlugin] : [],
     }),
     CoffeesModule,

@@ -329,6 +329,7 @@ export class BoltResultsService {
 
   async createBulk(
     createBoltResultsInput: GraphQLTypes.CreateBoltResultInput[],
+    siteId: string,
   ): Promise<BoltResult[]> {
     if (!createBoltResultsInput?.length) {
       throw new UserInputError('', {
@@ -336,6 +337,17 @@ export class BoltResultsService {
           code: 'BOLT_RESULT_REQUIRED_ERROR',
           title: errorTexts.boltResultRequired_title,
           message: errorTexts.boltResultRequired_message,
+        },
+      });
+    }
+
+    const allMatch = createBoltResultsInput.every((i) => i.siteId === siteId);
+    if (!allMatch) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'BOLT_RESULT_SITEID_MISMATCH_ERROR',
+          title: errorTexts.boltResultSiteIdMismatch_title,
+          message: errorTexts.boltResultSiteIdMismatch_message,
         },
       });
     }

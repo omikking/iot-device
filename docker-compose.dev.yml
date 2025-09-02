@@ -44,7 +44,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:123@dev-db:5432/nest?schema=public
     ports:
-      - '4000:4000'
+      - '3333:3333'
     command: pnpm start:prod
     # volumes:
     #   - ./apps/api:/app/apps/api

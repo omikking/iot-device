@@ -119,9 +119,22 @@ export class BoltResultsResolver {
   @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResults')
   async createBulk(
+    @Args('siteId', ParseUUIDPipe) siteId: string,
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
     createBoltResultsInput: CreateBoltResultInput[],
   ): Promise<BoltResult[]> {
+    if (!createBoltResultsInput.length) {
+      throw new BadRequestException('No input provided.');
+    }
+
+    // Enforce all items have the same siteId as the top-level argument
+    const allMatch = createBoltResultsInput.every((i) => i.siteId === siteId);
+    if (!allMatch) {
+      throw new BadRequestException(
+        'All items must have the same siteId as the top-level argument.',
+      );
+    }
+
     return this.boltResultsService.createBulk(createBoltResultsInput);
   }
 

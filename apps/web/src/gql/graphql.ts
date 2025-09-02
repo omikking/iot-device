@@ -392,6 +392,7 @@ export type MutationCreateBoltResultArgs = {
  */
 export type MutationCreateBoltResultsArgs = {
   createBoltResultsInput: Array<CreateBoltResultInput>;
+  siteId: Scalars['String']['input'];
 };
 
 

@@ -4,7 +4,13 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // We need to look over our cors settings before deploying to production!
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       // whitelist: true,

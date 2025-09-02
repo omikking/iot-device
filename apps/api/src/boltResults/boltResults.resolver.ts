@@ -119,10 +119,11 @@ export class BoltResultsResolver {
   @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResults')
   async createBulk(
+    @Args('siteId', ParseUUIDPipe) siteId: string,
     @Args('createBoltResultsInput', new ValidationPipe({ transform: true }))
     createBoltResultsInput: CreateBoltResultInput[],
   ): Promise<BoltResult[]> {
-    return this.boltResultsService.createBulk(createBoltResultsInput);
+    return this.boltResultsService.createBulk(createBoltResultsInput, siteId);
   }
 
   @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')

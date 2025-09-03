@@ -16,11 +16,9 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
 
   @IsOptional()
   @IsNumber()
-  @MaxLength(50)
   boltNumber: number;
 
   @IsOptional()
-  @MaxLength(50)
   @IsString()
   boltType: string;
 
@@ -28,18 +26,15 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
-  @MaxLength(50)
   peakLoad: number[];
 
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
-  @MaxLength(50)
   peakDisplacement: number[];
 
   @IsOptional()
-  @MaxLength(50)
   @IsString()
   positionInRing: string;
 

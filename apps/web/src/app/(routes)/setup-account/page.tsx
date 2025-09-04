@@ -100,7 +100,7 @@ export default function Page(): JSX.Element {
     pause: !id || !token,
   });
 
-  const [{ fetching: mutating }, completeInvitation] = useMutation(
+  const [{ fetching: invitationLoading }, completeInvitation] = useMutation(
     completeInvitationMutation,
   );
 
@@ -360,9 +360,9 @@ export default function Page(): JSX.Element {
               size="large"
               isWide
               disabled={isAnyFieldEmpty}
-              isLoading={mutating}
+              isLoading={invitationLoading}
             >
-              {!mutating && <LucideUserRoundCog />}
+              {!invitationLoading && <LucideUserRoundCog />}
               Sign up
             </Button>
           </div>

@@ -423,6 +423,7 @@ export class InvitationService {
         used: invitation.used,
         companyId: invitation.companyId,
         globalRole: null, // Company invitations don't have global roles
+        role: invitation.role,
       }));
     } catch (error) {
       throw new UserInputError('', {
@@ -458,6 +459,7 @@ export class InvitationService {
         used: invitation.used,
         companyId: null,
         globalRole: invitation.globalRole,
+        role: invitation.globalRole,
       }));
     } catch (error) {
       throw new UserInputError('', {

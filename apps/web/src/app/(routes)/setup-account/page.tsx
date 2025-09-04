@@ -38,6 +38,7 @@ const validateInvitationQuery = graphql(`
         email
         companyId
         globalRole
+        role
         expiresAt
         used
       }
@@ -110,7 +111,7 @@ export default function Page(): JSX.Element {
     variables: { id: invitation?.companyId || '' },
     pause: !invitation?.companyId,
   });
-  const companyName = companyData?.company?.name;
+  const companyName = companyData?.company?.name || undefined;
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -142,14 +143,12 @@ export default function Page(): JSX.Element {
 
         // Handle success
         if (result.data) {
+          showAlertToast({
+            title: responses.createAccountSetupSuccess,
+            variant: 'success',
+          });
           setTimeout(() => {
-            if (
-              result.data?.completeInvitation.globalRole === Role.SandvikAdmin
-            ) {
-              router.push('/administration-portal');
-            } else {
-              router.push(`/company/${invitation?.companyId}`);
-            }
+            router.push('/api/auth/signin');
           }, 2000);
         }
       })
@@ -171,7 +170,10 @@ export default function Page(): JSX.Element {
     !formValues.confirmPassword;
 
   const invitationMessage = invitation
-    ? getInvitationMessage(invitation.globalRole as Role, companyName)
+    ? getInvitationMessage(
+        (invitation.globalRole as Role) || (invitation.role as Role),
+        companyName,
+      )
     : null;
 
   if (fetching) {

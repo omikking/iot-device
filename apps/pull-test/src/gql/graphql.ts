@@ -279,6 +279,7 @@ export type Invitation = {
   expiresAt: Scalars['DateTime']['output'];
   globalRole?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  role?: Maybe<Scalars['String']['output']>;
   used: Scalars['Boolean']['output'];
 };
 

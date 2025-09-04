@@ -405,6 +405,7 @@ export class Invitation {
     used: boolean;
     companyId?: Nullable<string>;
     globalRole?: Nullable<string>;
+    role?: Nullable<string>;
 }
 
 export class InvitationResponse {

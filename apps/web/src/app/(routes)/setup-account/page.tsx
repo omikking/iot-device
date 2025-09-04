@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import {
   Button,
   Form,
@@ -10,7 +10,9 @@ import {
   FormMessage,
   Headline,
   Input,
+  LoadingSpinner,
   Text,
+  showAlertToast,
 } from '@gsp/ui';
 import {
   SetupAccountFormWithConfirmValues,
@@ -19,9 +21,12 @@ import {
 import { graphql } from '@/gql';
 import { useQuery, useMutation } from 'urql';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { LucideUserRoundCog } from 'lucide-react';
+import { LucideAlertCircle, LucideUserRoundCog } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Role } from '@/gql/graphql';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
 
 const validateInvitationQuery = graphql(`
   query validateInvitation($id: String!, $token: String!) {
@@ -46,37 +51,41 @@ const completeInvitationMutation = graphql(`
       id
       email
       fullName
+      globalRole
     }
   }
 `);
 
-function getInvitationMessage(invitation: {
-  companyId?: string | null;
-  globalRole?: string | null;
-}) {
-  if (!invitation) return null;
-  // Company invitations
-  if (invitation.companyId && !invitation.globalRole) {
-    return {
-      headline: `You’re invited to join this company.`,
-      subtext: 'Please complete your account setup to get started.',
-    };
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
   }
-  // Global invitations
-  if (invitation.globalRole === 'SANDVIK_TECHNICIAN') {
-    return {
-      headline: `You’re invited to join Ground Support Platform as a technician.`,
-      subtext: 'Please complete your account setup to get started.',
-    };
-  }
-  if (invitation.globalRole === 'SANDVIK_ADMIN') {
-    return {
-      headline: `You’re invited to join Ground Support Platform as an administrator.`,
-      subtext: 'Please complete your account setup to get started.',
-    };
-  }
-  return null;
-}
+`);
+
+const getInvitationMessage = (role: Role, companyName?: string) => {
+  const invitationMessage = {
+    [Role.SandvikAdmin]: {
+      companyName: 'Ground Support Platform',
+      role: 'as an administrator.',
+    },
+    [Role.SandvikTechnician]: {
+      companyName: 'Ground Support Platform',
+      role: 'as a technician.',
+    },
+    [Role.CompanyAdmin]: {
+      companyName: `${companyName}`,
+      role: 'as an administrator.',
+    },
+    [Role.CompanyUser]: {
+      companyName: `${companyName}.`,
+      role: undefined,
+    },
+  };
+  return invitationMessage[role];
+};
 
 export default function Page(): JSX.Element {
   const searchParams = useSearchParams();
@@ -84,10 +93,7 @@ export default function Page(): JSX.Element {
   const id = searchParams.get('id') || '';
   const token = searchParams.get('token') || '';
 
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
-  const [{ data, fetching, error: queryError }] = useQuery({
+  const [{ data, fetching, error: validateInviteError }] = useQuery({
     query: validateInvitationQuery,
     variables: { id, token },
     pause: !id || !token,
@@ -97,24 +103,14 @@ export default function Page(): JSX.Element {
     completeInvitationMutation,
   );
 
-  const invitation = data?.validateInvitation?.invitation;
-  const valid = data?.validateInvitation?.valid;
-  const reason = data?.validateInvitation?.reason;
+  const { invitation } = data?.validateInvitation || {};
 
-  // Determine error message from backend reason
-  useEffect(() => {
-    if (queryError) {
-      setError('Something went wrong. Please try again later.');
-    } else if (data && !valid) {
-      if (reason === 'expired') setError('This invitation has expired.');
-      else if (reason === 'already_used')
-        setError('This invitation has already been used.');
-      else if (reason === 'invalid_token') setError('Invalid invitation link.');
-      else setError('Invitation is not valid.');
-    } else {
-      setError(null);
-    }
-  }, [data, valid, reason, queryError]);
+  const [{ data: companyData }] = useQuery({
+    query: getCompanyName,
+    variables: { id: invitation?.companyId || '' },
+    pause: !invitation?.companyId,
+  });
+  const companyName = companyData?.company?.name;
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -127,16 +123,9 @@ export default function Page(): JSX.Element {
     },
   });
 
-  // Prefill email if available
-  useEffect(() => {
-    // No company name available, so do not prefill workPlace
-    // Optionally, prefill email if you want to show it elsewhere
-  }, [invitation, setupForm]);
-
   const onSubmit: SubmitHandler<SetupAccountFormWithConfirmValues> = async (
     formData,
   ) => {
-    setError(null);
     const input = {
       id,
       token,
@@ -145,19 +134,32 @@ export default function Page(): JSX.Element {
       workPlace: formData.workPlace,
       phoneNumber: formData.phoneNumber,
     };
-    const result = await completeInvitation({ input });
-    if (result.error) {
-      // Prefer backend error message if available
-      setError(
-        result.error.graphQLErrors?.[0]?.message ||
-          'Failed to complete invitation.',
-      );
-    } else {
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/'); // Redirect to dashboard or login, not going to work though
-      }, 2000);
-    }
+
+    completeInvitation({ input })
+      .then((result) => {
+        // Backend errors
+        handleGraphQLErrors(result.error);
+
+        // Handle success
+        if (result.data) {
+          setTimeout(() => {
+            if (
+              result.data?.completeInvitation.globalRole === Role.SandvikAdmin
+            ) {
+              router.push('/administration-portal');
+            } else {
+              router.push(`/company/${invitation?.companyId}`);
+            }
+          }, 2000);
+        }
+      })
+      .catch(() => {
+        showAlertToast({
+          title: responses.failedToSetupAccountError,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+      });
   };
 
   const formValues = setupForm.watch();
@@ -168,60 +170,74 @@ export default function Page(): JSX.Element {
     !formValues.password ||
     !formValues.confirmPassword;
 
+  const invitationMessage = invitation
+    ? getInvitationMessage(invitation.globalRole as Role, companyName)
+    : null;
+
   if (fetching) {
     return (
       <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-16 bg-neutral-1">
         <Headline as="h1" variant="xl" color="foreground">
           Setup Account
         </Headline>
-        <Text color="foreground" variant="medium">
+        <Text color="foreground" variant="medium" className="flex gap-3">
+          <LoadingSpinner />
           Loading invitation...
         </Text>
       </main>
     );
   }
 
-  if (error) {
+  if (validateInviteError) {
     return (
       <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-16 bg-neutral-1">
         <Headline as="h1" variant="xl" color="foreground">
           Setup Account
         </Headline>
-        <Text color="destructive" variant="medium">
-          {error}
-        </Text>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex gap-2 items-center">
+            <LucideAlertCircle size={20} color="red" />
+            <Headline as="h4" variant="medium" color="destructive">
+              {
+                validateInviteError.graphQLErrors[0]?.extensions
+                  ?.title as string
+              }
+            </Headline>
+          </div>
+          <Text variant="medium" color="foreground">
+            {
+              validateInviteError.graphQLErrors[0]?.extensions
+                ?.message as string
+            }
+          </Text>
+        </div>
       </main>
     );
   }
-
-  if (success) {
-    return (
-      <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-16 bg-neutral-1">
-        <Headline as="h1" variant="xl" color="foreground">
-          Account Created
-        </Headline>
-        <Text color="foreground" variant="medium">
-          Your account has been created. Redirecting...
-        </Text>
-      </main>
-    );
-  }
-
-  const invitationMsg = invitation ? getInvitationMessage(invitation) : null;
 
   return (
     <main className="min-h-[calc(100vh-64px)] flex flex-col m-auto items-center py-24 gap-16 bg-neutral-1">
       <Headline as="h1" variant="xl" color="foreground">
         Setup Account
       </Headline>
+
       <div className="flex flex-col gap-3 items-center">
-        {invitationMsg && (
+        {invitationMessage && (
           <>
-            <Headline as="h4" variant="small" color="foreground">
-              {invitationMsg.headline}
+            <Headline
+              as="h4"
+              variant="small"
+              color="foreground"
+              className="flex gap-1.5"
+            >
+              You’re invited to join
+              <Headline isBold as="span" variant="small" color="foreground">
+                {invitationMessage.companyName}
+              </Headline>
+              {invitationMessage.role}
             </Headline>
             <Text color={'foreground'} variant={'medium'}>
-              {invitationMsg.subtext}
+              Please complete your account setup to get started.
             </Text>
           </>
         )}
@@ -347,11 +363,6 @@ export default function Page(): JSX.Element {
               {!mutating && <LucideUserRoundCog />}
               Sign up
             </Button>
-            {error && (
-              <Text color="destructive" variant="medium" className="mt-4">
-                {error}
-              </Text>
-            )}
           </div>
         </form>
       </Form>

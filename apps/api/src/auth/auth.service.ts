@@ -35,6 +35,7 @@ export class AuthService {
     private refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
   async signup(dto: SignupDto) {
+    console.log(this.config.get('JWT_ACCESS_TOKEN_TTL'));
     try {
       if (!isPasswordStrong(dto.password)) {
         throw new BadRequestException({
@@ -163,6 +164,7 @@ export class AuthService {
           user.id,
           payload.refreshTokenId,
         );
+        return this.generateTokens(user);
       } else {
         throw new UnauthorizedException({
           code: 'USER_INVALID_REFRESH_TOKEN',
@@ -170,7 +172,7 @@ export class AuthService {
         });
       }
 
-      return this.generateTokens(user);
+      // return this.generateTokens(user);
     } catch (error) {
       if (error instanceof InvalidatedRefreshTokenError) {
         // Log or notify that someone is trying to use invalidated refresh token.

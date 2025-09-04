@@ -12,11 +12,10 @@ import {
 } from './dto';
 
 @Resolver()
-@UseGuards(RolesGuard)
 export class InvitationResolver {
   constructor(private invitationService: InvitationService) {}
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Mutation('createInvitation')
   async createInvitation(@Args('input') input: CreateInvitationInput) {
@@ -28,7 +27,7 @@ export class InvitationResolver {
     );
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.SANDVIK_ADMIN], [], '')
   @Mutation('createGlobalInvitation')
   async createGlobalInvitation(
@@ -48,14 +47,14 @@ export class InvitationResolver {
     return this.invitationService.validateInvitation(id, token);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Query('pendingInvitations')
   async getPendingInvitations(@Args('companyId') companyId: string) {
     return this.invitationService.getPendingInvitations(companyId);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.SANDVIK_ADMIN], [], '')
   @Query('pendingGlobalInvitations')
   async getPendingGlobalInvitations() {
@@ -72,14 +71,14 @@ export class InvitationResolver {
     });
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Mutation('resendInvitation')
   async resendInvitation(@Args('id') id: string) {
     return this.invitationService.resendInvitation(id);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Roles([Role.COMPANY_ADMIN], [], 'invitation')
   @Mutation('removeInvitation')
   async removeInvitation(@Args('id') id: string) {

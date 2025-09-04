@@ -149,7 +149,7 @@ export default function Page(): JSX.Element {
           });
           setTimeout(() => {
             router.push('/api/auth/signin');
-          }, 2000);
+          }, 200);
         }
       })
       .catch(() => {

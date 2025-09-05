@@ -199,18 +199,40 @@ export default function Page({
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.length > 0 ? (
-            hazards.map((boltResult) => (
-              <HazardCard
-                key={boltResult.id}
-                boltResult={boltResult}
-                onViewMore={() =>
-                  handleBoltDetailsModalToggle(true, boltResult.id)
+            hazards
+              .sort((a, b) => {
+                // First sort by hazard status (active hazards first)
+                if (a.isHazard && !b.isHazard) return -1;
+                if (!a.isHazard && b.isHazard) return 1;
+
+                // Then sort completed hazards by completion date (descending)
+                if (!a.isHazard && !b.isHazard) {
+                  const dateA = new Date(
+                    a.hazardCompletedDate || a.updatedAt,
+                  ).getTime();
+                  const dateB = new Date(
+                    b.hazardCompletedDate || b.updatedAt,
+                  ).getTime();
+                  return dateB - dateA;
                 }
-                onCompleteClick={() =>
-                  handleCompleteConfirmationModalToggle(true, boltResult.id)
-                }
-              />
-            ))
+
+                // For active hazards, maintain original order or sort by creation date
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+                return dateB - dateA;
+              })
+              .map((boltResult) => (
+                <HazardCard
+                  key={boltResult.id}
+                  boltResult={boltResult}
+                  onViewMore={() =>
+                    handleBoltDetailsModalToggle(true, boltResult.id)
+                  }
+                  onCompleteClick={() =>
+                    handleCompleteConfirmationModalToggle(true, boltResult.id)
+                  }
+                />
+              ))
           ) : (
             <NotFoundHazardMessage />
           )}

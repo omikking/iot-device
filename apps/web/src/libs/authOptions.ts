@@ -5,6 +5,8 @@ import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
 import { UUID } from 'crypto';
 
+let refreshPromise: Promise<JWT> | null = null;
+
 // here is a fucking problem
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -100,16 +102,20 @@ export const authOptions: NextAuthOptions = {
       if (isExpired) {
         console.log('Expired token, refreshing...');
         console.log('Before refresh:', jwtDecode(token.tokens.refreshToken));
-        // return refreshAccessToken(token);
 
-        const refreshedSession = await refreshAccessToken(token);
-
-        console.log(
-          'After refresh:',
-          jwtDecode(refreshedSession.tokens.refreshToken),
-        );
-
-        return refreshedSession;
+        try {
+          if (!refreshPromise) {
+            refreshPromise = refreshAccessToken(token);
+          }
+          const refreshedSession = await refreshPromise;
+          console.log(
+            'After refresh:',
+            jwtDecode(refreshedSession.tokens.refreshToken),
+          );
+          return refreshedSession;
+        } finally {
+          refreshPromise = null;
+        }
       }
 
       return token;

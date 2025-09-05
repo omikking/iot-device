@@ -34,9 +34,10 @@ const useClient = () => {
             // NextAuth is responsible for refreshing the token, not urql.
             async refreshAuth() {
               // TODO: This needs more testing/work.
-              if (error === 'RefreshAccessTokenError') {
-                signOut();
-              }
+              // if (error === 'RefreshAccessTokenError') {
+              //   signOut();
+              // }
+              console.log('URQL refreshAuth called!');
             },
           };
         }),

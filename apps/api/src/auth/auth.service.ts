@@ -154,25 +154,19 @@ export class AuthService {
         },
       });
 
-      const isValid = await this.refreshTokenIdsStorage.validate(
+      // This will throw InvalidatedRefreshTokenError if invalid
+      await this.refreshTokenIdsStorage.validate(
         user.id,
         payload.refreshTokenId,
       );
 
-      if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(
-          user.id,
-          payload.refreshTokenId,
-        );
-        return this.generateTokens(user);
-      } else {
-        throw new UnauthorizedException({
-          code: 'USER_INVALID_REFRESH_TOKEN',
-          title: errorTexts.authRefreshTokenError_title,
-        });
-      }
+      // If we reach here, token is valid
+      await this.refreshTokenIdsStorage.invalidate(
+        user.id,
+        payload.refreshTokenId,
+      );
 
-      // return this.generateTokens(user);
+      return this.generateTokens(user);
     } catch (error) {
       if (error instanceof InvalidatedRefreshTokenError) {
         // Log or notify that someone is trying to use invalidated refresh token.

@@ -31,11 +31,11 @@ export class RefreshTokenIdsStorage {
       },
     });
 
-    if (storedId?.refreshTokenId !== tokenId) {
+    if (!storedId || storedId.refreshTokenId !== tokenId) {
       throw new InvalidatedRefreshTokenError();
     }
 
-    return storedId?.refreshTokenId === tokenId;
+    return true;
   }
 
   async invalidate(userId: string, tokenId: string) {

@@ -83,8 +83,12 @@ export const authOptions: NextAuthOptions = {
       const isExpired = (exp ?? 0) < current;
 
       if (isExpired) {
+        console.log('Frontend token expired oh no! lets refreshAccessToken');
+        console.log('Token before refresh:', token);
         return refreshAccessToken(token);
       }
+
+      console.log('Token now:', token);
 
       return token;
     },

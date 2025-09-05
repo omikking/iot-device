@@ -24,14 +24,20 @@ export class RefreshTokenIdsStorage {
   }
 
   async validate(userId: string, tokenId: string) {
-    console.log('validate', userId, tokenId);
+    // console.log('validate', userId, tokenId);
+    console.log('Validate start!');
     const storedId = await this.prisma.refreshTokenId.findUnique({
       where: {
         userId: this.getKey(userId),
       },
     });
 
+    console.log('Trying to validate...');
+    console.log('Backend refresh token:', storedId);
+    console.log('Frontend refresh token:', tokenId);
+
     if (storedId?.refreshTokenId !== tokenId) {
+      console.log('Validate function fucking failed miserably! FUCK!');
       throw new InvalidatedRefreshTokenError();
     }
 

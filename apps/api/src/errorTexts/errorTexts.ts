@@ -173,7 +173,8 @@ export const errorTexts = {
     'This invitation has expired. Please request a new one.',
 
   invitationInvalidToken_title: 'Invalid invitation',
-  invitationInvalidToken_message: 'The invitation token is invalid.',
+  invitationInvalidToken_message:
+    'The invitation is invalid or does not exist.',
 
   invitationDuplicate_title: 'Invitation already exists',
   invitationDuplicate_message:

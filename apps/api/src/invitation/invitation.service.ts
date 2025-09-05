@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { Application, GlobalRole, Role } from '@prisma/client';
@@ -12,6 +6,7 @@ import { randomBytes } from 'crypto';
 import * as argon from 'argon2';
 import { errorTexts } from '../errorTexts/errorTexts';
 import { isPasswordStrong } from '../utils';
+import { UserInputError } from '@nestjs/apollo';
 
 @Injectable()
 export class InvitationService {
@@ -37,10 +32,12 @@ export class InvitationService {
     });
 
     if (!company) {
-      throw new NotFoundException({
-        code: 'INVITATION_COMPANY_NOT_FOUND_ERROR',
-        title: errorTexts.invitationCompanyNotFound_title,
-        message: errorTexts.invitationCompanyNotFound_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_COMPANY_NOT_FOUND_ERROR',
+          title: errorTexts.invitationCompanyNotFound_title,
+          message: errorTexts.invitationCompanyNotFound_message,
+        },
       });
     }
 
@@ -59,10 +56,12 @@ export class InvitationService {
       });
 
       if (existingPermission) {
-        throw new ConflictException({
-          code: 'INVITATION_USER_EXISTS_ERROR',
-          title: errorTexts.invitationUserExists_title,
-          message: errorTexts.invitationUserExists_message,
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_USER_EXISTS_ERROR',
+            title: errorTexts.invitationUserExists_title,
+            message: errorTexts.invitationUserExists_message,
+          },
         });
       }
 
@@ -79,10 +78,12 @@ export class InvitationService {
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
-        throw new InternalServerErrorException({
-          code: 'INVITATION_CREATE_ERROR',
-          title: errorTexts.invitationCreateError_title,
-          message: errorTexts.contactSupportError,
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_CREATE_ERROR',
+            title: errorTexts.invitationCreateError_title,
+            message: errorTexts.contactSupportError,
+          },
         });
       }
     }
@@ -98,10 +99,12 @@ export class InvitationService {
     });
 
     if (existingInvitation) {
-      throw new ConflictException({
-        code: 'INVITATION_DUPLICATE_ERROR',
-        title: errorTexts.invitationDuplicate_title,
-        message: errorTexts.invitationDuplicate_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_DUPLICATE_ERROR',
+          title: errorTexts.invitationDuplicate_title,
+          message: errorTexts.invitationDuplicate_message,
+        },
       });
     }
 
@@ -141,10 +144,12 @@ export class InvitationService {
         isNewUser: true,
       };
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_CREATE_ERROR',
-        title: errorTexts.invitationCreateError_title,
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_CREATE_ERROR',
+          title: errorTexts.invitationCreateError_title,
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -164,10 +169,12 @@ export class InvitationService {
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
-        throw new InternalServerErrorException({
-          code: 'INVITATION_CREATE_ERROR',
-          title: errorTexts.invitationCreateError_title,
-          message: errorTexts.contactSupportError,
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_CREATE_ERROR',
+            title: errorTexts.invitationCreateError_title,
+            message: errorTexts.contactSupportError,
+          },
         });
       }
     }
@@ -183,10 +190,12 @@ export class InvitationService {
     });
 
     if (existingInvitation) {
-      throw new ConflictException({
-        code: 'INVITATION_DUPLICATE_ERROR',
-        title: errorTexts.invitationDuplicate_title,
-        message: errorTexts.invitationDuplicate_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_DUPLICATE_ERROR',
+          title: errorTexts.invitationDuplicate_title,
+          message: errorTexts.invitationDuplicate_message,
+        },
       });
     }
 
@@ -224,10 +233,12 @@ export class InvitationService {
         isNewUser: true,
       };
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_CREATE_ERROR',
-        title: errorTexts.invitationCreateError_title,
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_CREATE_ERROR',
+          title: errorTexts.invitationCreateError_title,
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -239,24 +250,64 @@ export class InvitationService {
     });
 
     if (!invitation) {
-      return { valid: false, reason: 'invalid_token' };
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_INVALID_TOKEN_ERROR',
+          title: errorTexts.invitationInvalidToken_title,
+          message: errorTexts.invitationInvalidToken_message,
+        },
+      });
     }
 
     try {
       const isValidToken = await argon.verify(invitation.token, token);
       if (!isValidToken) {
-        return { valid: false, reason: 'invalid_token' };
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_INVALID_TOKEN_ERROR',
+            title: errorTexts.invitationInvalidToken_title,
+            message: errorTexts.invitationInvalidToken_message,
+          },
+        });
       }
     } catch (error) {
-      return { valid: false, reason: 'invalid_token' };
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_INVALID_TOKEN_ERROR',
+          title: errorTexts.invitationInvalidToken_title,
+          message: errorTexts.invitationInvalidToken_message,
+        },
+      });
     }
 
     if (invitation.used) {
-      return { valid: false, reason: 'already_used' };
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_ALREADY_USED_ERROR',
+          title: errorTexts.invitationAlreadyUsed_title,
+          message: errorTexts.invitationAlreadyUsed_message,
+        },
+      });
     }
 
     if (invitation.expiresAt < new Date()) {
-      return { valid: false, reason: 'expired' };
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_EXPIRED_ERROR',
+          title: errorTexts.invitationExpired_title,
+          message: errorTexts.invitationExpired_message,
+        },
+      });
+    }
+
+    if (invitation.expiresAt < new Date()) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_EXPIRED_ERROR',
+          title: errorTexts.invitationExpired_title,
+          message: errorTexts.invitationExpired_message,
+        },
+      });
     }
 
     return { valid: true, invitation };
@@ -274,56 +325,24 @@ export class InvitationService {
   ) {
     // Validate password strength
     if (!isPasswordStrong(userData.password)) {
-      throw new BadRequestException({
-        code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-        title: errorTexts.userPasswordTooWeak_title,
-        message: errorTexts.userPasswordTooWeak_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_PASSWORD_TOO_WEAK_ERROR',
+          title: errorTexts.userPasswordTooWeak_title,
+          message: errorTexts.userPasswordTooWeak_message,
+        },
       });
     }
 
-    const validation = await this.validateInvitation(id, token);
-
-    if (!validation.valid) {
-      let errorDetails;
-      switch (validation.reason) {
-        case 'invalid_token':
-          errorDetails = {
-            title: errorTexts.invitationInvalidToken_title,
-            message: errorTexts.invitationInvalidToken_message,
-          };
-          break;
-        case 'already_used':
-          errorDetails = {
-            title: errorTexts.invitationAlreadyUsed_title,
-            message: errorTexts.invitationAlreadyUsed_message,
-          };
-          break;
-        case 'expired':
-          errorDetails = {
-            title: errorTexts.invitationExpired_title,
-            message: errorTexts.invitationExpired_message,
-          };
-          break;
-        default:
-          errorDetails = {
-            title: errorTexts.invitationInvalidToken_title,
-            message: errorTexts.invitationInvalidToken_message,
-          };
-      }
-
-      throw new BadRequestException({
-        code: 'INVITATION_VALIDATION_ERROR',
-        ...errorDetails,
-      });
-    }
-
-    const invitation = validation.invitation;
+    const { invitation } = await this.validateInvitation(id, token);
 
     if (!invitation) {
-      throw new NotFoundException({
-        code: 'INVITATION_NOT_FOUND_ERROR',
-        title: errorTexts.invitationInvalidToken_title,
-        message: errorTexts.invitationInvalidToken_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_NOT_FOUND_ERROR',
+          title: errorTexts.invitationInvalidToken_title,
+          message: errorTexts.invitationInvalidToken_message,
+        },
       });
     }
 
@@ -371,10 +390,12 @@ export class InvitationService {
 
       return result;
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_COMPLETE_ERROR',
-        title: errorTexts.invitationCompleteError_title,
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_COMPLETE_ERROR',
+          title: errorTexts.invitationCompleteError_title,
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -402,12 +423,15 @@ export class InvitationService {
         used: invitation.used,
         companyId: invitation.companyId,
         globalRole: null, // Company invitations don't have global roles
+        role: invitation.role,
       }));
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_FETCH_ERROR',
-        title: 'Failed to fetch invitations',
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_FETCH_ERROR',
+          title: 'Failed to fetch invitations',
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -435,12 +459,15 @@ export class InvitationService {
         used: invitation.used,
         companyId: null,
         globalRole: invitation.globalRole,
+        role: invitation.globalRole,
       }));
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_FETCH_ERROR',
-        title: 'Failed to fetch invitations',
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_FETCH_ERROR',
+          title: 'Failed to fetch invitations',
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -452,18 +479,22 @@ export class InvitationService {
     });
 
     if (!invitation) {
-      throw new NotFoundException({
-        code: 'INVITATION_NOT_FOUND_ERROR',
-        title: errorTexts.invitationNotFound_title(id),
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_NOT_FOUND_ERROR',
+          title: errorTexts.invitationNotFound_title(id),
+          message: errorTexts.contactSupportError,
+        },
       });
     }
 
     if (invitation.used) {
-      throw new BadRequestException({
-        code: 'INVITATION_ALREADY_USED_ERROR',
-        title: errorTexts.invitationAlreadyUsed_title,
-        message: errorTexts.invitationAlreadyUsed_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_ALREADY_USED_ERROR',
+          title: errorTexts.invitationAlreadyUsed_title,
+          message: errorTexts.invitationAlreadyUsed_message,
+        },
       });
     }
 
@@ -504,19 +535,23 @@ export class InvitationService {
           invitation.company.name,
         );
       } else {
-        throw new BadRequestException({
-          code: 'INVITATION_INVALID_TYPE_ERROR',
-          title: 'Invalid invitation type',
-          message: errorTexts.contactSupportError,
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_INVALID_TYPE_ERROR',
+            title: 'Invalid invitation type',
+            message: errorTexts.contactSupportError,
+          },
         });
       }
 
       return updatedInvitation;
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_RESEND_ERROR',
-        title: errorTexts.invitationResendError_title,
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_RESEND_ERROR',
+          title: errorTexts.invitationResendError_title,
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -527,18 +562,22 @@ export class InvitationService {
     });
 
     if (!invitation) {
-      throw new NotFoundException({
-        code: 'INVITATION_NOT_FOUND_ERROR',
-        title: errorTexts.invitationNotFound_title(id),
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_NOT_FOUND_ERROR',
+          title: errorTexts.invitationNotFound_title(id),
+          message: errorTexts.contactSupportError,
+        },
       });
     }
 
     if (invitation.used) {
-      throw new BadRequestException({
-        code: 'INVITATION_ALREADY_USED_ERROR',
-        title: 'Cannot remove used invitation',
-        message: 'Cannot remove invitation that has already been used',
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_ALREADY_USED_ERROR',
+          title: 'Cannot remove used invitation',
+          message: 'Cannot remove invitation that has already been used',
+        },
       });
     }
 
@@ -549,10 +588,12 @@ export class InvitationService {
 
       return deletedInvitation;
     } catch (error) {
-      throw new InternalServerErrorException({
-        code: 'INVITATION_REMOVE_ERROR',
-        title: errorTexts.invitationRemoveError_title,
-        message: errorTexts.contactSupportError,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_REMOVE_ERROR',
+          title: errorTexts.invitationRemoveError_title,
+          message: errorTexts.contactSupportError,
+        },
       });
     }
   }
@@ -571,10 +612,12 @@ export class InvitationService {
     });
 
     if (recentInvitations >= this.RATE_LIMIT_MAX_INVITATIONS) {
-      throw new BadRequestException({
-        code: 'INVITATION_RATE_LIMIT_ERROR',
-        title: errorTexts.invitationRateLimit_title,
-        message: errorTexts.invitationRateLimit_message,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVITATION_RATE_LIMIT_ERROR',
+          title: errorTexts.invitationRateLimit_title,
+          message: errorTexts.invitationRateLimit_message,
+        },
       });
     }
   }

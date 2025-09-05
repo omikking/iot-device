@@ -10,6 +10,7 @@ type Invitation {
   used: Boolean!
   companyId: String
   globalRole: String
+  role: String
 }
 
 type InvitationResponse {

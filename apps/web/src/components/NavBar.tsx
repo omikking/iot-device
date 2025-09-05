@@ -33,7 +33,11 @@ export const NavBar = () => {
   });
   const companyName = data?.company?.name;
 
-  const excludedPaths = ['/api/auth/signin', '/forgot-password'];
+  const excludedPaths = [
+    '/api/auth/signin',
+    '/forgot-password',
+    '/setup-account',
+  ];
   const isExcludedPath = excludedPaths.includes(pathname);
 
   return (

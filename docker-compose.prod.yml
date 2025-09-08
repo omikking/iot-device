@@ -9,11 +9,11 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: nest
     ports:
-      - "5434:5432"           
+      - '5434:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d nest"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nest']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -37,7 +37,7 @@ services:
     env_file:
       - ./apps/api/.env.production
     ports:
-      - "3333:3333"
+      - '3333:3333'
     restart: unless-stopped
     networks:
       - playground
@@ -55,7 +55,7 @@ services:
       - ./apps/web/.env
     command: pnpm start
     ports:
-      - "3000:3000"
+      - '3000:3000'
     restart: unless-stopped
     networks:
       - playground
@@ -74,7 +74,7 @@ services:
       - ./apps/pull-test/.env
     command: pnpm start
     ports:
-      - "3001:3001"
+      - '3001:3001'
     restart: unless-stopped
     networks:
       - playground
@@ -83,4 +83,4 @@ networks:
   playground:
 
 volumes:
-  postgres_data:
+  postgres_data_prod:

@@ -42,15 +42,16 @@ export const MultiBoltGraphView = ({
   }));
 
   // --- Y Axis (Peak Load) ---
-  const yTickInterval = 10;
-  const yMax = 50;
+  const yTickInterval = 5;
+  const maxLoad = Math.max(...peakLoad, 0);
+  const yMaxBase = 25;
+  const yMax =
+    maxLoad > yMaxBase
+      ? Math.ceil((maxLoad + yTickInterval) / yTickInterval) * yTickInterval
+      : yMaxBase;
   const yAxisTicks = [];
   for (let i = 0; i <= yMax; i += yTickInterval) {
     yAxisTicks.push(i);
-  }
-
-  if (!yAxisTicks.includes(50)) {
-    yAxisTicks.push(50);
   }
 
   // --- X Axis (Displacement) ---
@@ -103,6 +104,8 @@ export const MultiBoltGraphView = ({
               }}
             />
             <YAxis
+              dataKey="desktop"
+              type="number"
               tick={{ fill: '#E6E6E6', fontSize: 12 }}
               ticks={yAxisTicks}
               axisLine={{ stroke: '#E6E6E6' }}

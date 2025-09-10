@@ -11,6 +11,7 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
+        // TODO fix correct colors from design. Add in tailwind config if needed.
         success: 'ui-bg-green-100 ui-text-green-800',
         info: 'ui-bg-blue-100 ui-text-blue-800',
         error: 'ui-bg-red-100 ui-text-red-800',

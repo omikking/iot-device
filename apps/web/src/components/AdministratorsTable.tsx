@@ -10,8 +10,8 @@ import {
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { LucideUserCog } from 'lucide-react';
-import { GetAdminsQuery } from '@/gql/graphql';
+import { LucideHourglass, LucideUserCog } from 'lucide-react';
+import { GetAdminsQuery, Role } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
@@ -19,11 +19,25 @@ import { handleGraphQLErrors } from '@/libs/utils';
 import { LucideSearchX } from 'lucide-react';
 
 type Administrator = GetAdminsQuery['users'][0];
+type AdminRow = Administrator & { isInvitation: boolean; expiresAt?: string };
+
+const getPendingAdminsQuery = graphql(`
+  query getPendingGlobalInvitations {
+    pendingGlobalInvitations {
+      id
+      email
+      globalRole
+      expiresAt
+      used
+    }
+  }
+`);
 
 const getAdminsQuery = graphql(`
   query getAdmins {
     users(roles: "SANDVIK_ADMIN") {
       id
+      createdAt
       email
       fullName
       workPlace
@@ -47,12 +61,50 @@ const deleteAdminMutation = graphql(`
 `);
 
 export const AdministratorsTable = () => {
-  const [administratorsData] = useQuery({
-    query: getAdminsQuery,
+  const [administratorsData] = useQuery({ query: getAdminsQuery });
+
+  const [pendingAdminsData] = useQuery({
+    query: getPendingAdminsQuery,
   });
 
   const administrators =
     (administratorsData?.data?.users as GetAdminsQuery['users']) || [];
+
+  const invitations = (pendingAdminsData?.data?.pendingGlobalInvitations || [])
+    .filter(
+      (pendingAdmin) =>
+        pendingAdmin.globalRole === Role.SandvikAdmin && !pendingAdmin.used,
+    )
+    .map((pendingAdmin) => ({
+      id: pendingAdmin.id,
+      email: pendingAdmin.email,
+      fullName: '',
+      workPlace: 'N/A',
+      phoneNumber: 'N/A',
+      globalRole: pendingAdmin.globalRole,
+      expiresAt: pendingAdmin.expiresAt,
+      createdAt: undefined,
+      isInvitation: true,
+    }));
+
+  // Add a flag to real users for sorting
+  const adminUsers = administrators.map((user) => ({
+    ...user,
+    isInvitation: false,
+    createdAt: user.createdAt,
+    expiresAt: undefined,
+  }));
+
+  // Combine and sort admins and pending admins by date
+  const allAdmins: AdminRow[] = [...adminUsers, ...invitations].sort((a, b) => {
+    const aDate = a.isInvitation
+      ? new Date(a.expiresAt)
+      : new Date(a.createdAt);
+    const bDate = b.isInvitation
+      ? new Date(b.expiresAt)
+      : new Date(b.createdAt);
+    return bDate.getTime() - aDate.getTime();
+  });
 
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
@@ -64,7 +116,7 @@ export const AdministratorsTable = () => {
   const [, deleteAdmin] = useMutation(deleteAdminMutation);
 
   const openDeleteModal = (adminId: string) => {
-    const adminToDelete = administrators?.find((admin) => admin.id === adminId);
+    const adminToDelete = allAdmins?.find((admin) => admin.id === adminId);
     setAdministratorToDelete(adminToDelete);
     setIsDeleteAdministratorModalOpen(true);
   };
@@ -115,12 +167,21 @@ export const AdministratorsTable = () => {
     );
   };
 
-  const columns: ColumnDef<Administrator>[] = [
+  const columns: ColumnDef<AdminRow>[] = [
     {
       accessorKey: 'fullName',
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Full name" />
       ),
+      cell: ({ row }) =>
+        row.original.isInvitation ? (
+          <Badge variant="pending">
+            <LucideHourglass />
+            Pending activation
+          </Badge>
+        ) : (
+          row.original.fullName
+        ),
     },
     {
       accessorKey: 'email',
@@ -186,13 +247,13 @@ export const AdministratorsTable = () => {
 
       <DataTable
         columns={columns}
-        data={administrators}
-        noResultMessage="There are no administrators added yet."
+        data={allAdmins}
+        noResultMessage="There are no administrators or pending invitations."
         icon={<LucideSearchX color="gray" />}
       />
-      {administrators?.length > 0 && (
+      {allAdmins?.length > 0 && (
         <Badge variant="neutral" className="self-start">
-          {administrators.length} total
+          {allAdmins.length} total
         </Badge>
       )}
     </>

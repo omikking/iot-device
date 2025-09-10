@@ -58,7 +58,7 @@ const config: Omit<Config, 'content'> = {
         'blue-primary': '#1441F5',
         'blue-1': '#003C7D',
         'blue-2': '#327DFF',
-        'blue-3': '#C8DCFF',
+        'blue-3': '#E7ECFE',
 
         /* Highlights in product pages Progress bars Steppers Timelines 
         Active toggles Attention grabbing toast cards */

@@ -46,7 +46,7 @@ export const MultiBoltGraphView = ({
   const maxLoad = Math.max(...peakLoad, 0);
   const yMaxBase = 25;
   const yMax =
-    maxLoad > yMaxBase
+    maxLoad >= yMaxBase
       ? Math.ceil((maxLoad + yTickInterval) / yTickInterval) * yTickInterval
       : yMaxBase;
   const yAxisTicks = [];
@@ -59,7 +59,7 @@ export const MultiBoltGraphView = ({
   const xTickInterval = 5;
   const xMaxBase = 40;
   const xMax =
-    maxDisplacement > xMaxBase
+    maxDisplacement >= xMaxBase
       ? Math.ceil((maxDisplacement + xTickInterval) / xTickInterval) *
         xTickInterval
       : xMaxBase;

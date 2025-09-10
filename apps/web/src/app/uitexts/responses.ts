@@ -71,7 +71,7 @@ export const responses = {
 
   // User permissions
   userPermissionCreateFailed: 'Failed to add user permissions',
-  userPermissionCreateSuccess: 'User permissions successfully created',
+  userPermissionCreateSuccess: 'Invitation for permissions successfully sent',
   userPermissionUpdateFailed: 'Failed to update user permissions',
   userPermissionUpdateSuccess: 'User permissions successfully updated',
   userPermissionDeleteFailed: 'Failed to delete user permissions',

@@ -373,7 +373,7 @@ export const AddOrEditUserModal = ({
       </ModalHeader>
       <SuccessMessage
         isVisible={isSuccessful}
-        title={user ? 'Successfully sent invitation' : 'Successfully saved'}
+        title={user ? 'Successfully saved' : 'Successfully sent invitation'}
       >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

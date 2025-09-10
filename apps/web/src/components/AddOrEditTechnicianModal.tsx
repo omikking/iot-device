@@ -201,7 +201,7 @@ export const AddOrEditTechnicianModal = ({
       <SuccessMessage
         isVisible={isSuccessful}
         title={
-          !technician ? 'Successfully sent invitation' : 'Successfully saved'
+          technician ? 'Successfully saved' : 'Successfully sent invitation'
         }
       >
         <Form {...form}>

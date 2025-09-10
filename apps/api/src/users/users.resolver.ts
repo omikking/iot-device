@@ -55,6 +55,19 @@ export class UsersResolver {
     updatePasswordInput?: UpdatePasswordInput,
   ): Promise<GraphQLTypes.User> {
     if (user.id !== id) {
+      // Allow Sandvik admin to update isGlobalVisibility for technicians
+      if (
+        user.globalRole === GlobalRole.SANDVIK_ADMIN &&
+        Object.keys(updateUserInput).every(
+          (key) => key === 'isGlobalVisibility' || key === 'email',
+        )
+      ) {
+        const targetUser = await this.usersService.findOne(id);
+        if (targetUser.globalRole === GlobalRole.SANDVIK_TECHNICIAN) {
+          return this.usersService.update(id, updateUserInput);
+        }
+      }
+      // Otherwise throw exception if not the same user for any other action
       throw new ForbiddenException('You can only update your own user data.');
     }
     return this.usersService.update(id, updateUserInput, updatePasswordInput);

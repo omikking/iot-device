@@ -383,7 +383,10 @@ export const AddOrEditUserModal = ({
           {user ? 'Edit user' : 'Add user'}
         </ModalTitle>
       </ModalHeader>
-      <SuccessMessage isVisible={isSuccessful}>
+      <SuccessMessage
+        isVisible={isSuccessful}
+        title="Successfully sent invitation"
+      >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex px-10 gap-10">

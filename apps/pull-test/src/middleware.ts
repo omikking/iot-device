@@ -2,8 +2,6 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { Application, Role } from './gql/graphql';
 
-export { default } from 'next-auth/middleware';
-
 const publicRoutes = ['/api/auth/signin'];
 
 const extractCompanyId = (pathname: string): string | null => {

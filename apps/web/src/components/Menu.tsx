@@ -313,7 +313,7 @@ export const Menu = () => {
               variant="outline"
               size="large"
               tabIndex={-1}
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: '/api/auth/signin' })}
             >
               <LucideLogOut />
               Logout

@@ -120,6 +120,20 @@ export default function Page({
 
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
+  // Modern helper function to sort hazards for the 'view all' tab
+  const sortHazards = (a: BoltResult, b: BoltResult) => {
+    if (a.isHazard && !b.isHazard) return -1;
+    if (!a.isHazard && b.isHazard) return 1;
+    if (!a.isHazard && !b.isHazard) {
+      const dateA = new Date(a.hazardCompletedDate || a.updatedAt).getTime();
+      const dateB = new Date(b.hazardCompletedDate || b.updatedAt).getTime();
+      return dateB - dateA;
+    }
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  };
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <Headline
@@ -200,27 +214,7 @@ export default function Page({
         >
           {hazards.length > 0 ? (
             hazards
-              .sort((a, b) => {
-                // First sort by hazard status (active hazards first)
-                if (a.isHazard && !b.isHazard) return -1;
-                if (!a.isHazard && b.isHazard) return 1;
-
-                // Then sort completed hazards by completion date (descending)
-                if (!a.isHazard && !b.isHazard) {
-                  const dateA = new Date(
-                    a.hazardCompletedDate || a.updatedAt,
-                  ).getTime();
-                  const dateB = new Date(
-                    b.hazardCompletedDate || b.updatedAt,
-                  ).getTime();
-                  return dateB - dateA;
-                }
-
-                // For active hazards, maintain original order or sort by creation date
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
-                return dateB - dateA;
-              })
+              .sort(sortHazards)
               .map((boltResult) => (
                 <HazardCard
                   key={boltResult.id}

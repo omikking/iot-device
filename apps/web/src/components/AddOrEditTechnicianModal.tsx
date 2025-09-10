@@ -35,6 +35,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { Role } from '@/gql/graphql';
+
+const createGlobalInvitationMutation = graphql(`
+  mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {
+    createGlobalInvitation(input: $input) {
+      invitationId
+      isNewUser
+    }
+  }
+`);
 
 const updateTechnicianMutation = graphql(`
   mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {
@@ -57,6 +67,10 @@ export const AddOrEditTechnicianModal = ({
 }: AddOrEditTechnicianModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
+
+  const [, createGlobalInvitation] = useMutation(
+    createGlobalInvitationMutation,
+  );
 
   const [, updateTechnician] = useMutation<UpdateTechnicianFormValues>(
     updateTechnicianMutation,
@@ -107,7 +121,7 @@ export const AddOrEditTechnicianModal = ({
 
             setTimeout(() => {
               showAlertToast({
-                title: responses.techincianUpdateSuccess,
+                title: responses.technicianUpdateSuccess,
                 variant: 'success',
               });
             }, 1500);
@@ -116,7 +130,7 @@ export const AddOrEditTechnicianModal = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.techinicianUpdateFailedError,
+            title: responses.technicianUpdateFailedError,
             description: responses.contactSupportError,
             variant: 'error',
           });
@@ -127,7 +141,36 @@ export const AddOrEditTechnicianModal = ({
     }
 
     if (!technician) {
-      // TODO fix later for create technician flow
+      createGlobalInvitation({
+        input: { email: data.email, globalRole: Role.SandvikTechnician },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            handleSuccess();
+
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.technicianInviteSuccess,
+                variant: 'success',
+              });
+            }, 1500);
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.technicianInviteFailError,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -155,7 +198,12 @@ export const AddOrEditTechnicianModal = ({
           {technician ? 'Edit technician' : 'Add technician'}
         </ModalTitle>
       </ModalHeader>
-      <SuccessMessage isVisible={isSuccessful}>
+      <SuccessMessage
+        isVisible={isSuccessful}
+        title={
+          !technician ? 'Successfully sent invitation' : 'Successfully saved'
+        }
+      >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex gap-2 justify-between px-10 pt-10">

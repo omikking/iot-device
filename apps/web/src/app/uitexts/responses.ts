@@ -46,11 +46,11 @@ export const responses = {
 
   // Technician
   technicianInviteFailError: 'Failed to invite technician',
-  techicianInviteSuccess: 'Invitation successfully sent',
-  techinicianUpdateFailedError: 'Failed to update technician',
-  techincianUpdateSuccess: 'Technician successfully updated',
-  techinicianDeleteFailed: 'Failed to delete technician',
-  techinicianDeleteSuccess: 'Technician has been deleted',
+  technicianInviteSuccess: 'Invitation successfully sent',
+  technicianUpdateFailedError: 'Failed to update technician',
+  technicianUpdateSuccess: 'Technician successfully updated',
+  technicianDeleteFailed: 'Failed to delete technician',
+  technicianDeleteSuccess: 'Technician has been deleted',
 
   //company
   companyInvitationFailed: 'Failed to send invitation to company',

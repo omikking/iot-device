@@ -402,6 +402,7 @@ export class Invitation {
     id: string;
     email: string;
     expiresAt: DateTime;
+    createdAt: DateTime;
     used: boolean;
     companyId?: Nullable<string>;
     globalRole?: Nullable<string>;

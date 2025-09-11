@@ -7,6 +7,7 @@ type Invitation {
   id: String!
   email: String!
   expiresAt: DateTime!
+  createdAt: DateTime!
   used: Boolean!
   companyId: String
   globalRole: String

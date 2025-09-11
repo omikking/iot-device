@@ -420,6 +420,7 @@ export class InvitationService {
         id: invitation.id,
         email: invitation.email,
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: invitation.companyId,
         globalRole: null, // Company invitations don't have global roles
@@ -456,6 +457,7 @@ export class InvitationService {
         id: invitation.id,
         email: invitation.email,
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: null,
         globalRole: invitation.globalRole,

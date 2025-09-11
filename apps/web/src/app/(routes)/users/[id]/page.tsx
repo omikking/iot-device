@@ -1,8 +1,9 @@
 'use client';
+import type { User, Application, Invitation } from '@/gql/graphql';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-import { Application, Role, User } from '@/gql/graphql';
+import { Role } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { UsersTable } from '@/components/UsersTable';
@@ -10,6 +11,19 @@ import { AddOrEditUserModal } from '@/components/AddOrEditUserModal';
 import { Button, Headline, Badge, Modal, ModalTrigger } from '@gsp/ui';
 import { useSession } from 'next-auth/react';
 import { isCompanyAdmin } from '@/libs/utils';
+
+const getPendingInvitationsQuery = graphql(`
+  query getPendingInvitations($companyId: String!) {
+    pendingInvitations(companyId: $companyId) {
+      id
+      email
+      role
+      expiresAt
+      createdAt
+      used
+    }
+  }
+`);
 
 const getCompanyUsersQuery = graphql(`
   query getCompanyUsers($id: String!) {
@@ -25,6 +39,7 @@ const getCompanyUsersQuery = graphql(`
         userPermissions {
           id
           userId
+          createdAt
           companyId
           role
           appsAccess
@@ -71,7 +86,15 @@ export default function Page({
     variables: { id: companyId },
   });
 
-  const companyPlans = companyData?.company.plans;
+  const [{ data: pendingUsersData }, refetchPendingUsers] = useQuery<
+    { pendingInvitations: Invitation[] },
+    { companyId: string }
+  >({
+    query: getPendingInvitationsQuery,
+    variables: { companyId },
+  });
+
+  const companyPlans = companyData?.company?.plans;
   const currentDate = new Date();
 
   const availableCompanyPlans = (companyPlans ?? [])
@@ -85,7 +108,7 @@ export default function Page({
       }
       return true;
     })
-    .map((plan) => plan.applicationName) as Application[];
+    .map((plan) => plan.applicationName as Application);
 
   const [{ data }] = useQuery({
     query: getCompanyName,
@@ -95,6 +118,7 @@ export default function Page({
 
   const refetchUsers = () => {
     executeQuery({ requestPolicy: 'network-only' });
+    refetchPendingUsers({ requestPolicy: 'network-only' });
   };
 
   const handleModalClose = (open: boolean) => {
@@ -103,6 +127,54 @@ export default function Page({
       setSelectedUser(undefined);
     }
   };
+
+  const users = (companyData?.company?.users || []) as User[];
+
+  // Filter out users who are Sandvik Admins
+  const filteredUsers = users.filter(
+    (user) => user.globalRole !== Role.SandvikAdmin,
+  );
+
+  const pendingInvitations = (pendingUsersData?.pendingInvitations || []).map(
+    (invitation: Invitation) => ({
+      id: invitation.id,
+      email: invitation.email ?? '',
+      fullName: '',
+      workPlace: 'N/A',
+      phoneNumber: 'N/A',
+      globalRole: '',
+      role: invitation.role || 'N/A',
+      userPermissions: [],
+      expiresAt: invitation.expiresAt,
+      createdAt: invitation.createdAt,
+      updatedAt: '',
+      isInvitation: true,
+    }),
+  );
+
+  const activeUsers = filteredUsers.map((user) => ({
+    ...user,
+    isInvitation: false,
+    expiresAt: undefined,
+  }));
+
+  const allUsers = [...activeUsers, ...pendingInvitations].sort((a, b) => {
+    const getDate = (user: typeof a): Date => {
+      if (user.userPermissions && user.userPermissions.length > 0) {
+        const perm = user.userPermissions.find(
+          (perm) => perm.companyId === companyId,
+        );
+        if (perm && perm.createdAt) return new Date(perm.createdAt);
+      }
+      if (user.createdAt) {
+        return new Date(user.createdAt as string);
+      }
+      return new Date(0);
+    };
+    const aDate = getDate(a);
+    const bDate = getDate(b);
+    return bDate.getTime() - aDate.getTime();
+  });
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
@@ -140,10 +212,9 @@ export default function Page({
           </Modal>
         )}
         <UsersTable
-          companyData={companyData}
+          allUsers={allUsers}
           availableCompanyPlans={availableCompanyPlans}
-          onOpenChange={handleModalClose}
-          onSelectUser={setSelectedUser}
+          refetchUsers={refetchUsers}
         />
       </div>
     </main>

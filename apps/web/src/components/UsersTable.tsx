@@ -129,6 +129,14 @@ export const UsersTable = ({
     undefined,
   );
 
+  // Invitation cancel modal state
+  const [isCancelInvitationModalOpen, setIsCancelInvitationModalOpen] =
+    useState(false);
+  const [invitationToCancel, setInvitationToCancel] = useState<
+    UserRow | undefined
+  >(undefined);
+  const [isCancelInvitation, setIsCancelInvitation] = useState(false);
+
   const [, deleteUserPermission] = useMutation(deleteUserPermissionMutation);
 
   const fullNameOfUserToDelete = allUsers.find(
@@ -168,11 +176,13 @@ export const UsersTable = ({
     );
   };
 
-  const handleCancelInvitation = async (
-    invitationId: string,
-  ): Promise<boolean> => {
+  const handleCancelInvitation = async (): Promise<boolean> => {
+    if (!invitationToCancel?.id) {
+      return false;
+    }
+    setIsCancelInvitation(true);
     return (
-      cancelInvitation({ id: invitationId })
+      cancelInvitation({ id: invitationToCancel.id })
         .then((result) => {
           // Backend errors
           const hasGraphQLErrors = handleGraphQLErrors(result.error);
@@ -181,11 +191,13 @@ export const UsersTable = ({
           }
           // Success
           if (result.data) {
-            showAlertToast({
-              title: responses.invitationCancelSuccess,
-              variant: 'info',
-            });
-            refetchUsers();
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.invitationCancelSuccess,
+                variant: 'info',
+              });
+              refetchUsers();
+            }, 1500);
           }
           return true;
         })
@@ -198,6 +210,7 @@ export const UsersTable = ({
           });
           return false;
         })
+        .finally(() => setIsCancelInvitation(false))
     );
   };
 
@@ -209,6 +222,18 @@ export const UsersTable = ({
   const closeDeleteModal = () => {
     setIsDeleteUserModalOpen(false);
     setUserToDelete(undefined);
+  };
+
+  // Invitation cancel logic
+  const openCancelInvitationModal = (invitationId: string) => {
+    const invitation = allUsers?.find((user) => user.id === invitationId);
+    setInvitationToCancel(invitation);
+    setIsCancelInvitationModalOpen(true);
+  };
+
+  const closeCancelInvitationModal = () => {
+    setIsCancelInvitationModalOpen(false);
+    setInvitationToCancel(undefined);
   };
 
   const handleDelete = async (): Promise<boolean> => {
@@ -326,7 +351,7 @@ export const UsersTable = ({
               isInvitation ? handleResendInvitation : undefined
             }
             onCancelInvitation={
-              isInvitation ? handleCancelInvitation : undefined
+              isInvitation ? openCancelInvitationModal : undefined
             }
           />
         );
@@ -336,6 +361,7 @@ export const UsersTable = ({
 
   return (
     <>
+      {/* Delete user modal */}
       <DeleteModalConfirmation
         deleteIcon="User"
         modalTitle="Delete user"
@@ -352,6 +378,27 @@ export const UsersTable = ({
             {` ${fullNameOfUserToDelete} `}
           </Text>
           from the list?
+        </Text>
+      </DeleteModalConfirmation>
+
+      {/* Invitation cancel modal */}
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Cancel invitation"
+        modalText="Confirm cancellation"
+        modalDeleteButtonText="Cancel invitation"
+        isLoading={isCancelInvitation}
+        isOpen={isCancelInvitationModalOpen}
+        onDelete={handleCancelInvitation}
+        onClose={closeCancelInvitationModal}
+        onOpenChange={closeCancelInvitationModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          This will cancel the pending invitation for
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${invitationToCancel?.email}. `}
+          </Text>
+          Are you sure you want to cancel this invitation?
         </Text>
       </DeleteModalConfirmation>
 

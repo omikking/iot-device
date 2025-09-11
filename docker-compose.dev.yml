@@ -57,7 +57,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://api:3333/graphql
     env_file:
-      - ./apps/web/.env
+      - ./apps/web/.env.dev
     command: pnpm start
     networks:
       - playground
@@ -73,7 +73,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://api:3333/graphql
     env_file:
-      - ./apps/pull-test/.env
+      - ./apps/pull-test/.env.dev
     command: pnpm start
     networks:
       - playground

@@ -5,7 +5,12 @@ import { User } from '@/gql/graphql';
 import { useMutation } from 'urql';
 import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { LucideEyeOff, LucideView, LucideSearchX } from 'lucide-react';
+import {
+  LucideEyeOff,
+  LucideView,
+  LucideSearchX,
+  LucideHourglass,
+} from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
@@ -229,7 +234,10 @@ export const TechniciansTable = ({
       header: 'Full name',
       cell: ({ row }) =>
         row.original.isInvitation ? (
-          <Badge variant="pending">Pending activation</Badge>
+          <Badge variant="pending">
+            <LucideHourglass />
+            Pending activation
+          </Badge>
         ) : (
           row.original.fullName
         ),

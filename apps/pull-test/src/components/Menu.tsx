@@ -179,6 +179,26 @@ export const Menu = () => {
                 )}
               </div>
 
+              {globalRole === Role.SandvikAdmin && (
+                <>
+                  <hr className="border-neutral-2" />
+
+                  <Headline
+                    variant="medium"
+                    color="foreground"
+                    as="h3"
+                    className="group"
+                  >
+                    <Link href="/administration-portal" passHref legacyBehavior>
+                      <Anchor color="foreground">
+                        <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                        Administration Portal
+                      </Anchor>
+                    </Link>
+                  </Headline>
+                </>
+              )}
+
               <hr className="border-neutral-2" />
             </>
           )}

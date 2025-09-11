@@ -158,13 +158,16 @@ export default function Page({
     expiresAt: undefined,
   }));
 
+  // Sort all users by date
   const allUsers = [...activeUsers, ...pendingInvitations].sort((a, b) => {
     const getDate = (user: typeof a): Date => {
       if (user.userPermissions && user.userPermissions.length > 0) {
         const perm = user.userPermissions.find(
           (perm) => perm.companyId === companyId,
         );
-        if (perm && perm.createdAt) return new Date(perm.createdAt);
+        if (perm && perm.createdAt) {
+          return new Date(perm.createdAt);
+        }
       }
       if (user.createdAt) {
         return new Date(user.createdAt as string);

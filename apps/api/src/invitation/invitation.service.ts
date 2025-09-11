@@ -99,13 +99,12 @@ export class InvitationService {
     });
 
     if (existingInvitation) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'INVITATION_DUPLICATE_ERROR',
-          title: errorTexts.invitationDuplicate_title,
-          message: errorTexts.invitationDuplicate_message,
-        },
-      });
+      // Instead of throwing an error, resend the existing invitation
+      await this.resendInvitation(existingInvitation.id);
+      return {
+        invitationId: existingInvitation.id,
+        isNewUser: false, // Indicating this is a resent invitation
+      };
     }
 
     // Rate limiting check

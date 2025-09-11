@@ -32,6 +32,7 @@ const documents = {
     "\n  mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      isGlobalVisibility\n    }\n  }\n": types.UpdateTechnicianDocument,
     "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n": types.GetTechniciansByRoleDocument,
     "\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.CreateUserPermissionDocument,
+    "\n  mutation CreateInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      userId\n      isNewUser\n    }\n  }\n": types.CreateInvitationDocument,
     "\n  mutation updateUserPermission(\n    $id: String!\n    $updateUserPermissionInput: UpdateUserPermissionInput!\n  ) {\n    updateUserPermission(\n      id: $id\n      updateUserPermissionInput: $updateUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.UpdateUserPermissionDocument,
     "\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n": types.GetUsersDocument,
     "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetAdminsDocument,
@@ -142,6 +143,10 @@ export function graphql(source: "\n  query getTechniciansByRole($roles: [String]
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n"): (typeof documents)["\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      userId\n      isNewUser\n    }\n  }\n"): (typeof documents)["\n  mutation CreateInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      userId\n      isNewUser\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

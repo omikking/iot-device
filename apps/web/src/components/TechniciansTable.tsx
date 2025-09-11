@@ -87,7 +87,7 @@ export const TechniciansTable = ({
           if (result.data) {
             setTimeout(() => {
               showAlertToast({
-                title: responses.techinicianDeleteSuccess,
+                title: responses.technicianDeleteSuccess,
                 variant: 'info',
               });
             }, 1500);
@@ -97,7 +97,7 @@ export const TechniciansTable = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.techinicianDeleteFailed,
+            title: responses.technicianDeleteFailed,
             description: responses.contactSupportError,
             variant: 'error',
           });
@@ -205,7 +205,7 @@ export const TechniciansTable = ({
         columns={columns}
         data={technicians}
         noResultMessage="There are no technicians added yet."
-        icon={<LucideSearchX color="gray" />}
+        icon={<LucideSearchX className="text-neutral-5" />}
       />
 
       {technicians?.length > 0 && (

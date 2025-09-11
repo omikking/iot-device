@@ -208,7 +208,7 @@ export const SitesTable = ({
         columns={columns}
         data={sites}
         noResultMessage="There are no sites added yet."
-        icon={<LucideSearchX color="gray" />}
+        icon={<LucideSearchX className="text-neutral-5" />}
       />
       {sites?.length > 0 && (
         <Badge variant="neutral" className="self-start mt-5">

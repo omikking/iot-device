@@ -61,8 +61,9 @@ const deleteAdminMutation = graphql(`
 `);
 
 export const AdministratorsTable = () => {
-  const [administratorsData] = useQuery({ query: getAdminsQuery });
-
+  const [administratorsData] = useQuery({
+    query: getAdminsQuery,
+  });
   const [pendingAdminsData] = useQuery({
     query: getPendingAdminsQuery,
   });
@@ -249,7 +250,7 @@ export const AdministratorsTable = () => {
         columns={columns}
         data={allAdmins}
         noResultMessage="There are no administrators or pending invitations."
-        icon={<LucideSearchX color="gray" />}
+        icon={<LucideSearchX className="text-neutral-5" />}
       />
       {allAdmins?.length > 0 && (
         <Badge variant="neutral" className="self-start">

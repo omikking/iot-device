@@ -476,7 +476,10 @@ export const AddOrEditUserModal = ({
               <div className="flex flex-col h-fit w-full mt-4 border-2 border-neutral-2">
                 <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
                   <div className="flex flex-grow items-center gap-2">
-                    <LucideLayoutGrid size={20} className="text-orange-600" />
+                    <LucideLayoutGrid
+                      size={20}
+                      className="text-orange-primary"
+                    />
                     <Headline
                       color={'foreground'}
                       as="h3"

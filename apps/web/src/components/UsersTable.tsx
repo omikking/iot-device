@@ -263,7 +263,7 @@ export const UsersTable = ({
         columns={columns}
         data={users}
         noResultMessage="There are no users added yet."
-        icon={<LucideSearchX color="gray" />}
+        icon={<LucideSearchX className="text-neutral-5" />}
       />
       {users.length > 0 && (
         <Badge variant="neutral" className="self-start">

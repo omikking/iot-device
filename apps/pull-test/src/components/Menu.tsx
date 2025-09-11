@@ -149,7 +149,7 @@ export const Menu = () => {
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />
+                      <LucideLayoutGrid className="text-orange-primary transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
                     </Anchor>
                   </Link>

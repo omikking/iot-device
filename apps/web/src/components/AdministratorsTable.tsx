@@ -103,7 +103,10 @@ export const AdministratorsTable = ({
       deleteAdmin({ id: administratorToDelete.id })
         .then((result) => {
           // Backend errors
-          handleGraphQLErrors(result.error);
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
           // Success
           if (result.data) {
             setTimeout(() => {
@@ -152,7 +155,10 @@ export const AdministratorsTable = ({
       cancelInvitation({ id: invitationToCancel.id })
         .then((result) => {
           // Backend errors
-          handleGraphQLErrors(result.error);
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
           // Success
           if (result.data) {
             setTimeout(() => {
@@ -186,7 +192,10 @@ export const AdministratorsTable = ({
       resendInvitation({ id })
         .then((result) => {
           // Backend errors
-          handleGraphQLErrors(result.error);
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
           // Success
           if (result.data) {
             showAlertToast({

@@ -78,6 +78,15 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @ActiveUser() user: ActiveUserData,
   ): Promise<GraphQLTypes.User> {
+    // Allow admins to delete any user except themselves
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      if (user.id === id) {
+        throw new ForbiddenException('Admins cannot delete their own account.');
+      }
+      return this.usersService.remove(id);
+    }
+
+    // Non-admins can only delete themselves
     if (user.id !== id) {
       throw new ForbiddenException('You can only remove your own user.');
     }

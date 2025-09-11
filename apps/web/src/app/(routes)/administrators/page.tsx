@@ -16,7 +16,7 @@ const getPendingAdminsQuery = graphql(`
       id
       email
       globalRole
-      expiresAt
+      createdAt
       used
     }
   }
@@ -68,8 +68,7 @@ export default function Page(): JSX.Element {
       workPlace: 'N/A',
       phoneNumber: 'N/A',
       globalRole: pendingAdmin.globalRole,
-      expiresAt: pendingAdmin.expiresAt,
-      createdAt: undefined,
+      createdAt: pendingAdmin.createdAt,
       isInvitation: true,
     }));
 
@@ -77,16 +76,11 @@ export default function Page(): JSX.Element {
     ...user,
     isInvitation: false,
     createdAt: user.createdAt,
-    expiresAt: undefined,
   }));
 
   const allAdmins = [...admins, ...adminInvitations].sort((a, b) => {
-    const aDate = a.isInvitation
-      ? new Date(a.expiresAt)
-      : new Date(a.createdAt);
-    const bDate = b.isInvitation
-      ? new Date(b.expiresAt)
-      : new Date(b.createdAt);
+    const aDate = new Date(a.createdAt);
+    const bDate = new Date(b.createdAt);
     return bDate.getTime() - aDate.getTime();
   });
 

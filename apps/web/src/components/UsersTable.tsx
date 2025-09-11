@@ -110,8 +110,6 @@ export const UsersTable = ({
   availableCompanyPlans,
   refetchUsers,
 }: UsersTableProps) => {
-  const [isResending, setIsResending] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
   const [, resendInvitation] = useMutation(resendInvitationMutation);
   const [, cancelInvitation] = useMutation(cancelInvitationMutation);
 
@@ -140,7 +138,6 @@ export const UsersTable = ({
   const handleResendInvitation = async (
     invitationId: string,
   ): Promise<boolean> => {
-    setIsResending(true);
     return (
       resendInvitation({ id: invitationId })
         .then((result) => {
@@ -168,14 +165,12 @@ export const UsersTable = ({
           });
           return false;
         })
-        .finally(() => setIsResending(false))
     );
   };
 
   const handleCancelInvitation = async (
     invitationId: string,
   ): Promise<boolean> => {
-    setIsCancelling(true);
     return (
       cancelInvitation({ id: invitationId })
         .then((result) => {
@@ -203,7 +198,6 @@ export const UsersTable = ({
           });
           return false;
         })
-        .finally(() => setIsCancelling(false))
     );
   };
 

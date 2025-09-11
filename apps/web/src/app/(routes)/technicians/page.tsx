@@ -20,7 +20,7 @@ const getPendingTechniciansQuery = graphql(`
       id
       email
       globalRole
-      expiresAt
+      createdAt
       used
     }
   }
@@ -71,8 +71,7 @@ export default function Page(): JSX.Element {
       phoneNumber: 'N/A',
       globalRole: invitation.globalRole,
       isGlobalVisibility: false,
-      expiresAt: invitation.expiresAt,
-      createdAt: undefined,
+      createdAt: invitation.createdAt,
       updatedAt: undefined,
       isInvitation: true,
     }));
@@ -85,12 +84,8 @@ export default function Page(): JSX.Element {
 
   const allTechnicians = [...activeTechnicians, ...pendingInvitations].sort(
     (a, b) => {
-      const aDate = a.isInvitation
-        ? new Date(a.expiresAt as string)
-        : new Date(a.createdAt as string);
-      const bDate = b.isInvitation
-        ? new Date(b.expiresAt as string)
-        : new Date(b.createdAt as string);
+      const aDate = new Date(a.createdAt as string);
+      const bDate = new Date(b.createdAt as string);
       return bDate.getTime() - aDate.getTime();
     },
   );

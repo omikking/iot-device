@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query getUser($id: String!) {\n    user(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n": types.GetUserDocument,
-    "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      expiresAt\n      used\n    }\n  }\n": types.GetPendingGlobalInvitationsDocument,
+    "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n    }\n  }\n": types.GetPendingGlobalInvitationsDocument,
     "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      createdAt\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetAdminsDocument,
     "\n  query getCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      sandvikAdminUserId\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n        phoneNumber\n        email\n      }\n    }\n  }\n": types.GetCompanyDocument,
     "\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n": types.RemoveCompanyDocument,
@@ -81,7 +81,7 @@ export function graphql(source: "\n  query getUser($id: String!) {\n    user(id:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      expiresAt\n      used\n    }\n  }\n"): (typeof documents)["\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      expiresAt\n      used\n    }\n  }\n"];
+export function graphql(source: "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n    }\n  }\n"): (typeof documents)["\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

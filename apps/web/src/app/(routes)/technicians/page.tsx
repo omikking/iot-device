@@ -22,6 +22,7 @@ const getPendingTechniciansQuery = graphql(`
       globalRole
       createdAt
       used
+      isGlobalVisibility
     }
   }
 `);
@@ -56,6 +57,7 @@ export default function Page(): JSX.Element {
   });
 
   const technicians = (techniciansData.data?.users as User[]) || [];
+
   const pendingInvitations = (
     pendingTechniciansData.data?.pendingGlobalInvitations || []
   )
@@ -70,7 +72,7 @@ export default function Page(): JSX.Element {
       workPlace: 'N/A',
       phoneNumber: 'N/A',
       globalRole: invitation.globalRole,
-      isGlobalVisibility: false,
+      isGlobalVisibility: invitation.isGlobalVisibility,
       createdAt: invitation.createdAt,
       updatedAt: undefined,
       isInvitation: true,

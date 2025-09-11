@@ -18,6 +18,7 @@ const getPendingAdminsQuery = graphql(`
       globalRole
       createdAt
       used
+      isGlobalVisibility
     }
   }
 `);

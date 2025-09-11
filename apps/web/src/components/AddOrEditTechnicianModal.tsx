@@ -145,7 +145,11 @@ export const AddOrEditTechnicianModal = ({
 
     if (!technician) {
       createGlobalInvitation({
-        input: { email: data.email, globalRole: Role.SandvikTechnician },
+        input: {
+          email: data.email,
+          globalRole: Role.SandvikTechnician,
+          isGlobalVisibility: data.isGlobalVisibility,
+        },
       })
         .then((result) => {
           // Backend errors

@@ -9,9 +9,9 @@ import {
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'urql';
+import { useMutation } from 'urql';
 import { LucideHourglass, LucideUserCog } from 'lucide-react';
-import { GetAdminsQuery, Role } from '@/gql/graphql';
+import { GetAdminsQuery } from '@/gql/graphql';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
@@ -19,33 +19,12 @@ import { handleGraphQLErrors } from '@/libs/utils';
 import { LucideSearchX } from 'lucide-react';
 
 type Administrator = GetAdminsQuery['users'][0];
+
 type AdminRow = Administrator & { isInvitation: boolean; expiresAt?: string };
 
-const getPendingAdminsQuery = graphql(`
-  query getPendingGlobalInvitations {
-    pendingGlobalInvitations {
-      id
-      email
-      globalRole
-      expiresAt
-      used
-    }
-  }
-`);
-
-const getAdminsQuery = graphql(`
-  query getAdmins {
-    users(roles: "SANDVIK_ADMIN") {
-      id
-      createdAt
-      email
-      fullName
-      workPlace
-      phoneNumber
-      globalRole
-    }
-  }
-`);
+type AdministratorsTableProps = {
+  allAdmins: AdminRow[];
+};
 
 const deleteAdminMutation = graphql(`
   mutation deleteAdmin($id: String!) {
@@ -60,53 +39,9 @@ const deleteAdminMutation = graphql(`
   }
 `);
 
-export const AdministratorsTable = () => {
-  const [administratorsData] = useQuery({
-    query: getAdminsQuery,
-  });
-  const [pendingAdminsData] = useQuery({
-    query: getPendingAdminsQuery,
-  });
-
-  const administrators =
-    (administratorsData?.data?.users as GetAdminsQuery['users']) || [];
-
-  const invitations = (pendingAdminsData?.data?.pendingGlobalInvitations || [])
-    .filter(
-      (pendingAdmin) =>
-        pendingAdmin.globalRole === Role.SandvikAdmin && !pendingAdmin.used,
-    )
-    .map((pendingAdmin) => ({
-      id: pendingAdmin.id,
-      email: pendingAdmin.email,
-      fullName: '',
-      workPlace: 'N/A',
-      phoneNumber: 'N/A',
-      globalRole: pendingAdmin.globalRole,
-      expiresAt: pendingAdmin.expiresAt,
-      createdAt: undefined,
-      isInvitation: true,
-    }));
-
-  // Add a flag to real users for sorting
-  const adminUsers = administrators.map((user) => ({
-    ...user,
-    isInvitation: false,
-    createdAt: user.createdAt,
-    expiresAt: undefined,
-  }));
-
-  // Combine and sort admins and pending admins by date
-  const allAdmins: AdminRow[] = [...adminUsers, ...invitations].sort((a, b) => {
-    const aDate = a.isInvitation
-      ? new Date(a.expiresAt)
-      : new Date(a.createdAt);
-    const bDate = b.isInvitation
-      ? new Date(b.expiresAt)
-      : new Date(b.createdAt);
-    return bDate.getTime() - aDate.getTime();
-  });
-
+export const AdministratorsTable = ({
+  allAdmins,
+}: AdministratorsTableProps) => {
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
 

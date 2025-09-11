@@ -41,11 +41,13 @@ import { handleGraphQLErrors } from '@/libs/utils';
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
   administrator?: GetAdminsQuery['users'][0];
+  refreshAdmins: () => void;
 };
 
 export const AddAdministratorModal = ({
   onOpenChange,
   administrator,
+  refreshAdmins,
 }: AddAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -70,6 +72,7 @@ export const AddAdministratorModal = ({
   const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
+    refreshAdmins();
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);

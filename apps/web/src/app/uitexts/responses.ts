@@ -69,6 +69,12 @@ export const responses = {
   adminDeleteFailed: 'Failed to delete administrator',
   adminDeleteSuccess: 'Administrator has been deleted',
 
+  // Invitation
+  invitationResendFailed: 'Failed to resend invitation',
+  invitationResendSuccess: 'Invitation successfully resent',
+  invitationCancelFailed: 'Failed to cancel invitation',
+  invitationCancelSuccess: 'Invitation has been cancelled',
+
   // User permissions
   userPermissionCreateFailed: 'Failed to add user permissions',
   userPermissionCreateSuccess: 'Invitation for permissions successfully sent',

@@ -24,6 +24,7 @@ type AdminRow = Administrator & { isInvitation: boolean; expiresAt?: string };
 
 type AdministratorsTableProps = {
   allAdmins: AdminRow[];
+  refreshAdmins: () => void;
 };
 
 const deleteAdminMutation = graphql(`
@@ -39,18 +40,49 @@ const deleteAdminMutation = graphql(`
   }
 `);
 
+const resendInvitationMutation = graphql(`
+  mutation resendInvitation($id: String!) {
+    resendInvitation(id: $id) {
+      id
+      email
+      expiresAt
+    }
+  }
+`);
+
+const cancelInvitationMutation = graphql(`
+  mutation deleteInvitation($id: String!) {
+    removeInvitation(id: $id) {
+      id
+      email
+    }
+  }
+`);
+
 export const AdministratorsTable = ({
   allAdmins,
+  refreshAdmins,
 }: AdministratorsTableProps) => {
+  // Admin delete modal state
   const [isDeleteAdministratorModalOpen, setIsDeleteAdministratorModalOpen] =
     useState(false);
-
   const [administratorToDelete, setAdministratorToDelete] = useState<
     Administrator | undefined
   >(undefined);
   const [isDeleting, setIsDeleting] = useState(false);
   const [, deleteAdmin] = useMutation(deleteAdminMutation);
 
+  // Invitation cancel modal state
+  const [isCancelInvitationModalOpen, setIsCancelInvitationModalOpen] =
+    useState(false);
+  const [invitationToCancel, setInvitationToCancel] = useState<
+    AdminRow | undefined
+  >(undefined);
+  const [isCancelInvitation, setIsCancelInvitation] = useState(false);
+  const [, resendInvitation] = useMutation(resendInvitationMutation);
+  const [, cancelInvitation] = useMutation(cancelInvitationMutation);
+
+  // Admin delete logic
   const openDeleteModal = (adminId: string) => {
     const adminToDelete = allAdmins?.find((admin) => admin.id === adminId);
     setAdministratorToDelete(adminToDelete);
@@ -66,17 +98,12 @@ export const AdministratorsTable = ({
     if (!administratorToDelete?.id) {
       return false;
     }
-
     setIsDeleting(true);
-
     return (
       deleteAdmin({ id: administratorToDelete.id })
         .then((result) => {
           // Backend errors
-          const hasGraphQLErrors = handleGraphQLErrors(result.error);
-          if (hasGraphQLErrors) {
-            return false;
-          }
+          handleGraphQLErrors(result.error);
           // Success
           if (result.data) {
             setTimeout(() => {
@@ -84,6 +111,7 @@ export const AdministratorsTable = ({
                 title: responses.adminDeleteSuccess,
                 variant: 'success',
               });
+              refreshAdmins();
             }, 1500);
           }
           return true;
@@ -99,6 +127,84 @@ export const AdministratorsTable = ({
         })
         .finally(() => {
           setIsDeleting(false);
+        })
+    );
+  };
+
+  // Invitation delete logic
+  const openCancelInvitationModal = (invitationId: string) => {
+    const invitation = allAdmins?.find((admin) => admin.id === invitationId);
+    setInvitationToCancel(invitation);
+    setIsCancelInvitationModalOpen(true);
+  };
+
+  const closeCancelInvitationModal = () => {
+    setIsCancelInvitationModalOpen(false);
+    setInvitationToCancel(undefined);
+  };
+
+  const handleCancelInvitation = async (): Promise<boolean> => {
+    if (!invitationToCancel?.id) {
+      return false;
+    }
+    setIsCancelInvitation(true);
+    return (
+      cancelInvitation({ id: invitationToCancel.id })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.invitationCancelSuccess,
+                variant: 'info',
+              });
+              refreshAdmins();
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.invitationCancelFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => {
+          setIsCancelInvitation(false);
+        })
+    );
+  };
+
+  // Resend invitation handler
+  const handleResendInvitation = async (id: string): Promise<boolean> => {
+    return (
+      resendInvitation({ id })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.invitationResendSuccess,
+              variant: 'success',
+            });
+            refreshAdmins();
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.invitationResendFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
         })
     );
   };
@@ -150,6 +256,15 @@ export const AdministratorsTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
+        if (row.original.isInvitation) {
+          return (
+            <DeleteEditDropdown
+              itemSelected={row.original.id}
+              onResendInvitation={handleResendInvitation}
+              onCancelInvitation={openCancelInvitationModal}
+            />
+          );
+        }
         return (
           <DeleteEditDropdown
             itemSelected={row.original.id}
@@ -162,6 +277,7 @@ export const AdministratorsTable = ({
 
   return (
     <>
+      {/* Admin delete modal */}
       <DeleteModalConfirmation
         deleteIcon="User"
         modalTitle="Delete administrator"
@@ -178,6 +294,27 @@ export const AdministratorsTable = ({
             {` ${administratorToDelete?.fullName} `}
           </Text>
           from the list. Are you sure you want to delete?
+        </Text>
+      </DeleteModalConfirmation>
+
+      {/* Invitation delete modal */}
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Cancel invitation"
+        modalText="Confirm cancellation"
+        modalDeleteButtonText="Cancel invitation"
+        isLoading={isCancelInvitation}
+        isOpen={isCancelInvitationModalOpen}
+        onDelete={handleCancelInvitation}
+        onClose={closeCancelInvitationModal}
+        onOpenChange={closeCancelInvitationModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          This will cancel the pending invitation for
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${invitationToCancel?.email}. `}
+          </Text>
+          Are you sure you want to cancel this invitation?
         </Text>
       </DeleteModalConfirmation>
 

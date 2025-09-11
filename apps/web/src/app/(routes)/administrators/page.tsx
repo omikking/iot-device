@@ -123,7 +123,10 @@ export default function Page(): JSX.Element {
           />
         </Modal>
 
-        <AdministratorsTable allAdmins={allAdmins} />
+        <AdministratorsTable
+          allAdmins={allAdmins}
+          refreshAdmins={refreshAdmins}
+        />
       </div>
     </main>
   );

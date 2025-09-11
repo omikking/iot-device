@@ -76,6 +76,7 @@ import {
   sitesDesignSystemMock,
 } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
+import { noop } from '@tanstack/react-table';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -210,7 +211,10 @@ export default function Page(): JSX.Element {
             Add technician
           </Button>
         </ModalTrigger>
-        <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
+        <AddOrEditTechnicianModal
+          onOpenChange={setOpenTechModal}
+          refreshTechnicians={noop}
+        />
       </Modal>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

@@ -59,11 +59,13 @@ const updateTechnicianMutation = graphql(`
 type AddOrEditTechnicianModalProps = {
   onOpenChange: (open: boolean) => void;
   technician?: User;
+  refreshTechnicians: () => void;
 };
 
 export const AddOrEditTechnicianModal = ({
   onOpenChange,
   technician,
+  refreshTechnicians,
 }: AddOrEditTechnicianModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -96,6 +98,7 @@ export const AddOrEditTechnicianModal = ({
     setIsLoading(false);
     setTimeout(() => {
       onOpenChange(false);
+      refreshTechnicians();
     }, 1500);
     setTimeout(() => {
       setIsSuccessful(false);

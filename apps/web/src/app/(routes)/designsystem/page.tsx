@@ -235,11 +235,11 @@ export default function Page(): JSX.Element {
         onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
-          You are about to delete
+          Are you sure you want to permanently remove
           <Text variant="medium" color={'foreground'} as="span" isBold>
             {` Elliot Alderson `}
           </Text>
-          from the list. Are you sure you want to delete?
+          from the list?
         </Text>
       </DeleteModalConfirmation>
       <hr className="w-full" />
@@ -273,11 +273,11 @@ export default function Page(): JSX.Element {
           onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
-            You are about to delete
+            Are you sure you want to permanently remove
             <Text variant="medium" color={'foreground'} isBold as="span">
               {siteToDelete}
             </Text>
-            from the list. Are you sure you want to delete?
+            from the list?
           </Text>
         </DeleteModalConfirmation>
       </div>

@@ -72,12 +72,14 @@ export default function Page(): JSX.Element {
       createdAt: undefined,
       isInvitation: true,
     }));
+
   const admins = administrators.map((user) => ({
     ...user,
     isInvitation: false,
     createdAt: user.createdAt,
     expiresAt: undefined,
   }));
+
   const allAdmins = [...admins, ...adminInvitations].sort((a, b) => {
     const aDate = a.isInvitation
       ? new Date(a.expiresAt)

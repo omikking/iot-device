@@ -251,11 +251,11 @@ export const UsersTable = ({
         onOpenChange={closeDeleteModal}
       >
         <Text variant="medium" color={'foreground'}>
-          You are about to delete
+          Are you sure you want to permanently remove
           <Text variant="medium" color={'foreground'} isBold as="span">
             {` ${fullNameOfUserToDelete} `}
           </Text>
-          from the list. Are you sure you want to delete?
+          from the list?
         </Text>
       </DeleteModalConfirmation>
 

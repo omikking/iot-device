@@ -298,11 +298,11 @@ export const AdministratorsTable = ({
         onOpenChange={closeDeleteModal}
       >
         <Text variant="medium" color={'foreground'}>
-          You are about to delete
+          Are you sure you want to permanently remove
           <Text variant="medium" color={'foreground'} isBold as="span">
             {` ${administratorToDelete?.fullName} `}
           </Text>
-          from the list. Are you sure you want to delete?
+          from the list?
         </Text>
       </DeleteModalConfirmation>
 
@@ -330,7 +330,7 @@ export const AdministratorsTable = ({
       <DataTable
         columns={columns}
         data={allAdmins}
-        noResultMessage="There are no administrators or pending invitations."
+        noResultMessage="There are no administrators added yet."
         icon={<LucideSearchX className="text-neutral-5" />}
       />
       {allAdmins?.length > 0 && (

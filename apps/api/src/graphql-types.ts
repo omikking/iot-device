@@ -163,6 +163,7 @@ export class CreateInvitationInput {
 export class CreateGlobalInvitationInput {
     email: string;
     globalRole: string;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class CompleteInvitationInput {
@@ -402,10 +403,12 @@ export class Invitation {
     id: string;
     email: string;
     expiresAt: DateTime;
+    createdAt: DateTime;
     used: boolean;
     companyId?: Nullable<string>;
     globalRole?: Nullable<string>;
     role?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class InvitationResponse {

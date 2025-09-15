@@ -166,11 +166,12 @@ model Invitation {
   used      Boolean  @default(false)
 
   companyId  String?
-  company    Company?      @relation(fields: [companyId], references: [id])
+  company    Company?    @relation(fields: [companyId], references: [id])
   role       Role?
-  appsAccess Application[]
-
   globalRole GlobalRole?
+
+  appsAccess         Application[]
+  isGlobalVisibility Boolean?
 
   @@map("invitations")
 }

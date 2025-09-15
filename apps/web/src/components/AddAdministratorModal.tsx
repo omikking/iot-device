@@ -17,27 +17,44 @@ import {
   CreateAdministratorFormValues,
 } from './schemas/AdministratorFormSchema';
 import { useEffect, useState } from 'react';
-import { GetAdminsQuery } from '@/gql/graphql';
+import { graphql } from '@/gql';
+import { useMutation } from 'urql';
+import { showAlertToast } from '@gsp/ui';
+
+const createGlobalInvitationMutation = graphql(`
+  mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {
+    createGlobalInvitation(input: $input) {
+      invitationId
+      isNewUser
+    }
+  }
+`);
+
+import { GetAdminsQuery, Role } from '@/gql/graphql';
 import { SuccessMessage } from './SuccessMessage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucidePlus } from 'lucide-react';
+import { responses } from '@/app/uitexts/responses';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
   administrator?: GetAdminsQuery['users'][0];
+  refreshAdmins: () => void;
 };
 
 export const AddAdministratorModal = ({
   onOpenChange,
   administrator,
+  refreshAdmins,
 }: AddAdministratorModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
-  // const [, updateUser] = useMutation<CreateAdministratorFormValues>(
-  //   createAdministratorFormSchema,
-  // );
+  const [, createGlobalInvitation] = useMutation(
+    createGlobalInvitationMutation,
+  );
 
   const form = useForm<CreateAdministratorFormValues>({
     resolver: zodResolver(createAdministratorFormSchema),
@@ -55,6 +72,7 @@ export const AddAdministratorModal = ({
   const handleSuccess = () => {
     setIsSuccessful(true);
     setIsLoading(false);
+    refreshAdmins();
     setTimeout(() => {
       onOpenChange(false);
     }, 1500);
@@ -65,12 +83,39 @@ export const AddAdministratorModal = ({
   };
 
   const onSubmit: SubmitHandler<CreateAdministratorFormValues> = (data) => {
-    if (administrator) {
-      setIsLoading(true);
-      console.log(data);
-      handleSuccess();
-      // TODO make add logic here later and use handleSuccess
-    }
+    setIsLoading(true);
+
+    createGlobalInvitation({
+      input: { email: data.email, globalRole: Role.SandvikAdmin },
+    })
+      .then((result) => {
+        // Backend errors
+        handleGraphQLErrors(result.error);
+
+        // Success
+        if (result.data) {
+          handleSuccess();
+
+          setTimeout(() => {
+            showAlertToast({
+              title: responses.adminInviteSuccess,
+              variant: 'success',
+            });
+          }, 1500);
+        }
+      })
+      // Fallback error
+      .catch(() => {
+        showAlertToast({
+          title: responses.adminInviteFailError,
+          description: responses.contactSupportError,
+          variant: 'error',
+        });
+        setIsLoading(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {

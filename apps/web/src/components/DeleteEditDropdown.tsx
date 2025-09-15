@@ -1,3 +1,10 @@
+import React from 'react';
+import {
+  LucideEllipsis,
+  LucideSquarePen,
+  LucideTrash2,
+  LucideMail,
+} from 'lucide-react';
 import {
   Text,
   Button,
@@ -6,19 +13,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@gsp/ui';
-import React from 'react';
-import { LucideEllipsis, LucideSquarePen, LucideTrash2 } from 'lucide-react';
 
 type DeleteEditDropdownProps = {
   itemSelected: string;
   openDeleteModal?: (itemSelected: string) => void;
   handleEdit?: (itemSelected: string) => void;
+  onResendInvitation?: (itemSelected: string) => void;
+  onCancelInvitation?: (itemSelected: string) => void;
 };
 
 export const DeleteEditDropdown = ({
   itemSelected,
   openDeleteModal,
   handleEdit,
+  onResendInvitation,
+  onCancelInvitation,
 }: DeleteEditDropdownProps) => {
   return (
     <DropdownMenu modal={false}>
@@ -27,7 +36,9 @@ export const DeleteEditDropdown = ({
           <LucideEllipsis />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-4">
+      <DropdownMenuContent
+        className={onResendInvitation || onCancelInvitation ? 'w-56' : 'w-20'}
+      >
         {handleEdit && (
           <DropdownMenuItem onSelect={() => handleEdit(itemSelected)}>
             <LucideSquarePen />
@@ -41,6 +52,22 @@ export const DeleteEditDropdown = ({
             <LucideTrash2 className="text-error" />
             <Text color={'destructive'} variant={'medium'}>
               Delete
+            </Text>
+          </DropdownMenuItem>
+        )}
+        {onResendInvitation && (
+          <DropdownMenuItem onClick={() => onResendInvitation(itemSelected)}>
+            <LucideMail />
+            <Text color={'foreground'} variant={'medium'}>
+              Resend invitation
+            </Text>
+          </DropdownMenuItem>
+        )}
+        {onCancelInvitation && (
+          <DropdownMenuItem onClick={() => onCancelInvitation(itemSelected)}>
+            <LucideTrash2 className="text-error" />
+            <Text color={'destructive'} variant={'medium'}>
+              Cancel invitation
             </Text>
           </DropdownMenuItem>
         )}

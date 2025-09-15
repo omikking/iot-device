@@ -15,6 +15,10 @@ type MultiBoltGraphViewProps = {
 };
 
 const chartConfig = {
+  reading: {
+    label: 'Reading',
+    color: 'var(--chart-1)',
+  },
   desktop: {
     label: 'Peak Load',
     color: 'var(--chart-1)',
@@ -31,17 +35,18 @@ export const MultiBoltGraphView = ({
 }: MultiBoltGraphViewProps) => {
   // Prepare chart data
   const chartData = peakDisplacement.map((displacement, index) => ({
+    reading: index + 1,
     displacement: displacement,
     peakLoad: peakLoad[index]?.toString() || '0',
     desktop: peakLoad[index] || 0,
   }));
 
   // --- Y Axis (Peak Load) ---
-  const maxLoad = Math.max(...peakLoad, 0);
   const yTickInterval = 5;
+  const maxLoad = Math.max(...peakLoad, 0);
   const yMaxBase = 25;
   const yMax =
-    maxLoad > yMaxBase
+    maxLoad >= yMaxBase
       ? Math.ceil((maxLoad + yTickInterval) / yTickInterval) * yTickInterval
       : yMaxBase;
   const yAxisTicks = [];
@@ -54,13 +59,13 @@ export const MultiBoltGraphView = ({
   const xTickInterval = 5;
   const xMaxBase = 40;
   const xMax =
-    maxDisplacement > xMaxBase
+    maxDisplacement >= xMaxBase
       ? Math.ceil((maxDisplacement + xTickInterval) / xTickInterval) *
         xTickInterval
       : xMaxBase;
   const xAxisTicks = [];
   for (let i = 0; i <= xMax; i += xTickInterval) {
-    xAxisTicks.push(i.toString());
+    xAxisTicks.push(i);
   }
 
   return (
@@ -81,7 +86,7 @@ export const MultiBoltGraphView = ({
               dataKey="displacement"
               type="number"
               domain={[0, xMax]}
-              ticks={xAxisTicks.map(Number)}
+              ticks={xAxisTicks}
               tickFormatter={(value) => value.toString()}
               tickLine={{ strokeWidth: 0 }}
               axisLine={{ stroke: '#E6E6E6' }}
@@ -99,11 +104,13 @@ export const MultiBoltGraphView = ({
               }}
             />
             <YAxis
+              dataKey="desktop"
+              type="number"
               tick={{ fill: '#E6E6E6', fontSize: 12 }}
               ticks={yAxisTicks}
               axisLine={{ stroke: '#E6E6E6' }}
               tickLine={{ strokeWidth: 0 }}
-              domain={['dataMin', yMax]}
+              domain={[0, yMax]}
               tickMargin={8}
               label={{
                 value: 'Peak Load (tons)',
@@ -121,6 +128,14 @@ export const MultiBoltGraphView = ({
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
+            />
+            <Line
+              dataKey="reading"
+              name="Reading"
+              strokeWidth={0}
+              dot={false}
+              activeDot={false}
+              isAnimationActive={false}
             />
             <Line
               dataKey="desktop"

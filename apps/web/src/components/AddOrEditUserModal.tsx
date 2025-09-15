@@ -69,6 +69,16 @@ const createUserPermissionsMutation = graphql(`
   }
 `);
 
+const createInvitationMutation = graphql(`
+  mutation CreateInvitation($input: CreateInvitationInput!) {
+    createInvitation(input: $input) {
+      invitationId
+      userId
+      isNewUser
+    }
+  }
+`);
+
 const updateUserPermissionsMutation = graphql(`
   mutation updateUserPermission(
     $id: String!

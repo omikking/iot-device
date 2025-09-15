@@ -136,6 +136,7 @@ export class InvitationService {
         invitation.id,
         token,
         company.name,
+        role,
       );
 
       return {
@@ -532,6 +533,7 @@ export class InvitationService {
           invitation.id,
           newToken,
           invitation.company.name,
+          invitation.role || undefined, // Pass the role for role-specific email content
         );
       } else {
         throw new UserInputError('', {

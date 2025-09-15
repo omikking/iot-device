@@ -120,6 +120,20 @@ export default function Page({
 
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
+  // Modern helper function to sort hazards for the 'view all' tab
+  const sortHazards = (a: BoltResult, b: BoltResult) => {
+    if (a.isHazard && !b.isHazard) return -1;
+    if (!a.isHazard && b.isHazard) return 1;
+    if (!a.isHazard && !b.isHazard) {
+      const dateA = new Date(a.hazardCompletedDate || a.updatedAt).getTime();
+      const dateB = new Date(b.hazardCompletedDate || b.updatedAt).getTime();
+      return dateB - dateA;
+    }
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  };
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white">
       <Headline
@@ -199,18 +213,20 @@ export default function Page({
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.length > 0 ? (
-            hazards.map((boltResult) => (
-              <HazardCard
-                key={boltResult.id}
-                boltResult={boltResult}
-                onViewMore={() =>
-                  handleBoltDetailsModalToggle(true, boltResult.id)
-                }
-                onCompleteClick={() =>
-                  handleCompleteConfirmationModalToggle(true, boltResult.id)
-                }
-              />
-            ))
+            hazards
+              .sort(sortHazards)
+              .map((boltResult) => (
+                <HazardCard
+                  key={boltResult.id}
+                  boltResult={boltResult}
+                  onViewMore={() =>
+                    handleBoltDetailsModalToggle(true, boltResult.id)
+                  }
+                  onCompleteClick={() =>
+                    handleCompleteConfirmationModalToggle(true, boltResult.id)
+                  }
+                />
+              ))
           ) : (
             <NotFoundHazardMessage />
           )}

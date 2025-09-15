@@ -15,6 +15,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query getUser($id: String!) {\n    user(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n": types.GetUserDocument,
+    "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n      isGlobalVisibility\n    }\n  }\n": types.GetPendingGlobalInvitationsDocument,
+    "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      createdAt\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetAdminsDocument,
     "\n  query getCompany($id: String!) {\n    company(id: $id) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      sandvikAdminUserId\n      plans {\n        id\n        companyId\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n        phoneNumber\n        email\n      }\n    }\n  }\n": types.GetCompanyDocument,
     "\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n": types.RemoveCompanyDocument,
     "\n  query getCompanyPlans($id: String!) {\n    company(id: $id) {\n      id\n      name\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.GetCompanyPlansDocument,
@@ -25,17 +27,21 @@ const documents = {
     "\n  query getCompanySitesNames($id: String!) {\n    company(id: $id) {\n      name\n      sites {\n        id\n        siteName\n      }\n    }\n  }\n": types.GetCompanySitesNamesDocument,
     "\n  query getFullSiteLocations($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n": types.GetFullSiteLocationsDocument,
     "\n  query getCompanySites($id: String!) {\n    company(id: $id) {\n      sites {\n        id\n        siteName\n        address\n        city\n        country\n        postalCode\n        companyId\n      }\n    }\n  }\n": types.GetCompanySitesDocument,
-    "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.GetCompanyUsersDocument,
+    "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n      createdAt\n    }\n  }\n": types.GetTechniciansDocument,
+    "\n  query getPendingInvitations($companyId: String!) {\n    pendingInvitations(companyId: $companyId) {\n      id\n      email\n      role\n      expiresAt\n      createdAt\n      used\n    }\n  }\n": types.GetPendingInvitationsDocument,
+    "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          createdAt\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.GetCompanyUsersDocument,
     "\n  mutation updateAccountUser(\n    $id: String!\n    $updateUserInput: UpdateUserInput!\n    $updatePasswordInput: UpdatePasswordInput\n  ) {\n    updateUser(\n      id: $id\n      updateUserInput: $updateUserInput\n      updatePasswordInput: $updatePasswordInput\n    ) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n": types.UpdateAccountUserDocument,
+    "\n  mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {\n    createGlobalInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n": types.CreateGlobalInvitationDocument,
     "\n  mutation createSite($createSiteInput: CreateSiteInput!) {\n    createSite(createSiteInput: $createSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.CreateSiteDocument,
     "\n  mutation updateSite($id: String!, $updateSiteInput: UpdateSiteInput!) {\n    updateSite(id: $id, updateSiteInput: $updateSiteInput) {\n      id\n      siteName\n      address\n      postalCode\n      city\n      country\n      companyId\n    }\n  }\n": types.UpdateSiteDocument,
     "\n  mutation updateTechnician($id: String!, $updateUserInput: UpdateUserInput!) {\n    updateUser(id: $id, updateUserInput: $updateUserInput) {\n      id\n      email\n      isGlobalVisibility\n    }\n  }\n": types.UpdateTechnicianDocument,
+    "\n  mutation createInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n": types.CreateInvitationDocument,
     "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n": types.GetTechniciansByRoleDocument,
-    "\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.CreateUserPermissionDocument,
     "\n  mutation updateUserPermission(\n    $id: String!\n    $updateUserPermissionInput: UpdateUserPermissionInput!\n  ) {\n    updateUserPermission(\n      id: $id\n      updateUserPermissionInput: $updateUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n": types.UpdateUserPermissionDocument,
     "\n  query GetUsers($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n    }\n  }\n": types.GetUsersDocument,
-    "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetAdminsDocument,
     "\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n": types.DeleteAdminDocument,
+    "\n  mutation resendInvitation($id: String!) {\n    resendInvitation(id: $id) {\n      id\n      email\n      expiresAt\n    }\n  }\n": types.ResendInvitationDocument,
+    "\n  mutation deleteInvitation($id: String!) {\n    removeInvitation(id: $id) {\n      id\n      email\n    }\n  }\n": types.DeleteInvitationDocument,
     "\n  mutation createCompany($createCompanyInput: CreateCompanyInput!) {\n    createCompany(createCompanyInput: $createCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n": types.CreateCompanyDocument,
     "\n  mutation updateCompany(\n    $id: String!\n    $updateCompanyInput: UpdateCompanyInput!\n  ) {\n    updateCompany(id: $id, updateCompanyInput: $updateCompanyInput) {\n      id\n      name\n      orgNumber\n      address\n      postalCode\n      city\n      country\n      companyContactEmail\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n      users {\n        id\n        fullName\n      }\n    }\n  }\n": types.UpdateCompanyDocument,
     "\n  query getCompanies {\n    companies {\n      results {\n        id\n        name\n      }\n    }\n  }\n": types.GetCompaniesDocument,
@@ -49,8 +55,6 @@ const documents = {
     "\n  mutation updateLocation(\n    $id: String!\n    $updateLocationInput: UpdateLocationInput!\n  ) {\n    updateLocation(id: $id, updateLocationInput: $updateLocationInput) {\n      id\n      locationName\n      driveId\n    }\n  }\n": types.UpdateLocationDocument,
     "\n  mutation deleteLocation($id: String!) {\n    removeLocation(id: $id) {\n      id\n    }\n  }\n": types.DeleteLocationDocument,
     "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n": types.DeleteSiteDocument,
-    "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n    }\n  }\n": types.GetTechniciansDocument,
-    "\n  mutation deleteTechnician($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n": types.DeleteTechnicianDocument,
     "\n  mutation deleteUserPermission($id: String!) {\n    removeUserPermission(id: $id) {\n      id\n    }\n  }\n": types.DeleteUserPermissionDocument,
     "\n  mutation createCoffee($createCoffeeInput: CreateCoffeeInput!) {\n    createCoffee(createCoffeeInput: $createCoffeeInput) {\n      id\n      name\n      brand\n      flavors {\n        id\n        name\n      }\n    }\n  }\n": types.CreateCoffeeDocument,
     "\n  query getMeCoffees {\n    coffees {\n      id\n      name\n      brand\n    }\n  }\n": types.GetMeCoffeesDocument,
@@ -74,6 +78,14 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getUser($id: String!) {\n    user(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n"): (typeof documents)["\n  query getUser($id: String!) {\n    user(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n      isGlobalVisibility\n    }\n  }\n"): (typeof documents)["\n  query getPendingGlobalInvitations {\n    pendingGlobalInvitations {\n      id\n      email\n      globalRole\n      createdAt\n      used\n      isGlobalVisibility\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      createdAt\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      createdAt\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -117,11 +129,23 @@ export function graphql(source: "\n  query getCompanySites($id: String!) {\n    
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getPendingInvitations($companyId: String!) {\n    pendingInvitations(companyId: $companyId) {\n      id\n      email\n      role\n      expiresAt\n      createdAt\n      used\n    }\n  }\n"): (typeof documents)["\n  query getPendingInvitations($companyId: String!) {\n    pendingInvitations(companyId: $companyId) {\n      id\n      email\n      role\n      expiresAt\n      createdAt\n      used\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          createdAt\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCompanyUsers($id: String!) {\n    company(id: $id) {\n      id\n      users {\n        id\n        email\n        fullName\n        workPlace\n        phoneNumber\n        globalRole\n        userPermissions {\n          id\n          userId\n          createdAt\n          companyId\n          role\n          appsAccess\n        }\n      }\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation updateAccountUser(\n    $id: String!\n    $updateUserInput: UpdateUserInput!\n    $updatePasswordInput: UpdatePasswordInput\n  ) {\n    updateUser(\n      id: $id\n      updateUserInput: $updateUserInput\n      updatePasswordInput: $updatePasswordInput\n    ) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n"): (typeof documents)["\n  mutation updateAccountUser(\n    $id: String!\n    $updateUserInput: UpdateUserInput!\n    $updatePasswordInput: UpdatePasswordInput\n  ) {\n    updateUser(\n      id: $id\n      updateUserInput: $updateUserInput\n      updatePasswordInput: $updatePasswordInput\n    ) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {\n    createGlobalInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n"): (typeof documents)["\n  mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {\n    createGlobalInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -137,11 +161,11 @@ export function graphql(source: "\n  mutation updateTechnician($id: String!, $up
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"): (typeof documents)["\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"];
+export function graphql(source: "\n  mutation createInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n"): (typeof documents)["\n  mutation createInvitation($input: CreateInvitationInput!) {\n    createInvitation(input: $input) {\n      invitationId\n      isNewUser\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n"): (typeof documents)["\n  mutation createUserPermission(\n    $createUserPermissionInput: CreateUserPermissionInput!\n  ) {\n    createUserPermission(\n      createUserPermissionInput: $createUserPermissionInput\n    ) {\n      id\n      userId\n      role\n      appsAccess\n      companyId\n    }\n  }\n"];
+export function graphql(source: "\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"): (typeof documents)["\n  query getTechniciansByRole($roles: [String]!) {\n    users(roles: $roles) {\n      id\n      fullName\n      email\n      workPlace\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -153,11 +177,15 @@ export function graphql(source: "\n  query GetUsers($roles: [String]!) {\n    us
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  query getAdmins {\n    users(roles: \"SANDVIK_ADMIN\") {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"];
+export function graphql(source: "\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  mutation deleteAdmin($id: String!) {\n    removeUser(id: $id) {\n      id\n      email\n      fullName\n      workPlace\n      phoneNumber\n      globalRole\n    }\n  }\n"];
+export function graphql(source: "\n  mutation resendInvitation($id: String!) {\n    resendInvitation(id: $id) {\n      id\n      email\n      expiresAt\n    }\n  }\n"): (typeof documents)["\n  mutation resendInvitation($id: String!) {\n    resendInvitation(id: $id) {\n      id\n      email\n      expiresAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation deleteInvitation($id: String!) {\n    removeInvitation(id: $id) {\n      id\n      email\n    }\n  }\n"): (typeof documents)["\n  mutation deleteInvitation($id: String!) {\n    removeInvitation(id: $id) {\n      id\n      email\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -210,14 +238,6 @@ export function graphql(source: "\n  mutation deleteLocation($id: String!) {\n  
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n"): (typeof documents)["\n  mutation deleteSite($id: String!) {\n    removeSite(id: $id) {\n      id\n      siteName\n      address\n      city\n      country\n      postalCode\n      companyId\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation deleteTechnician($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation deleteTechnician($id: String!) {\n    removeUser(id: $id) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

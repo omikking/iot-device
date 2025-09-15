@@ -36,6 +36,7 @@ export class InvitationResolver {
     return this.invitationService.createGlobalInvitation(
       input.email,
       input.globalRole,
+      input.isGlobalVisibility || false,
     );
   }
 

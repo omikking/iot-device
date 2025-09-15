@@ -54,11 +54,20 @@ const config: Omit<Config, 'content'> = {
         'gold-2': '#BEAF93',
         'gold-3': '#EBE6DC',
 
-        /* CTAs Buttons Badges */
+        /* CTAs Buttons Badges Alerts */
         'blue-primary': '#1441F5',
         'blue-1': '#003C7D',
         'blue-2': '#327DFF',
-        'blue-3': '#C8DCFF',
+        'blue-3': '#E7ECFE',
+
+        error: '#EB0D0D',
+        'error-3': '#FDE7E7',
+
+        success: '#7FCC5B',
+        'success-3': '#ECF7E6',
+
+        warning: '#FFD74B',
+        'warning-3': '#FEFDE9',
 
         /* Highlights in product pages Progress bars Steppers Timelines 
         Active toggles Attention grabbing toast cards */
@@ -66,10 +75,6 @@ const config: Omit<Config, 'content'> = {
         'orange-1': '#7D2300',
         'orange-2': '#FF824B',
         'orange-3': '#FFB991',
-
-        error: '#EB0D0D',
-        warning: '#FFD74B',
-        success: '#7FCC5B',
       },
     },
   },

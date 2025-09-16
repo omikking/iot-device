@@ -17,6 +17,7 @@ type InvitationResponse {
   invitationId: String
   userId: String
   isNewUser: Boolean!
+  message: String
 }
 
 type InvitationValidation {

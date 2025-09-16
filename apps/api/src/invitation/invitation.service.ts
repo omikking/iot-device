@@ -56,13 +56,29 @@ export class InvitationService {
       });
 
       if (existingPermission) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'INVITATION_USER_EXISTS_ERROR',
-            title: errorTexts.invitationUserExists_title,
-            message: errorTexts.invitationUserExists_message,
-          },
-        });
+        // User already has access to this company, send a notification/reminder
+        try {
+          await this.emailService.sendInvitationReminderEmail(
+            email,
+            '', // No invitation ID since they're already registered
+            '', // No token needed since they're already registered
+            company.name,
+            role,
+          );
+
+          return {
+            userId: existingUser.id,
+            isNewUser: false,
+            message: 'User already has access. Notification sent.',
+          };
+        } catch (emailError) {
+          // If email fails, still return success but note the email issue
+          return {
+            userId: existingUser.id,
+            isNewUser: false,
+            message: 'User already has access. Failed to send notification.',
+          };
+        }
       }
 
       // Add permission for the existing user

@@ -412,6 +412,7 @@ export class InvitationResponse {
     invitationId?: Nullable<string>;
     userId?: Nullable<string>;
     isNewUser: boolean;
+    message?: Nullable<string>;
 }
 
 export class InvitationValidation {

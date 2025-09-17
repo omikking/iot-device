@@ -177,8 +177,8 @@ export class EmailTemplateService {
                     <!-- Call to Action Button -->
                     <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
                       <tr>
-                        <td align="center" style="background-color: #327DFF; border-radius: 5px; padding: 0;">
-                          <a href="${inviteUrl}" style="background-color: #327DFF; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Accept Invitation</a>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${inviteUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Accept Invitation</a>
                         </td>
                       </tr>
                     </table>
@@ -260,8 +260,8 @@ export class EmailTemplateService {
                     <!-- Button -->
                     <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
                       <tr>
-                        <td align="center" style="background-color: #327DFF; border-radius: 5px; padding: 0;">
-                          <a href="${inviteUrl}" style="background-color: #327DFF; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 180px;">Accept Global Role Invitation</a>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${inviteUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 180px;">Accept Invitation</a>
                         </td>
                       </tr>
                     </table>
@@ -310,7 +310,7 @@ export class EmailTemplateService {
                 <!-- Header with Logo -->
                 <tr>
                   <td align="center" style="padding: 40px 40px 30px 40px; border-bottom: 2px solid #e9ecef;">
-                    <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; letter-spacing: 3px;">SANDVIK</h1>
+                    <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0 0 15px 0; letter-spacing: 3px;">SANDVIK</h1>
                     <p style="font-size: 16px; color: #6c757d; margin: 0 0 20px 0;">Ground Support Platform</p>
                   </td>
                 </tr>
@@ -331,8 +331,8 @@ export class EmailTemplateService {
                     <!-- Call to Action Button -->
                     <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
                       <tr>
-                        <td align="center" style="background-color: #28a745; border-radius: 5px; padding: 0;">
-                          <a href="${loginUrl}" style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">View Company</a>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">View Company</a>
                         </td>
                       </tr>
                     </table>
@@ -379,15 +379,8 @@ export class EmailTemplateService {
                 <!-- Header with Logo -->
                 <tr>
                   <td align="center" style="padding: 40px 40px 30px 40px; border-bottom: 2px solid #e9ecef;">
-                    <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0; letter-spacing: 3px;">SANDVIK</h1>
+                    <h1 style="font-size: 28px; font-weight: bold; color: #2c3e50; margin: 0 0 15px 0; letter-spacing: 3px;">SANDVIK</h1>
                     <p style="font-size: 16px; color: #6c757d; margin: 0 0 20px 0;">Ground Support Platform</p>
-                    <table cellpadding="0" cellspacing="0" border="0" style="margin: 10px auto;">
-                      <tr>
-                        <td align="center" style="background-color: #28a745; color: white; padding: 12px 24px; border-radius: 5px;">
-                          <strong style="font-weight: 600; font-size: 16px;">${roleDisplayName}</strong>
-                        </td>
-                      </tr>
-                    </table>
                   </td>
                 </tr>
                 
@@ -409,13 +402,17 @@ export class EmailTemplateService {
                     </p>
                     
                     <!-- Call to Action Button -->
-                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
-                      <tr>
-                        <td align="center" style="background-color: #28a745; border-radius: 5px; padding: 0;">
-                          <a href="${loginUrl}" style="background-color: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">${buttonText}</a>
-                        </td>
-                      </tr>
-                    </table>
+                    ${
+                      roleDisplayName === 'Sandvik Administrator'
+                        ? `<table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                           <tr>
+                             <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                               <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">${buttonText}</a>
+                             </td>
+                           </tr>
+                           </table>`
+                        : ''
+                    }
                   </td>
                 </tr>
                 

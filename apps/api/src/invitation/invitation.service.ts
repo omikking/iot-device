@@ -187,6 +187,11 @@ export class InvitationService {
           data: { globalRole, isGlobalVisibility },
         });
 
+        await this.emailService.sendExistingGlobalUserNotificationEmail(
+          email,
+          globalRole,
+        );
+
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
         throw new UserInputError('', {

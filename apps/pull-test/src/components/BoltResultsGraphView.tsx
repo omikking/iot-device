@@ -74,9 +74,9 @@ export const BoltResultsGraphView = ({
               : 'There are no bolt results found for your search.'}
           </Text>
           {!site ? (
-            <ClipboardList color="gray" />
+            <ClipboardList className="text-neutral-5" />
           ) : (
-            <LucideSearchX color="gray" />
+            <LucideSearchX className="text-neutral-5" />
           )}
         </div>
       )}

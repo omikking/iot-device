@@ -36,7 +36,7 @@ type ModalView = 'confirmDelete' | 'deleteSuccess';
 export const DeleteModalConfirmation = ({
   isOpen,
   children,
-  modalText,
+  modalText = 'Confirm deletion',
   isLoading,
   modalTitle,
   modalDeleteButtonText,
@@ -116,7 +116,7 @@ export const DeleteModalConfirmation = ({
             <div className="flex flex-row justify-center items-center pt-16 gap-4">
               {getDeleteIcon(deleteIcon)}
               <Headline variant="medium" as="h3" color="foreground" isBold>
-                {modalText || 'Confirm deletion'}
+                {modalText}
               </Headline>
             </div>
             {children}
@@ -133,7 +133,7 @@ export const DeleteModalConfirmation = ({
             <div className="flex flex-row pt-16 gap-4 items-center">
               <LucideCircleAlert size={30} className="text-blue-primary" />
               <Headline as="h3" color="foreground" variant="small" isBold>
-                Deleted Successfully
+                Successfully deleted
               </Headline>
             </div>
           </div>

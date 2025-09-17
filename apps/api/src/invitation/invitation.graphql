@@ -7,10 +7,12 @@ type Invitation {
   id: String!
   email: String!
   expiresAt: DateTime!
+  createdAt: DateTime!
   used: Boolean!
   companyId: String
   globalRole: String
   role: String
+  isGlobalVisibility: Boolean
 }
 
 type InvitationResponse {
@@ -36,6 +38,7 @@ input CreateInvitationInput {
 input CreateGlobalInvitationInput {
   email: String!
   globalRole: String!
+  isGlobalVisibility: Boolean
 }
 
 input CompleteInvitationInput {

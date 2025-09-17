@@ -170,9 +170,9 @@ export const BoltResultsTable = ({
         }
         icon={
           !site ? (
-            <ClipboardList color="gray" />
+            <ClipboardList className="text-neutral-5" />
           ) : (
-            <LucideSearchX color="gray" />
+            <LucideSearchX className="text-neutral-5" />
           )
         }
       />

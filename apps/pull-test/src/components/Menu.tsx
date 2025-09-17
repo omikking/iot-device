@@ -149,7 +149,7 @@ export const Menu = () => {
                     legacyBehavior
                   >
                     <Anchor color="foreground">
-                      <LucideLayoutGrid className="text-orange-600 transition-all ease-in-out group-hover:rotate-45" />
+                      <LucideLayoutGrid className="text-orange-primary transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
                     </Anchor>
                   </Link>
@@ -178,6 +178,30 @@ export const Menu = () => {
                   </Link>
                 )}
               </div>
+
+              {globalRole === Role.SandvikAdmin && (
+                <>
+                  <hr className="border-neutral-2" />
+
+                  <Headline
+                    variant="medium"
+                    color="foreground"
+                    as="h3"
+                    className="group"
+                  >
+                    <Link
+                      href="http://localhost:3000//administration-portal"
+                      passHref
+                      legacyBehavior
+                    >
+                      <Anchor color="foreground">
+                        <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
+                        Administration Portal
+                      </Anchor>
+                    </Link>
+                  </Headline>
+                </>
+              )}
 
               <hr className="border-neutral-2" />
             </>

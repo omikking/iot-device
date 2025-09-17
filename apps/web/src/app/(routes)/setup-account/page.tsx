@@ -198,7 +198,7 @@ export default function Page(): JSX.Element {
         </Headline>
         <div className="flex flex-col items-center gap-3">
           <div className="flex gap-2 items-center">
-            <LucideAlertCircle size={20} color="red" />
+            <LucideAlertCircle size={20} className="text-error" />
             <Headline as="h4" variant="medium" color="destructive">
               {
                 validateInviteError.graphQLErrors[0]?.extensions

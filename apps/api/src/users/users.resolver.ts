@@ -55,6 +55,19 @@ export class UsersResolver {
     updatePasswordInput?: UpdatePasswordInput,
   ): Promise<GraphQLTypes.User> {
     if (user.id !== id) {
+      // Allow Sandvik admin to update isGlobalVisibility for technicians
+      if (
+        user.globalRole === GlobalRole.SANDVIK_ADMIN &&
+        Object.keys(updateUserInput).every(
+          (key) => key === 'isGlobalVisibility' || key === 'email',
+        )
+      ) {
+        const targetUser = await this.usersService.findOne(id);
+        if (targetUser.globalRole === GlobalRole.SANDVIK_TECHNICIAN) {
+          return this.usersService.update(id, updateUserInput);
+        }
+      }
+      // Otherwise throw exception if not the same user for any other action
       throw new ForbiddenException('You can only update your own user data.');
     }
     return this.usersService.update(id, updateUserInput, updatePasswordInput);
@@ -65,6 +78,15 @@ export class UsersResolver {
     @Args('id', ParseUUIDPipe) id: string,
     @ActiveUser() user: ActiveUserData,
   ): Promise<GraphQLTypes.User> {
+    // Allow admins to delete any user except themselves
+    if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+      if (user.id === id) {
+        throw new ForbiddenException('Admins cannot delete their own account.');
+      }
+      return this.usersService.remove(id);
+    }
+
+    // Non-admins can only delete themselves
     if (user.id !== id) {
       throw new ForbiddenException('You can only remove your own user.');
     }

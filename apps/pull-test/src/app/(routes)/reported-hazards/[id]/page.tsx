@@ -114,7 +114,7 @@ export default function Page({
       <Text color="foreground" variant="medium">
         No reported hazards were found.
       </Text>
-      <LucideSearchX color="gray" />
+      <LucideSearchX className="text-neutral-5" />
     </div>
   );
 

@@ -15,6 +15,7 @@ const badgeVariants = cva(
         destructive: 'ui-bg-error ui-text-main-white',
         success: 'ui-bg-success ui-text-main-black',
         warning: 'ui-bg-warning ui-text-main-black',
+        pending: 'ui-bg-blue-3 ui-text-blue-primary',
       },
       size: {
         small:

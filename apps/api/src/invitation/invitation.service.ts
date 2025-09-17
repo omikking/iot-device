@@ -170,7 +170,11 @@ export class InvitationService {
     }
   }
 
-  async createGlobalInvitation(email: string, globalRole: GlobalRole) {
+  async createGlobalInvitation(
+    email: string,
+    globalRole: GlobalRole,
+    isGlobalVisibility: boolean,
+  ) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -180,7 +184,7 @@ export class InvitationService {
         // Update existing user's global role
         await this.prisma.user.update({
           where: { id: existingUser.id },
-          data: { globalRole },
+          data: { globalRole, isGlobalVisibility },
         });
 
         return { userId: existingUser.id, isNewUser: false };
@@ -233,6 +237,7 @@ export class InvitationService {
           token: tokenHash,
           expiresAt,
           globalRole,
+          isGlobalVisibility,
         },
       });
 
@@ -436,6 +441,7 @@ export class InvitationService {
         id: invitation.id,
         email: invitation.email,
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: invitation.companyId,
         globalRole: null, // Company invitations don't have global roles
@@ -472,10 +478,12 @@ export class InvitationService {
         id: invitation.id,
         email: invitation.email,
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: null,
         globalRole: invitation.globalRole,
         role: invitation.globalRole,
+        isGlobalVisibility: invitation.isGlobalVisibility,
       }));
     } catch (error) {
       throw new UserInputError('', {

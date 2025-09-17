@@ -166,8 +166,7 @@ const TableHeadWithSorting = <TData,>({
       {!isSorted && (
         <LucideArrowUpDown
           size="16"
-          color="silver"
-          className="ui-ml-1 ui-mt-0.5"
+          className="ui-ml-1 ui-mt-0.5 ui-text-neutral-4"
         />
       )}
       {isSorted === 'asc' && (

@@ -76,6 +76,7 @@ import {
   sitesDesignSystemMock,
 } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
+import { noop } from '@tanstack/react-table';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -210,7 +211,10 @@ export default function Page(): JSX.Element {
             Add technician
           </Button>
         </ModalTrigger>
-        <AddOrEditTechnicianModal onOpenChange={setOpenTechModal} />
+        <AddOrEditTechnicianModal
+          onOpenChange={setOpenTechModal}
+          refreshTechnicians={noop}
+        />
       </Modal>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
@@ -235,11 +239,11 @@ export default function Page(): JSX.Element {
         onDelete={handleDeleteUser}
       >
         <Text variant="medium" color={'foreground'}>
-          You are about to delete
+          Are you sure you want to permanently remove
           <Text variant="medium" color={'foreground'} as="span" isBold>
             {` Elliot Alderson `}
           </Text>
-          from the list. Are you sure you want to delete?
+          from the list?
         </Text>
       </DeleteModalConfirmation>
       <hr className="w-full" />
@@ -273,11 +277,11 @@ export default function Page(): JSX.Element {
           onDelete={handleDeleteSite}
         >
           <Text variant="medium" color={'foreground'}>
-            You are about to delete
+            Are you sure you want to permanently remove
             <Text variant="medium" color={'foreground'} isBold as="span">
               {siteToDelete}
             </Text>
-            from the list. Are you sure you want to delete?
+            from the list?
           </Text>
         </DeleteModalConfirmation>
       </div>

@@ -80,7 +80,7 @@ export const HazardCard = ({
               const allSpecs = generateBoltSpecifications(boltResult, {});
 
               const selectedSpecs = [
-                ...allSpecs.slice(0, 2),
+                ...allSpecs.slice(1, 3),
                 ...allSpecs.slice(-2, -1),
               ];
 

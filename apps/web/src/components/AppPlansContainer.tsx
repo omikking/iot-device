@@ -81,9 +81,12 @@ export const AppPlansContainer = ({
         </div>
 
         {isUserSandvikAdmin && activePlanLevel && (
-          <Badge variant="attention">
+          <Badge
+            variant={date && daysUntilExpiration < 0 ? 'warning' : 'attention'}
+          >
             <LucideCircleCheckBig size="14" />
-            Active
+
+            {date && daysUntilExpiration < 0 ? 'Expired' : 'Active'}
           </Badge>
         )}
 

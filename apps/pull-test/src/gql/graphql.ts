@@ -276,6 +276,7 @@ export type Flavor = {
 export type Invitation = {
   __typename?: 'Invitation';
   companyId?: Maybe<Scalars['String']['output']>;
+  companyName?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   expiresAt: Scalars['DateTime']['output'];

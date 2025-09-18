@@ -406,6 +406,7 @@ export class Invitation {
     createdAt: DateTime;
     used: boolean;
     companyId?: Nullable<string>;
+    companyName?: Nullable<string>;
     globalRole?: Nullable<string>;
     role?: Nullable<string>;
     isGlobalVisibility?: Nullable<boolean>;

@@ -315,7 +315,13 @@ export class InvitationService {
       });
     }
 
-    return { valid: true, invitation };
+    const { company, ...invitationWithoutCompany } = invitation;
+    const transformedInvitation = {
+      ...invitationWithoutCompany,
+      companyName: company?.name || null,
+    };
+
+    return { valid: true, invitation: transformedInvitation };
   }
 
   async completeInvitation(

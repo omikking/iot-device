@@ -38,16 +38,22 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl');
-      if (callbackUrl) {
-        router.push(callbackUrl);
-      } else {
-        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-        const redirectTo = isAdmin
-          ? 'http://localhost:3000/administration-portal'
-          : 'http://localhost:3000/select-company';
-        router.push(redirectTo);
-      }
+      // TODO: Re-test and re-enable callbackUrl logic
+      // const callbackUrl = searchParams.get('callbackUrl');
+      // if (callbackUrl) {
+      //   router.push(callbackUrl);
+      // } else {
+      //   const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      //   const redirectTo = isAdmin
+      //     ? 'http://localhost:3000/administration-portal'
+      //     : 'http://localhost:3000/select-company';
+      //   router.push(redirectTo);
+      // }
+      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      const redirectTo = isAdmin
+        ? 'http://localhost:3000/administration-portal'
+        : 'http://localhost:3000/select-company';
+      router.push(redirectTo);
     }
   }, [status, router, searchParams]);
 

@@ -487,6 +487,17 @@ async function generateTestUsersAndCompanies() {
   return [goldMiningCorp, silverMiningCorp, bronzeMiningCorp, noPlanCompany];
 }
 
+function generateAustralianNumber() {
+  return (
+    '+61 4' +
+    faker.string.numeric(2) +
+    ' ' +
+    faker.string.numeric(3) +
+    ' ' +
+    faker.string.numeric(3)
+  );
+}
+
 async function generateAdminUsers(count: number) {
   const users = [];
 
@@ -500,7 +511,7 @@ async function generateAdminUsers(count: number) {
         hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
         workPlace: 'Sandvik ' + faker.company.name(),
-        phoneNumber: faker.phone.number(),
+        phoneNumber: generateAustralianNumber(),
         globalRole: GlobalRole.SANDVIK_ADMIN,
         isGlobalVisibility: true,
       },
@@ -525,7 +536,7 @@ async function generateRegularUsers(count: number) {
         hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
         workPlace: faker.company.name(),
-        phoneNumber: faker.phone.number(),
+        phoneNumber: generateAustralianNumber(),
         // No globalRole for regular users
         isGlobalVisibility: false,
       },
@@ -550,7 +561,7 @@ async function generateTechnicianUsers(count: number) {
         hash: await argon.hash('Password123!'),
         fullName: `${firstName} ${lastName}`,
         workPlace: 'Sandvik Field Office',
-        phoneNumber: faker.phone.number(),
+        phoneNumber: generateAustralianNumber(),
         globalRole: GlobalRole.SANDVIK_TECHNICIAN,
         isGlobalVisibility: false,
       },

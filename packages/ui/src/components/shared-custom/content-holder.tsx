@@ -14,7 +14,7 @@ const contentHolderVariants = cva(
         general: 'ui-flex-row ui-flex-wrap ui-gap-6 ui-justify-between',
         table: 'ui-flex-col ui-gap-1.5',
         filter:
-          'ui-min-w-[1320px] ui-flex-row ui-flex-wrap ui-gap-2 ui-justify-between ui-py-6',
+          'ui-width-full ui-max-w-[1600px] ui-flex-row ui-flex-wrap ui-gap-6 ui-py-6',
       },
     },
   },

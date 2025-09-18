@@ -48,6 +48,6 @@ WORKDIR /app/apps/pull-test
 CMD ["node", "node_modules/next/dist/bin/next", "start"]
 
 # to build the image - docker build -t pull-test:1.0.0 -f apps/pull-test/Dockerfile .
-# to run the image - docker run -d --name pull-test-container -p 3001:3000 pull-test:1.0.0
+# to run the image - docker run -d --name pull-test-container -p 3001:3001 pull-test:1.0.0
 
 

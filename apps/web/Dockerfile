@@ -4,8 +4,6 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 COPY . .
-# COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-# COPY packages/typescript-config ./packages/typescript-config
 
 RUN pnpm install --frozen-lockfile --prod=false
 

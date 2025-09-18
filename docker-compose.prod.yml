@@ -25,6 +25,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    image: ground-support-platform-api:1.0.0
     depends_on:
       prod-db:
         condition: service_healthy
@@ -46,6 +47,7 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+    image: ground-support-platform-web:1.0.0
     depends_on:
       - api
     environment:
@@ -64,6 +66,7 @@ services:
     build:
       context: .
       dockerfile: apps/pull-test/Dockerfile
+    image: ground-support-platform-pull-test:1.0.0
     depends_on:
       - api
     environment:

@@ -1,6 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
-import { Application, Role } from './gql/graphql';
+import { Application, Role } from 'src/gql/graphql';
 
 const publicRoutes = ['/api/auth/signin'];
 

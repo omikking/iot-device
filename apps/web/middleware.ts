@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { Role } from './gql/graphql';
+import { Role } from 'src/gql/graphql';
 
 // Routes that should work without authentication
 const publicRoutes = ['/setup-account', '/api/auth/signin'];

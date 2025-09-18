@@ -117,13 +117,13 @@ export const AppPlan = ({
             {!isUserSandvikAdmin &&
               isPlanActive &&
               (isExpired ? (
-                <Badge variant="warning" className="flex items-center">
-                  <LucideCircleX size="16" className="mr-1" />
-                  Expired
+                <Badge variant="neutral" className="flex items-center">
+                  <LucideCircleX />
+                  Previous plan
                 </Badge>
               ) : (
                 <Badge variant="attention" className="flex items-center">
-                  <LucideCircleCheckBig size="16" className="mr-1" />
+                  <LucideCircleCheckBig />
                   Active plan
                 </Badge>
               ))}

@@ -7,7 +7,7 @@ import {
   FormLabel,
   Switch,
 } from '@gsp/ui';
-import { LucideCircleCheckBig } from 'lucide-react';
+import { LucideCircleCheckBig, LucideCircleX } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import {
   CreateCompanyFormValues,
@@ -114,12 +114,19 @@ export const AppPlan = ({
               </FormControl>
             )}
 
-            {!isUserSandvikAdmin && isPlanActive && !isExpired && (
-              <Badge variant="attention" className="flex items-center">
-                <LucideCircleCheckBig size="16" className="mr-1" />
-                Active plan
-              </Badge>
-            )}
+            {!isUserSandvikAdmin &&
+              isPlanActive &&
+              (isExpired ? (
+                <Badge variant="warning" className="flex items-center">
+                  <LucideCircleX size="16" className="mr-1" />
+                  Expired
+                </Badge>
+              ) : (
+                <Badge variant="attention" className="flex items-center">
+                  <LucideCircleCheckBig size="16" className="mr-1" />
+                  Active plan
+                </Badge>
+              ))}
           </FormItem>
         )}
       />

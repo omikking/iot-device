@@ -9,9 +9,9 @@ describe('EmailService', () => {
     SMTP_HOST: 'smtp.sandvik.com',
     SMTP_PORT: 587,
     SMTP_SECURE: 'false',
-    SMTP_USER: 'testuser',
-    SMTP_PASSWORD: 'testpass',
-    SMTP_FROM: 'test@example.com',
+    SMTP_USER: 'noreply.ConvergenceApp@sandvik.com',
+    SMTP_PASSWORD: '&md3dLHEqHH/WX)a',
+    SMTP_FROM: 'noreply.ConvergenceApp@sandvik.com',
     FRONTEND_URL: 'https://portal.groundsupport.mining.sandvik'
   };
 

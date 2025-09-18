@@ -28,8 +28,6 @@ COPY --from=deps /app/node_modules ./node_modules
 WORKDIR /app/apps/api
 
 RUN pnpm prisma generate 
-# RUN pnpm db:dev:up
-# RUN pnpm prisma:dev:deploy
 RUN pnpm build
 
 # Production (slim runtime)
@@ -59,4 +57,4 @@ WORKDIR /app/apps/api
 CMD ["node", "dist/src/main.js"]
 
 # to build the image - docker build -t my-api:1.0.0 -f apps/api/Dockerfile .
-# to run the image - docker run -d --name api-container -p 4000:3000 my-api:1.0.0
+# to run the image - docker run -d --name api-container -p 3333:3333 my-api:1.0.0

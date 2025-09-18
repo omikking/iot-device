@@ -801,7 +801,7 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
           result: result,
           isHazard: isHazard,
           hazardCompletedDate:
-            isHazard && faker.datatype.boolean(0.5)
+            !isHazard && faker.datatype.boolean(0.2)
               ? [faker.date.recent({ days: 10 })]
               : [],
           abortReason:

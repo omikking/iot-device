@@ -117,7 +117,7 @@ export const AppPlan = ({
             {!isUserSandvikAdmin && isPlanActive && !isExpired && (
               <Badge variant="attention" className="flex items-center">
                 <LucideCircleCheckBig size="16" className="mr-1" />
-                Your selected plan
+                Active plan
               </Badge>
             )}
           </FormItem>

@@ -1,7 +1,7 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, MaxLength } from 'class-validator';
 
 export class RequestPasswordResetInput {
-  @IsString()
   @IsEmail()
+  @MaxLength(50)
   email: string;
 }

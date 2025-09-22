@@ -1,10 +1,17 @@
-import { IsArray, IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { Application, Role } from '@prisma/client';
 import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateInvitationInput extends GraphQLTypes.CreateInvitationInput {
-  @IsString()
   @IsEmail()
+  @MaxLength(50)
   email: string;
 
   @IsString()

@@ -9,6 +9,8 @@ import { errorTexts } from 'src/errorTexts/errorTexts';
 
 export class ConfirmPasswordResetInput {
   @IsString()
+  @MinLength(6)
+  @MaxLength(6)
   token: string;
 
   @IsEmail()

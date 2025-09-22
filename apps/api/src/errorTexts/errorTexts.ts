@@ -134,9 +134,10 @@ export const errorTexts = {
   userPasswordMismatch_message:
     'New password and confirm password do not match.',
 
-  userPasswordTooWeak_title: 'Password too weak',
   userPasswordTooWeak_message:
     'Please provide a stronger password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.',
+
+  userPasswordTooShort_message: 'Password must be at least 8 characters',
 
   userUpdateError_title: 'Failed to update user',
 
@@ -195,4 +196,12 @@ export const errorTexts = {
   invitationRateLimit_title: 'Too many invitations',
   invitationRateLimit_message:
     'Please wait before sending another invitation to this email.',
+
+  otpCreateError_title: 'Failed to send a reset password code',
+
+  otpValidationError_title: 'Invalid reset password code',
+
+  otpTokenExpired_title: 'Reset password code expired',
+  otpTokenExpired_message:
+    'The reset password code has expired. Please request a new one.',
 };

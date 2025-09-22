@@ -5,7 +5,6 @@ import { Application, GlobalRole, Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as argon from 'argon2';
 import { errorTexts } from '../errorTexts/errorTexts';
-import { isPasswordStrong } from '../utils';
 import { UserInputError } from '@nestjs/apollo';
 
 @Injectable()
@@ -349,17 +348,6 @@ export class InvitationService {
       phoneNumber?: string;
     },
   ) {
-    // Validate password strength
-    if (!isPasswordStrong(userData.password)) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-          title: errorTexts.userPasswordTooWeak_title,
-          message: errorTexts.userPasswordTooWeak_message,
-        },
-      });
-    }
-
     const { invitation } = await this.validateInvitation(id, token);
 
     if (!invitation) {

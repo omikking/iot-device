@@ -2,62 +2,93 @@
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { User } from '@/gql/graphql';
-import { useMutation, useQuery } from 'urql';
+import { useMutation } from 'urql';
 import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
-import { LucideEyeOff, LucideView, LucideSearchX } from 'lucide-react';
+import {
+  LucideEyeOff,
+  LucideView,
+  LucideSearchX,
+  LucideHourglass,
+} from 'lucide-react';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
 import { handleGraphQLErrors } from '@/libs/utils';
 
-const getTechniciansQuery = graphql(`
-  query getTechnicians {
-    users(roles: "SANDVIK_TECHNICIAN") {
+export type TechnicianRow = User & {
+  isInvitation: boolean;
+  expiresAt?: string;
+};
+
+type TechniciansTableProps = {
+  allTechnicians: TechnicianRow[];
+  refreshTechnicians: () => void;
+  onOpenChange: (open: boolean) => void;
+  onSelectTechnician: (technician?: User) => void;
+};
+
+const deleteTechnicianMutation = graphql(`
+  mutation deleteAdmin($id: String!) {
+    removeUser(id: $id) {
       id
-      fullName
       email
+      fullName
       workPlace
-      isGlobalVisibility
       phoneNumber
       globalRole
     }
   }
 `);
 
-const deleteTechnicianMutation = graphql(`
-  mutation deleteTechnician($id: String!) {
-    removeUser(id: $id) {
+const resendInvitationMutation = graphql(`
+  mutation resendInvitation($id: String!) {
+    resendInvitation(id: $id) {
       id
+      email
+      expiresAt
     }
   }
 `);
 
-type TechniciansTableProps = {
-  onOpenChange: (open: boolean) => void;
-  onSelectTechnician: (technician?: User) => void;
-};
+const cancelInvitationMutation = graphql(`
+  mutation deleteInvitation($id: String!) {
+    removeInvitation(id: $id) {
+      id
+      email
+    }
+  }
+`);
 
 export const TechniciansTable = ({
+  allTechnicians,
+  refreshTechnicians,
   onOpenChange,
   onSelectTechnician,
 }: TechniciansTableProps) => {
+  // Delete modal state
   const [isDeleteTechnicianModalOpen, setDeleteTechnicianModalOpen] =
     useState(false);
   const [technicianToDelete, setTechnicianToDelete] = useState<
-    User | undefined
+    TechnicianRow | undefined
   >(undefined);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [techniciansData] = useQuery({
-    query: getTechniciansQuery,
-  });
-  const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
 
-  const technicians = (techniciansData.data?.users as User[]) || [];
+  const [, deleteTechnician] = useMutation(deleteTechnicianMutation);
+  const [, resendInvitation] = useMutation(resendInvitationMutation);
+  const [, cancelInvitation] = useMutation(cancelInvitationMutation);
+
+  // Invitation cancel modal state
+  const [isCancelInvitationModalOpen, setIsCancelInvitationModalOpen] =
+    useState(false);
+  const [invitationToCancel, setInvitationToCancel] = useState<
+    TechnicianRow | undefined
+  >(undefined);
+  const [isCancelInvitation, setIsCancelInvitation] = useState(false);
 
   const openDeleteModal = (technicianId: string) => {
-    const technicianToDelete = technicians?.find(
-      (technician) => technician.id === technicianId,
+    const technicianToDelete = allTechnicians?.find(
+      (t) => t.id === technicianId,
     );
     setTechnicianToDelete(technicianToDelete);
     setDeleteTechnicianModalOpen(true);
@@ -72,9 +103,7 @@ export const TechniciansTable = ({
     if (!technicianToDelete?.id) {
       return false;
     }
-
     setIsDeleting(true);
-
     return (
       deleteTechnician({ id: technicianToDelete.id })
         .then((result) => {
@@ -87,9 +116,10 @@ export const TechniciansTable = ({
           if (result.data) {
             setTimeout(() => {
               showAlertToast({
-                title: responses.techinicianDeleteSuccess,
+                title: responses.technicianDeleteSuccess,
                 variant: 'info',
               });
+              refreshTechnicians();
             }, 1500);
           }
           return true;
@@ -97,64 +127,146 @@ export const TechniciansTable = ({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.techinicianDeleteFailed,
+            title: responses.technicianDeleteFailed,
             description: responses.contactSupportError,
             variant: 'error',
           });
           return false;
         })
-        .finally(() => {
-          setIsDeleting(false);
+        .finally(() => setIsDeleting(false))
+    );
+  };
+
+  // Invitation cancel logic
+  const openCancelInvitationModal = (invitationId: string) => {
+    const invitation = allTechnicians?.find((t) => t.id === invitationId);
+    setInvitationToCancel(invitation);
+    setIsCancelInvitationModalOpen(true);
+  };
+
+  const closeCancelInvitationModal = () => {
+    setIsCancelInvitationModalOpen(false);
+    setInvitationToCancel(undefined);
+  };
+
+  const handleCancelInvitation = async (): Promise<boolean> => {
+    if (!invitationToCancel?.id) {
+      return false;
+    }
+    setIsCancelInvitation(true);
+    return (
+      cancelInvitation({ id: invitationToCancel.id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            setTimeout(() => {
+              showAlertToast({
+                title: responses.invitationCancelSuccess,
+                variant: 'info',
+              });
+              refreshTechnicians();
+            }, 1500);
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.invitationCancelFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
+        })
+        .finally(() => setIsCancelInvitation(false))
+    );
+  };
+
+  // Resend invitation handler
+  const handleResendInvitation = async (id: string): Promise<boolean> => {
+    return (
+      resendInvitation({ id })
+        .then((result) => {
+          // Backend errors
+          const hasGraphQLErrors = handleGraphQLErrors(result.error);
+          if (hasGraphQLErrors) {
+            return false;
+          }
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.invitationResendSuccess,
+              variant: 'success',
+            });
+            refreshTechnicians();
+          }
+          return true;
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.invitationResendFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+          return false;
         })
     );
   };
 
   const openEditModal = (technicianId: string) => {
-    const technicianToEdit = technicians?.find(
-      (technician) => technician.id === technicianId,
-    );
-    onSelectTechnician(technicianToEdit);
-    onOpenChange(true);
+    const technicianToEdit = allTechnicians?.find((t) => t.id === technicianId);
+
+    if (technicianToEdit && !technicianToEdit.isInvitation) {
+      onSelectTechnician(technicianToEdit);
+      onOpenChange(true);
+    }
   };
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<TechnicianRow>[] = [
     {
       accessorKey: 'fullName',
       header: 'Full name',
+      cell: ({ row }) =>
+        row.original.isInvitation ? (
+          <Badge variant="pending">
+            <LucideHourglass />
+            Pending activation
+          </Badge>
+        ) : (
+          row.original.fullName
+        ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      meta: {
-        headerClassName: 'w-80',
-      },
+      meta: { headerClassName: 'w-80' },
     },
     {
       accessorKey: 'workPlace',
       header: 'Company',
-      meta: {
-        headerClassName: 'w-44',
-      },
+      meta: { headerClassName: 'w-44' },
     },
     {
       accessorKey: 'isGlobalVisibility',
       header: 'Visible globally',
-      cell: ({ row }) => (
-        <>
-          {row.getValue('isGlobalVisibility') && (
-            <Badge variant="success">
-              <LucideView />
-              Visible
-            </Badge>
-          )}
-          {!row.getValue('isGlobalVisibility') && (
-            <Badge variant="neutral">
-              <LucideEyeOff />
-              Private
-            </Badge>
-          )}
-        </>
-      ),
+      cell: ({ row }) =>
+        row.getValue('isGlobalVisibility') ? (
+          <Badge variant="success">
+            <LucideView />
+            Visible
+          </Badge>
+        ) : (
+          <Badge variant="neutral">
+            <LucideEyeOff />
+            Private
+          </Badge>
+        ),
     },
     {
       accessorKey: 'phoneNumber',
@@ -164,17 +276,21 @@ export const TechniciansTable = ({
       accessorKey: 'settings',
       header: '',
       cell: ({ row }) => {
-        const technician = technicians.find(
-          (technician) => technician.id === row.original.id,
-        );
-        return (
-          technician && (
+        if (row.original.isInvitation) {
+          return (
             <DeleteEditDropdown
-              itemSelected={technician.id}
-              openDeleteModal={openDeleteModal}
-              handleEdit={openEditModal}
+              itemSelected={row.original.id}
+              onResendInvitation={handleResendInvitation}
+              onCancelInvitation={openCancelInvitationModal}
             />
-          )
+          );
+        }
+        return (
+          <DeleteEditDropdown
+            itemSelected={row.original.id}
+            openDeleteModal={openDeleteModal}
+            handleEdit={openEditModal}
+          />
         );
       },
     },
@@ -182,6 +298,7 @@ export const TechniciansTable = ({
 
   return (
     <>
+      {/* Delete technician modal */}
       <DeleteModalConfirmation
         deleteIcon="User"
         modalTitle="Delete technician"
@@ -193,24 +310,45 @@ export const TechniciansTable = ({
         onOpenChange={closeDeleteModal}
       >
         <Text variant="medium" color={'foreground'}>
-          You are about to delete
+          Are you sure you want to permanently remove
           <Text variant="medium" color={'foreground'} isBold as="span">
             {` ${technicianToDelete?.fullName} `}
           </Text>
-          from the list. Are you sure you want to delete?
+          from the list?
+        </Text>
+      </DeleteModalConfirmation>
+
+      {/* Invitation cancel modal */}
+      <DeleteModalConfirmation
+        deleteIcon="User"
+        modalTitle="Cancel invitation"
+        modalText="Confirm cancellation"
+        modalDeleteButtonText="Cancel invitation"
+        isLoading={isCancelInvitation}
+        isOpen={isCancelInvitationModalOpen}
+        onDelete={handleCancelInvitation}
+        onClose={closeCancelInvitationModal}
+        onOpenChange={closeCancelInvitationModal}
+      >
+        <Text variant="medium" color={'foreground'}>
+          This will cancel the pending invitation for
+          <Text variant="medium" color={'foreground'} isBold as="span">
+            {` ${invitationToCancel?.email}. `}
+          </Text>
+          Are you sure you want to cancel this invitation?
         </Text>
       </DeleteModalConfirmation>
 
       <DataTable
         columns={columns}
-        data={technicians}
+        data={allTechnicians}
         noResultMessage="There are no technicians added yet."
-        icon={<LucideSearchX color="gray" />}
+        icon={<LucideSearchX className="text-neutral-5" />}
       />
 
-      {technicians?.length > 0 && (
+      {allTechnicians?.length > 0 && (
         <Badge variant="neutral" className="self-start">
-          {technicians.length} total
+          {allTechnicians.length} total
         </Badge>
       )}
     </>

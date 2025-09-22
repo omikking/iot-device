@@ -3,7 +3,7 @@ export const responses = {
   contactSupportError: 'Please contact our support team for assistance.',
   accessDeniedError_title: 'Access Denied',
   accessDeniedError_message:
-    'You do not have permission to access this resource.',
+    'You do not have permission to perform this action.',
 
   // Reported Hazards
   reportedHazardCompletingError: 'Failed to complete hazard',

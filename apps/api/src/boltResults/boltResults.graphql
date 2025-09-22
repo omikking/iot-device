@@ -131,6 +131,7 @@ type Mutation {
   removeBoltResult(id: String!): BoltResult!
 
   createBoltResults(
+    siteId: String!
     createBoltResultsInput: [CreateBoltResultInput!]!
   ): [BoltResult!]!
 

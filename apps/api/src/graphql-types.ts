@@ -30,9 +30,17 @@ export enum RingPosition {
     RH_BACKS = "RH_BACKS",
     RH_SHOULDER = "RH_SHOULDER",
     RH_WALL_UPPER = "RH_WALL_UPPER",
+    RH_WALL_CENTER = "RH_WALL_CENTER",
+    RH_WALL_LOWER = "RH_WALL_LOWER",
+    RH_FACE_HIGH = "RH_FACE_HIGH",
+    RH_FACE_LOW = "RH_FACE_LOW",
     LH_BACKS = "LH_BACKS",
     LH_SHOULDER = "LH_SHOULDER",
     LH_WALL_UPPER = "LH_WALL_UPPER",
+    LH_WALL_CENTER = "LH_WALL_CENTER",
+    LH_WALL_LOWER = "LH_WALL_LOWER",
+    LH_FACE_HIGH = "LH_FACE_HIGH",
+    LH_FACE_LOW = "LH_FACE_LOW",
     CENTER_BACKS = "CENTER_BACKS"
 }
 
@@ -155,6 +163,7 @@ export class CreateInvitationInput {
 export class CreateGlobalInvitationInput {
     email: string;
     globalRole: string;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class CompleteInvitationInput {
@@ -413,9 +422,12 @@ export class Invitation {
     id: string;
     email: string;
     expiresAt: DateTime;
+    createdAt: DateTime;
     used: boolean;
     companyId?: Nullable<string>;
     globalRole?: Nullable<string>;
+    role?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class InvitationResponse {

@@ -26,7 +26,7 @@ export class EmailService {
     token: string,
     companyName: string,
   ) {
-    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?id=${invitationId}&token=${token}`;
+    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/setup-account?id=${invitationId}&token=${token}`;
 
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
@@ -57,7 +57,7 @@ export class EmailService {
     token: string,
     globalRole: GlobalRole,
   ) {
-    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/complete-signup?id=${invitationId}&token=${token}`;
+    const inviteUrl = `${this.configService.get('FRONTEND_URL')}/setup-account?id=${invitationId}&token=${token}`;
 
     const roleDisplayName =
       globalRole === GlobalRole.SANDVIK_ADMIN

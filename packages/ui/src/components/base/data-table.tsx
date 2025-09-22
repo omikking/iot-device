@@ -83,14 +83,24 @@ export function DataTable<TData, TValue>({
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
             >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={cell.column.columnDef.meta?.cellClassName}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+              {row.getVisibleCells().map((cell) => {
+                const value = cell.getValue();
+                const isNA = value === 'N/A';
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={cell.column.columnDef.meta?.cellClassName}
+                  >
+                    {isNA ? (
+                      <Text variant="small" color="muted" as="span">
+                        {value}
+                      </Text>
+                    ) : (
+                      flexRender(cell.column.columnDef.cell, cell.getContext())
+                    )}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))
         ) : (

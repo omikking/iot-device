@@ -15,6 +15,6 @@ export class CreateInvitationInput extends GraphQLTypes.CreateInvitationInput {
   role: Role;
 
   @IsArray()
-  @IsEnum(Application)
+  @IsEnum(Application, { each: true })
   appsAccess: Application[];
 }

@@ -41,16 +41,6 @@ export class EmailService {
     });
   }
 
-  async sendOTP(to: string, otp: string): Promise<void> {
-    await this.transporter.sendMail({
-      from: '"Support" <support@example.com>',
-      to,
-      subject: 'Password Reset OTP',
-      text: `Your password reset code is: ${otp}`,
-      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
-    });
-  }
-
   async sendGlobalInvitationEmail(
     email: string,
     invitationId: string,
@@ -76,6 +66,15 @@ export class EmailService {
         <p>This link will expire in 48 hours.</p>
         <p><em>Note: This invitation was sent by a Sandvik Administrator.</em></p>
       `,
+    });
+  }
+
+  async sendOneTimePassword(email: string, otp: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+      to: email,
+      subject: 'Password reset',
+      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
     });
   }
 }

@@ -5,139 +5,53 @@ import { ConfigService } from '@nestjs/config';
 export class EmailTemplateService {
   constructor(private configService: ConfigService) {}
 
-  // ================================================================================
-  // PUBLIC TEMPLATE GENERATION METHODS
-  // ================================================================================
-
-  generateInvitationTemplate(
-    inviteUrl: string,
-    companyName: string,
-    userRole?: string,
-  ): string {
-    return this.createInvitationTemplate(inviteUrl, companyName, userRole);
-  }
-
-  generateGlobalInvitationTemplate(
-    inviteUrl: string,
-    roleDisplayName: string,
-  ): string {
-    return this.createGlobalInvitationTemplate(inviteUrl, roleDisplayName);
-  }
-
-  generateExistingUserNotificationTemplate(
-    companyName: string,
-    userRole?: string,
-  ): string {
-    return this.createExistingUserNotificationTemplate(companyName, userRole);
-  }
-
-  generateExistingGlobalUserNotificationTemplate(
-    roleDisplayName: string,
-    loginUrl: string,
-  ): string {
-    return this.createExistingGlobalUserNotificationTemplate(
-      roleDisplayName,
-      loginUrl,
-    );
-  }
-
-  // ================================================================================
-  // TEXT CONTENT GENERATION METHODS
-  // ================================================================================
-
-  generateTextContent(
-    inviteUrl: string,
-    companyName: string,
-    role: string,
-  ): string {
-    const invitationHeading = this.getInvitationHeading(role, companyName);
-
-    return `
-      You're Invited to Ground Support Platform!
-
-      ${invitationHeading}
-
-      Please complete your account setup to get started.
-
-      Accept your invitation: ${inviteUrl}
-
-      This invitation link will expire in 48 hours for security purposes.
-
-      Need help? Contact your team administrator for assistance.
-    `.trim();
-  }
-
-  generateGlobalTextContent(
-    inviteUrl: string,
-    roleDisplayName: string,
-  ): string {
-    return `
-      Global Access Invitation - Ground Support Platform
-
-      You have been granted a ${roleDisplayName} role
-
-      Accept your global role invitation: ${inviteUrl}
-
-      This invitation link will expire in 48 hours for security purposes.
-
-      Need help? Contact your team administrator for assistance.
-    `.trim();
-  }
-
-  // ================================================================================
-  // ROLE UTILITY METHODS
-  // ================================================================================
-
-  getRoleDisplayName(role?: string): string {
+  getRoleDisplayName(role?: string): string | undefined {
     switch (role?.toUpperCase()) {
       case 'COMPANY_ADMIN':
         return 'an administrator';
       case 'COMPANY_USER':
-        return 'a user';
+        return 'a contributor';
       case 'SANDVIK_ADMIN':
         return 'a Sandvik administrator';
       case 'SANDVIK_TECHNICIAN':
-        return 'a technician';
-      default:
-        return 'a team member';
+        return 'a Sandvik technician';
     }
   }
 
-  getRoleDisplayText(role?: string): string {
+  getRoleDisplayText(role?: string): string | undefined {
     switch (role?.toUpperCase()) {
       case 'COMPANY_ADMIN':
         return ' as an administrator. You will have administrative privileges within your company workspace';
       case 'COMPANY_USER':
-        return ' as a user. You will be able to collaborate with your team on safety and operational tasks';
+        return '. You will be able to collaborate with your team on safety and operational tasks';
       case 'SANDVIK_ADMIN':
-        return ' with Sandvik administrator privileges. You will have platform-wide access and enhanced capabilities';
+        return ' with Sandvik administrator privileges. You will have platform-wide access';
       case 'SANDVIK_TECHNICIAN':
         return ' as a technician. You will have specialized access to technical features and support tools';
-      default:
-        return ' as a team member. You will be able to collaborate with your team on safety and operational excellence';
     }
   }
 
-  getInvitationHeading(role?: string, companyName?: string): string {
+  getInvitationHeading(
+    role?: string,
+    companyName?: string,
+  ): string | undefined {
     switch (role?.toUpperCase()) {
       case 'COMPANY_ADMIN':
-        return `You're invited to join ${companyName} as an administrator.`;
+        return `You're invited to join <strong>${companyName}</strong> as an administrator.`;
       case 'COMPANY_USER':
-        return `You're invited to join ${companyName} as a user.`;
+        return `You're invited to join <strong>${companyName}</strong>.`;
       case 'SANDVIK_ADMIN':
-        return `You're invited to join Ground Support Platform as an administrator.`;
+        return `You're invited to join <strong>Ground Support Platform</strong> as an administrator.`;
       case 'SANDVIK_TECHNICIAN':
-        return `You're invited to join Ground Support Platform as a technician.`;
-      default:
-        return `You're invited to join ${companyName} as a team member.`;
+        return `You're invited to join <strong>Ground Support Platform</strong> as a technician.`;
     }
   }
 
   // ================================================================================
-  // PRIVATE HTML TEMPLATE METHODS
+  // HTML TEMPLATE METHODS
   // ================================================================================
 
-  private createInvitationTemplate(
+  public buildInvitationTemplate(
     inviteUrl: string,
     companyName: string,
     userRole?: string,
@@ -168,10 +82,10 @@ export class EmailTemplateService {
                 <!-- Main Content -->
                 <tr>
                   <td style="padding: 40px;" align="center">
-                    <h2 style="font-size: 16px; font-weight: bold; color: #2c3e50; margin: 0 0 20px 0;">${invitationHeading}</h2>
+                    <h2 style="font-size: 16px; color: #2c3e50; margin: 0 0 20px 0;">${invitationHeading}</h2>
                     
-                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.6;">
-                      Please complete your account setup to get started.
+                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.5;">
+                      Please setup your account to get started.
                     </p>
                     
                     <!-- Call to Action Button -->
@@ -184,18 +98,17 @@ export class EmailTemplateService {
                     </table>
                     
                     <p style="font-size: 14px; color: #6c757d; margin: 25px 0;">
-                      This invitation link will expire in 48 hours for security purposes.
+                      This invitation link will expire in 48 hours.
                     </p>
                   </td>
                 </tr>
-                
+
                 <!-- Footer -->
                 <tr>
                   <td style="padding: 30px 40px; border-top: 1px solid #e9ecef; background-color: #f8f9fa;" align="center">
-                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your team administrator for assistance.</p>
+                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your administrator for assistance.</p>
                   </td>
                 </tr>
-                
               </table>
             </td>
           </tr>
@@ -204,7 +117,7 @@ export class EmailTemplateService {
       </html>`;
   }
 
-  private createGlobalInvitationTemplate(
+  public buildGlobalInvitationTemplate(
     inviteUrl: string,
     roleDisplayName: string,
   ): string {
@@ -213,7 +126,7 @@ export class EmailTemplateService {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Global Role Invitation - Ground Support Platform</title>
+        <title>Invitation to Ground Support Platform</title>
       </head>
       <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: Arial, sans-serif;">
         <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #f8f9fa;">
@@ -232,10 +145,10 @@ export class EmailTemplateService {
                 <!-- Main Content -->
                 <tr>
                   <td align="center" style="padding: 40px;">
-                    <h2 style="font-size: 16px; font-weight: 700; color: #2c3e50; margin: 0 0 20px 0;">Global Access Invitation</h2>
+                    <h2 style="font-size: 16px; font-weight: 700; color: #2c3e50; margin: 0 0 20px 0;">Invitation to Ground Support Platform</h2>
                     
-                    <p style="font-size: 18px; color: #495057; margin: 25px 0;">
-                      You have been granted a <strong>${roleDisplayName}</strong> role
+                    <p style="font-size: 18px; color: #495057; margin: 25px 0; line-height: 1.5;">
+                      You have been invited to join Ground Support Platform as a <strong>${roleDisplayName}</strong>
                     </p>
                     
                     <!-- Info Box -->
@@ -245,10 +158,10 @@ export class EmailTemplateService {
 
                           <h3 style="margin: 0 0 15px 0; color: #1976d2; font-size: 20px; font-weight: 600;">${
                             roleDisplayName === 'Sandvik Administrator'
-                              ? 'Global Access Granted'
-                              : 'Technical Access Granted'
+                              ? 'Sandvik Administrator Access'
+                              : 'Sandvik Technician Access'
                           }</h3>
-                          <p style="margin: 0; color: #495057; font-size: 16px;">${
+                          <p style="margin: 0; color: #495057; font-size: 16px; line-height: 1.5;">${
                             roleDisplayName === 'Sandvik Administrator'
                               ? 'This role provides platform-wide access across all companies and workspaces with enhanced administrative capabilities.'
                               : 'This role provides specialized technical access across all companies and workspaces with support capabilities.'
@@ -256,17 +169,22 @@ export class EmailTemplateService {
                         </td>
                       </tr>
                     </table>
-                    
+
                     <!-- Button -->
                     <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
                       <tr>
+                        <p style="font-size: 16px; color: #6c757d; margin: 40px 0; line-height: 1.5;">
+                          Please setup your account to get started.
+                        </p>  
                         <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
                           <a href="${inviteUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 180px;">Accept Invitation</a>
                         </td>
                       </tr>
                     </table>
-                    
-
+                    <p style="font-size: 14px; color: #6c757d; margin: 24px 0 10px;">
+                      This invitation link will expire in 48 hours.
+                    </p>
+                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your administrator for assistance.</p>
                   </td>
                 </tr>
                 
@@ -275,11 +193,10 @@ export class EmailTemplateService {
                   <td align="center" style="padding: 30px 40px; border-top: 1px solid #e9ecef; background-color: #f8f9fa;">
                     <p style="font-size: 14px; color: #6c757d; margin: 10px 0;"><em>Note: This invitation was sent by a Sandvik Administrator.</em></p>
                     <p style="font-size: 12px; color: #adb5bd; margin: 10px 0;">
-                      This invitation grants elevated privileges across the entire Ground Support Platform.
+                      This invitation grants privileges across Ground Support Platform.
                     </p>
                   </td>
                 </tr>
-                
               </table>
             </td>
           </tr>
@@ -288,18 +205,18 @@ export class EmailTemplateService {
       </html>`;
   }
 
-  private createExistingUserNotificationTemplate(
+  public buildExistingUserNotificationTemplate(
+    userRole: string,
     companyName: string,
-    userRole?: string,
   ): string {
-    const loginUrl = `${this.configService.get('FRONTEND_URL')}/select-company`;
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
 
     return `<!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome to ${companyName} - Ground Support Platform</title>
+        <title>You have access to ${companyName} in Ground Support Platform</title>
       </head>
       <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: Arial, sans-serif;">
         <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #f8f9fa;">
@@ -318,21 +235,17 @@ export class EmailTemplateService {
                 <!-- Main Content -->
                 <tr>
                   <td style="padding: 40px;" align="center">
-                    <h2 style="font-size: 18px; font-weight: bold; color: #2c3e50; margin: 0 0 20px 0;">Welcome to ${companyName}!</h2>
+                    <h2 style="font-size: 18px; font-weight: normal; color: #2c3e50; margin: 0 0 20px 0;">You've been assigned as <strong>${userRole}</strong> in <strong>${companyName}</strong>.</h2>
                     
-                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.6;">
-                      You already have an account on the Ground Support Platform, and you've been added to ${companyName}${userRole ? ` as ${this.getRoleDisplayName(userRole)}` : ''}.
-                    </p>
-                    
-                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.6;">
-                      You can now access ${companyName}'s workspace using your existing login credentials.
+                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.5;">
+                      You can now access ${companyName}'s workspace.
                     </p>
                     
                     <!-- Call to Action Button -->
                     <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
                       <tr>
                         <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
-                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">View Company</a>
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
                         </td>
                       </tr>
                     </table>
@@ -342,7 +255,7 @@ export class EmailTemplateService {
                 <!-- Footer -->
                 <tr>
                   <td style="padding: 30px 40px; border-top: 1px solid #e9ecef; background-color: #f8f9fa;" align="center">
-                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your team administrator for assistance.</p>
+                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your administrator for assistance.</p>
                   </td>
                 </tr>
                 
@@ -354,21 +267,17 @@ export class EmailTemplateService {
       </html>`;
   }
 
-  private createExistingGlobalUserNotificationTemplate(
+  public buildExistingGlobalUserNotificationTemplate(
     roleDisplayName: string,
-    loginUrl: string,
   ): string {
-    const buttonText =
-      roleDisplayName === 'Sandvik Administrator'
-        ? 'Access Administration Portal'
-        : 'Sign In';
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
 
     return `<!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Global Role Assignment - Ground Support Platform</title>
+        <title>New access in Ground Support Platform</title>
       </head>
       <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: Arial, sans-serif;">
         <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #f8f9fa;">
@@ -387,13 +296,13 @@ export class EmailTemplateService {
                 <!-- Main Content -->
                 <tr>
                   <td style="padding: 40px;" align="center">
-                    <h2 style="font-size: 18px; font-weight: bold; color: #2c3e50; margin: 0 0 20px 0;">Global Role Assignment</h2>
-                    
-                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.6;">
-                      You already have an account on the Ground Support Platform, and you've been granted global <strong>${roleDisplayName.toLowerCase()}</strong> privileges.
+                    <h2 style="font-size: 18px; font-weight: bold; color: #2c3e50; margin: 0 0 20px 0;">${roleDisplayName} Assignment</h2>
+
+                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.5;">
+                      You've been assigned as <strong>${roleDisplayName}</strong> in Ground Support Platform.
                     </p>
                     
-                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.6;">
+                    <p style="font-size: 16px; color: #6c757d; margin: 25px 0; line-height: 1.5;">
                       ${
                         roleDisplayName === 'Sandvik Administrator'
                           ? 'You now have access to the administration portal with platform-wide management capabilities.'
@@ -402,24 +311,20 @@ export class EmailTemplateService {
                     </p>
                     
                     <!-- Call to Action Button -->
-                    ${
-                      roleDisplayName === 'Sandvik Administrator'
-                        ? `<table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
-                           <tr>
-                             <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
-                               <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">${buttonText}</a>
-                             </td>
-                           </tr>
-                           </table>`
-                        : ''
-                    }
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
                 
                 <!-- Footer -->
                 <tr>
                   <td style="padding: 30px 40px; border-top: 1px solid #e9ecef; background-color: #f8f9fa;" align="center">
-                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your Sandvik administrator for assistance.</p>
+                    <p style="font-size: 14px; color: #6c757d; margin: 10px 0;">Need help? Contact your administrator for assistance.</p>
                   </td>
                 </tr>
                 

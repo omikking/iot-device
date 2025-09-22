@@ -55,29 +55,14 @@ export class InvitationService {
       });
 
       if (existingPermission) {
-        // User already has access to this company, send a notification/reminder
-        try {
-          await this.emailService.sendInvitationReminderEmail(
-            email,
-            '', // No invitation ID since they're already registered
-            '', // No token needed since they're already registered
-            company.name,
-            role,
-          );
-
-          return {
-            userId: existingUser.id,
-            isNewUser: false,
-            message: 'User already has access. Notification sent.',
-          };
-        } catch (emailError) {
-          // If email fails, still return success but note the email issue
-          return {
-            userId: existingUser.id,
-            isNewUser: false,
-            message: 'User already has access. Failed to send notification.',
-          };
-        }
+        throw new UserInputError('', {
+          extensions: {
+            code: 'INVITATION_USER_EXISTS_ERROR',
+            title: errorTexts.invitationUserExists_title,
+            message: errorTexts.invitationUserExists_message,
+            type: 'warning',
+          },
+        });
       }
 
       // Add permission for the existing user
@@ -90,6 +75,13 @@ export class InvitationService {
             appsAccess,
           },
         });
+
+        // Send email notification to existing user about new company access
+        await this.emailService.sendExistingUserEmail(
+          existingUser.email,
+          role,
+          company.name,
+        );
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -186,10 +178,7 @@ export class InvitationService {
           data: { globalRole, isGlobalVisibility },
         });
 
-        await this.emailService.sendExistingGlobalUserNotificationEmail(
-          email,
-          globalRole,
-        );
+        await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -550,7 +539,7 @@ export class InvitationService {
           invitation.id,
           newToken,
           invitation.company.name,
-          invitation.role || undefined, // Pass the role for role-specific email content
+          invitation.role || undefined,
         );
       } else {
         throw new UserInputError('', {

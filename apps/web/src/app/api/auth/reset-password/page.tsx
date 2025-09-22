@@ -78,6 +78,7 @@ export default function Page() {
     ConfirmPasswordResetMutationVariables
   >(CONFIRM_PASSWORD_RESET_MUTATION);
 
+  // TODO FIX THIS FILE
   const getSchemaForStep = (step: number) => {
     switch (step) {
       case 1:

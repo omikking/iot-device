@@ -1,10 +1,10 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class ValidateResetTokenInput {
-  @IsNotEmpty({ message: 'Token is required' })
+  @IsString()
   token: string;
 
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail()
+  @MaxLength(50)
   email: string;
 }

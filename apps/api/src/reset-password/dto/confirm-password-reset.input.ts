@@ -1,21 +1,27 @@
-import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import {
+  IsEmail,
+  MinLength,
+  Matches,
+  MaxLength,
+  IsString,
+} from 'class-validator';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 export class ConfirmPasswordResetInput {
-  @IsNotEmpty({ message: 'Token is required' })
+  @IsString()
   token: string;
 
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail()
+  @MaxLength(50)
   email: string;
 
-  @IsNotEmpty({ message: 'New password is required' })
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @MaxLength(50)
+  @MinLength(8, { message: errorTexts.userPasswordTooShort_message })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    message: errorTexts.userPasswordTooWeak_message,
   })
   newPassword: string;
 
-  @IsNotEmpty({ message: 'Password confirmation is required' })
+  @MaxLength(50)
   confirmPassword: string;
 }

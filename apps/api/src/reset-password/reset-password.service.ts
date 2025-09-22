@@ -69,7 +69,7 @@ export class ResetPasswordService {
       });
     }
 
-    await this.mailer.sendOTP(user.email, token);
+    await this.mailer.sendOneTimePassword(user.email, token);
     return true;
   }
   // Step 2: Verify code with email  //

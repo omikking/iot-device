@@ -1,7 +1,6 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail } from 'class-validator';
 
 export class RequestPasswordResetInput {
-  @IsEmail({}, { message: 'Please provide a valid email address' })
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail()
   email: string;
 }

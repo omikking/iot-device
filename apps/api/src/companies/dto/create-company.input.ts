@@ -26,7 +26,6 @@ export class CreateCompanyInput extends GraphQLTypes.CreateCompanyInput {
   @MaxLength(50)
   country: string;
 
-  @IsString()
   @IsEmail()
   @MaxLength(50)
   companyContactEmail: string;

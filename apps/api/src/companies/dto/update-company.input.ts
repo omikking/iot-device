@@ -39,7 +39,6 @@ export class UpdateCompanyInput extends GraphQLTypes.UpdateCompanyInput {
   country: string;
 
   @IsOptional()
-  @IsString()
   @IsEmail()
   @MaxLength(50)
   companyContactEmail: string;

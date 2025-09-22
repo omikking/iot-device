@@ -17,4 +17,11 @@ export const validations = {
   driveWhitespace: 'Drive name cannot be mostly whitespace.',
   levelWhitespace: 'Level name cannot be mostly whitespace.',
   locationWhitespace: 'Location name cannot be mostly whitespace.',
+
+  invalidOTP: 'The reset code must be 6 characters.',
+
+  passwordMismatch: 'New password and confirm password do not match.',
+  passwordTooShort: 'Password must be at least 8 characters.',
+  passwordTooWeak:
+    'Please provide a stronger password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.',
 };

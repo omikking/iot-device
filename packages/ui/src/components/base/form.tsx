@@ -139,7 +139,6 @@ const FormDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
-  // @TODO when is this used? update this to use Text component instead.
   return (
     <p
       ref={ref}
@@ -163,8 +162,11 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <div className="ui-flex ui-items-center ui-gap-1.5">
-      <LucideXCircle size="14" className="ui-stroke-error" />
+    <div className="ui-flex ui-items-start ui-gap-1.5">
+      <LucideXCircle
+        size="14"
+        className="ui-stroke-error ui-mt-[3px] ui-min-w-3.5"
+      />
       <Text variant="small" color="destructive" id={formMessageId} ref={ref}>
         {body}
       </Text>

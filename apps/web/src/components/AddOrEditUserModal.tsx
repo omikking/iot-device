@@ -31,6 +31,7 @@ import { UpdateUserPermissionFormValues } from './schemas/UserPermissionFormSche
 import { useParams } from 'next/navigation';
 import { getAppName, handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 type AddOrEditUserModalProps = {
   user?: User;
@@ -419,7 +420,7 @@ export const AddOrEditUserModal = ({
                           <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Fill in email..."
+                              placeholder={placeholder.emailPlaceholder}
                               className="w-96"
                               disabled={!!user}
                               {...field}

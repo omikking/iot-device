@@ -68,4 +68,13 @@ export class EmailService {
       `,
     });
   }
+
+  async sendOneTimePassword(email: string, otp: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+      to: email,
+      subject: 'Password reset',
+      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
+    });
+  }
 }

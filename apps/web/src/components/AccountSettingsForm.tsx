@@ -24,6 +24,7 @@ import { User } from '@/gql/graphql';
 import { LucideCheckCircle } from 'lucide-react';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 type AccountSettingsFormProps = {
   user: User;
@@ -156,7 +157,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your email..."
+                      placeholder={placeholder.emailPlaceholder}
                       autoComplete="email"
                       className="w-full"
                     />
@@ -176,7 +177,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your full name..."
+                      placeholder={placeholder.fullNamePlaceholder}
                       className="w-full"
                     />
                   </FormControl>
@@ -195,7 +196,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your workplace..."
+                      placeholder={placeholder.workplacePlaceholder}
                       className="w-full"
                     />
                   </FormControl>
@@ -214,7 +215,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your phone number..."
+                      placeholder={placeholder.phoneNumberPlaceholder}
                       className="w-full"
                     />
                   </FormControl>
@@ -235,7 +236,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your current password..."
+                      placeholder={placeholder.currentPasswordPlaceholder}
                       type="password"
                       autoComplete="current-password"
                       className="w-full"
@@ -256,7 +257,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Enter your new password..."
+                      placeholder={placeholder.newPasswordPlaceholder}
                       type="password"
                       autoComplete="new-password"
                       className="w-full"
@@ -277,7 +278,7 @@ export default function AccountSettingsForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Confirm your password..."
+                      placeholder={placeholder.confirmPasswordPlaceholder}
                       type="password"
                       autoComplete="new-password"
                       className="w-full"

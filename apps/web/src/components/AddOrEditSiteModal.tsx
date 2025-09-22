@@ -30,6 +30,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { responses } from '@/app/uitexts/responses';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { useParams } from 'next/navigation';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 const createSiteMutation = graphql(`
   mutation createSite($createSiteInput: CreateSiteInput!) {
@@ -221,7 +222,7 @@ export const AddOrEditSiteModal = ({
                         <FormLabel>Site name</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in site name..."
+                            placeholder={placeholder.siteNamePlaceholder}
                             className="w-96"
                             {...field}
                           />
@@ -240,7 +241,7 @@ export const AddOrEditSiteModal = ({
                         <FormLabel>Address</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in address..."
+                            placeholder={placeholder.addressPlaceholder}
                             className="w-96"
                             {...field}
                           />
@@ -259,7 +260,7 @@ export const AddOrEditSiteModal = ({
                         <FormLabel>Postal code</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in postal code..."
+                            placeholder={placeholder.postalCodePlaceholder}
                             className="w-96"
                             {...field}
                           />
@@ -278,7 +279,7 @@ export const AddOrEditSiteModal = ({
                         <FormLabel>City</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in city..."
+                            placeholder={placeholder.cityPlaceholder}
                             className="w-96"
                             {...field}
                           />
@@ -297,7 +298,7 @@ export const AddOrEditSiteModal = ({
                         <FormLabel>Country</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Fill in country..."
+                            placeholder={placeholder.countryPlaceholder}
                             className="w-96"
                             {...field}
                           />

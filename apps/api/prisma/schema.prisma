@@ -96,7 +96,7 @@ model Company {
   plan           Plan[]
   site           Site[]
   userPermission UserPermission[]
-  Invitation     Invitation[]
+  invitation     Invitation[]
 
   @@map("companies")
 }
@@ -131,8 +131,8 @@ model User {
   isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
 
   userRole             UserPermission[]
-  boltResult           BoltResult[] // @TODO Check if this can be removed. - We just need to give every BoltResult a userId, is this the correct way?
-  PasswordResetRequest PasswordResetRequest[]
+  boltResult           BoltResult[]
+  passwordResetRequest PasswordResetRequest[]
 
   @@map("users")
 }
@@ -200,7 +200,7 @@ model Site {
   companyId String
 
   level      Level[]
-  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give siteId to BoltResult, is this relation correct?
+  boltResult BoltResult[]
 
   @@map("sites")
 }
@@ -216,7 +216,7 @@ model Level {
   siteId String
 
   drive      Drive[]
-  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give levelId to BoltResult, is this relation correct?
+  boltResult BoltResult[]
 
   @@map("levels")
 }
@@ -232,7 +232,7 @@ model Drive {
   levelId String
 
   location   Location[]
-  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give driveId to BoltResult, is this relation correct?
+  boltResult BoltResult[]
 
   @@map("drives")
 }
@@ -247,7 +247,7 @@ model Location {
   drive   Drive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   driveId String
 
-  boltResult BoltResult[] // @TODO Check if this can be removed? - Harder to query then, we just want to give locationId to BoltResult, is this relation correct?
+  boltResult BoltResult[]
 
   @@map("locations")
 }

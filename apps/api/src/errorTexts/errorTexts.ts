@@ -134,9 +134,10 @@ export const errorTexts = {
   userPasswordMismatch_message:
     'New password and confirm password do not match.',
 
-  userPasswordTooWeak_title: 'Password too weak',
   userPasswordTooWeak_message:
     'Please provide a stronger password with at least 8 characters, including uppercase, lowercase, numbers, and special characters.',
+
+  userPasswordTooShort_message: 'Password must be at least 8 characters',
 
   userUpdateError_title: 'Failed to update user',
 

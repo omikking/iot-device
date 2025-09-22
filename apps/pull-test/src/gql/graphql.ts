@@ -197,6 +197,7 @@ export type CreateDriveInput = {
 export type CreateGlobalInvitationInput = {
   email: Scalars['String']['input'];
   globalRole: Scalars['String']['input'];
+  isGlobalVisibility?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CreateInvitationInput = {
@@ -287,6 +288,7 @@ export type Invitation = {
   expiresAt: Scalars['DateTime']['output'];
   globalRole?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  isGlobalVisibility?: Maybe<Scalars['Boolean']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   used: Scalars['Boolean']['output'];
 };

@@ -13,24 +13,18 @@ export class ResetPasswordService {
   ) {}
 
   private async generateUniqueOTP(): Promise<string> {
-    const MAX_RETRIES = 20;
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      const randomBuffer = randomBytes(4);
+    const randomBuffer = randomBytes(4);
 
-      // Generate a 6-digit OTP
-      const token = (
-        (randomBuffer.readUInt32BE(0) % 900000) +
-        100000
-      ).toString();
+    // Generate a 6-digit OTP
+    const token = ((randomBuffer.readUInt32BE(0) % 900000) + 100000).toString();
 
-      const existing = await this.prisma.passwordResetRequest.findUnique({
-        where: { token },
-      });
+    const existing = await this.prisma.passwordResetRequest.findUnique({
+      where: { token },
+    });
 
-      if (!existing) return token;
-    }
+    if (!existing) return token;
 
-    throw new Error('Failed to generate a unique OTP after maximum retries');
+    throw new Error('Failed to generate a unique OTP');
   }
 
   // Step 1: Request password reset //
@@ -60,8 +54,8 @@ export class ResetPasswordService {
 
     if (existingRequest) {
       // Update existing token and expiry
-      await this.prisma.passwordResetRequest.updateMany({
-        where: { userId: user.id },
+      await this.prisma.passwordResetRequest.update({
+        where: { id: existingRequest.id },
         data: { token, expiresAt },
       });
     } else {

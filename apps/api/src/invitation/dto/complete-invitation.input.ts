@@ -16,8 +16,8 @@ export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInpu
   token: string;
 
   @IsString()
-  @MinLength(2, { message: 'Full name must be at least 2 characters' })
-  @MaxLength(100, { message: 'Full name cannot exceed 100 characters' })
+  @MinLength(2)
+  @MaxLength(100)
   fullName: string;
 
   @IsString()
@@ -28,8 +28,8 @@ export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInpu
   password: string;
 
   @IsString()
-  @MinLength(2, { message: 'Work place must be at least 2 characters' })
-  @MaxLength(100, { message: 'Work place cannot exceed 100 characters' })
+  @MinLength(2)
+  @MaxLength(100)
   workPlace: string;
 
   @IsOptional()

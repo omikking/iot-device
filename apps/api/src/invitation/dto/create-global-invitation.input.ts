@@ -4,9 +4,9 @@ import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateGlobalInvitationInput extends GraphQLTypes.CreateGlobalInvitationInput {
   @IsString()
-  @IsEmail({}, { message: 'Invalid email format' })
+  @IsEmail()
   email: string;
 
-  @IsEnum(GlobalRole, { message: 'Invalid global role' })
+  @IsEnum(GlobalRole)
   globalRole: GlobalRole;
 }

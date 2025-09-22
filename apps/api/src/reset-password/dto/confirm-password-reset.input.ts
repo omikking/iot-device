@@ -11,10 +11,12 @@ export class ConfirmPasswordResetInput {
   @IsString()
   token: string;
 
+  @IsString()
   @IsEmail()
   @MaxLength(50)
   email: string;
 
+  @IsString()
   @MaxLength(50)
   @MinLength(8, { message: errorTexts.userPasswordTooShort_message })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
@@ -22,6 +24,7 @@ export class ConfirmPasswordResetInput {
   })
   newPassword: string;
 
+  @IsString()
   @MaxLength(50)
   confirmPassword: string;
 }

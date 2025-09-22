@@ -4,17 +4,17 @@ import * as GraphQLTypes from '../../graphql-types';
 
 export class CreateInvitationInput extends GraphQLTypes.CreateInvitationInput {
   @IsString()
-  @IsEmail({}, { message: 'Invalid email format' })
+  @IsEmail()
   email: string;
 
   @IsString()
-  @IsUUID(4, { message: 'Company ID must be a valid UUID' })
+  @IsUUID(4)
   companyId: string;
 
-  @IsEnum(Role, { message: 'Invalid role' })
+  @IsEnum(Role)
   role: Role;
 
   @IsArray()
-  @IsEnum(Application, { each: true, message: 'Invalid application access' })
+  @IsEnum(Application)
   appsAccess: Application[];
 }

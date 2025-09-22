@@ -4,6 +4,7 @@ export class ValidateResetTokenInput {
   @IsString()
   token: string;
 
+  @IsString()
   @IsEmail()
   @MaxLength(50)
   email: string;

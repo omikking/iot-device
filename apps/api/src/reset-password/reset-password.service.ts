@@ -4,6 +4,7 @@ import { UserInputError } from '@nestjs/apollo';
 import * as argon from 'argon2';
 import { EmailService } from 'src/email/email.service';
 import { randomBytes } from 'crypto';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class ResetPasswordService {
@@ -13,82 +14,24 @@ export class ResetPasswordService {
   ) {}
 
   private async generateUniqueOTP(): Promise<string> {
+    // Generate a 6-digit one-time password (OTP)
     const randomBuffer = randomBytes(4);
-
-    // Generate a 6-digit OTP
     const token = ((randomBuffer.readUInt32BE(0) % 900000) + 100000).toString();
-
-    const existing = await this.prisma.passwordResetRequest.findUnique({
-      where: { token },
-    });
-
-    if (!existing) return token;
-
-    throw new Error('Failed to generate a unique OTP');
+    return token;
   }
 
-  // Step 1: Request password reset //
-  async requestPasswordReset(requestPasswordResetInput: {
-    email: string;
-  }): Promise<boolean> {
-    const { email } = requestPasswordResetInput;
-
-    if (!email) {
-      throw new UserInputError('Email is required');
-    }
-
+  private async validateUserResetToken(token: string, email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      throw new UserInputError('User not found with this email');
-    }
-
-    const token = await this.generateUniqueOTP();
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // for now its 30 minutes we can update it later accordingly
-
-    const existingRequest = await this.prisma.passwordResetRequest.findFirst({
-      where: { userId: user.id },
-    });
-
-    if (existingRequest) {
-      // Update existing token and expiry
-      await this.prisma.passwordResetRequest.update({
-        where: { id: existingRequest.id },
-        data: { token, expiresAt },
-      });
-    } else {
-      // Create new request
-      await this.prisma.passwordResetRequest.create({
-        data: {
-          token,
-          expiresAt,
-          userId: user.id,
+      throw new UserInputError('', {
+        extensions: {
+          code: 'OTP_VALIDATION_ERROR',
+          title: errorTexts.otpValidationError_title,
         },
       });
-    }
-
-    await this.mailer.sendOneTimePassword(user.email, token);
-    return true;
-  }
-  // Step 2: Verify code with email  //
-  async validateResetToken(validateResetTokenInput: {
-    token: string;
-    email: string;
-  }): Promise<boolean> {
-    const { token, email } = validateResetTokenInput;
-
-    if (!token || !email) {
-      throw new UserInputError('Email and token are required');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new UserInputError('User not found');
     }
 
     const request = await this.prisma.passwordResetRequest.findFirst({
@@ -99,17 +42,78 @@ export class ResetPasswordService {
     });
 
     if (!request) {
-      throw new UserInputError('Invalid token');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'OTP_VALIDATION_ERROR',
+          title: errorTexts.otpValidationError_title,
+        },
+      });
     }
 
     if (request.expiresAt < new Date()) {
-      throw new UserInputError('Token expired');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'OTP_EXPIRED_ERROR',
+          title: errorTexts.otpTokenExpired_title,
+          message: errorTexts.otpTokenExpired_message,
+        },
+      });
     }
 
+    return { user, request };
+  }
+
+  async requestPasswordReset(requestPasswordResetInput: {
+    email: string;
+  }): Promise<boolean> {
+    const { email } = requestPasswordResetInput;
+
+    // Test if removing this would work anyways caught from dto validation
+    // if (!email) {
+    //   throw new UserInputError('Email is required');
+    // }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'OTP_CREATE_ERROR',
+          title: errorTexts.otpCreateError_title,
+        },
+      });
+    }
+
+    // Remove all existing tokens for user before generating a new one
+    await this.prisma.passwordResetRequest.deleteMany({
+      where: { userId: user.id },
+    });
+
+    const token = await this.generateUniqueOTP();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
+
+    await this.prisma.passwordResetRequest.create({
+      data: {
+        token,
+        expiresAt,
+        userId: user.id,
+      },
+    });
+
+    await this.mailer.sendOneTimePassword(user.email, token);
+    return true;
+  }
+  async validateResetToken(validateResetTokenInput: {
+    token: string;
+    email: string;
+  }): Promise<boolean> {
+    const { token, email } = validateResetTokenInput;
+    await this.validateUserResetToken(token, email);
     return true;
   }
 
-  //Step 3: Confirm and update password //
   async confirmPasswordReset(confirmPasswordResetInput: {
     token: string;
     email: string;
@@ -119,36 +123,22 @@ export class ResetPasswordService {
     const { token, email, newPassword, confirmPassword } =
       confirmPasswordResetInput;
 
-    if (!token || !email || !newPassword || !confirmPassword) {
-      throw new UserInputError('All fields are required');
-    }
+    // Not needed, check if this works in dto validation.
+    // if (!token || !email || !newPassword || !confirmPassword) {
+    //   throw new UserInputError('All fields are required');
+    // }
 
     if (newPassword !== confirmPassword) {
-      throw new UserInputError('Passwords do not match');
+      throw new UserInputError('', {
+        extensions: {
+          code: 'PASSWORD_MISMATCH_ERROR',
+          title: errorTexts.userPasswordMismatch_title,
+          message: errorTexts.userPasswordMismatch_message,
+        },
+      });
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new UserInputError('User not found');
-    }
-
-    const request = await this.prisma.passwordResetRequest.findFirst({
-      where: {
-        token,
-        userId: user.id,
-      },
-    });
-
-    if (!request) {
-      throw new UserInputError('Invalid token');
-    }
-
-    if (request.expiresAt < new Date()) {
-      throw new UserInputError('Token expired');
-    }
+    const { user } = await this.validateUserResetToken(token, email);
 
     const hashedPassword = await argon.hash(newPassword);
 
@@ -157,8 +147,8 @@ export class ResetPasswordService {
       data: { hash: hashedPassword },
     });
 
-    await this.prisma.passwordResetRequest.delete({
-      where: { token },
+    await this.prisma.passwordResetRequest.deleteMany({
+      where: { userId: user.id },
     });
 
     return true;

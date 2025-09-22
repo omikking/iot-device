@@ -111,7 +111,6 @@ export const AddAdministratorModal = ({
           description: responses.contactSupportError,
           variant: 'error',
         });
-        setIsLoading(false);
       })
       .finally(() => {
         setIsLoading(false);

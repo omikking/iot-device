@@ -86,4 +86,13 @@ export const responses = {
   // Account settings
   settingsUpdateFailed: 'Failed to update account settings',
   settingsUpdateSuccess: 'Account settings successfully updated',
+
+  // Reset password
+  resetPasswordEmailSent: 'You will receive a code shortly.',
+  resetPasswordEmailFailed: 'Failed to send email.',
+  resetPasswordCodeVerifiedSuccess:
+    'Code verified, you can now reset your password.',
+  resetPasswordCodeFailed: 'Failed to verify code.',
+  resetPasswordSuccess: 'Password has been successfully reset.',
+  resetPasswordFailed: 'Failed to reset password.',
 };

@@ -196,4 +196,12 @@ export const errorTexts = {
   invitationRateLimit_title: 'Too many invitations',
   invitationRateLimit_message:
     'Please wait before sending another invitation to this email.',
+
+  otpCreateError_title: 'Failed to send a reset password code',
+
+  otpValidationError_title: 'Invalid reset password code',
+
+  otpTokenExpired_title: 'Reset password code expired',
+  otpTokenExpired_message:
+    'The reset password code has expired. Please request a new one.',
 };

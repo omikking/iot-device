@@ -41,7 +41,7 @@ import { responses } from '@/app/uitexts/responses';
 import { placeholder } from '@/app/uitexts/placeholder';
 
 const requestPasswordResetMutation = graphql(`
-  mutation RequestPasswordReset(
+  mutation requestPasswordReset(
     $requestPasswordResetInput: RequestPasswordResetInput!
   ) {
     requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)
@@ -49,7 +49,7 @@ const requestPasswordResetMutation = graphql(`
 `);
 
 const validateResetTokenMutation = graphql(`
-  mutation ValidateResetToken(
+  mutation validateResetToken(
     $validateResetTokenInput: ValidateResetTokenInput!
   ) {
     validateResetToken(validateResetTokenInput: $validateResetTokenInput)
@@ -57,7 +57,7 @@ const validateResetTokenMutation = graphql(`
 `);
 
 const confirmPasswordResetMutation = graphql(`
-  mutation ConfirmPasswordReset(
+  mutation confirmPasswordReset(
     $confirmPasswordResetInput: ConfirmPasswordResetInput!
   ) {
     confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)

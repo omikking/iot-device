@@ -26,7 +26,15 @@ export const resetPasswordResetPassword = z
           message: validations.passwordTooWeak,
         },
       ),
-    confirmPassword: z.string(),
+    confirmPassword: z
+      .string()
+      .min(8, { message: validations.passwordTooShort })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        {
+          message: validations.passwordTooWeak,
+        },
+      ),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: validations.passwordsMismatch,

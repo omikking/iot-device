@@ -37,6 +37,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucidePlus } from 'lucide-react';
 import { responses } from '@/app/uitexts/responses';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 type AddAdministratorModalProps = {
   onOpenChange: (open: boolean) => void;
@@ -147,7 +148,7 @@ export const AddAdministratorModal = ({
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter email"
+                          placeholder={placeholder.emailPlaceholder}
                           {...field}
                           className="w-96"
                         />

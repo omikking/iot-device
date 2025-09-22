@@ -36,6 +36,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideCircleHelp, LucidePlus, LucideSquarePen } from 'lucide-react';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { Role } from '@/gql/graphql';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 const createGlobalInvitationMutation = graphql(`
   mutation createGlobalInvitation($input: CreateGlobalInvitationInput!) {
@@ -225,7 +226,7 @@ export const AddOrEditTechnicianModal = ({
                       <FormControl>
                         <Input
                           autoFocus
-                          placeholder="Enter email"
+                          placeholder={placeholder.emailPlaceholder}
                           {...field}
                           className="w-96"
                           disabled={technician ? true : false}

@@ -8,7 +8,7 @@ import { ValidateResetTokenInput } from './dto/validate-reset-token.input';
 export class ResetPasswordResolver {
   constructor(private readonly resetPasswordService: ResetPasswordService) {}
 
-  @Mutation(() => Boolean)
+  @Mutation('requestPasswordReset')
   async requestPasswordReset(
     @Args('input')
     input: RequestPasswordResetInput,
@@ -16,7 +16,7 @@ export class ResetPasswordResolver {
     return this.resetPasswordService.requestPasswordReset(input);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation('validateResetToken')
   async validateResetToken(
     @Args('input')
     input: ValidateResetTokenInput,
@@ -24,7 +24,7 @@ export class ResetPasswordResolver {
     return this.resetPasswordService.validateResetToken(input);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation('confirmPasswordReset')
   async confirmPasswordReset(
     @Args('input')
     input: ConfirmPasswordResetInput,

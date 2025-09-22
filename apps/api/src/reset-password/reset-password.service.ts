@@ -130,14 +130,15 @@ export class ResetPasswordService {
 
     const hashedPassword = await argon.hash(newPassword);
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { hash: hashedPassword },
-    });
-
-    await this.prisma.passwordResetRequest.deleteMany({
-      where: { userId: user.id },
-    });
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: { hash: hashedPassword },
+      }),
+      this.prisma.passwordResetRequest.deleteMany({
+        where: { userId: user.id },
+      }),
+    ]);
 
     return true;
   }

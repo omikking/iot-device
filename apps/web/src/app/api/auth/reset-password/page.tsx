@@ -182,7 +182,9 @@ export default function Page() {
               variant: 'success',
             });
           }
-          router.push('/api/auth/signin');
+          setTimeout(() => {
+            router.push('/api/auth/signin');
+          }, 1000);
         })
         // Fallback error
         .catch(() => {

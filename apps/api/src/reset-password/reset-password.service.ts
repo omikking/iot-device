@@ -68,11 +68,6 @@ export class ResetPasswordService {
   }): Promise<boolean> {
     const { email } = requestPasswordResetInput;
 
-    // Test if removing this would work anyways caught from dto validation
-    // if (!email) {
-    //   throw new UserInputError('Email is required');
-    // }
-
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -122,11 +117,6 @@ export class ResetPasswordService {
   }): Promise<boolean> {
     const { token, email, newPassword, confirmPassword } =
       confirmPasswordResetInput;
-
-    // Not needed, check if this works in dto validation.
-    // if (!token || !email || !newPassword || !confirmPassword) {
-    //   throw new UserInputError('All fields are required');
-    // }
 
     if (newPassword !== confirmPassword) {
       throw new UserInputError('', {

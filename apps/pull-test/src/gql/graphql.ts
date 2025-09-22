@@ -396,7 +396,7 @@ export type MutationCompleteInvitationArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationConfirmPasswordResetArgs = {
-  confirmPasswordResetInput: ConfirmPasswordResetInput;
+  input: ConfirmPasswordResetInput;
 };
 
 
@@ -604,7 +604,7 @@ export type MutationRemoveUserPermissionArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationRequestPasswordResetArgs = {
-  requestPasswordResetInput: RequestPasswordResetInput;
+  input: RequestPasswordResetInput;
 };
 
 
@@ -722,7 +722,7 @@ export type MutationUpdateUserPermissionArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationValidateResetTokenArgs = {
-  validateResetTokenInput: ValidateResetTokenInput;
+  input: ValidateResetTokenInput;
 };
 
 /**

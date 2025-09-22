@@ -63,10 +63,8 @@ export class ResetPasswordService {
     return { user, request };
   }
 
-  async requestPasswordReset(requestPasswordResetInput: {
-    email: string;
-  }): Promise<boolean> {
-    const { email } = requestPasswordResetInput;
+  async requestPasswordReset(input: { email: string }): Promise<boolean> {
+    const { email } = input;
 
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -100,23 +98,23 @@ export class ResetPasswordService {
     await this.mailer.sendOneTimePassword(user.email, token);
     return true;
   }
-  async validateResetToken(validateResetTokenInput: {
+
+  async validateResetToken(input: {
     token: string;
     email: string;
   }): Promise<boolean> {
-    const { token, email } = validateResetTokenInput;
+    const { token, email } = input;
     await this.validateUserResetToken(token, email);
     return true;
   }
 
-  async confirmPasswordReset(confirmPasswordResetInput: {
+  async confirmPasswordReset(input: {
     token: string;
     email: string;
     newPassword: string;
     confirmPassword: string;
   }): Promise<boolean> {
-    const { token, email, newPassword, confirmPassword } =
-      confirmPasswordResetInput;
+    const { token, email, newPassword, confirmPassword } = input;
 
     if (newPassword !== confirmPassword) {
       throw new UserInputError('', {

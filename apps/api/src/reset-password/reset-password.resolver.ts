@@ -10,31 +10,25 @@ export class ResetPasswordResolver {
 
   @Mutation(() => Boolean)
   async requestPasswordReset(
-    @Args('requestPasswordResetInput')
-    requestPasswordResetInput: RequestPasswordResetInput,
+    @Args('input')
+    input: RequestPasswordResetInput,
   ): Promise<boolean> {
-    return this.resetPasswordService.requestPasswordReset(
-      requestPasswordResetInput,
-    );
+    return this.resetPasswordService.requestPasswordReset(input);
   }
 
   @Mutation(() => Boolean)
   async validateResetToken(
-    @Args('validateResetTokenInput')
-    validateResetTokenInput: ValidateResetTokenInput,
+    @Args('input')
+    input: ValidateResetTokenInput,
   ): Promise<boolean> {
-    return this.resetPasswordService.validateResetToken(
-      validateResetTokenInput,
-    );
+    return this.resetPasswordService.validateResetToken(input);
   }
 
   @Mutation(() => Boolean)
   async confirmPasswordReset(
-    @Args('confirmPasswordResetInput')
-    confirmPasswordResetInput: ConfirmPasswordResetInput,
+    @Args('input')
+    input: ConfirmPasswordResetInput,
   ): Promise<boolean> {
-    return this.resetPasswordService.confirmPasswordReset(
-      confirmPasswordResetInput,
-    );
+    return this.resetPasswordService.confirmPasswordReset(input);
   }
 }

@@ -41,26 +41,20 @@ import { responses } from '@/app/uitexts/responses';
 import { placeholder } from '@/app/uitexts/placeholder';
 
 const requestPasswordResetMutation = graphql(`
-  mutation requestPasswordReset(
-    $requestPasswordResetInput: RequestPasswordResetInput!
-  ) {
-    requestPasswordReset(requestPasswordResetInput: $requestPasswordResetInput)
+  mutation requestPasswordReset($input: RequestPasswordResetInput!) {
+    requestPasswordReset(input: $input)
   }
 `);
 
 const validateResetTokenMutation = graphql(`
-  mutation validateResetToken(
-    $validateResetTokenInput: ValidateResetTokenInput!
-  ) {
-    validateResetToken(validateResetTokenInput: $validateResetTokenInput)
+  mutation validateResetToken($input: ValidateResetTokenInput!) {
+    validateResetToken(input: $input)
   }
 `);
 
 const confirmPasswordResetMutation = graphql(`
-  mutation confirmPasswordReset(
-    $confirmPasswordResetInput: ConfirmPasswordResetInput!
-  ) {
-    confirmPasswordReset(confirmPasswordResetInput: $confirmPasswordResetInput)
+  mutation confirmPasswordReset($input: ConfirmPasswordResetInput!) {
+    confirmPasswordReset(input: $input)
   }
 `);
 
@@ -105,7 +99,7 @@ export default function Page() {
 
     if (step === 1) {
       requestPasswordReset({
-        requestPasswordResetInput: { email: data.email },
+        input: { email: data.email },
       })
         .then((result) => {
           // Backend errors
@@ -136,7 +130,7 @@ export default function Page() {
 
     if (step === 2) {
       validateResetToken({
-        validateResetTokenInput: {
+        input: {
           email: data.email,
           token: data.code,
         },
@@ -170,7 +164,7 @@ export default function Page() {
 
     if (step === 3) {
       confirmPasswordReset({
-        confirmPasswordResetInput: {
+        input: {
           email: data.email,
           token: data.code,
           newPassword: data.newPassword,

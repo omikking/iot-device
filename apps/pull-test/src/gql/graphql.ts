@@ -297,6 +297,7 @@ export type InvitationResponse = {
   __typename?: 'InvitationResponse';
   invitationId?: Maybe<Scalars['String']['output']>;
   isNewUser: Scalars['Boolean']['output'];
+  message?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 

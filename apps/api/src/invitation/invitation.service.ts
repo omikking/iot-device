@@ -60,6 +60,7 @@ export class InvitationService {
             code: 'INVITATION_USER_EXISTS_ERROR',
             title: errorTexts.invitationUserExists_title,
             message: errorTexts.invitationUserExists_message,
+            type: 'warning',
           },
         });
       }
@@ -74,6 +75,13 @@ export class InvitationService {
             appsAccess,
           },
         });
+
+        // Send email notification to existing user about new company access
+        await this.emailService.sendExistingUserEmail(
+          existingUser.email,
+          role,
+          company.name,
+        );
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -98,13 +106,12 @@ export class InvitationService {
     });
 
     if (existingInvitation) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'INVITATION_DUPLICATE_ERROR',
-          title: errorTexts.invitationDuplicate_title,
-          message: errorTexts.invitationDuplicate_message,
-        },
-      });
+      // Instead of throwing an error, resend the existing invitation
+      await this.resendInvitation(existingInvitation.id);
+      return {
+        invitationId: existingInvitation.id,
+        isNewUser: false, // Indicating this is a resent invitation
+      };
     }
 
     // Rate limiting check
@@ -136,6 +143,7 @@ export class InvitationService {
         invitation.id,
         token,
         company.name,
+        role,
       );
 
       return {
@@ -169,6 +177,8 @@ export class InvitationService {
           where: { id: existingUser.id },
           data: { globalRole, isGlobalVisibility },
         });
+
+        await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -529,6 +539,7 @@ export class InvitationService {
           invitation.id,
           newToken,
           invitation.company.name,
+          invitation.role || undefined,
         );
       } else {
         throw new UserInputError('', {

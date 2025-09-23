@@ -183,7 +183,7 @@ export const errorTexts = {
 
   invitationUserExists_title: 'User already exists',
   invitationUserExists_message:
-    'A user with this email already has access to this company.',
+    'A user with this email already has access to this company. Edit from the existing access instead.',
 
   invitationCreateError_title: 'Failed to create invitation',
 

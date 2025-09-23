@@ -227,7 +227,6 @@ export const PullTestReportPDF = ({
       pdf.setFont('helvetica', 'normal');
       pageY += 22;
 
-      console.log('pageItems:', pageItems);
       pageItems.forEach((item) => {
         // Check if peak load or displacement have multiple values
         const peakLoadValues = Array.isArray(item.peakLoad)
@@ -369,16 +368,16 @@ export const PullTestReportPDF = ({
       pdf.setLineWidth(0.1);
       pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
 
-      // Check if this is the last page of table data
+      // READINGS SUMMARY //
       const isLastTablePage = i + itemsPerPage >= results.length;
 
       if (isLastTablePage) {
         // check for space
-        const graphReadingsHeight = 50;
+        const graphReadingsHeight = 80;
         const spaceNeeded = pageY + graphReadingsHeight + 20;
 
+        // If not enough space then add page count else continue
         if (spaceNeeded > pageHeight - 15) {
-          // Not enough space, add page count & url for this page first
           pdf.setFontSize(8);
           pdf.text(parentUrl, margin, pageHeight - 5);
           pdf.text(
@@ -388,11 +387,9 @@ export const PullTestReportPDF = ({
             { align: 'right' },
           );
 
-          // Create new page for Graph Readings
           pdf.addPage();
           pageY = 20;
 
-          // Add header for summary page
           pdf.setFontSize(9);
           pdf.setFont('helvetica', 'normal');
           pdf.text(new Date().toLocaleDateString(), pageWidth - margin, 10, {
@@ -400,9 +397,9 @@ export const PullTestReportPDF = ({
           });
           pdf.text('Bolting Pull Test - Summary', margin, 10);
           pdf.setTextColor(0, 0, 0);
-          pageY += 20;
+          pageY += 30;
         } else {
-          pageY += 20; // Add some spacing before Graph Readings
+          pageY += 30;
         }
 
         // Graph readings titles
@@ -414,6 +411,7 @@ export const PullTestReportPDF = ({
 
         // Calculate actual values from results
         const totalTests = results.length;
+
         const validPeakLoads = results
           .flatMap((r) =>
             Array.isArray(r.peakLoad) ? r.peakLoad : [r.peakLoad],
@@ -435,28 +433,32 @@ export const PullTestReportPDF = ({
             : '0%';
 
         // Draw graph readings section
-        pdf.setFontSize(10);
+        pdf.setFontSize(8);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(0, 0, 0);
 
-        const graphColWidth = (pageWidth - margin * 2) / 3;
+        // Calculate spacing for horizontal distribution (like flex space-around)
+        const availableWidth = pageWidth - margin * 2;
+        const itemCount = graphTitles.length;
+        const spaceBetween = availableWidth / (itemCount + 1);
 
-        // Draw graph titles
         graphTitles.forEach((title, index) => {
-          const x = margin + index * graphColWidth;
-          pdf.text(title, x, pageY);
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(title, x, pageY, { align: 'center' });
         });
 
-        // Draw calculated values
-        pdf.setFontSize(12);
+        pdf.setFontSize(10);
         pdf.setFont('helvetica', 'normal');
         const graphValues = [totalTests.toString(), averageTons, successRate];
 
         graphValues.forEach((value, index) => {
-          const x = margin + index * graphColWidth;
-          pdf.text(value, x, pageY + 15);
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(value, x, pageY + 18, { align: 'center' });
         });
+
+        pageY += 35;
       }
+      // END READINGS SUMMARY //
 
       // Add page count & url
       pdf.setFontSize(8);

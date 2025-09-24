@@ -46,14 +46,14 @@ export default function SignIn() {
       // } else {
       //   const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       //   const redirectTo = isAdmin
-      //     ? 'http://localhost:3000/administration-portal'
-      //     : 'http://localhost:3000/select-company';
+      //    ? `${process.env.FRONTEND_URL}/administration-portal`
+      //    : `${process.env.FRONTEND_URL}/select-company`;
       //   router.push(redirectTo);
       // }
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       const redirectTo = isAdmin
-        ? 'http://localhost:3000/administration-portal'
-        : 'http://localhost:3000/select-company';
+        ? `${process.env.FRONTEND_URL}/administration-portal`
+        : `${process.env.FRONTEND_URL}/select-company`;
       router.push(redirectTo);
     }
   }, [status, router, searchParams]);
@@ -160,7 +160,7 @@ export default function SignIn() {
                 </Text>
                 <Text variant="small" color="accent">
                   <Link
-                    href="http://localhost:3000/api/auth/reset-password"
+                    href={`${process.env.FRONTEND_URL}/api/auth/reset-password`}
                     passHref
                     legacyBehavior
                   >

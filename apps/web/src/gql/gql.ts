@@ -21,11 +21,11 @@ const documents = {
     "\n  mutation removeCompany($id: String!) {\n    removeCompany(id: $id) {\n      id\n    }\n  }\n": types.RemoveCompanyDocument,
     "\n  query getCompanyPlans($id: String!) {\n    company(id: $id) {\n      id\n      name\n      plans {\n        id\n        applicationName\n        planLevel\n        expiringDate\n      }\n    }\n  }\n": types.GetCompanyPlansDocument,
     "\n  query GetAllCompanies($offset: Int, $limit: Int) {\n    companies(offset: $offset, limit: $limit) {\n      totalRecords\n      results {\n        id\n        name\n      }\n    }\n  }\n": types.GetAllCompaniesDocument,
-    "\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n": types.ValidateInvitationDocument,
+    "\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        companyName\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n": types.ValidateInvitationDocument,
     "\n  mutation completeInvitation($input: CompleteInvitationInput!) {\n    completeInvitation(input: $input) {\n      id\n      email\n      fullName\n      globalRole\n    }\n  }\n": types.CompleteInvitationDocument,
-    "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query getCompanySitesNames($id: String!) {\n    company(id: $id) {\n      name\n      sites {\n        id\n        siteName\n      }\n    }\n  }\n": types.GetCompanySitesNamesDocument,
     "\n  query getFullSiteLocations($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n": types.GetFullSiteLocationsDocument,
+    "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query getCompanySites($id: String!) {\n    company(id: $id) {\n      sites {\n        id\n        siteName\n        address\n        city\n        country\n        postalCode\n        companyId\n      }\n    }\n  }\n": types.GetCompanySitesDocument,
     "\n  query getTechnicians {\n    users(roles: \"SANDVIK_TECHNICIAN\") {\n      id\n      fullName\n      email\n      workPlace\n      isGlobalVisibility\n      phoneNumber\n      globalRole\n      createdAt\n    }\n  }\n": types.GetTechniciansDocument,
     "\n  query getPendingInvitations($companyId: String!) {\n    pendingInvitations(companyId: $companyId) {\n      id\n      email\n      role\n      expiresAt\n      createdAt\n      used\n    }\n  }\n": types.GetPendingInvitationsDocument,
@@ -108,15 +108,11 @@ export function graphql(source: "\n  query GetAllCompanies($offset: Int, $limit:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n"): (typeof documents)["\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        companyName\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n"): (typeof documents)["\n  query validateInvitation($id: String!, $token: String!) {\n    validateInvitation(id: $id, token: $token) {\n      valid\n      reason\n      invitation {\n        id\n        email\n        companyId\n        companyName\n        globalRole\n        role\n        expiresAt\n        used\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation completeInvitation($input: CompleteInvitationInput!) {\n    completeInvitation(input: $input) {\n      id\n      email\n      fullName\n      globalRole\n    }\n  }\n"): (typeof documents)["\n  mutation completeInvitation($input: CompleteInvitationInput!) {\n    completeInvitation(input: $input) {\n      id\n      email\n      fullName\n      globalRole\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -125,6 +121,10 @@ export function graphql(source: "\n  query getCompanySitesNames($id: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getFullSiteLocations($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query getFullSiteLocations($id: String!) {\n    site(id: $id) {\n      id\n      siteName\n      levels {\n        id\n        levelName\n        siteId\n        drives {\n          id\n          driveName\n          levelId\n          locations {\n            id\n            driveId\n            locationName\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

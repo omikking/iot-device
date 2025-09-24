@@ -10,6 +10,7 @@ type Invitation {
   createdAt: DateTime!
   used: Boolean!
   companyId: String
+  companyName: String
   globalRole: String
   role: String
   isGlobalVisibility: Boolean

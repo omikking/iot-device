@@ -3,7 +3,7 @@
 set -e
 
 # Configuration 
-PROJECT_DIR="/home/adminpc/ground-support-platform"
+PROJECT_DIR="/ground-support-platform"
 
 # Database configuration
 DB_NAME="nest"

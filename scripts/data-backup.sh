@@ -4,7 +4,7 @@
 set -e
 
 # Configuration 
-PROJECT_DIR="/home/adminpc/ground-support-platform"
+PROJECT_DIR="/ground-support-platform"
 BACKUP_DIR="$PROJECT_DIR/backups"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILE="data_backup_$TIMESTAMP.sql"

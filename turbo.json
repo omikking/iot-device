@@ -17,7 +17,8 @@
       "env": [
         "BACKEND_URL",
         "NEXTAUTH_SECRET",
-        "NEXT_PUBLIC_API_URL"
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_PULLTEST_URL"
       ]
     },
     "lint": {},

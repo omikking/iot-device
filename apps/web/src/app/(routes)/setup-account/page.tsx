@@ -27,6 +27,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Role } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 const validateInvitationQuery = graphql(`
   query validateInvitation($id: String!, $token: String!) {
@@ -239,7 +240,6 @@ export default function Page(): JSX.Element {
                   <Input
                     disabled={true}
                     value={invitation?.email || ''}
-                    placeholder="email@example.com"
                     className="w-96"
                   />
                 </FormControl>
@@ -252,7 +252,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Full name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your full name..."
+                        placeholder={placeholder.fullNamePlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -271,7 +271,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Workplace</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your workplace..."
+                        placeholder={placeholder.workplacePlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -288,7 +288,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Phone number</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your phone number..."
+                        placeholder={placeholder.phoneNumberPlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -308,7 +308,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Fill in your password..."
+                        placeholder={placeholder.passwordPlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -326,7 +326,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Fill in your password..."
+                        placeholder={placeholder.passwordPlaceholder}
                         className="w-96"
                         {...field}
                       />

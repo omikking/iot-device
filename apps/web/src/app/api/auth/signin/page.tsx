@@ -27,6 +27,7 @@ import {
   SignInFormValues,
   signInFormSchema,
 } from '@/components/schemas/SignInFormSchema';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 export default function SignIn() {
   const router = useRouter();
@@ -120,7 +121,7 @@ export default function SignIn() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter email"
+                        placeholder={placeholder.emailPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -141,7 +142,7 @@ export default function SignIn() {
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter password"
+                          placeholder={placeholder.passwordPlaceholder}
                           {...field}
                           className="w-full"
                         />

@@ -16,7 +16,9 @@
       "env": [
         "BACKEND_URL",
         "NEXTAUTH_SECRET",
-        "FRONTEND_URL"
+        "FRONTEND_URL",
+        "NEXT_PUBLIC_PORTAL_URL",
+        "NEXT_PUBLIC_PULL_TEST_URL"
       ]
     },
     "start": {

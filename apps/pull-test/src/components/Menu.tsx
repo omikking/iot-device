@@ -144,7 +144,7 @@ export const Menu = () => {
                   className="group"
                 >
                   <Link
-                    href={`${process.env.FRONTEND_URL}/select-application/${companyId}`}
+                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/select-application/${companyId}`}
                     passHref
                     legacyBehavior
                   >
@@ -160,8 +160,8 @@ export const Menu = () => {
                   <Link
                     href={
                       globalRole === Role.SandvikAdmin
-                        ? `${process.env.FRONTEND_URL}/administration-portal`
-                        : `${process.env.FRONTEND_URL}/select-company`
+                        ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+                        : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`
                     }
                     passHref
                     legacyBehavior
@@ -190,7 +190,7 @@ export const Menu = () => {
                     className="group"
                   >
                     <Link
-                      href={`${process.env.FRONTEND_URL}/administration-portal`}
+                      href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`}
                       passHref
                       legacyBehavior
                     >
@@ -215,7 +215,7 @@ export const Menu = () => {
               className="group"
             >
               <Link
-                href={`${process.env.FRONTEND_URL}/account-settings`}
+                href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/account-settings`}
                 passHref
                 legacyBehavior
               >

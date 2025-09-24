@@ -9,10 +9,9 @@ export default function NotFound() {
   const { data: session } = useSession();
   const globalRole = session?.user?.globalRole;
   const isAdmin = globalRole === Role.SandvikAdmin;
-  const frontendUrl = process.env.FRONTEND_URL || '';
   const redirectPath = isAdmin
-    ? `${frontendUrl}/administration-portal`
-    : `${frontendUrl}/select-company`;
+    ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+    : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex flex-col m-auto items-center pt-24 gap-16 bg-neutral-1 overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

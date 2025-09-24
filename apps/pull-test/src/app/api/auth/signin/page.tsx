@@ -46,14 +46,14 @@ export default function SignIn() {
       // } else {
       //   const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       //   const redirectTo = isAdmin
-      //    ? `${process.env.FRONTEND_URL}/administration-portal`
-      //    : `${process.env.FRONTEND_URL}/select-company`;
+      //    ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+      //    : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
       //   router.push(redirectTo);
       // }
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       const redirectTo = isAdmin
-        ? `${process.env.FRONTEND_URL}/administration-portal`
-        : `${process.env.FRONTEND_URL}/select-company`;
+        ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+        : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
       router.push(redirectTo);
     }
   }, [status, router, searchParams]);
@@ -160,7 +160,7 @@ export default function SignIn() {
                 </Text>
                 <Text variant="small" color="accent">
                   <Link
-                    href={`${process.env.FRONTEND_URL}/api/auth/reset-password`}
+                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/api/auth/reset-password`}
                     passHref
                     legacyBehavior
                   >

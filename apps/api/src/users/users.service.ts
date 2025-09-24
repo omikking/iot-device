@@ -5,7 +5,6 @@ import { GlobalRole, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 
 @Injectable()
@@ -128,16 +127,6 @@ export class UsersService {
             code: 'USER_PASSWORD_MISMATCH_ERROR',
             title: errorTexts.userPasswordMismatch_title,
             message: errorTexts.userPasswordMismatch_message,
-          },
-        });
-      }
-
-      if (!isPasswordStrong(newPassword)) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-            title: errorTexts.userPasswordTooWeak_title,
-            message: errorTexts.userPasswordTooWeak_message,
           },
         });
       }

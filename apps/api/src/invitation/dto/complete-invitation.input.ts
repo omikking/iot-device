@@ -6,6 +6,7 @@ import {
   Matches,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInput {
   @IsString()
@@ -15,21 +16,20 @@ export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInpu
   token: string;
 
   @IsString()
-  @MinLength(2, { message: 'Full name must be at least 2 characters' })
-  @MaxLength(100, { message: 'Full name cannot exceed 100 characters' })
+  @MinLength(2)
+  @MaxLength(100)
   fullName: string;
 
   @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @MinLength(8, { message: errorTexts.userPasswordTooShort_message })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    message: errorTexts.userPasswordTooWeak_message,
   })
   password: string;
 
   @IsString()
-  @MinLength(2, { message: 'Work place must be at least 2 characters' })
-  @MaxLength(100, { message: 'Work place cannot exceed 100 characters' })
+  @MinLength(2)
+  @MaxLength(100)
   workPlace: string;
 
   @IsOptional()

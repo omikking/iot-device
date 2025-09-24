@@ -2,8 +2,13 @@
 import { GoBack } from '@/components/GoBack';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  resetPasswordSendOTP,
+  resetPasswordValidateOTP,
+  resetPasswordResetPassword,
+  ResetPasswordResetPassword,
+} from '@/components/schemas/ResetPasswordFormSchema';
 import { CircleCheckBig } from 'lucide-react';
 import {
   Button,
@@ -17,44 +22,70 @@ import {
   Input,
   Text,
   Anchor,
+  showAlertToast,
 } from '@gsp/ui';
+import {
+  RequestPasswordResetMutation,
+  RequestPasswordResetMutationVariables,
+  ValidateResetTokenMutation,
+  ValidateResetTokenMutationVariables,
+  ConfirmPasswordResetMutation,
+  ConfirmPasswordResetMutationVariables,
+} from '@/gql/graphql';
 import Link from 'next/link';
+import { useMutation } from 'urql';
+import { graphql } from '@/gql';
+import { useRouter } from 'next/navigation';
+import { handleGraphQLErrors } from '@/libs/utils';
+import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
+
+const requestPasswordResetMutation = graphql(`
+  mutation requestPasswordReset($input: RequestPasswordResetInput!) {
+    requestPasswordReset(input: $input)
+  }
+`);
+
+const validateResetTokenMutation = graphql(`
+  mutation validateResetToken($input: ValidateResetTokenInput!) {
+    validateResetToken(input: $input)
+  }
+`);
+
+const confirmPasswordResetMutation = graphql(`
+  mutation confirmPasswordReset($input: ConfirmPasswordResetInput!) {
+    confirmPasswordReset(input: $input)
+  }
+`);
 
 export default function Page() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getSchemaForStep = (step: number) => {
-    switch (step) {
-      case 1:
-        return z.object({
-          email: z.string().email({ message: 'Invalid email address' }),
-        });
-      case 2:
-        return z.object({
-          email: z.string(),
-          code: z.string().min(6, { message: 'Code must be 6 characters' }),
-        });
-      case 3:
-        return z
-          .object({
-            email: z.string(),
-            code: z.string(),
-            newPassword: z
-              .string()
-              .min(8, { message: 'Password must be at least 8 characters' }),
-            confirmPassword: z.string(),
-          })
-          .refine((data) => data.newPassword === data.confirmPassword, {
-            message: 'Passwords must match',
-            path: ['confirmPassword'],
-          });
-      default:
-        throw new Error('Invalid step value');
-    }
-  };
+  const [, requestPasswordReset] = useMutation<
+    RequestPasswordResetMutation,
+    RequestPasswordResetMutationVariables
+  >(requestPasswordResetMutation);
+
+  const [, validateResetToken] = useMutation<
+    ValidateResetTokenMutation,
+    ValidateResetTokenMutationVariables
+  >(validateResetTokenMutation);
+
+  const [, confirmPasswordReset] = useMutation<
+    ConfirmPasswordResetMutation,
+    ConfirmPasswordResetMutationVariables
+  >(confirmPasswordResetMutation);
 
   const form = useForm({
-    resolver: zodResolver(getSchemaForStep(step)),
+    resolver: zodResolver(
+      step === 1
+        ? resetPasswordSendOTP
+        : step === 2
+          ? resetPasswordValidateOTP
+          : resetPasswordResetPassword,
+    ),
     defaultValues: {
       email: '',
       code: '',
@@ -63,23 +94,109 @@ export default function Page() {
     },
   });
 
-  const onSubmit = async () => {
-    switch (step) {
-      case 1:
-        // TODO Integrate BE for sending verification code
-        setStep(2);
-        break;
-      case 2:
-        // TODO Integrate BE for verifying code
-        setStep(3);
-        break;
-      case 3:
-        console.log('Resetting password...');
-        alert('Password Reset Successful');
-        break;
-      default:
-        console.log('Unknown step');
-        break;
+  const onSubmit = async (data: ResetPasswordResetPassword) => {
+    setIsLoading(true);
+
+    if (step === 1) {
+      requestPasswordReset({
+        input: { email: data.email },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            setStep(2);
+
+            showAlertToast({
+              title: responses.resetPasswordEmailSent,
+              variant: 'success',
+            });
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.resetPasswordEmailFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    if (step === 2) {
+      validateResetToken({
+        input: {
+          email: data.email,
+          token: data.code,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            setStep(3);
+
+            showAlertToast({
+              title: responses.resetPasswordCodeVerifiedSuccess,
+              variant: 'success',
+            });
+          }
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.resetPasswordCodeFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    if (step === 3) {
+      confirmPasswordReset({
+        input: {
+          email: data.email,
+          token: data.code,
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
+        },
+      })
+        .then((result) => {
+          // Backend errors
+          handleGraphQLErrors(result.error);
+
+          // Success
+          if (result.data) {
+            showAlertToast({
+              title: responses.resetPasswordSuccess,
+              variant: 'success',
+            });
+          }
+          setTimeout(() => {
+            router.push('/api/auth/signin');
+          }, 1000);
+        })
+        // Fallback error
+        .catch(() => {
+          showAlertToast({
+            title: responses.resetPasswordFailed,
+            description: responses.contactSupportError,
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -100,8 +217,8 @@ export default function Page() {
             <>
               <div className="flex flex-col justify-center items-center px-14 text-center">
                 <Text variant="medium" color="foreground">
-                  Enter your email and we will send you a link to reset your
-                  password.
+                  Enter your email and we will send you a verification code to
+                  reset your password.
                 </Text>
               </div>
               <FormField
@@ -113,7 +230,7 @@ export default function Page() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={placeholder.emailPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -122,7 +239,13 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">
+              <Button
+                variant="primary"
+                size="large"
+                isWide
+                type="submit"
+                isLoading={isLoading}
+              >
                 Send Code
               </Button>
             </>
@@ -156,11 +279,11 @@ export default function Page() {
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Enter verification code</FormLabel>
+                    <FormLabel>Verification code</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter reset code"
+                        placeholder={placeholder.verificationCodePlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -169,7 +292,13 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">
+              <Button
+                variant="primary"
+                size="large"
+                isWide
+                type="submit"
+                isLoading={isLoading}
+              >
                 Verify Code
               </Button>
             </>
@@ -182,11 +311,11 @@ export default function Page() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Enter new password</FormLabel>
+                    <FormLabel>New password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Enter new password"
+                        placeholder={placeholder.newPasswordPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -204,7 +333,7 @@ export default function Page() {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Confirm new password"
+                        placeholder={placeholder.confirmPasswordPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -213,7 +342,13 @@ export default function Page() {
                   </FormItem>
                 )}
               />
-              <Button variant="primary" size="large" isWide type="submit">
+              <Button
+                variant="primary"
+                size="large"
+                isWide
+                type="submit"
+                isLoading={isLoading}
+              >
                 <CircleCheckBig />
                 Confirm
               </Button>

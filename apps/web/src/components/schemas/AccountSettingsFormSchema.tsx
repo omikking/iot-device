@@ -21,8 +21,26 @@ export const updateAccountSettingsFormSchema = z
       .max(50, { message: validations.max50Chars('Phone number') })
       .optional(),
     oldPassword: z.string().optional(),
-    newPassword: z.string().optional(),
-    confirmPassword: z.string().optional(),
+    newPassword: z
+      .string()
+      .min(8, { message: validations.passwordTooShort })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        {
+          message: validations.passwordTooWeak,
+        },
+      )
+      .optional(),
+    confirmPassword: z
+      .string()
+      .min(8, { message: validations.passwordTooShort })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        {
+          message: validations.passwordTooWeak,
+        },
+      )
+      .optional(),
   })
   .refine(
     (data) => {

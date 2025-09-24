@@ -12,6 +12,7 @@ import {
   CreateCompanyFormValues,
   UpdateCompanyFormValues,
 } from './schemas/CompanyFormSchema';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 type CompanyDetailsFormProps = {
   companyForm: UseFormReturn<UpdateCompanyFormValues | CreateCompanyFormValues>;
@@ -32,7 +33,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter company name..."
+                  placeholder={placeholder.companyNamePlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -52,7 +53,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Email..."
+                  placeholder={placeholder.emailPlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -72,7 +73,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter organisation number..."
+                  placeholder={placeholder.organisationNumberPlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -92,7 +93,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter country..."
+                  placeholder={placeholder.countryPlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -112,7 +113,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter city..."
+                  placeholder={placeholder.cityPlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -132,7 +133,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter address..."
+                  placeholder={placeholder.addressPlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />
@@ -152,7 +153,7 @@ export const CompanyDetailsForm = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Enter postal code..."
+                  placeholder={placeholder.postalCodePlaceholder}
                   className="w-full"
                   onChange={field.onChange}
                 />

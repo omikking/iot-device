@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GlobalRole } from '@prisma/client';
+import { GlobalRole, Role } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
+import { EmailTemplateService } from './email-template.service';
 
 @Injectable()
 export class EmailService {
   private transporter;
 
-  constructor(private configService: ConfigService) {
-    // Configure nodemailer transporter
+  constructor(
+    private configService: ConfigService,
+    private emailTemplateService: EmailTemplateService,
+  ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('SMTP_HOST'),
       port: this.configService.get('SMTP_PORT'),
@@ -20,27 +23,58 @@ export class EmailService {
     });
   }
 
+  // ================================================================================
+  // PUBLIC EMAIL SENDING METHODS
+  // ================================================================================
+
+  // 1: For non-existing user invitations on company level
   async sendInvitationEmail(
     email: string,
     invitationId: string,
     token: string,
     companyName: string,
+    userRole?: string,
   ) {
     const inviteUrl = `${this.configService.get('FRONTEND_URL')}/setup-account?id=${invitationId}&token=${token}`;
+
+    const htmlTemplate = this.emailTemplateService.buildInvitationTemplate(
+      inviteUrl,
+      companyName,
+      userRole,
+    );
+
+    const roleText = this.emailTemplateService.getRoleDisplayText(userRole);
+
+    const textContent = `
+      Ground Support Platform
+
+      SANDVIK
+
+      Welcome to ${companyName}
+
+      You have been invited to join ${companyName} in Ground Support Platform ${roleText}.
+
+      Accept this invitation and setup your account: ${inviteUrl}
+
+      This invitation link will expire in 48 hours.
+
+      Need help? Contact your administrator for assistance.
+    `.trim();
 
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
       to: email,
-      subject: 'You have been invited to Ground Support Platform',
-      html: `
-        <p>You have been invited to join ${companyName} on Ground Support Platform.</p>
-        <p>Click the link below to complete your registration:</p>
-        <p><a href="${inviteUrl}">Complete your registration</a></p>
-        <p>This link will expire in 48 hours.</p>
-      `,
+      subject: `You're invited to join ${companyName} as ${this.emailTemplateService.getRoleDisplayName(userRole)}`,
+      text: textContent,
+      html: htmlTemplate,
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+      },
     });
   }
 
+  // 2: For non-existing user receiving global role invitation
   async sendGlobalInvitationEmail(
     email: string,
     invitationId: string,
@@ -54,18 +88,147 @@ export class EmailService {
         ? 'Sandvik Administrator'
         : 'Sandvik Technician';
 
+    const htmlTemplate =
+      this.emailTemplateService.buildGlobalInvitationTemplate(
+        inviteUrl,
+        roleDisplayName,
+      );
+
+    const textContent = `
+      Ground Support Platform
+
+      SANDVIK
+
+      You have been invited to join Ground Support Platform as a ${roleDisplayName}
+
+      Global Access Granted
+      ${
+        globalRole === GlobalRole.SANDVIK_ADMIN
+          ? 'This role provides platform-wide access across all companies and workspaces with enhanced administrative capabilities.'
+          : 'This role provides specialized technical access across all companies and workspaces with support capabilities.'
+      }
+
+      Accept this invitation and setup your account: ${inviteUrl}
+
+      This invitation link will expire in 48 hours.
+
+      Need help? Contact your administrator for assistance.
+
+      Note: This invitation was sent by a Sandvik Administrator.
+    `.trim();
+
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
       to: email,
-      subject: `You have been invited as ${roleDisplayName} to Ground Support Platform`,
-      html: `
-        <p>You have been invited to join Ground Support Platform as a <strong>${roleDisplayName}</strong>.</p>
-        <p>This is a global role that provides access across all companies on the platform.</p>
-        <p>Click the link below to complete your registration:</p>
-        <p><a href="${inviteUrl}">Complete your registration</a></p>
-        <p>This link will expire in 48 hours.</p>
-        <p><em>Note: This invitation was sent by a Sandvik Administrator.</em></p>
-      `,
+      subject: `You're invited to join Ground Support Platform as ${roleDisplayName}`,
+      text: textContent,
+      html: htmlTemplate,
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+      },
+    });
+  }
+
+  // 3: For existing user invitations on company level
+  async sendExistingUserEmail(
+    email: string,
+    userRole: Role,
+    companyName: string,
+  ) {
+    const roleDisplayName =
+      userRole === Role.COMPANY_ADMIN
+        ? 'Administrator'
+        : userRole === Role.SANDVIK_TECHNICIAN
+          ? 'Sandvik Technician'
+          : 'Contributor';
+
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
+    const roleText = this.emailTemplateService.getRoleDisplayText(userRole);
+
+    // change
+    const htmlTemplate =
+      this.emailTemplateService.buildExistingUserNotificationTemplate(
+        roleDisplayName,
+        companyName,
+      );
+
+    const textContent = `
+      Ground Support Platform
+
+      SANDVIK
+
+      You have been assigned to join ${companyName} in Ground Support Platform ${roleText}.
+
+      Sign in to Ground Support Platform: ${loginUrl}
+
+      Need help? Contact your administrator for assistance.
+    `.trim();
+
+    await this.transporter.sendMail({
+      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+      to: email,
+      subject: `You have been assigned as ${roleDisplayName} for ${companyName} in Ground Support Platform`,
+      text: textContent,
+      html: htmlTemplate,
+      headers: {
+        'X-Priority': '2',
+        'X-MSMail-Priority': 'Normal',
+      },
+    });
+  }
+
+  // 4: For existing user receiving global role invitation
+  async sendExistingGlobalUserEmail(email: string, globalRole: GlobalRole) {
+    const roleDisplayName =
+      globalRole === GlobalRole.SANDVIK_ADMIN
+        ? 'Sandvik Administrator'
+        : 'Sandvik Technician';
+
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
+    const htmlTemplate =
+      this.emailTemplateService.buildExistingGlobalUserNotificationTemplate(
+        roleDisplayName,
+      );
+
+    const textContent = `
+      Ground Support Platform
+
+      SANDVIK
+
+      You have been assigned as ${roleDisplayName} in Ground Support Platform.
+
+      You've been granted global ${roleDisplayName.toLowerCase()} privileges.
+
+      Sign in to Ground Support Platform: ${loginUrl}
+
+      Need help? Contact your administrator for assistance.
+
+      Note: This invitation was sent by a Sandvik Administrator.
+    `.trim();
+
+    await this.transporter.sendMail({
+      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+      to: email,
+      subject: `You have been assigned as ${roleDisplayName} in Ground Support Platform`,
+      text: textContent,
+      html: htmlTemplate,
+      headers: {
+        'X-Priority': '2',
+        'X-MSMail-Priority': 'Normal',
+      },
+    });
+  }
+
+  // TODO fix design for this email
+  async sendOneTimePassword(email: string, otp: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+      to: email,
+      subject: 'Password reset',
+      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
     });
   }
 }

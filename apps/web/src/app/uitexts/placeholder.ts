@@ -1,12 +1,10 @@
 export const placeholder = {
   //email
-  emailPlaceholder: 'Fill in an email...',
-  validEmailPlaceholder: 'Fill in a valid email...',
+  emailPlaceholder: 'Fill in email...',
 
   //password
-  passwordPlaceholder: 'Fill in your password...',
+  passwordPlaceholder: 'Fill in password...',
   newPasswordPlaceholder: 'Fill in a new password...',
-  createPasswordPlaceholder: 'Fill in a password...',
   currentPasswordPlaceholder: 'Fill in current password...',
   confirmPasswordPlaceholder: 'Fill in password confirmation...',
 

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -24,7 +23,6 @@ import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
 import { errorTexts } from 'src/errorTexts/errorTexts';
-import { isPasswordStrong } from 'src/utils/';
 
 @Injectable()
 export class AuthService {
@@ -36,14 +34,6 @@ export class AuthService {
   ) {}
   async signup(dto: SignupDto) {
     try {
-      if (!isPasswordStrong(dto.password)) {
-        throw new BadRequestException({
-          code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-          title: errorTexts.userPasswordTooWeak_title,
-          message: errorTexts.userPasswordTooWeak_message,
-        });
-      }
-
       const hash = await argon.hash(dto.password);
       const user = await this.prisma.user.create({
         data: {

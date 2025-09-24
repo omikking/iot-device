@@ -109,7 +109,7 @@ export default function Page({
           {availableApps.map((plan, index) => (
             <div className="flex flex-row gap-12 justify-center" key={index}>
               <Link
-                href={`${process.env.NEXT_PUBLIC_PULLTEST_URL}/overview/${companyId}`}
+                href={`${process.env.NEXT_PUBLIC_PULL_TEST_URL}/overview/${companyId}`}
               >
                 <NavigationCard size="small">
                   <Headline

@@ -7,7 +7,6 @@ import {
   showAlertToast,
   TableHeadWithSorting,
 } from '@gsp/ui';
-import Link from 'next/link';
 import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation } from 'urql';
@@ -20,7 +19,7 @@ import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { useSession } from 'next-auth/react';
 import { CellContext } from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 const deleteSiteMutation = graphql(`
   mutation deleteSite($id: String!) {
@@ -49,6 +48,7 @@ export const SitesTable = ({
 }: SitesTableProps) => {
   const params = useParams();
   const companyId = params.id as string;
+  const router = useRouter();
 
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
@@ -133,19 +133,15 @@ export const SitesTable = ({
       accessorKey: 'totalSiteLocations',
       header: 'Site locations',
       cell: ({ row }) => {
+        const handleClick = () => {
+          router.push(`/site-locations/${companyId}?siteId=${row.original.id}`);
+        };
         return (
-          <Button variant="outline" size="small" asChild>
-            <Link
-              href={{
-                pathname: `/site-locations/${companyId}`,
-                query: { siteId: row.original.id },
-              }}
-            >
-              <LucideMoveRight />
-              <Text variant={'medium'} color={'foreground'}>
-                {row.getValue('totalSiteLocations')} Site locations
-              </Text>
-            </Link>
+          <Button variant="outline" size="small" onClick={handleClick}>
+            <LucideMoveRight />
+            <Text variant="medium" color="foreground">
+              Site locations
+            </Text>
           </Button>
         );
       },

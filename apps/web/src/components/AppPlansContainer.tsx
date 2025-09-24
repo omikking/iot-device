@@ -1,6 +1,7 @@
 import {
   LucideCalendar,
   LucideCircleCheckBig,
+  LucideCircleX,
   LucideSparkles,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -43,6 +44,7 @@ export const AppPlansContainer = ({
   const daysUntilExpiration = Math.ceil(
     (expirationTime - today) / (1000 * 60 * 60 * 24),
   );
+  const isExpired = date ? daysUntilExpiration < 0 : false;
 
   const handleDateChange = (date?: Date) => {
     const currentPlans = (companyForm.getValues('plans') as Plan[]) || [];
@@ -80,16 +82,23 @@ export const AppPlansContainer = ({
           </Headline>
         </div>
 
-        {isUserSandvikAdmin && activePlanLevel && (
-          <Badge variant="attention">
-            <LucideCircleCheckBig size="14" />
-            Active
-          </Badge>
-        )}
+        {isUserSandvikAdmin &&
+          activePlanLevel &&
+          (isExpired ? (
+            <Badge variant="warning">
+              <LucideCircleX />
+              Expired
+            </Badge>
+          ) : (
+            <Badge variant="attention" className="flex items-center">
+              <LucideCircleCheckBig />
+              Active plan
+            </Badge>
+          ))}
 
         {!isUserSandvikAdmin && !activePlanLevel && (
           <Badge variant="primary">
-            <LucideSparkles size="14" />
+            <LucideSparkles />
             Available plans
           </Badge>
         )}
@@ -104,7 +113,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={!!(date && daysUntilExpiration < 0)}
+        isExpired={isExpired}
       />
       <AppPlan
         planLevel={PlanLevel.Silver}
@@ -114,7 +123,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={!!(date && daysUntilExpiration < 0)}
+        isExpired={isExpired}
       />
       <AppPlan
         planLevel={PlanLevel.Bronze}
@@ -124,7 +133,7 @@ export const AppPlansContainer = ({
         activePlanLevel={activePlanLevel}
         onPlanLevelChange={setActivePlanLevel}
         isUserSandvikAdmin={isUserSandvikAdmin}
-        isExpired={!!(date && daysUntilExpiration < 0)}
+        isExpired={isExpired}
       />
 
       {/* Calendar */}

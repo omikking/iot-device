@@ -132,7 +132,7 @@ export class BoltResultsService {
         location: true,
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
     };
 

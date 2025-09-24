@@ -41,8 +41,11 @@ export class InvitationService {
     }
 
     // Check if user already exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        email,
+        isDeleted: false, // Only check non-deleted users
+      },
     });
 
     if (existingUser) {
@@ -166,8 +169,11 @@ export class InvitationService {
     globalRole: GlobalRole,
     isGlobalVisibility: boolean,
   ) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        email,
+        isDeleted: false, // Only check non-deleted users
+      },
     });
 
     if (existingUser) {

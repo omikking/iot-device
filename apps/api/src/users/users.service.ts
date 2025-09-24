@@ -17,7 +17,9 @@ export class UsersService {
     roles?: GlobalRole[],
   ): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
-    const where: Prisma.UserWhereInput = {};
+    const where: Prisma.UserWhereInput = {
+      isDeleted: false, // Only return non-deleted users
+    };
 
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
       if (roles && roles.length > 0) {
@@ -36,6 +38,7 @@ export class UsersService {
         where: {
           globalRole: GlobalRole.SANDVIK_TECHNICIAN,
           isGlobalVisibility: true,
+          isDeleted: false, // Only return non-deleted users
         },
         select: {
           id: true,
@@ -64,7 +67,12 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id,
+        isDeleted: false, // Only return non-deleted users
+      },
+    });
     if (!user) {
       throw new UserInputError('', {
         extensions: {
@@ -96,7 +104,12 @@ export class UsersService {
         });
       }
 
-      const existingUser = await this.prisma.user.findUnique({ where: { id } });
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          id,
+          isDeleted: false, // Only allow updating non-deleted users
+        },
+      });
       if (!existingUser) {
         throw new UserInputError('', {
           extensions: {
@@ -163,7 +176,12 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id,
+        isDeleted: false, // Only allow soft delete of non-deleted users
+      },
+    });
 
     if (!user) {
       throw new UserInputError('', {
@@ -174,8 +192,21 @@ export class UsersService {
       });
     }
 
+    if (user.isDeleted) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_ALREADY_DELETED_ERROR',
+          title: 'User is already deleted',
+        },
+      });
+    }
+
     try {
-      return await this.prisma.user.delete({ where: { id } });
+      // Perform soft delete by setting isDeleted to true
+      return await this.prisma.user.update({
+        where: { id },
+        data: { isDeleted: true },
+      });
     } catch (error) {
       if (error instanceof UserInputError) {
         throw error;

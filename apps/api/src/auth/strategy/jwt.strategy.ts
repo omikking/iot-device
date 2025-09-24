@@ -23,9 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // We get req.user in our custom decorator @User
     // Alternatively, we could add user data to the JWT payload directly and return it here. Then we could avoid a Prisma DB call.
     try {
-      const prismaUser = await this.prisma.user.findUniqueOrThrow({
+      const prismaUser = await this.prisma.user.findFirstOrThrow({
         where: {
           id: payload.sub,
+          isDeleted: false, // Only authenticate non-deleted users
         },
       });
 

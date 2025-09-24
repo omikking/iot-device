@@ -44,8 +44,11 @@ export class UserPermissionsService {
     createUserPermissionInput: GraphQLTypes.CreateUserPermissionInput,
   ): Promise<UserPermission> {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: createUserPermissionInput.userEmail },
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email: createUserPermissionInput.userEmail,
+          isDeleted: false, // Only create permissions for non-deleted users
+        },
       });
 
       if (!user) {

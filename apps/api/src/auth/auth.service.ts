@@ -67,9 +67,10 @@ export class AuthService {
 
   async signin(dto: SigninDto) {
     try {
-      const user = await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findFirst({
         where: {
           email: dto.email,
+          isDeleted: false, // Only allow sign-in for non-deleted users
         },
         include: {
           userRole: {
@@ -137,9 +138,10 @@ export class AuthService {
         secret: this.config.get('JWT_SECRET'),
       });
 
-      const user = await this.prisma.user.findUniqueOrThrow({
+      const user = await this.prisma.user.findFirstOrThrow({
         where: {
           id: payload.sub,
+          isDeleted: false, // Only refresh tokens for non-deleted users
         },
       });
 

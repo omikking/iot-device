@@ -33,6 +33,7 @@ export class CompanyUsersResolver {
         id: {
           in: userIds,
         },
+        isDeleted: false, // Only return non-deleted users
       },
     });
 

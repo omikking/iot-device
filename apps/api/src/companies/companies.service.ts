@@ -113,8 +113,11 @@ export class CompaniesService {
           });
         }
 
-        const user = await prisma.user.findUnique({
-          where: { id: sandvikAdminUserId as string },
+        const user = await prisma.user.findFirst({
+          where: {
+            id: sandvikAdminUserId as string,
+            isDeleted: false, // Only check non-deleted users
+          },
           select: { globalRole: true },
         });
 

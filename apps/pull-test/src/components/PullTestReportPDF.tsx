@@ -364,7 +364,7 @@ export const PullTestReportPDF = ({
       });
 
       // Add final line at the end of all items on the page
-      pdf.setDrawColor(0, 0, 0);
+      pdf.setDrawColor(40, 40, 40);
       pdf.setLineWidth(0.1);
       pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
 
@@ -433,7 +433,7 @@ export const PullTestReportPDF = ({
             : '0%';
 
         // Draw graph readings section
-        pdf.setFontSize(8);
+        pdf.setFontSize(10);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(0, 0, 0);
 
@@ -447,7 +447,12 @@ export const PullTestReportPDF = ({
           pdf.text(title, x, pageY, { align: 'center' });
         });
 
-        pdf.setFontSize(10);
+        // Draw a line under the headings
+        pdf.setDrawColor(180, 180, 180);
+        pdf.setLineWidth(0.1);
+        pdf.line(margin, pageY + 5, pageWidth - margin, pageY + 5);
+
+        pdf.setFontSize(12);
         pdf.setFont('helvetica', 'normal');
         const graphValues = [totalTests.toString(), averageTons, successRate];
 

@@ -38,6 +38,7 @@ const validateInvitationQuery = graphql(`
         id
         email
         companyId
+        companyName
         globalRole
         role
         expiresAt
@@ -54,15 +55,6 @@ const completeInvitationMutation = graphql(`
       email
       fullName
       globalRole
-    }
-  }
-`);
-
-const getCompanyName = graphql(`
-  query getCompanyName($id: String!) {
-    company(id: $id) {
-      id
-      name
     }
   }
 `);
@@ -106,13 +98,6 @@ export default function Page(): JSX.Element {
   );
 
   const { invitation } = data?.validateInvitation || {};
-
-  const [{ data: companyData }] = useQuery({
-    query: getCompanyName,
-    variables: { id: invitation?.companyId || '' },
-    pause: !invitation?.companyId,
-  });
-  const companyName = companyData?.company?.name || undefined;
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -173,7 +158,7 @@ export default function Page(): JSX.Element {
   const invitationMessage = invitation
     ? getInvitationMessage(
         (invitation.globalRole as Role) || (invitation.role as Role),
-        companyName,
+        invitation.companyName || undefined,
       )
     : null;
 

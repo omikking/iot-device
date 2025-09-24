@@ -217,6 +217,8 @@ export default function Page({
         <UsersTable
           allUsers={allUsers}
           availableCompanyPlans={availableCompanyPlans}
+          onOpenChange={handleModalClose}
+          onSelectUser={setSelectedUser}
           refetchUsers={refetchUsers}
         />
       </div>

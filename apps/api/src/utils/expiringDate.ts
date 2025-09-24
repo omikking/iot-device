@@ -1,8 +1,11 @@
-export function handleExpiringDate(dateValue: any): Date | null {
-  const year = dateValue.getFullYear();
-  if (!dateValue || dateValue === 0 || dateValue === '0' || year === 1970) {
-    return null;
+export function handleExpiringDate(dateValue: any): Date | undefined {
+  if (!dateValue || dateValue === 0 || dateValue === '0') {
+    return undefined;
   }
 
-  return new Date(dateValue);
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime()) || date.getFullYear() === 1970) {
+    return undefined;
+  }
+  return date;
 }

@@ -29,6 +29,8 @@ type UsersTableProps = {
   allUsers: UserRow[];
   availableCompanyPlans: Application[];
   refetchUsers: () => void;
+  onSelectUser: (user: UserRow) => void;
+  onOpenChange: (open: boolean) => void;
 };
 
 const resendInvitationMutation = graphql(`
@@ -109,6 +111,8 @@ export const UsersTable = ({
   allUsers,
   availableCompanyPlans,
   refetchUsers,
+  onOpenChange,
+  onSelectUser,
 }: UsersTableProps) => {
   const [, resendInvitation] = useMutation(resendInvitationMutation);
   const [, cancelInvitation] = useMutation(cancelInvitationMutation);
@@ -236,6 +240,14 @@ export const UsersTable = ({
     setInvitationToCancel(undefined);
   };
 
+  const openEditModal = (userId: string) => {
+    const userToEdit = allUsers.find((user) => user.id === userId);
+    if (userToEdit) {
+      onSelectUser(userToEdit);
+      onOpenChange(true);
+    }
+  };
+
   const handleDelete = async (): Promise<boolean> => {
     const userToDeleteFound = allUsers.find((user) => user.id === userToDelete);
     const userPermissionToDelete = userToDeleteFound?.userPermissions?.find(
@@ -346,6 +358,7 @@ export const UsersTable = ({
         return (
           <DeleteEditDropdown
             itemSelected={row.original.id}
+            handleEdit={!isInvitation ? openEditModal : undefined}
             openDeleteModal={!isInvitation ? openDeleteModal : undefined}
             onResendInvitation={
               isInvitation ? handleResendInvitation : undefined

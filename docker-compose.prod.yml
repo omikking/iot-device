@@ -1,5 +1,5 @@
 # docker-compose.prod.yml
-# Build + run all services locally (no nginx yet)
+# Build + run all services
 
 services:
   prod-db:
@@ -52,7 +52,6 @@ services:
       - api
     environment:
       NODE_ENV: production
-     # NEXT_PUBLIC_API_URL: http://api:3333/graphql
       NEXT_PUBLIC_API_URL: https://portal.groundsupport.mining.sandvik/api/graphql
     env_file:
       - ./apps/web/.env.production
@@ -73,8 +72,6 @@ services:
     environment:
       NODE_ENV: production
       # Also used by the browser → reach api via localhost
-      #NEXT_PUBLIC_API_URL: http://api:3333/graphql
-     # NEXT_PUBLIC_API_URL: https://groundsupport.mining.sandvik/api/graphql
       NEXT_PUBLIC_API_URL: https://pulltest.groundsupport.mining.sandvik/api/graphql
     env_file:
       - ./apps/pull-test/.env.production

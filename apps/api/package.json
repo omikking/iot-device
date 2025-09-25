@@ -14,7 +14,7 @@
     "prisma:studio": "prisma studio --port 4444",
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",
-    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy && npm run prisma:generate",
     "smtp:up": "docker compose up smtp4dev -d",
     "smtp:down": "docker compose stop smtp4dev",
     "smtp:restart": "npm run smtp:down && npm run smtp:up",

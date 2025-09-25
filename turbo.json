@@ -15,8 +15,17 @@
       ],
       "env": [
         "BACKEND_URL",
-        "NEXTAUTH_SECRET"
+        "NEXTAUTH_SECRET",
+        "FRONTEND_URL",
+        "NEXT_PUBLIC_PORTAL_URL",
+        "NEXT_PUBLIC_PULL_TEST_URL"
       ]
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": []
     },
     "lint": {},
     "type-check": {},

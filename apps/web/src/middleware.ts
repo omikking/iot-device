@@ -1,14 +1,26 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { NextRequest, NextResponse } from 'next/server';
-import { Application, Role } from 'src/gql/graphql';
+import { Role } from 'src/gql/graphql';
 
-const publicRoutes = ['/api/auth/signin'];
+// Routes that should work without authentication
+const publicRoutes = ['/setup-account'];
+
+// Protected route mappings
+const sandvikAdminRoutes = [
+  '/administration-portal',
+  '/administrators',
+  '/technicians',
+  '/company/new',
+];
 
 const extractCompanyId = (pathname: string): string | null => {
   const companyIdRoutes = [
-    /^\/overview\/([^/]+)/,
-    /^\/bolt-results\/([^/]+)/,
-    /^\/reported-hazards\/([^/]+)/,
+    /^\/company\/([^/]+)/,
+    /^\/site\/([^/]+)/,
+    /^\/site-locations\/([^/]+)/,
+    /^\/users\/([^/]+)/,
+    /^\/select-application\/([^/]+)/,
   ];
   for (const regex of companyIdRoutes) {
     const match = pathname.match(regex);
@@ -38,17 +50,29 @@ export async function middleware(req: NextRequest) {
 
   const globalRole = token.userData?.globalRole;
 
+  // Redirect Sandvik Admin pages
+  if (sandvikAdminRoutes.some((route) => pathname.startsWith(route))) {
+    if (globalRole !== Role.SandvikAdmin) {
+      return NextResponse.redirect(new URL('/not-found', req.url));
+    }
+  }
+
+  // Redirect Sandvik Admins away from select-company
+  if (
+    pathname.startsWith('/select-company') &&
+    globalRole === Role.SandvikAdmin
+  ) {
+    return NextResponse.redirect(new URL('/not-found', req.url));
+  }
+
+  // Check company permission for /company/[companyId] routes
   const companyId = extractCompanyId(pathname);
   if (companyId && globalRole !== Role.SandvikAdmin) {
     const permissions = token.userData?.userPermissions || [];
-    const companyPermission = permissions.find(
+    const hasPermission = permissions.some(
       (perm) => perm.companyId === companyId,
     );
-    // Check for Pull Test app access
-    if (
-      !companyPermission ||
-      !companyPermission.appsAccess?.includes(Application.PullTest)
-    ) {
+    if (!hasPermission) {
       return NextResponse.redirect(new URL('/not-found', req.url));
     }
   }

@@ -52,7 +52,8 @@ export default function SignIn() {
       // }
       const isAdmin = session.user.globalRole === Role.SandvikAdmin;
       const redirectTo = isAdmin ? '/administration-portal' : '/select-company';
-      router.push(redirectTo);
+      // Fix to make middleware get fresh token, router.push not working.
+      window.location.href = redirectTo;
     }
   }, [status, router, searchParams]);
 

@@ -54,7 +54,8 @@ export default function SignIn() {
       const redirectTo = isAdmin
         ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
         : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
-      router.push(redirectTo);
+      // Fix to make middleware get fresh token, router.push not working.
+      window.location.href = redirectTo;
     }
   }, [status, router, searchParams]);
 

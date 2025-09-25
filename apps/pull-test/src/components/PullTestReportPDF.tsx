@@ -364,9 +364,106 @@ export const PullTestReportPDF = ({
       });
 
       // Add final line at the end of all items on the page
-      pdf.setDrawColor(0, 0, 0);
+      pdf.setDrawColor(40, 40, 40);
       pdf.setLineWidth(0.1);
       pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+
+      // READINGS SUMMARY //
+      const isLastTablePage = i + itemsPerPage >= results.length;
+
+      if (isLastTablePage) {
+        // check for space
+        const graphReadingsHeight = 80;
+        const spaceNeeded = pageY + graphReadingsHeight + 20;
+
+        // If not enough space then add page count else continue
+        if (spaceNeeded > pageHeight - 15) {
+          pdf.setFontSize(8);
+          pdf.text(parentUrl, margin, pageHeight - 5);
+          pdf.text(
+            `Page ${pageNum} of ${totalPages}`,
+            pageWidth - margin,
+            pageHeight - 5,
+            { align: 'right' },
+          );
+
+          pdf.addPage();
+          pageY = 20;
+
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          pdf.text(new Date().toLocaleDateString(), pageWidth - margin, 10, {
+            align: 'right',
+          });
+          pdf.text('Bolting Pull Test - Summary', margin, 10);
+          pdf.setTextColor(0, 0, 0);
+          pageY += 30;
+        } else {
+          pageY += 30;
+        }
+
+        // Graph readings titles
+        const graphTitles = [
+          'Total number of tests',
+          'Average tons',
+          'Success rate',
+        ];
+
+        // Calculate actual values from results
+        const totalTests = results.length;
+
+        const validPeakLoads = results
+          .flatMap((r) =>
+            Array.isArray(r.peakLoad) ? r.peakLoad : [r.peakLoad],
+          )
+          .filter((load) => load != null && !isNaN(Number(load)));
+        const averageTons =
+          validPeakLoads.length > 0
+            ? (
+                validPeakLoads.reduce((sum, load) => sum + Number(load), 0) /
+                validPeakLoads.length
+              ).toFixed(1)
+            : '0';
+        const successCount = results.filter(
+          (r) => r.result?.toLowerCase() === 'pass',
+        ).length;
+        const successRate =
+          totalTests > 0
+            ? `${Math.round((successCount / totalTests) * 100)}%`
+            : '0%';
+
+        // Draw graph readings section
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+
+        // Calculate spacing for horizontal distribution (like flex space-around)
+        const availableWidth = pageWidth - margin * 2;
+        const itemCount = graphTitles.length;
+        const spaceBetween = availableWidth / (itemCount + 1);
+
+        graphTitles.forEach((title, index) => {
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(title, x, pageY, { align: 'center' });
+        });
+
+        // Draw a line under the headings
+        pdf.setDrawColor(180, 180, 180);
+        pdf.setLineWidth(0.1);
+        pdf.line(margin, pageY + 5, pageWidth - margin, pageY + 5);
+
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        const graphValues = [totalTests.toString(), averageTons, successRate];
+
+        graphValues.forEach((value, index) => {
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(value, x, pageY + 18, { align: 'center' });
+        });
+
+        pageY += 35;
+      }
+      // END READINGS SUMMARY //
 
       // Add page count & url
       pdf.setFontSize(8);

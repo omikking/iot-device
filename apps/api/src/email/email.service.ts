@@ -147,7 +147,6 @@ export class EmailService {
 
     const roleText = this.emailTemplateService.getRoleDisplayText(userRole);
 
-    // change
     const htmlTemplate =
       this.emailTemplateService.buildExistingUserNotificationTemplate(
         roleDisplayName,
@@ -222,13 +221,39 @@ export class EmailService {
     });
   }
 
-  // TODO fix design for this email
+  // 5: Password reset with OTP
   async sendOneTimePassword(email: string, otp: string): Promise<void> {
+    const htmlTemplate =
+      this.emailTemplateService.buildPasswordResetTemplate(otp);
+
+    const textContent = `
+      Ground Support Platform
+
+      SANDVIK
+
+      Password Reset Request
+
+      You have requested to reset your password. Use the verification code below to proceed with your password reset.
+
+      Your verification code: ${otp}
+
+      This code will expire in 30 minutes.
+
+      If you did not request this password reset, please ignore this email or contact your administrator.
+
+      Need help? Contact your administrator for assistance.
+    `.trim();
+
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
       to: email,
-      subject: 'Password reset',
-      html: `<p>Your password reset code is: <strong>${otp}</strong></p>`,
+      subject: 'Password Reset - Ground Support Platform',
+      text: textContent,
+      html: htmlTemplate,
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+      },
     });
   }
 }

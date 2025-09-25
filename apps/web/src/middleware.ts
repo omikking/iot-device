@@ -62,7 +62,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/select-company') &&
     globalRole === Role.SandvikAdmin
   ) {
-    return NextResponse.redirect(new URL('/not-found', req.url));
+    return NextResponse.redirect(new URL('/administration-portal', req.url));
   }
 
   // Check company permission for /company/[companyId] routes

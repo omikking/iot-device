@@ -295,7 +295,7 @@ export default function Page({ params }: Props): JSX.Element {
         withImage: filterState.withImage || undefined,
         withComment: filterState.withComment || undefined,
         startDate: dateRange?.from,
-        endDate: dateRange?.to,
+        endDate: getAdjustedEndDate(dateRange),
         result: result.length > 0 ? result : undefined,
       },
       pause: !shouldFetchAllResults || !site?.id,

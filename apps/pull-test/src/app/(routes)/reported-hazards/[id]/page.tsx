@@ -120,17 +120,27 @@ export default function Page({
 
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 
-  // Modern helper function to sort hazards for the 'view all' tab
-  const sortHazards = (a: BoltResult, b: BoltResult) => {
-    if (a.isHazard && !b.isHazard) return -1;
-    if (!a.isHazard && b.isHazard) return 1;
-    if (!a.isHazard && !b.isHazard) {
-      const dateA = new Date(a.hazardCompletedDate || a.updatedAt).getTime();
-      const dateB = new Date(b.hazardCompletedDate || b.updatedAt).getTime();
-      return dateB - dateA;
-    }
+  // Helper functions to sort hazards for different tabs
+  const sortByCreatedAt = (a: BoltResult, b: BoltResult) => {
     const dateA = new Date(a.createdAt).getTime();
     const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  };
+
+  const sortByLatestHazardCompletedDate = (a: BoltResult, b: BoltResult) => {
+    const getLatestDate = (
+      dates: string | string[] | null | undefined,
+    ): number => {
+      if (!dates) return 0;
+      if (Array.isArray(dates)) {
+        if (dates.length === 0) return 0;
+        return Math.max(...dates.map((date) => new Date(date).getTime()));
+      }
+      return new Date(dates).getTime();
+    };
+
+    const dateA = getLatestDate(a.hazardCompletedDate);
+    const dateB = getLatestDate(b.hazardCompletedDate);
     return dateB - dateA;
   };
 
@@ -166,21 +176,26 @@ export default function Page({
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.some((boltResult) => boltResult.isHazard) ? (
-            hazards.map(
-              (boltResult) =>
-                boltResult.isHazard && (
-                  <HazardCard
-                    key={boltResult.id}
-                    boltResult={boltResult}
-                    onViewMore={() =>
-                      handleBoltDetailsModalToggle(true, boltResult.id)
-                    }
-                    onCompleteClick={() =>
-                      handleCompleteConfirmationModalToggle(true, boltResult.id)
-                    }
-                  />
-                ),
-            )
+            hazards
+              .sort(sortByCreatedAt)
+              .map(
+                (boltResult) =>
+                  boltResult.isHazard && (
+                    <HazardCard
+                      key={boltResult.id}
+                      boltResult={boltResult}
+                      onViewMore={() =>
+                        handleBoltDetailsModalToggle(true, boltResult.id)
+                      }
+                      onCompleteClick={() =>
+                        handleCompleteConfirmationModalToggle(
+                          true,
+                          boltResult.id,
+                        )
+                      }
+                    />
+                  ),
+              )
           ) : (
             <NotFoundHazardMessage />
           )}
@@ -191,18 +206,20 @@ export default function Page({
           className="flex flex-wrap gap-y-8 gap-x-3 justify-between"
         >
           {hazards.some((boltResult) => !boltResult.isHazard) ? (
-            hazards.map(
-              (boltResult) =>
-                !boltResult.isHazard && (
-                  <HazardCard
-                    key={boltResult.id}
-                    boltResult={boltResult}
-                    onViewMore={() =>
-                      handleBoltDetailsModalToggle(true, boltResult.id)
-                    }
-                  />
-                ),
-            )
+            hazards
+              .sort(sortByLatestHazardCompletedDate)
+              .map(
+                (boltResult) =>
+                  !boltResult.isHazard && (
+                    <HazardCard
+                      key={boltResult.id}
+                      boltResult={boltResult}
+                      onViewMore={() =>
+                        handleBoltDetailsModalToggle(true, boltResult.id)
+                      }
+                    />
+                  ),
+              )
           ) : (
             <NotFoundHazardMessage />
           )}
@@ -214,7 +231,7 @@ export default function Page({
         >
           {hazards.length > 0 ? (
             hazards
-              .sort(sortHazards)
+              .sort(sortByCreatedAt)
               .map((boltResult) => (
                 <HazardCard
                   key={boltResult.id}

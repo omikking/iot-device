@@ -39,16 +39,23 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      const callbackUrl = searchParams.get('callbackUrl');
-      if (callbackUrl) {
-        router.push(callbackUrl);
-      } else {
-        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-        const redirectTo = isAdmin
-          ? 'http://localhost:3000/administration-portal'
-          : 'http://localhost:3000/select-company';
-        router.push(redirectTo);
-      }
+      // TODO: Re-test and re-enable callbackUrl logic
+      // const callbackUrl = searchParams.get('callbackUrl');
+      // if (callbackUrl) {
+      //   router.push(callbackUrl);
+      // } else {
+      //   const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      //   const redirectTo = isAdmin
+      //    ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+      //    : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
+      //   router.push(redirectTo);
+      // }
+      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+      const redirectTo = isAdmin
+        ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+        : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
+      // Fix to make middleware get fresh token, router.push not working.
+      window.location.href = redirectTo;
     }
   }, [status, router, searchParams]);
 
@@ -154,7 +161,7 @@ export default function SignIn() {
                 </Text>
                 <Text variant="small" color="accent">
                   <Link
-                    href="http://localhost:3000/api/auth/reset-password"
+                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/api/auth/reset-password`}
                     passHref
                     legacyBehavior
                   >

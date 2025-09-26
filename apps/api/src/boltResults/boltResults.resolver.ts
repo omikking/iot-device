@@ -98,7 +98,11 @@ export class BoltResultsResolver {
     return this.boltResultsService.create(createBoltResultInput);
   }
 
-  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
+  @Roles(
+    [],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+    'boltResult',
+  )
   @Mutation('updateBoltResult')
   async update(
     @Args('id', ParseUUIDPipe) id: string,

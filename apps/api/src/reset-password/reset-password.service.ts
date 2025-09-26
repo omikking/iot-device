@@ -101,7 +101,12 @@ export class ResetPasswordService {
       },
     });
 
-    await this.mailer.sendOneTimePassword(user.email, token);
+    try {
+      await this.mailer.sendOneTimePassword(user.email, token);
+    } catch (error) {
+      throw error;
+    }
+
     return true;
   }
 

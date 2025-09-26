@@ -1,8 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
-import { Application, Role } from './gql/graphql';
-
-const publicRoutes = ['/api/auth/signin'];
+import { Application, Role } from 'src/gql/graphql';
 
 const extractCompanyId = (pathname: string): string | null => {
   const companyIdRoutes = [
@@ -18,17 +16,16 @@ const extractCompanyId = (pathname: string): string | null => {
 };
 
 export async function middleware(req: NextRequest) {
-  const { pathname, search } = req.nextUrl;
-
-  // Allow access to public routes without authentication
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
+  // TODO: Re-test and re-enable callbackUrl logic
+  // const { pathname, search } = req.nextUrl;
+  const { pathname } = req.nextUrl;
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
-    const callbackUrl = encodeURIComponent(pathname + search);
-    const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
+    // TODO: Re-test and re-enable callbackUrl logic
+    // const callbackUrl = encodeURIComponent(pathname + search);
+    // const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
+    const signinUrl = `/api/auth/signin`;
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 

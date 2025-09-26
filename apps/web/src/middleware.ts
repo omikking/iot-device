@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { Role } from './gql/graphql';
+import { Role } from 'src/gql/graphql';
 
 // Routes that should work without authentication
-const publicRoutes = ['/setup-account', '/api/auth/signin'];
+const publicRoutes = ['/setup-account'];
 
 // Protected route mappings
 const sandvikAdminRoutes = [
@@ -30,7 +30,9 @@ const extractCompanyId = (pathname: string): string | null => {
 };
 
 export async function middleware(req: NextRequest) {
-  const { pathname, search } = req.nextUrl;
+  // TODO: Re-test and re-enable callbackUrl logic
+  // const { pathname, search } = req.nextUrl;
+  const { pathname } = req.nextUrl;
 
   // Allow access to public routes without authentication
   if (publicRoutes.some((route) => pathname.startsWith(route))) {
@@ -39,8 +41,10 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
-    const callbackUrl = encodeURIComponent(pathname + search);
-    const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
+    // TODO: Re-test and re-enable callbackUrl logic
+    // const callbackUrl = encodeURIComponent(pathname + search);
+    // const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
+    const signinUrl = `/api/auth/signin`;
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 
@@ -58,7 +62,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/select-company') &&
     globalRole === Role.SandvikAdmin
   ) {
-    return NextResponse.redirect(new URL('/not-found', req.url));
+    return NextResponse.redirect(new URL('/administration-portal', req.url));
   }
 
   // Check company permission for /company/[companyId] routes

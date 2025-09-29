@@ -17,7 +17,7 @@ export const SuccessMessage = ({
       <div
         className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
           isVisible
-            ? 'opacity-100 translate-y-0'
+            ? 'opacity-100 translate-y-5'
             : 'opacity-0 translate-y-32 pointer-events-none'
         }`}
       >

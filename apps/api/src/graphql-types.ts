@@ -72,7 +72,7 @@ export class CreateBoltResultInput {
     isHazard: boolean;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
     siteId: string;
     levelId: string;
     driveId: string;
@@ -92,7 +92,7 @@ export class UpdateBoltResultInput {
     hazardCompletedDate?: Nullable<DateTime[]>;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
 }
 
 export class CreateCoffeeInput {
@@ -501,4 +501,5 @@ export class User {
 }
 
 export type DateTime = any;
+export type Upload = any;
 type Nullable<T> = T | null;

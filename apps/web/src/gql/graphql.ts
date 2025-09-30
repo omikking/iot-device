@@ -16,6 +16,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Date custom scalar type */
   DateTime: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export enum Application {
@@ -147,7 +148,7 @@ export type CreateBoltResultInput = {
   boltType: Scalars['String']['input'];
   comment?: InputMaybe<Scalars['String']['input']>;
   driveId: Scalars['String']['input'];
-  image?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard: Scalars['Boolean']['input'];
   levelId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
@@ -1006,7 +1007,7 @@ export type UpdateBoltResultInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   hazardCompletedDate?: InputMaybe<Array<Scalars['DateTime']['input']>>;
   id?: InputMaybe<Scalars['String']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;
   peakLoad?: InputMaybe<Array<Scalars['Int']['input']>>;

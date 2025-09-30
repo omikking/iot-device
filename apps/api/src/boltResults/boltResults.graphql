@@ -4,6 +4,7 @@
 # Use npx ts-node src/generate-types.ts to generate the types
 
 scalar DateTime
+scalar Upload
 
 """
 BoltResult model
@@ -52,7 +53,7 @@ input CreateBoltResultInput {
   isHazard: Boolean!
   abortReason: String
   comment: String
-  image: String
+  image: Upload
   siteId: String!
   levelId: String!
   driveId: String!
@@ -77,7 +78,7 @@ input UpdateBoltResultInput {
   hazardCompletedDate: [DateTime!]
   abortReason: String
   comment: String
-  image: String
+  image: Upload
 }
 
 """

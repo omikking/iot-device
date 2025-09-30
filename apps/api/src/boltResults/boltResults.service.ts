@@ -521,6 +521,8 @@ export class BoltResultsService {
     return deletedResults;
   }
 
+  // This function saved the images on the uploads/boltResults folder and returns the path to be stored in the database.
+  // This solution is temporary and not scalable. A better solution will be needed to do in the future where we store images in a cloud service.
   private async saveImage(upload: GraphQLTypes.Upload): Promise<string> {
     const fileUpload = await upload;
     const { createReadStream, filename, mimetype } = fileUpload.file;
@@ -537,7 +539,6 @@ export class BoltResultsService {
       });
     }
 
-    // Generate filename
     const fileExtension = extname(filename).toLowerCase();
     const timestamp = Date.now();
     const randomPart = randomBytes(8).toString('hex');
@@ -554,7 +555,7 @@ export class BoltResultsService {
       const writeStream = createWriteStream(filePath);
       let fileSize = 0;
 
-      const maxFileSize = 10 * 1024 * 1024; // 10MB
+      const maxFileSize = 5 * 1024 * 1024; // 5MB
 
       // Check file size
       stream.on('data', (chunk: Buffer) => {

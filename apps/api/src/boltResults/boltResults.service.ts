@@ -15,6 +15,10 @@ import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UpdateBoltResultInput } from './dto/update-boltResult.input';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { hasAppAccessForCompany } from 'src/utils';
+import { extname, join } from 'path';
+import { createWriteStream } from 'fs';
+import { promises as fs } from 'fs';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class BoltResultsService {
@@ -195,6 +199,12 @@ export class BoltResultsService {
     createBoltResultInput: GraphQLTypes.CreateBoltResultInput,
   ): Promise<BoltResult> {
     try {
+      let imagePath: string | undefined;
+
+      if (createBoltResultInput.image) {
+        imagePath = await this.saveImage(createBoltResultInput.image);
+      }
+
       const createdBoltResult = await this.prisma.boltResult.create({
         data: {
           boltNumber: createBoltResultInput.boltNumber,
@@ -208,8 +218,7 @@ export class BoltResultsService {
             (createBoltResultInput.abortReason as PullTestAbortReason) ||
             undefined,
           comment: createBoltResultInput.comment || undefined,
-          image: createBoltResultInput.image || undefined,
-
+          image: imagePath || undefined,
           siteId: createBoltResultInput.siteId,
           levelId: createBoltResultInput.levelId,
           driveId: createBoltResultInput.driveId,
@@ -353,25 +362,35 @@ export class BoltResultsService {
     }
 
     // Transform data before insertion for better readability and maintainability
-    const boltResultsData = createBoltResultsInput.map((input) => ({
-      boltNumber: input.boltNumber,
-      boltType: input.boltType as BoltType,
-      peakLoad: input.peakLoad,
-      peakDisplacement: input.peakDisplacement,
-      positionInRing: input.positionInRing as RingPosition,
-      result: input.result as Result,
-      isHazard: input.isHazard,
-      abortReason: input.abortReason as PullTestAbortReason | undefined,
-      comment: input.comment || undefined,
-      image: input.image || undefined,
-      siteId: input.siteId,
-      levelId: input.levelId,
-      driveId: input.driveId,
-      locationId: input.locationId,
-      userId: input.userId,
-      createdAt: new Date(), // Ensure timestamps are consistent
-      updatedAt: new Date(),
-    }));
+    const boltResultsData = await Promise.all(
+      createBoltResultsInput.map(async (input) => {
+        let imagePath: string | undefined;
+
+        if (input.image) {
+          imagePath = await this.saveImage(input.image);
+        }
+
+        return {
+          boltNumber: input.boltNumber,
+          boltType: input.boltType as BoltType,
+          peakLoad: input.peakLoad,
+          peakDisplacement: input.peakDisplacement,
+          positionInRing: input.positionInRing as RingPosition,
+          result: input.result as Result,
+          isHazard: input.isHazard,
+          abortReason: input.abortReason as PullTestAbortReason | undefined,
+          comment: input.comment || undefined,
+          image: imagePath || undefined,
+          siteId: input.siteId,
+          levelId: input.levelId,
+          driveId: input.driveId,
+          locationId: input.locationId,
+          userId: input.userId,
+          createdAt: new Date(), // Ensure timestamps are consistent
+          updatedAt: new Date(),
+        };
+      }),
+    );
 
     // Perform bulk insertion
     await this.prisma.boltResult.createMany({
@@ -421,13 +440,30 @@ export class BoltResultsService {
       }
     });
 
-    const updatePromises = updateBoltResultsInput.map((updateInput) => {
+    const updatesWithImages = await Promise.all(
+      updateBoltResultsInput.map(async (updateInput) => {
+        const { image, ...rest } = updateInput;
+
+        let imagePath: string | undefined;
+        if (image) {
+          imagePath = await this.saveImage(image);
+        }
+
+        return {
+          ...rest,
+          imagePath,
+        };
+      }),
+    );
+
+    const updatePromises = updatesWithImages.map((updateInput) => {
       const {
         id,
         boltType,
         positionInRing,
         result,
         abortReason,
+        imagePath,
         ...updateData
       } = updateInput;
 
@@ -443,6 +479,7 @@ export class BoltResultsService {
           abortReason: abortReason
             ? (abortReason as PullTestAbortReason)
             : undefined,
+          image: imagePath || undefined,
           updatedAt: new Date(),
         },
       });
@@ -482,5 +519,68 @@ export class BoltResultsService {
     });
 
     return deletedResults;
+  }
+
+  private async saveImage(upload: GraphQLTypes.Upload): Promise<string> {
+    const fileUpload = await upload;
+    const { createReadStream, filename, mimetype } = fileUpload.file;
+
+    const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
+
+    if (!allowedTypes.includes(mimetype)) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'INVALID_FILE_TYPE_ERROR',
+          title: 'Invalid file type',
+          message: 'Only JPG, JPEG, PNG, and WebP files are allowed.',
+        },
+      });
+    }
+
+    // Generate filename
+    const fileExtension = extname(filename).toLowerCase();
+    const timestamp = Date.now();
+    const randomPart = randomBytes(8).toString('hex');
+    const safeFilename = `${timestamp}-${randomPart}${fileExtension}`;
+
+    const uploadDir = join(process.cwd(), 'uploads', 'boltResults');
+    const filePath = join(uploadDir, safeFilename);
+
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    // Save file with error handling and file size validation
+    await new Promise<void>((resolve, reject) => {
+      const stream = createReadStream();
+      const writeStream = createWriteStream(filePath);
+      let fileSize = 0;
+
+      const maxFileSize = 10 * 1024 * 1024; // 10MB
+
+      // Check file size
+      stream.on('data', (chunk: Buffer) => {
+        fileSize += chunk.length;
+        if (fileSize > maxFileSize) {
+          stream.destroy();
+          writeStream.destroy();
+          fs.unlink(filePath).catch(() => {});
+          reject(
+            new UserInputError('', {
+              extensions: {
+                code: 'FILE_SIZE_EXCEEDED_ERROR',
+                title: 'File size too large',
+                message: `File size exceeds maximum allowed size of ${maxFileSize / (1024 * 1024)}MB`,
+              },
+            }),
+          );
+        }
+      });
+
+      stream.pipe(writeStream);
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+      stream.on('error', reject);
+    });
+
+    return `/uploads/boltResults/${safeFilename}`;
   }
 }

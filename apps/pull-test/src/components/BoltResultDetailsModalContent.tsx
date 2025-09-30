@@ -32,18 +32,20 @@ export const BoltResultDetailsModalContent = ({
     hazardCompletedDate,
   } = boltResult || {};
 
+  const imageUrl = image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : null;
+
   return (
     <div className="flex flex-col px-10 pt-10">
       {/* Image, Comment and Hazard Status */}
-      {(image || comment || isHazard) && (
+      {(imageUrl || comment) && (
         <div className="flex flex-grow gap-10 pb-10">
-          {image && (
+          {imageUrl && (
             <Image
-              src={'/capybara.jpg'}
+              src={imageUrl}
               alt="Attached bolt result image"
               width={390}
               height={280}
-              className="rounded-md h-72"
+              className="rounded-md h-72 object-cover"
             />
           )}
           <div className="flex flex-col w-1/2">

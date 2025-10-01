@@ -26,7 +26,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       const prismaUser = await this.prisma.user.findFirstOrThrow({
         where: {
           id: payload.sub,
-          isDeleted: false, // Only authenticate non-deleted users
         },
       });
 
@@ -39,6 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         email: prismaUser.email,
         fullName: prismaUser.fullName,
         globalRole: prismaUser.globalRole,
+        isDeleted: prismaUser.isDeleted,
         userPermissions: permissions.map((perm) => ({
           role: perm.role,
           companyId: perm.companyId,

@@ -6,10 +6,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { RefreshTokenIdsStorage } from 'src/auth/refresh-token-storage';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private refreshTokenIdsStorage: RefreshTokenIdsStorage,
+  ) {}
 
   async findAll(
     user: ActiveUserData,
@@ -202,6 +206,9 @@ export class UsersService {
     }
 
     try {
+      // Remove all refresh tokens for this user
+      await this.refreshTokenIdsStorage.invalidateAllForUser(id);
+
       // Perform soft delete by setting isDeleted to true
       return await this.prisma.user.update({
         where: { id },

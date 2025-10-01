@@ -26,9 +26,31 @@ const useClient = () => {
               });
             },
             didAuthError(error) {
-              console.error('URQL Error', error);
+              console.error('URQL Error Details:', {
+                error,
+                graphQLErrors: error.graphQLErrors,
+                extensions: error.graphQLErrors?.map((e) => e.extensions),
+              });
+
+              // Check for user account deactivated error
+              const hasUserDeactivatedError = error.graphQLErrors?.some(
+                (e: { extensions?: { code?: string } }) =>
+                  e.extensions?.code === 'USER_ACCOUNT_DEACTIVATED',
+              );
+
+              // If user account is deactivated, trigger logout immediately
+              if (hasUserDeactivatedError) {
+                console.log('User account deactivated, triggering logout');
+                setTimeout(() => {
+                  signOut({ redirect: true, callbackUrl: '/auth/signin' });
+                }, 100);
+                return true;
+              }
+
               return error.graphQLErrors.some(
-                (e) => e.extensions?.code === 'FORBIDDEN' || 'UNAUTHENTICATED',
+                (e: { extensions?: { code?: string } }) =>
+                  e.extensions?.code === 'FORBIDDEN' ||
+                  e.extensions?.code === 'UNAUTHENTICATED',
               );
             },
             // NextAuth is responsible for refreshing the token, not urql.

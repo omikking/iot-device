@@ -40,15 +40,52 @@ export class InvitationService {
       });
     }
 
-    // Check if user already exists
+    // Check if user already exists (including soft-deleted users)
     const existingUser = await this.prisma.user.findFirst({
       where: {
         email,
-        isDeleted: false, // Only check non-deleted users
+        // Check for both active and soft-deleted users
       },
     });
 
     if (existingUser) {
+      if (existingUser.isDeleted) {
+        // Reactivate soft-deleted user
+        try {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { isDeleted: false },
+          });
+
+          // Create permission for the reactivated user
+          await this.prisma.userPermission.create({
+            data: {
+              userId: existingUser.id,
+              companyId,
+              role,
+              appsAccess,
+            },
+          });
+
+          // Send email notification to reactivated user about company access
+          await this.emailService.sendExistingUserEmail(
+            existingUser.email,
+            role,
+            company.name,
+          );
+
+          return { userId: existingUser.id, isNewUser: false };
+        } catch (error) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'INVITATION_CREATE_ERROR',
+              title: errorTexts.invitationCreateError_title,
+              message: errorTexts.contactSupportError,
+            },
+          });
+        }
+      }
+
       // Check if user already has permissions for this company
       const existingPermission = await this.prisma.userPermission.findFirst({
         where: {
@@ -172,17 +209,29 @@ export class InvitationService {
     const existingUser = await this.prisma.user.findFirst({
       where: {
         email,
-        isDeleted: false, // Only check non-deleted users
+        // Check for both active and soft-deleted users
       },
     });
 
     if (existingUser) {
       try {
-        // Update existing user's global role
-        await this.prisma.user.update({
-          where: { id: existingUser.id },
-          data: { globalRole, isGlobalVisibility },
-        });
+        if (existingUser.isDeleted) {
+          // Reactivate soft-deleted user and update their role
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              isDeleted: false, // Reactivate the user
+              globalRole,
+              isGlobalVisibility,
+            },
+          });
+        } else {
+          // Update existing active user's global role
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { globalRole, isGlobalVisibility },
+          });
+        }
 
         await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 

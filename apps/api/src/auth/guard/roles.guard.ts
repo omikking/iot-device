@@ -68,6 +68,11 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException(errorTexts.authUserError_title);
     }
 
+    // Check if user is soft deleted
+    if (user.isDeleted === true) {
+      throw new ForbiddenException('User account has been deactivated.');
+    }
+
     if (
       requiredRoles &&
       requiredRoles.length === 1 &&

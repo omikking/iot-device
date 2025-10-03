@@ -91,6 +91,7 @@ export class InvitationService {
         where: {
           userId: existingUser.id,
           companyId,
+          isDeleted: false,
         },
       });
 

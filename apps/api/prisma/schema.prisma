@@ -155,6 +155,7 @@ model UserPermission {
   role Role // SANDVIK_TECHNICIAN, SANDVIK_ADMIN, COMPANY_ADMIN or COMPANY_USER
 
   appsAccess Application[]
+  isDeleted  Boolean       @default(false)
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String

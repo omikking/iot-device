@@ -53,7 +53,10 @@ export class CompaniesService {
       where: { id },
       include: {
         userPermission: {
-          where: { role: Role.SANDVIK_ADMIN },
+          where: {
+            role: Role.SANDVIK_ADMIN,
+            isDeleted: false,
+          },
           select: { userId: true },
         },
       },
@@ -232,6 +235,7 @@ export class CompaniesService {
             where: {
               companyId: id,
               role: Role.SANDVIK_ADMIN,
+              isDeleted: false,
             },
           });
 

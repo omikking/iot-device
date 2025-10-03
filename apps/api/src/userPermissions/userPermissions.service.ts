@@ -16,18 +16,26 @@ export class UserPermissionsService {
     allowedCompanyIds: string[],
   ): Promise<UserPermission[]> {
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
-      return this.prisma.userPermission.findMany();
+      return this.prisma.userPermission.findMany({
+        where: {
+          isDeleted: false,
+        },
+      });
     }
     return this.prisma.userPermission.findMany({
       where: {
         companyId: { in: allowedCompanyIds },
+        isDeleted: false,
       },
     });
   }
 
   async findOne(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.findUnique({
-      where: { id },
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        id,
+        isDeleted: false,
+      },
     });
     if (!userPermission) {
       throw new UserInputError('', {
@@ -68,6 +76,7 @@ export class UserPermissionsService {
           where: {
             userId: user?.id,
             companyId: createUserPermissionInput.companyId,
+            isDeleted: false,
           },
         },
       );
@@ -155,8 +164,11 @@ export class UserPermissionsService {
   }
 
   async remove(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.findUnique({
-      where: { id },
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        id,
+        isDeleted: false,
+      },
     });
 
     if (!userPermission) {
@@ -169,8 +181,9 @@ export class UserPermissionsService {
     }
 
     try {
-      return await this.prisma.userPermission.delete({
+      return await this.prisma.userPermission.update({
         where: { id },
+        data: { isDeleted: true },
       });
     } catch (error) {
       if (error instanceof UserInputError) {

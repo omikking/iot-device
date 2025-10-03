@@ -118,6 +118,7 @@ export class RolesGuard implements CanActivate {
       where: {
         userId: user.id,
         companyId,
+        isDeleted: false,
         // Check if user has any of the required roles
         ...(requiredRoles && requiredRoles.length > 0
           ? { role: { in: requiredRoles } }

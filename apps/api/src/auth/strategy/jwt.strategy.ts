@@ -30,7 +30,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       });
 
       const permissions = await this.prisma.userPermission.findMany({
-        where: { userId: prismaUser.id },
+        where: {
+          userId: prismaUser.id,
+          isDeleted: false,
+        },
       });
 
       const activeUser: ActiveUserData = {

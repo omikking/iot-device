@@ -185,6 +185,9 @@ export class UsersService {
         id,
         isDeleted: false, // Only allow soft delete of non-deleted users
       },
+      include: {
+        userRole: true,
+      },
     });
 
     if (!user) {
@@ -208,6 +211,22 @@ export class UsersService {
     try {
       // Remove all refresh tokens for this user
       await this.refreshTokenIdsStorage.invalidateAllForUser(id);
+
+      if (
+        user.globalRole &&
+        (user.globalRole === GlobalRole.SANDVIK_TECHNICIAN ||
+          user.globalRole === GlobalRole.SANDVIK_ADMIN)
+      ) {
+        await this.prisma.userPermission.updateMany({
+          where: {
+            userId: id,
+            isDeleted: false,
+          },
+          data: {
+            isDeleted: true,
+          },
+        });
+      }
 
       // Perform soft delete by setting isDeleted to true
       return await this.prisma.user.update({

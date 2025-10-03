@@ -70,7 +70,7 @@ export class AuthService {
       const user = await this.prisma.user.findFirst({
         where: {
           email: dto.email,
-          isDeleted: false, // Only allow sign-in for non-deleted users
+          isDeleted: false,
         },
         include: {
           userRole: {

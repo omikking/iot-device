@@ -73,9 +73,9 @@ export class RolesGuard implements CanActivate {
     if (user.isDeleted === true) {
       throw new UserInputError('', {
         extensions: {
-          code: 'USER_ACCOUNT_DEACTIVATED',
-          title: 'Account Deactivated',
-          message: 'User account has been deactivated.',
+          code: errorTexts.userAccountDeactivatedCode,
+          title: errorTexts.userAccountDeactivatedTitle,
+          message: errorTexts.userAccountDeactivatedMessage,
         },
       });
     }

@@ -206,27 +206,24 @@ export class InvitationService {
     globalRole: GlobalRole,
     isGlobalVisibility: boolean,
   ) {
-    const existingUser = await this.prisma.user.findFirst({
+    const existingUser = await this.prisma.user.findUnique({
       where: {
         email,
-        // Check for both active and soft-deleted users
       },
     });
 
     if (existingUser) {
       try {
         if (existingUser.isDeleted) {
-          // Reactivate soft-deleted user and update their role
           await this.prisma.user.update({
             where: { id: existingUser.id },
             data: {
-              isDeleted: false, // Reactivate the user
+              isDeleted: false,
               globalRole,
               isGlobalVisibility,
             },
           });
         } else {
-          // Update existing active user's global role
           await this.prisma.user.update({
             where: { id: existingUser.id },
             data: { globalRole, isGlobalVisibility },

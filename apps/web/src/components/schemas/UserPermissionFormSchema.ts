@@ -5,7 +5,7 @@ export const createUserPermissionFormSchema = z.object({
   appsAccess: z.array(
     z.enum([
       Application.PullTest,
-      Application.PullTestOperator,
+      Application.PullTestTechnician,
       Application.Banshee,
     ]),
   ),
@@ -18,7 +18,7 @@ export const updateUserPermissionFormSchema = z.object({
   appsAccess: z.array(
     z.enum([
       Application.PullTest,
-      Application.PullTestOperator,
+      Application.PullTestTechnician,
       Application.Banshee,
     ]),
   ),

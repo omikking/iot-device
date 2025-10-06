@@ -7,7 +7,7 @@ import { CombinedError } from 'urql';
 export const getAppName = (app: Application): string => {
   const applicationNames = {
     [Application.PullTest]: 'Pull Test',
-    [Application.PullTestOperator]: 'Pull Test Operator',
+    [Application.PullTestTechnician]: 'Pull Test Technician',
     [Application.Banshee]: 'Banshee',
   };
   return applicationNames[app];

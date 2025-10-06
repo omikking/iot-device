@@ -51,7 +51,7 @@ export enum PullTestAbortReason {
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
+    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN",
     BANSHEE = "BANSHEE"
 }
 

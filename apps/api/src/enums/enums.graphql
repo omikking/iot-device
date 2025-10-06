@@ -41,7 +41,7 @@ enum PullTestAbortReason {
 
 enum Application {
   PULL_TEST
-  PULL_TEST_OPERATOR
+  PULL_TEST_TECHNICIAN
   BANSHEE
 }
 

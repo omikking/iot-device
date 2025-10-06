@@ -32,7 +32,7 @@ export const userFormSchema = z
         appsAccess: z.array(
           z.enum([
             Application.PullTest,
-            Application.PullTestOperator,
+            Application.PullTestTechnician,
             Application.Banshee,
           ]),
         ),

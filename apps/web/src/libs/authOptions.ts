@@ -86,13 +86,33 @@ export const authOptions: NextAuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token', // no "__Host-" prefix, since we're setting domain
+      name: 'next-auth.session-token', //no "__Host-" prefix, since we're setting domain
       options: {
         httpOnly: true,
         sameSite: 'none', // must be "none" for cross-subdomain
         path: '/',
         secure: process.env.NODE_ENV === 'production', // must be true for HTTPS
         domain: process.env.COOKIE_DOMAIN, // will be .groundsupport.mining.sandvik
+      },
+    },
+    callbackUrl: {
+      name: 'next-auth.callback-url',
+      options: {
+        httpOnly: false,
+        sameSite: 'none',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.COOKIE_DOMAIN,
+      },
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: false,
+        sameSite: 'none',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.COOKIE_DOMAIN,
       },
     },
   },

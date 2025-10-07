@@ -95,6 +95,26 @@ export const authOptions: NextAuthOptions = {
         domain: process.env.COOKIE_DOMAIN, // will be .groundsupport.mining.sandvik
       },
     },
+    callbackUrl: {
+      name: 'next-auth.callback-url',
+      options: {
+        httpOnly: false,
+        sameSite: 'none',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.COOKIE_DOMAIN,
+      },
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: false,
+        sameSite: 'none',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.COOKIE_DOMAIN,
+      },
+    },
   },
 
   callbacks: {

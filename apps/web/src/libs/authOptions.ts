@@ -85,6 +85,10 @@ export const authOptions: NextAuthOptions = {
           tokens: data.tokens,
           userData: data.userData,
         };
+        console.log(
+          'Authorize returning:',
+          JSON.stringify(returnedUser, null, 2),
+        );
         return returnedUser;
         //return user;
       },

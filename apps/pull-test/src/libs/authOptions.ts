@@ -84,18 +84,18 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  /*cookies: {
+  cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: 'next-auth.session-token', //no "__Host-" prefix, since we're setting domain
       options: {
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // "none" allows cross-subdomain
+        sameSite: 'none', // must be "none" for cross-subdomain
         path: '/',
-        secure: process.env.NODE_ENV === 'production', // must be true with SameSite=None
-        domain: process.env.COOKIE_DOMAIN,
+        secure: process.env.NODE_ENV === 'production', // must be true for HTTPS
+        domain: process.env.COOKIE_DOMAIN, // will be .groundsupport.mining.sandvik
       },
     },
-  },*/
+  },
 
   callbacks: {
     async jwt({ token, user }) {

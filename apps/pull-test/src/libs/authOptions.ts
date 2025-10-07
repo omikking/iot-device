@@ -1,4 +1,4 @@
-import type { Session } from 'next-auth';
+import type { Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
@@ -60,9 +60,9 @@ export const authOptions: NextAuthOptions = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const data = await response.json();
+
         if (!response.ok) {
-          /*const errorData = await response.json();
+          const errorData = await response.json();
 
           throw new Error(
             JSON.stringify({
@@ -71,22 +71,11 @@ export const authOptions: NextAuthOptions = {
               message: errorData.message,
               status: response.status,
             }),
-          );*/
-          console.error('Sign-in failed:', data); // 🟢 CHANGED: log real error
-          return null;
+          );
         }
 
-        //const user = (await response.json()) as User;
-        const returnedUser = {
-          user: data.userData, // <- satisfies `user` property required by your User type
-          id: data.userData.id,
-          email: data.userData.email,
-          name: data.userData.fullName,
-          tokens: data.tokens,
-          userData: data.userData,
-        };
-        return returnedUser;
-        //return user;
+        const user = (await response.json()) as User;
+        return user;
       },
     }),
   ],
@@ -95,38 +84,18 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  cookies: {
+  /*cookies: {
     sessionToken: {
-      name: 'next-auth.session-token', //no "__Host-" prefix, since we're setting domain
+      name: 'next-auth.session-token',
       options: {
         httpOnly: true,
-        sameSite: 'none', // must be "none" for cross-subdomain
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // "none" allows cross-subdomain
         path: '/',
-        secure: process.env.NODE_ENV === 'production', // must be true for HTTPS
-        domain: process.env.COOKIE_DOMAIN, // will be .groundsupport.mining.sandvik
-      },
-    },
-    callbackUrl: {
-      name: 'next-auth.callback-url',
-      options: {
-        httpOnly: false,
-        sameSite: 'none',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production', // must be true with SameSite=None
         domain: process.env.COOKIE_DOMAIN,
       },
     },
-    csrfToken: {
-      name: 'next-auth.csrf-token',
-      options: {
-        httpOnly: false,
-        sameSite: 'none',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.COOKIE_DOMAIN,
-      },
-    },
-  },
+  },*/
 
   callbacks: {
     async jwt({ token, user }) {

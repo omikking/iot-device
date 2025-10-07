@@ -1,4 +1,4 @@
-import type { Session, User } from 'next-auth';
+import type { Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
@@ -60,9 +60,9 @@ export const authOptions: NextAuthOptions = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-
+        const data = await response.json();
         if (!response.ok) {
-          const errorData = await response.json();
+          /*const errorData = await response.json();
 
           throw new Error(
             JSON.stringify({
@@ -71,11 +71,22 @@ export const authOptions: NextAuthOptions = {
               message: errorData.message,
               status: response.status,
             }),
-          );
+          );*/
+          console.error('Sign-in failed:', data); // 🟢 CHANGED: log real error
+          return null;
         }
 
-        const user = (await response.json()) as User;
-        return user;
+        //const user = (await response.json()) as User;
+        const returnedUser = {
+          user: data.userData, // <- satisfies `user` property required by your User type
+          id: data.userData.id,
+          email: data.userData.email,
+          name: data.userData.fullName,
+          tokens: data.tokens,
+          userData: data.userData,
+        };
+        return returnedUser;
+        //return user;
       },
     }),
   ],

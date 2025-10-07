@@ -84,6 +84,19 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // "none" allows cross-subdomain
+        path: '/',
+        secure: process.env.NODE_ENV === 'production', // must be true with SameSite=None
+        domain: process.env.COOKIE_DOMAIN,
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };

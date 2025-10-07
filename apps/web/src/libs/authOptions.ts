@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  cookies: {
+  /*cookies: {
     sessionToken: {
       name: 'next-auth.session-token',
       options: {
@@ -95,7 +95,7 @@ export const authOptions: NextAuthOptions = {
         domain: process.env.COOKIE_DOMAIN,
       },
     },
-  },
+  },*/
 
   callbacks: {
     async jwt({ token, user }) {

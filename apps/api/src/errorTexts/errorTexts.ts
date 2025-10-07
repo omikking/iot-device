@@ -52,7 +52,7 @@ export const errorTexts = {
   companyAlreadyExists_title: 'Company already exists',
   companyAlreadyExists_message: 'This company is already registered.',
 
-  companyDeleteError_title: 'Failed to inactivate company',
+  companyDeleteError_title: 'Failed to delete company',
 
   // Drive
   driveNotFound_title: (id: string) => `Drive #${id} not found`,

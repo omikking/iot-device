@@ -1,4 +1,3 @@
-'use client';
 import {
   Button,
   ContentHolder,
@@ -11,7 +10,7 @@ import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
   LucideSparkles,
-  // LucideTrash2,
+  LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
 import { graphql } from '@/gql';
@@ -105,7 +104,7 @@ type CompanyFormProps = {
 export const CompanyForm = ({
   company,
   isNewCompany,
-  // setIsDeleteModalOpen,
+  setIsDeleteModalOpen,
 }: CompanyFormProps) => {
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
@@ -320,10 +319,10 @@ export const CompanyForm = ({
             </ContentHolder>
           </div>
 
-          {/* Submit & Inactivate buttons */}
-          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+          {/* Submit & Delete buttons */}
+          {isUserSandvikAdmin && (
             <div className="flex gap-6 justify-end self-end mt-[40px]">
-              {/* {!isNewCompany && (
+              {!isNewCompany && (
                 <Button
                   variant="destructive"
                   size="large"
@@ -331,9 +330,9 @@ export const CompanyForm = ({
                   onClick={() => setIsDeleteModalOpen(true)}
                 >
                   <LucideTrash2 />
-                  Inactivate company
+                  Delete company
                 </Button>
-              )} */}
+              )}
 
               <Button
                 variant="primary"

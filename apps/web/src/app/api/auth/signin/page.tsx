@@ -39,21 +39,16 @@ export default function SignIn() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      // TODO: Re-test and re-enable callbackUrl logic
-      // const callbackUrl = searchParams.get('callbackUrl');
-      // if (callbackUrl) {
-      //   router.push(callbackUrl);
-      // } else {
-      //   const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-      //   const redirectTo = isAdmin
-      //     ? '/administration-portal'
-      //     : '/select-company';
-      //   router.push(redirectTo);
-      // }
-      const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-      const redirectTo = isAdmin ? '/administration-portal' : '/select-company';
-      // Fix to make middleware get fresh token, router.push not working.
-      window.location.href = redirectTo;
+      const callbackUrl = searchParams.get('callbackUrl');
+      if (callbackUrl) {
+        window.location.href = callbackUrl;
+      } else {
+        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+        const redirectTo = isAdmin
+          ? '/administration-portal'
+          : '/select-company';
+        window.location.href = redirectTo;
+      }
     }
   }, [status, router, searchParams]);
 

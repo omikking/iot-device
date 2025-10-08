@@ -40,14 +40,16 @@ export const BoltResultDetailsModalContent = ({
       {(imageUrl || comment) && (
         <div className="flex flex-grow gap-10">
           {imageUrl && !imageError && (
-            <Image
-              src={imageUrl}
-              alt="Attached bolt result image"
-              width={390}
-              height={280}
-              className="rounded-md h-72 object-cover pb-10"
-              onError={() => setImageError(true)}
-            />
+            <div className="flex flex-col w-1/2 pb-10">
+              <Image
+                src={imageUrl}
+                alt="Attached bolt result image"
+                width={388}
+                height={256}
+                className="rounded-md object-cover h-64"
+                onError={() => setImageError(true)}
+              />
+            </div>
           )}
           <div className="flex flex-col w-1/2">
             {comment && (

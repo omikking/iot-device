@@ -77,13 +77,11 @@ export const authOptions: NextAuthOptions = {
         //return user;
         // Build object that matches your `User` interface exactly
         const userObj = {
-          user: {
-            id: data.userData.id,
-            email: data.userData.email,
-            fullName: data.userData.fullName,
-            globalRole: data.userData.globalRole,
-            userPermissions: data.userData.userPermissions,
-          },
+          id: data.userData.id,
+          email: data.userData.email,
+          fullName: data.userData.fullName,
+          globalRole: data.userData.globalRole,
+          userPermissions: data.userData.userPermissions,
           tokens: {
             accessToken: data.tokens?.accessToken,
             refreshToken: data.tokens?.refreshToken,

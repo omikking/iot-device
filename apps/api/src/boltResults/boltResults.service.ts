@@ -386,7 +386,7 @@ export class BoltResultsService {
           driveId: input.driveId,
           locationId: input.locationId,
           userId: input.userId,
-          createdAt: new Date(), // Ensure timestamps are consistent
+          createdAt: new Date(),
           updatedAt: new Date(),
         };
       }),

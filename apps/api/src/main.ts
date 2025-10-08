@@ -12,10 +12,7 @@ async function bootstrap() {
   });
 
   // Enable multipart form data processing for file uploads
-  app.use(
-    '/graphql',
-    graphqlUploadExpress({ maxFileSize: 10 * 1024 * 1024, maxFiles: 10 }),
-  );
+  app.use('/graphql', graphqlUploadExpress({ maxFileSize: 10 * 1024 * 1024 }));
 
   // Serve static files from uploads directory
   app.useStaticAssets(join(process.cwd(), 'uploads'), {

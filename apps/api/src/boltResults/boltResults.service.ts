@@ -555,7 +555,7 @@ export class BoltResultsService {
       const writeStream = createWriteStream(filePath);
       let fileSize = 0;
 
-      const maxFileSize = 5 * 1024 * 1024; // 5MB
+      const maxFileSize = 10 * 1024 * 1024; // 10MB
 
       // Check file size
       stream.on('data', (chunk: Buffer) => {

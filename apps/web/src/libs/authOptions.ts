@@ -60,14 +60,15 @@ export const authOptions: NextAuthOptions = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const data = await response.json();
+
         if (!response.ok) {
-          console.error('Signin error:', data);
+          const errorData = await response.json();
+
           throw new Error(
             JSON.stringify({
-              code: data?.code,
-              title: data?.title,
-              message: data?.message ?? 'Sign-in failed',
+              code: errorData.code,
+              title: errorData.title,
+              message: errorData.message,
               status: response.status,
             }),
           );
@@ -77,13 +78,6 @@ export const authOptions: NextAuthOptions = {
         return user;
         // Build object that matches your `User` interface exactly
         // const userObj = {
-        //   user: {
-        //     id: data.userData.id,
-        //     email: data.userData.email,
-        //     fullName: data.userData.fullName,
-        //     globalRole: data.userData.globalRole,
-        //     userPermissions: data.userData.userPermissions,
-        //   },
         //   // id: data.userData.id,
         //   // email: data.userData.email,
         //   // fullName: data.userData.fullName,

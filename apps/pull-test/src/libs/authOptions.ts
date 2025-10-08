@@ -60,14 +60,15 @@ export const authOptions: NextAuthOptions = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const data = await response.json();
+
         if (!response.ok) {
-          console.error('Signin error:', data);
+          const errorData = await response.json();
+
           throw new Error(
             JSON.stringify({
-              code: data?.code,
-              title: data?.title,
-              message: data?.message ?? 'Sign-in failed',
+              code: errorData.code,
+              title: errorData.title,
+              message: errorData.message,
               status: response.status,
             }),
           );
@@ -149,7 +150,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      console.log('session callback token:', JSON.stringify(token));
+      // console.log('session callback token:', JSON.stringify(token));
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;

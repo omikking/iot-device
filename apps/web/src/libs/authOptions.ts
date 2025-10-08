@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
         };
 
         // Return as any (or as User) so NextAuth accepts it at runtime
-        return userObj as User;
+        return userObj as unknown as User;
       },
     }),
   ],

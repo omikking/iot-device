@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { BoltResult } from '@/gql/graphql';
 import { generateBoltSpecifications } from '@/libs/utils';
@@ -32,25 +32,26 @@ export const BoltResultDetailsModalContent = ({
     hazardCompletedDate,
   } = boltResult || {};
 
-  const imageUrl = image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : null;
+  const [imageError, setImageError] = useState(false);
 
+  const imageUrl = image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : null;
   return (
     <div className="flex flex-col px-10 pt-10">
-      {/* Image, Comment and Hazard Status */}
       {(imageUrl || comment) && (
-        <div className="flex flex-grow gap-10 pb-10">
-          {imageUrl && (
+        <div className="flex flex-grow gap-10">
+          {imageUrl && !imageError && (
             <Image
               src={imageUrl}
               alt="Attached bolt result image"
               width={390}
               height={280}
-              className="rounded-md h-72 object-cover"
+              className="rounded-md h-72 object-cover pb-10"
+              onError={() => setImageError(true)}
             />
           )}
           <div className="flex flex-col w-1/2">
             {comment && (
-              <div className="flex flex-col flex-grow">
+              <div className="flex flex-col flex-grow pb-10">
                 <Text variant="small" color="foreground">
                   Comment
                 </Text>

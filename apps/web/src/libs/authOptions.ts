@@ -99,7 +99,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  cookies: {
+  /* cookies: {
     sessionToken: {
       name: 'next-auth.session-token', // no "__Host-" prefix (so domain can be set)
       options: {
@@ -130,7 +130,7 @@ export const authOptions: NextAuthOptions = {
         domain: process.env.COOKIE_DOMAIN,
       },
     },
-  },
+  },*/
 
   callbacks: {
     async jwt({ token, user }) {
@@ -148,7 +148,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      console.log('session callback token:', JSON.stringify(token));
+      //console.log('session callback token:', JSON.stringify(token));
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;

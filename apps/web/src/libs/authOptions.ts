@@ -84,26 +84,26 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  session: {
-    strategy: 'jwt',
-  },
+  // session: {
+  //   strategy: 'jwt',
+  // },
 
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
 
-  cookies: {
-    sessionToken: {
-      name: '__Secure-next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'none', // Required for cross-domain
-        secure: true, // Must be true if using HTTPS
-        domain: process.env.COOKIE_DOMAIN, // crucial part
-        path: '/',
-      },
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     name: '__Secure-next-auth.session-token',
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: 'none', // Required for cross-domain
+  //       secure: true, // Must be true if using HTTPS
+  //       domain: process.env.COOKIE_DOMAIN, // crucial part
+  //       path: '/',
+  //     },
+  //   },
+  // },
 
   callbacks: {
     async jwt({ token, user }) {

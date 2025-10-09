@@ -44,7 +44,7 @@ export async function middleware(req: NextRequest) {
     // TODO: Re-test and re-enable callbackUrl logic
     // const callbackUrl = encodeURIComponent(pathname + search);
     // const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
-    const signinUrl = `/api/auth/signin`;
+    const signinUrl = `/auth/signin`;
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 
@@ -86,6 +86,6 @@ export const config = {
       Match all routes except static files and Next.js internals.
       This is the recommended pattern from NextAuth docs.
     */
-    '/((?!_next/static|_next/image|favicon.ico|images|.+\\.png$|.+\\.svg$|api/auth).*)',
+    '/((?!api/auth|_next/static|_next/image|favicon.ico|images|.+\\.png$|.+\\.svg$).*)',
   ],
 };

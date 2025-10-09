@@ -83,27 +83,27 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-  session: {
-    strategy: 'jwt',
-  },
+  // session: {
+  //   strategy: 'jwt',
+  // },
 
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
 
-  //Added section for cross-subdomain cookie sharing
-  cookies: {
-    sessionToken: {
-      name: '__Secure-next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'none',  // Required for cross-domain
-        secure: true,      // Must be true on HTTPS
-        domain: process.env.COOKIE_DOMAIN, // critical for shared login
-        path: '/',
-      },
-    },
-  },
+  // //Added section for cross-subdomain cookie sharing
+  // cookies: {
+  //   sessionToken: {
+  //     name: '__Secure-next-auth.session-token',
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: 'none',  // Required for cross-domain
+  //       secure: true,      // Must be true on HTTPS
+  //       domain: process.env.COOKIE_DOMAIN, // critical for shared login
+  //       path: '/',
+  //     },
+  //   },
+  // },
 
   callbacks: {
     async jwt({ token, user }) {

@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
     // TODO: Re-test and re-enable callbackUrl logic
     // const callbackUrl = encodeURIComponent(pathname + search);
     // const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
-    const signinUrl = `api/auth/signin`;
+    const signinUrl = `/api/auth/signin`;
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 

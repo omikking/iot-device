@@ -55,6 +55,6 @@ export const config = {
       Match all routes except static files and Next.js internals.
       This is the recommended pattern from NextAuth docs.
     */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|images|.+\\.png$|.+\\.svg$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|images|.+\\.png$|.+\\.svg$|api/auth).*)',
   ],
 };

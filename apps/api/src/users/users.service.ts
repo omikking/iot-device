@@ -22,7 +22,7 @@ export class UsersService {
   ): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
     const where: Prisma.UserWhereInput = {
-      isDeleted: false, // Only return non-deleted users
+      isDeleted: false,
     };
 
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
@@ -42,7 +42,7 @@ export class UsersService {
         where: {
           globalRole: GlobalRole.SANDVIK_TECHNICIAN,
           isGlobalVisibility: true,
-          isDeleted: false, // Only return non-deleted users
+          isDeleted: false,
         },
         select: {
           id: true,
@@ -71,10 +71,10 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         id,
-        isDeleted: false, // Only return non-deleted users
+        isDeleted: false,
       },
     });
     if (!user) {
@@ -108,10 +108,10 @@ export class UsersService {
         });
       }
 
-      const existingUser = await this.prisma.user.findFirst({
+      const existingUser = await this.prisma.user.findUnique({
         where: {
           id,
-          isDeleted: false, // Only allow updating non-deleted users
+          isDeleted: false,
         },
       });
       if (!existingUser) {
@@ -180,10 +180,10 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<User> {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         id,
-        isDeleted: false, // Only allow soft delete of non-deleted users
+        isDeleted: false,
       },
       include: {
         userRole: true,
@@ -199,36 +199,18 @@ export class UsersService {
       });
     }
 
-    if (user.isDeleted) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'USER_ALREADY_DELETED_ERROR',
-          title: 'User is already deleted',
-        },
-      });
-    }
-
     try {
       // Remove all refresh tokens for this user
       await this.refreshTokenIdsStorage.invalidateAllForUser(id);
 
-      if (
-        user.globalRole &&
-        (user.globalRole === GlobalRole.SANDVIK_TECHNICIAN ||
-          user.globalRole === GlobalRole.SANDVIK_ADMIN)
-      ) {
-        await this.prisma.userPermission.updateMany({
-          where: {
-            userId: id,
-            isDeleted: false,
-          },
-          data: {
-            isDeleted: true,
-          },
-        });
-      }
+      // Delete all user roles associated with this user permanently
+      await this.prisma.userPermission.deleteMany({
+        where: {
+          userId: id,
+        },
+      });
 
-      // Perform soft delete by setting isDeleted to true
+      // Soft delete user, by setting isDeleted to true
       return await this.prisma.user.update({
         where: { id },
         data: { isDeleted: true },

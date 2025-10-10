@@ -41,10 +41,9 @@ export class InvitationService {
     }
 
     // Check if user already exists (including soft-deleted users)
-    const existingUser = await this.prisma.user.findFirst({
+    const existingUser = await this.prisma.user.findUnique({
       where: {
         email,
-        // Check for both active and soft-deleted users
       },
     });
 
@@ -91,7 +90,6 @@ export class InvitationService {
         where: {
           userId: existingUser.id,
           companyId,
-          isDeleted: false,
         },
       });
 

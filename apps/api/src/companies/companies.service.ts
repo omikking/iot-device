@@ -53,10 +53,7 @@ export class CompaniesService {
       where: { id },
       include: {
         userPermission: {
-          where: {
-            role: Role.SANDVIK_ADMIN,
-            isDeleted: false,
-          },
+          where: { role: Role.SANDVIK_ADMIN },
           select: { userId: true },
         },
       },
@@ -116,11 +113,8 @@ export class CompaniesService {
           });
         }
 
-        const user = await prisma.user.findFirst({
-          where: {
-            id: sandvikAdminUserId as string,
-            isDeleted: false, // Only check non-deleted users
-          },
+        const user = await prisma.user.findUnique({
+          where: { id: sandvikAdminUserId as string },
           select: { globalRole: true },
         });
 
@@ -235,7 +229,6 @@ export class CompaniesService {
             where: {
               companyId: id,
               role: Role.SANDVIK_ADMIN,
-              isDeleted: false,
             },
           });
 

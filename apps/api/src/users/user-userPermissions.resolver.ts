@@ -20,7 +20,6 @@ export class UserUserPermissionsResolver {
         where: {
           userId: user.id,
           companyId: companyId,
-          isDeleted: false,
         },
       });
     }
@@ -29,7 +28,6 @@ export class UserUserPermissionsResolver {
     return this.prisma.userPermission.findMany({
       where: {
         userId: user.id,
-        isDeleted: false,
       },
     });
   }

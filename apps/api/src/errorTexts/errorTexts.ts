@@ -143,8 +143,6 @@ export const errorTexts = {
 
   userDeleteError_title: 'Failed to delete user',
 
-  userAccountDeactivatedCode: 'USER_ACCOUNT_DEACTIVATED',
-
   userAccountDeactivatedTitle: 'Account Deactivated',
 
   userAccountDeactivatedMessage: 'User account has been deactivated.',

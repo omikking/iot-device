@@ -16,27 +16,17 @@ export class UserPermissionsService {
     allowedCompanyIds: string[],
   ): Promise<UserPermission[]> {
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
-      return this.prisma.userPermission.findMany({
-        where: {
-          isDeleted: false,
-        },
-      });
+      return this.prisma.userPermission.findMany();
     }
     return this.prisma.userPermission.findMany({
       where: {
         companyId: { in: allowedCompanyIds },
-        isDeleted: false,
       },
     });
   }
 
   async findOne(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.findFirst({
-      where: {
-        id,
-        isDeleted: false,
-      },
-    });
+    const userPermission = await this.prisma.userPermission.findFirst();
     if (!userPermission) {
       throw new UserInputError('', {
         extensions: {
@@ -52,10 +42,10 @@ export class UserPermissionsService {
     createUserPermissionInput: GraphQLTypes.CreateUserPermissionInput,
   ): Promise<UserPermission> {
     try {
-      const user = await this.prisma.user.findFirst({
+      const user = await this.prisma.user.findUnique({
         where: {
           email: createUserPermissionInput.userEmail,
-          isDeleted: false, // Only create permissions for non-deleted users
+          isDeleted: false,
         },
       });
 
@@ -76,7 +66,6 @@ export class UserPermissionsService {
           where: {
             userId: user?.id,
             companyId: createUserPermissionInput.companyId,
-            isDeleted: false,
           },
         },
       );
@@ -164,10 +153,9 @@ export class UserPermissionsService {
   }
 
   async remove(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.findFirst({
+    const userPermission = await this.prisma.userPermission.findUnique({
       where: {
         id,
-        isDeleted: false,
       },
     });
 
@@ -181,9 +169,8 @@ export class UserPermissionsService {
     }
 
     try {
-      return await this.prisma.userPermission.update({
+      return await this.prisma.userPermission.delete({
         where: { id },
-        data: { isDeleted: true },
       });
     } catch (error) {
       if (error instanceof UserInputError) {

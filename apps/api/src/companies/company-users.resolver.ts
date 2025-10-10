@@ -19,7 +19,6 @@ export class CompanyUsersResolver {
       .findMany({
         where: {
           companyId: company.id,
-          isDeleted: false,
         },
         select: {
           userId: true,
@@ -34,7 +33,7 @@ export class CompanyUsersResolver {
         id: {
           in: userIds,
         },
-        isDeleted: false, // Only return non-deleted users
+        isDeleted: false,
       },
     });
 

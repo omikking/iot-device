@@ -58,7 +58,7 @@ export const responses = {
   companyUpdateFailed: 'Failed to update company',
   successfulCompanyUpdate: 'Company successfully updated',
   companyDeletionFailed: 'Failed to delete company',
-  companyDeleteSuccess: 'Company account has been deleted',
+  companyDeleteSuccess: 'Company has been permanently deleted',
 
   // Sign in
   signInFailed: 'Failed to sign in',

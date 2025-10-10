@@ -137,18 +137,23 @@ export default function Page({
         onClose={closeDeleteModal}
         onOpenChange={closeDeleteModal}
       >
-        <div className="flex flex-col text-center gap-4 max-w-[420px]">
+        <div className="flex flex-col text-center gap-4 max-w-[460px]">
           <Text variant="medium" color={'foreground'} as="span">
-            You are about to delete
+            You are about to permanently delete
             <Text variant="medium" color={'foreground'} as="span" isBold>
               {` ${company?.name}. `}
             </Text>
-            <Text variant="medium" color={'foreground'} as="span">
-              Are you sure about this action?
+            <Text color={'foreground'} variant={'medium'} className="mt-4">
+              This will{' '}
+              <Text variant="medium" color={'foreground'} as="span" isBold>
+                permanently{' '}
+              </Text>
+              delete the company and all associated data from the system. Are
+              you sure you want to proceed?
             </Text>
           </Text>
           <Text color={'foreground'} variant={'medium'}>
-            The company data will be deleted and is not recoverable.
+            This action is irreversible and all records will be lost.
           </Text>
         </div>
       </DeleteModalConfirmation>

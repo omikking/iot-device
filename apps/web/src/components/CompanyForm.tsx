@@ -320,20 +320,20 @@ export const CompanyForm = ({
           </div>
 
           {/* Submit & Delete buttons */}
-          {isUserSandvikAdmin && (
-            <div className="flex gap-6 justify-end self-end mt-[40px]">
-              {!isNewCompany && (
-                <Button
-                  variant="destructive"
-                  size="large"
-                  type="button"
-                  onClick={() => setIsDeleteModalOpen(true)}
-                >
-                  <LucideTrash2 />
-                  Delete company
-                </Button>
-              )}
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
+            {isUserSandvikAdmin && !isNewCompany && (
+              <Button
+                variant="destructive"
+                size="large"
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <LucideTrash2 />
+                Permanently delete
+              </Button>
+            )}
 
+            {isUserSandvikAdmin && isNewCompany && (
               <Button
                 variant="primary"
                 size="large"
@@ -341,10 +341,22 @@ export const CompanyForm = ({
                 disabled={isSubmitDisabled}
               >
                 <LucideCircleCheckBig />
-                {isNewCompany ? 'Send invitation' : 'Save changes'}
+                Send invitation
               </Button>
-            </div>
-          )}
+            )}
+
+            {!isNewCompany && (isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <Button
+                variant="primary"
+                size="large"
+                type="submit"
+                disabled={isSubmitDisabled}
+              >
+                <LucideCircleCheckBig />
+                Save changes
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
     </>

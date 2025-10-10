@@ -6,10 +6,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as GraphQLTypes from 'src/graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { RefreshTokenIdsStorage } from 'src/auth/refresh-token-storage';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private refreshTokenIdsStorage: RefreshTokenIdsStorage,
+  ) {}
 
   async findAll(
     user: ActiveUserData,
@@ -17,7 +21,9 @@ export class UsersService {
     roles?: GlobalRole[],
   ): Promise<User[]> {
     // If roles are provided, only the users with the provided roles will be returned
-    const where: Prisma.UserWhereInput = {};
+    const where: Prisma.UserWhereInput = {
+      isDeleted: false,
+    };
 
     if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
       if (roles && roles.length > 0) {
@@ -36,6 +42,7 @@ export class UsersService {
         where: {
           globalRole: GlobalRole.SANDVIK_TECHNICIAN,
           isGlobalVisibility: true,
+          isDeleted: false,
         },
         select: {
           id: true,
@@ -64,7 +71,12 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+        isDeleted: false,
+      },
+    });
     if (!user) {
       throw new UserInputError('', {
         extensions: {
@@ -96,7 +108,12 @@ export class UsersService {
         });
       }
 
-      const existingUser = await this.prisma.user.findUnique({ where: { id } });
+      const existingUser = await this.prisma.user.findUnique({
+        where: {
+          id,
+          isDeleted: false,
+        },
+      });
       if (!existingUser) {
         throw new UserInputError('', {
           extensions: {
@@ -135,10 +152,14 @@ export class UsersService {
     }
 
     try {
+      const normalizedEmail = updateUserInput?.email
+        ? updateUserInput.email.toLowerCase()
+        : undefined;
+
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {
-          email: updateUserInput?.email || undefined,
+          email: normalizedEmail || undefined,
           fullName: updateUserInput?.fullName || undefined,
           workPlace: updateUserInput?.workPlace || undefined,
           phoneNumber: updateUserInput?.phoneNumber || undefined,
@@ -163,7 +184,15 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+        isDeleted: false,
+      },
+      include: {
+        userRole: true,
+      },
+    });
 
     if (!user) {
       throw new UserInputError('', {
@@ -175,7 +204,21 @@ export class UsersService {
     }
 
     try {
-      return await this.prisma.user.delete({ where: { id } });
+      // Remove all refresh tokens for this user
+      await this.refreshTokenIdsStorage.invalidateAllForUser(id);
+
+      // Delete all user roles associated with this user permanently
+      await this.prisma.userPermission.deleteMany({
+        where: {
+          userId: id,
+        },
+      });
+
+      // Soft delete user, by setting isDeleted to true
+      return await this.prisma.user.update({
+        where: { id },
+        data: { isDeleted: true },
+      });
     } catch (error) {
       if (error instanceof UserInputError) {
         throw error;

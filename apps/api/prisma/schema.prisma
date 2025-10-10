@@ -129,6 +129,7 @@ model User {
   phoneNumber        String?
   globalRole         GlobalRole? // For role SANDVIK_TECHNICIAN or SANDVIK_ADMIN
   isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
+  isDeleted          Boolean     @default(false) // Soft delete flag
 
   userRole             UserPermission[]
   boltResult           BoltResult[]

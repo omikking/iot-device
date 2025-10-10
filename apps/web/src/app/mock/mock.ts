@@ -50,7 +50,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       appAccess: [
         Application.PullTest,
         Application.PullTestTechnician,
-        Application.Banshee,
+        // Application.Banshee,
       ],
     },
     phoneNumber: '+4683729327',

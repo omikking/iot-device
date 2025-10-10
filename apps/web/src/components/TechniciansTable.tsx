@@ -3,7 +3,7 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { User } from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
+import { Badge, DataTable, Text, showAlertToast, TableHeadWithSorting } from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
   LucideEyeOff,
@@ -244,12 +244,16 @@ export const TechniciansTable = ({
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Email" />
+      ),
       meta: { headerClassName: 'w-80' },
     },
     {
       accessorKey: 'workPlace',
-      header: 'Company',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Company" />
+      ),
       meta: { headerClassName: 'w-44' },
     },
     {

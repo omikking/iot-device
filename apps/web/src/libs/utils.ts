@@ -20,7 +20,7 @@ export const getAppName = (app: Application): string => {
   const applicationNames = {
     [Application.PullTest]: 'Pull Test',
     [Application.PullTestTechnician]: 'Pull Test Technician',
-    [Application.Banshee]: 'Banshee',
+    // [Application.Banshee]: 'Banshee',
   };
   return applicationNames[app];
 };

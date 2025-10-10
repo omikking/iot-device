@@ -33,7 +33,7 @@ export const userFormSchema = z
           z.enum([
             Application.PullTest,
             Application.PullTestTechnician,
-            Application.Banshee,
+            // Application.Banshee,
           ]),
         ),
       }),

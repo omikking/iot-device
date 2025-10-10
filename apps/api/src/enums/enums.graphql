@@ -42,7 +42,7 @@ enum PullTestAbortReason {
 enum Application {
   PULL_TEST
   PULL_TEST_TECHNICIAN
-  BANSHEE
+  # BANSHEE
 }
 
 enum PlanLevel {

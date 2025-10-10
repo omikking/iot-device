@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { UserInputError } from '@nestjs/apollo';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -66,6 +67,17 @@ export class RolesGuard implements CanActivate {
 
     if (!user || !user.id) {
       throw new UnauthorizedException(errorTexts.authUserError_title);
+    }
+
+    // Check if user is soft deleted
+    if (user.isDeleted === true) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_ACCOUNT_DEACTIVATED',
+          title: errorTexts.userAccountDeactivatedTitle,
+          message: errorTexts.userAccountDeactivatedMessage,
+        },
+      });
     }
 
     if (

@@ -6,7 +6,7 @@ export const createUserPermissionFormSchema = z.object({
     z.enum([
       Application.PullTest,
       Application.PullTestTechnician,
-      Application.Banshee,
+      // Application.Banshee,
     ]),
   ),
   role: z.enum([Role.CompanyUser, Role.SandvikTechnician, Role.CompanyAdmin]),
@@ -19,7 +19,7 @@ export const updateUserPermissionFormSchema = z.object({
     z.enum([
       Application.PullTest,
       Application.PullTestTechnician,
-      Application.Banshee,
+      // Application.Banshee,
     ]),
   ),
   role: z.enum([Role.CompanyUser, Role.SandvikTechnician, Role.CompanyAdmin]),

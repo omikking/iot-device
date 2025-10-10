@@ -153,7 +153,7 @@ export class CompaniesService {
                 appsAccess: [
                   Application.PULL_TEST,
                   Application.PULL_TEST_TECHNICIAN,
-                  Application.BANSHEE,
+                  // Application.BANSHEE,
                 ],
               },
             },
@@ -254,7 +254,7 @@ export class CompaniesService {
                 appsAccess: [
                   Application.PULL_TEST,
                   Application.PULL_TEST_TECHNICIAN,
-                  Application.BANSHEE,
+                  // Application.BANSHEE,
                 ],
               },
             });
@@ -345,6 +345,16 @@ export class CompaniesService {
   async remove(id: string): Promise<Company> {
     const company = await this.prisma.company.findUnique({
       where: { id },
+      include: {
+        _count: {
+          select: {
+            site: true,
+            userPermission: true,
+            plan: true,
+            invitation: true,
+          },
+        },
+      },
     });
 
     if (!company) {
@@ -357,8 +367,12 @@ export class CompaniesService {
     }
 
     try {
-      return await this.prisma.company.delete({
-        where: { id },
+      return await this.prisma.$transaction(async (prisma) => {
+        const deletedCompany = await prisma.company.delete({
+          where: { id },
+        });
+
+        return deletedCompany;
       });
     } catch (error) {
       if (error instanceof UserInputError) {

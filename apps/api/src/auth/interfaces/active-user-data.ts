@@ -5,6 +5,7 @@ export interface ActiveUserData {
   email: string;
   fullName: string;
   globalRole: GlobalRole | null;
+  isDeleted?: boolean;
   userPermissions?: {
     role: Role;
     companyId: string;

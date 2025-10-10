@@ -8,7 +8,7 @@ export const getAppName = (app: Application): string => {
   const applicationNames = {
     [Application.PullTest]: 'Pull Test',
     [Application.PullTestOperator]: 'Pull Test Operator',
-    [Application.Banshee]: 'Banshee',
+    // [Application.Banshee]: 'Banshee',
   };
   return applicationNames[app];
 };
@@ -183,5 +183,30 @@ export const getEarliestAndLatestDates = (results: BoltResult[]) => {
   return {
     testingStartDate: earliest.toLocaleDateString(),
     testingEndDate: latest.toLocaleDateString(),
+  };
+};
+
+// Utility function for sorting alphanumeric strings by their numeric part
+export const alphanumericSort = <T>(
+  getValue: (item: T) => string | null | undefined,
+) => {
+  return (rowA: { original: T }, rowB: { original: T }) => {
+    const valueA = getValue(rowA.original) || '';
+    const valueB = getValue(rowB.original) || '';
+
+    // Extract the first number found in each string
+    const matchA = valueA.match(/\d+/);
+    const matchB = valueB.match(/\d+/);
+
+    const numA = matchA ? parseInt(matchA[0]) : 0;
+    const numB = matchB ? parseInt(matchB[0]) : 0;
+
+    // If numbers are different, sort by number
+    if (numA !== numB) {
+      return numA - numB;
+    }
+
+    // If numbers are the same, fall back to alphabetical sorting
+    return valueA.localeCompare(valueB);
   };
 };

@@ -143,6 +143,10 @@ export const errorTexts = {
 
   userDeleteError_title: 'Failed to delete user',
 
+  userAccountDeactivatedTitle: 'Account Deactivated',
+
+  userAccountDeactivatedMessage: 'User account has been deactivated.',
+
   // Auth related errors
   authEmailExists_title: 'Email already exists',
   authEmailExists_message: 'An account with this email already exists.',

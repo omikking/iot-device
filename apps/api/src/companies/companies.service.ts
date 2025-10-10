@@ -153,7 +153,7 @@ export class CompaniesService {
                 appsAccess: [
                   Application.PULL_TEST,
                   Application.PULL_TEST_OPERATOR,
-                  Application.BANSHEE,
+                  // Application.BANSHEE,
                 ],
               },
             },
@@ -254,7 +254,7 @@ export class CompaniesService {
                 appsAccess: [
                   Application.PULL_TEST,
                   Application.PULL_TEST_OPERATOR,
-                  Application.BANSHEE,
+                  // Application.BANSHEE,
                 ],
               },
             });

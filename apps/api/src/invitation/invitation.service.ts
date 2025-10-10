@@ -24,6 +24,8 @@ export class InvitationService {
     role: Role,
     appsAccess: Application[],
   ) {
+    const normalizedEmail = email.toLowerCase();
+
     // Check if company exists
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
@@ -40,12 +42,51 @@ export class InvitationService {
       });
     }
 
-    // Check if user already exists
+    // Check if user already exists (including soft-deleted users)
     const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: normalizedEmail,
+      },
     });
 
     if (existingUser) {
+      if (existingUser.isDeleted) {
+        // Reactivate soft-deleted user
+        try {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { isDeleted: false },
+          });
+
+          // Create permission for the reactivated user
+          await this.prisma.userPermission.create({
+            data: {
+              userId: existingUser.id,
+              companyId,
+              role,
+              appsAccess,
+            },
+          });
+
+          // Send email notification to reactivated user about company access
+          await this.emailService.sendExistingUserEmail(
+            existingUser.email,
+            role,
+            company.name,
+          );
+
+          return { userId: existingUser.id, isNewUser: false };
+        } catch (error) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'INVITATION_CREATE_ERROR',
+              title: errorTexts.invitationCreateError_title,
+              message: errorTexts.contactSupportError,
+            },
+          });
+        }
+      }
+
       // Check if user already has permissions for this company
       const existingPermission = await this.prisma.userPermission.findFirst({
         where: {
@@ -98,7 +139,7 @@ export class InvitationService {
     // Check for existing pending invitation
     const existingInvitation = await this.prisma.invitation.findFirst({
       where: {
-        email,
+        email: normalizedEmail,
         companyId,
         used: false,
         expiresAt: { gt: new Date() },
@@ -115,7 +156,7 @@ export class InvitationService {
     }
 
     // Rate limiting check
-    await this.checkRateLimit(email);
+    await this.checkRateLimit(normalizedEmail);
 
     // Generate secure token and hash it
     const token = randomBytes(32).toString('hex');
@@ -166,17 +207,31 @@ export class InvitationService {
     globalRole: GlobalRole,
     isGlobalVisibility: boolean,
   ) {
+    const normalizedEmail = email.toLowerCase();
+
     const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: normalizedEmail,
+      },
     });
 
     if (existingUser) {
       try {
-        // Update existing user's global role
-        await this.prisma.user.update({
-          where: { id: existingUser.id },
-          data: { globalRole, isGlobalVisibility },
-        });
+        if (existingUser.isDeleted) {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              isDeleted: false,
+              globalRole,
+              isGlobalVisibility,
+            },
+          });
+        } else {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { globalRole, isGlobalVisibility },
+          });
+        }
 
         await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 
@@ -195,7 +250,7 @@ export class InvitationService {
     // Check for existing pending global invitation
     const existingInvitation = await this.prisma.invitation.findFirst({
       where: {
-        email,
+        email: normalizedEmail,
         globalRole: { not: null },
         used: false,
         expiresAt: { gt: new Date() },
@@ -226,7 +281,7 @@ export class InvitationService {
       // Create invitation record with hashed token
       const invitation = await this.prisma.invitation.create({
         data: {
-          email,
+          email: normalizedEmail,
           token: tokenHash,
           expiresAt,
           globalRole,
@@ -345,6 +400,8 @@ export class InvitationService {
   ) {
     const { invitation } = await this.validateInvitation(id, token);
 
+    const normalizedEmail = invitation.email.toLowerCase();
+
     if (!invitation) {
       throw new UserInputError('', {
         extensions: {
@@ -363,7 +420,7 @@ export class InvitationService {
         async (tx) => {
           const user = await tx.user.create({
             data: {
-              email: invitation.email,
+              email: normalizedEmail,
               hash,
               fullName: userData.fullName,
               workPlace: userData.workPlace,
@@ -427,7 +484,7 @@ export class InvitationService {
       // Transform to PendingInvitation format (without token)
       return invitations.map((invitation) => ({
         id: invitation.id,
-        email: invitation.email,
+        email: invitation.email.toLocaleLowerCase(),
         expiresAt: invitation.expiresAt,
         createdAt: invitation.createdAt,
         used: invitation.used,
@@ -464,7 +521,7 @@ export class InvitationService {
       // Transform to PendingInvitation format (without token)
       return invitations.map((invitation) => ({
         id: invitation.id,
-        email: invitation.email,
+        email: invitation.email.toLocaleLowerCase(),
         expiresAt: invitation.expiresAt,
         createdAt: invitation.createdAt,
         used: invitation.used,

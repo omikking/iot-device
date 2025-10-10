@@ -299,7 +299,7 @@ async function generateTestUsersAndCompanies() {
   await prisma.plan.create({
     data: {
       companyId: bronzeMiningCorp.id,
-      applicationName: Application.PULL_TEST_OPERATOR,
+      applicationName: Application.PULL_TEST_TECHNICIAN,
       planLevel: PlanLevel.BRONZE,
       expiringDate: faker.date.future({ years: 1 }),
     },
@@ -389,7 +389,7 @@ async function generateTestUsersAndCompanies() {
       userId: multiCompanyAdmin.id,
       companyId: bronzeMiningCorp.id,
       role: Role.COMPANY_ADMIN,
-      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
     },
   });
 
@@ -421,7 +421,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.COMPANY_USER,
       appsAccess: [
         Application.PULL_TEST, // Expired plan
-        Application.PULL_TEST_OPERATOR, // Valid plan
+        Application.PULL_TEST_TECHNICIAN, // Valid plan
       ],
     },
   });

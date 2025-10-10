@@ -152,10 +152,14 @@ export class UsersService {
     }
 
     try {
+      const normalizedEmail = updateUserInput?.email
+        ? updateUserInput.email.toLowerCase()
+        : undefined;
+
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {
-          email: updateUserInput?.email || undefined,
+          email: normalizedEmail || undefined,
           fullName: updateUserInput?.fullName || undefined,
           workPlace: updateUserInput?.workPlace || undefined,
           phoneNumber: updateUserInput?.phoneNumber || undefined,

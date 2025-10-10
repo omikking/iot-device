@@ -35,9 +35,11 @@ export class AuthService {
   async signup(dto: SignupDto) {
     try {
       const hash = await argon.hash(dto.password);
+      const normalizedEmail = dto.email.toLowerCase();
+
       const user = await this.prisma.user.create({
         data: {
-          email: dto.email,
+          email: normalizedEmail,
           hash: hash,
           fullName: dto.fullName,
           workPlace: dto.workPlace,
@@ -67,9 +69,10 @@ export class AuthService {
 
   async signin(dto: SigninDto) {
     try {
+      const normalizedEmail = dto.email.toLowerCase();
       const user = await this.prisma.user.findUnique({
         where: {
-          email: dto.email,
+          email: normalizedEmail,
           isDeleted: false,
         },
         include: {

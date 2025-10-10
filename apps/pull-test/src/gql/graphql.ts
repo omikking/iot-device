@@ -20,7 +20,7 @@ export type Scalars = {
 };
 
 export enum Application {
-  Banshee = 'BANSHEE',
+  // Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
   PullTestOperator = 'PULL_TEST_OPERATOR'
 }

@@ -22,7 +22,10 @@ export class ResetPasswordService {
 
   private async validateUserResetToken(token: string, email: string) {
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+        isDeleted: false,
+      },
     });
 
     if (!user) {
@@ -67,7 +70,10 @@ export class ResetPasswordService {
     const { email } = input;
 
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+        isDeleted: false,
+      },
     });
 
     if (!user) {

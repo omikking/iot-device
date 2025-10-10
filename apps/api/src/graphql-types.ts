@@ -51,8 +51,7 @@ export enum PullTestAbortReason {
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
-    BANSHEE = "BANSHEE"
+    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR"
 }
 
 export enum PlanLevel {

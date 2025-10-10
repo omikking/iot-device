@@ -176,7 +176,7 @@ model Invitation {
   used      Boolean  @default(false)
 
   companyId  String?
-  company    Company?    @relation(fields: [companyId], references: [id])
+  company    Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   role       Role?
   globalRole GlobalRole?
 

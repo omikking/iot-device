@@ -57,8 +57,8 @@ export const responses = {
   successfulCompanyCreation: 'Invitation successfully sent',
   companyUpdateFailed: 'Failed to update company',
   successfulCompanyUpdate: 'Company successfully updated',
-  companyInactivationFailed: 'Failed to inactivate company',
-  companyDeleteSuccess: 'Company account has been deactivated',
+  companyDeletionFailed: 'Failed to delete company',
+  companyDeleteSuccess: 'Company has been permanently deleted',
 
   // Sign in
   signInFailed: 'Failed to sign in',

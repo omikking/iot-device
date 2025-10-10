@@ -4,7 +4,13 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useParams } from 'next/navigation';
-import { Badge, DataTable, Text, showAlertToast } from '@gsp/ui';
+import {
+  Badge,
+  DataTable,
+  Text,
+  showAlertToast,
+  TableHeadWithSorting,
+} from '@gsp/ui';
 import { DeleteEditDropdown } from './DeleteEditDropdown';
 import { DeleteModalConfirmation } from './DeleteModalConfirmation';
 import {
@@ -310,7 +316,9 @@ export const UsersTable = ({
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Email" />
+      ),
     },
     {
       id: 'appsAccess',

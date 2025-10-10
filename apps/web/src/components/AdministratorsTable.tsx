@@ -236,7 +236,9 @@ export const AdministratorsTable = ({
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Email" />
+      ),
       meta: {
         headerClassName: 'w-80',
       },

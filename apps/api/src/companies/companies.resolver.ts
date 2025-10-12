@@ -59,7 +59,7 @@ export class CompaniesResolver {
     return this.companiesService.update(id, updateCompanyInput, user);
   }
 
-  @Roles([Role.COMPANY_ADMIN], [], 'company')
+  @Roles([Role.SANDVIK_ADMIN], [], 'company')
   @Mutation('removeCompany')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

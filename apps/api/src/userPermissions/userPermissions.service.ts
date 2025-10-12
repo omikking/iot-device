@@ -26,9 +26,7 @@ export class UserPermissionsService {
   }
 
   async findOne(id: string): Promise<UserPermission> {
-    const userPermission = await this.prisma.userPermission.findUnique({
-      where: { id },
-    });
+    const userPermission = await this.prisma.userPermission.findFirst();
     if (!userPermission) {
       throw new UserInputError('', {
         extensions: {
@@ -45,7 +43,10 @@ export class UserPermissionsService {
   ): Promise<UserPermission> {
     try {
       const user = await this.prisma.user.findUnique({
-        where: { email: createUserPermissionInput.userEmail },
+        where: {
+          email: createUserPermissionInput.userEmail,
+          isDeleted: false,
+        },
       });
 
       if (!user) {
@@ -153,7 +154,9 @@ export class UserPermissionsService {
 
   async remove(id: string): Promise<UserPermission> {
     const userPermission = await this.prisma.userPermission.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
     });
 
     if (!userPermission) {

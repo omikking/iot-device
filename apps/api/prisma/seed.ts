@@ -275,7 +275,7 @@ async function generateTestUsersAndCompanies() {
   // 3. Expired Plan Company
   const bronzeMiningCorp = await prisma.company.create({
     data: {
-      name: 'Test Bronze Banshee & Expired Pull Test Mining Corp',
+      name: 'Test Bronze & Expired Pull Test Mining Corp',
       orgNumber: '3333333333',
       address: '789 Bronze Street',
       postalCode: '34567',
@@ -299,7 +299,7 @@ async function generateTestUsersAndCompanies() {
   await prisma.plan.create({
     data: {
       companyId: bronzeMiningCorp.id,
-      applicationName: Application.BANSHEE,
+      applicationName: Application.PULL_TEST_OPERATOR,
       planLevel: PlanLevel.BRONZE,
       expiringDate: faker.date.future({ years: 1 }),
     },
@@ -329,7 +329,7 @@ async function generateTestUsersAndCompanies() {
       appsAccess: [
         Application.PULL_TEST,
         Application.PULL_TEST_OPERATOR,
-        Application.BANSHEE,
+        // Application.BANSHEE,
       ],
     },
   });
@@ -353,7 +353,7 @@ async function generateTestUsersAndCompanies() {
       appsAccess: [
         Application.PULL_TEST,
         Application.PULL_TEST_OPERATOR,
-        Application.BANSHEE,
+        // Application.BANSHEE,
       ],
     },
   });
@@ -368,7 +368,7 @@ async function generateTestUsersAndCompanies() {
       appsAccess: [
         Application.PULL_TEST,
         Application.PULL_TEST_OPERATOR,
-        Application.BANSHEE,
+        // Application.BANSHEE,
       ],
     },
   });
@@ -389,7 +389,7 @@ async function generateTestUsersAndCompanies() {
       userId: multiCompanyAdmin.id,
       companyId: bronzeMiningCorp.id,
       role: Role.COMPANY_ADMIN,
-      appsAccess: [Application.PULL_TEST, Application.BANSHEE],
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     },
   });
 
@@ -421,7 +421,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.COMPANY_USER,
       appsAccess: [
         Application.PULL_TEST, // Expired plan
-        Application.BANSHEE, // Valid plan
+        Application.PULL_TEST_OPERATOR, // Valid plan
       ],
     },
   });
@@ -582,7 +582,7 @@ async function generateCompanies(
   const applications = [
     Application.PULL_TEST,
     Application.PULL_TEST_OPERATOR,
-    Application.BANSHEE,
+    // Application.BANSHEE,
   ];
   const planLevels = [PlanLevel.GOLD, PlanLevel.SILVER, PlanLevel.BRONZE];
 

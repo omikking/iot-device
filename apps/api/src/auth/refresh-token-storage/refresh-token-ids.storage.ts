@@ -47,6 +47,14 @@ export class RefreshTokenIdsStorage {
     });
   }
 
+  async invalidateAllForUser(userId: string) {
+    await this.prisma.refreshTokenId.deleteMany({
+      where: {
+        userId: this.getKey(userId),
+      },
+    });
+  }
+
   private getKey(userId: string) {
     return `user-${userId}`;
   }

@@ -3,6 +3,7 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { Company } from '@/gql/graphql';
 import { useMutation, useQuery } from 'urql';
+import { useRouter } from 'next/navigation';
 import { GoBack } from '@/components/GoBack';
 import { responses } from '@/app/uitexts/responses';
 import { CompanyForm } from '@/components/CompanyForm';
@@ -53,6 +54,7 @@ export default function Page({
 }: {
   params: { id: string };
 }): JSX.Element {
+  const router = useRouter();
   const isNewCompany = params.id === 'new';
 
   // Does not call if it's new company flow.
@@ -73,7 +75,6 @@ export default function Page({
     setIsDeleteModalOpen(false);
   };
 
-  // TODO still not able to delete company, need to fix it in backend
   const handleDelete = async (): Promise<boolean> => {
     setIsDeleting(true);
 
@@ -90,6 +91,7 @@ export default function Page({
                 title: responses.companyDeleteSuccess,
                 variant: 'info',
               });
+              router.replace('/administration-portal');
             }, 1500);
           }
           return true;
@@ -97,7 +99,7 @@ export default function Page({
         // Fallback error
         .catch(() => {
           showAlertToast({
-            title: responses.companyInactivationFailed,
+            title: responses.companyDeletionFailed,
             description: responses.contactSupportError,
             variant: 'error',
           });
@@ -108,7 +110,6 @@ export default function Page({
         })
     );
   };
-
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <GoBack />
@@ -127,28 +128,32 @@ export default function Page({
 
       <DeleteModalConfirmation
         deleteIcon="Company"
-        modalTitle="Inactivate company"
-        modalDeleteButtonText="Inactivate company"
-        modalText="Confirm inactivation"
+        modalTitle="Delete company"
+        modalDeleteButtonText="Delete company"
+        modalText="Confirm deletion"
         isLoading={isDeleting}
         isOpen={isDeleteModalOpen}
         onDelete={handleDelete}
         onClose={closeDeleteModal}
         onOpenChange={closeDeleteModal}
       >
-        <div className="flex flex-col text-center gap-4 max-w-[420px]">
+        <div className="flex flex-col text-center gap-4 max-w-[460px]">
           <Text variant="medium" color={'foreground'} as="span">
-            You are about to inactivate
+            You are about to permanently delete
             <Text variant="medium" color={'foreground'} as="span" isBold>
               {` ${company?.name}. `}
             </Text>
-            <Text variant="medium" color={'foreground'} as="span">
-              Are you sure about this action?
+            <Text color={'foreground'} variant={'medium'} className="mt-4">
+              This will{' '}
+              <Text variant="medium" color={'foreground'} as="span" isBold>
+                permanently{' '}
+              </Text>
+              delete the company and all associated data from the system. Are
+              you sure you want to proceed?
             </Text>
           </Text>
           <Text color={'foreground'} variant={'medium'}>
-            The company will become inactive. The company data will not be
-            deleted and is recoverable.
+            This action is irreversible and all records will be lost.
           </Text>
         </div>
       </DeleteModalConfirmation>

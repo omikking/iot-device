@@ -809,7 +809,7 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
               ? faker.helpers.arrayElement(abortReasons)
               : null,
           comment: faker.datatype.boolean(0.6) ? faker.lorem.sentence() : null,
-          image: faker.datatype.boolean(0.3) ? faker.image.url() : null,
+          image: null, // skip images for now
           createdAt: faker.date.recent({ days: 60 }),
           updatedAt: faker.date.recent({ days: 60 }),
           siteId: site.id,

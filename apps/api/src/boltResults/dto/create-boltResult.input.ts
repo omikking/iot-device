@@ -9,6 +9,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
+import { Upload } from 'graphql-upload-ts';
 
 export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
   @IsNumber()
@@ -47,8 +48,7 @@ export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
   comment: string;
 
   @IsOptional()
-  @IsString()
-  image: string;
+  image: Upload;
 
   @IsUUID()
   siteId: string;

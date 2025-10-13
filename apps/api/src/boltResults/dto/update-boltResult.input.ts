@@ -8,6 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
+import { Upload } from 'graphql-upload-ts';
 
 export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
   @IsOptional()
@@ -60,6 +61,5 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
   comment: string;
 
   @IsOptional()
-  @IsString()
-  image: string;
+  image: Upload;
 }

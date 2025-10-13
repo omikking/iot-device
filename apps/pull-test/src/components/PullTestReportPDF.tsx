@@ -466,7 +466,7 @@ export const PullTestReportPDF = ({
         ).length;
         const successRate =
           totalTests > 0
-            ? `${Math.round((successCount / totalTests) * 100)}%`
+            ? `${((successCount / totalTests) * 100).toFixed(1)}%`
             : '0%';
 
         // Draw graph readings section

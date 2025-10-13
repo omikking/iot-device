@@ -88,6 +88,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         return user;
+<<<<<<< HEAD
         // Build object that matches `User` interface exactly
         // const userObj = {
         //   // id: data.userData.id,
@@ -103,6 +104,8 @@ export const authOptions: NextAuthOptions = {
 
         // // Return as any (or as User) so NextAuth accepts it at runtime
         // return userObj as unknown as User;
+=======
+>>>>>>> 1e371ad6b31e7348c3bf770f830db9b73a31bd04
       },
     }),
   ],
@@ -111,6 +114,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
+<<<<<<< HEAD
   /* cookies: {
     sessionToken: {
       name: 'next-auth.session-token', // no "__Host-" prefix (so domain can be set)
@@ -158,6 +162,28 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
+=======
+  // session: {
+  //   strategy: 'jwt',
+  // },
+
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
+
+  // cookies: {
+  //   sessionToken: {
+  //     name: '__Secure-next-auth.session-token',
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: 'none', // Required for cross-domain
+  //       secure: true, // Must be true if using HTTPS
+  //       domain: process.env.COOKIE_DOMAIN, // crucial part
+  //       path: '/',
+  //     },
+  //   },
+  // },
+>>>>>>> 1e371ad6b31e7348c3bf770f830db9b73a31bd04
 
   callbacks: {
     async jwt({ token, user }) {
@@ -182,4 +208,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
+  // secret: process.env.NEXTAUTH_SECRET,
 };

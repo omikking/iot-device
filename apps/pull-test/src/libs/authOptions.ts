@@ -13,8 +13,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
         headers: { 'Content-Type': 'application/json' },
         // We could also refactor to send through Authorization header, but this works.
         body: JSON.stringify({ refreshToken: token.tokens.refreshToken }),
-      },
-    );
+      });
 
     const refreshedTokens: {
       accessToken: string;
@@ -76,23 +75,6 @@ export const authOptions: NextAuthOptions = {
 
         const user = (await response.json()) as User;
         return user;
-        // Build object that matches your `User` interface exactly
-        // const userObj = {
-        //   user: {
-        //     id: data.userData.id,
-        //     email: data.userData.email,
-        //     fullName: data.userData.fullName,
-        //     globalRole: data.userData.globalRole,
-        //     userPermissions: data.userData.userPermissions,
-        //   },
-        //   tokens: {
-        //     accessToken: data.tokens?.accessToken,
-        //     refreshToken: data.tokens?.refreshToken,
-        //   },
-        // };
-
-        // // Return as any (or as User) so NextAuth accepts it at runtime
-        // return userObj as User;
       },
     }),
   ],
@@ -101,35 +83,24 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
+  // session: {
+  //   strategy: 'jwt',
+  // },
+
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
+
+  // //Added section for cross-subdomain cookie sharing
   // cookies: {
   //   sessionToken: {
-  //     name: 'next-auth.session-token', // no "__Host-" prefix (so domain can be set)
+  //     name: '__Secure-next-auth.session-token',
   //     options: {
   //       httpOnly: true,
-  //       sameSite: 'none', // must be "none" for cross-subdomain cookies
+  //       sameSite: 'none',  // Required for cross-domain
+  //       secure: true,      // Must be true on HTTPS
+  //       domain: process.env.COOKIE_DOMAIN, // critical for shared login
   //       path: '/',
-  //       secure: process.env.NODE_ENV === 'production', // must be true for HTTPS
-  //       domain: process.env.COOKIE_DOMAIN, // set to ".groundsupport.mining.sandvik"
-  //     },
-  //   },
-  //   callbackUrl: {
-  //     name: 'next-auth.callback-url',
-  //     options: {
-  //       httpOnly: false,
-  //       sameSite: 'none',
-  //       path: '/',
-  //       secure: process.env.NODE_ENV === 'production',
-  //       domain: process.env.COOKIE_DOMAIN,
-  //     },
-  //   },
-  //   csrfToken: {
-  //     name: 'next-auth.csrf-token',
-  //     options: {
-  //       httpOnly: false,
-  //       sameSite: 'none',
-  //       path: '/',
-  //       secure: process.env.NODE_ENV === 'production',
-  //       domain: process.env.COOKIE_DOMAIN,
   //     },
   //   },
   // },
@@ -157,4 +128,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
+  // secret: process.env.NEXTAUTH_SECRET,
 };

@@ -36,7 +36,7 @@ enum PullTestAbortReason {
 
 enum Application {
   PULL_TEST
-  PULL_TEST_OPERATOR
+  PULL_TEST_TECHNICIAN
   // BANSHEE
 }
 
@@ -176,7 +176,7 @@ model Invitation {
   used      Boolean  @default(false)
 
   companyId  String?
-  company    Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company    Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   role       Role?
   globalRole GlobalRole?
 

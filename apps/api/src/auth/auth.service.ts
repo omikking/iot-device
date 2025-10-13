@@ -70,7 +70,7 @@ export class AuthService {
   async signin(dto: SigninDto) {
     try {
       const normalizedEmail = dto.email.toLowerCase();
-      const user = await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findFirst({
         where: {
           email: normalizedEmail,
           isDeleted: false,

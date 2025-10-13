@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token', // intentionally not "__Host-"
+      name: '__Secure-next-auth.session-token',
       options: {
         httpOnly: true,
         path: '/',

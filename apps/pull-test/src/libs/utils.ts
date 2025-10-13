@@ -216,6 +216,10 @@ export const convertBoltType = (boltType: BoltType): string => {
 
 export const convertAbortReason = (reason: PullTestAbortReason): string => {
   const abortReasonDisplayMap: Record<PullTestAbortReason, string> = {
+    [PullTestAbortReason.NotTestedVoidCavity]:
+      'Bolt not tested due to void or cavity',
+    [PullTestAbortReason.TestStoppedInstallAngle]:
+      'Test stopped due to incorrect installation angle',
     [PullTestAbortReason.PegNotExtruded]:
       'Bolt has not been installed correctly, peg not extruded',
     [PullTestAbortReason.HighAngleNotPerpendicular]:

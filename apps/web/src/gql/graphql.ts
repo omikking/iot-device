@@ -783,8 +783,10 @@ export enum PlanLevel {
 export enum PullTestAbortReason {
   BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
   HighAngleNotPerpendicular = 'HIGH_ANGLE_NOT_PERPENDICULAR',
+  NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
   PegNotExtruded = 'PEG_NOT_EXTRUDED',
-  RebarEjectedStopperCaught = 'REBAR_EJECTED_STOPPER_CAUGHT'
+  RebarEjectedStopperCaught = 'REBAR_EJECTED_STOPPER_CAUGHT',
+  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
 }
 
 /**

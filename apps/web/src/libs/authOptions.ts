@@ -75,8 +75,20 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = (await response.json()) as User;
+        // for debugging
+        try {
+          console.debug(
+            '[nextauth][authorize] backend returned:',
+            JSON.stringify(user),
+          );
+        } catch {
+          console.debug(
+            '[nextauth][authorize] backend returned non-serializable user',
+          );
+        }
+
         return user;
-        // Build object that matches your `User` interface exactly
+        // Build object that matches `User` interface exactly
         // const userObj = {
         //   // id: data.userData.id,
         //   // email: data.userData.email,
@@ -131,6 +143,21 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },*/
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token', // intentionally not "__Host-"
+      options: {
+        httpOnly: true,
+        path: '/',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // none required for cross-subdomain, but only enable in prod
+        secure: process.env.NODE_ENV === 'production',
+        // Only attach domain in prod and only if COOKIE_DOMAIN is set to avoid invalid config in dev
+        ...(process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
+          ? { domain: process.env.COOKIE_DOMAIN }
+          : {}),
+      },
+    },
+  },
 
   callbacks: {
     async jwt({ token, user }) {

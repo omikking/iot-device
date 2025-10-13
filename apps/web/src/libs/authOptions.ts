@@ -75,17 +75,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = (await response.json()) as User;
-        // for debugging
-        try {
-          console.debug(
-            '[nextauth][authorize] backend returned:',
-            JSON.stringify(user),
-          );
-        } catch {
-          console.debug(
-            '[nextauth][authorize] backend returned non-serializable user',
-          );
-        }
 
         return user;
       },
@@ -111,26 +100,6 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  // session: {
-  //   strategy: 'jwt',
-  // },
-
-  // jwt: {
-  //   secret: process.env.NEXTAUTH_SECRET,
-  // },
-
-  // cookies: {
-  //   sessionToken: {
-  //     name: '__Secure-next-auth.session-token',
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: 'none', // Required for cross-domain
-  //       secure: true, // Must be true if using HTTPS
-  //       domain: process.env.COOKIE_DOMAIN, // crucial part
-  //       path: '/',
-  //     },
-  //   },
-  // },
 
   callbacks: {
     async jwt({ token, user }) {
@@ -148,7 +117,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      //console.log('session callback token:', JSON.stringify(token));
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;

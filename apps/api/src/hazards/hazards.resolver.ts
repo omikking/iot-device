@@ -23,7 +23,7 @@ export class HazardsResolver {
     @Args('companyId', ParseUUIDPipe) companyId: string,
   ): Promise<GraphQLTypes.BoltResult[]> {
     const allowedCompanyIds = getAllowedCompanyIds(user);
-    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN];
+    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_OPERATOR];
 
     return this.hazardsService.findAll(
       user,

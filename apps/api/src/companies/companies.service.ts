@@ -152,7 +152,7 @@ export class CompaniesService {
                 role: Role.SANDVIK_ADMIN,
                 appsAccess: [
                   Application.PULL_TEST,
-                  Application.PULL_TEST_TECHNICIAN,
+                  Application.PULL_TEST_OPERATOR,
                   // Application.BANSHEE,
                 ],
               },
@@ -253,7 +253,7 @@ export class CompaniesService {
                 role: Role.SANDVIK_ADMIN,
                 appsAccess: [
                   Application.PULL_TEST,
-                  Application.PULL_TEST_TECHNICIAN,
+                  Application.PULL_TEST_OPERATOR,
                   // Application.BANSHEE,
                 ],
               },

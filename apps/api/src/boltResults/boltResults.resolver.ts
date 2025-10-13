@@ -46,10 +46,7 @@ export class BoltResultsResolver {
     @Args('endDate', { type: () => Date })
     endDate?: Date,
   ): Promise<GraphQLTypes.BoltResultResponse> {
-    const allowedApps = [
-      Application.PULL_TEST,
-      Application.PULL_TEST_TECHNICIAN,
-    ];
+    const allowedApps = [Application.PULL_TEST, Application.PULL_TEST_OPERATOR];
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
     const pagination: { offset: number; limit?: number } = {
@@ -81,7 +78,7 @@ export class BoltResultsResolver {
 
   @Roles(
     [],
-    [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     'boltResult',
   )
   @Query('boltResult')
@@ -92,7 +89,7 @@ export class BoltResultsResolver {
   }
 
   // TODO Test all resolvers below in insomnia
-  @Roles([], [Application.PULL_TEST_TECHNICIAN], 'boltResult')
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResult')
   async create(
     @Args('createBoltResultInput')
@@ -103,7 +100,7 @@ export class BoltResultsResolver {
 
   @Roles(
     [],
-    [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+    [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     'boltResult',
   )
   @Mutation('updateBoltResult')
@@ -115,7 +112,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.update(id, updateBoltResultInput);
   }
 
-  @Roles([], [Application.PULL_TEST_TECHNICIAN], 'boltResult')
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResult')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,
@@ -123,7 +120,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.remove(id);
   }
 
-  @Roles([], [Application.PULL_TEST_TECHNICIAN], 'boltResult')
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('createBoltResults')
   async createBulk(
     @Args('siteId', ParseUUIDPipe) siteId: string,
@@ -133,7 +130,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.createBulk(createBoltResultsInput, siteId);
   }
 
-  @Roles([], [Application.PULL_TEST_TECHNICIAN], 'boltResult')
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('updateBoltResults')
   async updateBulk(
     @Args('updateBoltResultsInput', new ValidationPipe({ transform: true }))
@@ -146,7 +143,7 @@ export class BoltResultsResolver {
     return this.boltResultsService.updateBulk(updateBoltResultsInput);
   }
 
-  @Roles([], [Application.PULL_TEST_TECHNICIAN], 'boltResult')
+  @Roles([], [Application.PULL_TEST_OPERATOR], 'boltResult')
   @Mutation('removeBoltResults')
   async removeBulk(
     @Args('ids', new ValidationPipe({ transform: true })) ids: string[],

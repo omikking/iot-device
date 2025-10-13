@@ -74,7 +74,7 @@ function printLoginInstructions() {
   console.log('technician@mail.com     - Sandvik Technician');
   console.log('companyadmin@mail.com   - Company Admin');
   console.log('regularuser@mail.com    - Regular user (no global role)');
-  console.log('pulltesttechnician@mail.com       - Pull Test Technician only');
+  console.log('operator@mail.com       - Pull Test Operator only');
   console.log('multiadmin@mail.com     - Admin for multiple companies');
   console.log('expired@mail.com        - User with expired plan access');
   console.log('noapp@mail.com          - User with no app access');
@@ -180,12 +180,12 @@ async function generateTestUsersAndCompanies() {
     },
   });
 
-  // 6. Pull Test Technician (specialized app user)
-  const pullTestTechnician = await prisma.user.create({
+  // 6. Pull Test Operator (specialized app user)
+  const pullTestOperator = await prisma.user.create({
     data: {
-      email: 'pulltesttechnician@mail.com',
+      email: 'operator@mail.com',
       hash: passwordHash,
-      fullName: 'Pull Test Technician',
+      fullName: 'Pull Test Operator',
       workPlace: 'Testing Lab',
       phoneNumber: '+46222333444',
       isGlobalVisibility: false,
@@ -269,7 +269,7 @@ async function generateTestUsersAndCompanies() {
   await prisma.plan.create({
     data: {
       companyId: silverMiningCorp.id,
-      applicationName: Application.PULL_TEST_TECHNICIAN,
+      applicationName: Application.PULL_TEST_OPERATOR,
       planLevel: PlanLevel.SILVER,
       expiringDate: faker.date.future({ years: 1 }),
     },
@@ -302,7 +302,7 @@ async function generateTestUsersAndCompanies() {
   await prisma.plan.create({
     data: {
       companyId: bronzeMiningCorp.id,
-      applicationName: Application.PULL_TEST_TECHNICIAN,
+      applicationName: Application.PULL_TEST_OPERATOR,
       planLevel: PlanLevel.BRONZE,
       expiringDate: faker.date.future({ years: 1 }),
     },
@@ -331,7 +331,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.COMPANY_ADMIN,
       appsAccess: [
         Application.PULL_TEST,
-        Application.PULL_TEST_TECHNICIAN,
+        Application.PULL_TEST_OPERATOR,
         // Application.BANSHEE,
       ],
     },
@@ -343,7 +343,7 @@ async function generateTestUsersAndCompanies() {
       userId: regularUser.id,
       companyId: goldMiningCorp.id,
       role: Role.COMPANY_USER,
-      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     },
   });
 
@@ -355,7 +355,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.SANDVIK_TECHNICIAN,
       appsAccess: [
         Application.PULL_TEST,
-        Application.PULL_TEST_TECHNICIAN,
+        Application.PULL_TEST_OPERATOR,
         // Application.BANSHEE,
       ],
     },
@@ -370,7 +370,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.COMPANY_ADMIN,
       appsAccess: [
         Application.PULL_TEST,
-        Application.PULL_TEST_TECHNICIAN,
+        Application.PULL_TEST_OPERATOR,
         // Application.BANSHEE,
       ],
     },
@@ -382,7 +382,7 @@ async function generateTestUsersAndCompanies() {
       userId: multiCompanyAdmin.id,
       companyId: silverMiningCorp.id,
       role: Role.COMPANY_ADMIN,
-      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     },
   });
 
@@ -392,7 +392,7 @@ async function generateTestUsersAndCompanies() {
       userId: multiCompanyAdmin.id,
       companyId: bronzeMiningCorp.id,
       role: Role.COMPANY_ADMIN,
-      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_OPERATOR],
     },
   });
 
@@ -406,13 +406,13 @@ async function generateTestUsersAndCompanies() {
     },
   });
 
-  // 5. Pull Test Technician specific user
+  // 5. Pull Test Operator specific user
   await prisma.userPermission.create({
     data: {
-      userId: pullTestTechnician.id,
+      userId: pullTestOperator.id,
       companyId: silverMiningCorp.id,
       role: Role.COMPANY_USER,
-      appsAccess: [Application.PULL_TEST_TECHNICIAN],
+      appsAccess: [Application.PULL_TEST_OPERATOR],
     },
   });
 
@@ -424,7 +424,7 @@ async function generateTestUsersAndCompanies() {
       role: Role.COMPANY_USER,
       appsAccess: [
         Application.PULL_TEST, // Expired plan
-        Application.PULL_TEST_TECHNICIAN, // Valid plan
+        Application.PULL_TEST_OPERATOR, // Valid plan
       ],
     },
   });
@@ -584,7 +584,7 @@ async function generateCompanies(
   const companies = [];
   const applications = [
     Application.PULL_TEST,
-    Application.PULL_TEST_TECHNICIAN,
+    Application.PULL_TEST_OPERATOR,
     // Application.BANSHEE,
   ];
   const planLevels = [PlanLevel.GOLD, PlanLevel.SILVER, PlanLevel.BRONZE];

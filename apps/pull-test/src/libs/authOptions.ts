@@ -13,7 +13,8 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
         headers: { 'Content-Type': 'application/json' },
         // We could also refactor to send through Authorization header, but this works.
         body: JSON.stringify({ refreshToken: token.tokens.refreshToken }),
-      });
+      },
+    );
 
     const refreshedTokens: {
       accessToken: string;
@@ -83,6 +84,21 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
+  cookies: {
+    sessionToken: {
+      name: '__Secure-next-auth.session-token',
+      options: {
+        httpOnly: true,
+        path: '/',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // none required for cross-subdomain, but only enable in prod
+        secure: process.env.NODE_ENV === 'production',
+        // Only attach domain in prod and only if COOKIE_DOMAIN is set to avoid invalid config in dev
+        ...(process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
+          ? { domain: process.env.COOKIE_DOMAIN }
+          : {}),
+      },
+    },
+  },
   // session: {
   //   strategy: 'jwt',
   // },

@@ -116,7 +116,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ token, session }) {
-      // console.log('session callback token:', JSON.stringify(token));
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;

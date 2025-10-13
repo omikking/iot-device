@@ -150,15 +150,16 @@ export const BoltResultDetailsModalContent = ({
               (boltSpec, index) => (
                 <Specification
                   isWide
+                  isFullWidth={boltSpec.title === 'Abort Reason'}
                   key={index}
                   title={boltSpec.title}
                   text={boltSpec.text}
-                  className="w-1/2"
+                  className={
+                    boltSpec.title === 'Abort Reason' ? 'w-full' : 'w-1/2'
+                  }
                 />
               ),
             )}
-            {generateBoltSpecifications(boltResult, siteInfo).length % 2 ===
-              1 && <Specification isWide title="" text="" className="w-1/2" />}
           </div>
         )}
       </div>

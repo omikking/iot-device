@@ -2,8 +2,12 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
-import { BoltResultResponse, RingPosition } from '@/gql/graphql';
-import { capitalizeFirstLetter, convertRingPosition } from '@/libs/utils';
+import { BoltResultResponse, BoltType, RingPosition } from '@/gql/graphql';
+import {
+  capitalizeFirstLetter,
+  convertBoltType,
+  convertRingPosition,
+} from '@/libs/utils';
 import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
@@ -250,7 +254,7 @@ export const PullTestReportPDF = ({
 
         const values = [
           item.boltNumber,
-          item.boltType,
+          convertBoltType(item.boltType as BoltType),
           peakLoadValues,
           peakDisplacementValues,
           item.level?.levelName || '',

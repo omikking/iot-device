@@ -24,6 +24,7 @@
     "seed:minimal:clean": "ts-node prisma/seed-minimal.ts --clean",
     "seed:dev": "NODE_ENV=development prisma db seed",
     "db:seed": "pnpm seed",
+    "generate:graphql-types": "ts-node src/generate-types.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

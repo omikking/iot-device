@@ -70,8 +70,39 @@ export type BoltResultResponse = {
 };
 
 export enum BoltType {
-  Md47 = 'MD47',
-  Mdx47 = 'MDX47'
+  D39Mdx_1_8M = 'D39_MDX_1_8_M',
+  D39Mdx_2_1M = 'D39_MDX_2_1_M',
+  D39Mdx_2_4M = 'D39_MDX_2_4_M',
+  D39Mdx_3_0M = 'D39_MDX_3_0_M',
+  D39MdxPegBolt_1_8M = 'D39_MDX_PEG_BOLT_1_8_M',
+  D39MdxPegBolt_2_1M = 'D39_MDX_PEG_BOLT_2_1_M',
+  D39MdxPegBolt_2_4M = 'D39_MDX_PEG_BOLT_2_4_M',
+  D39MdxPegBolt_3_0M = 'D39_MDX_PEG_BOLT_3_0_M',
+  D47Mdx_1_8M = 'D47_MDX_1_8_M',
+  D47Mdx_2_1M = 'D47_MDX_2_1_M',
+  D47Mdx_2_4M = 'D47_MDX_2_4_M',
+  D47Mdx_3_0M = 'D47_MDX_3_0_M',
+  D47Mdx_3_8M = 'D47_MDX_3_8_M',
+  D47Mdx_4_0M = 'D47_MDX_4_0_M',
+  D47MdxPegBolt_1_8M = 'D47_MDX_PEG_BOLT_1_8_M',
+  D47MdxPegBolt_2_1M = 'D47_MDX_PEG_BOLT_2_1_M',
+  D47MdxPegBolt_2_4M = 'D47_MDX_PEG_BOLT_2_4_M',
+  D47MdxPegBolt_3_0M = 'D47_MDX_PEG_BOLT_3_0_M',
+  D47Md_1_8M = 'D47_MD_1_8_M',
+  D47Md_2_1M = 'D47_MD_2_1_M',
+  D47Md_2_4M = 'D47_MD_2_4_M',
+  D47Md_3_0M = 'D47_MD_3_0_M',
+  D47Md_3_8M = 'D47_MD_3_8_M',
+  D47MdPegBolt_1_8M = 'D47_MD_PEG_BOLT_1_8_M',
+  D47MdPegBolt_2_1M = 'D47_MD_PEG_BOLT_2_1_M',
+  D47MdPegBolt_2_4M = 'D47_MD_PEG_BOLT_2_4_M',
+  D47MdPegBolt_3_0M = 'D47_MD_PEG_BOLT_3_0_M',
+  FrictionBolt_33Mm = 'FRICTION_BOLT_33_MM',
+  FrictionBolt_39Mm = 'FRICTION_BOLT_39_MM',
+  FrictionBolt_47Mm = 'FRICTION_BOLT_47_MM',
+  KinlocBolt = 'KINLOC_BOLT',
+  KinlocBoltIndie = 'KINLOC_BOLT_INDIE',
+  SpiralFrictionBolt = 'SPIRAL_FRICTION_BOLT'
 }
 
 /**
@@ -750,8 +781,10 @@ export enum PlanLevel {
 }
 
 export enum PullTestAbortReason {
-  NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
-  TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
+  BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
+  HighAngleNotPerpendicular = 'HIGH_ANGLE_NOT_PERPENDICULAR',
+  PegNotExtruded = 'PEG_NOT_EXTRUDED',
+  RebarEjectedStopperCaught = 'REBAR_EJECTED_STOPPER_CAUGHT'
 }
 
 /**

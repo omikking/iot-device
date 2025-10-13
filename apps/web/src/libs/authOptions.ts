@@ -88,24 +88,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         return user;
-<<<<<<< HEAD
-        // Build object that matches `User` interface exactly
-        // const userObj = {
-        //   // id: data.userData.id,
-        //   // email: data.userData.email,
-        //   // fullName: data.userData.fullName,
-        //   // globalRole: data.userData.globalRole,
-        //   // userPermissions: data.userData.userPermissions,
-        //   tokens: {
-        //     accessToken: data.tokens?.accessToken,
-        //     refreshToken: data.tokens?.refreshToken,
-        //   },
-        // };
-
-        // // Return as any (or as User) so NextAuth accepts it at runtime
-        // return userObj as unknown as User;
-=======
->>>>>>> 1e371ad6b31e7348c3bf770f830db9b73a31bd04
       },
     }),
   ],
@@ -114,39 +96,6 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
 
-<<<<<<< HEAD
-  /* cookies: {
-    sessionToken: {
-      name: 'next-auth.session-token', // no "__Host-" prefix (so domain can be set)
-      options: {
-        httpOnly: true,
-        sameSite: 'none', // must be "none" for cross-subdomain cookies
-        path: '/',
-        secure: process.env.NODE_ENV === 'production', // must be true for HTTPS
-        domain: process.env.COOKIE_DOMAIN, // set to ".groundsupport.mining.sandvik"
-      },
-    },
-    callbackUrl: {
-      name: 'next-auth.callback-url',
-      options: {
-        httpOnly: false,
-        sameSite: 'none',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.COOKIE_DOMAIN,
-      },
-    },
-    csrfToken: {
-      name: 'next-auth.csrf-token',
-      options: {
-        httpOnly: false,
-        sameSite: 'none',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.COOKIE_DOMAIN,
-      },
-    },
-  },*/
   cookies: {
     sessionToken: {
       name: 'next-auth.session-token', // intentionally not "__Host-"
@@ -162,7 +111,6 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-=======
   // session: {
   //   strategy: 'jwt',
   // },
@@ -183,7 +131,6 @@ export const authOptions: NextAuthOptions = {
   //     },
   //   },
   // },
->>>>>>> 1e371ad6b31e7348c3bf770f830db9b73a31bd04
 
   callbacks: {
     async jwt({ token, user }) {

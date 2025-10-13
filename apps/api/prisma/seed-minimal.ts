@@ -7,15 +7,18 @@ async function cleanup() {
   console.log('🧹 Cleaning up existing data...');
 
   // Delete data in reverse order of dependencies
-  await prisma.boltResult.deleteMany();
-  await prisma.location.deleteMany();
-  await prisma.drive.deleteMany();
-  await prisma.level.deleteMany();
-  await prisma.site.deleteMany();
-  await prisma.userPermission.deleteMany();
-  await prisma.plan.deleteMany();
-  await prisma.company.deleteMany();
-  await prisma.user.deleteMany(); // Clear all users for a fresh start
+  await prisma.$transaction([
+    prisma.boltResult.deleteMany(),
+    prisma.location.deleteMany(),
+    prisma.drive.deleteMany(),
+    prisma.level.deleteMany(),
+    prisma.site.deleteMany(),
+    prisma.userPermission.deleteMany(),
+    prisma.refreshTokenId.deleteMany(),
+    prisma.plan.deleteMany(),
+    prisma.company.deleteMany(),
+    prisma.user.deleteMany(), // Clear all users for a fresh start
+  ]);
 
   console.log('✅ Database cleaned');
 }
@@ -23,31 +26,27 @@ async function cleanup() {
 async function main() {
   console.log('🌱 Starting minimal seeding...');
 
-  // Check if we should clean first (based on command line argument)
-  const shouldClean = process.argv.includes('--clean');
-
-  if (shouldClean) {
-    await cleanup();
-  }
+  // Clear existing data
+  await cleanup();
 
   // Create a global Sandvik admin user
   const passwordHash = await argon.hash('Password123!');
 
   const sandvikAdmin = await prisma.user.create({
     data: {
-      email: 'sandvikadmin@mail.com',
+      email: 'felix.ostergren@sandvik.com',
       hash: passwordHash,
-      fullName: 'Sandvik Admin',
+      fullName: 'Felix Östergren',
       workPlace: 'Sandvik',
       phoneNumber: '+46123456789',
       globalRole: GlobalRole.SANDVIK_ADMIN,
-      isGlobalVisibility: true,
+      isGlobalVisibility: false,
     },
   });
 
-  console.log('\n🔑 ADMIN TEST ACCOUNT CREATED');
+  console.log('\n🔑 ADMIN ACCOUNT CREATED');
   console.log('=====================================');
-  console.log('Email: sandvikadmin@mail.com');
+  console.log('Email: felix.ostergren@sandvik.com');
   console.log('Password: Password123!');
   console.log('=====================================');
 }

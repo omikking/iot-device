@@ -26,8 +26,12 @@ async function cleanup() {
 async function main() {
   console.log('🌱 Starting minimal seeding...');
 
-  // Clear existing data
-  await cleanup();
+  // Check if we should clean first (based on command line argument)
+  const shouldClean = process.argv.includes('--clean');
+
+  if (shouldClean) {
+    await cleanup();
+  }
 
   // Create a global Sandvik admin user
   const passwordHash = await argon.hash('Password123!');

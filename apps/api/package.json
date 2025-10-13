@@ -21,6 +21,7 @@
     "smtp:logs": "docker compose logs smtp4dev -f",
     "seed": "prisma db seed",
     "seed:minimal": "ts-node prisma/seed-minimal.ts",
+    "seed:minimal:clean": "ts-node prisma/seed-minimal.ts --clean",
     "seed:dev": "NODE_ENV=development prisma db seed",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

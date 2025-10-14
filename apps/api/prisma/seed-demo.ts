@@ -99,6 +99,16 @@ async function main() {
     },
   });
 
+  // Assign Felix as administrator for Mine Company 1
+  await prisma.userPermission.create({
+    data: {
+      userId: felix.id,
+      companyId: mineCompany1.id,
+      role: Role.SANDVIK_ADMIN,
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+    },
+  });
+
   // Company Admin for Mine Company 1
   const mineCompany1Admin = await prisma.user.create({
     data: {
@@ -174,6 +184,16 @@ async function main() {
     },
   });
 
+  // Assign Felix as administrator for Mine Company 2
+  await prisma.userPermission.create({
+    data: {
+      userId: felix.id,
+      companyId: mineCompany2.id,
+      role: Role.SANDVIK_ADMIN,
+      appsAccess: [Application.PULL_TEST, Application.PULL_TEST_TECHNICIAN],
+    },
+  });
+
   // Company Admin for Mine Company 2
   const mineCompany2Admin = await prisma.user.create({
     data: {
@@ -218,10 +238,10 @@ async function main() {
 
   // ============ CREATE SITE STRUCTURE FOR MINE COMPANY 1 ============
 
-  // Site_A
+  // Site A
   const siteA = await prisma.site.create({
     data: {
-      siteName: 'Site_A',
+      siteName: 'Site A',
       address: '789 Mine Site Road',
       postalCode: '11111',
       city: 'Kiruna',
@@ -230,122 +250,122 @@ async function main() {
     },
   });
 
-  // Level_1
+  // Level 1
   const level1 = await prisma.level.create({
     data: {
-      levelName: 'Level_1',
+      levelName: 'Level 1',
       siteId: siteA.id,
     },
   });
 
-  // Drive_A
+  // Drive A
   const driveA = await prisma.drive.create({
     data: {
-      driveName: 'Drive_A',
+      driveName: 'Drive A',
       levelId: level1.id,
     },
   });
 
   const location1 = await prisma.location.create({
     data: {
-      locationName: 'Location_1',
+      locationName: 'Location 1',
       driveId: driveA.id,
     },
   });
 
   const location2 = await prisma.location.create({
     data: {
-      locationName: 'Location_2',
+      locationName: 'Location 2',
       driveId: driveA.id,
     },
   });
 
-  // Drive_B
+  // Drive B
   const driveB = await prisma.drive.create({
     data: {
-      driveName: 'Drive_B',
+      driveName: 'Drive B',
       levelId: level1.id,
     },
   });
 
   const location3 = await prisma.location.create({
     data: {
-      locationName: 'Location_3',
+      locationName: 'Location 3',
       driveId: driveB.id,
     },
   });
 
   const location4 = await prisma.location.create({
     data: {
-      locationName: 'Location_4',
+      locationName: 'Location 4',
       driveId: driveB.id,
     },
   });
 
-  // Level_2
+  // Level 2
   const level2 = await prisma.level.create({
     data: {
-      levelName: 'Level_2',
+      levelName: 'Level 2',
       siteId: siteA.id,
     },
   });
 
-  // Drive_C
+  // Drive C
   const driveC = await prisma.drive.create({
     data: {
-      driveName: 'Drive_C',
+      driveName: 'Drive C',
       levelId: level2.id,
     },
   });
 
   const location5 = await prisma.location.create({
     data: {
-      locationName: 'Location_5',
+      locationName: 'Location 5',
       driveId: driveC.id,
     },
   });
 
   const location6 = await prisma.location.create({
     data: {
-      locationName: 'Location_6',
+      locationName: 'Location 6',
       driveId: driveC.id,
     },
   });
 
-  // Level_3
+  // Level 3
   const level3 = await prisma.level.create({
     data: {
-      levelName: 'Level_3',
+      levelName: 'Level 3',
       siteId: siteA.id,
     },
   });
 
-  // Drive_D
+  // Drive D
   const driveD = await prisma.drive.create({
     data: {
-      driveName: 'Drive_D',
+      driveName: 'Drive D',
       levelId: level3.id,
     },
   });
 
   const location7 = await prisma.location.create({
     data: {
-      locationName: 'Location_7',
+      locationName: 'Location 7',
       driveId: driveD.id,
     },
   });
 
   const location8 = await prisma.location.create({
     data: {
-      locationName: 'Location_8',
+      locationName: 'Location 8',
       driveId: driveD.id,
     },
   });
 
-  // Site_B
+  // Site B
   const siteB = await prisma.site.create({
     data: {
-      siteName: 'Site_B',
+      siteName: 'Site B',
       address: '321 Secondary Site Road',
       postalCode: '22222',
       city: 'Malmö',
@@ -1063,10 +1083,13 @@ async function main() {
 
   // Create all bolt results
   for (const boltData of boltResultsData) {
+    const isHazard =
+      boltData.result === Result.FAIL || boltData.result === Result.ABORT;
+
     await prisma.boltResult.create({
       data: {
         ...boltData,
-        isHazard: false,
+        isHazard,
         hazardCompletedDate: [],
       },
     });

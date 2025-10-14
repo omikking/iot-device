@@ -279,7 +279,8 @@ export const CompanyForm = ({
                 )}
               </div>
 
-              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
+              {/* TODO Replace with Justify-between and gap-6 when more than 2 AppPlans is in order. */}
+              <div className="w-full flex justify-start items-start bg-main-white mt-4 gap-16">
                 {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
                     (plan) => plan.applicationName === appName,

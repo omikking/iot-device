@@ -446,21 +446,22 @@ export class BoltResultsService {
       }
     });
 
-    const updatesWithImages = await Promise.all(
-      updateBoltResultsInput.map(async (updateInput) => {
-        const { image, ...rest } = updateInput;
+    // Process images sequentially to avoid race conditions
+    const updatesWithImages = [];
 
-        let imagePath: string | undefined;
-        if (image) {
-          imagePath = await this.saveImage(image);
-        }
+    for (const updateInput of updateBoltResultsInput) {
+      const { image, ...rest } = updateInput;
 
-        return {
-          ...rest,
-          imagePath,
-        };
-      }),
-    );
+      let imagePath: string | undefined;
+      if (image) {
+        imagePath = await this.saveImage(image);
+      }
+
+      updatesWithImages.push({
+        ...rest,
+        imagePath,
+      });
+    }
 
     const updatePromises = updatesWithImages.map((updateInput) => {
       const {

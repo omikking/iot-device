@@ -45,18 +45,18 @@ module.exports = {
         pathname: '/graphql/uploads/**',
       },
       // Production
-      ...(process.env.NEXT_PUBLIC_API_URL
+      ...(process.env.NEXT_PUBLIC_API_IMAGE_URL
         ? [
             {
               protocol: 'https',
-              hostname: new URL(process.env.NEXT_PUBLIC_API_URL).hostname,
-              port: new URL(process.env.NEXT_PUBLIC_API_URL).port || undefined,
+              hostname: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).hostname,
+              port: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).port || undefined,
               pathname: '/uploads/**',
             },
             {
               protocol: 'https',
-              hostname: new URL(process.env.NEXT_PUBLIC_API_URL).hostname,
-              port: new URL(process.env.NEXT_PUBLIC_API_URL).port || undefined,
+              hostname: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).hostname,
+              port: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).port || undefined,
               pathname: '/graphql/uploads/**',
             },
           ]

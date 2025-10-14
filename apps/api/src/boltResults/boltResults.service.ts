@@ -367,36 +367,36 @@ export class BoltResultsService {
       });
     }
 
-    // Transform data before insertion for better readability and maintainability
-    const boltResultsData = await Promise.all(
-      createBoltResultsInput.map(async (input) => {
-        let imagePath: string | undefined;
+    // Transform data before insertion & process sequentially to avoid race conditions
+    const boltResultsData = [];
 
-        if (input.image) {
-          imagePath = await this.saveImage(input.image);
-        }
+    for (const input of createBoltResultsInput) {
+      let imagePath: string | undefined;
 
-        return {
-          boltNumber: input.boltNumber,
-          boltType: input.boltType as BoltType,
-          peakLoad: input.peakLoad,
-          peakDisplacement: input.peakDisplacement,
-          positionInRing: input.positionInRing as RingPosition,
-          result: input.result as Result,
-          isHazard: input.isHazard,
-          abortReason: input.abortReason as PullTestAbortReason | undefined,
-          comment: input.comment || undefined,
-          image: imagePath || undefined,
-          siteId: input.siteId,
-          levelId: input.levelId,
-          driveId: input.driveId,
-          locationId: input.locationId,
-          userId: input.userId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-      }),
-    );
+      if (input.image) {
+        imagePath = await this.saveImage(input.image);
+      }
+
+      boltResultsData.push({
+        boltNumber: input.boltNumber,
+        boltType: input.boltType as BoltType,
+        peakLoad: input.peakLoad,
+        peakDisplacement: input.peakDisplacement,
+        positionInRing: input.positionInRing as RingPosition,
+        result: input.result as Result,
+        isHazard: input.isHazard,
+        abortReason: input.abortReason as PullTestAbortReason | undefined,
+        comment: input.comment || undefined,
+        image: imagePath || undefined,
+        siteId: input.siteId,
+        levelId: input.levelId,
+        driveId: input.driveId,
+        locationId: input.locationId,
+        userId: input.userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
 
     // Perform bulk insertion
     await this.prisma.boltResult.createMany({

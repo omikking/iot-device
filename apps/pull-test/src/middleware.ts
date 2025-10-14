@@ -16,16 +16,12 @@ const extractCompanyId = (pathname: string): string | null => {
 };
 
 export async function middleware(req: NextRequest) {
-  // TODO: Re-test and re-enable callbackUrl logic
-  // const { pathname, search } = req.nextUrl;
-  const { pathname } = req.nextUrl;
+  const { pathname, search } = req.nextUrl;
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
-    // TODO: Re-test and re-enable callbackUrl logic
-    // const callbackUrl = encodeURIComponent(pathname + search);
-    // const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
-    const signinUrl = `/api/auth/signin`;
+    const callbackUrl = encodeURIComponent(pathname + search);
+    const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 

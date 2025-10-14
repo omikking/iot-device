@@ -65,8 +65,8 @@ export default function Page({
           }
         }
 
-        //hide pullTestOperator
-        if (plan.applicationName === Application.PullTestOperator) {
+        //hide pullTestTechnician
+        if (plan.applicationName === Application.PullTestTechnician) {
           return false;
         }
         return (

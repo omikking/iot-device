@@ -51,8 +51,7 @@ export enum PullTestAbortReason {
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
-    BANSHEE = "BANSHEE"
+    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN"
 }
 
 export enum PlanLevel {
@@ -72,7 +71,7 @@ export class CreateBoltResultInput {
     isHazard: boolean;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
     siteId: string;
     levelId: string;
     driveId: string;
@@ -92,7 +91,7 @@ export class UpdateBoltResultInput {
     hazardCompletedDate?: Nullable<DateTime[]>;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
 }
 
 export class CreateCoffeeInput {
@@ -501,4 +500,5 @@ export class User {
 }
 
 export type DateTime = any;
+export type Upload = any;
 type Nullable<T> = T | null;

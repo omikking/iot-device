@@ -32,8 +32,8 @@ export const userFormSchema = z
         appsAccess: z.array(
           z.enum([
             Application.PullTest,
-            Application.PullTestOperator,
-            Application.Banshee,
+            Application.PullTestTechnician,
+            // Application.Banshee,
           ]),
         ),
       }),

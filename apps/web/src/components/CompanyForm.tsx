@@ -1,4 +1,3 @@
-'use client';
 import {
   Button,
   ContentHolder,
@@ -11,7 +10,7 @@ import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   LucideCircleCheckBig,
   LucideSparkles,
-  // LucideTrash2,
+  LucideTrash2,
 } from 'lucide-react';
 import { AppPlansContainer } from './AppPlansContainer';
 import { graphql } from '@/gql';
@@ -105,7 +104,7 @@ type CompanyFormProps = {
 export const CompanyForm = ({
   company,
   isNewCompany,
-  // setIsDeleteModalOpen,
+  setIsDeleteModalOpen,
 }: CompanyFormProps) => {
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
@@ -280,7 +279,8 @@ export const CompanyForm = ({
                 )}
               </div>
 
-              <div className="w-full flex justify-between items-start bg-main-white mt-4 gap-6">
+              {/* TODO Replace with Justify-between and gap-6 when more than 2 AppPlans is in order. */}
+              <div className="w-full flex justify-start items-start bg-main-white mt-4 gap-16">
                 {Object.values(Application).map((appName) => {
                   const existingPlan = company?.plans?.find(
                     (plan) => plan.applicationName === appName,
@@ -320,21 +320,21 @@ export const CompanyForm = ({
             </ContentHolder>
           </div>
 
-          {/* Submit & Inactivate buttons */}
-          {(isUserSandvikAdmin || isUserCompanyAdmin) && (
-            <div className="flex gap-6 justify-end self-end mt-[40px]">
-              {/* {!isNewCompany && (
-                <Button
-                  variant="destructive"
-                  size="large"
-                  type="button"
-                  onClick={() => setIsDeleteModalOpen(true)}
-                >
-                  <LucideTrash2 />
-                  Inactivate company
-                </Button>
-              )} */}
+          {/* Submit & Delete buttons */}
+          <div className="flex gap-6 justify-end self-end mt-[40px]">
+            {isUserSandvikAdmin && !isNewCompany && (
+              <Button
+                variant="destructive"
+                size="large"
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <LucideTrash2 />
+                Permanently delete
+              </Button>
+            )}
 
+            {isUserSandvikAdmin && isNewCompany && (
               <Button
                 variant="primary"
                 size="large"
@@ -342,10 +342,22 @@ export const CompanyForm = ({
                 disabled={isSubmitDisabled}
               >
                 <LucideCircleCheckBig />
-                {isNewCompany ? 'Send invitation' : 'Save changes'}
+                Send invitation
               </Button>
-            </div>
-          )}
+            )}
+
+            {!isNewCompany && (isUserSandvikAdmin || isUserCompanyAdmin) && (
+              <Button
+                variant="primary"
+                size="large"
+                type="submit"
+                disabled={isSubmitDisabled}
+              >
+                <LucideCircleCheckBig />
+                Save changes
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
     </>

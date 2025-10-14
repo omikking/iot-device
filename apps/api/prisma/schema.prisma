@@ -37,8 +37,8 @@ enum PullTestAbortReason {
 
 enum Application {
   PULL_TEST
-  PULL_TEST_OPERATOR
-  BANSHEE
+  PULL_TEST_TECHNICIAN
+  // BANSHEE
 }
 
 enum PlanLevel {
@@ -130,6 +130,7 @@ model User {
   phoneNumber        String?
   globalRole         GlobalRole? // For role SANDVIK_TECHNICIAN or SANDVIK_ADMIN
   isGlobalVisibility Boolean? // For role SANDVIK_TECHNICIAN
+  isDeleted          Boolean     @default(false) // Soft delete flag
 
   userRole             UserPermission[]
   boltResult           BoltResult[]
@@ -176,7 +177,7 @@ model Invitation {
   used      Boolean  @default(false)
 
   companyId  String?
-  company    Company?    @relation(fields: [companyId], references: [id])
+  company    Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   role       Role?
   globalRole GlobalRole?
 

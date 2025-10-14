@@ -38,6 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         email: prismaUser.email,
         fullName: prismaUser.fullName,
         globalRole: prismaUser.globalRole,
+        isDeleted: prismaUser.isDeleted,
         userPermissions: permissions.map((perm) => ({
           role: perm.role,
           companyId: perm.companyId,

@@ -7,7 +7,7 @@ import { graphqlUploadExpress } from 'graphql-upload-ts';
 
 async function bootstrap() {
   // We need to look over our cors settings before deploying to production!
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
     origin: [

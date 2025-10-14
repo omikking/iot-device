@@ -307,6 +307,7 @@ export const CompanyForm = ({
             {/* Admin assignment */}
             <ContentHolder
               variant="general"
+              background={isUserSandvikAdmin ? 'light' : 'transparent'}
               headlineText={
                 isUserSandvikAdmin
                   ? 'Sandvik admin'

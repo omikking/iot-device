@@ -1,5 +1,11 @@
 import { responses } from '@/app/uitexts/responses';
-import { Application, BoltResult, RingPosition } from '@/gql/graphql';
+import {
+  Application,
+  BoltResult,
+  BoltType,
+  PullTestAbortReason,
+  RingPosition,
+} from '@/gql/graphql';
 import { showAlertToast } from '@gsp/ui';
 import { CombinedError } from 'urql';
 
@@ -41,7 +47,7 @@ export const generateBoltSpecifications = (
     },
     {
       title: 'Bolt type',
-      text: boltData.boltType || 'N/A',
+      text: convertBoltType(boltData.boltType as BoltType) || 'N/A',
     },
     {
       title: 'Level',
@@ -68,9 +74,8 @@ export const generateBoltSpecifications = (
       ? [
           {
             title: 'Abort Reason',
-            text: capitalizeFirstLetter(boltData.abortReason).replaceAll(
-              '_',
-              ' ',
+            text: convertAbortReason(
+              boltData.abortReason as PullTestAbortReason,
             ),
           },
         ]
@@ -141,29 +146,94 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
   }
 };
 
-const ringPositionDisplayMap: Record<RingPosition, string> = {
-  [RingPosition.RhBacks]: 'R/H Backs',
-  [RingPosition.RhShoulder]: 'R/H Shoulder',
-  [RingPosition.RhWallUpper]: 'R/H Wall Upper',
-  [RingPosition.RhWallCenter]: 'R/H Wall Center',
-  [RingPosition.RhWallLower]: 'R/H Wall Lower',
-  [RingPosition.RhFaceHigh]: 'R/H Face High',
-  [RingPosition.RhFaceLow]: 'R/H Face Low',
-  [RingPosition.LhBacks]: 'L/H Backs',
-  [RingPosition.LhShoulder]: 'L/H Shoulder',
-  [RingPosition.LhWallUpper]: 'L/H Wall Upper',
-  [RingPosition.LhWallCenter]: 'L/H Wall Center',
-  [RingPosition.LhWallLower]: 'L/H Wall Lower',
-  [RingPosition.LhFaceHigh]: 'L/H Face High',
-  [RingPosition.LhFaceLow]: 'L/H Face Low',
-  [RingPosition.CenterBacks]: 'Center Backs',
-};
-
 export const convertRingPosition = (position: RingPosition): string => {
+  const ringPositionDisplayMap: Record<RingPosition, string> = {
+    [RingPosition.RhBacks]: 'R/H Backs',
+    [RingPosition.RhShoulder]: 'R/H Shoulder',
+    [RingPosition.RhWallUpper]: 'R/H Wall Upper',
+    [RingPosition.RhWallCenter]: 'R/H Wall Center',
+    [RingPosition.RhWallLower]: 'R/H Wall Lower',
+    [RingPosition.RhFaceHigh]: 'R/H Face High',
+    [RingPosition.RhFaceLow]: 'R/H Face Low',
+    [RingPosition.LhBacks]: 'L/H Backs',
+    [RingPosition.LhShoulder]: 'L/H Shoulder',
+    [RingPosition.LhWallUpper]: 'L/H Wall Upper',
+    [RingPosition.LhWallCenter]: 'L/H Wall Center',
+    [RingPosition.LhWallLower]: 'L/H Wall Lower',
+    [RingPosition.LhFaceHigh]: 'L/H Face High',
+    [RingPosition.LhFaceLow]: 'L/H Face Low',
+    [RingPosition.CenterBacks]: 'Center Backs',
+  };
+
   if (position in ringPositionDisplayMap) {
     return ringPositionDisplayMap[position as RingPosition];
   }
   return position.toString();
+};
+
+export const convertBoltType = (boltType: BoltType): string => {
+  const boltTypeDisplayMap: Record<BoltType, string> = {
+    [BoltType.D47Md_1_8M]: 'D47 MD - 1.8 m',
+    [BoltType.D47Md_2_1M]: 'D47 MD - 2.1 m',
+    [BoltType.D47Md_2_4M]: 'D47 MD - 2.4 m',
+    [BoltType.D47Md_3_0M]: 'D47 MD - 3.0 m',
+    [BoltType.D47Md_3_8M]: 'D47 MD - 3.8 m',
+    [BoltType.D47Mdx_1_8M]: 'D47 MDX - 1.8 m',
+    [BoltType.D47Mdx_2_1M]: 'D47 MDX - 2.1 m',
+    [BoltType.D47Mdx_2_4M]: 'D47 MDX - 2.4 m',
+    [BoltType.D47Mdx_3_0M]: 'D47 MDX - 3.0 m',
+    [BoltType.D47Mdx_3_8M]: 'D47 MDX - 3.8 m',
+    [BoltType.D47Mdx_4_0M]: 'D47 MDX - 4.0 m',
+    [BoltType.D39Mdx_1_8M]: 'D39 MDX - 1.8 m',
+    [BoltType.D39Mdx_2_1M]: 'D39 MDX - 2.1 m',
+    [BoltType.D39Mdx_2_4M]: 'D39 MDX - 2.4 m',
+    [BoltType.D39Mdx_3_0M]: 'D39 MDX - 3.0 m',
+    [BoltType.D47MdxPegBolt_1_8M]: 'D47 MDX - Peg Bolt - 1.8 m',
+    [BoltType.D47MdxPegBolt_2_1M]: 'D47 MDX - Peg Bolt - 2.1 m',
+    [BoltType.D47MdxPegBolt_2_4M]: 'D47 MDX - Peg Bolt - 2.4 m',
+    [BoltType.D47MdxPegBolt_3_0M]: 'D47 MDX - Peg Bolt - 3.0 m',
+    [BoltType.D39MdxPegBolt_1_8M]: 'D39 MDX - Peg Bolt - 1.8 m',
+    [BoltType.D39MdxPegBolt_2_1M]: 'D39 MDX - Peg Bolt - 2.1 m',
+    [BoltType.D39MdxPegBolt_2_4M]: 'D39 MDX - Peg Bolt - 2.4 m',
+    [BoltType.D39MdxPegBolt_3_0M]: 'D39 MDX - Peg Bolt - 3.0 m',
+    [BoltType.D47MdPegBolt_1_8M]: 'D47 MD - Peg Bolt - 1.8 m',
+    [BoltType.D47MdPegBolt_2_1M]: 'D47 MD - Peg Bolt - 2.1 m',
+    [BoltType.D47MdPegBolt_2_4M]: 'D47 MD - Peg Bolt - 2.4 m',
+    [BoltType.D47MdPegBolt_3_0M]: 'D47 MD - Peg Bolt - 3.0 m',
+    [BoltType.FrictionBolt_47Mm]: 'Friction Bolt Ø47 mm',
+    [BoltType.FrictionBolt_39Mm]: 'Friction Bolt Ø39 mm',
+    [BoltType.FrictionBolt_33Mm]: 'Friction Bolt Ø33 mm',
+    [BoltType.SpiralFrictionBolt]: 'Spiral Friction Bolt',
+    [BoltType.KinlocBolt]: 'Kinloc Bolt',
+    [BoltType.KinlocBoltIndie]: 'Kinloc Bolt Indie',
+  };
+
+  if (boltType in boltTypeDisplayMap) {
+    return boltTypeDisplayMap[boltType as BoltType];
+  }
+  return boltType.toString();
+};
+
+export const convertAbortReason = (reason: PullTestAbortReason): string => {
+  const abortReasonDisplayMap: Record<PullTestAbortReason, string> = {
+    [PullTestAbortReason.NotTestedVoidCavity]:
+      'Bolt not tested due to void or cavity',
+    [PullTestAbortReason.TestStoppedInstallAngle]:
+      'Test stopped due to incorrect installation angle',
+    [PullTestAbortReason.PegNotExtruded]:
+      'Bolt has not been installed correctly, peg not extruded',
+    [PullTestAbortReason.HighAngleNotPerpendicular]:
+      'Bolt installed on a high degree angle, not perpendicular to the rockface',
+    [PullTestAbortReason.RebarEjectedStopperCaught]:
+      'Rebar ejected from bolt, visually popped, stopper has caught the bar',
+    [PullTestAbortReason.BoltEndDamageRigNotEngaging]:
+      'End of the bolt damage, rig not engaging the rock plate properly',
+  };
+
+  if (reason in abortReasonDisplayMap) {
+    return abortReasonDisplayMap[reason as PullTestAbortReason];
+  }
+  return reason.toString();
 };
 
 export const getEarliestAndLatestDates = (results: BoltResult[]) => {

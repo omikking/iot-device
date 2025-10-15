@@ -13,8 +13,7 @@ const useClient = () => {
   return useMemo(() => {
     // This client manages all of our GraphQL requests and results.
     const client = new Client({
-      // TODO: set url to 'process.env.NEXT_PUBLIC_GRAPHQL_URL'
-      url: 'http://localhost:3333/graphql',
+      url: `${process.env.NEXT_PUBLIC_GRAPHQL_URL}`,
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {
@@ -33,7 +32,7 @@ const useClient = () => {
 
               if (hasUserDeactivatedError) {
                 setTimeout(() => {
-                  signOut({ redirect: true, callbackUrl: '/auth/signin' });
+                  signOut({ redirect: true, callbackUrl: '/api/auth/signin' });
                 }, 100);
                 return true;
               }
@@ -48,7 +47,7 @@ const useClient = () => {
             async refreshAuth() {
               // TODO: This needs more testing/work.
               if (error === 'RefreshAccessTokenError') {
-                signOut();
+                signOut({ redirect: true, callbackUrl: '/api/auth/signin' });
               }
             },
           };

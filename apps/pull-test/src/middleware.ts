@@ -25,6 +25,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(signinUrl, req.url));
   }
 
+  if (token.userData?.isDeleted === true) {
+    return NextResponse.redirect(new URL('/api/auth/signin', req.url));
+  }
+
   const globalRole = token.userData?.globalRole;
 
   const companyId = extractCompanyId(pathname);

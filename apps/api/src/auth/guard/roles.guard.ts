@@ -60,11 +60,6 @@ export class RolesGuard implements CanActivate {
     const req = gqlContext.getContext().req;
     const user = req && req.user;
 
-    // Bypass everything for SANDVIK ADMINS
-    if (user?.globalRole === Role.SANDVIK_ADMIN) {
-      return true;
-    }
-
     if (!user || !user.id) {
       throw new UnauthorizedException(errorTexts.authUserError_title);
     }
@@ -78,6 +73,10 @@ export class RolesGuard implements CanActivate {
           message: errorTexts.userAccountDeactivatedMessage,
         },
       });
+    }
+
+    if (user?.globalRole === Role.SANDVIK_ADMIN) {
+      return true;
     }
 
     if (

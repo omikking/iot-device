@@ -111,6 +111,7 @@ export class AuthService {
         email: user.email,
         fullName: user.fullName,
         globalRole: user.globalRole,
+        isDeleted: user.isDeleted,
         userPermissions: user.userRole.map((permission) => ({
           role: permission.role,
           companyId: permission.companyId,

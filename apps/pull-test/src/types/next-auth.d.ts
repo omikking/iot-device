@@ -13,6 +13,7 @@ declare module 'next-auth/jwt' {
       email: string;
       fullName: string;
       globalRole: Role;
+      isDeleted?: boolean;
       userPermissions?: {
         role: Role;
         companyId: UUID;
@@ -34,6 +35,7 @@ declare module 'next-auth' {
       email: string;
       fullName: string;
       globalRole: Role;
+      isDeleted?: boolean;
       userPermissions?: {
         role: Role;
         companyId: UUID;
@@ -55,6 +57,7 @@ declare module 'next-auth' {
       email: string;
       fullName: string;
       globalRole: Role;
+      isDeleted?: boolean;
       userPermissions?: {
         role: Role;
         companyId: UUID;

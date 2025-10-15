@@ -4,6 +4,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ActiveUserData } from '../interfaces/active-user-data';
+import { UserInputError } from '@nestjs/apollo';
+import { errorTexts } from 'src/errorTexts/errorTexts';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -29,6 +31,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         },
       });
 
+      if (prismaUser.isDeleted === true) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'USER_ACCOUNT_DEACTIVATED',
+            title: errorTexts.userAccountDeactivatedTitle,
+            message: errorTexts.userAccountDeactivatedMessage,
+          },
+        });
+      }
+
       const permissions = await this.prisma.userPermission.findMany({
         where: { userId: prismaUser.id },
       });
@@ -48,6 +60,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       return activeUser;
     } catch (error) {
+      if (error instanceof UserInputError) {
+        throw error;
+      }
       if (error.code === 'P2025') {
         console.error('User not found');
         throw new UnauthorizedException();

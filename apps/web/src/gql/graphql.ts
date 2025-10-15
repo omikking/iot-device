@@ -16,12 +16,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Date custom scalar type */
   DateTime: { input: any; output: any; }
+  Upload: { input: any; output: any; }
 };
 
 export enum Application {
-  Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
-  PullTestOperator = 'PULL_TEST_OPERATOR'
+  PullTestTechnician = 'PULL_TEST_TECHNICIAN'
 }
 
 /**
@@ -70,8 +70,39 @@ export type BoltResultResponse = {
 };
 
 export enum BoltType {
-  Md47 = 'MD47',
-  Mdx47 = 'MDX47'
+  D39Mdx_1_8M = 'D39_MDX_1_8_M',
+  D39Mdx_2_1M = 'D39_MDX_2_1_M',
+  D39Mdx_2_4M = 'D39_MDX_2_4_M',
+  D39Mdx_3_0M = 'D39_MDX_3_0_M',
+  D39MdxPegBolt_1_8M = 'D39_MDX_PEG_BOLT_1_8_M',
+  D39MdxPegBolt_2_1M = 'D39_MDX_PEG_BOLT_2_1_M',
+  D39MdxPegBolt_2_4M = 'D39_MDX_PEG_BOLT_2_4_M',
+  D39MdxPegBolt_3_0M = 'D39_MDX_PEG_BOLT_3_0_M',
+  D47Mdx_1_8M = 'D47_MDX_1_8_M',
+  D47Mdx_2_1M = 'D47_MDX_2_1_M',
+  D47Mdx_2_4M = 'D47_MDX_2_4_M',
+  D47Mdx_3_0M = 'D47_MDX_3_0_M',
+  D47Mdx_3_8M = 'D47_MDX_3_8_M',
+  D47Mdx_4_0M = 'D47_MDX_4_0_M',
+  D47MdxPegBolt_1_8M = 'D47_MDX_PEG_BOLT_1_8_M',
+  D47MdxPegBolt_2_1M = 'D47_MDX_PEG_BOLT_2_1_M',
+  D47MdxPegBolt_2_4M = 'D47_MDX_PEG_BOLT_2_4_M',
+  D47MdxPegBolt_3_0M = 'D47_MDX_PEG_BOLT_3_0_M',
+  D47Md_1_8M = 'D47_MD_1_8_M',
+  D47Md_2_1M = 'D47_MD_2_1_M',
+  D47Md_2_4M = 'D47_MD_2_4_M',
+  D47Md_3_0M = 'D47_MD_3_0_M',
+  D47Md_3_8M = 'D47_MD_3_8_M',
+  D47MdPegBolt_1_8M = 'D47_MD_PEG_BOLT_1_8_M',
+  D47MdPegBolt_2_1M = 'D47_MD_PEG_BOLT_2_1_M',
+  D47MdPegBolt_2_4M = 'D47_MD_PEG_BOLT_2_4_M',
+  D47MdPegBolt_3_0M = 'D47_MD_PEG_BOLT_3_0_M',
+  FrictionBolt_33Mm = 'FRICTION_BOLT_33_MM',
+  FrictionBolt_39Mm = 'FRICTION_BOLT_39_MM',
+  FrictionBolt_47Mm = 'FRICTION_BOLT_47_MM',
+  KinlocBolt = 'KINLOC_BOLT',
+  KinlocBoltIndie = 'KINLOC_BOLT_INDIE',
+  SpiralFrictionBolt = 'SPIRAL_FRICTION_BOLT'
 }
 
 /**
@@ -130,6 +161,13 @@ export type CompleteInvitationInput = {
   workPlace: Scalars['String']['input'];
 };
 
+export type ConfirmPasswordResetInput = {
+  confirmPassword: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
 /**
  * CreateBoltResultInput
  * Define the input fields to create a new boltResult
@@ -140,7 +178,7 @@ export type CreateBoltResultInput = {
   boltType: Scalars['String']['input'];
   comment?: InputMaybe<Scalars['String']['input']>;
   driveId: Scalars['String']['input'];
-  image?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard: Scalars['Boolean']['input'];
   levelId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
@@ -190,6 +228,7 @@ export type CreateDriveInput = {
 export type CreateGlobalInvitationInput = {
   email: Scalars['String']['input'];
   globalRole: Scalars['String']['input'];
+  isGlobalVisibility?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CreateInvitationInput = {
@@ -275,10 +314,13 @@ export type Flavor = {
 export type Invitation = {
   __typename?: 'Invitation';
   companyId?: Maybe<Scalars['String']['output']>;
+  companyName?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   expiresAt: Scalars['DateTime']['output'];
   globalRole?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  isGlobalVisibility?: Maybe<Scalars['Boolean']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   used: Scalars['Boolean']['output'];
 };
@@ -287,6 +329,7 @@ export type InvitationResponse = {
   __typename?: 'InvitationResponse';
   invitationId?: Maybe<Scalars['String']['output']>;
   isNewUser: Scalars['Boolean']['output'];
+  message?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -333,6 +376,7 @@ export type Location = {
 export type Mutation = {
   __typename?: 'Mutation';
   completeInvitation: User;
+  confirmPasswordReset: Scalars['Boolean']['output'];
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -355,6 +399,7 @@ export type Mutation = {
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
+  requestPasswordReset: Scalars['Boolean']['output'];
   resendInvitation: Invitation;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
@@ -366,6 +411,7 @@ export type Mutation = {
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
+  validateResetToken: Scalars['Boolean']['output'];
 };
 
 
@@ -375,6 +421,15 @@ export type Mutation = {
  */
 export type MutationCompleteInvitationArgs = {
   input: CompleteInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationConfirmPasswordResetArgs = {
+  input: ConfirmPasswordResetInput;
 };
 
 
@@ -581,6 +636,15 @@ export type MutationRemoveUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationRequestPasswordResetArgs = {
+  input: RequestPasswordResetInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationResendInvitationArgs = {
   id: Scalars['String']['input'];
 };
@@ -685,6 +749,15 @@ export type MutationUpdateUserPermissionArgs = {
   updateUserPermissionInput: UpdateUserPermissionInput;
 };
 
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationValidateResetTokenArgs = {
+  input: ValidateResetTokenInput;
+};
+
 /**
  * Plan model
  * Define the Plan model and its fields
@@ -708,7 +781,11 @@ export enum PlanLevel {
 }
 
 export enum PullTestAbortReason {
+  BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
+  HighAngleNotPerpendicular = 'HIGH_ANGLE_NOT_PERPENDICULAR',
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
+  PegNotExtruded = 'PEG_NOT_EXTRUDED',
+  RebarEjectedStopperCaught = 'REBAR_EJECTED_STOPPER_CAUGHT',
   TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
 }
 
@@ -898,6 +975,10 @@ export type QueryValidateInvitationArgs = {
   token: Scalars['String']['input'];
 };
 
+export type RequestPasswordResetInput = {
+  email: Scalars['String']['input'];
+};
+
 export enum Result {
   Abort = 'ABORT',
   Fail = 'FAIL',
@@ -960,7 +1041,7 @@ export type UpdateBoltResultInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   hazardCompletedDate?: InputMaybe<Array<Scalars['DateTime']['input']>>;
   id?: InputMaybe<Scalars['String']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;
   peakLoad?: InputMaybe<Array<Scalars['Int']['input']>>;
@@ -1109,6 +1190,11 @@ export type UserPermission = {
   role: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['String']['output'];
+};
+
+export type ValidateResetTokenInput = {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export type GetUserQueryVariables = Exact<{

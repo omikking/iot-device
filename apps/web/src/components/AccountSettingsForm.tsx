@@ -135,6 +135,7 @@ export default function AccountSettingsForm({
 
   const formValues = settingsForm.getValues();
   const isDirty = settingsForm.formState.isDirty;
+
   const isAnyFieldEmpty =
     !formValues.email ||
     !formValues.fullName ||
@@ -231,7 +232,7 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="oldPassword"
               render={({ field }) => (
-                <FormItem className="min-w-[31%]">
+                <FormItem className="w-[31%]">
                   <FormLabel>Current password</FormLabel>
                   <FormControl>
                     <Input
@@ -252,7 +253,7 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="newPassword"
               render={({ field }) => (
-                <FormItem className="min-w-[31%]">
+                <FormItem className="w-[31%]">
                   <FormLabel>New password</FormLabel>
                   <FormControl>
                     <Input
@@ -273,7 +274,7 @@ export default function AccountSettingsForm({
               control={settingsForm.control}
               name="confirmPassword"
               render={({ field }) => (
-                <FormItem className="min-w-[31%]">
+                <FormItem className="w-[31%]">
                   <FormLabel>Confirm password</FormLabel>
                   <FormControl>
                     <Input

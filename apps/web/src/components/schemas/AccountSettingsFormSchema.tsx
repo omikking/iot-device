@@ -30,7 +30,8 @@ export const updateAccountSettingsFormSchema = z
           message: validations.passwordTooWeak,
         },
       )
-      .optional(),
+      .optional()
+      .or(z.literal('')),
     confirmPassword: z
       .string()
       .min(8, { message: validations.passwordTooShort })
@@ -40,7 +41,8 @@ export const updateAccountSettingsFormSchema = z
           message: validations.passwordTooWeak,
         },
       )
-      .optional(),
+      .optional()
+      .or(z.literal('')),
   })
   .refine(
     (data) => {

@@ -27,6 +27,7 @@ import {
   SignInFormValues,
   signInFormSchema,
 } from '@/components/schemas/SignInFormSchema';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 export default function SignIn() {
   const router = useRouter();
@@ -40,12 +41,12 @@ export default function SignIn() {
     if (status === 'authenticated') {
       const callbackUrl = searchParams.get('callbackUrl');
       if (callbackUrl) {
-        router.push(callbackUrl);
+        window.location.href = callbackUrl;
       } else {
         const isAdmin = session.user.globalRole === Role.SandvikAdmin;
         const redirectTo = isAdmin
-          ? 'http://localhost:3000/administration-portal'
-          : 'http://localhost:3000/select-company';
+          ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+          : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
         router.push(redirectTo);
       }
     }
@@ -116,7 +117,7 @@ export default function SignIn() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter email"
+                        placeholder={placeholder.emailPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -137,7 +138,7 @@ export default function SignIn() {
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter password"
+                          placeholder={placeholder.passwordPlaceholder}
                           {...field}
                           className="w-full"
                         />
@@ -153,7 +154,7 @@ export default function SignIn() {
                 </Text>
                 <Text variant="small" color="accent">
                   <Link
-                    href="http://localhost:3000/api/auth/reset-password"
+                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/api/auth/reset-password`}
                     passHref
                     legacyBehavior
                   >

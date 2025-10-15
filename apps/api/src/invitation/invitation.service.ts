@@ -5,7 +5,6 @@ import { Application, GlobalRole, Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as argon from 'argon2';
 import { errorTexts } from '../errorTexts/errorTexts';
-import { isPasswordStrong } from '../utils';
 import { UserInputError } from '@nestjs/apollo';
 
 @Injectable()
@@ -25,6 +24,8 @@ export class InvitationService {
     role: Role,
     appsAccess: Application[],
   ) {
+    const normalizedEmail = email.toLowerCase();
+
     // Check if company exists
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
@@ -41,12 +42,51 @@ export class InvitationService {
       });
     }
 
-    // Check if user already exists
+    // Check if user already exists (including soft-deleted users)
     const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: normalizedEmail,
+      },
     });
 
     if (existingUser) {
+      if (existingUser.isDeleted) {
+        // Reactivate soft-deleted user
+        try {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { isDeleted: false },
+          });
+
+          // Create permission for the reactivated user
+          await this.prisma.userPermission.create({
+            data: {
+              userId: existingUser.id,
+              companyId,
+              role,
+              appsAccess,
+            },
+          });
+
+          // Send email notification to reactivated user about company access
+          await this.emailService.sendExistingUserEmail(
+            existingUser.email,
+            role,
+            company.name,
+          );
+
+          return { userId: existingUser.id, isNewUser: false };
+        } catch (error) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'INVITATION_CREATE_ERROR',
+              title: errorTexts.invitationCreateError_title,
+              message: errorTexts.contactSupportError,
+            },
+          });
+        }
+      }
+
       // Check if user already has permissions for this company
       const existingPermission = await this.prisma.userPermission.findFirst({
         where: {
@@ -61,6 +101,7 @@ export class InvitationService {
             code: 'INVITATION_USER_EXISTS_ERROR',
             title: errorTexts.invitationUserExists_title,
             message: errorTexts.invitationUserExists_message,
+            type: 'warning',
           },
         });
       }
@@ -75,6 +116,13 @@ export class InvitationService {
             appsAccess,
           },
         });
+
+        // Send email notification to existing user about new company access
+        await this.emailService.sendExistingUserEmail(
+          existingUser.email,
+          role,
+          company.name,
+        );
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -91,7 +139,7 @@ export class InvitationService {
     // Check for existing pending invitation
     const existingInvitation = await this.prisma.invitation.findFirst({
       where: {
-        email,
+        email: normalizedEmail,
         companyId,
         used: false,
         expiresAt: { gt: new Date() },
@@ -99,17 +147,16 @@ export class InvitationService {
     });
 
     if (existingInvitation) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'INVITATION_DUPLICATE_ERROR',
-          title: errorTexts.invitationDuplicate_title,
-          message: errorTexts.invitationDuplicate_message,
-        },
-      });
+      // Instead of throwing an error, resend the existing invitation
+      await this.resendInvitation(existingInvitation.id);
+      return {
+        invitationId: existingInvitation.id,
+        isNewUser: false, // Indicating this is a resent invitation
+      };
     }
 
     // Rate limiting check
-    await this.checkRateLimit(email);
+    await this.checkRateLimit(normalizedEmail);
 
     // Generate secure token and hash it
     const token = randomBytes(32).toString('hex');
@@ -137,6 +184,7 @@ export class InvitationService {
         invitation.id,
         token,
         company.name,
+        role,
       );
 
       return {
@@ -154,18 +202,38 @@ export class InvitationService {
     }
   }
 
-  async createGlobalInvitation(email: string, globalRole: GlobalRole) {
+  async createGlobalInvitation(
+    email: string,
+    globalRole: GlobalRole,
+    isGlobalVisibility: boolean,
+  ) {
+    const normalizedEmail = email.toLowerCase();
+
     const existingUser = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: normalizedEmail,
+      },
     });
 
     if (existingUser) {
       try {
-        // Update existing user's global role
-        await this.prisma.user.update({
-          where: { id: existingUser.id },
-          data: { globalRole },
-        });
+        if (existingUser.isDeleted) {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              isDeleted: false,
+              globalRole,
+              isGlobalVisibility,
+            },
+          });
+        } else {
+          await this.prisma.user.update({
+            where: { id: existingUser.id },
+            data: { globalRole, isGlobalVisibility },
+          });
+        }
+
+        await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 
         return { userId: existingUser.id, isNewUser: false };
       } catch (error) {
@@ -182,7 +250,7 @@ export class InvitationService {
     // Check for existing pending global invitation
     const existingInvitation = await this.prisma.invitation.findFirst({
       where: {
-        email,
+        email: normalizedEmail,
         globalRole: { not: null },
         used: false,
         expiresAt: { gt: new Date() },
@@ -213,10 +281,11 @@ export class InvitationService {
       // Create invitation record with hashed token
       const invitation = await this.prisma.invitation.create({
         data: {
-          email,
+          email: normalizedEmail,
           token: tokenHash,
           expiresAt,
           globalRole,
+          isGlobalVisibility,
         },
       });
 
@@ -310,7 +379,13 @@ export class InvitationService {
       });
     }
 
-    return { valid: true, invitation };
+    const { company, ...invitationWithoutCompany } = invitation;
+    const transformedInvitation = {
+      ...invitationWithoutCompany,
+      companyName: company?.name || null,
+    };
+
+    return { valid: true, invitation: transformedInvitation };
   }
 
   async completeInvitation(
@@ -323,18 +398,9 @@ export class InvitationService {
       phoneNumber?: string;
     },
   ) {
-    // Validate password strength
-    if (!isPasswordStrong(userData.password)) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'USER_PASSWORD_TOO_WEAK_ERROR',
-          title: errorTexts.userPasswordTooWeak_title,
-          message: errorTexts.userPasswordTooWeak_message,
-        },
-      });
-    }
-
     const { invitation } = await this.validateInvitation(id, token);
+
+    const normalizedEmail = invitation.email.toLowerCase();
 
     if (!invitation) {
       throw new UserInputError('', {
@@ -354,7 +420,7 @@ export class InvitationService {
         async (tx) => {
           const user = await tx.user.create({
             data: {
-              email: invitation.email,
+              email: normalizedEmail,
               hash,
               fullName: userData.fullName,
               workPlace: userData.workPlace,
@@ -418,8 +484,9 @@ export class InvitationService {
       // Transform to PendingInvitation format (without token)
       return invitations.map((invitation) => ({
         id: invitation.id,
-        email: invitation.email,
+        email: invitation.email.toLocaleLowerCase(),
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: invitation.companyId,
         globalRole: null, // Company invitations don't have global roles
@@ -454,12 +521,14 @@ export class InvitationService {
       // Transform to PendingInvitation format (without token)
       return invitations.map((invitation) => ({
         id: invitation.id,
-        email: invitation.email,
+        email: invitation.email.toLocaleLowerCase(),
         expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
         used: invitation.used,
         companyId: null,
         globalRole: invitation.globalRole,
         role: invitation.globalRole,
+        isGlobalVisibility: invitation.isGlobalVisibility,
       }));
     } catch (error) {
       throw new UserInputError('', {
@@ -533,6 +602,7 @@ export class InvitationService {
           invitation.id,
           newToken,
           invitation.company.name,
+          invitation.role || undefined,
         );
       } else {
         throw new UserInputError('', {

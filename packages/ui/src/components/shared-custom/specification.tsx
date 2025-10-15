@@ -8,6 +8,7 @@ export interface SpecificationProps {
   title: string;
   text: string;
   isWide?: boolean;
+  isFullWidth?: boolean;
   className?: string;
 }
 
@@ -18,6 +19,7 @@ const Specification = ({
   text,
   className,
   isWide = false,
+  isFullWidth = false,
 }: SpecificationProps) => {
   const getBadge = (
     result: ResultType,
@@ -45,7 +47,10 @@ const Specification = ({
       <Text
         variant="small"
         color="muted"
-        className={cn(isWide ? 'ui-w-36' : 'ui-w-24', 'ui-break-words ui-pr-4')}
+        className={cn(
+          isWide ? 'ui-w-36' : 'ui-w-32',
+          'ui-flex-shrink-0 ui-break-words ui-pr-4',
+        )}
       >
         {title}
       </Text>
@@ -55,7 +60,11 @@ const Specification = ({
           {text}
         </Badge>
       ) : (
-        <Text className="ui-max-w-40" variant="small" color="foreground">
+        <Text
+          className={isFullWidth ? 'ui-max-w-full' : 'ui-max-w-52'}
+          variant="small"
+          color="foreground"
+        >
           {text}
         </Text>
       )}

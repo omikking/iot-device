@@ -27,6 +27,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Role } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 const validateInvitationQuery = graphql(`
   query validateInvitation($id: String!, $token: String!) {
@@ -37,6 +38,7 @@ const validateInvitationQuery = graphql(`
         id
         email
         companyId
+        companyName
         globalRole
         role
         expiresAt
@@ -53,15 +55,6 @@ const completeInvitationMutation = graphql(`
       email
       fullName
       globalRole
-    }
-  }
-`);
-
-const getCompanyName = graphql(`
-  query getCompanyName($id: String!) {
-    company(id: $id) {
-      id
-      name
     }
   }
 `);
@@ -105,13 +98,6 @@ export default function Page(): JSX.Element {
   );
 
   const { invitation } = data?.validateInvitation || {};
-
-  const [{ data: companyData }] = useQuery({
-    query: getCompanyName,
-    variables: { id: invitation?.companyId || '' },
-    pause: !invitation?.companyId,
-  });
-  const companyName = companyData?.company?.name || undefined;
 
   const setupForm = useForm<SetupAccountFormWithConfirmValues>({
     resolver: zodResolver(setupAccountFormWithConfirmSchema),
@@ -172,7 +158,7 @@ export default function Page(): JSX.Element {
   const invitationMessage = invitation
     ? getInvitationMessage(
         (invitation.globalRole as Role) || (invitation.role as Role),
-        companyName,
+        invitation.companyName || undefined,
       )
     : null;
 
@@ -198,7 +184,7 @@ export default function Page(): JSX.Element {
         </Headline>
         <div className="flex flex-col items-center gap-3">
           <div className="flex gap-2 items-center">
-            <LucideAlertCircle size={20} color="red" />
+            <LucideAlertCircle size={20} className="text-error" />
             <Headline as="h4" variant="medium" color="destructive">
               {
                 validateInviteError.graphQLErrors[0]?.extensions
@@ -254,7 +240,6 @@ export default function Page(): JSX.Element {
                   <Input
                     disabled={true}
                     value={invitation?.email || ''}
-                    placeholder="email@example.com"
                     className="w-96"
                   />
                 </FormControl>
@@ -267,7 +252,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Full name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your full name..."
+                        placeholder={placeholder.fullNamePlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -286,7 +271,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Workplace</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your workplace..."
+                        placeholder={placeholder.workplacePlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -303,7 +288,7 @@ export default function Page(): JSX.Element {
                     <FormLabel>Phone number</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Fill in your phone number..."
+                        placeholder={placeholder.phoneNumberPlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -323,7 +308,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Fill in your password..."
+                        placeholder={placeholder.passwordPlaceholder}
                         className="w-96"
                         {...field}
                       />
@@ -341,7 +326,7 @@ export default function Page(): JSX.Element {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Fill in your password..."
+                        placeholder={placeholder.passwordPlaceholder}
                         className="w-96"
                         {...field}
                       />

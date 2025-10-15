@@ -8,10 +8,15 @@ import {
   LucideSearchX,
   ClipboardList,
 } from 'lucide-react';
-import { BoltResult, Result, RingPosition } from '@/gql/graphql';
+import { BoltResult, BoltType, Result, RingPosition } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { Pagination } from './Pagination';
-import { convertRingPosition } from '@/libs/utils';
+import {
+  convertRingPosition,
+  alphanumericSort,
+  convertBoltType,
+  capitalizeFirstLetter,
+} from '@/libs/utils';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
@@ -56,7 +61,10 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'boltType',
-      header: 'Bolt type',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Bolt type" />
+      ),
+      cell: ({ row }) => convertBoltType(row.original.boltType as BoltType),
     },
     {
       accessorKey: 'peakLoad',
@@ -116,22 +124,35 @@ export const BoltResultsTable = ({
     },
     {
       accessorKey: 'level',
-      header: 'Level',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Level" />
+      ),
       cell: ({ row }) => row.original.level?.levelName,
+      sortingFn: alphanumericSort<BoltResult>((row) => row.level?.levelName),
     },
     {
       accessorKey: 'drive',
-      header: 'Drive',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Drive" />
+      ),
       cell: ({ row }) => row.original.drive?.driveName,
+      sortingFn: alphanumericSort<BoltResult>((row) => row.drive?.driveName),
     },
     {
       accessorKey: 'location',
-      header: 'Location',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Location" />
+      ),
       cell: ({ row }) => row.original.location?.locationName,
+      sortingFn: alphanumericSort<BoltResult>(
+        (row) => row.location?.locationName,
+      ),
     },
     {
       accessorKey: 'positionInRing',
-      header: 'Position in ring',
+      header: ({ column }) => (
+        <TableHeadWithSorting column={column} header="Position in ring" />
+      ),
       cell: ({ row }) =>
         convertRingPosition(row.original.positionInRing as RingPosition),
     },
@@ -151,7 +172,7 @@ export const BoltResultsTable = ({
         <div className="flex justify-end w-16">
           <Badge variant={getBadge(row?.getValue('result'))?.variant}>
             {getBadge(row?.getValue('result'))?.icon}
-            {row.getValue('result')}
+            {capitalizeFirstLetter(row.getValue('result') as string)}
           </Badge>
         </div>
       ),
@@ -170,9 +191,9 @@ export const BoltResultsTable = ({
         }
         icon={
           !site ? (
-            <ClipboardList color="gray" />
+            <ClipboardList className="text-neutral-5" />
           ) : (
-            <LucideSearchX color="gray" />
+            <LucideSearchX className="text-neutral-5" />
           )
         }
       />

@@ -21,7 +21,7 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
               Once you're added to a company, you'll see it here.
             </Text>
           </div>
-          <LucideSearchX color="gray" />
+          <LucideSearchX className="text-neutral-5" />
         </div>
       ) : (
         <nav aria-label="Companies list">

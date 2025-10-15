@@ -16,6 +16,7 @@ import { LocationsModule } from './locations/locations.module';
 import { BoltResultsModule } from './boltResults/boltResults.module';
 import { HazardsModule } from './hazards/hazards.module';
 import { EnumModule } from './enums/enum.module';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
@@ -43,6 +44,7 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     BoltResultsModule,
     HazardsModule,
     EnumModule,
+    ResetPasswordModule,
     EmailModule,
     InvitationModule,
   ],

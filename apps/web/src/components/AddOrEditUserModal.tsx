@@ -27,13 +27,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { LucideEdit, LucideLayoutGrid, LucidePlus } from 'lucide-react';
 import { UserFormValues, userFormSchema } from './schemas/UserFormSchema';
-import {
-  CreateUserPermissionFormValues,
-  UpdateUserPermissionFormValues,
-} from './schemas/UserPermissionFormSchema';
+import { UpdateUserPermissionFormValues } from './schemas/UserPermissionFormSchema';
 import { useParams } from 'next/navigation';
 import { getAppName, handleGraphQLErrors } from '@/libs/utils';
 import { responses } from '@/app/uitexts/responses';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 type AddOrEditUserModalProps = {
   user?: User;
@@ -42,6 +40,15 @@ type AddOrEditUserModalProps = {
   onUserAdded: () => void;
 };
 
+const createUserInvitationMutation = graphql(`
+  mutation createInvitation($input: CreateInvitationInput!) {
+    createInvitation(input: $input) {
+      invitationId
+      isNewUser
+    }
+  }
+`);
+
 const getTechniciansQuery = graphql(`
   query getTechniciansByRole($roles: [String]!) {
     users(roles: $roles) {
@@ -49,22 +56,6 @@ const getTechniciansQuery = graphql(`
       fullName
       email
       workPlace
-    }
-  }
-`);
-
-const createUserPermissionsMutation = graphql(`
-  mutation createUserPermission(
-    $createUserPermissionInput: CreateUserPermissionInput!
-  ) {
-    createUserPermission(
-      createUserPermissionInput: $createUserPermissionInput
-    ) {
-      id
-      userId
-      role
-      appsAccess
-      companyId
     }
   }
 `);
@@ -94,7 +85,7 @@ export const AddOrEditUserModal = ({
   onUserAdded,
 }: AddOrEditUserModalProps) => {
   const params = useParams();
-  const companyId = params.id;
+  const companyId = params.id as string;
 
   const permission = user?.userPermissions?.[0];
 
@@ -108,9 +99,7 @@ export const AddOrEditUserModal = ({
     User | undefined
   >();
 
-  const [, createUserPermission] = useMutation<CreateUserPermissionFormValues>(
-    createUserPermissionsMutation,
-  );
+  const [, createInvitation] = useMutation(createUserInvitationMutation);
 
   const [, updateUserPermission] = useMutation<UpdateUserPermissionFormValues>(
     updateUserPermissionsMutation,
@@ -293,12 +282,12 @@ export const AddOrEditUserModal = ({
     }
 
     if (!user) {
-      createUserPermission({
-        createUserPermissionInput: {
-          userEmail: data.email,
+      createInvitation({
+        input: {
+          email: data.email || '',
+          companyId,
           role: data.userPermissions[0].role,
           appsAccess: data.userPermissions[0].appsAccess,
-          companyId,
         },
       })
         .then((result) => {
@@ -383,7 +372,10 @@ export const AddOrEditUserModal = ({
           {user ? 'Edit user' : 'Add user'}
         </ModalTitle>
       </ModalHeader>
-      <SuccessMessage isVisible={isSuccessful}>
+      <SuccessMessage
+        isVisible={isSuccessful}
+        title={user ? 'Successfully saved' : 'Successfully sent invitation'}
+      >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="flex px-10 gap-10">
@@ -428,7 +420,7 @@ export const AddOrEditUserModal = ({
                           <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Fill in email..."
+                              placeholder={placeholder.emailPlaceholder}
                               className="w-96"
                               disabled={!!user}
                               {...field}
@@ -485,7 +477,10 @@ export const AddOrEditUserModal = ({
               <div className="flex flex-col h-fit w-full mt-4 border-2 border-neutral-2">
                 <div className="flex items-center px-6 py-5 bg-main-white border-b border-neutral-2">
                   <div className="flex flex-grow items-center gap-2">
-                    <LucideLayoutGrid size={20} className="text-orange-600" />
+                    <LucideLayoutGrid
+                      size={20}
+                      className="text-orange-primary"
+                    />
                     <Headline
                       color={'foreground'}
                       as="h3"

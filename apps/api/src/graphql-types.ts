@@ -22,8 +22,39 @@ export enum Result {
 }
 
 export enum BoltType {
-    MD47 = "MD47",
-    MDX47 = "MDX47"
+    D47_MD_1_8_M = "D47_MD_1_8_M",
+    D47_MD_2_1_M = "D47_MD_2_1_M",
+    D47_MD_2_4_M = "D47_MD_2_4_M",
+    D47_MD_3_0_M = "D47_MD_3_0_M",
+    D47_MD_3_8_M = "D47_MD_3_8_M",
+    D47_MDX_1_8_M = "D47_MDX_1_8_M",
+    D47_MDX_2_1_M = "D47_MDX_2_1_M",
+    D47_MDX_2_4_M = "D47_MDX_2_4_M",
+    D47_MDX_3_0_M = "D47_MDX_3_0_M",
+    D47_MDX_3_8_M = "D47_MDX_3_8_M",
+    D47_MDX_4_0_M = "D47_MDX_4_0_M",
+    D39_MDX_1_8_M = "D39_MDX_1_8_M",
+    D39_MDX_2_1_M = "D39_MDX_2_1_M",
+    D39_MDX_2_4_M = "D39_MDX_2_4_M",
+    D39_MDX_3_0_M = "D39_MDX_3_0_M",
+    D47_MDX_PEG_BOLT_1_8_M = "D47_MDX_PEG_BOLT_1_8_M",
+    D47_MDX_PEG_BOLT_2_1_M = "D47_MDX_PEG_BOLT_2_1_M",
+    D47_MDX_PEG_BOLT_2_4_M = "D47_MDX_PEG_BOLT_2_4_M",
+    D47_MDX_PEG_BOLT_3_0_M = "D47_MDX_PEG_BOLT_3_0_M",
+    D39_MDX_PEG_BOLT_1_8_M = "D39_MDX_PEG_BOLT_1_8_M",
+    D39_MDX_PEG_BOLT_2_1_M = "D39_MDX_PEG_BOLT_2_1_M",
+    D39_MDX_PEG_BOLT_2_4_M = "D39_MDX_PEG_BOLT_2_4_M",
+    D39_MDX_PEG_BOLT_3_0_M = "D39_MDX_PEG_BOLT_3_0_M",
+    D47_MD_PEG_BOLT_1_8_M = "D47_MD_PEG_BOLT_1_8_M",
+    D47_MD_PEG_BOLT_2_1_M = "D47_MD_PEG_BOLT_2_1_M",
+    D47_MD_PEG_BOLT_2_4_M = "D47_MD_PEG_BOLT_2_4_M",
+    D47_MD_PEG_BOLT_3_0_M = "D47_MD_PEG_BOLT_3_0_M",
+    FRICTION_BOLT_47_MM = "FRICTION_BOLT_47_MM",
+    FRICTION_BOLT_39_MM = "FRICTION_BOLT_39_MM",
+    FRICTION_BOLT_33_MM = "FRICTION_BOLT_33_MM",
+    SPIRAL_FRICTION_BOLT = "SPIRAL_FRICTION_BOLT",
+    KINLOC_BOLT = "KINLOC_BOLT",
+    KINLOC_BOLT_INDIE = "KINLOC_BOLT_INDIE"
 }
 
 export enum RingPosition {
@@ -46,13 +77,16 @@ export enum RingPosition {
 
 export enum PullTestAbortReason {
     NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
-    TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE"
+    TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE",
+    PEG_NOT_EXTRUDED = "PEG_NOT_EXTRUDED",
+    HIGH_ANGLE_NOT_PERPENDICULAR = "HIGH_ANGLE_NOT_PERPENDICULAR",
+    REBAR_EJECTED_STOPPER_CAUGHT = "REBAR_EJECTED_STOPPER_CAUGHT",
+    BOLT_END_DAMAGE_RIG_NOT_ENGAGING = "BOLT_END_DAMAGE_RIG_NOT_ENGAGING"
 }
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_OPERATOR = "PULL_TEST_OPERATOR",
-    BANSHEE = "BANSHEE"
+    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN"
 }
 
 export enum PlanLevel {
@@ -72,7 +106,7 @@ export class CreateBoltResultInput {
     isHazard: boolean;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
     siteId: string;
     levelId: string;
     driveId: string;
@@ -92,7 +126,7 @@ export class UpdateBoltResultInput {
     hazardCompletedDate?: Nullable<DateTime[]>;
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
-    image?: Nullable<string>;
+    image?: Nullable<Upload>;
 }
 
 export class CreateCoffeeInput {
@@ -163,6 +197,7 @@ export class CreateInvitationInput {
 export class CreateGlobalInvitationInput {
     email: string;
     globalRole: string;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class CompleteInvitationInput {
@@ -190,6 +225,22 @@ export class CreateLocationInput {
 
 export class UpdateLocationInput {
     locationName?: Nullable<string>;
+}
+
+export class RequestPasswordResetInput {
+    email: string;
+}
+
+export class ValidateResetTokenInput {
+    email: string;
+    token: string;
+}
+
+export class ConfirmPasswordResetInput {
+    token: string;
+    email: string;
+    newPassword: string;
+    confirmPassword: string;
 }
 
 export class CreateSiteInput {
@@ -331,6 +382,9 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    requestPasswordReset?: boolean;
+    validateResetToken?: boolean;
+    confirmPasswordReset?: boolean;
     createSite?: Site;
     updateSite?: Site;
     removeSite?: Site;
@@ -402,16 +456,20 @@ export class Invitation {
     id: string;
     email: string;
     expiresAt: DateTime;
+    createdAt: DateTime;
     used: boolean;
     companyId?: Nullable<string>;
+    companyName?: Nullable<string>;
     globalRole?: Nullable<string>;
     role?: Nullable<string>;
+    isGlobalVisibility?: Nullable<boolean>;
 }
 
 export class InvitationResponse {
     invitationId?: Nullable<string>;
     userId?: Nullable<string>;
     isNewUser: boolean;
+    message?: Nullable<string>;
 }
 
 export class InvitationValidation {
@@ -477,4 +535,5 @@ export class User {
 }
 
 export type DateTime = any;
+export type Upload = any;
 type Nullable<T> = T | null;

@@ -27,6 +27,7 @@ import {
   SignInFormValues,
   signInFormSchema,
 } from '@/components/schemas/SignInFormSchema';
+import { placeholder } from '@/app/uitexts/placeholder';
 
 export default function SignIn() {
   const router = useRouter();
@@ -39,15 +40,14 @@ export default function SignIn() {
   useEffect(() => {
     if (status === 'authenticated') {
       const callbackUrl = searchParams.get('callbackUrl');
-
       if (callbackUrl) {
-        router.push(callbackUrl);
+        window.location.href = callbackUrl;
       } else {
         const isAdmin = session.user.globalRole === Role.SandvikAdmin;
         const redirectTo = isAdmin
           ? '/administration-portal'
           : '/select-company';
-        router.push(redirectTo);
+        window.location.href = redirectTo;
       }
     }
   }, [status, router, searchParams]);
@@ -117,7 +117,7 @@ export default function SignIn() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter email"
+                        placeholder={placeholder.emailPlaceholder}
                         {...field}
                         className="w-full"
                       />
@@ -138,7 +138,7 @@ export default function SignIn() {
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter password"
+                          placeholder={placeholder.passwordPlaceholder}
                           {...field}
                           className="w-full"
                         />

@@ -65,8 +65,8 @@ export default function Page({
           }
         }
 
-        //hide pullTestOperator
-        if (plan.applicationName === Application.PullTestOperator) {
+        //hide pullTestTechnician
+        if (plan.applicationName === Application.PullTestTechnician) {
           return false;
         }
         return (
@@ -108,7 +108,9 @@ export default function Page({
         <div className="flex flex-row justify-center gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
           {availableApps.map((plan, index) => (
             <div className="flex flex-row gap-12 justify-center" key={index}>
-              <Link href={`http://localhost:3001/overview/${companyId}`}>
+              <Link
+                href={`${process.env.NEXT_PUBLIC_PULL_TEST_URL}/overview/${companyId}`}
+              >
                 <NavigationCard size="small">
                   <Headline
                     as="h3"

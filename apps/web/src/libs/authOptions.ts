@@ -3,7 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
-import { UUID } from 'crypto';
 
 let refreshPromise: Promise<JWT> | null = null;
 
@@ -88,7 +87,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/api/auth/signin',
   },
 
   callbacks: {
@@ -125,11 +124,6 @@ export const authOptions: NextAuthOptions = {
       session.user = token.userData as Session['user'];
       session.accessToken = token.tokens.accessToken;
       session.error = token.error;
-      // TODO: Backend integration
-      session.company = {
-        id: (process.env.TEMP_COMPANY_ID as UUID) || '404',
-        name: 'Default Company Name',
-      };
       return session;
     },
   },

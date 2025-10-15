@@ -19,8 +19,8 @@ export const formattedDate = (timestamp: Date | number) => {
 export const getAppName = (app: Application): string => {
   const applicationNames = {
     [Application.PullTest]: 'Pull Test',
-    [Application.PullTestOperator]: 'Pull Test Operator',
-    [Application.Banshee]: 'Banshee',
+    [Application.PullTestTechnician]: 'Pull Test Technician',
+    // [Application.Banshee]: 'Banshee',
   };
   return applicationNames[app];
 };

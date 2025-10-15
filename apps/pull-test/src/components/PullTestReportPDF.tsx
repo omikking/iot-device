@@ -2,8 +2,18 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
-import { BoltResultResponse, RingPosition } from '@/gql/graphql';
-import { capitalizeFirstLetter, convertRingPosition } from '@/libs/utils';
+import {
+  BoltResultResponse,
+  BoltType,
+  PullTestAbortReason,
+  RingPosition,
+} from '@/gql/graphql';
+import {
+  capitalizeFirstLetter,
+  convertAbortReason,
+  convertBoltType,
+  convertRingPosition,
+} from '@/libs/utils';
 import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
@@ -187,7 +197,7 @@ export const PullTestReportPDF = ({
         'Result',
       ];
 
-      const customColWidths = [15, 15, 18, 22, 20, 20, 25, 25];
+      const customColWidths = [15, 30, 18, 22, 20, 20, 25, 15];
 
       const totalCustomWidth = customColWidths.reduce(
         (sum, width) => sum + width,
@@ -250,7 +260,7 @@ export const PullTestReportPDF = ({
 
         const values = [
           item.boltNumber,
-          item.boltType,
+          convertBoltType(item.boltType as BoltType),
           peakLoadValues,
           peakDisplacementValues,
           item.level?.levelName || '',
@@ -280,27 +290,26 @@ export const PullTestReportPDF = ({
                 align: 'center',
               });
             });
+          } else if (colIndex === 1) {
+            const maxWidth = colWidths[colIndex] - 8;
+            const lines = pdf.splitTextToSize(String(value), maxWidth);
+            const lineHeight = 4;
+            const startY = pageY + 6 + (maxLines - 1) * 3;
+
+            lines.forEach((line: string, lineIndex: number) => {
+              pdf.text(line, cellCenterX, startY + lineIndex * lineHeight, {
+                align: 'center',
+              });
+            });
           } else if (
             colIndex === 7 &&
             item.result?.toLowerCase() === 'abort' &&
             item.abortReason
           ) {
-            // Special handling for Result column when it's ABORT with reason
             pdf.text(
               String(value),
               cellCenterX,
               pageY + 6 + (maxLines - 1) * 3,
-              { align: 'center' },
-            );
-            // Add abort reason on second line
-            pdf.setFontSize(8);
-            const formattedReason = capitalizeFirstLetter(
-              item.abortReason,
-            ).replaceAll('_', ' ');
-            pdf.text(
-              `(${formattedReason})`,
-              cellCenterX,
-              pageY + 6 + (maxLines - 1) * 3 + 4,
               { align: 'center' },
             );
           } else {
@@ -316,6 +325,8 @@ export const PullTestReportPDF = ({
         });
 
         pageY += rowHeight;
+        const hasMultipleValues = maxLines > 1;
+        pageY += hasMultipleValues ? 0 : 5;
 
         if (item.isHazard) {
           const hazardHeight = 5;
@@ -361,12 +372,135 @@ export const PullTestReportPDF = ({
           pageY += commentHeight;
           pdf.setFontSize(9);
         }
+
+        if (item.abortReason) {
+          const abortReasonHeight = 5;
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(
+            margin,
+            pageY - 3,
+            pageWidth - margin * 2,
+            abortReasonHeight,
+            'F',
+          );
+
+          pdf.setFontSize(8);
+          pdf.text('Abort Reason:', margin + 5, pageY - 2);
+
+          // Handle long comments with text wrapping
+          const abortReasonText = convertAbortReason(
+            item.abortReason as PullTestAbortReason,
+          );
+          const maxWidth = pageWidth - margin * 4 - 30;
+          const lines = pdf.splitTextToSize(abortReasonText, maxWidth);
+          pdf.text(lines, margin + 25, pageY - 2);
+
+          pageY += abortReasonHeight;
+          pdf.setFontSize(9);
+        }
       });
 
       // Add final line at the end of all items on the page
-      pdf.setDrawColor(0, 0, 0);
+      pdf.setDrawColor(40, 40, 40);
       pdf.setLineWidth(0.1);
       pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+
+      // READINGS SUMMARY //
+      const isLastTablePage = i + itemsPerPage >= results.length;
+
+      if (isLastTablePage) {
+        // check for space
+        const graphReadingsHeight = 80;
+        const spaceNeeded = pageY + graphReadingsHeight + 20;
+
+        // If not enough space then add page count else continue
+        if (spaceNeeded > pageHeight - 15) {
+          pdf.setFontSize(8);
+          pdf.text(parentUrl, margin, pageHeight - 5);
+          pdf.text(
+            `Page ${pageNum} of ${totalPages}`,
+            pageWidth - margin,
+            pageHeight - 5,
+            { align: 'right' },
+          );
+
+          pdf.addPage();
+          pageY = 20;
+
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          pdf.text(new Date().toLocaleDateString(), pageWidth - margin, 10, {
+            align: 'right',
+          });
+          pdf.text('Bolting Pull Test - Summary', margin, 10);
+          pdf.setTextColor(0, 0, 0);
+          pageY += 30;
+        } else {
+          pageY += 30;
+        }
+
+        // Graph readings titles
+        const graphTitles = [
+          'Total number of tests',
+          'Average tons',
+          'Success rate',
+        ];
+
+        // Calculate actual values from results
+        const totalTests = results.length;
+
+        const validPeakLoads = results
+          .flatMap((r) =>
+            Array.isArray(r.peakLoad) ? r.peakLoad : [r.peakLoad],
+          )
+          .filter((load) => load != null && !isNaN(Number(load)));
+        const averageTons =
+          validPeakLoads.length > 0
+            ? (
+                validPeakLoads.reduce((sum, load) => sum + Number(load), 0) /
+                validPeakLoads.length
+              ).toFixed(1)
+            : '0';
+        const successCount = results.filter(
+          (r) => r.result?.toLowerCase() === 'pass',
+        ).length;
+        const successRate =
+          totalTests > 0
+            ? `${((successCount / totalTests) * 100).toFixed(1)}%`
+            : '0%';
+
+        // Draw graph readings section
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+
+        // Calculate spacing for horizontal distribution (like flex space-around)
+        const availableWidth = pageWidth - margin * 2;
+        const itemCount = graphTitles.length;
+        const spaceBetween = availableWidth / (itemCount + 1);
+
+        graphTitles.forEach((title, index) => {
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(title, x, pageY, { align: 'center' });
+        });
+
+        // Draw a line under the headings
+        pdf.setDrawColor(180, 180, 180);
+        pdf.setLineWidth(0.1);
+        pdf.line(margin, pageY + 5, pageWidth - margin, pageY + 5);
+
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        const graphValues = [totalTests.toString(), averageTons, successRate];
+
+        graphValues.forEach((value, index) => {
+          const x = margin + spaceBetween * (index + 1);
+          pdf.text(value, x, pageY + 18, { align: 'center' });
+        });
+
+        pageY += 35;
+      }
+      // END READINGS SUMMARY //
 
       // Add page count & url
       pdf.setFontSize(8);

@@ -16,7 +16,11 @@ export const CompanyDetails = ({ company }: CompanyDetailsProps) => {
     country,
   } = company || {};
   return (
-    <ContentHolder variant="general" headlineText="Company details">
+    <ContentHolder
+      variant="general"
+      headlineText="Company details"
+      background={'transparent'}
+    >
       <div className="flex w-full gap-12">
         <Specification title="Company name" text={name} className="w-full" />
         <Specification
@@ -24,11 +28,7 @@ export const CompanyDetails = ({ company }: CompanyDetailsProps) => {
           text={companyContactEmail}
           className="w-full"
         />
-        <Specification
-          title="Organisation number"
-          text={orgNumber}
-          className="w-full"
-        />
+        <Specification title="Org number" text={orgNumber} className="w-full" />
       </div>
 
       <div className="flex w-full gap-12">

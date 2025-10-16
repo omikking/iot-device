@@ -1,6 +1,7 @@
 #!/bin/bash
+BACKUP_SCRIPT="$(dirname "$0")/data-backup.sh"
 
-BACKUP_SCRIPT="./scripts/data-backup.sh"
+#BACKUP_SCRIPT="./scripts/data-backup.sh"
 if [ ! -f "$BACKUP_SCRIPT" ]; then
     echo "Error: Backup script not found at $BACKUP_SCRIPT"
     echo "Please ensure the backup script exists before setting up cron."
@@ -9,13 +10,11 @@ fi
 
 chmod +x "$BACKUP_SCRIPT"
 echo "Made backup script executable"
-
-# PROJECT_DIR=$(pwd)
-PROJECT_DIR="/ground-support-platform"
-
+PROJECT_DIR=$(pwd)
+#PROJECT_DIR="/ground-support-platform"
 echo "Project directory: $PROJECT_DIR"
 
-LOG_DIR="$PROJECT_DIR/logs"
+LOG_DIR="/ground-support-platform/logs"
 mkdir -p "$LOG_DIR"
 echo "Log directory: $LOG_DIR"
 

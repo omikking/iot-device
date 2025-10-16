@@ -10,7 +10,9 @@ fi
 chmod +x "$BACKUP_SCRIPT"
 echo "Made backup script executable"
 
-PROJECT_DIR=$(pwd)
+# PROJECT_DIR=$(pwd)
+PROJECT_DIR="/ground-support-platform"
+
 echo "Project directory: $PROJECT_DIR"
 
 LOG_DIR="$PROJECT_DIR/logs"

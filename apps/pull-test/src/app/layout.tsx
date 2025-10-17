@@ -7,6 +7,7 @@ import { authOptions } from '@/libs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
+import { SessionErrorHandler } from '@/components/SessionErrorHandler';
 
 export const metadata: Metadata = {
   title: 'Pull Test | Ground Support Platform | Sandvik',
@@ -23,6 +24,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className="min-h-screen">
         <NextAuthProvider session={session}>
+          <SessionErrorHandler />
           <Toaster duration={8000} />
           <UrqlProvider>
             <NavBar />

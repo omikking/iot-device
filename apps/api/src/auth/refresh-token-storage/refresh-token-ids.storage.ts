@@ -8,7 +8,6 @@ export class RefreshTokenIdsStorage {
   constructor(private prisma: PrismaService) {}
 
   async insert(userId: string, tokenId: string) {
-    // Consider if this should be insert instead?
     await this.prisma.refreshTokenId.upsert({
       where: {
         userId: this.getKey(userId),
@@ -23,23 +22,30 @@ export class RefreshTokenIdsStorage {
     });
   }
 
+  async validateAndReplace(
+    userId: string,
+    oldTokenId: string,
+    newTokenId: string,
+  ): Promise<boolean> {
+    const result = await this.prisma.refreshTokenId.updateMany({
+      where: {
+        userId: this.getKey(userId),
+        refreshTokenId: oldTokenId,
+      },
+      data: {
+        refreshTokenId: newTokenId,
+      },
+    });
+
+    return result.count > 0;
+  }
+
   async validate(userId: string, tokenId: string) {
-    // console.log('validate', userId, tokenId);
-    console.log('Validate start!');
     const storedId = await this.prisma.refreshTokenId.findUnique({
       where: {
         userId: this.getKey(userId),
       },
     });
-
-    console.log('Trying to validate...');
-    console.log('Backend refresh token:', storedId);
-    console.log('Frontend refresh token:', tokenId);
-
-    if (storedId?.refreshTokenId !== tokenId) {
-      console.log('Validate function fucking failed miserably! FUCK!');
-      throw new InvalidatedRefreshTokenError();
-    }
 
     return storedId?.refreshTokenId === tokenId;
   }

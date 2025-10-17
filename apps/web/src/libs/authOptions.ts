@@ -4,9 +4,12 @@ import { NextAuthOptions } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import { jwtDecode } from 'jwt-decode';
 
-let refreshPromise: Promise<JWT> | null = null;
+// Cache to prevent duplicate refresh requests for the same token
+const refreshCache = new Map<
+  string,
+  { promise: Promise<JWT>; timestamp: number }
+>();
 
-// here is a fucking problem
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const response = await fetch(
@@ -36,11 +39,6 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       },
     };
   } catch (error) {
-    // console.error(
-    //   'LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOL',
-    //   error,
-    // );
-
     return {
       ...token,
       error: 'RefreshAccessTokenError',
@@ -92,29 +90,44 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user) return { ...token, ...user };
+      if (user) {
+        // Clear cache when user signs in
+        refreshCache.clear();
+        return { ...token, ...user };
+      }
+
+      // Check if the refresh token has expired
+      const refreshTokenDecoded = jwtDecode(token.tokens.refreshToken);
+      const current = Math.floor(Date.now() / 1000);
+      const refreshTokenExpired = (refreshTokenDecoded.exp ?? 0) < current;
+
+      if (refreshTokenExpired) {
+        return {
+          ...token,
+          error: 'RefreshAccessTokenError',
+        };
+      }
 
       const { exp } = jwtDecode(token.tokens.accessToken);
-      const current = Math.floor(Date.now() / 1000);
       const isExpired = (exp ?? 0) < current;
 
       if (isExpired) {
-        console.log('Expired token, refreshing...');
-        console.log('Before refresh:', jwtDecode(token.tokens.refreshToken));
+        const cacheKey = token.tokens.refreshToken;
 
-        try {
-          if (!refreshPromise) {
-            refreshPromise = refreshAccessToken(token);
-          }
-          const refreshedSession = await refreshPromise;
-          console.log(
-            'After refresh:',
-            jwtDecode(refreshedSession.tokens.refreshToken),
-          );
-          return refreshedSession;
-        } finally {
-          refreshPromise = null;
+        // Return existing refresh promise if one is in progress
+        let cachedEntry = refreshCache.get(cacheKey);
+
+        if (!cachedEntry) {
+          // Create new refresh promise and cache it
+          const promise = refreshAccessToken(token);
+          cachedEntry = { promise, timestamp: Date.now() };
+          refreshCache.set(cacheKey, cachedEntry);
+
+          // Auto-cleanup after cache duration
+          setTimeout(() => refreshCache.delete(cacheKey), 5000);
         }
+
+        return await cachedEntry.promise;
       }
 
       return token;

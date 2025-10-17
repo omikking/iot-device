@@ -15,10 +15,7 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import {
-  InvalidatedRefreshTokenError,
-  RefreshTokenIdsStorage,
-} from './refresh-token-storage';
+import { RefreshTokenIdsStorage } from './refresh-token-storage';
 import { randomUUID } from 'crypto';
 import { ActiveUserData } from './interfaces/active-user-data';
 import type { User } from '@prisma/client';
@@ -136,7 +133,6 @@ export class AuthService {
 
   async refreshTokens(dto: RefreshTokenDto) {
     try {
-      console.log('Refresh token triggered');
       const payload = await this.jwt.verifyAsync(dto.refreshToken, {
         secret: this.config.get('JWT_SECRET'),
       });
@@ -144,36 +140,49 @@ export class AuthService {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
           id: payload.sub,
-          isDeleted: false, // Only refresh tokens for non-deleted users
+          isDeleted: false,
         },
       });
 
-      const isValid = await this.refreshTokenIdsStorage.validate(
-        user.id,
-        payload.refreshTokenId,
-      );
+      const newRefreshTokenId = randomUUID();
 
-      if (isValid) {
-        await this.refreshTokenIdsStorage.invalidate(
+      const swapSuccessful =
+        await this.refreshTokenIdsStorage.validateAndReplace(
           user.id,
           payload.refreshTokenId,
+          newRefreshTokenId,
         );
-      } else {
+
+      if (!swapSuccessful) {
         throw new UnauthorizedException({
           code: 'USER_INVALID_REFRESH_TOKEN',
           title: errorTexts.authRefreshTokenError_title,
         });
       }
 
-      return this.generateTokens(user);
+      const [accessToken, refreshToken] = await Promise.all([
+        this.signToken(
+          user.id,
+          user.globalRole ?? 'defaultRole',
+          parseInt(this.config.get('JWT_ACCESS_TOKEN_TTL') ?? '600'),
+          {
+            email: user.email,
+          },
+        ),
+        this.signToken(
+          user.id,
+          user.globalRole ?? 'defaultRole',
+          parseInt(this.config.get('JWT_REFRESH_TOKEN_TTL') ?? '600'),
+          {
+            refreshTokenId: newRefreshTokenId,
+          },
+        ),
+      ]);
+
+      return { accessToken, refreshToken };
     } catch (error) {
-      if (error instanceof InvalidatedRefreshTokenError) {
-        // Log or notify that someone is trying to use invalidated refresh token.
-        // This is a security measure to log potential replay attacks or other malicious activity.
-        throw new UnauthorizedException({
-          code: 'USER_SESSION_EXPIRED',
-          title: errorTexts.authAccessDenied_title,
-        });
+      if (error instanceof UnauthorizedException) {
+        throw error;
       }
       throw new UnauthorizedException({
         code: 'USER_AUTHENTICATION_ERROR',
@@ -184,6 +193,7 @@ export class AuthService {
 
   async generateTokens(user: User) {
     const refreshTokenId = randomUUID();
+
     const [accessToken, refreshToken] = await Promise.all([
       this.signToken(
         user.id,

@@ -81,14 +81,12 @@ export const PullTestReportPDF = ({
     const margin = 10;
 
     const results = allBoltResults?.results || [];
-
-    const itemsPerPage = 8;
-    const totalPages = Math.ceil(results.length / itemsPerPage) + 1;
     const currentDate = new Date().toLocaleDateString();
 
     let logoDataUrl: string | null = null;
     logoDataUrl = await loadImageAsBase64(sandvikLogo.src);
 
+    // ========== (Cover Page) ==========
     let currentY = 0;
     const headerHeight = 65;
 
@@ -162,54 +160,48 @@ export const PullTestReportPDF = ({
       currentY += 30;
     }
 
-    // Add footer for first page
-    pdf.setFontSize(10);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text(parentUrl, margin, pageHeight - 5);
-    pdf.text(`Page 1 of ${totalPages}`, pageWidth - margin, pageHeight - 5, {
-      align: 'right',
-    });
+    // ========== DYNAMIC TABLE PAGES ==========
+    const headers = [
+      'Bolt number',
+      'Bolt type',
+      'Peak load (tons)',
+      'Peak displacement (mm)',
+      'Level',
+      'Drive',
+      'Position in ring',
+      'Result',
+    ];
 
-    // Add table pages with text-based tables
-    for (let i = 0; i < results.length; i += itemsPerPage) {
+    const customColWidths = [15, 30, 18, 22, 20, 20, 25, 15];
+    const totalCustomWidth = customColWidths.reduce(
+      (sum, width) => sum + width,
+      0,
+    );
+    const scaleFactor = (pageWidth - margin * 2) / totalCustomWidth;
+    const colWidths = customColWidths.map((width) => width * scaleFactor);
+
+    let pageY = 0;
+    let isFirstItemOnPage = true;
+
+    // Helper function to add a new table page with header
+    const addNewTablePage = () => {
       pdf.addPage();
-      const pageItems = results.slice(i, i + itemsPerPage);
-      const pageNum = Math.floor(i / itemsPerPage) + 2;
+      pageY = 20;
+      isFirstItemOnPage = true;
 
-      let pageY = 20;
-
-      // Add header
+      // Add page header
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'normal');
       pdf.text(currentDate, pageWidth - margin, 10, { align: 'right' });
       pdf.text('Bolting Pull Test', margin, 10);
       pdf.setTextColor(0, 0, 0);
+    };
 
-      // Add table header
-      const headers = [
-        'Bolt number',
-        'Bolt type',
-        'Peak load (tons)',
-        'Peak displacement (mm)',
-        'Level',
-        'Drive',
-        'Position in ring',
-        'Result',
-      ];
-
-      const customColWidths = [15, 30, 18, 22, 20, 20, 25, 15];
-
-      const totalCustomWidth = customColWidths.reduce(
-        (sum, width) => sum + width,
-        0,
-      );
-      const scaleFactor = (pageWidth - margin * 2) / totalCustomWidth;
-      const colWidths = customColWidths.map((width) => width * scaleFactor);
-
+    // Helper function to draw table headers
+    const drawTableHeader = () => {
       pdf.setFillColor(248, 248, 248);
       pdf.rect(margin, pageY, pageWidth - margin * 2, 22, 'F');
 
-      // Header drawing
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(0, 0, 0);
@@ -233,284 +225,281 @@ export const PullTestReportPDF = ({
         currentX += colWidths[index];
       });
 
-      // Rows drawing
-      pdf.setFont('helvetica', 'normal');
       pageY += 22;
 
-      pageItems.forEach((item) => {
-        // Check if peak load or displacement have multiple values
-        const peakLoadValues = Array.isArray(item.peakLoad)
-          ? item.peakLoad
-          : [item.peakLoad];
-        const peakDisplacementValues = Array.isArray(item.peakDisplacement)
-          ? item.peakDisplacement
-          : [item.peakDisplacement];
+      pdf.setFont('helvetica', 'normal');
+    };
 
-        // Calculate required height based on max lines needed
-        const maxPeakLoadLines = peakLoadValues.length;
-        const maxPeakDisplacementLines = peakDisplacementValues.length;
-        const maxLines = Math.max(
-          maxPeakLoadLines,
-          maxPeakDisplacementLines,
-          1,
-        );
+    // Add first table page
+    addNewTablePage();
+    drawTableHeader();
 
-        const baseRowHeight = 16;
-        const rowHeight = baseRowHeight + (maxLines - 1) * 8;
+    for (let i = 0; i < results.length; i++) {
+      const item = results[i];
 
-        const values = [
-          item.boltNumber,
-          convertBoltType(item.boltType as BoltType),
-          peakLoadValues,
-          peakDisplacementValues,
-          item.level?.levelName || '',
-          item.drive?.driveName || '',
-          convertRingPosition(item.positionInRing as RingPosition),
-          capitalizeFirstLetter(item.result),
-        ];
+      // Check if peak load or displacement have multiple values
+      const peakLoadValues = Array.isArray(item.peakLoad)
+        ? item.peakLoad
+        : [item.peakLoad];
+      const peakDisplacementValues = Array.isArray(item.peakDisplacement)
+        ? item.peakDisplacement
+        : [item.peakDisplacement];
 
-        pdf.setFillColor(255, 255, 255);
-        pdf.rect(margin, pageY - 3, pageWidth - margin * 2, rowHeight, 'F');
+      // Calculate required height for this item
+      const maxPeakLoadLines = peakLoadValues.length;
+      const maxPeakDisplacementLines = peakDisplacementValues.length;
+      const maxLines = Math.max(maxPeakLoadLines, maxPeakDisplacementLines, 1);
 
-        pdf.setDrawColor(40, 40, 40);
-        pdf.setLineWidth(0.1);
-        pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+      const baseRowHeight = 16;
+      const rowHeight = baseRowHeight + (maxLines - 1) * 8;
 
-        // Draw cell values with proper alignment
-        pdf.setFontSize(9);
-        currentX = margin;
+      // Calculate additional height for hazard, comment, and abort reason
+      let additionalHeight = 0;
+      if (item.isHazard) additionalHeight += 5;
+      if (item.comment) additionalHeight += 5;
+      if (item.abortReason) additionalHeight += 5;
 
-        values.forEach((value, colIndex) => {
-          const cellCenterX = currentX + colWidths[colIndex] / 2;
+      const hasMultipleValues = maxLines > 1;
+      const extraPadding = hasMultipleValues ? 0 : 5;
+      const totalItemHeight = rowHeight + additionalHeight + extraPadding;
 
-          if (colIndex === 2 || colIndex === 3) {
-            const valuesArray = Array.isArray(value) ? value : [value];
-            valuesArray.forEach((val, lineIndex) => {
-              pdf.text(String(val), cellCenterX, pageY + 6 + lineIndex * 6, {
-                align: 'center',
-              });
-            });
-          } else if (colIndex === 1) {
-            const maxWidth = colWidths[colIndex] - 8;
-            const lines = pdf.splitTextToSize(String(value), maxWidth);
-            const lineHeight = 4;
-            const startY = pageY + 6 + (maxLines - 1) * 3;
+      // Check if we need a new page
+      const isLastItem = i === results.length - 1;
+      const summarySpace = isLastItem ? 100 : 0;
+      const footerSpace = 15;
+      const requiredSpace = summarySpace + footerSpace;
 
-            lines.forEach((line: string, lineIndex: number) => {
-              pdf.text(line, cellCenterX, startY + lineIndex * lineHeight, {
-                align: 'center',
-              });
-            });
-          } else if (
-            colIndex === 7 &&
-            item.result?.toLowerCase() === 'abort' &&
-            item.abortReason
-          ) {
-            pdf.text(
-              String(value),
-              cellCenterX,
-              pageY + 6 + (maxLines - 1) * 3,
-              { align: 'center' },
-            );
-          } else {
-            pdf.text(
-              String(value),
-              cellCenterX,
-              pageY + 6 + (maxLines - 1) * 3,
-              { align: 'center' },
-            );
-          }
-
-          currentX += colWidths[colIndex];
-        });
-
-        pageY += rowHeight;
-        const hasMultipleValues = maxLines > 1;
-        pageY += hasMultipleValues ? 0 : 5;
-
-        if (item.isHazard) {
-          const hazardHeight = 5;
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(
-            margin,
-            pageY - 3,
-            pageWidth - margin * 2,
-            hazardHeight,
-            'F',
-          );
-
-          pdf.setFontSize(8);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setTextColor(220, 0, 0);
-          pdf.text('Hazard reported on this bolt', margin + 5, pageY - 2);
-          pdf.setTextColor(0, 0, 0);
-
-          pageY += hazardHeight;
-          pdf.setFontSize(9);
+      if (pageY + totalItemHeight > pageHeight - requiredSpace) {
+        if (!isFirstItemOnPage) {
+          pdf.setDrawColor(40, 40, 40);
+          pdf.setLineWidth(0.1);
+          pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
         }
 
-        if (item.comment) {
-          const commentHeight = 5;
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(
-            margin,
-            pageY - 3,
-            pageWidth - margin * 2,
-            commentHeight,
-            'F',
-          );
+        pdf.setFontSize(8);
+        pdf.text(parentUrl, margin, pageHeight - 5);
 
-          pdf.setFontSize(8);
-          pdf.text('Comment:', margin + 5, pageY - 2);
+        addNewTablePage();
+        drawTableHeader();
+      }
 
-          // Handle long comments with text wrapping
-          const commentText = item.comment;
-          const maxWidth = pageWidth - margin * 4 - 30;
-          const lines = pdf.splitTextToSize(commentText, maxWidth);
-          pdf.text(lines, margin + 20, pageY - 2);
+      isFirstItemOnPage = false;
 
-          pageY += commentHeight;
-          pdf.setFontSize(9);
-        }
+      // Draw the bolt result row
+      const itemValues = [
+        item.boltNumber,
+        convertBoltType(item.boltType as BoltType),
+        peakLoadValues,
+        peakDisplacementValues,
+        item.level?.levelName || '',
+        item.drive?.driveName || '',
+        convertRingPosition(item.positionInRing as RingPosition),
+        capitalizeFirstLetter(item.result),
+      ];
 
-        if (item.abortReason) {
-          const abortReasonHeight = 5;
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(
-            margin,
-            pageY - 3,
-            pageWidth - margin * 2,
-            abortReasonHeight,
-            'F',
-          );
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(margin, pageY - 3, pageWidth - margin * 2, rowHeight, 'F');
 
-          pdf.setFontSize(8);
-          pdf.text('Abort Reason:', margin + 5, pageY - 2);
-
-          // Handle long comments with text wrapping
-          const abortReasonText = convertAbortReason(
-            item.abortReason as PullTestAbortReason,
-          );
-          const maxWidth = pageWidth - margin * 4 - 30;
-          const lines = pdf.splitTextToSize(abortReasonText, maxWidth);
-          pdf.text(lines, margin + 25, pageY - 2);
-
-          pageY += abortReasonHeight;
-          pdf.setFontSize(9);
-        }
-      });
-
-      // Add final line at the end of all items on the page
       pdf.setDrawColor(40, 40, 40);
       pdf.setLineWidth(0.1);
       pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
 
-      // READINGS SUMMARY //
-      const isLastTablePage = i + itemsPerPage >= results.length;
+      // Draw cell values
+      pdf.setFontSize(9);
+      let currentX = margin;
 
-      if (isLastTablePage) {
-        // check for space
-        const graphReadingsHeight = 80;
-        const spaceNeeded = pageY + graphReadingsHeight + 20;
+      itemValues.forEach((value, colIndex) => {
+        const cellCenterX = currentX + colWidths[colIndex] / 2;
 
-        // If not enough space then add page count else continue
-        if (spaceNeeded > pageHeight - 15) {
-          pdf.setFontSize(8);
-          pdf.text(parentUrl, margin, pageHeight - 5);
-          pdf.text(
-            `Page ${pageNum} of ${totalPages}`,
-            pageWidth - margin,
-            pageHeight - 5,
-            { align: 'right' },
-          );
-
-          pdf.addPage();
-          pageY = 20;
-
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
-          pdf.text(new Date().toLocaleDateString(), pageWidth - margin, 10, {
-            align: 'right',
+        if (colIndex === 2 || colIndex === 3) {
+          // Peak load and displacement columns (may have multiple values)
+          const valuesArray = Array.isArray(value) ? value : [value];
+          valuesArray.forEach((val, lineIndex) => {
+            pdf.text(String(val), cellCenterX, pageY + 6 + lineIndex * 6, {
+              align: 'center',
+            });
           });
-          pdf.text('Bolting Pull Test - Summary', margin, 10);
-          pdf.setTextColor(0, 0, 0);
-          pageY += 30;
+        } else if (colIndex === 1) {
+          const maxWidth = colWidths[colIndex] - 8;
+          const lines = pdf.splitTextToSize(String(value), maxWidth);
+          const lineHeight = 4;
+          const startY = pageY + 6 + (maxLines - 1) * 3;
+
+          lines.forEach((line: string, lineIndex: number) => {
+            pdf.text(line, cellCenterX, startY + lineIndex * lineHeight, {
+              align: 'center',
+            });
+          });
         } else {
-          pageY += 30;
+          pdf.text(String(value), cellCenterX, pageY + 6 + (maxLines - 1) * 3, {
+            align: 'center',
+          });
         }
 
-        // Graph readings titles
-        const graphTitles = [
-          'Total number of tests',
-          'Average tons',
-          'Success rate',
-        ];
+        currentX += colWidths[colIndex];
+      });
 
-        // Calculate actual values from results
-        const totalTests = results.length;
+      pageY += rowHeight + extraPadding;
 
-        const validPeakLoads = results
-          .flatMap((r) =>
-            Array.isArray(r.peakLoad) ? r.peakLoad : [r.peakLoad],
-          )
-          .filter((load) => load != null && !isNaN(Number(load)));
-        const averageTons =
-          validPeakLoads.length > 0
-            ? (
-                validPeakLoads.reduce((sum, load) => sum + Number(load), 0) /
-                validPeakLoads.length
-              ).toFixed(1)
-            : '0';
-        const successCount = results.filter(
-          (r) => r.result?.toLowerCase() === 'pass',
-        ).length;
-        const successRate =
-          totalTests > 0
-            ? `${((successCount / totalTests) * 100).toFixed(1)}%`
-            : '0%';
+      if (item.isHazard) {
+        const hazardHeight = 5;
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(margin, pageY - 3, pageWidth - margin * 2, hazardHeight, 'F');
 
-        // Draw graph readings section
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(220, 0, 0);
+        pdf.text('Hazard reported on this bolt', margin + 5, pageY - 2);
         pdf.setTextColor(0, 0, 0);
 
-        // Calculate spacing for horizontal distribution (like flex space-around)
-        const availableWidth = pageWidth - margin * 2;
-        const itemCount = graphTitles.length;
-        const spaceBetween = availableWidth / (itemCount + 1);
-
-        graphTitles.forEach((title, index) => {
-          const x = margin + spaceBetween * (index + 1);
-          pdf.text(title, x, pageY, { align: 'center' });
-        });
-
-        // Draw a line under the headings
-        pdf.setDrawColor(180, 180, 180);
-        pdf.setLineWidth(0.1);
-        pdf.line(margin, pageY + 5, pageWidth - margin, pageY + 5);
-
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
-        const graphValues = [totalTests.toString(), averageTons, successRate];
-
-        graphValues.forEach((value, index) => {
-          const x = margin + spaceBetween * (index + 1);
-          pdf.text(value, x, pageY + 18, { align: 'center' });
-        });
-
-        pageY += 35;
+        pageY += hazardHeight;
+        pdf.setFontSize(9);
       }
-      // END READINGS SUMMARY //
 
-      // Add page count & url
+      if (item.comment) {
+        const commentHeight = 5;
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(margin, pageY - 3, pageWidth - margin * 2, commentHeight, 'F');
+
+        pdf.setFontSize(8);
+        pdf.text('Comment:', margin + 5, pageY - 2);
+
+        const commentText = item.comment;
+        const maxWidth = pageWidth - margin * 4 - 30;
+        const lines = pdf.splitTextToSize(commentText, maxWidth);
+        pdf.text(lines, margin + 20, pageY - 2);
+
+        pageY += commentHeight;
+        pdf.setFontSize(9);
+      }
+
+      if (item.abortReason) {
+        const abortReasonHeight = 5;
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(
+          margin,
+          pageY - 3,
+          pageWidth - margin * 2,
+          abortReasonHeight,
+          'F',
+        );
+
+        pdf.setFontSize(8);
+        pdf.text('Abort Reason:', margin + 5, pageY - 2);
+
+        const abortReasonText = convertAbortReason(
+          item.abortReason as PullTestAbortReason,
+        );
+        const maxWidth = pageWidth - margin * 4 - 30;
+        const lines = pdf.splitTextToSize(abortReasonText, maxWidth);
+        pdf.text(lines, margin + 25, pageY - 2);
+
+        pageY += abortReasonHeight;
+        pdf.setFontSize(9);
+      }
+    }
+
+    // Add final line at the end of all items
+    pdf.setDrawColor(40, 40, 40);
+    pdf.setLineWidth(0.1);
+    pdf.line(margin, pageY - 3, pageWidth - margin, pageY - 3);
+
+    // ========== SUMMARY SECTION ==========
+    const graphReadingsHeight = 80;
+    const spaceNeeded = pageY + graphReadingsHeight + 20;
+
+    // Check if we need a new page for summary
+    if (spaceNeeded > pageHeight - 15) {
       pdf.setFontSize(8);
       pdf.text(parentUrl, margin, pageHeight - 5);
+
+      pdf.addPage();
+      pageY = 20;
+
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(currentDate, pageWidth - margin, 10, { align: 'right' });
+      pdf.text('Bolting Pull Test - Summary', margin, 10);
+      pdf.setTextColor(0, 0, 0);
+      pageY += 30;
+    } else {
+      pageY += 30;
+    }
+
+    const totalTests = results.length;
+
+    const validPeakLoads = results
+      .flatMap((r) => (Array.isArray(r.peakLoad) ? r.peakLoad : [r.peakLoad]))
+      .filter((load) => load != null && !isNaN(Number(load)));
+
+    const averageTons =
+      validPeakLoads.length > 0
+        ? (
+            validPeakLoads.reduce((sum, load) => sum + Number(load), 0) /
+            validPeakLoads.length
+          ).toFixed(1)
+        : '0';
+
+    const successCount = results.filter(
+      (r) => r.result?.toLowerCase() === 'pass',
+    ).length;
+    const successRate =
+      totalTests > 0
+        ? `${((successCount / totalTests) * 100).toFixed(1)}%`
+        : '0%';
+
+    const graphTitles = [
+      'Total number of tests',
+      'Average tons',
+      'Success rate',
+    ];
+    const graphValues = [totalTests.toString(), averageTons, successRate];
+
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+
+    const availableWidth = pageWidth - margin * 2;
+    const itemCount = graphTitles.length;
+    const spaceBetween = availableWidth / (itemCount + 1);
+
+    graphTitles.forEach((title, index) => {
+      const x = margin + spaceBetween * (index + 1);
+      pdf.text(title, x, pageY, { align: 'center' });
+    });
+
+    pdf.setDrawColor(180, 180, 180);
+    pdf.setLineWidth(0.1);
+    pdf.line(margin, pageY + 5, pageWidth - margin, pageY + 5);
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+
+    graphValues.forEach((value, index) => {
+      const x = margin + spaceBetween * (index + 1);
+      pdf.text(value, x, pageY + 18, { align: 'center' });
+    });
+
+    // ========== ADD PAGE NUMBERS TO ALL PAGES ==========
+    const totalPages = pdf.internal.pages.length - 1;
+
+    for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+      pdf.setPage(pageNum);
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+
       pdf.text(
         `Page ${pageNum} of ${totalPages}`,
         pageWidth - margin,
         pageHeight - 5,
         { align: 'right' },
       );
+
+      // Add page count & url
+      if (pageNum > 1) {
+        pdf.setFontSize(8);
+        pdf.text(parentUrl, margin, pageHeight - 5);
+      }
     }
 
     pdf.save(`pull-test-report-${Date.now()}.pdf`);

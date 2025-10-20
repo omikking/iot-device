@@ -87,3 +87,4 @@ networks:
 
 volumes:
   postgres_data_prod:
+  name:postgres_data_prod

@@ -92,37 +92,48 @@ export class UsersService {
     id: string,
     updateUserInput: GraphQLTypes.UpdateUserInput,
     updatePasswordInput?: GraphQLTypes.UpdatePasswordInput,
+    skipPasswordVerification = false,
   ): Promise<User> {
     let hashedPassword: string | undefined = undefined;
 
     const { oldPassword, newPassword, confirmPassword } =
       updatePasswordInput || {};
 
-    if (oldPassword || newPassword || confirmPassword) {
-      if (!oldPassword || !newPassword || !confirmPassword) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_PASSWORD_FIELDS_REQUIRED_ERROR',
-            title: errorTexts.userPasswordFieldsRequired_title,
-          },
-        });
-      }
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id,
+        isDeleted: false,
+      },
+    });
 
-      const existingUser = await this.prisma.user.findUnique({
-        where: {
-          id,
-          isDeleted: false,
+    if (!existingUser) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_NOTFOUND_ERROR',
+          title: errorTexts.userNotFound_title(id),
         },
       });
-      if (!existingUser) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'USER_NOTFOUND_ERROR',
-            title: errorTexts.userNotFound_title(id),
-          },
-        });
-      }
+    }
 
+    // Track email changes
+    const normalizedEmail = updateUserInput?.email
+      ? updateUserInput.email.toLowerCase()
+      : undefined;
+    const isEmailChanging =
+      normalizedEmail && normalizedEmail !== existingUser.email.toLowerCase();
+
+    // Require password verification when changing email, skips if admin
+    if (isEmailChanging && !oldPassword && !skipPasswordVerification) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_PASSWORD_REQUIRED_FOR_EMAIL_CHANGE',
+          title: 'Password required',
+          message: 'Current password is required to change your email address.',
+        },
+      });
+    }
+
+    if (oldPassword) {
       const isOldPasswordValid = await argon.verify(
         existingUser.hash,
         oldPassword,
@@ -134,6 +145,18 @@ export class UsersService {
             code: 'USER_INCORRECT_PASSWORD_ERROR',
             title: errorTexts.userIncorrectPassword_title,
             message: errorTexts.userIncorrectPassword_message,
+          },
+        });
+      }
+    }
+
+    // If updating password
+    if (newPassword || confirmPassword) {
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'USER_PASSWORD_FIELDS_REQUIRED_ERROR',
+            title: errorTexts.userPasswordFieldsRequired_title,
           },
         });
       }
@@ -152,10 +175,6 @@ export class UsersService {
     }
 
     try {
-      const normalizedEmail = updateUserInput?.email
-        ? updateUserInput.email.toLowerCase()
-        : undefined;
-
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {

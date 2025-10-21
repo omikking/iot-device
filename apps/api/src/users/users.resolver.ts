@@ -64,7 +64,8 @@ export class UsersResolver {
       ) {
         const targetUser = await this.usersService.findOne(id);
         if (targetUser.globalRole === GlobalRole.SANDVIK_TECHNICIAN) {
-          return this.usersService.update(id, updateUserInput);
+          // Admin update - skip password verification
+          return this.usersService.update(id, updateUserInput, undefined, true);
         }
       }
       // Otherwise throw exception if not the same user for any other action

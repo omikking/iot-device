@@ -69,6 +69,7 @@ export default function AccountSettingsForm({
       oldPassword: '',
       newPassword: '',
       confirmPassword: '',
+      originalEmail: user.email || '', // Watch email changes
     },
   });
 
@@ -97,9 +98,9 @@ export default function AccountSettingsForm({
     const updatePasswordInput =
       oldPassword || newPassword || confirmPassword
         ? {
-            oldPassword,
-            newPassword,
-            confirmPassword,
+            oldPassword: oldPassword || undefined,
+            newPassword: newPassword || undefined,
+            confirmPassword: confirmPassword || undefined,
           }
         : undefined;
 

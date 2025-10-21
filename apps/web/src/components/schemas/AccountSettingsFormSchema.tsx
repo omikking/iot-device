@@ -43,6 +43,7 @@ export const updateAccountSettingsFormSchema = z
       )
       .optional()
       .or(z.literal('')),
+    originalEmail: z.string().optional(), // Track original email to detect changes
   })
   .refine(
     (data) => {
@@ -52,6 +53,23 @@ export const updateAccountSettingsFormSchema = z
     {
       message: validations.passwordsMismatch,
       path: ['confirmPassword'],
+    },
+  )
+  .refine(
+    (data) => {
+      // If email is being changed, require oldPassword
+      if (
+        data.originalEmail &&
+        data.email &&
+        data.email !== data.originalEmail
+      ) {
+        return !!data.oldPassword && data.oldPassword.length > 0;
+      }
+      return true;
+    },
+    {
+      message: 'Current password is required to change your email address',
+      path: ['oldPassword'],
     },
   );
 

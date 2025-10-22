@@ -28,7 +28,8 @@ module.exports = {
     "eslint:recommended",
     "prettier",
     require.resolve("@vercel/style-guide/eslint/next"),
-    "turbo",
+    // TODO: re-enable after updating ESLint.  After updating it breaks and I think the problem is that eslint-config-turbo version 2.5.8 uses ES module exports with a default export, but ESLint in legacy mode expects a CommonJS module export. Might be fixed by itself when updating ESLint. error: Unexpected top-level property "default".
+    // "turbo",
     "plugin:@typescript-eslint/recommended",
     // Default Turbo next eslint config END
   ],

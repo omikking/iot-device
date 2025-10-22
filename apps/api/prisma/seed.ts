@@ -85,15 +85,18 @@ async function cleanup() {
   console.log('🧹 Cleaning up existing data...');
 
   // Delete data in reverse order of dependencies
-  await prisma.boltResult.deleteMany();
-  await prisma.location.deleteMany();
-  await prisma.drive.deleteMany();
-  await prisma.level.deleteMany();
-  await prisma.site.deleteMany();
-  await prisma.userPermission.deleteMany();
-  await prisma.plan.deleteMany();
-  await prisma.company.deleteMany();
-  await prisma.user.deleteMany(); // Clear all users for a fresh start
+  await prisma.$transaction([
+    prisma.boltResult.deleteMany(),
+    prisma.location.deleteMany(),
+    prisma.drive.deleteMany(),
+    prisma.level.deleteMany(),
+    prisma.site.deleteMany(),
+    prisma.userPermission.deleteMany(),
+    prisma.refreshTokenId.deleteMany(),
+    prisma.plan.deleteMany(),
+    prisma.company.deleteMany(),
+    prisma.user.deleteMany(), // Clear all users for a fresh start
+  ]);
 }
 
 async function generateTestUsersAndCompanies() {

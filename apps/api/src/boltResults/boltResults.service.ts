@@ -255,6 +255,12 @@ export class BoltResultsService {
     updateBoltResultInput: GraphQLTypes.UpdateBoltResultInput,
   ): Promise<BoltResult> {
     try {
+      let imagePath: string | undefined;
+
+      if (updateBoltResultInput.image) {
+        imagePath = await this.saveImage(updateBoltResultInput.image);
+      }
+
       const updatedBoltResult = await this.prisma.boltResult.update({
         where: { id },
 
@@ -275,7 +281,7 @@ export class BoltResultsService {
             (updateBoltResultInput?.abortReason as PullTestAbortReason) ||
             undefined,
           comment: updateBoltResultInput?.comment || undefined,
-          image: updateBoltResultInput?.image || undefined,
+          image: imagePath || undefined,
         },
       });
 

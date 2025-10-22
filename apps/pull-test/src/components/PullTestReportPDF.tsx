@@ -2,8 +2,18 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import jsPDF from 'jspdf';
 import { Button } from '@gsp/ui';
 import { LucideFileDown } from 'lucide-react';
-import { BoltResultResponse, RingPosition } from '@/gql/graphql';
-import { capitalizeFirstLetter, convertRingPosition } from '@/libs/utils';
+import {
+  BoltResultResponse,
+  BoltType,
+  PullTestAbortReason,
+  RingPosition,
+} from '@/gql/graphql';
+import {
+  capitalizeFirstLetter,
+  convertAbortReason,
+  convertBoltType,
+  convertRingPosition,
+} from '@/libs/utils';
 import sandvikLogo from './assets/Sandvik-logo.png';
 
 interface PullTestReportPDFProps {
@@ -187,7 +197,7 @@ export const PullTestReportPDF = ({
         'Result',
       ];
 
-      const customColWidths = [15, 15, 18, 22, 20, 20, 25, 25];
+      const customColWidths = [15, 30, 18, 22, 20, 20, 25, 15];
 
       const totalCustomWidth = customColWidths.reduce(
         (sum, width) => sum + width,
@@ -250,7 +260,7 @@ export const PullTestReportPDF = ({
 
         const values = [
           item.boltNumber,
-          item.boltType,
+          convertBoltType(item.boltType as BoltType),
           peakLoadValues,
           peakDisplacementValues,
           item.level?.levelName || '',
@@ -280,27 +290,26 @@ export const PullTestReportPDF = ({
                 align: 'center',
               });
             });
+          } else if (colIndex === 1) {
+            const maxWidth = colWidths[colIndex] - 8;
+            const lines = pdf.splitTextToSize(String(value), maxWidth);
+            const lineHeight = 4;
+            const startY = pageY + 6 + (maxLines - 1) * 3;
+
+            lines.forEach((line: string, lineIndex: number) => {
+              pdf.text(line, cellCenterX, startY + lineIndex * lineHeight, {
+                align: 'center',
+              });
+            });
           } else if (
             colIndex === 7 &&
             item.result?.toLowerCase() === 'abort' &&
             item.abortReason
           ) {
-            // Special handling for Result column when it's ABORT with reason
             pdf.text(
               String(value),
               cellCenterX,
               pageY + 6 + (maxLines - 1) * 3,
-              { align: 'center' },
-            );
-            // Add abort reason on second line
-            pdf.setFontSize(8);
-            const formattedReason = capitalizeFirstLetter(
-              item.abortReason,
-            ).replaceAll('_', ' ');
-            pdf.text(
-              `(${formattedReason})`,
-              cellCenterX,
-              pageY + 6 + (maxLines - 1) * 3 + 4,
               { align: 'center' },
             );
           } else {
@@ -316,6 +325,8 @@ export const PullTestReportPDF = ({
         });
 
         pageY += rowHeight;
+        const hasMultipleValues = maxLines > 1;
+        pageY += hasMultipleValues ? 0 : 5;
 
         if (item.isHazard) {
           const hazardHeight = 5;
@@ -359,6 +370,32 @@ export const PullTestReportPDF = ({
           pdf.text(lines, margin + 20, pageY - 2);
 
           pageY += commentHeight;
+          pdf.setFontSize(9);
+        }
+
+        if (item.abortReason) {
+          const abortReasonHeight = 5;
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(
+            margin,
+            pageY - 3,
+            pageWidth - margin * 2,
+            abortReasonHeight,
+            'F',
+          );
+
+          pdf.setFontSize(8);
+          pdf.text('Abort Reason:', margin + 5, pageY - 2);
+
+          // Handle long comments with text wrapping
+          const abortReasonText = convertAbortReason(
+            item.abortReason as PullTestAbortReason,
+          );
+          const maxWidth = pageWidth - margin * 4 - 30;
+          const lines = pdf.splitTextToSize(abortReasonText, maxWidth);
+          pdf.text(lines, margin + 25, pageY - 2);
+
+          pageY += abortReasonHeight;
           pdf.setFontSize(9);
         }
       });
@@ -429,7 +466,7 @@ export const PullTestReportPDF = ({
         ).length;
         const successRate =
           totalTests > 0
-            ? `${Math.round((successCount / totalTests) * 100)}%`
+            ? `${((successCount / totalTests) * 100).toFixed(1)}%`
             : '0%';
 
         // Draw graph readings section

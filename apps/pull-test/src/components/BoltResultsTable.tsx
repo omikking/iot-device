@@ -8,10 +8,15 @@ import {
   LucideSearchX,
   ClipboardList,
 } from 'lucide-react';
-import { BoltResult, Result, RingPosition } from '@/gql/graphql';
+import { BoltResult, BoltType, Result, RingPosition } from '@/gql/graphql';
 import { BoltCommentBadge } from './BoltCommentBadge';
 import { Pagination } from './Pagination';
-import { convertRingPosition, alphanumericSort } from '@/libs/utils';
+import {
+  convertRingPosition,
+  alphanumericSort,
+  convertBoltType,
+  capitalizeFirstLetter,
+} from '@/libs/utils';
 
 type BoltResultsTableProps = {
   boltResults?: BoltResult[];
@@ -59,6 +64,7 @@ export const BoltResultsTable = ({
       header: ({ column }) => (
         <TableHeadWithSorting column={column} header="Bolt type" />
       ),
+      cell: ({ row }) => convertBoltType(row.original.boltType as BoltType),
     },
     {
       accessorKey: 'peakLoad',
@@ -166,7 +172,7 @@ export const BoltResultsTable = ({
         <div className="flex justify-end w-16">
           <Badge variant={getBadge(row?.getValue('result'))?.variant}>
             {getBadge(row?.getValue('result'))?.icon}
-            {row.getValue('result')}
+            {capitalizeFirstLetter(row.getValue('result') as string)}
           </Badge>
         </div>
       ),

@@ -7,7 +7,7 @@ import { Headline } from '../base/headline';
 // This is the grey box that is used as a wrapper across the projects.
 
 const contentHolderVariants = cva(
-  'ui-flex ui-my-4 ui-py-12 ui-px-8 ui-bg-neutral-1 ui-w-full ui-border-2 ui-border-neutral-2',
+  'ui-flex ui-my-4 ui-py-12 ui-px-8 ui-w-full ui-border-2 ui-border-neutral-2',
   {
     variants: {
       variant: {
@@ -16,18 +16,26 @@ const contentHolderVariants = cva(
         filter:
           'ui-width-full ui-max-w-[1600px] ui-flex-row ui-flex-wrap 2xl:ui-justify-between ui-gap-6 ui-py-6',
       },
+      background: {
+        light: 'ui-bg-neutral-1',
+        transparent: 'ui-bg-transparent',
+      },
+    },
+    defaultVariants: {
+      background: 'light',
     },
   },
 );
 
 export interface ContentHolderProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    Required<Pick<VariantProps<typeof contentHolderVariants>, 'variant'>> {
+    Required<Pick<VariantProps<typeof contentHolderVariants>, 'variant'>>,
+    Pick<VariantProps<typeof contentHolderVariants>, 'background'> {
   headlineText?: string;
 }
 
 const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
-  ({ className, variant, headlineText, children }, ref) => {
+  ({ className, variant, background, headlineText, children }, ref) => {
     return (
       <div className="ui-w-full" ref={ref}>
         {!!headlineText && (
@@ -40,7 +48,12 @@ const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
             {headlineText}
           </Headline>
         )}
-        <div className={cn(contentHolderVariants({ variant }), className)}>
+        <div
+          className={cn(
+            contentHolderVariants({ variant, background }),
+            className,
+          )}
+        >
           {children}
         </div>
       </div>

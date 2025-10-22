@@ -3,7 +3,13 @@ import { graphql } from '@/gql';
 import { useState } from 'react';
 import { User } from '@/gql/graphql';
 import { useMutation } from 'urql';
-import { Badge, DataTable, Text, showAlertToast, TableHeadWithSorting } from '@gsp/ui';
+import {
+  Badge,
+  DataTable,
+  Text,
+  showAlertToast,
+  TableHeadWithSorting,
+} from '@gsp/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
   LucideEyeOff,

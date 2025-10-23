@@ -1,0 +1,23 @@
+{
+  "extends": "@gsp/typescript-config/react-library.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+
+}
+
+
+// {
+//   "extends": "@gsp/typescript-config/base.json",
+//   "compilerOptions": {
+//     "outDir": "dist",
+//     "rootDir": "src"
+//   },
+//   "include": ["src"],
+//   "exclude": ["node_modules", "dist"]
+// }

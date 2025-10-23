@@ -77,6 +77,7 @@ import {
 } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import { noop } from '@tanstack/react-table';
+import { hello } from '@gsp/ui-banshee';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -146,6 +147,8 @@ export default function Page(): JSX.Element {
     setSiteIsDeleting(true);
     return true;
   };
+
+  console.log(hello());
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">

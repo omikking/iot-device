@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* File needs to be adjusted according to Banshees designsystem */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply ui-banshee-border-border;
+}
+body {
+    @apply ui-banshee-bg-background ui-banshee-text-foreground;
+  }
+  :root {
+    --chart-1: oklch(0.643 0.071 83.799);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+  }
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-ExtraBold.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-ExtraBold.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 800;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-ExtraBoldItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-ExtraBoldItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-Bold.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-Bold.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 700;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-BoldItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-BoldItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-Light.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-Light.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 200;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-LightItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-LightItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-Regular.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-Regular.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansHeadline";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansHeadline-RegularItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansHeadline-RegularItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-Regular.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-Regular.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-RegularItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-RegularItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-Bold.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-Bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 700;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-BoldItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-BoldItalic.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-Light.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "SandvikSansText";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 200;
+  src:
+    url("../../../shared/fonts/woff2/SandvikSansText-LightItalic.woff2")
+      format("woff2"),
+    url("../../../shared/fonts/woff/SandvikSansText-LightItalic.woff")
+      format("woff");
+}

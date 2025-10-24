@@ -1,5 +1,6 @@
 import './globals.css';
 import '@gsp/ui/styles.css';
+import '@gsp/ui-banshee/styles.css';
 import { Toaster } from '@gsp/ui';
 import type { Metadata } from 'next';
 import { NavBar } from '@/components/NavBar';

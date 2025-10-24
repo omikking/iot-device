@@ -1,2 +1,2 @@
 export * from './base/hello';
-export * from
+export * from './base/button';

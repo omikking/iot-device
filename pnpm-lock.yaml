@@ -530,6 +530,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.1.0
         version: 1.1.0(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-tooltip':
+        specifier: ^1.1.4
+        version: 1.1.4(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -549,6 +552,9 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
     devDependencies:
+      '@gsp/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@gsp/tailwind-config':
         specifier: workspace:^
         version: link:../tailwind-config
@@ -574,7 +580,7 @@ importers:
         specifier: ^3.4.1
         version: 3.4.1(ts-node@10.9.2(@types/node@24.9.1)(typescript@5.9.3))
       typescript:
-        specifier: latest
+        specifier: ^5.3.3
         version: 5.9.3
 
 packages:

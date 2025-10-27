@@ -77,8 +77,6 @@ import {
 } from '@/app/mock/mock';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import { noop } from '@tanstack/react-table';
-import { hello } from '@gsp/ui-banshee';
-import { Button as ButtonBanshee } from '@gsp/ui-banshee';
 
 type Role = 'User' | 'Technician' | 'Admin';
 
@@ -151,7 +149,6 @@ export default function Page(): JSX.Element {
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
-      <ButtonBanshee className="">Button from UI Banshee</ButtonBanshee>
       <Headline variant="xl" as="h1" color="foreground">
         Design system experiments 🦄
       </Headline>

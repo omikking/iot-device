@@ -14,8 +14,8 @@ const textVariants = cva('ui-banshee-font-sandvik-text', {
     color: {
       foreground: 'ui-banshee-text-main-black',
       background: 'ui-banshee-text-main-white',
-      // muted: 'ui-banshee-text-neutral-5',
-      // destructive: 'ui-banshee-text-error',
+      muted: 'ui-banshee-text-neutral-5',
+      destructive: 'ui-banshee-text-error',
       // accent: 'ui-banshee-text-orange-primary',
     },
     isBold: {
@@ -24,6 +24,7 @@ const textVariants = cva('ui-banshee-font-sandvik-text', {
     },
     defaultVariants: {
       isBold: 'false',
+      color: 'foreground',
     },
   },
 });

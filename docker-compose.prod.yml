@@ -1,0 +1,90 @@
+# docker-compose.prod.yml
+# Build + run all services
+
+services:
+  prod-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    ports:
+      - '5434:5432'
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d nest']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - playground
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: ground-support-platform-api:1.0.0
+    depends_on:
+      prod-db:
+        condition: service_healthy
+    # In prod we migrate schema (no dev seeding), then start Nest in prod mode.
+    command: >
+      sh -c "pnpm prisma:migrate:deploy && pnpm start:prod"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:123@prod-db:5432/nest?schema=public
+    env_file:
+      - ./apps/api/.env.production
+    ports:
+      - '3333:3333'
+    restart: unless-stopped
+    networks:
+      - playground
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    image: ground-support-platform-web:1.0.0
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://portal.groundsupport.mining.sandvik/api/graphql
+    env_file:
+      - ./apps/web/.env.production
+    command: pnpm start
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    networks:
+      - playground
+
+  pull-test:
+    build:
+      context: .
+      dockerfile: apps/pull-test/Dockerfile
+    image: ground-support-platform-pull-test:1.0.0
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      # Also used by the browser → reach api via localhost
+      NEXT_PUBLIC_API_URL: https://pulltest.groundsupport.mining.sandvik/api/graphql
+    env_file:
+      - ./apps/pull-test/.env.production
+    command: pnpm start
+    ports:
+      - '3001:3001'
+    restart: unless-stopped
+    networks:
+      - playground
+
+networks:
+  playground:
+
+volumes:
+  postgres_data_prod:
+    name: postgres_data_prod

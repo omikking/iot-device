@@ -68,6 +68,9 @@ export default function Page() {
           id="combobox"
           className="w-96"
           options={optionsDesignSystemMock}
+          disabled={false}
+          placeholder="Select ..."
+          onSelect={(id) => console.log('Combobox selected id:', id)}
         />
 
         <Form {...form}>

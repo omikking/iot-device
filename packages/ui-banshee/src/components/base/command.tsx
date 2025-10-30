@@ -40,14 +40,14 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div
-    className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-px-3"
+    className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-border-neutral-3 ui-banshee-px-3"
     data-cmdk-input-wrapper=""
   >
     {/* <Search className="ui-banshee-mr-2 ui-banshee-h-4 ui-banshee-w-4 ui-banshee-shrink-0 ui-banshee-opacity-50" /> */}
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
-        'ui-banshee-flex ui-banshee-h-11 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-bg-transparent ui-banshee-py-3 ui-banshee-text-sm ui-banshee-outline-none placeholder:ui-banshee-text-muted-foreground disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50',
+        'ui-banshee-flex ui-banshee-h-6 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-bg-transparent ui-banshee-py-3 ui-banshee-text-sm ui-banshee-outline-none placeholder:ui-banshee-text-muted-foreground disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50',
         className,
       )}
       {...props}

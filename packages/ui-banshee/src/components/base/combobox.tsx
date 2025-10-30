@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
+import { CheckIcon } from 'lucide-react';
 import { Button } from './button';
 import {
   Command,
@@ -12,7 +12,7 @@ import {
   CommandSeparator,
 } from './command';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 import { ArrowDown } from '../svg/arrow-down';
 
 import { cn } from '../../lib/utils';
@@ -44,36 +44,51 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
   (
     {
       id,
-      placeholder = 'Select',
+      placeholder = 'Select...',
       options,
       selectedId,
       disabled,
-      isResettable,
+
       className,
       onSelect,
-      isBadge,
-      badgeIcon,
-      // badgeVariant = 'primary',
       ...props
     },
     ref,
   ) => {
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('');
     const [search, setSearch] = useState('');
+
+    const [selectedItem, setSelectedItem] = useState<ComboboxItem | undefined>(
+      selectedId ? options?.find((item) => item.id === selectedId) : undefined,
+    );
+
+    // Required to reset
+    useEffect(() => {
+      if (selectedId && options) {
+        const newSelectedItem = options.find((item) => item.id === selectedId);
+        newSelectedItem && setSelectedItem(newSelectedItem);
+      } else {
+        setSelectedItem(undefined);
+      }
+    }, [selectedId, options]);
 
     return (
       <div className={cn('relative', className)} {...props} ref={ref}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
+              id={id}
               role="combobox"
               aria-expanded={open}
-              className={buttonStyling}
+              disabled={disabled}
+              className={cn(
+                buttonStyling,
+                open && 'ui-banshee-rounded-b-none',
+                !selectedItem && 'ui-banshee-text-neutral-5',
+              )}
             >
-              {value
-                ? options.find((option) => option.id === value)?.name
-                : 'Select...'}
+              {selectedItem?.name || placeholder}
+
               <ArrowDown
                 height={12}
                 width={12}
@@ -83,11 +98,10 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                 )}
               />
             </Button>
-            {/* </button> */}
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="ui-banshee-w-[var(--radix-popover-trigger-width)]  ui-banshee-p-0"
+            className="ui-banshee-w-[var(--radix-popover-trigger-width)]  ui-banshee-p-0 ui-banshee-mt-[-4px]"
           >
             <Command>
               <CommandInput
@@ -103,39 +117,42 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                       key={option.id}
                       value={option.name}
                       onSelect={() => {
-                        const newValue = value === option.id ? '' : option.id;
-                        setValue(newValue);
-                        onSelect?.(newValue || undefined);
+                        const newItem =
+                          selectedItem?.id === option.id ? undefined : option;
+                        setSelectedItem(newItem);
+                        onSelect?.(newItem?.id);
                         setOpen(false);
                       }}
                     >
+                      {option.name}
                       <CheckIcon
                         className={cn(
                           'ui-banshee-mr-2 ui-banshee-h-4 ui-banshee-w-4',
-                          value === option.id
+                          selectedItem?.id === option.id
                             ? 'ui-banshee-opacity-100'
                             : 'ui-banshee-opacity-0',
                         )}
                       />
-                      {option.name}
                     </CommandItem>
                   ))}
                 </CommandGroup>
               </CommandList>
               <CommandSeparator />
             </Command>
-            <div className="ui-banshee-flex ui-banshee-row ui-banshee-justify-between ui-banshee-gap-2 ui-banshee-p-2 ui-banshee-border-t ui-banshee-border-neutral-2">
+            {/* TODO Fix all import of Icons */}
+            <div className="ui-banshee-flex ui-banshee-row ui-banshee-justify-between ui-banshee-gap-2 ui-banshee-px-3 ui-banshee-border-t ui-banshee-border-neutral-3">
               <div>
                 <Button
                   type="button"
                   onClick={() => {
                     setSearch('');
-                    setValue('');
+                    setSelectedItem(undefined);
                     onSelect?.(undefined);
                     setOpen(false);
                   }}
-                  className="ui-banshee-w-full ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-left ui-banshee-text-sm hover:ui-banshee-bg-neutral-1 ui-banshee-rounded ui-banshee-transition"
+                  className="ui-banshee-flex ui-banshee-gap-1 ui-banshee-w-full ui-banshee-py-2 ui-banshee-text-left ui-banshee-text-sm hover:ui-banshee-bg-neutral-1 ui-banshee-rounded ui-banshee-transition"
                 >
+                  <ArrowDown height={12} width={12} />
                   Clear
                 </Button>
               </div>
@@ -144,12 +161,11 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                   type="button"
                   onClick={() => {
                     setSearch('');
-                    // onSelect?.(undefined);
                     setOpen(open);
                   }}
-                  className="ui-banshee-w-full ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-left ui-banshee-text-sm hover:ui-banshee-bg-neutral-1 ui-banshee-rounded ui-banshee-transition"
+                  className="ui-banshee-flex ui-banshee-gap-1 ui-banshee-w-full ui-banshee-py-2 ui-banshee-text-left ui-banshee-text-sm hover:ui-banshee-bg-neutral-1 ui-banshee-rounded ui-banshee-transition"
                 >
-                  Reset
+                  {/* TODO replace with real icon */}X
                 </Button>
               </div>
             </div>

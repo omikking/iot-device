@@ -8,3 +8,6 @@ export * from './base/form';
 export * from './base/input';
 export * from './base/dropdown';
 export * from './base/popover';
+export * from './base/command';
+export * from './base/dialog';
+export * from './base/combobox';

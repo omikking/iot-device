@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   Input,
   Dropdown,
+  Combobox,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -60,8 +61,14 @@ export default function Page() {
       {/* Input Field, Drowdown, Calendar & Time Select */}
       <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
-          Input Field, Dropdown, Calendar & Time Select 🚀
+          Input Field, Dropdown, Cal & Time Select 🚀
         </Headline>
+
+        <Combobox
+          id="combobox"
+          className="w-96"
+          options={optionsDesignSystemMock}
+        />
 
         <Form {...form}>
           <form

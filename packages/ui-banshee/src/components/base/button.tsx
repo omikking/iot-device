@@ -10,8 +10,8 @@ const buttonVariants = cva(
       variant: {
         primary:
           'ui-banshee-bg-blue-primary ui-banshee-text-main-white hover:ui-banshee-bg-blue-2 focus:ui-banshee-bg-blue-1',
-        // destructive:
-        //   'ui-banshee-bg-destructive ui-banshee-text-destructive-foreground hover:ui-banshee-bg-destructive/90',
+        destructive:
+          'ui-banshee-bg-destructive ui-banshee-text-destructive-foreground hover:ui-banshee-bg-destructive/90',
         // outline:
         //   'ui-banshee-border ui-banshee-border-input ui-banshee-bg-background hover:ui-banshee-bg-accent hover:ui-banshee-text-accent-foreground',
         // secondary:

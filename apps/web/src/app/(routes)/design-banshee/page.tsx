@@ -69,7 +69,8 @@ export default function Page() {
           className="w-96"
           options={optionsDesignSystemMock}
           disabled={false}
-          placeholder="Select ..."
+          dropdownLabel="Technician"
+          placeholder="Technician..."
           onSelect={(id) => console.log('Combobox selected id:', id)}
         />
 

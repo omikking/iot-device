@@ -18,6 +18,8 @@ import {
   Input,
   Dropdown,
   Combobox,
+  TimeCalendar,
+  Textarea,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -29,6 +31,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { SingleDateCalendar } from '@gsp/ui';
 
 export default function Page() {
   const formSchema = z.object({
@@ -58,10 +61,24 @@ export default function Page() {
         Banshee Design System Page 🚀
       </Headline>
       <hr className="w-full border-neutral-2" />
+      {/* Textarea */}
+      <div className="flex flex-col items-center gap-12">
+        <Headline variant="large" as="h1" color="foreground">
+          Textarea 🚀
+        </Headline>
+
+        <Textarea
+          className="w-96"
+          resize={false}
+          placeholder="Textarea..."
+          rows={5}
+        />
+      </div>
+      <hr className="w-full border-neutral-2" />
       {/* Input Field, Drowdown, Calendar & Time Select */}
       <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
-          Input Field, Dropdown, Cal & Time Select 🚀
+          Input Field, Dropdown, Calendar & Time Select 🚀
         </Headline>
 
         <Combobox
@@ -79,6 +96,39 @@ export default function Page() {
             onSubmit={() => console.log('submit form')}
             className="w-full max-w-[1200px] flex flex-row justify-center flex-wrap gap-12"
           >
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    {/* <FormLabel>Time & Date Select</FormLabel> */}
+                    <FormControl>
+                      <TimeCalendar />
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="calendar"
+              render={() => {
+                return (
+                  <FormItem>
+                    <FormLabel>Calendar Select</FormLabel>
+                    <FormControl>
+                      <SingleDateCalendar
+                        className="w-96"
+                        onDateChange={() => console.log('date change')}
+                      />
+                    </FormControl>
+                  </FormItem>
+                );
+              }}
+            />
+
             <FormField
               control={form.control}
               name="dropdown"

@@ -15,3 +15,4 @@ export * from './base/calendar';
 export * from './base/time-calendar';
 export * from './base/label';
 export * from './base/textarea';
+export * from './base/single-date-calendar';

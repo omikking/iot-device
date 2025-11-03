@@ -20,6 +20,7 @@ import {
   Combobox,
   TimeCalendar,
   Textarea,
+  SingleDateCalendar,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -31,7 +32,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { SingleDateCalendar } from '@gsp/ui';
 
 export default function Page() {
   const formSchema = z.object({
@@ -80,16 +80,6 @@ export default function Page() {
         <Headline variant="large" as="h1" color="foreground">
           Input Field, Dropdown, Calendar & Time Select 🚀
         </Headline>
-
-        <Combobox
-          id="combobox"
-          className="w-96"
-          options={optionsDesignSystemMock}
-          disabled={false}
-          dropdownLabel="Technician"
-          placeholder="Technician..."
-          onSelect={(id) => console.log('Combobox selected id:', id)}
-        />
 
         <Form {...form}>
           <form
@@ -214,6 +204,16 @@ export default function Page() {
             />
           </form>
         </Form>
+
+        <Combobox
+          id="combobox"
+          className="w-96"
+          options={optionsDesignSystemMock}
+          disabled={false}
+          dropdownLabel="Technician"
+          placeholder="Technician..."
+          onSelect={(id) => console.log('Combobox selected id:', id)}
+        />
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Tooltip */}

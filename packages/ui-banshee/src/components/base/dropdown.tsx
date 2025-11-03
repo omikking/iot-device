@@ -32,10 +32,10 @@ export interface DropdownProps {
 }
 
 export const buttonStyling =
-  'flex justify-between items-center ui-banshee-h-12 ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-w-full ui-banshee-bg-main-white ui-banshee-px-4 ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none hover:ui-banshee-border-blue-primary focus:ui-banshee-border-blue-primary ui-banshee-transition ease-in-out ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none';
+  'ui-banshee-flex ui-banshee-justify-between ui-banshee-items-center ui-banshee-h-12 ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-w-full ui-banshee-bg-main-white ui-banshee-px-4 ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none hover:ui-banshee-border-blue-primary focus:ui-banshee-border-blue-primary ui-banshee-transition ease-in-out ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none';
 
 const dropdownItemStyling =
-  'flex items-center cursor-pointer hover:ui-banshee-bg-neutral-1 ui-banshee-px-6 ui-banshee-py-3 ui-banshee-transform ui-banshee-duration-200 ease-in-out';
+  'ui-banshee-flex ui-banshee-items-center cursor-pointer hover:ui-banshee-bg-neutral-1 ui-banshee-px-6 ui-banshee-py-3 ui-banshee-transform ui-banshee-duration-200 ease-in-out';
 
 const dropdownVariants =
   'ui-banshee-w-full ui-banshee-bg-main-white w-max ui-banshee-py-3 ui-banshee-overflow-y-auto ui-banshee-rounded ui-banshee-shadow-md ui-banshee-max-h-56 ui-banshee-z-10';

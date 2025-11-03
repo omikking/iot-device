@@ -23,38 +23,44 @@ const Calendar = ({
     (selected?.from && format(selected?.from, 'LLL dd, y')) ===
       (selected?.to && format(selected?.to, 'LLL dd, y'));
 
+  const customDayNames = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'];
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      formatters={{
+        formatWeekdayName: (date) => customDayNames[date.getDay()],
+      }}
       className={cn(
-        'ui-banshee-p-5',
-        mode === 'single' && 'ui-banshee-w-[320px]',
+        'ui-banshee-p-1',
+        mode === 'single' && 'ui-banshee-w-full',
         className,
       )}
       classNames={{
         months:
           'ui-banshee-flex ui-banshee-flex-col sm:ui-banshee-flex-row ui-banshee-space-y-4 sm:ui-banshee-space-x-4 sm:ui-banshee-space-y-0',
-        month: 'ui-banshee-w-full ui-banshee-space-y-4',
+        month: 'ui-banshee-w-full ui-banshee-space-y-1',
         caption:
-          'ui-banshee-flex ui-banshee-justify-center ui-banshee-pt-1 ui-banshee-relative ui-banshee-items-center',
+          'ui-banshee-flex ui-banshee-justify-center ui-banshee-pt-1 ui-banshee-relative ui-banshee-items-center ui-banshee-w-full',
         caption_label:
           'ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black',
         nav: 'ui-banshee-space-x-1 ui-banshee-flex ui-banshee-items-center',
         nav_button: cn(
-          // buttonVariants({ variant: 'outline' }),
-          'ui-banshee-h-8 ui-banshee-w-9 ui-banshee-bg-transparent ui-banshee-p-0 ui-banshee-opacity-80 hover:ui-banshee-opacity-100',
+          'ui-banshee-h-8 ui-banshee-w-9 ui-banshee-bg-transparent ui-banshee-p-1 ui-banshee-opacity-80 hover:ui-banshee-opacity-100',
         ),
-        nav_button_previous: 'ui-banshee-absolute ui-banshee-left-1',
-        nav_button_next: 'ui-banshee-absolute ui-banshee-right-1',
+        nav_button_previous: 'ui-banshee-absolute ui-banshee-left-0',
+        nav_button_next: 'ui-banshee-absolute ui-banshee-right-0',
         table:
           'ui-banshee-w-full ui-banshee-border-collapse ui-banshee-space-y-1',
         head_row:
-          'ui-banshee-my-2 ui-banshee-py-1 ui-banshee-flex ui-banshee-justify-between ui-banshee-border-b ui-banshee-border-neutral-2',
+          // 'ui-banshee-my-2 ui-banshee-py-1 ui-banshee-flex ui-banshee-justify-between ui-banshee-border-b ui-banshee-border-neutral-2',
+          'ui-banshee-flex ui-banshee-justify-between',
         head_cell:
-          'ui-banshee-font-sandvik-text ui-banshee-text-neutral-4 ui-banshee-w-9 ui-banshee-text-xs ui-banshee-font-[400]',
+          // 'ui-banshee-font-sandvik-text ui-banshee-text-neutral-4 ui-banshee-w-9 ui-banshee-text-xs ui-banshee-font-[400]',
+          'ui-banshee-font-sandvik-text ui-banshee-w-9 ui-banshee-text-md ui-banshee-font-[400]',
         row: 'ui-banshee-flex ui-banshee-justify-between ui-banshee-mt-2',
-        cell: 'ui-banshee-h-9 ui-banshee-w-9 ui-banshee-text-center ui-banshee-text-md ui-banshee-p-0 ui-banshee-relative [&:has([aria-selected].day-range-end)]:ui-banshee-rounded-r-md [&:has([aria-selected].day-outside)]:ui-banshee-bg-neutral-2/50 first:[&:has([aria-selected])]:ui-banshee-rounded-l-md last:[&:has([aria-selected])]:ui-banshee-rounded-r-md focus-within:ui-banshee-relative focus-within:ui-banshee-z-20',
-        day: 'ui-banshee-rounded-md ui-banshee-font-sandvik-text ui-banshee-h-9 ui-banshee-w-9 ui-banshee-p-0 ui-banshee-font-normal hover:ui-banshee-bg-neutral-2 ui-banshee-transition-all ui-banshee-duration-200',
+        cell: 'ui-banshee-h-7 ui-banshee-w-9 ui-banshee-text-center ui-banshee-text-md ui-banshee-p-0 ui-banshee-relative [&:has([aria-selected].day-range-end)]:ui-banshee-rounded-r-md [&:has([aria-selected].day-outside)]:ui-banshee-bg-neutral-2/50 first:[&:has([aria-selected])]:ui-banshee-rounded-l-md last:[&:has([aria-selected])]:ui-banshee-rounded-r-md focus-within:ui-banshee-relative focus-within:ui-banshee-z-20',
+        day: 'ui-banshee-rounded-md ui-banshee-font-sandvik-text ui-banshee-h-6 ui-banshee-w-9 ui-banshee-p-0 ui-banshee-font-normal hover:ui-banshee-bg-neutral-2 ui-banshee-transition-all ui-banshee-duration-200',
         day_range_start: cn(
           'day-range-start ui-banshee-rounded-e-none !ui-banshee-rounded-s-md',
           isSameStartAndEndDate && '!ui-banshee-rounded-e-md',

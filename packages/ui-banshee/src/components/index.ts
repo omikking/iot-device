@@ -17,3 +17,4 @@ export * from './base/label';
 export * from './base/textarea';
 export * from './base/single-date-calendar';
 export * from './base/switch';
+export * from './base/tabs';

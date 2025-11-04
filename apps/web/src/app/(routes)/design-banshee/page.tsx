@@ -10,6 +10,10 @@ import {
   FormItem,
   FormControl,
   FormMessage,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -61,6 +65,30 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+      <hr className="w-full border-neutral-2" />
+      {/* Tabs */}
+      <div className="flex flex-col items-center gap-12">
+        <Headline variant="large" as="h1" color="foreground">
+          Tabs 🚀
+        </Headline>
+        <Tabs defaultValue="tab1">
+          <TabsList>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">
+            <Text variant="medium" color="foreground">
+              This is the content of Tab 1.
+            </Text>
+          </TabsContent>
+          <TabsContent value="tab2">
+            <Text variant="medium" color="foreground">
+              This is the content of Tab 2.
+            </Text>
+          </TabsContent>
+        </Tabs>
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Switch */}
       <div className="flex flex-col items-center gap-12">

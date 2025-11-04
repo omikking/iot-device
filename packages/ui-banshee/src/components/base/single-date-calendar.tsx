@@ -10,11 +10,11 @@ import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar } from './calendar';
 import { Text } from './text';
 
-interface SingleDateCalendarProps {
+type SingleDateCalendarProps = {
   selectedDate?: Date;
   disabled?: boolean;
   onDateChange: (date?: Date) => void;
-}
+};
 
 export const formattedDate = (timestamp: Date) => {
   const date = new Date(timestamp);

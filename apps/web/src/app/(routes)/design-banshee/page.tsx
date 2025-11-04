@@ -94,7 +94,7 @@ export default function Page() {
                   <FormItem>
                     {/* <FormLabel>Time & Date Select</FormLabel> */}
                     <FormControl>
-                      <TimeCalendar />
+                      <TimeCalendar id="time" className="w-96" />
                     </FormControl>
                   </FormItem>
                 );

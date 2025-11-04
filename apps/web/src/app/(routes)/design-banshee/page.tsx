@@ -21,6 +21,7 @@ import {
   TimeCalendar,
   Textarea,
   SingleDateCalendar,
+  Switch,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -61,6 +62,15 @@ export default function Page() {
         Banshee Design System Page 🚀
       </Headline>
       <hr className="w-full border-neutral-2" />
+      {/* Switch */}
+      <div className="flex flex-col items-center gap-12">
+        <Headline variant="large" as="h1" color="foreground">
+          Switch 🚀
+        </Headline>
+        <Switch />
+        <Switch disabled />
+      </div>
+      <hr className="w-full border-neutral-2" />
       {/* Textarea */}
       <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
@@ -92,7 +102,7 @@ export default function Page() {
               render={() => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Time & Date Select</FormLabel> */}
+                    {/* TODO disabled should change color of text */}
                     <FormControl>
                       <TimeCalendar id="time" className="w-96" />
                     </FormControl>

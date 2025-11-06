@@ -112,11 +112,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
               className={buttonStyling}
             >
               {isBadge && selectedItem?.name ? (
-                <Badge
-                  // variant={selectedItem?.background || badgeVariant}
-                  size="small"
-                  className="ui-banshee-mr-2"
-                >
+                <Badge size="small" className="ui-banshee-mr-2">
                   {selectedItem.iconLabel &&
                     iconHandler(selectedItem.iconLabel.toLowerCase())}
                   {selectedItem?.name}
@@ -151,8 +147,6 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                 {isResettable && options?.length > 0 && (
                   <div className="ui-banshee-px-5 ui-banshee-pb-3 ui-banshee-border-b ui-banshee-border-neutral-2">
                     <Button
-                      // isWide
-                      // variant="outline"
                       size="small"
                       disabled={!selectedItem}
                       tabIndex={-1}

@@ -26,6 +26,11 @@ import {
   Textarea,
   SingleDateCalendar,
   Switch,
+  Checkbox,
+  FilterDropdown,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -60,11 +65,71 @@ export default function Page() {
     undefined,
   );
 
+  const [filterValues, setFilterValues] = useState<string[]>([]);
+
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+      <hr className="w-full border-neutral-2" />
+      {/* Filter Dropdown */}
+      <div className="flex flex-col items-center gap-12">
+        <Headline variant="large" as="h1" color="foreground">
+          Filter Dropdown 🚀
+        </Headline>
+
+        {/* <Button variant="destructive" size="large">
+              <Text variant="medium" color="foreground">
+                Select site...
+              </Text>
+            </Button> */}
+        <FilterDropdown
+          id="filter-users"
+          placeholder="Filter technicians..."
+          options={optionsDesignSystemMock}
+          onSelect={setFilterValues}
+          isResettable={true}
+          className="w-96"
+        />
+
+        {/* <div className="flex flex-row gap-1">
+          <Checkbox /> A
+        </div>
+        <div className="flex flex-row gap-1">
+          <Checkbox /> B
+        </div> */}
+
+        {/* <FilterDropdown
+          id="users"
+          className="w-96"
+          options={usersDesignSystemMock}
+          disabled={false}
+          placeholder="Select user..."
+          onSelect={(id: string | undefined) =>
+            console.log('Filter Dropdown selected id:', id)
+          }
+        /> */}
+      </div>
+      <hr className="w-full border-neutral-2" />
+      {/* Checkbox */}
+      <div className="flex flex-col items-center gap-6">
+        <Headline variant="large" as="h1" color="foreground">
+          Checkbox 🚀
+        </Headline>
+        <div className="flex flex-row items-center gap-3">
+          <Checkbox />
+          Select All
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          <Checkbox />
+          Select This
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          <Checkbox />
+          Select That
+        </div>
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Tabs */}
       <div className="flex flex-col items-center gap-12">

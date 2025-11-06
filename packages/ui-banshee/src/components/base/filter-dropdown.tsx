@@ -74,7 +74,10 @@ const FilterDropdown = React.forwardRef<HTMLDivElement, FilterDropdownProps>(
 
     useEffect(() => {
       if (selectedIds && options) {
-        setSelectedItemIds(selectedIds);
+        const newSelectedIds = options.find((item) =>
+          selectedIds.includes(item.id),
+        )?.id;
+        newSelectedIds && setSelectedItemIds(selectedIds);
       } else {
         setSelectedItemIds([]);
       }
@@ -189,77 +192,6 @@ const FilterDropdown = React.forwardRef<HTMLDivElement, FilterDropdownProps>(
                 </Button>
               </div>
             </div>
-            {/* <div aria-label="Dropdown menu" className={filterDropdownVariants}>
-
-              <div className="ui-banshee-px-4 ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-neutral-2">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                  }}
-                  className="ui-banshee-w-full ui-banshee-px-3 ui-banshee-py-2 ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-text-md ui-banshee-font-sandvik-text placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none focus:ui-banshee-border-blue-primary"
-                />
-              </div>
-
-              <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
-                {isResettable && options?.length > 0 && (
-                  <div className="ui-banshee-px-4 ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-neutral-2">
-                    <Button
-                      size="small"
-                      disabled={selectedItemIds.length === 0}
-                      tabIndex={-1}
-                      onClick={() => {
-                        handleReset();
-                      }}
-                    >
-                      <LucideX />
-                      Clear
-                    </Button>
-                  </div>
-                )}
-
-                {filteredOptions?.map((item) => (
-                  <li
-                    key={item.id}
-                    className={cn(dropdownItemStyling, 'ui-banshee-gap-3')}
-                  >
-                    <input
-                      type="checkbox"
-                      id={`checkbox-${item.id}`}
-                      checked={selectedItemIds.includes(item.id)}
-                      onChange={() => {
-                        handleToggleItem(item.id);
-                      }}
-                      className="ui-banshee-cursor-pointer"
-                    />
-                    <label
-                      htmlFor={`checkbox-${item.id}`}
-                      className="ui-banshee-flex-1 ui-banshee-cursor-pointer"
-                    >
-                      <Text variant="medium" color="foreground">
-                        {item.name}
-                      </Text>
-                    </label>
-                  </li>
-                ))}
-
-                {filteredOptions?.length === 0 && (
-                  <li
-                    aria-hidden="true"
-                    className={cn(
-                      dropdownItemStyling,
-                      'ui-banshee-bg-neutral-1',
-                    )}
-                  >
-                    <Text variant="medium" color="muted">
-                      No results found
-                    </Text>
-                  </li>
-                )}
-              </ul>
-            </div> */}
           </PopoverContent>
         </Popover>
       </div>

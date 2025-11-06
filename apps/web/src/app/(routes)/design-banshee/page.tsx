@@ -89,7 +89,6 @@ export default function Page() {
           placeholder="Filter technicians..."
           options={optionsDesignSystemMock}
           onSelect={setFilterValues}
-          isResettable={true}
           className="w-96"
         />
 

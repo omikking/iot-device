@@ -36,6 +36,6 @@ docker exec "$CONTAINER" pg_dump -U "$DB_USER" -d "$DB_NAME" --data-only --inser
 # Create latest symlink for easy access
 ln -sf "$BACKUP_FILE" "$BACKUP_DIR/latest.sql"
 
-echo "✓ Backup completed successfully!"
+echo "Backup completed successfully!"
 echo "File: $BACKUP_DIR/$BACKUP_FILE"
 echo "Latest: $BACKUP_DIR/latest.sql"

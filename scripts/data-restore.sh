@@ -84,4 +84,4 @@ fi
 echo "Restoring data..."
 docker exec -i "$CONTAINER" psql -U "$DB_USER" -d "$DB_NAME" < "$BACKUP_FILE"
 
-echo "✓ Data restore completed successfully!"
+echo "Data restore completed successfully!"

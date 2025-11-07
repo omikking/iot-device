@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import {
   Button,
   Headline,
@@ -28,9 +29,11 @@ import {
   Switch,
   Checkbox,
   FilterDropdown,
+  ContentHolder,
   Popover,
   PopoverTrigger,
   PopoverContent,
+  Label,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -42,6 +45,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
 
 export default function Page() {
   const formSchema = z.object({
@@ -72,6 +76,118 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+
+      <hr className="w-full border-neutral-2" />
+      {/* Content Holder */}
+      <Headline variant="large" as="h1" color="foreground">
+        Content Holder 🚀
+      </Headline>
+      <div className="flex flex-col items-center gap-12">
+        <ContentHolder variant="image" headlineText="Content Holder Headline">
+          <Image
+            src={bansheeImage}
+            alt="Example Image"
+            width={384}
+            height={384}
+          />
+        </ContentHolder>
+      </div>
+      <Form {...form}>
+        <form
+          onSubmit={() => console.log('submit form')}
+          className="w-full max-w-[1200px] flex flex-row justify-center flex-nowrap gap-12"
+        >
+          <ContentHolder
+            variant="general"
+            className="w-full flex flex-wrap gap-12"
+            headlineText="Example with inputs"
+          >
+            <FormField
+              control={form.control}
+              name="textarea"
+              render={({ field }) => {
+                return (
+                  // TODO Find a better solution for the width calc
+                  <FormItem className="w-[calc(50%-12px)]">
+                    <FormLabel>Textarea Field</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Textarea..."
+                        {...field}
+                        className="w-full"
+                        rows={5}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="dropdown"
+              render={() => {
+                return (
+                  <FormItem className="w-[calc(50%-12px)]">
+                    <FormLabel>Combo Field</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        id="technician"
+                        placeholder="Select technician"
+                        options={optionsDesignSystemMock}
+                        onSelect={setDropdownValue}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-[calc(50%-12px)]">
+                    <FormLabel>Input Field </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="I field..."
+                        {...field}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="input"
+              render={({ field }) => {
+                return (
+                  <FormItem className="w-[calc(50%-12px)]">
+                    <FormLabel>Disabled Input Field </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        placeholder="Disabled input field..."
+                        {...field}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </ContentHolder>
+        </form>
+      </Form>
+
       <hr className="w-full border-neutral-2" />
       {/* Filter Dropdown */}
       <div className="flex flex-col items-center gap-12">
@@ -91,24 +207,6 @@ export default function Page() {
           onSelect={setFilterValues}
           className="w-96"
         />
-
-        {/* <div className="flex flex-row gap-1">
-          <Checkbox /> A
-        </div>
-        <div className="flex flex-row gap-1">
-          <Checkbox /> B
-        </div> */}
-
-        {/* <FilterDropdown
-          id="users"
-          className="w-96"
-          options={usersDesignSystemMock}
-          disabled={false}
-          placeholder="Select user..."
-          onSelect={(id: string | undefined) =>
-            console.log('Filter Dropdown selected id:', id)
-          }
-        /> */}
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Checkbox */}
@@ -306,16 +404,18 @@ export default function Page() {
             />
           </form>
         </Form>
-
-        <Combobox
-          id="combobox"
-          className="w-96"
-          options={optionsDesignSystemMock}
-          disabled={false}
-          dropdownLabel="Technician"
-          placeholder="Technician..."
-          onSelect={(id) => console.log('Combobox selected id:', id)}
-        />
+        <div>
+          {/* check why padding not working as it should */}
+          <Label className="">Combobox</Label>
+          <Combobox
+            id="combobox"
+            className="w-96"
+            options={optionsDesignSystemMock}
+            disabled={false}
+            placeholder="Technician..."
+            onSelect={(id) => console.log('Combobox selected id:', id)}
+          />
+        </div>
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Tooltip */}

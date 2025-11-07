@@ -21,7 +21,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'ui-banshee-fixed ui-banshee-inset-0 ui-banshee-z-50 ui-banshee-bg-black/80 data-[state=open]:ui-banshee-animate-in data-[state=closed]:ui-banshee-animate-out data-[state=closed]:ui-banshee-fade-out-0 data-[state=open]:ui-banshee-fade-in-0',
+      'ui-banshee-fixed ui-banshee-inset-0 ui-banshee-z-50 ui-banshee-bg-main-black/80 data-[state=open]:ui-banshee-animate-in data-[state=closed]:ui-banshee-animate-out data-[state=closed]:ui-banshee-fade-out-0 data-[state=open]:ui-banshee-fade-in-0',
       className,
     )}
     {...props}

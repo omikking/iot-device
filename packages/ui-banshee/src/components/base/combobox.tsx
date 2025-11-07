@@ -16,7 +16,7 @@ import { useState, forwardRef, useEffect } from 'react';
 import { ArrowDown } from '../svg/arrow-down';
 
 import { cn } from '../../lib/utils';
-import { Label } from './label';
+// import { Label } from './label';
 
 export type ComboboxItem = {
   // TODO Add id and other props
@@ -28,7 +28,7 @@ export interface ComboboxProps {
   id: string;
   placeholder?: string;
   options: ComboboxItem[];
-  dropdownLabel?: string;
+  // dropdownLabel?: string;
   selectedId?: string;
   isResettable?: boolean;
   className?: string;
@@ -50,7 +50,7 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       options,
       selectedId,
       disabled,
-      dropdownLabel = 'Select an option',
+      // dropdownLabel = 'Select an option',
       className,
       onSelect,
       ...props
@@ -77,7 +77,7 @@ export const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     return (
       <div className={cn('relative', className)} {...props} ref={ref}>
         <Popover open={open} onOpenChange={setOpen}>
-          <Label className="">{dropdownLabel}</Label>
+          {/* <Label>{dropdownLabel}</Label> */}
           <PopoverTrigger asChild>
             <Button
               id={id}

@@ -20,3 +20,4 @@ export * from './base/switch';
 export * from './base/tabs';
 export * from './base/checkbox';
 export * from './base/filter-dropdown';
+export * from './base/content-holder';

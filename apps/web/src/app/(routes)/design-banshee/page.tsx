@@ -30,6 +30,7 @@ import {
   Checkbox,
   FilterDropdown,
   ContentHolder,
+  ContentHolderTable,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -82,8 +83,55 @@ export default function Page() {
       <Headline variant="large" as="h1" color="foreground">
         Content Holder 🚀
       </Headline>
+
+      <ContentHolderTable
+        variant="table"
+        headlineText="Content Holder Table"
+        form={form}
+        onSubmit={(data) => console.log('Form submitted:', data)}
+      >
+        <FormField
+          control={form.control}
+          name="input"
+          render={({ field }) => (
+            <FormItem className="w-48">
+              <Input placeholder="Input field..." {...field} className="w-48" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="input"
+          render={({ field }) => (
+            <FormItem className="w-48">
+              <Input
+                placeholder="Input field..."
+                {...field}
+                className="w-full"
+              />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="input"
+          render={({ field }) => (
+            <FormItem className="w-72">
+              <Input
+                placeholder="Input field..."
+                {...field}
+                className="w-full"
+              />
+            </FormItem>
+          )}
+        />
+        <Button variant="primary" size="large">
+          Add New Banshee
+        </Button>
+      </ContentHolderTable>
+
       <div className="flex flex-col items-center gap-12">
-        <ContentHolder variant="image" headlineText="Content Holder Headline">
+        <ContentHolder variant="image" headlineText="Content Holder Image">
           <Image
             src={bansheeImage}
             alt="Example Image"
@@ -92,6 +140,7 @@ export default function Page() {
           />
         </ContentHolder>
       </div>
+
       <Form {...form}>
         <form
           onSubmit={() => console.log('submit form')}

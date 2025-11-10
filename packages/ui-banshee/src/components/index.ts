@@ -21,3 +21,4 @@ export * from './base/tabs';
 export * from './base/checkbox';
 export * from './base/filter-dropdown';
 export * from './base/content-holder';
+export * from './base/content-holder-table';

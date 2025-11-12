@@ -98,6 +98,62 @@ export const usersDesignSystemMock: UserSchema[] = [
     },
     phoneNumber: '+4683729327',
   },
+  {
+    id: '5',
+    fullName: 'Dominique DiPierro',
+    email: 'dominiquedipierro@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '5',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683729327',
+  },
+  {
+    id: '6',
+    fullName: 'Leon Badmon',
+    email: 'leonbadmon@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '6',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683729327',
+  },
+  {
+    id: '7',
+    fullName: 'Fernando Vera',
+    email: 'fernandovera@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '7',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683729327',
+  },
+  {
+    id: '8',
+    fullName: 'Ray Heyworth',
+    email: 'rayheyworth@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '8',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683729327',
+  },
 ];
 
 export const sitesDesignSystemMock = [

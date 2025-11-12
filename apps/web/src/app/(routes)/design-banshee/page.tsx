@@ -35,6 +35,12 @@ import {
   PopoverTrigger,
   PopoverContent,
   Label,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
 } from '@gsp/ui-banshee';
 // import { ArrowDown } from '@gsp/ui-banshee/';
 import {
@@ -77,13 +83,45 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
-
+      <hr className="w-full border-neutral-2" />
+      {/* Table row & Table header */}
+      <Headline variant="large" as="h1" color="foreground">
+        Table Row & Table Header 🚀
+      </Headline>
+      <div className="max-w-[1320px] w-full h-96 overflow-y-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[220px]">Full name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>App access</TableHead>
+              {/* <TableHead>Role</TableHead> */}
+              <TableHead>Phone number</TableHead>
+              <TableHead>Last</TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody className="h-20">
+            {usersDesignSystemMock.map((user) => {
+              return (
+                <TableRow key={user.id}>
+                  <TableCell>{user.fullName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.userPermissions.appAccess}</TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell>|||</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+      <div></div>
       <hr className="w-full border-neutral-2" />
       {/* Content Holder */}
       <Headline variant="large" as="h1" color="foreground">
         Content Holder 🚀
       </Headline>
-
       <ContentHolderTable
         variant="table"
         headlineText="Content Holder Table"
@@ -129,7 +167,6 @@ export default function Page() {
           Add New Banshee
         </Button>
       </ContentHolderTable>
-
       <div className="flex flex-col items-center gap-12">
         <ContentHolder variant="image" headlineText="Content Holder Image">
           <Image
@@ -140,7 +177,6 @@ export default function Page() {
           />
         </ContentHolder>
       </div>
-
       <Form {...form}>
         <form
           onSubmit={() => console.log('submit form')}
@@ -236,7 +272,6 @@ export default function Page() {
           </ContentHolder>
         </form>
       </Form>
-
       <hr className="w-full border-neutral-2" />
       {/* Filter Dropdown */}
       <div className="flex flex-col items-center gap-12">

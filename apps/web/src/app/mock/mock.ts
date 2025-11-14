@@ -53,7 +53,7 @@ export const usersDesignSystemMock: UserSchema[] = [
         // Application.Banshee,
       ],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721111',
   },
   {
     id: '2',
@@ -67,7 +67,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Technician',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721112',
   },
   {
     id: '3',
@@ -82,7 +82,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'User',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721113',
   },
   {
     id: '4',
@@ -96,7 +96,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721114',
   },
   {
     id: '5',
@@ -110,7 +110,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721115',
   },
   {
     id: '6',
@@ -124,7 +124,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721116',
   },
   {
     id: '7',
@@ -138,7 +138,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721117',
   },
   {
     id: '8',
@@ -152,7 +152,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721118',
   },
 ];
 

@@ -21,5 +21,7 @@ export * from './base/tabs';
 export * from './base/checkbox';
 export * from './base/filter-dropdown';
 export * from './base/table';
+export * from './base/schedule-data-table';
+export * from './base/schedule-table';
 export * from './base/content-holder';
 export * from './base/content-holder-table';

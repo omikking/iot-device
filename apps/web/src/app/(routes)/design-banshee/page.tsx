@@ -31,28 +31,32 @@ import {
   FilterDropdown,
   ContentHolder,
   ContentHolderTable,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
   Label,
+  ColumnDef,
   Table,
   TableHeader,
   TableRow,
   TableHead,
   TableBody,
   TableCell,
+  ScheduleTable,
+  ScheduleTableHead,
+  ScheduleTableCell,
+  ScheduleTableHeadWithSorting,
+  ScheduleDataTable,
 } from '@gsp/ui-banshee';
-// import { ArrowDown } from '@gsp/ui-banshee/';
 import {
   optionsDesignSystemMock,
   usersDesignSystemMock,
-  sitesDesignSystemMock,
+  UserSchema,
 } from '@/app/mock/mock';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+
+type Technician = UserSchema;
 
 export default function Page() {
   const formSchema = z.object({
@@ -75,8 +79,34 @@ export default function Page() {
   const [dropdownValue, setDropdownValue] = useState<string | undefined>(
     undefined,
   );
-
   const [filterValues, setFilterValues] = useState<string[]>([]);
+
+  const columns: ColumnDef<Technician>[] = [
+    // const columns: ColumnDef<(typeof usersDesignSystemMock)[0]>[] = [
+    {
+      accessorKey: 'id',
+      header: '',
+    },
+    {
+      accessorKey: 'fullName',
+      header: ({ column }) => (
+        // TODO Fix arrowDown SVG
+        <ScheduleTableHeadWithSorting column={column} header="Full name" />
+      ),
+    },
+    {
+      accessorKey: 'email',
+      header: ({ column }) => (
+        <ScheduleTableHeadWithSorting column={column} header="Email" />
+      ),
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: ({ column }) => (
+        <ScheduleTableHeadWithSorting column={column} header="Phone number" />
+      ),
+    },
+  ];
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -88,26 +118,53 @@ export default function Page() {
       <Headline variant="large" as="h1" color="foreground">
         Table Row & Table Header 🚀
       </Headline>
-      <div className="max-w-[1320px] w-full h-96 overflow-y-auto">
+      <div className="w-[700px] h-40 overflow-y-auto border-b">
+        <ScheduleDataTable columns={columns} data={usersDesignSystemMock} />
+      </div>
+
+      <ScheduleTable>
+        <TableHeader>
+          <TableRow>
+            <ScheduleTableHead className="w-4">A</ScheduleTableHead>
+            <ScheduleTableHead className="w-[220px]">
+              Full name
+            </ScheduleTableHead>
+            <ScheduleTableHead>Email</ScheduleTableHead>
+            <ScheduleTableHead>App access</ScheduleTableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {usersDesignSystemMock.map((user) => {
+            return (
+              <TableRow key={user.id}>
+                <ScheduleTableCell>{'A'}</ScheduleTableCell>
+                <ScheduleTableCell>{user.fullName}</ScheduleTableCell>
+                <ScheduleTableCell>{user.email}</ScheduleTableCell>
+                <ScheduleTableCell>{'Banshee'}</ScheduleTableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </ScheduleTable>
+      <div className="max-w-[1320px] w-full h-40 overflow-y-auto border-b">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[220px]">Full name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>App access</TableHead>
-              {/* <TableHead>Role</TableHead> */}
               <TableHead>Phone number</TableHead>
               <TableHead>Last</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
-          <TableBody className="h-20">
+          <TableBody>
             {usersDesignSystemMock.map((user) => {
               return (
                 <TableRow key={user.id}>
                   <TableCell>{user.fullName}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.userPermissions.appAccess}</TableCell>
+                  <TableCell>{'Banshee'}</TableCell>
                   <TableCell>{user.phoneNumber}</TableCell>
                   <TableCell>|||</TableCell>
                 </TableRow>
@@ -278,12 +335,6 @@ export default function Page() {
         <Headline variant="large" as="h1" color="foreground">
           Filter Dropdown 🚀
         </Headline>
-
-        {/* <Button variant="destructive" size="large">
-              <Text variant="medium" color="foreground">
-                Select site...
-              </Text>
-            </Button> */}
         <FilterDropdown
           id="filter-users"
           placeholder="Filter technicians..."

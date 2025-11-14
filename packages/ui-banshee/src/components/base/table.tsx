@@ -6,12 +6,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const tableVariants = cva(
-  // 'ui-banshee-relative ui-banshee-w-full ui-banshee-py-12 ui-banshee-px-8 ui-banshee-bg-neutral-1 ui-banshee-overflow-auto',
   'ui-banshee-relative ui-banshee-w-full ui-banshee-bg-neutral-1',
   {
     variants: {
       variant: {
-        // border: 'ui-banshee-border-b-2 ui-banshee-border-neutral-2',
         border: 'ui-banshee-border-neutral-2',
         noBorder: 'ui-banshee-border-none',
       },
@@ -28,8 +26,7 @@ export interface TableProps
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, variant = 'border', ...props }, ref) => (
-    // <div className={cn(tableVariants({ variant }), className)} ref={ref}>
-    <div className={cn(tableVariants({ variant }))} ref={ref}>
+    <div className={cn(tableVariants({ variant }), className)} ref={ref}>
       <table
         ref={ref}
         className={cn(
@@ -51,8 +48,8 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      // 'ui-banshee-font-bold [&_tr]:ui-banshee-border-b-2 [&_tr]:ui-banshee-border-neutral-3 [&_tr]:ui-banshee-bg-neutral-1 [&_tr]:hover:ui-banshee-bg-transparent ui-banshee-text-sm ui-banshee-font-sandvik-text ui-banshee',
-      'ui-banshee-sticky ui-banshee-top-0 ui-banshee-z-10 ui-banshee-bg-neutral-1 ui-banshee-font-bold [&_tr]:ui-banshee-border-b-2 [&_tr]:ui-banshee-border-neutral-3 [&_tr]:ui-banshee-bg-neutral-1 [&_tr]:hover:ui-banshee-bg-transparent ui-banshee-text-sm ui-banshee-font-sandvik-text',
+      // 'ui-banshee-sticky ui-banshee-top-0 ui-banshee-z-10 ui-banshee-bg-neutral-4 ui-banshee-font-bold [&_tr]:ui-banshee-border-b-2 [&_tr]:ui-banshee-border-neutral-3 [&_tr]:ui-banshee-bg-neutral-1 [&_tr]:hover:ui-banshee-bg-transparent ui-banshee-text-sm ui-banshee-font-sandvik-text',
+      'ui-banshee-sticky ui-banshee-top-0 ui-banshee-z-10 ui-banshee-bg-neutral-4 ui-banshee-font-bold [&_tr]:ui-banshee-border-b-2 [&_tr]:ui-banshee-border-neutral-3 [&_tr]:ui-banshee-bg-neutral-1 ui-banshee-text-sm ui-banshee-font-sandvik-text',
 
       className,
     )}
@@ -110,8 +107,6 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      // 'ui-banshee-h-9 ui-banshee-font-bold [&:first-child]:ui-banshee-pl-6 [&:last-child]:ui-banshee-flex [&:last-child]:ui-banshee-justify-end [&:last-child]:ui-banshee-items-center [&:last-child]:ui-banshee-pr-6 ui-banshee-text-left ui-banshee-align-middle ui-banshee-tracking-wide [&:has([role=checkbox])]:ui-banshee-pr-0',
-      // Cant find out why last-child doesnt right align, ugly fix for now with nth-child(5)
       'ui-banshee-h-9 ui-banshee-sticky ui-banshee-font-bold ui-banshee-p-0 [&:first-child]:ui-banshee-text-center [&:nth-child(2)]:ui-banshee-text-center [&:nth-child(5)]:ui-banshee-text-right [&:last-child]:ui-banshee-flex ui-banshee-text-left [&:last-child]:ui-banshee-text-right ui-banshee-tracking-wide',
       className,
     )}
@@ -127,7 +122,6 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      // 'ui-banshee-border-b ui-banshee-border-neutral-3 [&:first-child]:ui-banshee-pl-6 [&:last-child]:ui-banshee-flex [&:last-child]:ui-banshee-justify-end [&:last-child]:ui-banshee-items-center [&:last-child]:ui-banshee-pr-6 ui-banshee-align-middle ui-banshee-text-main-black [&:has([role=checkbox])]:ui-banshee-pr-0',
       'ui-banshee-border-b ui-banshee-border-neutral-3 [&:nth-child(2)]:ui-banshee-text-center [&:first-child]:ui-banshee-bg-neutral-2 [&:first-child]:ui-banshee-text-center [&:last-child]:ui-banshee-text-right ui-banshee-text-main-black ',
       className,
     )}

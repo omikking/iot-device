@@ -35,6 +35,23 @@ export type UserSchema = {
   };
 };
 
+export const tableViewDesignSystemMock = [
+  { title: 'Status', value: 'Low Plastic' },
+  {
+    title: 'Location',
+    value: 'Garpenberg, Level 4002, Drive 2001, Location 20,42',
+  },
+  { title: 'Last inspection', value: '2023-10-10' },
+  { title: 'Next inspection', value: '2024-04-10' },
+  { title: 'Assigned to', value: ['Elliot Alderson', 'Jimmy Nwadinkpa'] },
+  { title: 'Tags', value: ['Critical', 'Outdoor'] },
+  {
+    title: 'Comments',
+    value: 'Requires special handling during winter months.',
+  },
+  { title: 'Created by', value: 'Admin User' },
+];
+
 export const usersDesignSystemMock: UserSchema[] = [
   {
     id: '1',

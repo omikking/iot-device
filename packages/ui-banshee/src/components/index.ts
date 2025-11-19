@@ -25,3 +25,4 @@ export * from './base/schedule-data-table';
 export * from './base/schedule-table';
 export * from './base/content-holder';
 export * from './base/content-holder-table';
+export * from './base/modal';

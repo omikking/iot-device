@@ -49,12 +49,14 @@ import {
   optionsDesignSystemMock,
   usersDesignSystemMock,
   UserSchema,
+  tableViewDesignSystemMock,
 } from '@/app/mock/mock';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+import { ConfirmModal } from '@/components/banshee-components/ConfirmModal';
 
 type Technician = UserSchema;
 
@@ -80,9 +82,17 @@ export default function Page() {
     undefined,
   );
   const [filterValues, setFilterValues] = useState<string[]>([]);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+  };
+
+  const loremText =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan fermentum arcu auctor imperdiet. Cras tincidunt enim nec augue efficitur, vitae varius metus vehicula. Proin efficitur laoreet pharetra. ';
 
   const columns: ColumnDef<Technician>[] = [
-    // const columns: ColumnDef<(typeof usersDesignSystemMock)[0]>[] = [
     {
       accessorKey: 'id',
       header: '',
@@ -114,11 +124,45 @@ export default function Page() {
         Banshee Design System Page 🚀
       </Headline>
       <hr className="w-full border-neutral-2" />
+      {/* Modal */}
+      <Headline variant="large" as="h1" color="foreground">
+        Modal 🚀
+      </Headline>
+
+      <Button onClick={() => setIsConfirmModalOpen(true)}>
+        Open THE Incredible Modal
+      </Button>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        modalTitle="Jamiroquai"
+        modalConfirmButtonText="Confirm"
+        isLoading={isConfirming}
+        isOpen={isConfirmModalOpen}
+        onClose={closeConfirmModal}
+        onOpenChange={closeConfirmModal}
+        // commentBox="Using Sandvik carbon black, the modal is placed over a 60% transparent background overlay."
+        // onConfirm={handleConfirm}
+        // tableView={tableViewDesignSystemMock}
+      >
+        <Text variant={'medium'} color={'foreground'}>
+          {loremText}
+        </Text>
+
+        <Image
+          src={bansheeImage}
+          alt="Example Image"
+          width={384}
+          height={384}
+        />
+      </ConfirmModal>
+
       {/* Table row & Table header */}
       <Headline variant="large" as="h1" color="foreground">
         Table Row & Table Header 🚀
       </Headline>
       <div className="w-[700px] h-40 overflow-y-auto border-b">
+        {/* TODO Fix border bottom on the headers */}
         <ScheduleDataTable columns={columns} data={usersDesignSystemMock} />
       </div>
 

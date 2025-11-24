@@ -1,5 +1,67 @@
 import { Application } from '@/gql/graphql';
 
+export const chartDataMock = [
+  { label: 'Elastic', value: 55, fill: 'var(--color-elastic)' },
+  { label: 'Plastic Low', value: 10, fill: 'var(--color-plasticLow)' },
+  { label: 'Plastic High', value: 5, fill: 'var(--color-plasticHigh)' },
+  { label: 'Not Measurable', value: 5, fill: 'var(--color-notMeasurable)' },
+  { label: 'Broken', value: 25, fill: 'var(--color-broken)' },
+];
+
+export const chartConfigMock = {
+  status: {
+    label: 'status',
+  },
+  elastic: {
+    label: 'Elastic',
+    color: '#62CE47',
+  },
+  plasticLow: {
+    label: 'Plastic Low',
+    color: '#FFD50C',
+  },
+  plasticHigh: {
+    label: 'Plastic High',
+    color: '#FF7938',
+  },
+  notMeasurable: {
+    label: 'Not Measurable',
+    color: '#9C9C9C',
+  },
+  broken: {
+    label: 'Broken',
+    color: '#FF0000',
+  },
+} satisfies ChartConfig;
+
+export const chartItemsMock = [
+  {
+    label: 'Elastic',
+    value: '55%',
+    color: '#62CE47',
+  },
+  {
+    label: 'Plastic Low',
+    value: '10%',
+    color: '#FFD50C',
+  },
+  {
+    label: 'Plastic High',
+    value: '5%',
+    color: '#FF7938',
+  },
+  {
+    label: 'Not Measurable',
+    value: '5%',
+    color: '#9C9C9C',
+  },
+  {
+    label: 'Broken',
+    value: '25%',
+    color: '#FF0000',
+  },
+];
+
 export const optionsDesignSystemMock = [
   {
     id: '1',

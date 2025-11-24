@@ -18,6 +18,8 @@ const badgeVariants = cva(
         // pending: 'ui-banshee-bg-blue-3 ui-banshee-text-blue-primary',
       },
       size: {
+        extraSmall:
+          'ui-banshee-h-[18px] ui-banshee-px-4 ui-banshee-text-xs ui-banshee-gap-1.5 ui-banshee-tracking-wide ui-banshee-font-sandvik-text [&>svg]:ui-banshee-w-[16px] [&>svg]:ui-banshee-h-[16px] [&>svg]:ui-banshee-mb-[1px]',
         small:
           'ui-banshee-h-[34px] ui-banshee-px-4 ui-banshee-text-xs ui-banshee-gap-1.5 ui-banshee-tracking-wide ui-banshee-font-sandvik-text [&>svg]:ui-banshee-w-[16px] [&>svg]:ui-banshee-h-[16px] [&>svg]:ui-banshee-mb-[1px]',
       },
@@ -32,7 +34,7 @@ const badgeVariants = cva(
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
-  size?: 'small';
+  size?: 'small' | 'extraSmall';
   variant?: 'neutral';
   badgeText?: string;
 }

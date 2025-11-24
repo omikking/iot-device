@@ -1,62 +1,67 @@
 'use client';
 import Image from 'next/image';
 import {
-  Button,
-  Headline,
   Text,
-  Badge,
   Form,
-  FormField,
-  FormLabel,
-  FormItem,
-  FormControl,
-  FormMessage,
   Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipArrow,
-  TooltipProvider,
+  Badge,
   Input,
+  Table,
+  Label,
+  Button,
+  Switch,
+  Tooltip,
+  Headline,
+  FormItem,
   Dropdown,
   Combobox,
-  TimeCalendar,
   Textarea,
-  SingleDateCalendar,
-  Switch,
   Checkbox,
-  FilterDropdown,
-  ContentHolder,
-  ContentHolderTable,
-  Label,
-  ColumnDef,
-  Table,
-  TableHeader,
+  TabsList,
   TableRow,
+  FormLabel,
+  FormField,
   TableHead,
+  ColumnDef,
   TableBody,
   TableCell,
+  FormControl,
+  FormMessage,
+  TabsTrigger,
+  TabsContent,
+  TableHeader,
+  TooltipArrow,
+  TimeCalendar,
+  ContentHolder,
+  ChartPieDonut,
   ScheduleTable,
+  TooltipContent,
+  FilterDropdown,
+  TooltipTrigger,
+  TooltipProvider,
   ScheduleTableHead,
   ScheduleTableCell,
-  ScheduleTableHeadWithSorting,
   ScheduleDataTable,
+  ContentHolderTable,
+  SingleDateCalendar,
+  ScheduleTableHeadWithSorting,
 } from '@gsp/ui-banshee';
 import {
-  optionsDesignSystemMock,
-  usersDesignSystemMock,
   UserSchema,
+  chartDataMock,
+  chartItemsMock,
+  chartConfigMock,
+  usersDesignSystemMock,
+  optionsDesignSystemMock,
   tableViewDesignSystemMock,
 } from '@/app/mock/mock';
 import { z } from 'zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
 import { ConfirmModal } from '@/components/banshee-components/ConfirmModal';
+import { ChartConfig } from 'node_modules/@gsp/ui-banshee/src/components/charts/chart';
+import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
 
 type Technician = UserSchema;
 
@@ -123,6 +128,18 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+      <hr className="w-full border-neutral-2" />
+      {/* Donut Chart */}
+      <Headline variant="large" as="h1" color="foreground">
+        Donut Chart 🚀
+      </Headline>
+      <div className="w-full flex justify-center">
+        <ChartPieDonut
+          chartData={chartDataMock}
+          chartConfig={chartConfigMock}
+          chartItems={chartItemsMock}
+        />
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Modal */}
       <Headline variant="large" as="h1" color="foreground">

@@ -6,8 +6,8 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
-  CardTitle,
+  // CardHeader,
+  // CardTitle,
 } from '../base/card';
 import { Text } from '../base/text';
 import { ChartConfig, ChartContainer, ChartTooltip } from './chart';
@@ -32,7 +32,7 @@ const CustomChartTooltip = ({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="ui-banshee-bg-black ui-banshee-text-main-white ui-banshee-p-2 ui-banshee-border ui-banshee-border-gray-300 ui-banshee-rounded-lg">
+    <div className="ui-banshee-bg-black ui-banshee-text-main-white ui-banshee-p-2 ui-banshee-rounded-sm">
       <p className="ui-banshee-font-sm">{payload[0].payload.label}</p>
       <p className="ui-banshee-font-sm">{payload[0].value}%</p>
     </div>
@@ -46,9 +46,9 @@ export function ChartPieDonut({
 }: DonutChartProps) {
   return (
     <Card className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ui-banshee-border-none">
-      <CardHeader className="ui-banshee-pb-0 ui-banshee-pl-8">
+      {/* <CardHeader className="ui-banshee-pb-0 ui-banshee-pl-8">
         <CardTitle className="ui-banshee-text-md">Pie Chart</CardTitle>
-      </CardHeader>
+      </CardHeader> */}
       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center">
         <CardContent className="ui-banshee-flex- ui-banshee-pb-0 ui-banshee-px-0">
           <ChartContainer

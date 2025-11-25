@@ -43,6 +43,7 @@ import {
   ScheduleTableCell,
   ScheduleDataTable,
   ContentHolderTable,
+  SmallChartPieDonut,
   SingleDateCalendar,
   ScheduleTableHeadWithSorting,
 } from '@gsp/ui-banshee';
@@ -140,6 +141,18 @@ export default function Page() {
           chartItems={chartItemsMock}
         />
       </div>
+      <div className="flex flex-row gap-2">
+        <SmallChartPieDonut
+          chartData={chartDataMock}
+          chartConfig={chartConfigMock}
+        />
+        <SmallChartPieDonut
+          chartData={chartDataMock}
+          chartConfig={chartConfigMock}
+          footerText="Group 1"
+        />
+      </div>
+
       <hr className="w-full border-neutral-2" />
       {/* Modal */}
       <Headline variant="large" as="h1" color="foreground">

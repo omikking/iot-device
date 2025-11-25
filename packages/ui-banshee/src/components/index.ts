@@ -27,3 +27,4 @@ export * from './base/content-holder-table';
 export * from './base/modal';
 export * from './base/card';
 export * from './charts/donut-chart';
+export * from './charts/small-donut-chart';

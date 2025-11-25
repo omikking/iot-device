@@ -10,7 +10,7 @@ const Card = React.forwardRef<
     ref={ref}
     className={cn(
       // 'ui-banshee-rounded-lg ui-banshee-border ui-banshee-bg-card ui-banshee-text-card-foreground ui-banshee-shadow-sm',
-      'ui-banshee-rounded-lg ui-banshee-border ui-banshee-bg-card ui-banshee-text-card-foreground',
+      'ui-banshee-border ui-banshee-bg-card ui-banshee-text-card-foreground',
       className,
     )}
     {...props}

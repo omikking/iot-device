@@ -38,26 +38,14 @@ module.exports = {
         port: '3333',
         pathname: '/uploads/**',
       },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3333',
-        pathname: '/graphql/uploads/**',
-      },
       // Production
-      ...(process.env.NEXT_PUBLIC_API_IMAGE_URL
+      ...(process.env.NEXT_PUBLIC_API_URL
         ? [
             {
               protocol: 'https',
-              hostname: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).hostname,
-              port: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).port || undefined,
+              hostname: new URL(process.env.NEXT_PUBLIC_API_URL).hostname,
+              port: new URL(process.env.NEXT_PUBLIC_API_URL).port || undefined,
               pathname: '/uploads/**',
-            },
-            {
-              protocol: 'https',
-              hostname: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).hostname,
-              port: new URL(process.env.NEXT_PUBLIC_API_IMAGE_URL).port || undefined,
-              pathname: '/graphql/uploads/**',
             },
           ]
         : []),

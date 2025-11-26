@@ -34,9 +34,7 @@ export const BoltResultDetailsModalContent = ({
 
   const [imageError, setImageError] = useState(false);
 
-  const imageUrl = image
-    ? `${process.env.NEXT_PUBLIC_API_IMAGE_URL}${image}`
-    : null;
+  const imageUrl = image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : null;
   return (
     <div className="flex flex-col px-10 pt-10">
       {(imageUrl || comment) && (

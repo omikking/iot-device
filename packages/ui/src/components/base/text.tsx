@@ -29,10 +29,8 @@ const textVariants = cva('ui-font-sandvik-text', {
 });
 
 export interface TextProps
-  extends Omit<
-      React.HTMLAttributes<HTMLParagraphElement | HTMLSpanElement>,
-      'color'
-    >,
+  extends
+    Omit<React.HTMLAttributes<HTMLParagraphElement | HTMLSpanElement>, 'color'>,
     Required<Pick<VariantProps<typeof textVariants>, 'variant' | 'color'>> {
   as?: 'p' | 'span';
   isBold?: boolean;

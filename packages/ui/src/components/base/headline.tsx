@@ -25,10 +25,8 @@ const headlineVariants = cva('ui-font-sandvik-headline', {
 });
 
 export interface HeadlineProps
-  extends Omit<
-      React.HTMLAttributes<HTMLHeadingElement | HTMLSpanElement>,
-      'color'
-    >,
+  extends
+    Omit<React.HTMLAttributes<HTMLHeadingElement | HTMLSpanElement>, 'color'>,
     Required<Pick<VariantProps<typeof headlineVariants>, 'variant' | 'color'>> {
   as: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'span';
   isBold?: boolean;

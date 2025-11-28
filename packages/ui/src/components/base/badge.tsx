@@ -31,7 +31,8 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     Required<Pick<VariantProps<typeof badgeVariants>, 'variant'>> {
   size?: 'small' | 'large';
   badgeText?: string;

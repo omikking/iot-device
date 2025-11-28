@@ -21,7 +21,8 @@ const tableVariants = cva(
 );
 
 export interface TableProps
-  extends React.HTMLAttributes<HTMLTableElement>,
+  extends
+    React.HTMLAttributes<HTMLTableElement>,
     VariantProps<typeof tableVariants> {}
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(

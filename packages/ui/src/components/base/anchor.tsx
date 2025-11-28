@@ -28,7 +28,8 @@ const anchorVariants = cva(
 );
 
 export interface AnchorProps
-  extends Omit<React.HTMLAttributes<HTMLAnchorElement>, 'color'>,
+  extends
+    Omit<React.HTMLAttributes<HTMLAnchorElement>, 'color'>,
     Required<Pick<VariantProps<typeof anchorVariants>, 'color'>> {
   href?: string;
   isUnderline?: boolean;

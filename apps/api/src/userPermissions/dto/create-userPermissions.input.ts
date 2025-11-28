@@ -8,7 +8,9 @@ import {
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class CreateUserPermissionInput extends GraphQLTypes.CreateUserPermissionInput {
+export class CreateUserPermissionInput
+  extends GraphQLTypes.CreateUserPermissionInput
+{
   @IsEmail()
   @MaxLength(50)
   userEmail: string;

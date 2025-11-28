@@ -54,11 +54,9 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-): JSX.Element {
+export default function Page(props: {
+  params: Promise<{ id: string }>;
+}): JSX.Element {
   const params = use(props.params);
   const companyId = params.id;
 

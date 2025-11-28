@@ -13,7 +13,8 @@ const errorStyling = cva(
 );
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement>,
+  extends
+    React.InputHTMLAttributes<HTMLInputElement>,
     VariantProps<typeof inputStyling> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

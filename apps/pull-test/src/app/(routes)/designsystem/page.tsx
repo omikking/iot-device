@@ -1,10 +1,10 @@
-'use client';;
+'use client';
 import { BoltResultsFilter } from '@/components/BoltResultsFilter';
 import { Headline } from '@gsp/ui';
 import { HazardCard } from '@/components/HazardCard';
 import { boltResultDesignSystemMock } from '@/app/mock/mock';
 
-import type { JSX } from "react";
+import type { JSX } from 'react';
 
 export default function Page(): JSX.Element {
   return (

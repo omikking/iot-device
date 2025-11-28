@@ -28,7 +28,8 @@ const contentHolderVariants = cva(
 );
 
 export interface ContentHolderProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     Required<Pick<VariantProps<typeof contentHolderVariants>, 'variant'>>,
     Pick<VariantProps<typeof contentHolderVariants>, 'background'> {
   headlineText?: string;

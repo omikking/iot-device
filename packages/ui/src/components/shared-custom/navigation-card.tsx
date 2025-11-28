@@ -20,7 +20,8 @@ const navigationCardVariants = cva(
 );
 
 interface NavigationCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof navigationCardVariants> {
   children: React.ReactNode;
 }

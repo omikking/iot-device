@@ -3,7 +3,7 @@ import { showAlertToast, Text } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
 import { Location, Role } from '@/gql/graphql';
-import React, { useState } from 'react';
+import { useState, RefObject } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { AddSiteLocationItemForm } from '@/components/AddSiteLocationItemForm';
@@ -52,7 +52,7 @@ const deleteLocationMutation = graphql(`
 type LocationComponentProps = {
   location: Location;
   locationsOptions: Location[];
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: RefObject<HTMLInputElement | null>;
   refreshSite: () => void;
   setIsDeletingLocation: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -97,10 +97,12 @@ export const LocationItem = ({
 
   const handleCancelEdit = () => {
     if (!location.id) {
-      locationsOptions.filter(
+      const remaining = locationsOptions.filter(
         (emptyLocation) => emptyLocation.id !== location.id,
       );
-      refreshSite();
+      if (remaining.length !== locationsOptions.length) {
+        refreshSite();
+      }
     }
     locationForm.reset();
     setTimeout(() => setIsEditing(false), 50);
@@ -125,7 +127,9 @@ export const LocationItem = ({
               title: responses.locationCreateSuccess,
               variant: 'success',
             });
-            locationsOptions.length === 1 && refreshSite();
+            if (locationsOptions.length === 1) {
+              refreshSite();
+            }
             setTimeout(() => setIsEditing(false), 30);
           }
         })
@@ -218,8 +222,7 @@ export const LocationItem = ({
 
   return (
     <div
-      className={`bg-main-white px-6 border-2 border-transparent flex items-center h-16 ${isEditing && 'bg-main-white/50'}`}
-      key={location.id}
+      className={`bg-main-white px-6 border-2 border-transparent flex items-center h-16 ${isEditing ? 'bg-main-white/50' : ''}`}
     >
       <div className="py-3 w-full">
         {!location.id || isEditing ? (
@@ -231,21 +234,18 @@ export const LocationItem = ({
             inputRef={inputRef}
           />
         ) : (
-          <div
-            className="flex flex-row w-full justify-between items-center gap-2"
-            key={location.id}
-          >
+          <div className="flex flex-row w-full justify-between items-center gap-2">
             <Text variant="medium" color="foreground">
               {location.locationName}
             </Text>
 
-            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            {isUserSandvikAdmin || isUserCompanyAdmin ? (
               <DeleteEditDropdown
                 itemSelected={location.id}
                 handleEdit={handleEditLocation}
                 openDeleteModal={() => setIsDeleteModalOpen(true)}
               />
-            )}
+            ) : null}
 
             <DeleteModalConfirmation
               deleteIcon="Site"

@@ -49,22 +49,18 @@ const deleteCompanyMutation = graphql(`
   }
 `);
 
-export default function Page(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-): JSX.Element {
+export default function Page(props: {
+  params: Promise<{ id: string }>;
+}): JSX.Element {
   const params = use(props.params);
   const router = useRouter();
   const isNewCompany = params.id === 'new';
 
-  // Does not call if it's new company flow.
-  const [companyData] = isNewCompany
-    ? []
-    : useQuery({
-        query: getCompanyQuery,
-        variables: { id: params.id },
-      });
+  const [companyData] = useQuery({
+    query: getCompanyQuery,
+    variables: { id: params.id },
+    pause: isNewCompany,
+  });
   const company = companyData?.data?.company as Company;
 
   const [isDeleting, setIsDeleting] = useState(false);

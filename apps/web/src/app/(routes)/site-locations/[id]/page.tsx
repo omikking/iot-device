@@ -56,11 +56,9 @@ const getFullSiteLocationsQuery = graphql(`
   }
 `);
 
-export default function Page(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-): JSX.Element {
+export default function Page(props: {
+  params: Promise<{ id: string }>;
+}): JSX.Element {
   const params = use(props.params);
   const searchParams = useSearchParams();
   const [selectedSite, setSelectedSite] = useState<Site | undefined>();

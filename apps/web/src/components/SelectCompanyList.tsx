@@ -15,10 +15,10 @@ export const SelectCompanyList = ({ companies }: SelectCompanyListProps) => {
         <div className="flex h-60 flex-col justify-center items-center gap-5">
           <div className="text-center">
             <Text color="foreground" variant="medium">
-              You don't have access to any companies yet.
+              You don&apos;t have access to any companies yet.
             </Text>
             <Text color="foreground" variant="medium">
-              Once you're added to a company, you'll see it here.
+              Once you&apos;re added to a company, you&apos;ll see it here.
             </Text>
           </div>
           <LucideSearchX className="text-neutral-5" />

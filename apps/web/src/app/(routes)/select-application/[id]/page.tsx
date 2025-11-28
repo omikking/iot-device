@@ -1,5 +1,5 @@
-'use client';;
-import { use, type JSX } from "react";
+'use client';
+import { use, type JSX } from 'react';
 import { useQuery } from 'urql';
 import { Badge, Headline, NavigationCard } from '@gsp/ui';
 import { GoBack } from '@/components/GoBack';
@@ -27,11 +27,9 @@ const getCompanyPlansQuery = graphql(`
   }
 `);
 
-export default function Page(
-  props: {
-    params: Promise<{ id: string }>;
-  }
-): JSX.Element {
+export default function Page(props: {
+  params: Promise<{ id: string }>;
+}): JSX.Element {
   const params = use(props.params);
   const { data: session } = useSession();
 

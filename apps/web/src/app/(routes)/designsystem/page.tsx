@@ -168,7 +168,7 @@ export default function Page(): JSX.Element {
           </TooltipTrigger>
           <TooltipContent>
             <Text color={'foreground'} variant={'small'}>
-              Hey! You're awesome! 🚀
+              Hey! You&apos;re awesome! 🚀
             </Text>
           </TooltipContent>
         </Tooltip>

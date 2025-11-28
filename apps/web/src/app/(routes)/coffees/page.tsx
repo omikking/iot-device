@@ -2,7 +2,7 @@ import CoffeeCreateUrql from '@/components/urql-coffees/CoffeeCreateUrql';
 import CoffeesClientUrql from '@/components/urql-coffees/CoffeesClientUrql';
 import CoffeesUrql from '@/components/urql-coffees/CoffeesUrql';
 
-import type { JSX } from "react";
+import type { JSX } from 'react';
 
 export default function Page(): JSX.Element {
   return (

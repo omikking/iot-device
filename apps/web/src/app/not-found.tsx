@@ -21,7 +21,7 @@ export default function NotFound() {
           Oops! Page not found.
         </Headline>
         <Text color={'foreground'} variant={'medium'}>
-          It looks like the page you're looking for doesn't exist.
+          It looks like the page you&apos;re looking for doesn&apos;t exist.
         </Text>
       </div>
       <Button size="large" variant="primary" asChild>

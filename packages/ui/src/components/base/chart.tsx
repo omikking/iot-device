@@ -62,7 +62,7 @@ const ChartContainer = React.forwardRef<
         data-chart={chartId}
         ref={ref}
         className={cn(
-          'ui-flex ui-aspect-video ui-justify-center ui-text-xs [&_.recharts-cartesian-axis-tick_text]:ui-fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke=#ccc]]:ui-stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:ui-stroke-border [&_.recharts-dot[stroke=#fff]]:ui-stroke-transparent [&_.recharts-layer]:ui-outline-none [&_.recharts-polar-grid_[stroke=#ccc]]:ui-stroke-border [&_.recharts-radial-bar-background-sector]:ui-fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:ui-fill-muted [&_.recharts-reference-line_[stroke=#ccc]]:ui-stroke-border [&_.recharts-sector[stroke=#fff]]:ui-stroke-transparent [&_.recharts-sector]:ui-outline-none [&_.recharts-surface]:ui-outline-none',
+          "ui-flex ui-aspect-video ui-justify-center ui-text-xs [&_.recharts-cartesian-axis-tick_text]:ui-fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:ui-stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:ui-stroke-border [&_.recharts-dot[stroke='#fff']]:ui-stroke-transparent [&_.recharts-layer]:ui-outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:ui-stroke-border [&_.recharts-radial-bar-background-sector]:ui-fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:ui-fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:ui-stroke-border [&_.recharts-sector[stroke='#fff']]:ui-stroke-transparent [&_.recharts-sector]:ui-outline-none [&_.recharts-surface]:ui-outline-none",
           className,
         )}
         {...props}

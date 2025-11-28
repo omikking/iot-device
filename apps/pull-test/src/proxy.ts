@@ -15,7 +15,7 @@ const extractCompanyId = (pathname: string): string | null => {
   return null;
 };
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

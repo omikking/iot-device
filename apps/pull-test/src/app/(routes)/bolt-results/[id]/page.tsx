@@ -19,7 +19,7 @@ import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { GetCompanyQuery } from '@/gql/graphql';
 import { responses } from '@/app/uitexts/responses';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, use, type JSX } from 'react';
 import { BoltSelection } from '@/components/BoltSelection';
 import { BoltResultsTable } from '@/components/BoltResultsTable';
 import { BoltResultsGraphView } from '@/components/BoltResultsGraphView';
@@ -28,9 +28,9 @@ import { LucideGrid3X3, LucideLineChart } from 'lucide-react';
 import { getEarliestAndLatestDates } from '@/libs/utils';
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 type CompanyType = GetCompanyQuery['company'];
@@ -187,7 +187,8 @@ const getCompanyQuery = gql`
   }
 `;
 
-export default function Page({ params }: Props): JSX.Element {
+export default function Page(props: Props): JSX.Element {
+  const params = use(props.params);
   const companyId = params.id;
 
   const [site, setSite] = useState<SiteType | undefined>();

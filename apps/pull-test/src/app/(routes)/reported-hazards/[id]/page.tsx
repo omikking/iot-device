@@ -10,7 +10,7 @@ import {
 } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import React, { useState } from 'react';
+import React, { useState, use, type JSX } from 'react';
 import { BoltResult } from '@/gql/graphql';
 import { GoBack } from '@/components/GoBack';
 import { HazardCard } from '@/components/HazardCard';
@@ -54,11 +54,12 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page({
-  params,
-}: {
-  params: { id: string };
-}): JSX.Element {
+export default function Page(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+): JSX.Element {
+  const params = use(props.params);
   const companyId = params.id;
 
   const [{ data: hazardData }] = useQuery({

@@ -1,7 +1,7 @@
-// TODO: Unify codemod changes with eslint config...
-// import next from "eslint-config-next";
-// import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-// import nextTypescript from "eslint-config-next/typescript";
+// UPDATE-TODO: Unify codemod changes with eslint config...
+import next from "eslint-config-next";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 import nextConfig from '@gsp/eslint-config/eslint.config.next.mjs';
 
 /**
@@ -11,7 +11,9 @@ import nextConfig from '@gsp/eslint-config/eslint.config.next.mjs';
  */
 
 export default [
-    // ...next, ...nextCoreWebVitals, ...nextTypescript, 
-    ...nextConfig, {
+    ...next, ...nextCoreWebVitals, ...nextTypescript, 
+    // ...nextConfig,
+    
+    {
  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
 }];

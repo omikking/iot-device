@@ -50,7 +50,7 @@ type DriveComponentProps = {
   drive: Drive;
   drivesOptions: Drive[];
   selectedDriveId?: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   refreshSite: () => void;
   handleSetDrive: (drive: Drive) => void;
   setIsDeletingDrive: Dispatch<SetStateAction<boolean>>;

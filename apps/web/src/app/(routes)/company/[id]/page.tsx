@@ -1,6 +1,6 @@
 'use client';
 import { graphql } from '@/gql';
-import { useState } from 'react';
+import { useState, use, type JSX } from 'react';
 import { Company } from '@/gql/graphql';
 import { useMutation, useQuery } from 'urql';
 import { useRouter } from 'next/navigation';
@@ -49,11 +49,12 @@ const deleteCompanyMutation = graphql(`
   }
 `);
 
-export default function Page({
-  params,
-}: {
-  params: { id: string };
-}): JSX.Element {
+export default function Page(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+): JSX.Element {
+  const params = use(props.params);
   const router = useRouter();
   const isNewCompany = params.id === 'new';
 

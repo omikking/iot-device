@@ -2,7 +2,7 @@
 import type { User, Application, Invitation } from '@/gql/graphql';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { useState } from 'react';
+import { useState, use, type JSX } from 'react';
 import { Role } from '@/gql/graphql';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
@@ -64,11 +64,12 @@ const getCompanyName = graphql(`
   }
 `);
 
-export default function Page({
-  params,
-}: {
-  params: { id: string; name?: string };
-}): JSX.Element {
+export default function Page(
+  props: {
+    params: Promise<{ id: string; name?: string }>;
+  }
+): JSX.Element {
+  const params = use(props.params);
   const companyId = params.id;
 
   const { data: session } = useSession();

@@ -17,7 +17,7 @@ type FormValueMap = {
 type AddSiteLocationItemFormProps<T extends 'level' | 'drive' | 'location'> = {
   form: UseFormReturn<FormValueMap[T]>;
   type: 'level' | 'drive' | 'location';
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   onSubmit: SubmitHandler<FormValueMap[T]>;
   onCancel: () => void;
 };

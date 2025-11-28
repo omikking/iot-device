@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, type JSX } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';

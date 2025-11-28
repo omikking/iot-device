@@ -52,7 +52,7 @@ const deleteLocationMutation = graphql(`
 type LocationComponentProps = {
   location: Location;
   locationsOptions: Location[];
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   refreshSite: () => void;
   setIsDeletingLocation: React.Dispatch<React.SetStateAction<boolean>>;
 };

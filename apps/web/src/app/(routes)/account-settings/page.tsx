@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { User } from '@/gql/graphql';

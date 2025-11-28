@@ -18,7 +18,7 @@ import {
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, type JSX } from 'react';
 
 export default function Page(): JSX.Element {
   const { data: session, status } = useSession();

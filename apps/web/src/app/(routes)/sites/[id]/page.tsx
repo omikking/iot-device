@@ -3,7 +3,7 @@ import { Badge, Button, Headline, Modal, ModalTrigger, Tabs } from '@gsp/ui';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { Role, Site } from '@/gql/graphql';
-import React, { useState } from 'react';
+import React, { useState, use, type JSX } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { SitesTable } from '@/components/SitesTable';
@@ -34,11 +34,12 @@ const getCompanySitesQuery = graphql(`
     }
   }
 `);
-export default function Page({
-  params,
-}: {
-  params: { id: string };
-}): JSX.Element {
+export default function Page(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+): JSX.Element {
+  const params = use(props.params);
   const companyId = params.id;
 
   const { data: session } = useSession();

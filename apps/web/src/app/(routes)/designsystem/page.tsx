@@ -65,7 +65,7 @@ import {
 
 import { z } from 'zod';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';

@@ -4,7 +4,7 @@ import { LucidePlus } from 'lucide-react';
 import { AddOrEditTechnicianModal } from '@/components/AddOrEditTechnicianModal';
 import { TechniciansTable } from '@/components/TechniciansTable';
 import { GoBack } from '@/components/GoBack';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import { User, Role } from '@/gql/graphql';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';

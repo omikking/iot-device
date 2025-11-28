@@ -50,7 +50,7 @@ type LevelComponentProps = {
   level: Level;
   levelsOptions: Level[];
   selectedLevelId?: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   refreshSite: () => void;
   handleSetLevel: (level: Level) => void;
   setIsDeletingLevel: Dispatch<SetStateAction<boolean>>;

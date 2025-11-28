@@ -29,7 +29,7 @@ const extractCompanyId = (pathname: string): string | null => {
   return null;
 };
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   // Allow access to public routes without authentication

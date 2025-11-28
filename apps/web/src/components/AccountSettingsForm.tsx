@@ -17,7 +17,7 @@ import {
 } from './schemas/AccountSettingsFormSchema';
 import { graphql } from '@/gql';
 import { useMutation } from 'urql';
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from '@/gql/graphql';

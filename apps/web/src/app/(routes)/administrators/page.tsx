@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import { LucidePlus } from 'lucide-react';
 import { GoBack } from '@/components/GoBack';
 import { GetAdminsQuery } from '@/gql/graphql';

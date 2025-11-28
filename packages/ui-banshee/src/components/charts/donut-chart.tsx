@@ -50,7 +50,7 @@ export function ChartPieDonut({
         <CardTitle className="ui-banshee-text-md">Pie Chart</CardTitle>
       </CardHeader> */}
       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center">
-        <CardContent className="ui-banshee-flex- ui-banshee-pb-0 ui-banshee-px-0">
+        <CardContent className="ui-banshee-pb-0 ui-banshee-px-0">
           <ChartContainer
             config={chartConfig}
             className="ui-banshee-mx-auto ui-banshee-aspect-square ui-banshee-max-h-[315px] ui-banshee-w-[315px]"

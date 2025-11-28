@@ -28,3 +28,4 @@ export * from './base/modal';
 export * from './base/card';
 export * from './charts/donut-chart';
 export * from './charts/small-donut-chart';
+export * from './charts/line-chart';

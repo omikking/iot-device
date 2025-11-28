@@ -38,6 +38,7 @@ import {
   TooltipContent,
   FilterDropdown,
   TooltipTrigger,
+  ChartLineLinear,
   TooltipProvider,
   ScheduleTableHead,
   ScheduleTableCell,
@@ -129,6 +130,13 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+      <hr className="w-full border-neutral-2" />
+      <Headline variant="large" as="h1" color="foreground">
+        Line Chart 🚀
+      </Headline>
+      <div className="w-full flex justify-center">
+        <ChartLineLinear />
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Donut Chart */}
       <Headline variant="large" as="h1" color="foreground">

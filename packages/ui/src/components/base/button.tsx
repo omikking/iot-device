@@ -58,22 +58,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const Component = asChild ? Slot : 'button';
-    const childProps = asChild
-      ? { className: cn(buttonVariants({ variant, size, isWide }), className) }
-      : {};
-
     return (
       <Component
         className={cn(buttonVariants({ variant, size, isWide }), className)}
         ref={ref}
         {...props}
       >
-        <>
-          {isLoading && <LoadingSpinner className="ui-animate-spin" />}
-          {React.isValidElement(children) && asChild
-            ? React.cloneElement(children as React.ReactElement, childProps)
-            : children}
-        </>
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {isLoading && <LoadingSpinner className="ui-animate-spin" />}
+            {children}
+          </>
+        )}
       </Component>
     );
   },

@@ -2,18 +2,6 @@ import { z } from 'zod';
 import { Application, Role } from '@/gql/graphql';
 import { validations } from '@/app/uitexts/validations';
 
-export type UserFormValues = {
-  email?: string;
-  technician?: string;
-  userPermissions: [
-    {
-      userId?: string;
-      role: string;
-      appsAccess: Application[];
-    },
-  ];
-};
-
 export const userFormSchema = z
   .object({
     email: z
@@ -60,3 +48,5 @@ export const userFormSchema = z
       }
     }
   });
+
+export type UserFormValues = z.infer<typeof userFormSchema>;

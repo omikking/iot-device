@@ -21,7 +21,7 @@ import {
 import { graphql } from '@/gql';
 import { useMutation, useQuery } from 'urql';
 import { SuccessMessage } from './SuccessMessage';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { User, UserPermission, Application, Role } from '@/gql/graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -111,7 +111,10 @@ export const AddOrEditUserModal = ({
       roles: [Role.SandvikTechnician],
     },
   });
-  const technicians = (techniciansData?.users as User[]) || [];
+  const technicians = useMemo(
+    () => (techniciansData?.users as User[]) || [],
+    [techniciansData],
+  );
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -120,7 +123,7 @@ export const AddOrEditUserModal = ({
       technician: undefined,
       userPermissions: [
         {
-          role: permission?.role,
+          role: permission?.role as UserFormValues['userPermissions'][0]['role'],
           appsAccess: (permission?.appsAccess || []).map(
             (app) => app as Application,
           ),
@@ -175,7 +178,10 @@ export const AddOrEditUserModal = ({
       setFullAccess(false);
       form.setValue('userPermissions.0.appsAccess', []);
     }
-    form.setValue('userPermissions.0.role', e);
+    form.setValue(
+      'userPermissions.0.role',
+      e as UserFormValues['userPermissions'][0]['role'],
+    );
     setRole(e);
 
     if (e === Role.CompanyAdmin) {
@@ -332,7 +338,7 @@ export const AddOrEditUserModal = ({
       );
 
     setFullAccess(allCompanyAppsSelected);
-  }, [watchAppAccess]);
+  }, [watchAppAccess, availableCompanyPlans]);
 
   useEffect(() => {
     if (user) {
@@ -355,7 +361,7 @@ export const AddOrEditUserModal = ({
         userPermissions: [
           {
             ...permission,
-            role: userRole,
+            role: userRole as UserFormValues['userPermissions'][0]['role'],
             appsAccess: permission?.appsAccess?.map(
               (access) => (access as Application) || [],
             ),
@@ -363,7 +369,7 @@ export const AddOrEditUserModal = ({
         ],
       });
     }
-  }, [user, technicians]);
+  }, [user, technicians, form, permission]);
 
   return (
     <ModalContent onCloseAutoFocus={resetFormValues}>

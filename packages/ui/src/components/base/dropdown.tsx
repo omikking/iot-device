@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   LucideChevronDown,
   LucideX,
@@ -65,25 +65,14 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
   ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
-      selectedId ? options?.find((item) => item.id === selectedId) : undefined,
-    );
+    const selectedItem = selectedId
+      ? options?.find((item) => item.id === selectedId)
+      : undefined;
 
     const handleChange = (item?: DropdownItem) => {
-      setSelectedItem(item);
       onSelect && onSelect(item?.id);
       setIsOpen(false);
     };
-
-    // Required to reset
-    useEffect(() => {
-      if (selectedId && options) {
-        const newSelectedItem = options.find((item) => item.id === selectedId);
-        newSelectedItem && setSelectedItem(newSelectedItem);
-      } else {
-        setSelectedItem(undefined);
-      }
-    }, [selectedId, options]);
 
     const iconHandler = (iconLabel: string) => {
       switch (iconLabel) {

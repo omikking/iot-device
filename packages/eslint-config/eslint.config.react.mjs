@@ -8,7 +8,7 @@ import prettierConfig from 'eslint-config-prettier';
 
 /**
  * ESLint flat config for React libraries
- * 
+ *
  * This config is designed for React component libraries and packages.
  * Includes accessibility rules and relaxed rules for UI component libraries.
  */
@@ -46,12 +46,12 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
-      
+
       // Prettier integration
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
-      
-      // Relaxed rules for UI libraries (similar to your shadcn/ui setup)
+
+      // Relaxed rules for UI libraries
       'import/no-default-export': 'off',
       'import/no-extraneous-dependencies': 'off',
       'import/order': 'off',
@@ -74,6 +74,14 @@ export default [
       'no-implicit-coercion': 'off',
       'object-shorthand': 'off',
       'react/jsx-no-leaked-render': 'off',
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+          allowTaggedTemplates: true,
+        },
+      ],
     },
     settings: {
       react: {
@@ -89,7 +97,7 @@ export default [
       },
     },
   },
-  
+
   // Node.js config files
   {
     files: ['*.config.js', '*.config.mjs'],
@@ -99,7 +107,7 @@ export default [
       },
     },
   },
-  
+
   // Ignore patterns
   {
     ignores: [

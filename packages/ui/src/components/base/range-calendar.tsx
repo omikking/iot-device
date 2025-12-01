@@ -5,7 +5,7 @@ import { Button } from './button';
 import { cn } from '../../lib/utils';
 import { Calendar } from './calendar';
 import { buttonStyling } from './dropdown';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LucideCalendar } from 'lucide-react';
 import { DateRange as DateRangeProps } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
@@ -27,10 +27,7 @@ export const RangeCalendar = ({
   RangeCalendarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: selected?.from,
-    to: selected?.to,
-  });
+  const date = selected || { from: undefined, to: undefined };
 
   const getRangeFormat = () => {
     const { from, to } = date || {};
@@ -51,16 +48,6 @@ export const RangeCalendar = ({
     }
     return 'Select dates';
   };
-
-  // Required to reset
-  useEffect(() => {
-    selected
-      ? setDate(selected)
-      : setDate({
-          from: undefined,
-          to: undefined,
-        });
-  }, [selected]);
 
   return (
     <div className={cn('ui-grid ui-gap-2', className)}>
@@ -99,10 +86,7 @@ export const RangeCalendar = ({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={(e) => {
-              setDate(e);
-              onSelect?.(e);
-            }}
+            onSelect={onSelect}
             numberOfMonths={2}
           />
           <Button

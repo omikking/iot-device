@@ -6,7 +6,7 @@
  */
 
 /* tslint:disable */
-/* eslint-disable */
+ 
 
 export enum Role {
     COMPANY_USER = "COMPANY_USER",

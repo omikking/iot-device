@@ -57,7 +57,7 @@ const useClient = () => {
       ],
     });
     return client;
-  }, [token]);
+  }, [token, error]);
 };
 
 const UrqlProvider = ({ children }: React.PropsWithChildren) => {

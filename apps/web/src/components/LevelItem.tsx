@@ -11,8 +11,8 @@ import { DeleteEditDropdown } from '@/components/DeleteEditDropdown';
 import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import {
+  levelSchema,
   LevelValue,
-  siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
 import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -87,7 +87,7 @@ export const LevelItem = ({
   const [, deleteLevel] = useMutation(deleteLevelMutation);
 
   const levelForm: UseFormReturn<LevelValue> = useForm<LevelValue>({
-    resolver: zodResolver(siteLocationsSchema),
+    resolver: zodResolver(levelSchema),
     defaultValues: {
       id: level.id || '',
       levelName: level.levelName || '',

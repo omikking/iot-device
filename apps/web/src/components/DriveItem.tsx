@@ -11,8 +11,8 @@ import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
 import {
+  driveSchema,
   DriveValue,
-  siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
 import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -85,7 +85,7 @@ export const DriveItem = ({
   const [, deleteDrive] = useMutation(deleteDriveMutation);
 
   const driveForm: UseFormReturn<DriveValue> = useForm<DriveValue>({
-    resolver: zodResolver(siteLocationsSchema),
+    resolver: zodResolver(driveSchema),
     defaultValues: {
       id: drive.id || '',
       driveName: drive.driveName || '',

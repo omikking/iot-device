@@ -11,8 +11,8 @@ import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
 import { DeleteModalConfirmation } from '@/components/DeleteModalConfirmation';
 import { responses } from '@/app/uitexts/responses';
 import {
+  locationSchema,
   LocationValue,
-  siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
 import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -83,7 +83,7 @@ export const LocationItem = ({
   const [, deleteLocation] = useMutation(deleteLocationMutation);
 
   const locationForm: UseFormReturn<LocationValue> = useForm<LocationValue>({
-    resolver: zodResolver(siteLocationsSchema),
+    resolver: zodResolver(locationSchema),
     defaultValues: {
       id: location.id || '',
       locationName: location.locationName || '',

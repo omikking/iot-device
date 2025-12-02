@@ -37,7 +37,6 @@ export const ConfirmModal = ({
   onClose,
   onOpenChange,
 }: ConfirmModalProps) => {
-  console.log(modalTitle);
   return (
     <Modal open={isOpen} onOpenChange={onOpenChange}>
       <ModalContent

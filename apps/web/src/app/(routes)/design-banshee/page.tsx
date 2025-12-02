@@ -135,7 +135,12 @@ export default function Page() {
         Line Chart 🚀
       </Headline>
       <div className="w-full flex justify-center">
-        <ChartLineLinear />
+        <ChartLineLinear
+          showAxis={true}
+          hideXAxisLabel={false}
+          showLegend={false}
+          chartLabel={'Pls god make this chart stop'}
+        />
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Donut Chart */}

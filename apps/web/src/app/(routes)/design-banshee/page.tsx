@@ -32,6 +32,7 @@ import {
   TableHeader,
   TooltipArrow,
   TimeCalendar,
+  DataLineChart,
   ContentHolder,
   ChartPieDonut,
   ScheduleTable,
@@ -53,6 +54,8 @@ import {
   chartDataMock,
   chartItemsMock,
   chartConfigMock,
+  lineDataChartMock,
+  lineDataConfigMock,
   usersDesignSystemMock,
   optionsDesignSystemMock,
   tableViewDesignSystemMock,
@@ -130,6 +133,13 @@ export default function Page() {
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
+      <hr className="w-full border-neutral-2" />
+      <Headline variant="large" as="h1" color="foreground">
+        Line Data Chart 🚀
+      </Headline>
+      <div className="w-full flex justify-center">
+        <DataLineChart data={lineDataChartMock} lines={lineDataConfigMock} />
+      </div>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
         Line Chart 🚀

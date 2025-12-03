@@ -262,6 +262,37 @@ function ChartTooltipContent({
   );
 }
 
+function getIconElement(iconType: string, color: string) {
+  if (iconType === 'line') {
+    return (
+      <div
+        className="ui-banshee-h-1 ui-banshee-w-6 ui-banshee-shrink-0 ui-banshee-rounded-sm"
+        style={{
+          backgroundColor: color,
+        }}
+      />
+    );
+  }
+  if (iconType === 'circle') {
+    return (
+      <div
+        className="ui-banshee-h-2 ui-banshee-w-2 ui-banshee-shrink-0 ui-banshee-rounded-full"
+        style={{
+          backgroundColor: color,
+        }}
+      />
+    );
+  }
+  return (
+    <div
+      className="ui-banshee-h-2 ui-banshee-w-2 ui-banshee-shrink-0 ui-banshee-rounded-[2px]"
+      style={{
+        backgroundColor: color,
+      }}
+    />
+  );
+}
+
 const ChartLegend = RechartsPrimitive.Legend;
 
 function ChartLegendContent({
@@ -270,10 +301,12 @@ function ChartLegendContent({
   payload,
   verticalAlign = 'bottom',
   nameKey,
+  iconType = 'square',
 }: React.ComponentProps<'div'> &
   Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
     hideIcon?: boolean;
     nameKey?: string;
+    iconType?: string;
   }) {
   const { config } = useChart();
 
@@ -302,16 +335,12 @@ function ChartLegendContent({
                 '[&>svg]:ui-banshee-text-muted-foreground ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5 [&>svg]:ui-banshee-h-3 [&>svg]:ui-banshee-w-3',
               )}
             >
-              {itemConfig?.icon && !hideIcon ? (
-                <itemConfig.icon />
-              ) : (
-                <div
-                  className="ui-banshee-h-2 ui-banshee-w-2 ui-banshee-shrink-0 ui-banshee-rounded-[2px]"
-                  style={{
-                    backgroundColor: item.color,
-                  }}
-                />
-              )}
+              {!hideIcon &&
+                (itemConfig?.icon ? (
+                  <itemConfig.icon />
+                ) : (
+                  getIconElement(iconType, item.color || '')
+                ))}
               {itemConfig?.label}
             </div>
           );

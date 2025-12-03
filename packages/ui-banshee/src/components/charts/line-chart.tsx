@@ -43,6 +43,7 @@ const defaultChartData = [
   { time: 'T9', line1: 4.5, line2: 4.0, line3: 4.9 },
 ];
 
+// TODO Fix propps
 const defaultLineConfig = [
   { dataKey: 'line1', label: 'Line 1', color: '#0066cc' },
   { dataKey: 'line2', label: 'Line 2', color: '#ff6b6b' },

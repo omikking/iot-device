@@ -29,3 +29,4 @@ export * from './base/card';
 export * from './charts/donut-chart';
 export * from './charts/small-donut-chart';
 export * from './charts/line-chart';
+export * from './charts/data-line.chart';

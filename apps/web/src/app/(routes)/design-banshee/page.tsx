@@ -26,6 +26,7 @@ import {
   TableBody,
   TableCell,
   FormControl,
+  BoltLocator,
   FormMessage,
   TabsTrigger,
   TabsContent,
@@ -65,7 +66,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/banshee-components/ConfirmModal';
-import { ChartConfig } from 'node_modules/@gsp/ui-banshee/src/components/charts/chart';
 import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
 
 type Technician = UserSchema;
@@ -135,6 +135,13 @@ export default function Page() {
       </Headline>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
+        Bolt Locator 🚀
+      </Headline>
+      <div className="w-full flex justify-center">
+        <BoltLocator />
+      </div>
+      <hr className="w-full border-neutral-2" />
+      <Headline variant="large" as="h1" color="foreground">
         Line Data Chart 🚀
       </Headline>
       <div className="w-full flex justify-center">
@@ -168,10 +175,12 @@ export default function Page() {
         <SmallChartPieDonut
           chartData={chartDataMock}
           chartConfig={chartConfigMock}
+          chartItems={chartItemsMock}
         />
         <SmallChartPieDonut
           chartData={chartDataMock}
           chartConfig={chartConfigMock}
+          chartItems={chartItemsMock}
           footerText="Group 1"
         />
       </div>

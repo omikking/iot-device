@@ -4,6 +4,7 @@ import '@gsp/ui-banshee/styles.css';
 import { Toaster } from '@gsp/ui';
 import type { Metadata } from 'next';
 import { NavBar } from '@/components/NavBar';
+import { NavbarBanshee } from '@/components/banshee-components/NavbarBanshee';
 import { authOptions } from '@/libs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
@@ -26,8 +27,10 @@ export default async function RootLayout({
         <NextAuthProvider session={session}>
           <Toaster duration={8000} />
           <UrqlProvider>
-            <NavBar />
+            {/* <NavBar /> */}
+            <NavbarBanshee />
             {children}
+            {/* <FooterBanshee /> */}
           </UrqlProvider>
         </NextAuthProvider>
       </body>

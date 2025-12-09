@@ -16,8 +16,8 @@ const buttonVariants = cva(
         //   'ui-banshee-border ui-banshee-border-input ui-banshee-bg-background hover:ui-banshee-bg-accent hover:ui-banshee-text-accent-foreground',
         // secondary:
         //   'ui-banshee-bg-secondary ui-banshee-text-secondary-foreground hover:ui-banshee-bg-secondary/80',
-        // ghost:
-        //   'hover:ui-banshee-bg-accent hover:ui-banshee-text-accent-foreground',
+        ghost:
+          'hover:ui-banshee-bg-accent hover:ui-banshee-text-accent-foreground',
         // link: 'ui-banshee-text-primary ui-banshee-underline-offset-4 hover:ui-banshee-underline',
       },
       size: {

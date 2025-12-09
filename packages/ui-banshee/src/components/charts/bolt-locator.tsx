@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { ActiveBoltLocator } from '../svg/active-bolt-locator';
 

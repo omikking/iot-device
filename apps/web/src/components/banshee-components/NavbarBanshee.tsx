@@ -12,7 +12,7 @@ import {
 } from '@gsp/ui-banshee';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
-import { LucideUser, LucideX } from 'lucide-react';
+import { LucideUser } from 'lucide-react';
 import { ShoppingCart } from '../../../../../packages/ui-banshee/src/components/svg/shopping-cart';
 
 export const NavbarBanshee = () => {
@@ -32,7 +32,7 @@ export const NavbarBanshee = () => {
   });
 
   return (
-    <header className="h-20 flex flex-row justify-between mx-16 border-b border-gold-3">
+    <header className="h-20 mx-16 w-[calc(100%-8rem)] flex border-b justify-between border-gold-3 bg-white ">
       <nav className="w-full flex flex-row justify-between items-center">
         <Link href={'/administration-portal'}>
           <div className="flex items-center justify-center gap-2">

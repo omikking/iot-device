@@ -4,7 +4,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ReferenceArea,
 } from 'recharts';
 import {
@@ -88,7 +87,6 @@ export function DataLineChart({
       <LineChart
         style={{
           width: '100%',
-          maxWidth: '1400px',
           height: '100%',
         }}
         data={data}

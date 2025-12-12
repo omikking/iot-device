@@ -129,7 +129,7 @@ export default function Page() {
   ];
 
   return (
-    <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
+    <main className="w-full min-h-screen flex flex-col items-center py-28 px-10 gap-16 bg-main-white">
       <Headline variant="xl" as="h1" color="foreground">
         Banshee Design System Page 🚀
       </Headline>
@@ -184,17 +184,14 @@ export default function Page() {
           footerText="Group 1"
         />
       </div>
-
       <hr className="w-full border-neutral-2" />
       {/* Modal */}
       <Headline variant="large" as="h1" color="foreground">
         Modal 🚀
       </Headline>
-
       <Button onClick={() => setIsConfirmModalOpen(true)}>
         Open THE Incredible Modal
       </Button>
-
       {/* Confirm Modal */}
       {/* <ConfirmModal
         modalTitle="Jamiroquai"
@@ -218,7 +215,6 @@ export default function Page() {
           height={384}
         />
       </ConfirmModal> */}
-
       {/* Table row & Table header */}
       <Headline variant="large" as="h1" color="foreground">
         Table Row & Table Header 🚀
@@ -227,7 +223,6 @@ export default function Page() {
         {/* TODO Fix border bottom on the headers */}
         <ScheduleDataTable columns={columns} data={usersDesignSystemMock} />
       </div>
-
       <ScheduleTable>
         <TableHeader>
           <TableRow>

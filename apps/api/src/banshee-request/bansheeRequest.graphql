@@ -1,0 +1,129 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+scalar DateTime
+scalar Upload
+scalar JSON
+"""
+BansheeRequest model
+Define the BansheeRequest model and its fields
+"""
+type BansheeRequest {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  serialNumber: String!
+  name: String
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  period: Int!
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String
+  comment: String
+  isBrokenBolt: Boolean!
+  isNotMeasurable: Boolean!
+  images: [String!]
+  deviceAndMeasurement: JSON
+
+  measured: Boolean!
+
+  createdBy: String!
+  updatedBy: String
+
+  level: Level
+  drive: Drive
+  location: Location
+  boltType: String
+}
+
+"""
+CreateBansheeRequestInput
+Define the input fields to create a new banshee request
+"""
+input CreateBansheeRequestInput {
+  serialNumber: String!
+  name: String
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  period: Int!
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String
+  comment: String
+  isBrokenBolt: Boolean!
+  isNotMeasurable: Boolean!
+  images: [Upload!]
+  boltType: String
+}
+
+"""
+UpdateBansheeRequestInput
+Define the input fields to update an existing banshee request
+"""
+input UpdateBansheeRequestInput {
+  serialNumber: String
+  name: String
+  levelId: String
+  driveId: String
+  locationId: String
+  period: Int
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String
+  comment: String
+  isBrokenBolt: Boolean
+  isNotMeasurable: Boolean
+  images: [Upload!]
+  measured: Boolean
+  boltType: String
+}
+"""
+BansheeRequestResponse
+Response structure for paginated list of banshee requests
+"""
+type BansheeRequestResponse {
+  totalRecords: Int!
+  results: [BansheeRequest!]!
+}
+
+"""
+Query
+Define the queries that can be made to the BansheeRequest model
+"""
+type Query {
+  bansheeRequests(
+    offset: Int
+    limit: Int
+    serialNumber: String
+    measured: Boolean
+    period: Int
+    driveId: String
+    locationId: String
+    createdBy: String
+  ): BansheeRequestResponse!
+
+  bansheeRequest(id: String!): BansheeRequest!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the BansheeRequest model
+"""
+type Mutation {
+  createBansheeRequest(createBansheeRequestInput: CreateBansheeRequestInput!): BansheeRequest!
+
+  updateBansheeRequest(
+    id: String!
+    updateBansheeRequestInput: UpdateBansheeRequestInput!
+  ): BansheeRequest!
+
+  deleteBansheeRequest(id: String!): BansheeRequest!
+
+  markBansheeRequestMeasured(id: String!): BansheeRequest!
+
+  finalizeBansheeSession: Int!
+}

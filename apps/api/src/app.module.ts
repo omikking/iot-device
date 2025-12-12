@@ -21,6 +21,8 @@ import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
 
+import { BansheeRequestModule } from './banshee-request/banshee-request.module';
+
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
 @Module({
@@ -47,6 +49,7 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     ResetPasswordModule,
     EmailModule,
     InvitationModule,
+    BansheeRequestModule,
   ],
   providers: [DateScalar],
 })

@@ -96,6 +96,41 @@ export enum PlanLevel {
     INACTIVE = "INACTIVE"
 }
 
+export class CreateBansheeRequestInput {
+    serialNumber: string;
+    name?: Nullable<string>;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    period: number;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<string>;
+    comment?: Nullable<string>;
+    isBrokenBolt: boolean;
+    isNotMeasurable: boolean;
+    images?: Nullable<Upload[]>;
+    boltType?: Nullable<string>;
+}
+
+export class UpdateBansheeRequestInput {
+    serialNumber?: Nullable<string>;
+    name?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    period?: Nullable<number>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<string>;
+    comment?: Nullable<string>;
+    isBrokenBolt?: Nullable<boolean>;
+    isNotMeasurable?: Nullable<boolean>;
+    images?: Nullable<Upload[]>;
+    measured?: Nullable<boolean>;
+    boltType?: Nullable<string>;
+}
+
 export class CreateBoltResultInput {
     boltNumber: number;
     boltType: string;
@@ -288,42 +323,41 @@ export class UpdatePasswordInput {
     confirmPassword?: Nullable<string>;
 }
 
-export class BoltResult {
+export class BansheeRequest {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-    boltNumber: number;
-    boltType: string;
-    peakLoad: number[];
-    peakDisplacement: number[];
-    positionInRing: string;
-    result: string;
-    isHazard: boolean;
-    hazardCompletedDate?: Nullable<DateTime[]>;
-    abortReason?: Nullable<string>;
-    comment?: Nullable<string>;
-    image?: Nullable<string>;
-    siteId: string;
+    serialNumber: string;
+    name?: Nullable<string>;
     levelId: string;
     driveId: string;
     locationId: string;
-    userId: string;
-    site?: Nullable<Site>;
+    period: number;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<string>;
+    comment?: Nullable<string>;
+    isBrokenBolt: boolean;
+    isNotMeasurable: boolean;
+    images?: Nullable<string[]>;
+    deviceAndMeasurement?: Nullable<JSON>;
+    measured: boolean;
+    createdBy: string;
+    updatedBy?: Nullable<string>;
     level?: Nullable<Level>;
     drive?: Nullable<Drive>;
     location?: Nullable<Location>;
+    boltType?: Nullable<string>;
 }
 
-export class BoltResultResponse {
-    failedCount: number;
-    hazardCount: number;
-    passedCount: number;
+export class BansheeRequestResponse {
     totalRecords: number;
-    averageTons?: Nullable<number>;
-    results: BoltResult[];
+    results: BansheeRequest[];
 }
 
 export abstract class IQuery {
+    bansheeRequests?: BansheeRequestResponse;
+    bansheeRequest?: BansheeRequest;
     boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
@@ -356,6 +390,11 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
+    createBansheeRequest?: BansheeRequest;
+    updateBansheeRequest?: BansheeRequest;
+    deleteBansheeRequest?: BansheeRequest;
+    markBansheeRequestMeasured?: BansheeRequest;
+    finalizeBansheeSession: number;
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
@@ -393,6 +432,41 @@ export abstract class IMutation {
     removeUserPermission?: UserPermission;
     updateUser?: User;
     removeUser?: User;
+}
+
+export class BoltResult {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+}
+
+export class BoltResultResponse {
+    failedCount: number;
+    hazardCount: number;
+    passedCount: number;
+    totalRecords: number;
+    averageTons?: Nullable<number>;
+    results: BoltResult[];
 }
 
 export class Coffee {
@@ -536,4 +610,5 @@ export class User {
 
 export type DateTime = any;
 export type Upload = any;
+export type JSON = any;
 type Nullable<T> = T | null;

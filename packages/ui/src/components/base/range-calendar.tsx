@@ -95,7 +95,6 @@ export const RangeCalendar = ({
           align="start"
         >
           <Calendar
-            initialFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}

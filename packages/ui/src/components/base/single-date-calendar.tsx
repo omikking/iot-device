@@ -64,7 +64,6 @@ export const SingleDateCalendar = ({
 
         <PopoverContent className="ui-w-auto ui-p-0">
           <Calendar
-            initialFocus
             mode="single"
             selected={date}
             onSelect={handleDateChange}

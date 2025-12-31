@@ -36,6 +36,8 @@ enum PullTestAbortReason {
   HIGH_ANGLE_NOT_PERPENDICULAR
   REBAR_EJECTED_STOPPER_CAUGHT
   BOLT_END_DAMAGE_RIG_NOT_ENGAGING
+  NOT_TESTED_BROKEN_BOLT_NUT
+  NOT_TESTED_PULL_TEST_COLLAR_INSTALLED_BACKWARDS
 }
 
 enum Application {
@@ -362,35 +364,35 @@ model CoffeeFlavor {
 }
 
 model BansheeRequest {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    serialNumber             String
-    name                     String?
-    levelId                  String
-    driveId                  String
-    locationId               String
-    period                   Int
-    boltType                 BoltType
-    locationDetails          String?
-    boltInstallationDateTime DateTime?
-    ringPosition             String?
-    comment                  String?
-    isBrokenBolt             Boolean
-    isNotMeasurable          Boolean
-    images                   Json?
-    measured                Boolean @default(false)
-    deviceAndMeasurement     Json?
+  serialNumber             String
+  name                     String?
+  levelId                  String
+  driveId                  String
+  locationId               String
+  period                   Int
+  boltType                 BoltType
+  locationDetails          String?
+  boltInstallationDateTime DateTime?
+  ringPosition             String?
+  comment                  String?
+  isBrokenBolt             Boolean
+  isNotMeasurable          Boolean
+  images                   Json?
+  measured                 Boolean   @default(false)
+  deviceAndMeasurement     Json?
 
-    createdBy String
-    updatedBy String?
+  createdBy String
+  updatedBy String?
 
-    level    Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
-    drive    Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
-    location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  level    Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive    Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 
-    @@index([createdBy])
-    @@index([serialNumber])
-    @@map("banshee_requests")
+  @@index([createdBy])
+  @@index([serialNumber])
+  @@map("banshee_requests")
 }

@@ -8,7 +8,6 @@ import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import { NavbarBanshee } from '@/components/banshee-components/NavbarBanshee';
-import { NavBar } from '@/components/NavBar';
 
 import { SidebarProvider } from '@gsp/ui-banshee';
 import { AppSidebar } from '@gsp/ui-banshee';
@@ -33,8 +32,7 @@ export default async function RootLayout({
             <NavbarBanshee />
             <SidebarProvider>
               <AppSidebar />
-              {/* <NavBar /> */}
-              <main>{children}</main>
+              {children}
             </SidebarProvider>
           </UrqlProvider>
         </NextAuthProvider>

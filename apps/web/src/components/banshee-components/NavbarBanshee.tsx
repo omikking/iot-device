@@ -55,7 +55,7 @@ export const NavbarBanshee = () => {
               <PopoverContent
                 sideOffset={29}
                 align="end"
-                alignOffset={-22}
+                alignOffset={-24}
                 className="border-none shadow-2xl p-8 min-w-64"
               >
                 <div className="flex flex-row gap-4">

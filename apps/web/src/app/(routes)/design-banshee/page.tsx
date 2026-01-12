@@ -193,7 +193,7 @@ export default function Page() {
         Open THE Incredible Modal
       </Button>
       {/* Confirm Modal */}
-      {/* <ConfirmModal
+      <ConfirmModal
         modalTitle="Jamiroquai"
         modalConfirmButtonText="Confirm"
         isLoading={isConfirming}
@@ -214,7 +214,7 @@ export default function Page() {
           width={384}
           height={384}
         />
-      </ConfirmModal> */}
+      </ConfirmModal>
       {/* Table row & Table header */}
       <Headline variant="large" as="h1" color="foreground">
         Table Row & Table Header 🚀
@@ -432,7 +432,7 @@ export default function Page() {
       </Form>
       <hr className="w-full border-neutral-2" />
       {/* Filter Dropdown */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Filter Dropdown 🚀
         </Headline>
@@ -443,10 +443,10 @@ export default function Page() {
           onSelect={setFilterValues}
           className="w-96"
         />
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Checkbox */}
-      {/* <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-6">
         <Headline variant="large" as="h1" color="foreground">
           Checkbox 🚀
         </Headline>
@@ -462,10 +462,10 @@ export default function Page() {
           <Checkbox />
           Select That
         </div>
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Tabs */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Tabs 🚀
         </Headline>
@@ -486,19 +486,19 @@ export default function Page() {
             </Text>
           </TabsContent>
         </Tabs>
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Switch */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Switch 🚀
         </Headline>
         <Switch />
         <Switch disabled />
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Textarea */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Textarea 🚀
         </Headline>
@@ -509,9 +509,9 @@ export default function Page() {
           placeholder="Textarea..."
           rows={5}
         />
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
-      {/* Input Field, Drowdown, Calendar & Time Select */}
+      {/* Input Field, Dropdown, Calendar & Time Select */}
       <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Input Field, Dropdown, Calendar & Time Select 🚀
@@ -529,6 +529,7 @@ export default function Page() {
                 return (
                   <FormItem>
                     {/* TODO disabled should change color of text */}
+                    <FormLabel>Time Select</FormLabel>
                     <FormControl>
                       <TimeCalendar id="time" className="w-96" />
                     </FormControl>
@@ -641,8 +642,8 @@ export default function Page() {
           </form>
         </Form>
         <div>
-          {/* check why padding not working as it should */}
-          <Label className="">Combobox</Label>
+          {/*TODO check why padding not working as it should */}
+          <Label className="">Combobox WONKY</Label>
           <Combobox
             id="combobox"
             className="w-96"
@@ -703,25 +704,25 @@ export default function Page() {
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Badge */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Badges 🚀
         </Headline>
         <Badge>Neutral</Badge>
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Graph Time Range */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Graph Time Range 🚀
         </Headline>
         <Headline variant="medium" as="h2" color="foreground">
           (Component coming soon...)
         </Headline>
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
       {/* Button */}
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Buttons 🚀
         </Headline>
@@ -731,10 +732,10 @@ export default function Page() {
         <Button variant="primary" size="large">
           Button Primary Regular Large
         </Button>
-      </div> */}
+      </div>
       {/* Texts */}
       <hr className="w-full border-neutral-2" />
-      {/* <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col items-center gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Texts 🚀
         </Headline>
@@ -752,7 +753,7 @@ export default function Page() {
         <Text variant="xs" color={'foreground'}>
           XS text
         </Text>
-      </div> */}
+      </div>
       <hr className="w-full border-neutral-2" />
     </main>
   );

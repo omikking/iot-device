@@ -9,7 +9,7 @@ export interface ContentHolderTableProps<T extends FieldValues = FieldValues> {
   headlineText?: string;
   background?: ContentHolderProps['background'];
   className?: string;
-  form: UseFormReturn<T>;
+  form: UseFormReturn<T>; // TODO Need a schema when using useForm
   onSubmit: (data: T) => void;
   children: React.ReactNode;
   layout?: 'row' | 'column';

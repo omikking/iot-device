@@ -1,26 +1,26 @@
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
+  LineChart,
   ReferenceArea,
+  ReferenceLine,
 } from 'recharts';
 import {
   ChartConfig,
-  ChartContainer,
   ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
+  ChartContainer,
+  ChartLegendContent,
 } from './chart';
 
 import { Text } from '../base/text';
 
 export type DataLineChartProps = {
-  data: { date: string; [key: string]: string | number | undefined }[];
-  lines?: { dataKey: string; label: string; color: string }[];
   yAxisLabel?: string;
   yAxisDomain?: [number, number];
+  lines?: { dataKey: string; label: string; color: string }[];
+  data: { date: string; [key: string]: string | number | undefined }[];
 };
 
 const chartConfig = {
@@ -98,17 +98,23 @@ export function DataLineChart({
         }}
       >
         <ChartTooltip cursor={false} content={<CustomChartTooltip />} />
-        <CartesianGrid stroke="#e0e0e0" />
         {/* Vertical alternating stripes */}
         {stripes.map((stripe) => (
           <ReferenceArea
             key={`${stripe.x1}-${stripe.x2}`}
             x1={stripe.x1}
             x2={stripe.x2}
-            fill="#f5f5f5"
+            fill="#EAEAEA"
             fillOpacity={1}
           />
         ))}
+
+        {/* Horizontal grid lines at 3, 6, 9, 12 */}
+        <ReferenceLine y={3} stroke="#E4E4E4" strokeWidth={1} />
+        <ReferenceLine y={6} stroke="#E4E4E4" strokeWidth={1} />
+        <ReferenceLine y={9} stroke="#E4E4E4" strokeWidth={1} />
+        <ReferenceLine y={12} stroke="#E4E4E4" strokeWidth={1} />
+
         <XAxis dataKey="date" tick={{ fontSize: 12 }} tickMargin={10} />
         <YAxis
           label={{

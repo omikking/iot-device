@@ -11,6 +11,7 @@ import { NavbarBanshee } from '@/components/banshee-components/NavbarBanshee';
 
 import { SidebarProvider } from '@gsp/ui-banshee';
 import { AppSidebar } from '@gsp/ui-banshee';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Portal | Ground Support Platform | Sandvik',
@@ -36,6 +37,7 @@ export default async function RootLayout({
             </SidebarProvider>
           </UrqlProvider>
         </NextAuthProvider>
+        <Footer />
       </body>
     </html>
   );

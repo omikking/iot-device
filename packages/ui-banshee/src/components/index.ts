@@ -36,3 +36,9 @@ export * from './charts/bolt-locator';
 // Sidebar
 export * from './base/sidebar';
 export * from './sidebar/app-sidebar';
+//Icons
+export * from './svg/banshee-icon';
+export * from './svg/facebook-icon';
+export * from './svg/instagram-icon';
+export * from './svg/linkedin-icon';
+export * from './svg/twitter-icon';

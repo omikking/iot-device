@@ -12,7 +12,7 @@ import { FacebookIcon } from '@gsp/ui-banshee';
 
 export const Footer = () => {
   return (
-    <div className="sticky bottom-0 w-full h-[460px] z-10 bg-main-black text-main-white">
+    <div className="bottom-0 w-full h-[460px] z-10 bg-main-black text-main-white">
       <div className="flex flex-col h-full justify-between pt-16 pr-36 pb-5 pl-16">
         <div className="flex flex-row justify-between ">
           <div>
@@ -68,7 +68,7 @@ export const Footer = () => {
         </div>
 
         <div className="flex flex-col">
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 justify-start items-center">
             <LucideGlobe size={16} />
             <Text color="background" variant={'small'}>
               Global
@@ -76,12 +76,12 @@ export const Footer = () => {
             <Headline as="h4" color="background" variant={'medium'}>
               |
             </Headline>
-            <Text color="background" variant={'large'}></Text>
+
             <Text color="background" variant={'small'}>
-              English(US)
+              English (US)
             </Text>
           </div>
-          <div className="flex flex-row justify-between pt-6">
+          <div className="flex flex-row justify-between items-center pt-6">
             <div className="flex flex-row gap-10">
               <Text color="muted" variant={'small'}>
                 Terms of Use
@@ -101,18 +101,6 @@ export const Footer = () => {
               <InstagramIcon />
               <TwitterIcon />
               <LinkedinIcon />
-              {/* <Text color="background" variant={'small'}>
-                L1
-              </Text> */}
-              {/* <Text color="background" variant={'small'}>
-                L2
-              </Text> */}
-              {/* <Text color="background" variant={'small'}>
-                L3
-              </Text>
-              <Text color="background" variant={'small'}>
-                L4
-              </Text> */}
             </div>
           </div>
         </div>

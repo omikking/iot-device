@@ -35,9 +35,9 @@ export default async function RootLayout({
               <AppSidebar />
               {children}
             </SidebarProvider>
+            <Footer />
           </UrqlProvider>
         </NextAuthProvider>
-        <Footer />
       </body>
     </html>
   );

@@ -6,7 +6,7 @@
     "preinstall": "npx only-allow pnpm",
     "build": "turbo build",
     "dev": "turbo dev",
-    "start": "turbo run start --filter=web --filter=pull-test",
+    "start": "turbo run start --filter=web --filter=pull-test --filter=banshee",
     "lint": "turbo lint",
     "db:seed": "pnpm --filter api db:seed",
     "type-check": "turbo type-check",

@@ -122,7 +122,7 @@ export class BansheeRequestsService {
     }
   }
 
-  // measured fieled updtae in same table
+  // measured field update in same table
   async update(
     id: string,
     updateBansheeRequestInput: GraphQLTypes.UpdateBansheeRequestInput,

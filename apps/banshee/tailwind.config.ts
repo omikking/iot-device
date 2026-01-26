@@ -2,14 +2,19 @@
 
 import type { Config } from 'tailwindcss';
 import sharedConfig from '@gsp/tailwind-config';
+import bansheeConfig from '@gsp/ui-banshee/tailwind.config';
 import type { PluginAPI } from 'tailwindcss/types/config';
 const plugin = require('tailwindcss/plugin');
 
 const config: Pick<Config, 'content' | 'presets' | 'theme' | 'plugins'> = {
   content: ['./src/**/*.tsx'],
-  presets: [sharedConfig],
+  presets: [sharedConfig, bansheeConfig],
   theme: {
     extend: {
+      height: {
+        6: '1.5rem', // for ui-banshee-h-6
+        20: '5rem', // for ui-banshee-h-20
+      },
       fontSize: {
         caption: '10px',
         footnote: '10px',

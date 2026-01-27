@@ -13,7 +13,7 @@ import {
   Tooltip,
   Headline,
   FormItem,
-  Dropdown,
+  // Dropdown,
   Combobox,
   Textarea,
   Checkbox,
@@ -38,7 +38,7 @@ import {
   ChartPieDonut,
   ScheduleTable,
   TooltipContent,
-  FilterDropdown,
+  // FilterDropdown,
   TooltipTrigger,
   ChartLineLinear,
   TooltipProvider,
@@ -59,11 +59,10 @@ import {
   lineDataConfigMock,
   usersDesignSystemMock,
   optionsDesignSystemMock,
-  tableViewDesignSystemMock,
 } from '@/app/mock/mock';
 import { z } from 'zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
@@ -79,7 +78,7 @@ export default function Page() {
     textarea: z.string(),
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form: UseFormReturn<z.infer<typeof formSchema>> = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       input: '',
@@ -89,12 +88,10 @@ export default function Page() {
     },
   });
 
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    undefined,
-  );
-  const [filterValues, setFilterValues] = useState<string[]>([]);
+  // const [setDropdownValue] = useState<string | undefined>(undefined);
+  // const [setFilterValues] = useState<string[]>([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirming] = useState(false);
 
   const closeConfirmModal = () => {
     setIsConfirmModalOpen(false);
@@ -367,7 +364,7 @@ export default function Page() {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dropdown"
               render={() => {
@@ -387,7 +384,7 @@ export default function Page() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="input"
@@ -437,13 +434,13 @@ export default function Page() {
         <Headline variant="large" as="h1" color="foreground">
           Filter Dropdown 🚀
         </Headline>
-        <FilterDropdown
+        {/* <FilterDropdown
           id="filter-users"
           placeholder="Filter technicians..."
           options={optionsDesignSystemMock}
           onSelect={setFilterValues}
           className="w-96"
-        />
+        /> */}
       </div>
       <hr className="w-full border-neutral-2" />
       {/* Checkbox */}
@@ -557,7 +554,7 @@ export default function Page() {
               }}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dropdown"
               render={() => {
@@ -577,8 +574,8 @@ export default function Page() {
                   </FormItem>
                 );
               }}
-            />
-            <FormField
+            /> */}
+            {/* <FormField
               control={form.control}
               name="dropdown"
               render={() => {
@@ -599,7 +596,7 @@ export default function Page() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
 
             <FormField
               control={form.control}

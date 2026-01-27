@@ -4,6 +4,13 @@ import { ContentHolder, type ContentHolderProps } from './content-holder';
 import { Form } from './form';
 import { Headline } from './headline';
 
+type FormValue = {
+  input: string;
+  dropdown: string;
+  calendar: string;
+  textarea: string;
+};
+
 export interface ContentHolderTableProps<T extends FieldValues = FieldValues> {
   variant: ContentHolderProps['variant'];
   headlineText?: string;
@@ -17,7 +24,7 @@ export interface ContentHolderTableProps<T extends FieldValues = FieldValues> {
 
 const ContentHolderTable = React.forwardRef<
   HTMLDivElement,
-  ContentHolderTableProps
+  ContentHolderTableProps<FormValue>
 >(
   (
     {

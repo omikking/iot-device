@@ -8,7 +8,7 @@ import {
   ModalContent,
 } from '@gsp/ui-banshee';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 type ConfirmModalProps = {
   isOpen?: boolean;
@@ -29,8 +29,6 @@ export const ConfirmModal = ({
   children,
   commentBox,
   modalTitle,
-  modalText,
-  isLoading,
   modalConfirmButtonText = 'Confirm',
   tableView,
   onConfirm,

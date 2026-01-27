@@ -1,5 +1,12 @@
 import { Application } from '@/gql/graphql';
 
+export type ChartConfig = {
+  [key: string]: {
+    label: string;
+    color?: string;
+  };
+};
+
 export const chartDataMock = [
   { label: 'Elastic', value: 55, fill: 'var(--color-elastic)' },
   { label: 'Plastic Low', value: 10, fill: 'var(--color-plasticLow)' },

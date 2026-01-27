@@ -7,7 +7,7 @@ import type { PluginAPI } from 'tailwindcss/types/config';
 const plugin = require('tailwindcss/plugin');
 
 const config: Pick<Config, 'content' | 'presets' | 'theme' | 'plugins'> = {
-  content: ['./src/**/*.tsx'],
+  content: ['./src/**/*.{ts,tsx}'],
   presets: [sharedConfig, bansheeConfig],
   theme: {
     extend: {

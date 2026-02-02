@@ -5,7 +5,6 @@ const config: Pick<
   Config,
   'prefix' | 'presets' | 'content' | 'theme' | 'plugins'
 > = {
-  // darkMode: ['class'],
   content: ['./src/**/*.tsx'],
   presets: [sharedConfig],
   prefix: 'ui-banshee-',

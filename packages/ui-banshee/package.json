@@ -13,8 +13,8 @@
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
-    "lint": "eslint src/",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "lint": "eslint src/",
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {

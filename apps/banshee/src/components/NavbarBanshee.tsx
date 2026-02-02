@@ -33,7 +33,7 @@ export const NavbarBanshee = () => {
   });
 
   return (
-    <header className="ui-banshee-h-16 ui-banshee-mx-16 ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">
+    <header className="ui-banshee-h-20 ui-banshee-mx-16 ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">
       <nav className="ui-banshee-w-full ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
         <Link href={'/administration-portal'}>
           <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">

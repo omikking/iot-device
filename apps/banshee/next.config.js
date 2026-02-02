@@ -27,8 +27,6 @@ module.exports = {
         
         return config;
     },
-    reactStrictMode: true,
-    transpilePackages: ['@gsp/ui-banshee'],
     images: {
         remotePatterns: [
             // Local development
@@ -49,6 +47,8 @@ module.exports = {
                     },
                 ]
                 : []),
-        ],
-    },
+            ],
+        },
+        reactStrictMode: true,
+        transpilePackages: ['@gsp/ui-banshee'],
 }

@@ -36,7 +36,7 @@ export const NavbarBanshee = () => {
     <header className="ui-banshee-h-20 ui-banshee-mx-16 ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">
       <nav className="ui-banshee-w-full ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
         <Link href={'/administration-portal'}>
-          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
+          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-[11px]">
             <SandvikLogo />
             <div className="ui-banshee-h-6 ui-banshee-border-l ui-banshee-border-black ui-banshee-mx-1" />
             <Headline variant="medium" color="foreground" as="h3" isBold>

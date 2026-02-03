@@ -13,7 +13,7 @@ const contentHolderVariants = cva('ui-banshee-flex ui-banshee-mb-4', {
       filter:
         'ui-banshee-width-full ui-banshee-max-w-[1600px] ui-banshee-flex-row ui-banshee-flex-wrap 2xl:ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-6 ui-banshee-px-8',
       image:
-        'ui-banshee-flex-row ui-banshee-gap-6 ui-banshee-items-center ui-banshee-w-fit ui-banshee-py-12 ui-banshee-px-8',
+        'ui-banshee-w-full ui-banshee-flex-row ui-banshee-gap-6 ui-banshee-items-center',
     },
     background: {
       light: 'ui-banshee-bg-neutral-1',
@@ -35,7 +35,7 @@ export interface ContentHolderProps
 const ContentHolder = React.forwardRef<HTMLDivElement, ContentHolderProps>(
   ({ className, variant, background, headlineText, children }, ref) => {
     return (
-      <div className="ui-banshee-w-full" ref={ref}>
+      <div className="ui-banshee" ref={ref}>
         {!!headlineText && (
           <Headline
             variant="medium"

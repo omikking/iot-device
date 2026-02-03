@@ -6,7 +6,8 @@ import '@gsp/ui-banshee/styles.css';
 // import { authOptions } from '@/libs/authOptions';
 // import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import { NavbarBanshee } from '@/components/NavbarBanshee';
-
+import { SidebarProvider } from '@gsp/ui-banshee';
+import { AppSidebar } from '@gsp/ui-banshee';
 export const metadata: Metadata = {
   title: 'Banshee | Ground Support Platform | Sandvik',
   description: 'For all your ground support needs.',
@@ -23,7 +24,10 @@ export default async function RootLayout({
       <body className="min-h-screen">
         {/* <NextAuthProvider session={session}> */}
         <NavbarBanshee />
-        {children}
+        <SidebarProvider>
+          <AppSidebar />
+          {children}
+        </SidebarProvider>
         {/* </NextAuthProvider> */}
       </body>
     </html>

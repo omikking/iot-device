@@ -12,7 +12,7 @@ import { Drive, Level, Role } from '@/gql/graphql';
 import { Button, Headline, Text } from '@gsp/ui';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
-import { isCompanyAdmin } from '@/libs/utils';
+import { isCompanyAdmin, isSandvikTechnician } from '@/libs/utils';
 
 type DrivesListProps = {
   drivesOptions: Drive[];
@@ -39,6 +39,10 @@ export const DrivesList = ({
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
   const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const isUserSandvikTechnician = isSandvikTechnician(
     session?.user?.userPermissions,
     companyId,
   );
@@ -82,7 +86,7 @@ export const DrivesList = ({
       </div>
       <div
         className={`flex flex-col gap-1 w-full h-full ${
-          isUserSandvikAdmin || isUserCompanyAdmin ? 'border-y' : 'border-t'
+          isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician
         } py-6 px-6 overflow-auto`}
       >
         {drives.length === 0 && (
@@ -108,7 +112,9 @@ export const DrivesList = ({
           />
         ))}
       </div>
-      {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+      {(isUserSandvikAdmin ||
+        isUserCompanyAdmin ||
+        isUserSandvikTechnician) && (
         <div className="flex justify-end w-full p-3">
           {selectedLevelId ? (
             <Button

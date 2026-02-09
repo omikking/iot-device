@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
+  IsDate,
   IsNumber,
   IsOptional,
   IsString,
@@ -62,4 +63,8 @@ export class UpdateBoltResultInput extends GraphQLTypes.UpdateBoltResultInput {
 
   @IsOptional()
   image: Upload;
+
+  @IsOptional()
+  @IsDate()
+  measuredAt?: Date;
 }

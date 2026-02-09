@@ -99,6 +99,7 @@ export enum PlanLevel {
 }
 
 export class CreateBoltResultInput {
+    measuredAt: DateTime;
     boltNumber: number;
     boltType: string;
     peakLoad: number[];
@@ -129,6 +130,7 @@ export class UpdateBoltResultInput {
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
     image?: Nullable<Upload>;
+    measuredAt?: Nullable<DateTime>;
 }
 
 export class CreateCoffeeInput {
@@ -294,6 +296,7 @@ export class BoltResult {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    measuredAt: DateTime;
     boltNumber: number;
     boltType: string;
     peakLoad: number[];

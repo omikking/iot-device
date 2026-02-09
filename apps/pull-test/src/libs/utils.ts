@@ -38,8 +38,8 @@ export const generateBoltSpecifications = (
 ) => {
   return [
     {
-      title: 'Created at',
-      text: new Date(Number(boltData.createdAt)).toLocaleString() || 'N/A',
+      title: 'Measured at',
+      text: new Date(Number(boltData.measuredAt)).toLocaleString() || 'N/A',
     },
     {
       title: 'Bolt number',

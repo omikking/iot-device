@@ -77,6 +77,7 @@ const boltResultQuery = gql`
         id
         createdAt
         updatedAt
+        measuredAt
         boltNumber
         boltType
         peakLoad
@@ -140,6 +141,7 @@ const allBoltResultQuery = gql`
         id
         createdAt
         updatedAt
+        measuredAt
         boltNumber
         boltType
         peakLoad

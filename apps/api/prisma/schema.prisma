@@ -291,9 +291,10 @@ model Location {
 }
 
 model BoltResult {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  measuredAt DateTime
 
   boltNumber       Int
   boltType         BoltType

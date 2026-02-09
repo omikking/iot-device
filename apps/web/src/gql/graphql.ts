@@ -45,6 +45,7 @@ export type BoltResult = {
   levelId: Scalars['String']['output'];
   location?: Maybe<Location>;
   locationId: Scalars['String']['output'];
+  measuredAt: Scalars['DateTime']['output'];
   peakDisplacement: Array<Scalars['Int']['output']>;
   peakLoad: Array<Scalars['Int']['output']>;
   positionInRing: Scalars['String']['output'];
@@ -182,6 +183,7 @@ export type CreateBoltResultInput = {
   isHazard: Scalars['Boolean']['input'];
   levelId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
+  measuredAt: Scalars['DateTime']['input'];
   peakDisplacement: Array<Scalars['Int']['input']>;
   peakLoad: Array<Scalars['Int']['input']>;
   positionInRing: Scalars['String']['input'];
@@ -1045,6 +1047,7 @@ export type UpdateBoltResultInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
+  measuredAt?: InputMaybe<Scalars['DateTime']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;
   peakLoad?: InputMaybe<Array<Scalars['Int']['input']>>;
   positionInRing?: InputMaybe<Scalars['String']['input']>;

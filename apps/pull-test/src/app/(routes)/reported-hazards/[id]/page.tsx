@@ -27,6 +27,7 @@ const getHazardDetails = graphql(`
       boltType
       comment
       createdAt
+      measuredAt
       driveId
       hazardCompletedDate
       id

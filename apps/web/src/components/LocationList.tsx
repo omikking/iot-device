@@ -76,6 +76,8 @@ export const LocationsList = ({
       <div
         className={`flex flex-col gap-1 w-full h-full ${
           isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician
+            ? 'border-y'
+            : 'border-t'
         } py-6 px-6 overflow-auto`}
       >
         {locations.length === 0 && (

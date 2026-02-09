@@ -87,6 +87,8 @@ export const DrivesList = ({
       <div
         className={`flex flex-col gap-1 w-full h-full ${
           isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician
+            ? 'border-y'
+            : 'border-t'
         } py-6 px-6 overflow-auto`}
       >
         {drives.length === 0 && (

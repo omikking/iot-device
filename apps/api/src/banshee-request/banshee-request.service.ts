@@ -36,7 +36,7 @@ export class BansheeRequestsService {
         });
       }
 
-      await this.validateUserCompanyAccess(user, createBansheeRequestInput.companyId);
+      // await this.validateUserCompanyAccess(user, createBansheeRequestInput.companyId);
       
       await this.validateRelations(
         createBansheeRequestInput.levelId,

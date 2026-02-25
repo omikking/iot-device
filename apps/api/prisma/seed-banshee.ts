@@ -1200,6 +1200,7 @@ async function seedBanshee() {
         linearLimit: 50,
         elasticLimit: 10,
         lowPlasticLimit: 100,
+        createdAt: new Date(),
       },
     });
     console.log('Seeded BoltTypeConstant for D47_MD_1_8_M with default values');

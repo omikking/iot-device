@@ -22,12 +22,16 @@ import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
 
 import { BansheeRequestModule } from './banshee-request/banshee-request.module';
+import { ProceqModule } from './proceq/proceq.module';
+import { BansheeStatsModule } from './banshee-stats/banshee-stats.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     AuthModule,
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -50,6 +54,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     EmailModule,
     InvitationModule,
     BansheeRequestModule,
+    ProceqModule,
+    BansheeStatsModule,
   ],
   providers: [DateScalar],
 })

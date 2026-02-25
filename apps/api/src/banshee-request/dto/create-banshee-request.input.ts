@@ -59,4 +59,8 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   @IsOptional()
   @IsString()
   boltType: string;
+
+  @IsString()
+  @IsUUID()
+  companyId: string;
 }

@@ -111,6 +111,7 @@ export class CreateBansheeRequestInput {
     isNotMeasurable: boolean;
     images?: Nullable<Upload[]>;
     boltType?: Nullable<string>;
+    companyId: string;
 }
 
 export class UpdateBansheeRequestInput {
@@ -129,6 +130,7 @@ export class UpdateBansheeRequestInput {
     images?: Nullable<Upload[]>;
     measured?: Nullable<boolean>;
     boltType?: Nullable<string>;
+    companyId?: Nullable<string>;
 }
 
 export class CreateBoltResultInput {
@@ -340,13 +342,14 @@ export class BansheeRequest {
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
     images?: Nullable<string[]>;
-    deviceAndMeasurement?: Nullable<JSON>;
+    deviceAndMeasurements: ProceqData[];
     measured: boolean;
     createdBy: string;
     updatedBy?: Nullable<string>;
     level?: Nullable<Level>;
     drive?: Nullable<Drive>;
     location?: Nullable<Location>;
+    company?: Nullable<Company>;
     boltType?: Nullable<string>;
 }
 
@@ -358,6 +361,9 @@ export class BansheeRequestResponse {
 export abstract class IQuery {
     bansheeRequests?: BansheeRequestResponse;
     bansheeRequest?: BansheeRequest;
+    dailyStats?: Nullable<BansheeSessionStats>;
+    statsForPeriod?: BansheeSessionStats[];
+    dailyReport?: DailyReportEntry[];
     boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
@@ -395,6 +401,7 @@ export abstract class IMutation {
     deleteBansheeRequest?: BansheeRequest;
     markBansheeRequestMeasured?: BansheeRequest;
     finalizeBansheeSession: number;
+    generateDailyReport?: string;
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
@@ -432,6 +439,30 @@ export abstract class IMutation {
     removeUserPermission?: UserPermission;
     updateUser?: User;
     removeUser?: User;
+}
+
+export class BansheeSessionStats {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    operatorEmail: string;
+    sessionDate: DateTime;
+    sessionId: string;
+    totalMeasured: number;
+    totalWithLogs: number;
+    notMeasurable: number;
+    broken: number;
+    company: Company;
+}
+
+export class DailyReportEntry {
+    operatorEmail: string;
+    sessionDate: DateTime;
+    totalMeasured: number;
+    totalWithLogs: number;
+    notMeasurable: number;
+    broken: number;
+    company?: Nullable<Company>;
 }
 
 export class BoltResult {
@@ -569,6 +600,51 @@ export class Location {
     locationName: string;
     driveId: string;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class ProceqData {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    measurementId: string;
+    fileName: string;
+    operator?: Nullable<string>;
+    email?: Nullable<string>;
+    comments?: Nullable<JSON>;
+    temperature?: Nullable<number>;
+    indicationSetupFile?: Nullable<JSON>;
+    measuringMode?: Nullable<string>;
+    frequency?: Nullable<number>;
+    gain?: Nullable<number>;
+    voltage?: Nullable<number>;
+    sampleAveraging?: Nullable<number>;
+    damping?: Nullable<number>;
+    analogueFilter?: Nullable<number>;
+    indicationSetupFileName?: Nullable<string>;
+    readings?: Nullable<JSON>;
+    gate1Levels?: Nullable<JSON>;
+    gate2Levels?: Nullable<JSON>;
+    rawDataZipId?: Nullable<string>;
+    rawDataZipPath?: Nullable<string>;
+    attachmentIds: string[];
+    createdTimestamp?: Nullable<string>;
+    updatedTimestamp?: Nullable<string>;
+    bansheeRequest?: Nullable<BansheeRequest>;
+    proceqAttachments?: Nullable<ProceqAttachment[]>;
+}
+
+export class ProceqAttachment {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    attachmentId: string;
+    measurementId: string;
+    fileName: string;
+    filePath: string;
+    fileType: string;
+    fileSize?: Nullable<number>;
+    attachmentType: string;
+    description?: Nullable<string>;
 }
 
 export class Site {

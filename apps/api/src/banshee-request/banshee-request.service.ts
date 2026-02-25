@@ -8,7 +8,7 @@ import { extname, join } from 'path';
 import { createWriteStream } from 'fs';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { BoltType, Prisma } from '@prisma/client';
+import { BoltType } from '@prisma/client';
 
 @Injectable()
 export class BansheeRequestsService {
@@ -36,6 +36,8 @@ export class BansheeRequestsService {
         });
       }
 
+      await this.validateUserCompanyAccess(user, createBansheeRequestInput.companyId);
+      
       await this.validateRelations(
         createBansheeRequestInput.levelId,
         createBansheeRequestInput.driveId,
@@ -72,14 +74,15 @@ export class BansheeRequestsService {
           isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
           boltType: createBansheeRequestInput.boltType as BoltType,
-          deviceAndMeasurement: Prisma.JsonNull,
           createdBy: user.id,
           updatedBy: user.id,
+          companyId: createBansheeRequestInput.companyId,
         },
         include: {
           level: true,
           drive: true,
           location: true,
+          deviceAndMeasurements: { include: { readings: true } },
         },
       });
 
@@ -102,10 +105,16 @@ export class BansheeRequestsService {
         }
       }
 
+      // Fetch the company data to include in the response
+      const company = await this.prisma.company.findUnique({
+        where: { id: createdBansheeRequest.companyId },
+      });
+
       return {
         ...createdBansheeRequest,
         images: imagesArray,
         boltType: createBansheeRequestInput.boltType || undefined,
+        company: company,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -142,6 +151,11 @@ export class BansheeRequestsService {
         });
       }
 
+      // Validate company access if companyId is being updated
+      if (updateBansheeRequestInput.companyId) {
+        await this.validateUserCompanyAccess(user, updateBansheeRequestInput.companyId);
+      }
+      
       if (
         updateBansheeRequestInput.levelId ||
         updateBansheeRequestInput.driveId ||
@@ -192,6 +206,7 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          deviceAndMeasurements: { include: { readings: true } },
         },
       });
 
@@ -231,6 +246,7 @@ export class BansheeRequestsService {
         level: true,
         drive: true,
         location: true,
+        deviceAndMeasurements: { include: { readings: true } }, 
       },
     });
 
@@ -250,6 +266,7 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          deviceAndMeasurements: { include: { readings: true } },
         },
       });
 
@@ -289,6 +306,7 @@ export class BansheeRequestsService {
     driveId?: string;
     locationId?: string;
     createdBy?: string;
+    companyId?: string;
   }): Promise<any> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
@@ -322,6 +340,10 @@ export class BansheeRequestsService {
         where.createdBy = restFilters.createdBy;
       }
 
+      if (restFilters.companyId) {
+        where.companyId = restFilters.companyId;
+      }
+
       const totalRecords = await this.prisma.bansheeRequest.count({
         where,
       });
@@ -337,6 +359,7 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          deviceAndMeasurements: { include: { readings: true } },
         },
       });
 
@@ -382,6 +405,7 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          deviceAndMeasurements: { include: { readings: true } },
         },
       });
 
@@ -419,6 +443,24 @@ export class BansheeRequestsService {
           code: 'BANSHEE_REQUEST_FETCH_ERROR',
           title: 'Failed to fetch banshee request',
           message: errorTexts.contactSupportError,
+        },
+      });
+    }
+  }
+
+  private async validateUserCompanyAccess(user: ActiveUserData, companyId: string): Promise<void> {
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId: user.id,
+        companyId: companyId,
+      },
+    });
+
+    if (!userPermission) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_COMPANY_ACCESS_DENIED',
+          title: 'User does not have access to the specified company',
         },
       });
     }

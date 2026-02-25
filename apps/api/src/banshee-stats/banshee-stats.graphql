@@ -1,0 +1,43 @@
+scalar DateTime
+
+type BansheeSessionStats {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  operatorEmail: String!
+  sessionDate: DateTime!
+  sessionId: String!
+  
+  totalMeasured: Int!
+  totalWithLogs: Int!
+  notMeasurable: Int!
+  broken: Int!
+  
+  company: Company!
+}
+
+type DailyReportEntry {
+  operatorEmail: String!
+  sessionDate: DateTime!
+  totalMeasured: Int!
+  totalWithLogs: Int!
+  notMeasurable: Int!
+  broken: Int!
+  company: Company
+}
+
+type Query {
+  dailyStats(operatorEmail: String!, date: DateTime!): BansheeSessionStats
+  statsForPeriod(
+    startDate: DateTime!
+    endDate: DateTime!
+    operatorEmail: String
+    companyId: String
+  ): [BansheeSessionStats!]!
+  dailyReport(date: DateTime!): [DailyReportEntry!]!
+}
+
+type Mutation {
+  generateDailyReport(date: DateTime!): String! # Returns success message
+}

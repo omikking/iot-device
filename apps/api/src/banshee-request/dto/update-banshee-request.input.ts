@@ -66,4 +66,9 @@ export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequest
 
   @IsOptional()
   images?: Upload[];
+
+  @IsString()
+  @IsUUID()
+  @IsOptional()
+  companyId?: string;
 }

@@ -12,6 +12,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#Data
+proceq-data
+
 # OS
 .DS_Store
 

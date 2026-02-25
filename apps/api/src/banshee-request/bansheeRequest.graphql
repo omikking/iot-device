@@ -26,7 +26,7 @@ type BansheeRequest {
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
   images: [String!]
-  deviceAndMeasurement: JSON
+  deviceAndMeasurements: [ProceqData!]!
 
   measured: Boolean!
 
@@ -36,6 +36,7 @@ type BansheeRequest {
   level: Level
   drive: Drive
   location: Location
+  company: Company
   boltType: String
 }
 
@@ -58,6 +59,7 @@ input CreateBansheeRequestInput {
   isNotMeasurable: Boolean!
   images: [Upload!]
   boltType: String
+  companyId: String!
 }
 
 """
@@ -80,6 +82,7 @@ input UpdateBansheeRequestInput {
   images: [Upload!]
   measured: Boolean
   boltType: String
+  companyId: String
 }
 """
 BansheeRequestResponse

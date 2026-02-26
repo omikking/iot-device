@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
@@ -11,35 +11,21 @@ export class BansheeStatsResolver {
     private readonly statsService: BansheeStatsService,
   ) {}
 
-  @Query('dailyStats')
-  async getDailyStats(
-    @Args('operatorEmail') operatorEmail: string,
+  @Query('getStats')
+  async getStats(
     @Args('date') date: Date,
+    @Args('companyId', { nullable: true }) companyId?: string,
   ) {
-    return this.statsService.getDailyStats(operatorEmail, date);
+    return this.statsService.getStats(date, companyId);
   }
 
   @Query('statsForPeriod')
   async getStatsForPeriod(
     @Args('startDate') startDate: Date,
     @Args('endDate') endDate: Date,
-    @Args('operatorEmail', { nullable: true }) operatorEmail?: string,
+    @Args('companyId', { nullable: true }) companyId?: string,
   ) {
-    return this.statsService.getStatsForPeriod(startDate, endDate, operatorEmail);
+    return this.statsService.getStatsForPeriod(startDate, endDate, companyId);
   }
 
-  @Query('dailyReport')
-  async getDailyReport(
-    @Args('date') date: Date,
-  ) {
-    return this.statsService.generateDailyReport(date);
-  }
-
-  @Mutation('generateDailyReport')
-  async generateDailyReport(
-    @Args('date') date: Date,
-  ) {
-    const report = await this.statsService.generateDailyReport(date);
-    return `Generated report for ${date.toISOString().split('T')[0]} with ${report.length} entries`;
-  }
 }

@@ -8,7 +8,6 @@ export class BansheeStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateStatsForMeasurement(
-    operatorEmail: string,
     createdTimestamp: bigint | null,
     hasReadings: boolean,
     hasLogs: boolean,
@@ -16,7 +15,7 @@ export class BansheeStatsService {
     companyId: string
   ): Promise<void> {
     try {
-      if (!createdTimestamp || !operatorEmail) {
+      if (!createdTimestamp) {
         this.logger.warn('Missing required fields for stats update');
         return;
       }
@@ -67,48 +66,25 @@ export class BansheeStatsService {
         }
       });
 
-      this.logger.log(`Updated stats for ${operatorEmail} on ${sessionDate.toISOString().split('T')[0]}`);
+      this.logger.log(`Updated stats for ${sessionDate.toISOString().split('T')[0]}`);
     } catch (error) {
       this.logger.error('Failed to update banshee stats', error.message);
     }
   }
 
-  async getDailyStats(
-    operatorEmail: string,
-    date: Date
-  ): Promise<any> {
-    const sessionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    
-    const stats = await this.prisma.bansheeSessionStats.findUnique({
-      where: {
-        sessionDate: sessionDate
-      }
-    });
-
-    return stats || {
-      totalMeasured: 0,
-      totalWithLogs: 0,
-      notMeasurable: 0,
-      broken: 0
-    };
-  }
-
-  async getStatsForPeriod(
-    startDate: Date,
-    endDate: Date,
-    operatorEmail?: string,
-    companyId?: string
+  async getStats(
+    date: Date,
+    companyId?: string,
   ): Promise<any[]> {
+    const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+
     const where: any = {
       sessionDate: {
-        gte: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()),
-        lte: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())
-      }
+        gte: startDate,
+        lte: endDate,
+      },
     };
-
-    if (operatorEmail) {
-      where.operatorEmail = operatorEmail;
-    }
 
     if (companyId) {
       where.companyId = companyId;
@@ -116,25 +92,38 @@ export class BansheeStatsService {
 
     return await this.prisma.bansheeSessionStats.findMany({
       where,
+      include: {
+        company: true,
+      },
       orderBy: {
-        sessionDate: 'desc'
-      }
+        sessionDate: 'desc',
+      },
     });
   }
 
-  async generateDailyReport(date: Date): Promise<any[]> {
-    const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+  async getStatsForPeriod(
+    startDate: Date,
+    endDate: Date,
+    companyId?: string,
+  ): Promise<any[]> {
+    const where: any = {
+      sessionDate: {
+        gte: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()),
+        lte: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59),
+      },
+    };
+
+    if (companyId) {
+      where.companyId = companyId;
+    }
 
     return await this.prisma.bansheeSessionStats.findMany({
-      where: {
-        sessionDate: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
+      where,
       include: {
-        company: true
+        company: true,
+      },
+      orderBy: {
+        sessionDate: 'desc',
       },
     });
   }

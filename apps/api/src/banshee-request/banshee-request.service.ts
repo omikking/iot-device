@@ -200,7 +200,7 @@ export class BansheeRequestsService {
             updateBansheeRequestInput.isNotMeasurable ?? undefined,
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
           updatedBy: user.id,
-          measured: updateBansheeRequestInput.measured || undefined,
+          measured: updateBansheeRequestInput.measured ?? undefined,
         },
         include: {
           level: true,

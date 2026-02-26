@@ -944,7 +944,6 @@ export class ProceqSyncService {
           const companyId = bansheeMap.get(serialNumber) || '';
 
           return this.statsService.updateStatsForMeasurement(
-            record.operatorEmail || 'unknown',
             record.createdTimestamp,
             true,
             true,

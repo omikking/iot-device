@@ -24,6 +24,8 @@ type ProceqReading {
   gate1MaximumAmplitude: Float
   gate1SoundPathDistance: Float
   gate1SoundPathDistanceInTimeUnit: Float
+  status: String
+  elongation: Float
 }
 
 type ProceqData {

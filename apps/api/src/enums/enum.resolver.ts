@@ -11,6 +11,7 @@ import {
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import {
+  BOLT_TYPE_LABELS,
   PULL_TEST_ABORT_REASON_LABELS,
   RING_POSITION_LABELS,
 } from './enum-labels.constants';
@@ -36,6 +37,14 @@ export class EnumResolver {
   @Query()
   getBoltTypes(): BoltType[] {
     return Object.values(BoltType);
+  }
+
+  @Query()
+  getBoltTypesOptions(): EnumOption[] {
+    return Object.values(BoltType).map((value) => ({
+      value,
+      label: BOLT_TYPE_LABELS[value],
+    }));
   }
 
   @Query()

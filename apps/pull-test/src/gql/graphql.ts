@@ -815,6 +815,7 @@ export type Query = {
   drives: Array<Drive>;
   getApplication?: Maybe<Array<Application>>;
   getBoltTypes?: Maybe<Array<BoltType>>;
+  getBoltTypesOptions: Array<EnumOption>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
   getPullTestAbortReasonOptions: Array<EnumOption>;

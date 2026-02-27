@@ -340,6 +340,7 @@ export abstract class IQuery {
     getRoles: Role[];
     getResults: Result[];
     getBoltTypes?: Nullable<BoltType[]>;
+    getBoltTypesOptions: EnumOption[];
     getRingPosition?: Nullable<RingPosition[]>;
     getRingPositionOptions: EnumOption[];
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;

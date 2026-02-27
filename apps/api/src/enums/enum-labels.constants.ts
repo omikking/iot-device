@@ -1,4 +1,4 @@
-import { PullTestAbortReason, RingPosition } from '@prisma/client';
+import { BoltType, PullTestAbortReason, RingPosition } from '@prisma/client';
 
 export const PULL_TEST_ABORT_REASON_LABELS: Record<
   PullTestAbortReason,
@@ -37,4 +37,40 @@ export const RING_POSITION_LABELS: Record<RingPosition, string> = {
   [RingPosition.LH_FACE_HIGH]: 'LH Face High',
   [RingPosition.LH_FACE_LOW]: 'LH Face Low',
   [RingPosition.CENTER_BACKS]: 'Center Backs',
+};
+
+export const BOLT_TYPE_LABELS: Record<BoltType, string> = {
+  [BoltType.D47_MD_1_8_M]: 'D47 MD - 1.8 m',
+  [BoltType.D47_MD_2_1_M]: 'D47 MD - 2.1 m',
+  [BoltType.D47_MD_2_4_M]: 'D47 MD - 2.4 m',
+  [BoltType.D47_MD_3_0_M]: 'D47 MD - 3.0 m',
+  [BoltType.D47_MD_3_8_M]: 'D47 MD - 3.8 m',
+  [BoltType.D47_MDX_1_8_M]: 'D47 MDX - 1.8 m',
+  [BoltType.D47_MDX_2_1_M]: 'D47 MDX - 2.1 m',
+  [BoltType.D47_MDX_2_4_M]: 'D47 MDX - 2.4 m',
+  [BoltType.D47_MDX_3_0_M]: 'D47 MDX - 3.0 m',
+  [BoltType.D47_MDX_3_8_M]: 'D47 MDX - 3.8 m',
+  [BoltType.D47_MDX_4_0_M]: 'D47 MDX - 4.0 m',
+  [BoltType.D39_MDX_1_8_M]: 'D39 MDX - 1.8 m',
+  [BoltType.D39_MDX_2_1_M]: 'D39 MDX - 2.1 m',
+  [BoltType.D39_MDX_2_4_M]: 'D39 MDX - 2.4 m',
+  [BoltType.D39_MDX_3_0_M]: 'D39 MDX - 3.0 m',
+  [BoltType.D47_MDX_PEG_BOLT_1_8_M]: 'D47 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D47_MDX_PEG_BOLT_2_1_M]: 'D47 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D47_MDX_PEG_BOLT_2_4_M]: 'D47 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D47_MDX_PEG_BOLT_3_0_M]: 'D47 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D39_MDX_PEG_BOLT_1_8_M]: 'D39 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D39_MDX_PEG_BOLT_2_1_M]: 'D39 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D39_MDX_PEG_BOLT_2_4_M]: 'D39 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D39_MDX_PEG_BOLT_3_0_M]: 'D39 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D47_MD_PEG_BOLT_1_8_M]: 'D47 MD - Peg Bolt - 1.8 m',
+  [BoltType.D47_MD_PEG_BOLT_2_1_M]: 'D47 MD - Peg Bolt - 2.1 m',
+  [BoltType.D47_MD_PEG_BOLT_2_4_M]: 'D47 MD - Peg Bolt - 2.4 m',
+  [BoltType.D47_MD_PEG_BOLT_3_0_M]: 'D47 MD - Peg Bolt - 3.0 m',
+  [BoltType.FRICTION_BOLT_47_MM]: 'Friction Bolt Ø47 mm',
+  [BoltType.FRICTION_BOLT_39_MM]: 'Friction Bolt Ø39 mm',
+  [BoltType.FRICTION_BOLT_33_MM]: 'Friction Bolt Ø33 mm',
+  [BoltType.SPIRAL_FRICTION_BOLT]: 'Spiral Friction Bolt',
+  [BoltType.KINLOC_BOLT]: 'Kinloc Bolt',
+  [BoltType.KINLOC_BOLT_INDIE]: 'Kinloc Bolt Indie',
 };

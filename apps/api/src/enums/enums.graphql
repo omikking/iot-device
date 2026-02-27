@@ -103,6 +103,7 @@ type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
+  getBoltTypesOptions: [EnumOption!]!
   getRingPosition: [RingPosition!]
   getRingPositionOptions: [EnumOption!]!
   getPullTestAbortReason: [PullTestAbortReason!]

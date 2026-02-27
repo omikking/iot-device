@@ -15,12 +15,7 @@ import {
   PULL_TEST_ABORT_REASON_LABELS,
   RING_POSITION_LABELS,
 } from './enum-labels.constants';
-
-interface EnumOption {
-  value: string;
-  label: string;
-}
-
+import * as GraphQLTypes from '../graphql-types';
 @Resolver()
 @UseGuards(JwtGuard)
 export class EnumResolver {
@@ -40,7 +35,7 @@ export class EnumResolver {
   }
 
   @Query()
-  getBoltTypesOptions(): EnumOption[] {
+  getBoltTypesOptions(): GraphQLTypes.EnumOption[] {
     return Object.values(BoltType).map((value) => ({
       value,
       label: BOLT_TYPE_LABELS[value],
@@ -53,7 +48,7 @@ export class EnumResolver {
   }
 
   @Query()
-  getRingPositionOptions(): EnumOption[] {
+  getRingPositionOptions(): GraphQLTypes.EnumOption[] {
     return Object.values(RingPosition).map((value) => ({
       value,
       label: RING_POSITION_LABELS[value],
@@ -66,7 +61,7 @@ export class EnumResolver {
   }
 
   @Query()
-  getPullTestAbortReasonOptions(): EnumOption[] {
+  getPullTestAbortReasonOptions(): GraphQLTypes.EnumOption[] {
     return Object.values(PullTestAbortReason).map((value) => ({
       value,
       label: PULL_TEST_ABORT_REASON_LABELS[value],

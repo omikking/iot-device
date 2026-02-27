@@ -94,12 +94,19 @@ enum PlanLevel {
   INACTIVE
 }
 
+type EnumOption {
+  value: String!
+  label: String!
+}
+
 type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
   getRingPosition: [RingPosition!]
+  getRingPositionOptions: [EnumOption!]!
   getPullTestAbortReason: [PullTestAbortReason!]
+  getPullTestAbortReasonOptions: [EnumOption!]!
   getApplication: [Application!]
   getPlanLevel: [PlanLevel!]
 }

@@ -307,6 +307,12 @@ export type Drive = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type EnumOption = {
+  __typename?: 'EnumOption';
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Flavor = {
   __typename?: 'Flavor';
   id: Scalars['ID']['output'];
@@ -811,8 +817,10 @@ export type Query = {
   getBoltTypes?: Maybe<Array<BoltType>>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getPullTestAbortReasonOptions: Array<EnumOption>;
   getResults: Array<Result>;
   getRingPosition?: Maybe<Array<RingPosition>>;
+  getRingPositionOptions: Array<EnumOption>;
   getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;

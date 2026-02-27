@@ -10,41 +10,66 @@ import {
 } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
+import {
+  PULL_TEST_ABORT_REASON_LABELS,
+  RING_POSITION_LABELS,
+} from './enum-labels.constants';
+
+interface EnumOption {
+  value: string;
+  label: string;
+}
 
 @Resolver()
 @UseGuards(JwtGuard)
 export class EnumResolver {
-  @Query(() => [Role])
+  @Query()
   getRoles(): Role[] {
     return Object.values(Role);
   }
 
-  @Query(() => [Result])
+  @Query()
   getResults(): Result[] {
     return Object.values(Result);
   }
 
-  @Query(() => [BoltType])
+  @Query()
   getBoltTypes(): BoltType[] {
     return Object.values(BoltType);
   }
 
-  @Query(() => [RingPosition])
+  @Query()
   getRingPosition(): RingPosition[] {
     return Object.values(RingPosition);
   }
 
-  @Query(() => [PullTestAbortReason])
+  @Query()
+  getRingPositionOptions(): EnumOption[] {
+    return Object.values(RingPosition).map((value) => ({
+      value,
+      label: RING_POSITION_LABELS[value],
+    }));
+  }
+
+  @Query()
   getPullTestAbortReason(): PullTestAbortReason[] {
     return Object.values(PullTestAbortReason);
   }
 
-  @Query(() => [Application])
+  @Query()
+  getPullTestAbortReasonOptions(): EnumOption[] {
+    return Object.values(PullTestAbortReason).map((value) => ({
+      value,
+      label: PULL_TEST_ABORT_REASON_LABELS[value],
+    }));
+  }
+
+  @Query()
   getApplication(): Application[] {
     return Object.values(Application);
   }
 
-  @Query(() => [PlanLevel])
+  @Query()
   getPlanLevel(): PlanLevel[] {
     return Object.values(PlanLevel);
   }

@@ -341,7 +341,9 @@ export abstract class IQuery {
     getResults: Result[];
     getBoltTypes?: Nullable<BoltType[]>;
     getRingPosition?: Nullable<RingPosition[]>;
+    getRingPositionOptions: EnumOption[];
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
+    getPullTestAbortReasonOptions: EnumOption[];
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
@@ -455,6 +457,11 @@ export class Drive {
     levelId: string;
     locations?: Nullable<Location[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class EnumOption {
+    value: string;
+    label: string;
 }
 
 export class Invitation {

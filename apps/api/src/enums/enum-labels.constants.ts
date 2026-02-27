@@ -11,11 +11,11 @@ export const PULL_TEST_ABORT_REASON_LABELS: Record<
   [PullTestAbortReason.PEG_NOT_EXTRUDED]:
     'Bolt has not been installed correctly, peg not extruded',
   [PullTestAbortReason.HIGH_ANGLE_NOT_PERPENDICULAR]:
-    'Bolt installed at a high angle, not perpendicular to the rock face',
+    'Bolt installed on a high degree angle, not perpendicular to the rockface',
   [PullTestAbortReason.REBAR_EJECTED_STOPPER_CAUGHT]:
     'Rebar ejected from bolt, visually popped, stopper has caught the bar',
   [PullTestAbortReason.BOLT_END_DAMAGE_RIG_NOT_ENGAGING]:
-    'End of the bolt damaged, rig not engaging the rock plate properly',
+    'End of the bolt damage, rig not engaging the rock plate properly',
   [PullTestAbortReason.PULL_TEST_COLLAR_INSTALLED_BACKWARDS]:
     'Pull test collar installed backwards',
   [PullTestAbortReason.BROKEN_BOLT_NUT]: 'Broken bolt nut',

@@ -38,8 +38,8 @@ export const generateBoltSpecifications = (
 ) => {
   return [
     {
-      title: 'Created at',
-      text: new Date(Number(boltData.createdAt)).toLocaleString() || 'N/A',
+      title: 'Measured at',
+      text: new Date(Number(boltData.measuredAt)).toLocaleString() || 'N/A',
     },
     {
       title: 'Bolt number',
@@ -228,6 +228,9 @@ export const convertAbortReason = (reason: PullTestAbortReason): string => {
       'Rebar ejected from bolt, visually popped, stopper has caught the bar',
     [PullTestAbortReason.BoltEndDamageRigNotEngaging]:
       'End of the bolt damage, rig not engaging the rock plate properly',
+    [PullTestAbortReason.PullTestCollarInstalledBackwards]:
+      'Pull test collar installed backwards',
+    [PullTestAbortReason.BrokenBoltNut]: 'Broken bolt nut',
   };
 
   if (reason in abortReasonDisplayMap) {

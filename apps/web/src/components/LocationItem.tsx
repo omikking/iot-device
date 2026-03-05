@@ -14,7 +14,11 @@ import {
   LocationValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import {
+  handleGraphQLErrors,
+  isCompanyAdmin,
+  isSandvikTechnician,
+} from '@/libs/utils';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 
@@ -70,6 +74,10 @@ export const LocationItem = ({
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
   const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const isUserSandvikTechnician = isSandvikTechnician(
     session?.user?.userPermissions,
     companyId,
   );
@@ -239,7 +247,9 @@ export const LocationItem = ({
               {location.locationName}
             </Text>
 
-            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            {(isUserSandvikAdmin ||
+              isUserCompanyAdmin ||
+              isUserSandvikTechnician) && (
               <DeleteEditDropdown
                 itemSelected={location.id}
                 handleEdit={handleEditLocation}

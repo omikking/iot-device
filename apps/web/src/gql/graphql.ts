@@ -45,6 +45,7 @@ export type BoltResult = {
   levelId: Scalars['String']['output'];
   location?: Maybe<Location>;
   locationId: Scalars['String']['output'];
+  measuredAt: Scalars['DateTime']['output'];
   peakDisplacement: Array<Scalars['Int']['output']>;
   peakLoad: Array<Scalars['Int']['output']>;
   positionInRing: Scalars['String']['output'];
@@ -182,6 +183,7 @@ export type CreateBoltResultInput = {
   isHazard: Scalars['Boolean']['input'];
   levelId: Scalars['String']['input'];
   locationId: Scalars['String']['input'];
+  measuredAt: Scalars['DateTime']['input'];
   peakDisplacement: Array<Scalars['Int']['input']>;
   peakLoad: Array<Scalars['Int']['input']>;
   positionInRing: Scalars['String']['input'];
@@ -303,6 +305,12 @@ export type Drive = {
   levelId: Scalars['String']['output'];
   locations?: Maybe<Array<Location>>;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type EnumOption = {
+  __typename?: 'EnumOption';
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type Flavor = {
@@ -782,9 +790,11 @@ export enum PlanLevel {
 
 export enum PullTestAbortReason {
   BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
+  BrokenBoltNut = 'BROKEN_BOLT_NUT',
   HighAngleNotPerpendicular = 'HIGH_ANGLE_NOT_PERPENDICULAR',
   NotTestedVoidCavity = 'NOT_TESTED_VOID_CAVITY',
   PegNotExtruded = 'PEG_NOT_EXTRUDED',
+  PullTestCollarInstalledBackwards = 'PULL_TEST_COLLAR_INSTALLED_BACKWARDS',
   RebarEjectedStopperCaught = 'REBAR_EJECTED_STOPPER_CAUGHT',
   TestStoppedInstallAngle = 'TEST_STOPPED_INSTALL_ANGLE'
 }
@@ -805,10 +815,13 @@ export type Query = {
   drives: Array<Drive>;
   getApplication?: Maybe<Array<Application>>;
   getBoltTypes?: Maybe<Array<BoltType>>;
+  getBoltTypesOptions: Array<EnumOption>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
+  getPullTestAbortReasonOptions: Array<EnumOption>;
   getResults: Array<Result>;
   getRingPosition?: Maybe<Array<RingPosition>>;
+  getRingPositionOptions: Array<EnumOption>;
   getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   level: Level;
@@ -1043,6 +1056,7 @@ export type UpdateBoltResultInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['Upload']['input']>;
   isHazard?: InputMaybe<Scalars['Boolean']['input']>;
+  measuredAt?: InputMaybe<Scalars['DateTime']['input']>;
   peakDisplacement?: InputMaybe<Array<Scalars['Int']['input']>>;
   peakLoad?: InputMaybe<Array<Scalars['Int']['input']>>;
   positionInRing?: InputMaybe<Scalars['String']['input']>;

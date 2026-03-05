@@ -77,6 +77,8 @@ enum PullTestAbortReason {
   HIGH_ANGLE_NOT_PERPENDICULAR
   REBAR_EJECTED_STOPPER_CAUGHT
   BOLT_END_DAMAGE_RIG_NOT_ENGAGING
+  PULL_TEST_COLLAR_INSTALLED_BACKWARDS
+  BROKEN_BOLT_NUT
 }
 
 enum Application {
@@ -92,12 +94,20 @@ enum PlanLevel {
   INACTIVE
 }
 
+type EnumOption {
+  value: String!
+  label: String!
+}
+
 type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
+  getBoltTypesOptions: [EnumOption!]!
   getRingPosition: [RingPosition!]
+  getRingPositionOptions: [EnumOption!]!
   getPullTestAbortReason: [PullTestAbortReason!]
+  getPullTestAbortReasonOptions: [EnumOption!]!
   getApplication: [Application!]
   getPlanLevel: [PlanLevel!]
 }

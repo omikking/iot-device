@@ -33,7 +33,7 @@ export class DrivesResolver {
     return this.drivesService.findOne(id);
   }
 
-  @Roles([Role.COMPANY_ADMIN], [], 'drive')
+  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'drive')
   @Mutation('createDrive')
   async create(
     @Args('createDriveInput')
@@ -42,7 +42,7 @@ export class DrivesResolver {
     return this.drivesService.create(createDriveInput);
   }
 
-  @Roles([Role.COMPANY_ADMIN], [], 'drive')
+  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'drive')
   @Mutation('updateDrive')
   async update(
     @Args('id', ParseUUIDPipe) id: string,
@@ -52,7 +52,7 @@ export class DrivesResolver {
     return this.drivesService.update(id, updateDriveInput);
   }
 
-  @Roles([Role.COMPANY_ADMIN], [], 'drive')
+  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'drive')
   @Mutation('removeDrive')
   async remove(
     @Args('id', ParseUUIDPipe) id: string,

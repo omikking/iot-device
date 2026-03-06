@@ -59,6 +59,7 @@ export class BansheeRequestsResolver {
     @Args('locationId', { nullable: true }) locationId?: string,
     @Args('createdBy', { nullable: true }) createdBy?: string,
     @Args('companyId', { nullable: true }) companyId?: string,
+    @Args('siteId', { nullable: true }) siteId?: string,
   ): Promise<GraphQLTypes.BansheeRequestResponse> {
     return this.bansheeRequestsService.findAll({
       offset,
@@ -71,6 +72,7 @@ export class BansheeRequestsResolver {
       locationId,
       createdBy,
       companyId,
+      siteId,
     });
   }
 

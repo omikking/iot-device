@@ -92,9 +92,9 @@ enum BoltType {
 model BoltTypeConstant {
   id                   String   @id @default(uuid())
   boltType             BoltType
-  velocity             Float   
-  tempCorrectionFactor Float   
-  tempCoeff            Float    
+  velocity             Float
+  tempCorrectionFactor Float
+  tempCoeff            Float
   quadCoeff1           Float
   linCoeff1            Float
   quadCoeff2           Float
@@ -262,7 +262,8 @@ model Site {
 
   level      Level[]
   boltResult BoltResult[]
-
+  bansheeRequests BansheeRequest[]
+  
   @@map("sites")
 }
 
@@ -396,17 +397,19 @@ model BansheeRequest {
   levelId                  String
   driveId                  String
   locationId               String
+  coordinates              Json?  
   period                   Int
   boltType                 BoltType
   locationDetails          String?
   boltInstallationDateTime DateTime?
-  ringPosition             String?
+  ringPosition             RingPosition
   comment                  String?
   isBrokenBolt             Boolean
   isNotMeasurable          Boolean
   images                   Json?
   measured                 Boolean      @default(false)
   deviceAndMeasurements    ProceqData[]
+  eventLogs                BansheeEventLog[]
   isProceqSynced           Boolean      @default(false)
 
   createdBy String
@@ -417,11 +420,30 @@ model BansheeRequest {
   location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@index([createdBy])
   @@index([serialNumber])
   @@index([companyId])
+  @@index([siteId])
   @@map("banshee_requests")
+}
+model BansheeEventLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime?
+
+  eventType      String   
+  previousStatus String
+  newStatus      String   
+  measurementId  String?  
+
+  bansheeRequest   BansheeRequest @relation(fields: [bansheeRequestId], references: [id], onDelete: Cascade)
+  bansheeRequestId String
+
+  @@index([bansheeRequestId])
+  @@index([createdAt])
+  @@map("banshee_event_logs")
 }
 
 model ProceqData {
@@ -436,8 +458,8 @@ model ProceqData {
   userPhoto        Json?
   rawDataZipId     String?
   rawDataZipPath   String?
-  createdTimestamp BigInt?
-  updatedTimestamp BigInt?
+  createdTimestamp DateTime?
+  updatedTimestamp DateTime?
   status           String?
 
   bansheeRequestId  String?
@@ -453,7 +475,7 @@ model ProceqReading {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  readingIndex                     Int     @default(0)
+  readingIndex                     Int        @default(0)
   indicationSetupFileName          String?
   measuringMode                    String?
   frequency                        Float?
@@ -474,8 +496,8 @@ model ProceqReading {
   gate1SoundPathDistanceInTimeUnit Float?
   status                           String?
   elongation                       Float?
-  proceqData   ProceqData @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
-  proceqDataId String
+  proceqData                       ProceqData @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
+  proceqDataId                     String
 
   @@unique([proceqDataId, readingIndex])
   @@map("proceq_readings")

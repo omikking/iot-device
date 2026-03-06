@@ -111,8 +111,8 @@ export interface ExtractedProceqFields {
   comments: string | undefined;
   temperature: number | null;
   userPhoto: UserPhotoEntry[];
-  createdTimestamp: bigint | null;
-  updatedTimestamp: bigint | null;
+  createdTimestamp: Date | null;
+  updatedTimestamp: Date | null;
   rawDataZipId: string | null;
   rawDataZipPath: string | null;
   readings: ExtractedProceqReading[];

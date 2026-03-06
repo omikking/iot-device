@@ -6,7 +6,7 @@ import { BansheeRequestsService } from 'src/banshee-request/banshee-request.serv
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BansheeRequestModule } from 'src/banshee-request/banshee-request.module';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
-import { BoltType, GlobalRole, PrismaClient } from '@prisma/client';
+import { BoltType, GlobalRole, PrismaClient, RingPosition } from '@prisma/client';
 
 @Module({
   imports: [PrismaModule, BansheeRequestModule],
@@ -1208,12 +1208,19 @@ async function seedBanshee() {
     console.log('BoltTypeConstant for D47_MD_1_8_M already exists, skipping');
   }
 
+  const ringPositions = Object.values(RingPosition);
+
   const baseInput = {
     name: 'Seeded Banshee Request',
     period: 1,
     locationDetails: 'Near the main entrance',
     boltInstallationDateTime: '2025-12-11T10:00:00Z',
-    ringPosition: 'Position A',
+    ringPosition: pickRandom(ringPositions),
+    coordinates: {
+      x: parseFloat((Math.random() * 100).toFixed(2)),
+      y: parseFloat((Math.random() * 100).toFixed(2)),
+      z: parseFloat((Math.random() * 50).toFixed(2)),
+    },
     comment: 'Seeded via internal script',
     isBrokenBolt: false,
     isNotMeasurable: false,
@@ -1230,6 +1237,7 @@ async function seedBanshee() {
       const levelId = location.drive.level.id;
       const driveId = location.drive.id;
       const locationId = location.id;
+      const siteId = location.drive.level.site.id;
       const companyId = location.drive.level.site.company.id;
 
       await bansheeService.create(
@@ -1239,6 +1247,7 @@ async function seedBanshee() {
           levelId,
           driveId,
           locationId,
+          siteId,
           companyId,
         } as any,
         systemUser,

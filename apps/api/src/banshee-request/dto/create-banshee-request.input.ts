@@ -6,6 +6,7 @@ import {
   Min,
   IsBoolean,
   IsUUID,
+  IsObject,
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 import { Upload } from 'graphql-upload-ts';
@@ -28,6 +29,10 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   @IsUUID()
   locationId: string;
 
+  @IsOptional()
+  @IsObject()
+  coordinates?: any;
+
   @IsInt()
   @Min(1)
   period: number;
@@ -38,10 +43,6 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
 
   @IsOptional()
   boltInstallationDateTime?: GraphQLTypes.DateTime;
-
-  @IsString()
-  @IsOptional()
-  ringPosition?: string;
 
   @IsString()
   @IsOptional()
@@ -63,4 +64,8 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   @IsString()
   @IsUUID()
   companyId: string;
+
+  @IsString()
+  @IsUUID()
+  siteId: string;
 }

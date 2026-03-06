@@ -102,16 +102,18 @@ export class CreateBansheeRequestInput {
     levelId: string;
     driveId: string;
     locationId: string;
+    coordinates?: Nullable<JSON>;
     period: number;
     locationDetails?: Nullable<string>;
     boltInstallationDateTime?: Nullable<DateTime>;
-    ringPosition?: Nullable<string>;
+    ringPosition?: Nullable<RingPosition>;
     comment?: Nullable<string>;
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
     images?: Nullable<Upload[]>;
     boltType?: Nullable<string>;
     companyId: string;
+    siteId: string;
 }
 
 export class UpdateBansheeRequestInput {
@@ -121,9 +123,10 @@ export class UpdateBansheeRequestInput {
     driveId?: Nullable<string>;
     locationId?: Nullable<string>;
     period?: Nullable<number>;
+    coordinates?: Nullable<JSON>;
     locationDetails?: Nullable<string>;
     boltInstallationDateTime?: Nullable<DateTime>;
-    ringPosition?: Nullable<string>;
+    ringPosition?: Nullable<RingPosition>;
     comment?: Nullable<string>;
     isBrokenBolt?: Nullable<boolean>;
     isNotMeasurable?: Nullable<boolean>;
@@ -131,6 +134,7 @@ export class UpdateBansheeRequestInput {
     measured?: Nullable<boolean>;
     boltType?: Nullable<string>;
     companyId?: Nullable<string>;
+    siteId?: Nullable<string>;
 }
 
 export class CreateBoltResultInput {
@@ -334,15 +338,18 @@ export class BansheeRequest {
     levelId: string;
     driveId: string;
     locationId: string;
+    companyId: string;
+    coordinates?: Nullable<JSON>;
     period: number;
     locationDetails?: Nullable<string>;
     boltInstallationDateTime?: Nullable<DateTime>;
-    ringPosition?: Nullable<string>;
+    ringPosition?: Nullable<RingPosition>;
     comment?: Nullable<string>;
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
     images?: Nullable<string[]>;
     deviceAndMeasurements: ProceqData[];
+    eventLogs: BansheeEventLog[];
     measured: boolean;
     createdBy: string;
     updatedBy?: Nullable<string>;
@@ -350,12 +357,25 @@ export class BansheeRequest {
     drive?: Nullable<Drive>;
     location?: Nullable<Location>;
     company?: Nullable<Company>;
+    site?: Nullable<Site>;
+    siteId: string;
     boltType?: Nullable<string>;
 }
 
 export class BansheeRequestResponse {
     totalRecords: number;
     results: BansheeRequest[];
+}
+
+export class BansheeEventLog {
+    id: string;
+    createdAt: DateTime;
+    eventType: string;
+    previousStatus: string;
+    newStatus: string;
+    source?: Nullable<string>;
+    measurementId?: Nullable<string>;
+    bansheeRequestId: string;
 }
 
 export abstract class IQuery {

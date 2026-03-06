@@ -8,7 +8,7 @@ import { extname, join } from 'path';
 import { createWriteStream } from 'fs';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { BoltType } from '@prisma/client';
+import { BoltType, RingPosition } from '@prisma/client';
 
 @Injectable()
 export class BansheeRequestsService {
@@ -63,12 +63,13 @@ export class BansheeRequestsService {
           levelId: createBansheeRequestInput.levelId,
           driveId: createBansheeRequestInput.driveId,
           locationId: createBansheeRequestInput.locationId,
+          coordinates: createBansheeRequestInput.coordinates || undefined,
           period: createBansheeRequestInput.period,
           locationDetails:
             createBansheeRequestInput.locationDetails || undefined,
           boltInstallationDateTime:
             createBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: createBansheeRequestInput.ringPosition || undefined,
+          ringPosition: createBansheeRequestInput.ringPosition as RingPosition || undefined,
           comment: createBansheeRequestInput.comment || undefined,
           isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
           isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
@@ -77,12 +78,16 @@ export class BansheeRequestsService {
           createdBy: user.id,
           updatedBy: user.id,
           companyId: createBansheeRequestInput.companyId,
+          siteId: createBansheeRequestInput.siteId,
         },
         include: {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
           deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -105,16 +110,10 @@ export class BansheeRequestsService {
         }
       }
 
-      // Fetch the company data to include in the response
-      const company = await this.prisma.company.findUnique({
-        where: { id: createdBansheeRequest.companyId },
-      });
-
       return {
         ...createdBansheeRequest,
         images: imagesArray,
         boltType: createBansheeRequestInput.boltType || undefined,
-        company: company,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -188,12 +187,13 @@ export class BansheeRequestsService {
           levelId: updateBansheeRequestInput.levelId || undefined,
           driveId: updateBansheeRequestInput.driveId || undefined,
           locationId: updateBansheeRequestInput.locationId || undefined,
+          coordinates: updateBansheeRequestInput.coordinates || undefined,
           period: updateBansheeRequestInput.period || undefined,
           locationDetails:
             updateBansheeRequestInput.locationDetails || undefined,
           boltInstallationDateTime:
             updateBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: updateBansheeRequestInput.ringPosition || undefined,
+          ringPosition: updateBansheeRequestInput.ringPosition as RingPosition || undefined,
           comment: updateBansheeRequestInput.comment || undefined,
           isBrokenBolt: updateBansheeRequestInput.isBrokenBolt ?? undefined,
           isNotMeasurable:
@@ -201,12 +201,16 @@ export class BansheeRequestsService {
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
           updatedBy: user.id,
           measured: updateBansheeRequestInput.measured ?? undefined,
+          siteId: updateBansheeRequestInput.siteId || undefined,
         },
         include: {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
           deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -246,7 +250,10 @@ export class BansheeRequestsService {
         level: true,
         drive: true,
         location: true,
-        deviceAndMeasurements: { include: { readings: true } }, 
+        company: true,
+        site: true,
+        deviceAndMeasurements: { include: { readings: true } },
+        eventLogs: true,
       },
     });
 
@@ -266,7 +273,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
           deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -307,6 +317,7 @@ export class BansheeRequestsService {
     locationId?: string;
     createdBy?: string;
     companyId?: string;
+    siteId?: string;
   }): Promise<any> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
@@ -344,6 +355,10 @@ export class BansheeRequestsService {
         where.companyId = restFilters.companyId;
       }
 
+      if (restFilters.siteId) {
+        where.siteId = restFilters.siteId;
+      }
+
       const totalRecords = await this.prisma.bansheeRequest.count({
         where,
       });
@@ -359,7 +374,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
           deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -405,7 +423,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
           deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 

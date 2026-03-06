@@ -8,7 +8,7 @@ export class BansheeStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateStatsForMeasurement(
-    createdTimestamp: bigint | null,
+    createdTimestamp: Date | null,
     hasReadings: boolean,
     hasLogs: boolean,
     comment: string ,
@@ -20,7 +20,7 @@ export class BansheeStatsService {
         return;
       }
 
-      const date = new Date(Number(createdTimestamp));
+      const date = createdTimestamp;
       const sessionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
       const isNotMeasurable = this.isCommentNotMeasurable(comment);

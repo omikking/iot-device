@@ -16,6 +16,7 @@ import {
   BoltConstants,
 } from './interfaces/proceq-sync.interfaces';
 import { BoltType } from '@prisma/client';
+import { DateTime } from 'src/graphql-types';
 
 @Injectable()
 export class ProceqSyncService {
@@ -264,13 +265,13 @@ export class ProceqSyncService {
           } else {
             const apiUpdatedAt = m.updatedAt || null;
             const apiUpdatedTimestamp = apiUpdatedAt
-              ? BigInt(new Date(apiUpdatedAt).getTime())
+              ? new Date(apiUpdatedAt)
               : null;
 
             if (
               apiUpdatedTimestamp !== null &&
               dbUpdatedTimestamp !== null &&
-              apiUpdatedTimestamp !== dbUpdatedTimestamp
+              apiUpdatedTimestamp.getTime() !== dbUpdatedTimestamp.getTime()
             ) {
               allUpdatedMeasurementIds.push(m.id);
             }
@@ -582,26 +583,38 @@ export class ProceqSyncService {
     const extractedDir = archivePath;
 
     try {
-      const allItems = await fs.readdir(extractedDir);
-      const jsonDirs = allItems.filter((item) => item.startsWith('JSON_'));
+      const jsonContainingDirs: string[] = [];
 
-      if (jsonDirs.length === 0) {
-        this.logger.warn(`No JSON subdirectories found in ${extractedDir}`);
-        return;
-      }
+      const findJsonDirs = async (dir: string): Promise<void> => {
+        const items = await fs.readdir(dir);
+        const hasJson = items.some((item) => item.endsWith('.json'));
+        if (hasJson) {
+          jsonContainingDirs.push(dir);
+          return;
+        }
+        for (const item of items) {
+          const fullPath = join(dir, item);
+          try {
+            const itemStat = await fs.stat(fullPath);
+            if (itemStat.isDirectory()) {
+              await findJsonDirs(fullPath);
+            }
+          } catch {
+            continue;
+          }
+        }
+      };
 
-      const jsonDirPath = join(extractedDir, jsonDirs[0]);
-      const allDirs = await fs.readdir(jsonDirPath);
+      await findJsonDirs(extractedDir);
+
+      this.logger.debug(
+        `Found ${jsonContainingDirs.length} JSON-containing directories in export archive`,
+      );
 
       const measurementDirMap = new Map<string, string>();
 
-      for (const dirName of allDirs) {
-        const potentialDir = join(jsonDirPath, dirName);
-
+      for (const potentialDir of jsonContainingDirs) {
         try {
-          const stat = await fs.stat(potentialDir);
-          if (!stat.isDirectory()) continue;
-
           const filesInDir = await fs.readdir(potentialDir);
           const jsonFiles = filesInDir.filter((file) => file.endsWith('.json'));
 
@@ -671,15 +684,15 @@ export class ProceqSyncService {
           const apiTimestamps = measurementTimestampMap.get(measurementId);
           if (apiTimestamps) {
             extracted.createdTimestamp = apiTimestamps.created
-              ? BigInt(new Date(apiTimestamps.created).getTime())
+              ? new Date(apiTimestamps.created)
               : null;
             extracted.updatedTimestamp = apiTimestamps.updated
-              ? BigInt(new Date(apiTimestamps.updated).getTime())
+              ? new Date(apiTimestamps.updated)
               : null;
 
             // Append createdTimestamp to fileName
             if (extracted.createdTimestamp) {
-              extracted.fileName = `${extracted.fileName}_${extracted.createdTimestamp.toString()}`;
+              extracted.fileName = `${extracted.fileName}_${extracted.createdTimestamp.getTime().toString()}`;
             }
           }
 
@@ -804,6 +817,16 @@ export class ProceqSyncService {
 
     for (let i = 0; i < records.length; i += chunkSize) {
       const chunk = records.slice(i, i + chunkSize);
+     //for event logs
+      const measurementIds = chunk.map((r) => r.measurementId);
+      const existingRecords = await this.prisma.proceqData.findMany({
+        where: { measurementId: { in: measurementIds } },
+        select: { measurementId: true, status: true, bansheeRequestId: true },
+      });
+      const existingStatusMap = new Map(
+      existingRecords.map(e => [e.measurementId,
+         { status: e.status, bansheeRequestId: e.bansheeRequestId }]),
+      );
 
       const parentOps = chunk.map((record) =>
         this.prisma.proceqData.upsert({
@@ -909,6 +932,35 @@ export class ProceqSyncService {
 
       if (readingUpserts.length > 0) {
         await this.prisma.$transaction(readingUpserts);
+      }
+
+      //update status for event logs
+      const eventLogs: Array<{
+        eventType: string; previousStatus: string; newStatus: string;
+         measurementId: string; bansheeRequestId: string;
+        createdAt: Date| null;
+      }> = [];
+
+      for (const record of chunk) {
+        const existing = existingStatusMap.get(record.measurementId);
+        if (!existing || !existing.bansheeRequestId) continue;
+        const oldStatus = existing.status;
+        const newStatus = record.status || null;
+        if (oldStatus && newStatus && oldStatus !== newStatus) {
+          eventLogs.push({
+            eventType: 'STATUS_CHANGE',
+            previousStatus: oldStatus,
+            newStatus: newStatus,
+            createdAt: record?.updatedTimestamp,
+            measurementId: record.measurementId,
+            bansheeRequestId: existing.bansheeRequestId,
+          });
+        }
+      }
+
+      if (eventLogs.length > 0) {
+        await this.prisma.bansheeEventLog.createMany({ data: eventLogs });
+        this.logger.log(`Created ${eventLogs.length} status change event logs`);
       }
     }
   }

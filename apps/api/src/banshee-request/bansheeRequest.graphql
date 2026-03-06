@@ -4,6 +4,25 @@
 scalar DateTime
 scalar Upload
 scalar JSON
+scalar BigInt
+
+enum RingPosition {
+  RH_BACKS
+  RH_SHOULDER
+  RH_WALL_UPPER
+  RH_WALL_CENTER
+  RH_WALL_LOWER
+  RH_FACE_HIGH
+  RH_FACE_LOW
+  LH_BACKS
+  LH_SHOULDER
+  LH_WALL_UPPER
+  LH_WALL_CENTER
+  LH_WALL_LOWER
+  LH_FACE_HIGH
+  LH_FACE_LOW
+  CENTER_BACKS
+}
 """
 BansheeRequest model
 Define the BansheeRequest model and its fields
@@ -18,16 +37,18 @@ type BansheeRequest {
   levelId: String!
   driveId: String!
   locationId: String!
+  companyId: String!
+  coordinates: JSON
   period: Int!
   locationDetails: String
   boltInstallationDateTime: DateTime
-  ringPosition: String
+  ringPosition: RingPosition
   comment: String
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
   images: [String!]
   deviceAndMeasurements: [ProceqData!]!
-
+  eventLogs: [BansheeEventLog!]!
   measured: Boolean!
 
   createdBy: String!
@@ -37,6 +58,8 @@ type BansheeRequest {
   drive: Drive
   location: Location
   company: Company
+  site: Site
+  siteId: String!
   boltType: String
 }
 
@@ -50,16 +73,18 @@ input CreateBansheeRequestInput {
   levelId: String!
   driveId: String!
   locationId: String!
+  coordinates: JSON
   period: Int!
   locationDetails: String
   boltInstallationDateTime: DateTime
-  ringPosition: String
+  ringPosition: RingPosition
   comment: String
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
   images: [Upload!]
   boltType: String
   companyId: String!
+  siteId: String!
 }
 
 """
@@ -72,10 +97,11 @@ input UpdateBansheeRequestInput {
   levelId: String
   driveId: String
   locationId: String
+  coordinates: JSON
   period: Int
   locationDetails: String
   boltInstallationDateTime: DateTime
-  ringPosition: String
+  ringPosition: RingPosition
   comment: String
   isBrokenBolt: Boolean
   isNotMeasurable: Boolean
@@ -83,6 +109,7 @@ input UpdateBansheeRequestInput {
   measured: Boolean
   boltType: String
   companyId: String
+  siteId: String
 }
 """
 BansheeRequestResponse
@@ -107,6 +134,8 @@ type Query {
     driveId: String
     locationId: String
     createdBy: String
+    companyId: String
+    siteId: String
   ): BansheeRequestResponse!
 
   bansheeRequest(id: String!): BansheeRequest!
@@ -129,4 +158,15 @@ type Mutation {
   markBansheeRequestMeasured(id: String!): BansheeRequest!
 
   finalizeBansheeSession: Int!
+}
+
+type BansheeEventLog {
+  id: String!
+  createdAt: DateTime!
+  eventType: String!
+  previousStatus: String!
+  newStatus: String!
+  source: String
+  measurementId: String
+  bansheeRequestId: String!
 }

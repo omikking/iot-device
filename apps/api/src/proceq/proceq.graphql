@@ -1,0 +1,72 @@
+scalar DateTime
+scalar JSON
+scalar BigInt
+
+type ProceqReading {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  readingIndex: Int!
+  indicationSetupFileName: String
+  measuringMode: String
+  frequency: Float
+  gain: Float
+  voltage: Int
+  sampleAveraging: Int
+  damping: Int
+  analogueFilter: Int
+  zeroOffset: Float
+  level: Float
+  measurementLevel: Float
+  referenceSamplingRate: Int
+  start: Float
+  width: Float
+  gate1MaximumAmplitude: Float
+  gate1SoundPathDistance: Float
+  gate1SoundPathDistanceInTimeUnit: Float
+  status: String
+  elongation: Float
+}
+
+type ProceqData {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  measurementId: String!
+  fileName: String!
+  operator: String
+  email: String
+  
+  comments: JSON
+  temperature: Float
+  
+  rawDataZipId: String
+  rawDataZipPath: String
+  status: String
+  
+  attachmentIds: [String!]!
+  
+  createdTimestamp: DateTime
+  updatedTimestamp: DateTime
+  
+  bansheeRequest: BansheeRequest
+  proceqAttachments: [ProceqAttachment!]
+  readings: [ProceqReading!]
+}
+
+type ProceqAttachment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  attachmentId: String!
+  measurementId: String!
+  fileName: String!
+  filePath: String!
+  fileType: String!
+  fileSize: Int
+  attachmentType: String!
+  description: String
+}

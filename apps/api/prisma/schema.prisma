@@ -89,6 +89,27 @@ enum BoltType {
   KINLOC_BOLT_INDIE
 }
 
+model BoltTypeConstant {
+  id                   String   @id @default(uuid())
+  boltType             BoltType
+  velocity             Float
+  tempCorrectionFactor Float
+  tempCoeff            Float
+  quadCoeff1           Float
+  linCoeff1            Float
+  quadCoeff2           Float
+  linCoeff2            Float
+  constTerm            Float
+  nominalLength        Float
+  linearLimit          Float
+  elasticLimit         Float
+  lowPlasticLimit      Float
+  createdAt            DateTime
+  updatedAt            DateTime @updatedAt
+
+  @@map("bolt_type_constants")
+}
+
 enum RingPosition {
   RH_BACKS
   RH_SHOULDER
@@ -130,10 +151,12 @@ model Company {
   country             String
   companyContactEmail String
 
-  plan           Plan[]
-  site           Site[]
-  userPermission UserPermission[]
-  invitation     Invitation[]
+  plan                Plan[]
+  site                Site[]
+  userPermission      UserPermission[]
+  invitation          Invitation[]
+  bansheeSessionStats BansheeSessionStats[]
+  bansheeRequests     BansheeRequest[]
 
   @@map("companies")
 }
@@ -239,7 +262,9 @@ model Site {
 
   level      Level[]
   boltResult BoltResult[]
-
+  bansheeRequests BansheeRequest[]
+  bansheeSessionStats BansheeSessionStats[]
+  
   @@map("sites")
 }
 
@@ -373,26 +398,162 @@ model BansheeRequest {
   levelId                  String
   driveId                  String
   locationId               String
+  coordinates              Json?  
   period                   Int
   boltType                 BoltType
   locationDetails          String?
   boltInstallationDateTime DateTime?
-  ringPosition             String?
+  ringPosition             RingPosition
   comment                  String?
   isBrokenBolt             Boolean
   isNotMeasurable          Boolean
   images                   Json?
-  measured                 Boolean   @default(false)
-  deviceAndMeasurement     Json?
+  measured                 Boolean      @default(false)
+  deviceAndMeasurements    ProceqData[]
+  eventLogs                BansheeEventLog[]
+  isProceqSynced           Boolean      @default(false)
 
   createdBy String
   updatedBy String?
 
-  level    Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
-  drive    Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
-  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  level     Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive     Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@index([createdBy])
   @@index([serialNumber])
+  @@index([companyId])
+  @@index([siteId])
   @@map("banshee_requests")
+}
+model BansheeEventLog {
+  id        String   @id @default(uuid())
+  createdAt DateTime?
+
+  eventType      String   
+  previousStatus String
+  newStatus      String   
+  measurementId  String?  
+
+  bansheeRequest   BansheeRequest @relation(fields: [bansheeRequestId], references: [id], onDelete: Cascade)
+  bansheeRequestId String
+
+  @@index([bansheeRequestId])
+  @@index([createdAt])
+  @@map("banshee_event_logs")
+}
+
+model ProceqData {
+  id               String   @id @default(uuid())
+  fileName         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  measurementId    String   @unique
+  operatorEmail    String?
+  comments         String?
+  temperature      Float?
+  userPhoto        Json?
+  rawDataZipId     String?
+  rawDataZipPath   String?
+  createdTimestamp DateTime?
+  updatedTimestamp DateTime?
+  status           String?
+
+  bansheeRequestId  String?
+  bansheeRequest    BansheeRequest?    @relation(fields: [bansheeRequestId], references: [id])
+  proceqAttachments ProceqAttachment[]
+  readings          ProceqReading[]
+
+  @@map("proceq_data")
+}
+
+model ProceqReading {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  readingIndex                     Int        @default(0)
+  indicationSetupFileName          String?
+  measuringMode                    String?
+  frequency                        Float?
+  gain                             Float?
+  voltage                          Int?
+  sampleAveraging                  Int?
+  damping                          Int?
+  analogueFilter                   Int?
+  zeroOffset                       Float?
+  velocity                         Float?
+  level                            Float?
+  measurementLevel                 Float?
+  referenceSamplingRate            Int?
+  start                            Float?
+  width                            Float?
+  gate1MaximumAmplitude            Float?
+  gate1SoundPathDistance           Float?
+  gate1SoundPathDistanceInTimeUnit Float?
+  status                           String?
+  elongation                       Float?
+  proceqData                       ProceqData @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
+  proceqDataId                     String
+
+  @@unique([proceqDataId, readingIndex])
+  @@map("proceq_readings")
+}
+
+model ProceqToken {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  operatorEmail String   @unique
+  accessToken   String
+  refreshToken  String
+  expiresAt     DateTime
+
+  @@map("proceq_tokens")
+}
+
+model ProceqAttachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachmentId   String  @unique
+  measurementId  String
+  fileName       String
+  filePath       String
+  fileType       String
+  fileSize       Int
+  attachmentType String
+  description    String?
+
+  proceqData   ProceqData @relation(fields: [proceqDataId], references: [id])
+  proceqDataId String
+
+  @@map("proceq_attachments")
+}
+
+model BansheeSessionStats {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessionDate DateTime
+
+  totalMeasured Int @default(0)
+  notMeasurable Int @default(0)
+  broken        Int @default(0)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  siteId String?
+  site   Site? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, siteId, sessionDate])
+  @@map("banshee_session_stats")
 }

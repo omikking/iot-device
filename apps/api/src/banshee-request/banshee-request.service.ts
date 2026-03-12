@@ -8,7 +8,7 @@ import { extname, join } from 'path';
 import { createWriteStream } from 'fs';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { BoltType, Prisma } from '@prisma/client';
+import { BoltType, RingPosition } from '@prisma/client';
 
 @Injectable()
 export class BansheeRequestsService {
@@ -36,6 +36,8 @@ export class BansheeRequestsService {
         });
       }
 
+      // await this.validateUserCompanyAccess(user, createBansheeRequestInput.companyId);
+      
       await this.validateRelations(
         createBansheeRequestInput.levelId,
         createBansheeRequestInput.driveId,
@@ -61,25 +63,31 @@ export class BansheeRequestsService {
           levelId: createBansheeRequestInput.levelId,
           driveId: createBansheeRequestInput.driveId,
           locationId: createBansheeRequestInput.locationId,
+          coordinates: createBansheeRequestInput.coordinates || undefined,
           period: createBansheeRequestInput.period,
           locationDetails:
             createBansheeRequestInput.locationDetails || undefined,
           boltInstallationDateTime:
             createBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: createBansheeRequestInput.ringPosition || undefined,
+          ringPosition: createBansheeRequestInput.ringPosition as RingPosition || undefined,
           comment: createBansheeRequestInput.comment || undefined,
           isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
           isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
           boltType: createBansheeRequestInput.boltType as BoltType,
-          deviceAndMeasurement: Prisma.JsonNull,
           createdBy: user.id,
           updatedBy: user.id,
+          companyId: createBansheeRequestInput.companyId,
+          siteId: createBansheeRequestInput.siteId,
         },
         include: {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
+          deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -122,7 +130,7 @@ export class BansheeRequestsService {
     }
   }
 
-  // measured field update in same table
+  // measured fieled updtae in same table
   async update(
     id: string,
     updateBansheeRequestInput: GraphQLTypes.UpdateBansheeRequestInput,
@@ -142,6 +150,11 @@ export class BansheeRequestsService {
         });
       }
 
+      // Validate company access if companyId is being updated
+      if (updateBansheeRequestInput.companyId) {
+        await this.validateUserCompanyAccess(user, updateBansheeRequestInput.companyId);
+      }
+      
       if (
         updateBansheeRequestInput.levelId ||
         updateBansheeRequestInput.driveId ||
@@ -174,24 +187,30 @@ export class BansheeRequestsService {
           levelId: updateBansheeRequestInput.levelId || undefined,
           driveId: updateBansheeRequestInput.driveId || undefined,
           locationId: updateBansheeRequestInput.locationId || undefined,
+          coordinates: updateBansheeRequestInput.coordinates || undefined,
           period: updateBansheeRequestInput.period || undefined,
           locationDetails:
             updateBansheeRequestInput.locationDetails || undefined,
           boltInstallationDateTime:
             updateBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: updateBansheeRequestInput.ringPosition || undefined,
+          ringPosition: updateBansheeRequestInput.ringPosition as RingPosition || undefined,
           comment: updateBansheeRequestInput.comment || undefined,
           isBrokenBolt: updateBansheeRequestInput.isBrokenBolt ?? undefined,
           isNotMeasurable:
             updateBansheeRequestInput.isNotMeasurable ?? undefined,
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
           updatedBy: user.id,
-          measured: updateBansheeRequestInput.measured || undefined,
+          measured: updateBansheeRequestInput.measured ?? undefined,
+          siteId: updateBansheeRequestInput.siteId || undefined,
         },
         include: {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
+          deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -231,6 +250,10 @@ export class BansheeRequestsService {
         level: true,
         drive: true,
         location: true,
+        company: true,
+        site: true,
+        deviceAndMeasurements: { include: { readings: true } },
+        eventLogs: true,
       },
     });
 
@@ -250,6 +273,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
+          deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -289,6 +316,9 @@ export class BansheeRequestsService {
     driveId?: string;
     locationId?: string;
     createdBy?: string;
+    companyId?: string;
+    siteId?: string;
+    timeFilter?: string;
   }): Promise<any> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
@@ -322,6 +352,28 @@ export class BansheeRequestsService {
         where.createdBy = restFilters.createdBy;
       }
 
+      if (restFilters.companyId) {
+        where.companyId = restFilters.companyId;
+      }
+
+      if (restFilters.siteId) {
+        where.siteId = restFilters.siteId;
+      }
+    
+      if (restFilters.timeFilter && restFilters.timeFilter !== 'ALL' && restFilters.companyId && restFilters.siteId) {
+        const dateRange = await this.getDateRangeFromTimeFilter(restFilters.companyId, restFilters.siteId, restFilters.timeFilter);
+        if (dateRange) {
+          where.deviceAndMeasurements = {
+            some: {
+              updatedTimestamp: {
+                gte: dateRange.startDate,
+                lte: dateRange.endDate,
+              }
+            }
+          };
+        }
+      }
+
       const totalRecords = await this.prisma.bansheeRequest.count({
         where,
       });
@@ -337,6 +389,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
+          deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -382,6 +438,10 @@ export class BansheeRequestsService {
           level: true,
           drive: true,
           location: true,
+          company: true,
+          site: true,
+          deviceAndMeasurements: { include: { readings: true } },
+          eventLogs: true,
         },
       });
 
@@ -419,6 +479,115 @@ export class BansheeRequestsService {
           code: 'BANSHEE_REQUEST_FETCH_ERROR',
           title: 'Failed to fetch banshee request',
           message: errorTexts.contactSupportError,
+        },
+      });
+    }
+  }
+
+  async getStatusDistribution(filters: { companyId?: string; siteId?: string; locationId?: string; timeFilter?: string }): Promise<GraphQLTypes.BansheeStatusDistribution> {
+    const where: any = {};
+    if (filters.companyId) where.companyId = filters.companyId;
+    if (filters.siteId) where.siteId = filters.siteId;
+    if (filters.locationId) where.locationId = filters.locationId;
+
+    if (filters.timeFilter && filters.timeFilter !== 'ALL' && filters.companyId && filters.siteId) {
+      const dateRange = await this.getDateRangeFromTimeFilter(filters.companyId, filters.siteId, filters.timeFilter);
+      if (dateRange) {
+        where.deviceAndMeasurements = {
+          some: {
+            createdTimestamp: {
+              gte: dateRange.startDate,
+              lte: dateRange.endDate,
+            }
+          }
+        };
+      }
+    }
+
+    const bansheeRequests = await this.prisma.bansheeRequest.findMany({
+      where,
+      select: {
+        id: true,
+        locationId: true,
+        location: {
+          select: { locationName: true }
+        },
+        deviceAndMeasurements: {
+          select: { status: true, createdTimestamp: true },
+          orderBy: { createdTimestamp: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    const counts: Record<string, number> = {};
+    const locationCountsMap: Record<string, { locationName: string; total: number; counts: Record<string, number> }> = {};
+
+    for (const br of bansheeRequests) {
+      const status = br.deviceAndMeasurements[0]?.status ?? 'unmeasured';
+      counts[status] = (counts[status] || 0) + 1;
+
+      const locId = br.locationId;
+      if (!locationCountsMap[locId]) {
+        locationCountsMap[locId] = {
+          locationName: br.location?.locationName || 'Unknown',
+          total: 0,
+          counts: {}
+        };
+      }
+      locationCountsMap[locId].total += 1;
+      locationCountsMap[locId].counts[status] = (locationCountsMap[locId].counts[status] || 0) + 1;
+    }
+
+    return {
+      total: bansheeRequests.length,
+      statusCounts: Object.entries(counts).map(([status, count]) => ({ status, count })),
+      byLocation: Object.entries(locationCountsMap).map(([locId, locData]) => ({
+        locationId: locId,
+        locationName: locData.locationName,
+        total: locData.total,
+        statusCounts: Object.entries(locData.counts).map(([status, count]) => ({ status, count }))
+      }))
+    };
+  }
+
+  private async getDateRangeFromTimeFilter(companyId: string, siteId: string, timeFilter: string) {
+    if (!timeFilter || timeFilter === 'ALL') return null;
+
+    const latestRecord = await this.prisma.proceqData.findFirst({
+      where: { bansheeRequest: { companyId, siteId } },
+      orderBy: { updatedTimestamp: 'desc' },
+      select: { updatedTimestamp: true }
+    });
+    this.logger.log('Vasu latest records', latestRecord);
+    if (!latestRecord?.updatedTimestamp) return null;
+
+    const endDate = new Date(latestRecord.updatedTimestamp);
+    const startDate = new Date(latestRecord.updatedTimestamp);
+
+    switch (timeFilter) {
+      case '7D': startDate.setDate(endDate.getDate() - 7); break;
+      case '1M': startDate.setMonth(endDate.getMonth() - 1); break;
+      case '3M': startDate.setMonth(endDate.getMonth() - 3); break;
+      case '1Y': startDate.setFullYear(endDate.getFullYear() - 1); break;
+    }
+    this.logger.log('Vasu start and end date', startDate, endDate);
+    return { startDate, endDate };
+  }
+
+  private async validateUserCompanyAccess(user: ActiveUserData, companyId: string): Promise<void> {
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId: user.id,
+        companyId: companyId,
+      },
+    });
+
+    if (!userPermission) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'USER_COMPANY_ACCESS_DENIED',
+          title: 'User does not have access to the specified company',
         },
       });
     }
@@ -549,5 +718,60 @@ export class BansheeRequestsService {
     });
 
     return `/uploads/bansheeRequests/${safeFilename}`;
+  }
+
+  async getEventLogs(filters: {
+    offset?: number;
+    limit?: number;
+    companyId?: string;
+    siteId?: string;
+  }): Promise<GraphQLTypes.BansheeEventLogResponse> {
+    try {
+      const { offset = 0, limit = 100, companyId, siteId } = filters;
+
+      const where: any = {};
+      
+      const bansheeRequestWhere: any = {};
+      if (companyId) bansheeRequestWhere.companyId = companyId;
+      if (siteId) bansheeRequestWhere.siteId = siteId;
+      
+      if (Object.keys(bansheeRequestWhere).length > 0) {
+        where.bansheeRequest = bansheeRequestWhere;
+      }
+
+      const totalRecords = await this.prisma.bansheeEventLog.count({
+        where,
+      });
+
+      const results = await this.prisma.bansheeEventLog.findMany({
+        where,
+        skip: offset,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          bansheeRequest: {
+            include: {
+              location: true,
+            }
+          }
+        }
+      });
+
+      return {
+        totalRecords,
+        results: results as unknown as GraphQLTypes.BansheeEventLog[],
+      };
+    } catch (error) {
+      this.logger.error('Error fetching event logs', error.stack);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'EVENT_LOGS_FETCH_ERROR',
+          title: 'Failed to fetch event logs',
+          message: errorTexts.contactSupportError,
+        },
+      });
+    }
   }
 }

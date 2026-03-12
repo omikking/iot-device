@@ -263,6 +263,7 @@ model Site {
   level      Level[]
   boltResult BoltResult[]
   bansheeRequests BansheeRequest[]
+  bansheeSessionStats BansheeSessionStats[]
   
   @@map("sites")
 }
@@ -550,6 +551,9 @@ model BansheeSessionStats {
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
-  @@unique([sessionDate])
+  siteId String?
+  site   Site? @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, siteId, sessionDate])
   @@map("banshee_session_stats")
 }

@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import * as GraphQLTypes from 'src/graphql-types';
+import * as GraphQLTypes from '../graphql-types';
 import { CreateBansheeRequestInput } from './dto/create-banshee-request.input';
 import { UpdateBansheeRequestInput } from './dto/update-banshee-request.input';
 import { UseGuards, ParseUUIDPipe } from '@nestjs/common';
@@ -60,6 +60,7 @@ export class BansheeRequestsResolver {
     @Args('createdBy', { nullable: true }) createdBy?: string,
     @Args('companyId', { nullable: true }) companyId?: string,
     @Args('siteId', { nullable: true }) siteId?: string,
+    @Args('timeFilter', { nullable: true }) timeFilter?: string,
   ): Promise<GraphQLTypes.BansheeRequestResponse> {
     return this.bansheeRequestsService.findAll({
       offset,
@@ -73,6 +74,7 @@ export class BansheeRequestsResolver {
       createdBy,
       companyId,
       siteId,
+      timeFilter,
     });
   }
 
@@ -81,5 +83,35 @@ export class BansheeRequestsResolver {
     @Args('id', ParseUUIDPipe) id: string,
   ): Promise<GraphQLTypes.BansheeRequest> {
     return this.bansheeRequestsService.findOne(id);
+  }
+
+  @Query('bansheeStatusDistribution')
+  async bansheeStatusDistribution(
+    @Args('companyId', { nullable: true }) companyId?: string,
+    @Args('siteId', { nullable: true }) siteId?: string,
+    @Args('locationId', { nullable: true }) locationId?: string,
+    @Args('timeFilter', { nullable: true }) timeFilter?: string,
+  ): Promise<GraphQLTypes.BansheeStatusDistribution> {
+    return this.bansheeRequestsService.getStatusDistribution({
+      companyId,
+      siteId,
+      locationId,
+      timeFilter,
+    });
+  }
+
+  @Query('bansheeEventLogs')
+  async bansheeEventLogs(
+    @Args('offset', { nullable: true }) offset?: number,
+    @Args('limit', { nullable: true }) limit?: number,
+    @Args('companyId', { nullable: true }) companyId?: string,
+    @Args('siteId', { nullable: true }) siteId?: string,
+  ): Promise<GraphQLTypes.BansheeEventLogResponse> {
+    return this.bansheeRequestsService.getEventLogs({
+      offset,
+      limit,
+      companyId,
+      siteId,
+    });
   }
 }

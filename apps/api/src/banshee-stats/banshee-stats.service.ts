@@ -12,6 +12,7 @@ export class BansheeStatsService {
     hasReadings: boolean,
     hasLogs: boolean,
     comment: string ,
+    siteId: string,
     companyId: string
   ): Promise<void> {
     try {
@@ -43,7 +44,11 @@ export class BansheeStatsService {
       
       await this.prisma.bansheeSessionStats.upsert({
         where: {
-          sessionDate: sessionDate
+          companyId_siteId_sessionDate: {
+            companyId: companyId,
+            siteId: siteId ,
+            sessionDate: sessionDate
+          }
         },
         update: {
           totalMeasured: {
@@ -54,15 +59,15 @@ export class BansheeStatsService {
           },
           broken: {
             increment: (hasLogsFlag && isBroken) ? 1 : 0
-          },
-          companyId: companyId || null
+          }
         },
         create: {
           sessionDate,
           totalMeasured: isMeasured ? 1 : 0,
           notMeasurable: (hasLogsFlag && isNotMeasurable) ? 1 : 0,
           broken: (hasLogsFlag && isBroken) ? 1 : 0,
-          companyId: companyId || null
+          companyId: companyId || null,
+          siteId: siteId || null
         }
       });
 

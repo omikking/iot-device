@@ -16,7 +16,6 @@ import {
   BoltConstants,
 } from './interfaces/proceq-sync.interfaces';
 import { BoltType } from '@prisma/client';
-import { DateTime } from 'src/graphql-types';
 
 @Injectable()
 export class ProceqSyncService {
@@ -934,7 +933,6 @@ export class ProceqSyncService {
         await this.prisma.$transaction(readingUpserts);
       }
 
-      //update status for event logs
       const eventLogs: Array<{
         eventType: string; previousStatus: string; newStatus: string;
          measurementId: string; bansheeRequestId: string;
@@ -976,12 +974,12 @@ export class ProceqSyncService {
       allSerialNumbers.length > 0
         ? await this.prisma.bansheeRequest.findMany({
             where: { serialNumber: { in: allSerialNumbers } },
-            select: { serialNumber: true, companyId: true },
+            select: { serialNumber: true, companyId: true, siteId: true },
           })
         : [];
 
     const bansheeMap = new Map(
-      bansheeRequests.map((b) => [b.serialNumber, b.companyId]),
+      bansheeRequests.map((b) => [b.serialNumber, { companyId: b.companyId, siteId: b.siteId }]),
     );
 
     const STATS_CONCURRENCY = 5;
@@ -993,13 +991,16 @@ export class ProceqSyncService {
           const serialNumber =
             serialNumberMap.get(record.measurementId) ||
             record.fileName.split('_')[0];
-          const companyId = bansheeMap.get(serialNumber) || '';
+          const bansheeInfo = bansheeMap.get(serialNumber);
+          const companyId = bansheeInfo?.companyId || '';
+          const siteId = bansheeInfo?.siteId || '';
 
           return this.statsService.updateStatsForMeasurement(
             record.createdTimestamp,
             true,
             true,
             record.comments || '',
+            siteId,
             companyId,
           );
         }),

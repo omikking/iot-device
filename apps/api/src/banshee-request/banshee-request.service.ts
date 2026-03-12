@@ -318,6 +318,7 @@ export class BansheeRequestsService {
     createdBy?: string;
     companyId?: string;
     siteId?: string;
+    timeFilter?: string;
   }): Promise<any> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
@@ -357,6 +358,20 @@ export class BansheeRequestsService {
 
       if (restFilters.siteId) {
         where.siteId = restFilters.siteId;
+      }
+    
+      if (restFilters.timeFilter && restFilters.timeFilter !== 'ALL' && restFilters.companyId && restFilters.siteId) {
+        const dateRange = await this.getDateRangeFromTimeFilter(restFilters.companyId, restFilters.siteId, restFilters.timeFilter);
+        if (dateRange) {
+          where.deviceAndMeasurements = {
+            some: {
+              updatedTimestamp: {
+                gte: dateRange.startDate,
+                lte: dateRange.endDate,
+              }
+            }
+          };
+        }
       }
 
       const totalRecords = await this.prisma.bansheeRequest.count({
@@ -467,6 +482,97 @@ export class BansheeRequestsService {
         },
       });
     }
+  }
+
+  async getStatusDistribution(filters: { companyId?: string; siteId?: string; locationId?: string; timeFilter?: string }): Promise<GraphQLTypes.BansheeStatusDistribution> {
+    const where: any = {};
+    if (filters.companyId) where.companyId = filters.companyId;
+    if (filters.siteId) where.siteId = filters.siteId;
+    if (filters.locationId) where.locationId = filters.locationId;
+
+    if (filters.timeFilter && filters.timeFilter !== 'ALL' && filters.companyId && filters.siteId) {
+      const dateRange = await this.getDateRangeFromTimeFilter(filters.companyId, filters.siteId, filters.timeFilter);
+      if (dateRange) {
+        where.deviceAndMeasurements = {
+          some: {
+            createdTimestamp: {
+              gte: dateRange.startDate,
+              lte: dateRange.endDate,
+            }
+          }
+        };
+      }
+    }
+
+    const bansheeRequests = await this.prisma.bansheeRequest.findMany({
+      where,
+      select: {
+        id: true,
+        locationId: true,
+        location: {
+          select: { locationName: true }
+        },
+        deviceAndMeasurements: {
+          select: { status: true, createdTimestamp: true },
+          orderBy: { createdTimestamp: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    const counts: Record<string, number> = {};
+    const locationCountsMap: Record<string, { locationName: string; total: number; counts: Record<string, number> }> = {};
+
+    for (const br of bansheeRequests) {
+      const status = br.deviceAndMeasurements[0]?.status ?? 'unmeasured';
+      counts[status] = (counts[status] || 0) + 1;
+
+      const locId = br.locationId;
+      if (!locationCountsMap[locId]) {
+        locationCountsMap[locId] = {
+          locationName: br.location?.locationName || 'Unknown',
+          total: 0,
+          counts: {}
+        };
+      }
+      locationCountsMap[locId].total += 1;
+      locationCountsMap[locId].counts[status] = (locationCountsMap[locId].counts[status] || 0) + 1;
+    }
+
+    return {
+      total: bansheeRequests.length,
+      statusCounts: Object.entries(counts).map(([status, count]) => ({ status, count })),
+      byLocation: Object.entries(locationCountsMap).map(([locId, locData]) => ({
+        locationId: locId,
+        locationName: locData.locationName,
+        total: locData.total,
+        statusCounts: Object.entries(locData.counts).map(([status, count]) => ({ status, count }))
+      }))
+    };
+  }
+
+  private async getDateRangeFromTimeFilter(companyId: string, siteId: string, timeFilter: string) {
+    if (!timeFilter || timeFilter === 'ALL') return null;
+
+    const latestRecord = await this.prisma.proceqData.findFirst({
+      where: { bansheeRequest: { companyId, siteId } },
+      orderBy: { updatedTimestamp: 'desc' },
+      select: { updatedTimestamp: true }
+    });
+    this.logger.log('Vasu latest records', latestRecord);
+    if (!latestRecord?.updatedTimestamp) return null;
+
+    const endDate = new Date(latestRecord.updatedTimestamp);
+    const startDate = new Date(latestRecord.updatedTimestamp);
+
+    switch (timeFilter) {
+      case '7D': startDate.setDate(endDate.getDate() - 7); break;
+      case '1M': startDate.setMonth(endDate.getMonth() - 1); break;
+      case '3M': startDate.setMonth(endDate.getMonth() - 3); break;
+      case '1Y': startDate.setFullYear(endDate.getFullYear() - 1); break;
+    }
+    this.logger.log('Vasu start and end date', startDate, endDate);
+    return { startDate, endDate };
   }
 
   private async validateUserCompanyAccess(user: ActiveUserData, companyId: string): Promise<void> {
@@ -612,5 +718,60 @@ export class BansheeRequestsService {
     });
 
     return `/uploads/bansheeRequests/${safeFilename}`;
+  }
+
+  async getEventLogs(filters: {
+    offset?: number;
+    limit?: number;
+    companyId?: string;
+    siteId?: string;
+  }): Promise<GraphQLTypes.BansheeEventLogResponse> {
+    try {
+      const { offset = 0, limit = 100, companyId, siteId } = filters;
+
+      const where: any = {};
+      
+      const bansheeRequestWhere: any = {};
+      if (companyId) bansheeRequestWhere.companyId = companyId;
+      if (siteId) bansheeRequestWhere.siteId = siteId;
+      
+      if (Object.keys(bansheeRequestWhere).length > 0) {
+        where.bansheeRequest = bansheeRequestWhere;
+      }
+
+      const totalRecords = await this.prisma.bansheeEventLog.count({
+        where,
+      });
+
+      const results = await this.prisma.bansheeEventLog.findMany({
+        where,
+        skip: offset,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          bansheeRequest: {
+            include: {
+              location: true,
+            }
+          }
+        }
+      });
+
+      return {
+        totalRecords,
+        results: results as unknown as GraphQLTypes.BansheeEventLog[],
+      };
+    } catch (error) {
+      this.logger.error('Error fetching event logs', error.stack);
+      throw new UserInputError('', {
+        extensions: {
+          code: 'EVENT_LOGS_FETCH_ERROR',
+          title: 'Failed to fetch event logs',
+          message: errorTexts.contactSupportError,
+        },
+      });
+    }
   }
 }

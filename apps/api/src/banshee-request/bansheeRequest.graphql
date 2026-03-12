@@ -120,6 +120,19 @@ type BansheeRequestResponse {
   results: [BansheeRequest!]!
 }
 
+type LocationDistribution {
+  locationId: String!
+  locationName: String!
+  total: Int!
+  statusCounts: [StatusCount!]!
+}
+
+type BansheeStatusDistribution {
+  total: Int!
+  statusCounts: [StatusCount!]!
+  byLocation: [LocationDistribution!]
+}
+
 """
 Query
 Define the queries that can be made to the BansheeRequest model
@@ -136,9 +149,34 @@ type Query {
     createdBy: String
     companyId: String
     siteId: String
+    timeFilter: String
   ): BansheeRequestResponse!
 
   bansheeRequest(id: String!): BansheeRequest!
+
+  bansheeStatusDistribution(
+    companyId: String
+    siteId: String
+    locationId: String
+    timeFilter: String
+  ): BansheeStatusDistribution!
+
+  bansheeEventLogs(
+    offset: Int
+    limit: Int
+    companyId: String
+    siteId: String
+  ): BansheeEventLogResponse!
+}
+
+type StatusCount {
+  status: String!
+  count: Int!
+}
+
+type BansheeStatusDistribution {
+  total: Int!
+  statusCounts: [StatusCount!]!
 }
 
 """
@@ -169,4 +207,10 @@ type BansheeEventLog {
   source: String
   measurementId: String
   bansheeRequestId: String!
+  bansheeRequest: BansheeRequest
+}
+
+type BansheeEventLogResponse {
+  totalRecords: Int!
+  results: [BansheeEventLog!]!
 }

@@ -113,7 +113,6 @@ export class BansheeRequestsService {
       return {
         ...createdBansheeRequest,
         images: imagesArray,
-        boltType: createBansheeRequestInput.boltType || undefined,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -199,6 +198,7 @@ export class BansheeRequestsService {
           isNotMeasurable:
             updateBansheeRequestInput.isNotMeasurable ?? undefined,
           images: imagePaths ? JSON.stringify(imagePaths) : undefined,
+          boltType: updateBansheeRequestInput.boltType as BoltType || undefined,
           updatedBy: user.id,
           measured: updateBansheeRequestInput.measured ?? undefined,
           siteId: updateBansheeRequestInput.siteId || undefined,
@@ -226,7 +226,6 @@ export class BansheeRequestsService {
       return {
         ...updatedBansheeRequest,
         images: imagesArray,
-        boltType: updateBansheeRequestInput.boltType || undefined,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -293,7 +292,6 @@ export class BansheeRequestsService {
       return {
         ...deletedRequest,
         images: imagesArray,
-        boltType: undefined,
       };
     } catch (error) {
       this.logger.error(`Error deleting banshee request #${id}`, error.stack);
@@ -332,7 +330,7 @@ export class BansheeRequestsService {
         };
       }
 
-      if (restFilters.measured) {
+      if (restFilters.measured != null) {
         where.measured = restFilters.measured;
       }
 
@@ -410,7 +408,6 @@ export class BansheeRequestsService {
         return {
           ...request,
           images: imagesArray,
-          boltType: undefined,
         };
       });
 
@@ -467,7 +464,6 @@ export class BansheeRequestsService {
       return {
         ...bansheeRequest,
         images: imagesArray,
-        boltType: undefined,
       };
     } catch (error) {
       if (error instanceof UserInputError) {

@@ -101,6 +101,10 @@ export enum BoltType {
   FrictionBolt_33Mm = 'FRICTION_BOLT_33_MM',
   FrictionBolt_39Mm = 'FRICTION_BOLT_39_MM',
   FrictionBolt_47Mm = 'FRICTION_BOLT_47_MM',
+  FrictionBolt_47Mm_1_8M = 'FRICTION_BOLT_47_MM_1_8_M',
+  FrictionBolt_47Mm_2_1M = 'FRICTION_BOLT_47_MM_2_1_M',
+  FrictionBolt_47Mm_2_4M = 'FRICTION_BOLT_47_MM_2_4_M',
+  FrictionBolt_47Mm_3_0M = 'FRICTION_BOLT_47_MM_3_0_M',
   KinlocBolt = 'KINLOC_BOLT',
   KinlocBoltIndie = 'KINLOC_BOLT_INDIE',
   SpiralFrictionBolt = 'SPIRAL_FRICTION_BOLT'

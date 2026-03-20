@@ -23,7 +23,10 @@ export class ProceqSchedulerService {
         return;
       }
     } catch (error) {
-      this.logger.error('Proceq data synchronization failed', error.stack || error.message);
+      this.logger.error(
+        'Proceq data synchronization failed',
+        error.stack || error.message,
+      );
     }
   }
 }

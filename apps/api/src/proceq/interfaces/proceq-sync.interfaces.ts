@@ -1,4 +1,4 @@
-import { ProceqStatus } from "@prisma/client";
+import { ProceqStatus } from '@prisma/client';
 
 export interface ProceqLogEntry {
   type?: string;

@@ -14,9 +14,7 @@ export class ProceqApiService implements OnModuleInit {
   constructor(private readonly auth: ProceqAuthService) {
     const domain = process.env.PROCEQ_REGIONAL_DOMAIN;
     if (!domain) {
-      throw new Error(
-        'PROCEQ_REGIONAL_DOMAIN environment variable is not set',
-      );
+      throw new Error('PROCEQ_REGIONAL_DOMAIN environment variable is not set');
     }
     this.baseURL = `https://${domain}/api/workspace/v1`;
   }
@@ -82,9 +80,7 @@ export class ProceqApiService implements OnModuleInit {
   async getMeasurementDetails(
     measurementId: string,
   ): Promise<AxiosResponse<any>> {
-    return this.retryableGet(
-      `/${this.PRODUCT}/measurement/${measurementId}`,
-    );
+    return this.retryableGet(`/${this.PRODUCT}/measurement/${measurementId}`);
   }
 
   async getMeasurementAttachments(
@@ -123,4 +119,3 @@ export class ProceqApiService implements OnModuleInit {
     );
   }
 }
-

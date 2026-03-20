@@ -229,7 +229,10 @@ export class ProceqSyncService {
         `Found ${totalCount} total measurements, ${totalPages} pages to process`,
       );
 
-      const measurementTimestampMap = new Map<string, { created: string | null; updated: string | null }>();
+      const measurementTimestampMap = new Map<
+        string,
+        { created: string | null; updated: string | null }
+      >();
       const allUpdatedMeasurementIds: string[] = [];
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
@@ -362,7 +365,10 @@ export class ProceqSyncService {
 
   private async processMeasurementsBatch(
     ids: string[],
-    measurementTimestampMap: Map<string, { created: string | null; updated: string | null }>,
+    measurementTimestampMap: Map<
+      string,
+      { created: string | null; updated: string | null }
+    >,
   ): Promise<void> {
     if (!ids.length) return;
 
@@ -391,7 +397,11 @@ export class ProceqSyncService {
           const downloadUrl = statusResponse.data.data.url;
           const downloadPath = await downloadAndSaveFile(downloadUrl);
 
-          await this.processExportArchive(downloadPath, ids, measurementTimestampMap);
+          await this.processExportArchive(
+            downloadPath,
+            ids,
+            measurementTimestampMap,
+          );
 
           setImmediate(() => {
             this.logger.log(
@@ -579,7 +589,10 @@ export class ProceqSyncService {
   private async processExportArchive(
     archivePath: string,
     measurementIds: string[],
-    measurementTimestampMap: Map<string, { created: string | null; updated: string | null }>,
+    measurementTimestampMap: Map<
+      string,
+      { created: string | null; updated: string | null }
+    >,
   ): Promise<void> {
     const extractedDir = archivePath;
 
@@ -758,8 +771,7 @@ export class ProceqSyncService {
           );
         } else {
           for (const idx of indices) {
-            (recordsToUpsert[idx] as any).bansheeRequestId =
-              bansheeRequest.id;
+            (recordsToUpsert[idx] as any).bansheeRequestId = bansheeRequest.id;
           }
           bansheeRequestsToUpdate.push(bansheeRequest.id);
         }
@@ -767,9 +779,7 @@ export class ProceqSyncService {
       const uniqueBoltTypes: BoltType[] = [
         ...new Set([
           BoltType.D47_MD_1_8_M,
-          ...bansheeRequests
-            .filter((b) => b.boltType)
-            .map((b) => b.boltType),
+          ...bansheeRequests.filter((b) => b.boltType).map((b) => b.boltType),
         ]),
       ];
 
@@ -818,15 +828,17 @@ export class ProceqSyncService {
 
     for (let i = 0; i < records.length; i += chunkSize) {
       const chunk = records.slice(i, i + chunkSize);
-     //for event logs
+      //for event logs
       const measurementIds = chunk.map((r) => r.measurementId);
       const existingRecords = await this.prisma.proceqData.findMany({
         where: { measurementId: { in: measurementIds } },
         select: { measurementId: true, status: true, bansheeRequestId: true },
       });
       const existingStatusMap = new Map(
-      existingRecords.map(e => [e.measurementId,
-         { status: e.status, bansheeRequestId: e.bansheeRequestId }]),
+        existingRecords.map((e) => [
+          e.measurementId,
+          { status: e.status, bansheeRequestId: e.bansheeRequestId },
+        ]),
       );
 
       const parentOps = chunk.map((record) =>
@@ -940,9 +952,12 @@ export class ProceqSyncService {
       }
 
       const eventLogs: Array<{
-        eventType: string; previousStatus: ProceqStatus; newStatus: ProceqStatus;
-         measurementId: string; bansheeRequestId: string;
-        createdAt: Date| null;
+        eventType: string;
+        previousStatus: ProceqStatus;
+        newStatus: ProceqStatus;
+        measurementId: string;
+        bansheeRequestId: string;
+        createdAt: Date | null;
       }> = [];
 
       for (const record of chunk) {
@@ -985,7 +1000,10 @@ export class ProceqSyncService {
         : [];
 
     const bansheeMap = new Map(
-      bansheeRequests.map((b) => [b.serialNumber, { companyId: b.companyId, siteId: b.siteId }]),
+      bansheeRequests.map((b) => [
+        b.serialNumber,
+        { companyId: b.companyId, siteId: b.siteId },
+      ]),
     );
 
     const STATS_CONCURRENCY = 5;
@@ -1086,8 +1104,7 @@ export class ProceqSyncService {
           continue;
         }
 
-        const boltType =
-          recordBoltTypeMap.get(idx) || BoltType.D47_MD_1_8_M;
+        const boltType = recordBoltTypeMap.get(idx) || BoltType.D47_MD_1_8_M;
         const boltConstants =
           boltConstantsMap.get(boltType) ||
           boltConstantsMap.get(BoltType.D47_MD_1_8_M)!;
@@ -1107,8 +1124,7 @@ export class ProceqSyncService {
           const L_UT_T =
             L_UT *
             boltConstants.tempCorrectionFactor *
-            (1 +
-              (boltConstants.tempCoeff * (20 - temp)) / Math.pow(10, 6));
+            (1 + (boltConstants.tempCoeff * (20 - temp)) / Math.pow(10, 6));
 
           const L0 = boltConstants.nominalLength;
 
@@ -1125,7 +1141,7 @@ export class ProceqSyncService {
               boltConstants.linCoeff2 * diff -
               boltConstants.constTerm;
           }
-          
+
           let readingStatus: ProceqStatus;
           if (E_LUT_T_L < boltConstants.elasticLimit) {
             readingStatus = ProceqStatus.ELASTIC;
@@ -1145,7 +1161,8 @@ export class ProceqSyncService {
 
         if (readingStatuses.length > 0) {
           readingStatuses.sort((a, b) => a.readingIndex - b.readingIndex);
-          record.status = readingStatuses[readingStatuses.length - 1].status as ProceqStatus;
+          record.status = readingStatuses[readingStatuses.length - 1]
+            .status as ProceqStatus;
         }
       } catch (error) {
         this.logger.warn(

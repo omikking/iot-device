@@ -10,9 +10,7 @@ import { Application } from '@prisma/client';
 @Resolver()
 @UseGuards(JwtGuard)
 export class BansheeStatsResolver {
-  constructor(
-    private readonly statsService: BansheeStatsService,
-  ) {}
+  constructor(private readonly statsService: BansheeStatsService) {}
 
   @Query('bansheeSessionStats')
   async bansheeSessionStats(

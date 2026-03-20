@@ -10,10 +10,7 @@ import {
 import * as GraphQLTypes from '../graphql-types';
 import { CreateBansheeRequestInput } from './dto/create-banshee-request.input';
 import { UpdateBansheeRequestInput } from './dto/update-banshee-request.input';
-import {
-  UseGuards,
-  ParseUUIDPipe,
-} from '@nestjs/common';
+import { UseGuards, ParseUUIDPipe } from '@nestjs/common';
 
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';

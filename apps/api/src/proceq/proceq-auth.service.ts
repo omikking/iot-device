@@ -125,7 +125,9 @@ export class ProceqAuthService {
 
     if (storedToken?.refreshToken) {
       try {
-        this.refreshPromise = this.refreshAndStoreToken(storedToken.refreshToken);
+        this.refreshPromise = this.refreshAndStoreToken(
+          storedToken.refreshToken,
+        );
         await this.refreshPromise;
         return this.token!;
       } catch (error) {
@@ -200,7 +202,10 @@ export class ProceqAuthService {
         expiresAt: Date.now() + response.data.expires_in * 1000,
       };
     } catch (error) {
-      this.logger.error('Failed to exchange authorization code for token', extractErrorMessage(error));
+      this.logger.error(
+        'Failed to exchange authorization code for token',
+        extractErrorMessage(error),
+      );
       throw error;
     }
   }

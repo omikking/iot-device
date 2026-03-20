@@ -6,6 +6,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   providers: [BansheeStatsService, BansheeStatsResolver],
-  exports: [BansheeStatsService]
+  exports: [BansheeStatsService],
 })
 export class BansheeStatsModule {}

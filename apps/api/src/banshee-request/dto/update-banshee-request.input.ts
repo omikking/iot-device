@@ -11,7 +11,6 @@ import {
 import { Upload } from 'graphql-upload-ts';
 import * as GraphQLTypes from '../../graphql-types';
 
-@InputType()
 export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequestInput {
   @IsString()
   @IsOptional()
@@ -47,7 +46,7 @@ export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequest
   locationDetails?: string;
 
   @IsOptional()
-  boltInstallationDateTime?: GraphQLTypes.DateTime[];
+  boltInstallationDateTime?: GraphQLTypes.DateTime;
 
   @IsString()
   @IsOptional()

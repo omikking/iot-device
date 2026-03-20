@@ -8,7 +8,7 @@ export class ProceqSchedulerService {
 
   constructor(private readonly syncService: ProceqSyncService) {}
 
-  @Cron('0 */2 * * * *')
+  @Cron('0 */1 * * * *')
   async handleProceqSync() {
     this.logger.debug('Triggered Proceq data synchronization');
     try {

@@ -1,3 +1,5 @@
+import { ProceqStatus } from "@prisma/client";
+
 export interface ProceqLogEntry {
   type?: string;
   content?: {
@@ -101,7 +103,7 @@ export interface ExtractedProceqReading {
   gate1SoundPathDistance: number | null;
   gate1SoundPathDistanceInTimeUnit: number | null;
   elongation: number | null;
-  status?: string;
+  status: ProceqStatus | null;
 }
 
 export interface ExtractedProceqFields {
@@ -116,7 +118,8 @@ export interface ExtractedProceqFields {
   rawDataZipId: string | null;
   rawDataZipPath: string | null;
   readings: ExtractedProceqReading[];
-  status?: string;
+  status: ProceqStatus | null;
+  bansheeRequestId?: string | null;
 }
 
 export interface SyncResult {

@@ -15,7 +15,7 @@ import {
   SyncResult,
   BoltConstants,
 } from './interfaces/proceq-sync.interfaces';
-import { BoltType } from '@prisma/client';
+import { BoltType, ProceqStatus } from '@prisma/client';
 
 @Injectable()
 export class ProceqSyncService {
@@ -114,6 +114,7 @@ export class ProceqSyncService {
         gate1SoundPathDistance: null,
         gate1SoundPathDistanceInTimeUnit: null,
         elongation: null,
+        status: null,
       });
     } else {
       for (let idx = 0; idx < readingsArray.length; idx++) {
@@ -167,6 +168,7 @@ export class ProceqSyncService {
           gate1SoundPathDistanceInTimeUnit:
             readingToolBarOptions?.gate1SoundPathDistanceInTimeUnit || null,
           elongation: null,
+          status: null,
         });
       }
     }
@@ -190,6 +192,7 @@ export class ProceqSyncService {
       rawDataZipId: null,
       rawDataZipPath: null,
       readings: extractedReadings,
+      status: null,
     };
   }
 
@@ -474,7 +477,6 @@ export class ProceqSyncService {
                       },
                       create: {
                         attachmentId: attachment.id,
-                        measurementId,
                         fileName,
                         filePath,
                         fileType,
@@ -773,7 +775,7 @@ export class ProceqSyncService {
 
       const boltConstantsMap = new Map<string, BoltConstants>();
       const boltTypeConstants =
-        await this.prisma.boltTypeConstant.findMany({
+        await this.prisma.bansheeBoltTypeConstant.findMany({
           where: { boltType: { in: uniqueBoltTypes } },
         });
       boltTypeConstants.forEach((constant) => {
@@ -840,8 +842,8 @@ export class ProceqSyncService {
             updatedTimestamp: record.updatedTimestamp,
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
-            bansheeRequestId: (record as any).bansheeRequestId || null,
-            status: record.status || null,
+            bansheeRequestId: record.bansheeRequestId,
+            status: record.status || ProceqStatus.UNMEASURED,
           },
           create: {
             measurementId: record.measurementId,
@@ -854,8 +856,8 @@ export class ProceqSyncService {
             updatedTimestamp: record.updatedTimestamp,
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
-            bansheeRequestId: (record as any).bansheeRequestId || null,
-            status: record.status || null,
+            bansheeRequestId: record.bansheeRequestId,
+            status: record.status || ProceqStatus.UNMEASURED,
           },
         }),
       );
@@ -897,10 +899,14 @@ export class ProceqSyncService {
                 gate1SoundPathDistanceInTimeUnit:
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
-                status: reading.status || null,
+                status: reading.status || ProceqStatus.UNMEASURED,
               },
               create: {
-                proceqDataId: parentId,
+                proceqData: {
+                  connect: {
+                    id: parentId,
+                  },
+                },
                 readingIndex: reading.readingIndex,
                 indicationSetupFileName: reading.indicationSetupFileName,
                 measuringMode: reading.measuringMode,
@@ -922,7 +928,7 @@ export class ProceqSyncService {
                 gate1SoundPathDistanceInTimeUnit:
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
-                status: reading.status || null,
+                status: reading.status as ProceqStatus,
               },
             }),
           );
@@ -934,7 +940,7 @@ export class ProceqSyncService {
       }
 
       const eventLogs: Array<{
-        eventType: string; previousStatus: string; newStatus: string;
+        eventType: string; previousStatus: ProceqStatus; newStatus: ProceqStatus;
          measurementId: string; bansheeRequestId: string;
         createdAt: Date| null;
       }> = [];
@@ -1002,6 +1008,7 @@ export class ProceqSyncService {
             record.comments || '',
             siteId,
             companyId,
+            'create',
           );
         }),
       );
@@ -1063,11 +1070,11 @@ export class ProceqSyncService {
           : '';
 
         if (commentsStr.includes('broken')) {
-          record.status = 'broken';
+          record.status = ProceqStatus.BROKEN;
           continue;
         }
         if (commentsStr.includes('not measurable')) {
-          record.status = 'not measurable';
+          record.status = ProceqStatus.NOT_MEASURABLE;
           continue;
         }
 
@@ -1119,13 +1126,13 @@ export class ProceqSyncService {
               boltConstants.constTerm;
           }
           
-          let readingStatus: string;
+          let readingStatus: ProceqStatus;
           if (E_LUT_T_L < boltConstants.elasticLimit) {
-            readingStatus = 'Elastic';
+            readingStatus = ProceqStatus.ELASTIC;
           } else if (E_LUT_T_L <= boltConstants.lowPlasticLimit) {
-            readingStatus = 'Low plastic';
+            readingStatus = ProceqStatus.LOW_PLASTIC;
           } else {
-            readingStatus = 'High plastic';
+            readingStatus = ProceqStatus.HIGH_PLASTIC;
           }
 
           reading.elongation = E_LUT_T_L;
@@ -1138,7 +1145,7 @@ export class ProceqSyncService {
 
         if (readingStatuses.length > 0) {
           readingStatuses.sort((a, b) => a.readingIndex - b.readingIndex);
-          record.status = readingStatuses[readingStatuses.length - 1].status;
+          record.status = readingStatuses[readingStatuses.length - 1].status as ProceqStatus;
         }
       } catch (error) {
         this.logger.warn(

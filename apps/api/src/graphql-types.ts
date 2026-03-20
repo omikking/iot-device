@@ -8,24 +8,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export enum RingPosition {
-    RH_BACKS = "RH_BACKS",
-    RH_SHOULDER = "RH_SHOULDER",
-    RH_WALL_UPPER = "RH_WALL_UPPER",
-    RH_WALL_CENTER = "RH_WALL_CENTER",
-    RH_WALL_LOWER = "RH_WALL_LOWER",
-    RH_FACE_HIGH = "RH_FACE_HIGH",
-    RH_FACE_LOW = "RH_FACE_LOW",
-    LH_BACKS = "LH_BACKS",
-    LH_SHOULDER = "LH_SHOULDER",
-    LH_WALL_UPPER = "LH_WALL_UPPER",
-    LH_WALL_CENTER = "LH_WALL_CENTER",
-    LH_WALL_LOWER = "LH_WALL_LOWER",
-    LH_FACE_HIGH = "LH_FACE_HIGH",
-    LH_FACE_LOW = "LH_FACE_LOW",
-    CENTER_BACKS = "CENTER_BACKS"
-}
-
 export enum Role {
     COMPANY_USER = "COMPANY_USER",
     COMPANY_ADMIN = "COMPANY_ADMIN",
@@ -75,6 +57,24 @@ export enum BoltType {
     KINLOC_BOLT_INDIE = "KINLOC_BOLT_INDIE"
 }
 
+export enum RingPosition {
+    RH_BACKS = "RH_BACKS",
+    RH_SHOULDER = "RH_SHOULDER",
+    RH_WALL_UPPER = "RH_WALL_UPPER",
+    RH_WALL_CENTER = "RH_WALL_CENTER",
+    RH_WALL_LOWER = "RH_WALL_LOWER",
+    RH_FACE_HIGH = "RH_FACE_HIGH",
+    RH_FACE_LOW = "RH_FACE_LOW",
+    LH_BACKS = "LH_BACKS",
+    LH_SHOULDER = "LH_SHOULDER",
+    LH_WALL_UPPER = "LH_WALL_UPPER",
+    LH_WALL_CENTER = "LH_WALL_CENTER",
+    LH_WALL_LOWER = "LH_WALL_LOWER",
+    LH_FACE_HIGH = "LH_FACE_HIGH",
+    LH_FACE_LOW = "LH_FACE_LOW",
+    CENTER_BACKS = "CENTER_BACKS"
+}
+
 export enum PullTestAbortReason {
     NOT_TESTED_VOID_CAVITY = "NOT_TESTED_VOID_CAVITY",
     TEST_STOPPED_INSTALL_ANGLE = "TEST_STOPPED_INSTALL_ANGLE",
@@ -106,7 +106,7 @@ export class CreateBansheeRequestInput {
     period: number;
     locationDetails?: Nullable<string>;
     boltInstallationDateTime?: Nullable<DateTime>;
-    ringPosition?: Nullable<RingPosition>;
+    ringPosition: RingPosition;
     comment?: Nullable<string>;
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
@@ -343,16 +343,17 @@ export class BansheeRequest {
     period: number;
     locationDetails?: Nullable<string>;
     boltInstallationDateTime?: Nullable<DateTime>;
-    ringPosition?: Nullable<RingPosition>;
+    ringPosition: string;
     comment?: Nullable<string>;
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
     images?: Nullable<string[]>;
-    deviceAndMeasurements: ProceqData[];
-    eventLogs: BansheeEventLog[];
+    proceqData?: Nullable<ProceqData[]>;
+    eventLogs?: Nullable<BansheeEventLog[]>;
     measured: boolean;
     createdBy: string;
     updatedBy?: Nullable<string>;
+    createdByUser?: Nullable<User>;
     level?: Nullable<Level>;
     drive?: Nullable<Drive>;
     location?: Nullable<Location>;
@@ -385,8 +386,7 @@ export abstract class IQuery {
     bansheeRequest?: BansheeRequest;
     bansheeStatusDistribution?: BansheeStatusDistribution;
     bansheeEventLogs?: BansheeEventLogResponse;
-    getStats?: BansheeSessionStats[];
-    statsForPeriod?: BansheeSessionStats[];
+    bansheeSessionStats?: BansheeSessionStats[];
     boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
@@ -427,8 +427,6 @@ export abstract class IMutation {
     createBansheeRequest?: BansheeRequest;
     updateBansheeRequest?: BansheeRequest;
     deleteBansheeRequest?: BansheeRequest;
-    markBansheeRequestMeasured?: BansheeRequest;
-    finalizeBansheeSession: number;
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
@@ -491,10 +489,10 @@ export class BansheeSessionStats {
     updatedAt: DateTime;
     sessionDate: DateTime;
     totalMeasured: number;
-    totalWithLogs: number;
     notMeasurable: number;
     broken: number;
-    company: Company;
+    site: Site;
+    company?: Nullable<Company>;
 }
 
 export class BoltResult {
@@ -668,12 +666,12 @@ export class ProceqData {
     fileName: string;
     operator?: Nullable<string>;
     email?: Nullable<string>;
-    comments?: Nullable<JSON>;
+    comments: string;
     temperature?: Nullable<number>;
     rawDataZipId?: Nullable<string>;
     rawDataZipPath?: Nullable<string>;
     status?: Nullable<string>;
-    attachmentIds: string[];
+    attachmentIds?: Nullable<Nullable<string>[]>;
     createdTimestamp?: Nullable<DateTime>;
     updatedTimestamp?: Nullable<DateTime>;
     bansheeRequest?: Nullable<BansheeRequest>;
@@ -735,5 +733,4 @@ export class User {
 export type DateTime = any;
 export type Upload = any;
 export type JSON = any;
-export type BigInt = any;
 type Nullable<T> = T | null;

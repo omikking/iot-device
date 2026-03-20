@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserInputError } from '@nestjs/apollo';
 import * as GraphQLTypes from 'src/graphql-types';
@@ -8,18 +8,22 @@ import { extname, join } from 'path';
 import { createWriteStream } from 'fs';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { BoltType, RingPosition } from '@prisma/client';
+import { BansheeRequest, BoltType, GlobalRole } from '@prisma/client';
+import { BansheeStatsService } from 'src/banshee-stats/banshee-stats.service';
 
 @Injectable()
 export class BansheeRequestsService {
   private readonly logger = new Logger(BansheeRequestsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private statsService: BansheeStatsService,
+  ) {}
 
   async create(
     createBansheeRequestInput: GraphQLTypes.CreateBansheeRequestInput,
     user: ActiveUserData,
-  ): Promise<any> {
+  ): Promise<BansheeRequest> {
     try {
       const existingRequest = await this.prisma.bansheeRequest.findFirst({
         where: {
@@ -36,8 +40,6 @@ export class BansheeRequestsService {
         });
       }
 
-      // await this.validateUserCompanyAccess(user, createBansheeRequestInput.companyId);
-      
       await this.validateRelations(
         createBansheeRequestInput.levelId,
         createBansheeRequestInput.driveId,
@@ -69,25 +71,17 @@ export class BansheeRequestsService {
             createBansheeRequestInput.locationDetails || undefined,
           boltInstallationDateTime:
             createBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: createBansheeRequestInput.ringPosition as RingPosition || undefined,
+          ringPosition:
+            createBansheeRequestInput.ringPosition || undefined,
           comment: createBansheeRequestInput.comment || undefined,
           isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
           isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
-          images: imagePaths ? JSON.stringify(imagePaths) : undefined,
+          images: imagePaths && imagePaths.length > 0 ? imagePaths : undefined,
           boltType: createBansheeRequestInput.boltType as BoltType,
           createdBy: user.id,
           updatedBy: user.id,
           companyId: createBansheeRequestInput.companyId,
           siteId: createBansheeRequestInput.siteId,
-        },
-        include: {
-          level: true,
-          drive: true,
-          location: true,
-          company: true,
-          site: true,
-          deviceAndMeasurements: { include: { readings: true } },
-          eventLogs: true,
         },
       });
 
@@ -95,24 +89,13 @@ export class BansheeRequestsService {
         throw new UserInputError('', {
           extensions: {
             code: 'BANSHEE_REQUEST_CREATION_ERROR',
-            title:
-              errorTexts.createBansheeRequestInputResultCreationError_title,
+            title: errorTexts.bansheeRequestCreateError_title,
           },
         });
       }
 
-      let imagesArray: string[] | undefined;
-      if (createdBansheeRequest.images) {
-        try {
-          imagesArray = JSON.parse(createdBansheeRequest.images as string);
-        } catch (e) {
-          imagesArray = undefined;
-        }
-      }
-
       return {
         ...createdBansheeRequest,
-        images: imagesArray,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -122,141 +105,24 @@ export class BansheeRequestsService {
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_CREATION_ERROR_GENERIC',
-          title: errorTexts.createBansheeRequestInputResultCreationError_title,
+          title: errorTexts.bansheeRequestCreateError_title,
           message: errorTexts.contactSupportError,
         },
       });
     }
   }
 
-  // measured fieled updtae in same table
-  async update(
-    id: string,
-    updateBansheeRequestInput: GraphQLTypes.UpdateBansheeRequestInput,
-    user: ActiveUserData,
-  ): Promise<any> {
-    try {
-      const existingRequest = await this.prisma.bansheeRequest.findUnique({
-        where: { id },
-      });
-
-      if (!existingRequest) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'BANSHEE_REQUEST_NOTFOUND_ERROR',
-            title: `Banshee request #${id} not found`,
-          },
-        });
-      }
-
-      // Validate company access if companyId is being updated
-      if (updateBansheeRequestInput.companyId) {
-        await this.validateUserCompanyAccess(user, updateBansheeRequestInput.companyId);
-      }
-      
-      if (
-        updateBansheeRequestInput.levelId ||
-        updateBansheeRequestInput.driveId ||
-        updateBansheeRequestInput.locationId
-      ) {
-        await this.validateRelations(
-          updateBansheeRequestInput.levelId || existingRequest.levelId,
-          updateBansheeRequestInput.driveId || existingRequest.driveId,
-          updateBansheeRequestInput.locationId || existingRequest.locationId,
-        );
-      }
-
-      let imagePaths: string[] | undefined;
-      if (
-        updateBansheeRequestInput.images &&
-        updateBansheeRequestInput.images.length > 0
-      ) {
-        imagePaths = [];
-        for (const image of updateBansheeRequestInput.images) {
-          const imagePath = await this.saveImage(image);
-          imagePaths.push(imagePath);
-        }
-      }
-
-      const updatedBansheeRequest = await this.prisma.bansheeRequest.update({
-        where: { id },
-        data: {
-          serialNumber: updateBansheeRequestInput.serialNumber || undefined,
-          name: updateBansheeRequestInput.name || undefined,
-          levelId: updateBansheeRequestInput.levelId || undefined,
-          driveId: updateBansheeRequestInput.driveId || undefined,
-          locationId: updateBansheeRequestInput.locationId || undefined,
-          coordinates: updateBansheeRequestInput.coordinates || undefined,
-          period: updateBansheeRequestInput.period || undefined,
-          locationDetails:
-            updateBansheeRequestInput.locationDetails || undefined,
-          boltInstallationDateTime:
-            updateBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: updateBansheeRequestInput.ringPosition as RingPosition || undefined,
-          comment: updateBansheeRequestInput.comment || undefined,
-          isBrokenBolt: updateBansheeRequestInput.isBrokenBolt ?? undefined,
-          isNotMeasurable:
-            updateBansheeRequestInput.isNotMeasurable ?? undefined,
-          images: imagePaths ? JSON.stringify(imagePaths) : undefined,
-          boltType: updateBansheeRequestInput.boltType as BoltType || undefined,
-          updatedBy: user.id,
-          measured: updateBansheeRequestInput.measured ?? undefined,
-          siteId: updateBansheeRequestInput.siteId || undefined,
-        },
-        include: {
-          level: true,
-          drive: true,
-          location: true,
-          company: true,
-          site: true,
-          deviceAndMeasurements: { include: { readings: true } },
-          eventLogs: true,
-        },
-      });
-
-      let imagesArray: string[] | undefined;
-      if (updatedBansheeRequest.images) {
-        try {
-          imagesArray = JSON.parse(updatedBansheeRequest.images as string);
-        } catch (e) {
-          imagesArray = undefined;
-        }
-      }
-
-      return {
-        ...updatedBansheeRequest,
-        images: imagesArray,
-      };
-    } catch (error) {
-      if (error instanceof UserInputError) {
-        throw error;
-      }
-      this.logger.error(`Error updating banshee request #${id}`, error.stack);
-      throw new UserInputError('', {
-        extensions: {
-          code: 'BANSHEE_REQUEST_UPDATE_ERROR_GENERIC',
-          title: errorTexts.boltResultUpdateError_title,
-          message: errorTexts.contactSupportError,
-        },
-      });
-    }
-  }
-
-  async remove(id: string): Promise<any> {
-    const bansheeRequest = await this.prisma.bansheeRequest.findUnique({
+async update(
+  id: string,
+  updateBansheeRequestInput: GraphQLTypes.UpdateBansheeRequestInput,
+  user: ActiveUserData,
+): Promise<BansheeRequest> {
+  try {
+    const existingRequest = await this.prisma.bansheeRequest.findUnique({
       where: { id },
-      include: {
-        level: true,
-        drive: true,
-        location: true,
-        company: true,
-        site: true,
-        deviceAndMeasurements: { include: { readings: true } },
-        eventLogs: true,
-      },
     });
 
-    if (!bansheeRequest) {
+    if (!existingRequest) {
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_NOTFOUND_ERROR',
@@ -265,59 +131,155 @@ export class BansheeRequestsService {
       });
     }
 
+    if (updateBansheeRequestInput.companyId) {
+      await this.validateUserCompanyAccess(
+        user,
+        updateBansheeRequestInput.companyId,
+      );
+    }
+
+    if (
+      updateBansheeRequestInput.levelId ||
+      updateBansheeRequestInput.driveId ||
+      updateBansheeRequestInput.locationId
+    ) {
+      await this.validateRelations(
+        updateBansheeRequestInput.levelId || existingRequest.levelId,
+        updateBansheeRequestInput.driveId || existingRequest.driveId,
+        updateBansheeRequestInput.locationId || existingRequest.locationId,
+      );
+    }
+
+    let imagePaths: string[] | undefined;
+    if (updateBansheeRequestInput && updateBansheeRequestInput.images && updateBansheeRequestInput.images.length > 0) {
+      const newPaths: string[] = [];
+      for (const image of updateBansheeRequestInput.images) {
+        newPaths.push(await this.saveImage(image));
+      }
+      imagePaths = [...(existingRequest.images ?? []), ...newPaths];
+    }
+
+    const updatedBansheeRequest = await this.prisma.bansheeRequest.update({
+      where: { id },
+      data: {
+        serialNumber: updateBansheeRequestInput.serialNumber || undefined,
+        name: updateBansheeRequestInput.name || undefined,
+        levelId: updateBansheeRequestInput.levelId || undefined,
+        driveId: updateBansheeRequestInput.driveId || undefined,
+        locationId: updateBansheeRequestInput.locationId || undefined,
+        coordinates: updateBansheeRequestInput.coordinates || undefined,
+        period: updateBansheeRequestInput.period || undefined,
+        locationDetails:
+          updateBansheeRequestInput.locationDetails || undefined,
+        boltInstallationDateTime:
+          updateBansheeRequestInput.boltInstallationDateTime || undefined,
+        ringPosition: updateBansheeRequestInput.ringPosition || undefined,
+        comment: updateBansheeRequestInput.comment || undefined,
+        isBrokenBolt: updateBansheeRequestInput.isBrokenBolt ?? undefined,
+        isNotMeasurable: updateBansheeRequestInput.isNotMeasurable ?? undefined,
+        images: imagePaths ?? undefined,
+        updatedBy: user.id,
+        measured: updateBansheeRequestInput.measured ?? undefined,
+        siteId: updateBansheeRequestInput.siteId || undefined,
+      },
+    });
+
+    return {
+      ...updatedBansheeRequest,
+    };
+  } catch (error) {
+    if (error instanceof UserInputError) {
+      throw error;
+    }
+    this.logger.error(`Error updating banshee request #${id}`, error.stack);
+    throw new UserInputError('', {
+      extensions: {
+        code: 'BANSHEE_REQUEST_UPDATE_ERROR_GENERIC',
+        title: errorTexts.boltResultUpdateError_title,
+        message: errorTexts.contactSupportError,
+      },
+    });
+  }
+}
+
+  async remove(id: string, user: ActiveUserData): Promise<BansheeRequest> {
+    const bansheeRequest = await this.prisma.bansheeRequest.findUnique({
+      where: { id },
+      include: { proceqData:  {
+      include: { readings: true }
+    } } 
+    });
+
+    if (!bansheeRequest) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'BANSHEE_REQUEST_NOTFOUND_ERROR',
+          title: errorTexts.boltResultUpdateError_title,
+        },
+      });
+    }
+
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      try {
+        await this.validateUserCompanyAccess(user, bansheeRequest.companyId);
+      } catch {
+        throw new ForbiddenException(
+          'User does not have access to this banshee request.',
+        );
+      }
+    }
+    for (const proceqData of bansheeRequest.proceqData) {
+     const hasReadings = proceqData.readings.length > 0;
+     const hasLogs = !!proceqData.comments;
+
+    await this.statsService.updateStatsForMeasurement(
+      proceqData.createdTimestamp,
+      hasReadings,
+      hasLogs,
+      proceqData.comments || '',
+      bansheeRequest.siteId,
+      bansheeRequest.companyId,
+      'delete'
+    );
+  }
     try {
       const deletedRequest = await this.prisma.bansheeRequest.delete({
         where: { id },
-        include: {
-          level: true,
-          drive: true,
-          location: true,
-          company: true,
-          site: true,
-          deviceAndMeasurements: { include: { readings: true } },
-          eventLogs: true,
-        },
       });
-
-      let imagesArray: string[] | undefined;
-      if (deletedRequest.images) {
-        try {
-          imagesArray = JSON.parse(deletedRequest.images as string);
-        } catch (e) {
-          // If parsing fails, set to undefined
-          imagesArray = undefined;
-        }
-      }
 
       return {
         ...deletedRequest,
-        images: imagesArray,
       };
     } catch (error) {
       this.logger.error(`Error deleting banshee request #${id}`, error.stack);
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_DELETE_ERROR_GENERIC',
-          title: errorTexts.boltResultDeleteError_title,
+          title: errorTexts.bansheeRequestDeleteError_title,
           message: errorTexts.contactSupportError,
         },
       });
     }
   }
-  async findAll(filters: {
-    offset?: number;
-    limit?: number;
-    serialNumber?: string;
-    measured?: boolean;
-    levelId?: string;
-    period?: number;
-    driveId?: string;
-    locationId?: string;
-    createdBy?: string;
-    companyId?: string;
-    siteId?: string;
-    timeFilter?: string;
-  }): Promise<any> {
+  async findAll(
+    filters: {
+      offset?: number;
+      limit?: number;
+      serialNumber?: string;
+      measured?: boolean;
+      levelId?: string;
+      period?: number;
+      driveId?: string;
+      locationId?: string;
+      createdBy?: string;
+      companyId?: string;
+      siteId?: string;
+      startDate?: Date;
+      endDate?: Date;
+    },
+    allowedCompanyIds: string[],
+    user: ActiveUserData,
+  ): Promise<GraphQLTypes.BansheeRequestResponse> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
 
@@ -357,17 +319,38 @@ export class BansheeRequestsService {
       if (restFilters.siteId) {
         where.siteId = restFilters.siteId;
       }
-    
-      if (restFilters.timeFilter && restFilters.timeFilter !== 'ALL' && restFilters.companyId && restFilters.siteId) {
-        const dateRange = await this.getDateRangeFromTimeFilter(restFilters.companyId, restFilters.siteId, restFilters.timeFilter);
-        if (dateRange) {
-          where.deviceAndMeasurements = {
+
+      if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+        if (restFilters.companyId) {
+          if (!allowedCompanyIds.includes(restFilters.companyId)) {
+            throw new ForbiddenException(
+              'User does not have access to this company.',
+            );
+          }
+          where.companyId = restFilters.companyId;
+        } else {
+          where.companyId = { in: allowedCompanyIds };
+        }
+      } else {
+        if (restFilters.companyId) {
+          where.companyId = restFilters.companyId;
+        }
+      }
+
+      if (
+        restFilters.startDate &&
+        restFilters.endDate &&
+        restFilters.companyId &&
+        restFilters.siteId
+      ) {
+        if (restFilters.startDate && restFilters.endDate) {
+          where.proceqData = {
             some: {
               updatedTimestamp: {
-                gte: dateRange.startDate,
-                lte: dateRange.endDate,
-              }
-            }
+                gte: restFilters.startDate,
+                lte: restFilters.endDate,
+              },
+            },
           };
         }
       }
@@ -376,44 +359,18 @@ export class BansheeRequestsService {
         where,
       });
 
-      const bansheeRequests = await this.prisma.bansheeRequest.findMany({
+      const results = await this.prisma.bansheeRequest.findMany({
         where,
         skip: offset,
         take: limit,
         orderBy: {
           createdAt: 'desc',
         },
-        include: {
-          level: true,
-          drive: true,
-          location: true,
-          company: true,
-          site: true,
-          deviceAndMeasurements: { include: { readings: true } },
-          eventLogs: true,
-        },
-      });
-
-      // Transform images for each request
-      const results = bansheeRequests.map((request) => {
-        let imagesArray: string[] | undefined;
-        if (request.images) {
-          try {
-            imagesArray = JSON.parse(request.images as string);
-          } catch (e) {
-            imagesArray = undefined;
-          }
-        }
-
-        return {
-          ...request,
-          images: imagesArray,
-        };
       });
 
       return {
         totalRecords,
-        results,
+        results: results,
       };
     } catch (error) {
       this.logger.error('Error fetching banshee requests', error.stack);
@@ -427,19 +384,10 @@ export class BansheeRequestsService {
     }
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(id: string, user: ActiveUserData): Promise<BansheeRequest> {
     try {
       const bansheeRequest = await this.prisma.bansheeRequest.findUnique({
         where: { id },
-        include: {
-          level: true,
-          drive: true,
-          location: true,
-          company: true,
-          site: true,
-          deviceAndMeasurements: { include: { readings: true } },
-          eventLogs: true,
-        },
       });
 
       if (!bansheeRequest) {
@@ -451,19 +399,18 @@ export class BansheeRequestsService {
         });
       }
 
-      // Transform images from JSON string to array
-      let imagesArray: string[] | undefined;
-      if (bansheeRequest.images) {
-        try {
-          imagesArray = JSON.parse(bansheeRequest.images as string);
-        } catch (e) {
-          imagesArray = undefined;
-        }
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      try {
+        await this.validateUserCompanyAccess(user, bansheeRequest.companyId);
+      } catch {
+        throw new ForbiddenException(
+          'User does not have access to this banshee request.',
+        );
       }
+    }
 
       return {
         ...bansheeRequest,
-        images: imagesArray,
       };
     } catch (error) {
       if (error instanceof UserInputError) {
@@ -480,47 +427,87 @@ export class BansheeRequestsService {
     }
   }
 
-  async getStatusDistribution(filters: { companyId?: string; siteId?: string; locationId?: string; timeFilter?: string }): Promise<GraphQLTypes.BansheeStatusDistribution> {
+  async getStatusDistribution(
+    filters: {
+      companyId?: string;
+      siteId?: string;
+      locationId?: string;
+      startDate?: Date;
+      endDate?: Date;
+    },
+    allowedCompanyIds: string[],
+    user: ActiveUserData,
+  ): Promise<GraphQLTypes.BansheeStatusDistribution> {
     const where: any = {};
+
     if (filters.companyId) where.companyId = filters.companyId;
     if (filters.siteId) where.siteId = filters.siteId;
     if (filters.locationId) where.locationId = filters.locationId;
 
-    if (filters.timeFilter && filters.timeFilter !== 'ALL' && filters.companyId && filters.siteId) {
-      const dateRange = await this.getDateRangeFromTimeFilter(filters.companyId, filters.siteId, filters.timeFilter);
-      if (dateRange) {
-        where.deviceAndMeasurements = {
-          some: {
-            createdTimestamp: {
-              gte: dateRange.startDate,
-              lte: dateRange.endDate,
-            }
-          }
-        };
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      if (filters.companyId) {
+        if (!allowedCompanyIds.includes(filters.companyId)) {
+          throw new ForbiddenException(
+            'User does not have access to this company.',
+          );
+        }
+      } else {
+        where.companyId = { in: allowedCompanyIds };
       }
     }
 
+    const hasDateFilter = filters.startDate && filters.endDate;
+
     const bansheeRequests = await this.prisma.bansheeRequest.findMany({
-      where,
+      where: {
+        ...where,
+        ...(hasDateFilter && {
+          proceqData: {
+            some: {
+              createdTimestamp: {
+                gte: filters.startDate,
+                lte: filters.endDate,
+              },
+            },
+          },
+        }),
+      },
       select: {
         id: true,
         locationId: true,
         location: {
-          select: { locationName: true }
+          select: { locationName: true },
         },
-        deviceAndMeasurements: {
-          select: { status: true, createdTimestamp: true },
-          orderBy: { createdTimestamp: 'desc' },
+        proceqData: {
+          where: hasDateFilter
+            ? {
+                createdTimestamp: {
+                  gte: filters.startDate,
+                  lte: filters.endDate,
+                },
+              }
+            : undefined,
+          select: {
+            status: true,
+            createdTimestamp: true,
+          },
+          orderBy: {
+            createdTimestamp: 'desc',
+          },
           take: 1,
         },
       },
     });
 
     const counts: Record<string, number> = {};
-    const locationCountsMap: Record<string, { locationName: string; total: number; counts: Record<string, number> }> = {};
+    const locationCountsMap: Record<
+      string,
+      { locationName: string; total: number; counts: Record<string, number> }
+    > = {};
 
     for (const br of bansheeRequests) {
-      const status = br.deviceAndMeasurements[0]?.status ?? 'unmeasured';
+      const status = br.proceqData[0]?.status ?? 'unmeasured';
+
       counts[status] = (counts[status] || 0) + 1;
 
       const locId = br.locationId;
@@ -528,50 +515,37 @@ export class BansheeRequestsService {
         locationCountsMap[locId] = {
           locationName: br.location?.locationName || 'Unknown',
           total: 0,
-          counts: {}
+          counts: {},
         };
       }
+
       locationCountsMap[locId].total += 1;
-      locationCountsMap[locId].counts[status] = (locationCountsMap[locId].counts[status] || 0) + 1;
+      locationCountsMap[locId].counts[status] =
+        (locationCountsMap[locId].counts[status] || 0) + 1;
     }
 
     return {
       total: bansheeRequests.length,
-      statusCounts: Object.entries(counts).map(([status, count]) => ({ status, count })),
+      statusCounts: Object.entries(counts).map(([status, count]) => ({
+        status,
+        count,
+      })),
       byLocation: Object.entries(locationCountsMap).map(([locId, locData]) => ({
         locationId: locId,
         locationName: locData.locationName,
         total: locData.total,
-        statusCounts: Object.entries(locData.counts).map(([status, count]) => ({ status, count }))
-      }))
+        statusCounts: Object.entries(locData.counts).map(([status, count]) => ({
+          status,
+          count,
+        })),
+      })),
     };
   }
 
-  private async getDateRangeFromTimeFilter(companyId: string, siteId: string, timeFilter: string) {
-    if (!timeFilter || timeFilter === 'ALL') return null;
-
-    const latestRecord = await this.prisma.proceqData.findFirst({
-      where: { bansheeRequest: { companyId, siteId } },
-      orderBy: { updatedTimestamp: 'desc' },
-      select: { updatedTimestamp: true }
-    });
-    this.logger.log('Vasu latest records', latestRecord);
-    if (!latestRecord?.updatedTimestamp) return null;
-
-    const endDate = new Date(latestRecord.updatedTimestamp);
-    const startDate = new Date(latestRecord.updatedTimestamp);
-
-    switch (timeFilter) {
-      case '7D': startDate.setDate(endDate.getDate() - 7); break;
-      case '1M': startDate.setMonth(endDate.getMonth() - 1); break;
-      case '3M': startDate.setMonth(endDate.getMonth() - 3); break;
-      case '1Y': startDate.setFullYear(endDate.getFullYear() - 1); break;
-    }
-    this.logger.log('Vasu start and end date', startDate, endDate);
-    return { startDate, endDate };
-  }
-
-  private async validateUserCompanyAccess(user: ActiveUserData, companyId: string): Promise<void> {
+  private async validateUserCompanyAccess(
+    user: ActiveUserData,
+    companyId: string,
+  ): Promise<void> {
     const userPermission = await this.prisma.userPermission.findFirst({
       where: {
         userId: user.id,
@@ -594,7 +568,6 @@ export class BansheeRequestsService {
     driveId: string,
     locationId: string,
   ): Promise<void> {
-    // Validate level exists
     const level = await this.prisma.level.findUnique({
       where: { id: levelId },
     });
@@ -607,7 +580,6 @@ export class BansheeRequestsService {
       });
     }
 
-    // Validate drive exists and belongs to the level
     const drive = await this.prisma.drive.findUnique({
       where: { id: driveId },
       include: { level: true },
@@ -716,21 +688,41 @@ export class BansheeRequestsService {
     return `/uploads/bansheeRequests/${safeFilename}`;
   }
 
-  async getEventLogs(filters: {
-    offset?: number;
-    limit?: number;
-    companyId?: string;
-    siteId?: string;
-  }): Promise<GraphQLTypes.BansheeEventLogResponse> {
+  async getEventLogs(
+    filters: {
+      offset?: number;
+      limit?: number;
+      companyId?: string;
+      siteId?: string;
+    },
+    allowedCompanyIds: string[],
+    user: ActiveUserData,
+  ): Promise<GraphQLTypes.BansheeEventLogResponse> {
     try {
       const { offset = 0, limit = 100, companyId, siteId } = filters;
 
       const where: any = {};
-      
+
       const bansheeRequestWhere: any = {};
-      if (companyId) bansheeRequestWhere.companyId = companyId;
+
+      // Apply company access filter for non-admin users
+      if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+        if (companyId) {
+          if (!allowedCompanyIds.includes(companyId)) {
+            throw new ForbiddenException(
+              'User does not have access to this company.',
+            );
+          }
+          bansheeRequestWhere.companyId = companyId;
+        } else {
+          bansheeRequestWhere.companyId = { in: allowedCompanyIds };
+        }
+      } else {
+        if (companyId) bansheeRequestWhere.companyId = companyId;
+      }
+
       if (siteId) bansheeRequestWhere.siteId = siteId;
-      
+
       if (Object.keys(bansheeRequestWhere).length > 0) {
         where.bansheeRequest = bansheeRequestWhere;
       }
@@ -750,9 +742,9 @@ export class BansheeRequestsService {
           bansheeRequest: {
             include: {
               location: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       return {

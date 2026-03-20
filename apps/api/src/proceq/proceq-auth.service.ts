@@ -17,7 +17,7 @@ function extractErrorMessage(error: unknown): string {
 @Injectable()
 export class ProceqAuthService {
   private readonly logger = new Logger(ProceqAuthService.name);
-  private readonly OPERATOR_EMAIL = ''; // TODO: This will be removed and changed dynamically as per user.
+  private readonly OPERATOR_EMAIL = 'osvaldo.vallati@sandvik.com'; // TODO: This will be removed and changed dynamically as per user.
 
   private token?: ProceqTokenDto;
   private refreshPromise: Promise<void> | null = null;

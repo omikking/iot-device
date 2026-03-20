@@ -5,12 +5,12 @@ import { Module } from '@nestjs/common';
 import { BansheeRequestsService } from 'src/banshee-request/banshee-request.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BansheeRequestModule } from 'src/banshee-request/banshee-request.module';
+import { BansheeStatsModule } from 'src/banshee-stats/banshee-stats.module';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { BoltType, GlobalRole, PrismaClient, RingPosition } from '@prisma/client';
 
 @Module({
-  imports: [PrismaModule, BansheeRequestModule],
-  providers: [BansheeRequestsService],
+  imports: [PrismaModule, BansheeStatsModule, BansheeRequestModule],
 })
 export class SeedBansheeModule {}
 
@@ -1180,12 +1180,12 @@ async function seedBanshee() {
 ];
 
   // Seed BoltTypeConstant with default values for D47_MD_1_8_M
-  const existingBoltConstant = await prisma.boltTypeConstant.findFirst({
+  const existingBoltConstant = await prisma.bansheeBoltTypeConstant.findFirst({
     where: { boltType: BoltType.D47_MD_1_8_M },
   });
 
   if (!existingBoltConstant) {
-    await prisma.boltTypeConstant.create({
+    await prisma.bansheeBoltTypeConstant.create({
       data: {
         boltType: BoltType.D47_MD_1_8_M,
         velocity: 5890,

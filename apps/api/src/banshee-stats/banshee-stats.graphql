@@ -8,18 +8,17 @@ type BansheeSessionStats {
   sessionDate: DateTime!
   
   totalMeasured: Int!
-  totalWithLogs: Int!
   notMeasurable: Int!
   broken: Int!
-  
-  company: Company!
+  site: Site!
+  company: Company
 }
 
 type Query {
-  getStats(date: DateTime!, companyId: String): [BansheeSessionStats!]!
-  statsForPeriod(
+  bansheeSessionStats(
     startDate: DateTime!
     endDate: DateTime!
     companyId: String
+    siteId: String
   ): [BansheeSessionStats!]!
 }

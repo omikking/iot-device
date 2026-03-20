@@ -1,4 +1,3 @@
-import { InputType } from '@nestjs/graphql';
 import {
   IsString,
   IsOptional,
@@ -11,7 +10,6 @@ import {
 import * as GraphQLTypes from '../../graphql-types';
 import { Upload } from 'graphql-upload-ts';
 
-@InputType()
 export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequestInput {
   @IsString()
   serialNumber: string;
@@ -57,7 +55,6 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   @IsOptional()
   images?: Upload[];
 
-  @IsOptional()
   @IsString()
   boltType: string;
 

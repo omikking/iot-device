@@ -1,31 +1,36 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
+import { ActiveUser } from 'src/auth/decorators';
+import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 import { BansheeStatsService } from './banshee-stats.service';
+import { Application } from '@prisma/client';
 
 @Resolver()
-@UseGuards(JwtGuard, RolesGuard)
+@UseGuards(JwtGuard)
 export class BansheeStatsResolver {
-  constructor(
-    private readonly statsService: BansheeStatsService,
-  ) {}
+  constructor(private readonly statsService: BansheeStatsService) {}
 
-  @Query('getStats')
-  async getStats(
-    @Args('date') date: Date,
-    @Args('companyId', { nullable: true }) companyId?: string,
-  ) {
-    return this.statsService.getStats(date, companyId);
-  }
-
-  @Query('statsForPeriod')
-  async getStatsForPeriod(
+  @Query('bansheeSessionStats')
+  async bansheeSessionStats(
+    @ActiveUser() user: ActiveUserData,
     @Args('startDate') startDate: Date,
     @Args('endDate') endDate: Date,
     @Args('companyId', { nullable: true }) companyId?: string,
+    @Args('siteId', { nullable: true }) siteId?: string,
   ) {
-    return this.statsService.getStatsForPeriod(startDate, endDate, companyId);
-  }
+    const allowedCompanyIds = getAllowedCompanyIds(user);
+    const allowedApps = [Application.BANSHEE];
 
+    return this.statsService.bansheeSessionStats(
+      user,
+      startDate,
+      endDate,
+      companyId,
+      siteId,
+      allowedCompanyIds,
+      allowedApps,
+    );
+  }
 }

@@ -69,3 +69,10 @@ type ProceqAttachment {
   attachmentType: String!
   description: String
 }
+type ProceqLoginUrlResponse {
+  url: String!
+}
+
+type Query {
+  proceqLoginUrl(callbackUrl: String!): ProceqLoginUrlResponse!
+}

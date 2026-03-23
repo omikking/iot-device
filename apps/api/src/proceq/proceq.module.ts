@@ -5,6 +5,7 @@ import { ProceqSchedulerService } from './proceq-scheduler.service';
 import { ProceqSyncService } from './proceq-sync.service';
 import { ProceqAuthController } from './proceq-auth.controller';
 import { BansheeStatsModule } from '../banshee-stats/banshee-stats.module';
+import { ProceqAuthResolver } from './proceq-auth.resolver';
 
 @Module({
   imports: [BansheeStatsModule],
@@ -13,6 +14,7 @@ import { BansheeStatsModule } from '../banshee-stats/banshee-stats.module';
     ProceqAuthService,
     ProceqSchedulerService,
     ProceqSyncService,
+    ProceqAuthResolver,
   ],
   controllers: [ProceqAuthController],
   exports: [ProceqApiService, ProceqAuthService],

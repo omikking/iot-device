@@ -196,7 +196,7 @@ export class ProceqSyncService {
     };
   }
 
-  async syncAllMeasurements(): Promise<SyncResult> {
+  async syncAllMeasurements(email: string): Promise<SyncResult> {
     if (this.isSyncing) {
       this.logger.debug('Sync already in progress, skipping');
       return {
@@ -220,7 +220,7 @@ export class ProceqSyncService {
       const allNewMeasurementIds: string[] = [];
       let totalMeasurements = 0;
 
-      const { data } = await this.api.getMeasurements(1, 1);
+      const { data } = await this.api.getMeasurements(email, 1, 1);
       this.logger.log(data.meta);
       const totalCount = data?.meta?.pagination?.totalCount || 0;
       const totalPages = Math.ceil(totalCount / size);
@@ -236,7 +236,7 @@ export class ProceqSyncService {
       const allUpdatedMeasurementIds: string[] = [];
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const { data } = await this.api.getMeasurements(currentPage, size);
+        const { data } = await this.api.getMeasurements(email, currentPage, size);
 
         const measurements = data.data || [];
         if (!measurements.length) break;
@@ -316,7 +316,7 @@ export class ProceqSyncService {
           const batch = allMeasurementIdsToSync.slice(i, i + adaptiveBatchSize);
 
           try {
-            await this.processMeasurementsBatch(batch, measurementTimestampMap);
+            await this.processMeasurementsBatch(email, batch, measurementTimestampMap);
           } catch (error) {
             failedBatches++;
             this.logger.error(
@@ -364,6 +364,7 @@ export class ProceqSyncService {
   }
 
   private async processMeasurementsBatch(
+    email: string,
     ids: string[],
     measurementTimestampMap: Map<
       string,
@@ -373,7 +374,7 @@ export class ProceqSyncService {
     if (!ids.length) return;
 
     try {
-      const exportResponse = await this.api.exportMeasurementData(ids, 'json');
+      const exportResponse = await this.api.exportMeasurementData(email, ids, 'json');
       const exportId = exportResponse.data.data.exportID;
 
       const startTime = Date.now();
@@ -390,7 +391,7 @@ export class ProceqSyncService {
           );
         }
 
-        const statusResponse = await this.api.getExportStatus(exportId);
+        const statusResponse = await this.api.getExportStatus(email, exportId);
         exportStatus = statusResponse.data.data.status;
 
         if (exportStatus === 'completed') {
@@ -407,7 +408,7 @@ export class ProceqSyncService {
             this.logger.log(
               `Starting background attachment processing for ${ids.length} measurements`,
             );
-            this.processAttachments(ids).catch((err) => {
+            this.processAttachments(email, ids).catch((err) => {
               this.logger.error(
                 `Background attachment processing failed for ${ids.length} measurements [${ids.slice(0, 3).join(',')}...]: ${err.message}`,
               );
@@ -430,7 +431,10 @@ export class ProceqSyncService {
     }
   }
 
-  private async processAttachments(measurementIds: string[]): Promise<void> {
+  private async processAttachments(
+    email: string,
+    measurementIds: string[],
+  ): Promise<void> {
     const concurrencyLimit = 5;
 
     for (let i = 0; i < measurementIds.length; i += concurrencyLimit) {
@@ -452,7 +456,7 @@ export class ProceqSyncService {
             }
 
             const attachmentsResponse =
-              await this.api.getMeasurementAttachments(measurementId);
+              await this.api.getMeasurementAttachments(email, measurementId);
             const attachments = attachmentsResponse.data.data || [];
 
             if (!attachments.length) return;
@@ -461,6 +465,7 @@ export class ProceqSyncService {
               attachments.map(async (attachment: Record<string, any>) => {
                 try {
                   const response = await this.api.downloadAttachment(
+                    email,
                     attachment.mID,
                     attachment.id,
                   );

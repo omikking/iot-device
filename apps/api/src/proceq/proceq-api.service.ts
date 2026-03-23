@@ -28,14 +28,15 @@ export class ProceqApiService implements OnModuleInit {
     });
   }
 
-  private async getAuthHeaders(): Promise<Record<string, string>> {
-    const token = await this.auth.authenticate();
+  private async getAuthHeaders(email: string): Promise<Record<string, string>> {
+    const token = await this.auth.authenticate(email);
     return {
       Authorization: `Bearer ${token.accessToken}`,
     };
   }
 
   private async retryableGet<T = any>(
+    email: string,
     url: string,
     config?: Record<string, any>,
   ): Promise<AxiosResponse<T>> {
@@ -43,7 +44,7 @@ export class ProceqApiService implements OnModuleInit {
 
     for (let attempt = 0; attempt <= this.MAX_RETRIES; attempt++) {
       try {
-        const headers = await this.getAuthHeaders();
+        const headers = await this.getAuthHeaders(email);
         return await this.client.get<T>(url, {
           ...config,
           headers: { ...config?.headers, ...headers },
@@ -65,6 +66,7 @@ export class ProceqApiService implements OnModuleInit {
   }
 
   async getMeasurements(
+    email: string,
     page?: number,
     size?: number,
   ): Promise<AxiosResponse<any>> {
@@ -73,39 +75,46 @@ export class ProceqApiService implements OnModuleInit {
     if (size !== undefined) params.append('size', size.toString());
     const queryString = params.toString();
     return this.retryableGet(
+      email,
       `/${this.PRODUCT}/measurement${queryString ? `?${queryString}` : ''}`,
     );
   }
 
   async getMeasurementDetails(
+    email: string,
     measurementId: string,
   ): Promise<AxiosResponse<any>> {
-    return this.retryableGet(`/${this.PRODUCT}/measurement/${measurementId}`);
+    return this.retryableGet(email, `/${this.PRODUCT}/measurement/${measurementId}`);
   }
 
   async getMeasurementAttachments(
+    email: string,
     measurementId: string,
   ): Promise<AxiosResponse<any>> {
     return this.retryableGet(
+      email,
       `/${this.PRODUCT}/measurement/${measurementId}/attachment`,
     );
   }
 
   async downloadAttachment(
+    email: string,
     measurementId: string,
     attachmentId: string,
   ): Promise<AxiosResponse<ArrayBuffer>> {
     return this.retryableGet(
+      email,
       `/${this.PRODUCT}/measurement/${measurementId}/attachment/${attachmentId}/download`,
       { responseType: 'arraybuffer' },
     );
   }
 
   async exportMeasurementData(
+    email: string,
     measurementIds: string[],
     format: 'json' | 'csv' = 'json',
   ): Promise<AxiosResponse<any>> {
-    const headers = await this.getAuthHeaders();
+    const headers = await this.getAuthHeaders(email);
     return this.client.post(
       `/${this.PRODUCT}/measurement/export`,
       { format, ids: measurementIds },
@@ -113,8 +122,12 @@ export class ProceqApiService implements OnModuleInit {
     );
   }
 
-  async getExportStatus(exportId: string): Promise<AxiosResponse<any>> {
+  async getExportStatus(
+    email: string,
+    exportId: string,
+  ): Promise<AxiosResponse<any>> {
     return this.retryableGet(
+      email,
       `/${this.PRODUCT}/measurement/export/${exportId}/status`,
     );
   }

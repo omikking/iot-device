@@ -4,7 +4,7 @@
 /build
 
 # Logs
-proceq-logs
+proceq-logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*

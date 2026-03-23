@@ -9,7 +9,7 @@ const logger = new Logger('DownloadFile');
 export async function downloadAndSaveFile(
   downloadUrl: string,
 ): Promise<string> {
-  const logsDir = path.join(process.cwd(), 'logs');
+  const logsDir = path.join(process.cwd(), 'proceq-logs');
   fs.mkdirSync(logsDir, { recursive: true });
 
   const fileName =

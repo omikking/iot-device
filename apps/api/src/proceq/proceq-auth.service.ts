@@ -17,47 +17,21 @@ function extractErrorMessage(error: unknown): string {
 @Injectable()
 export class ProceqAuthService {
   private readonly logger = new Logger(ProceqAuthService.name);
-  private readonly OPERATOR_EMAIL = 'osvaldo.vallati@sandvik.com'; // TODO: This will be removed and changed dynamically as per user.
-
-  private token?: ProceqTokenDto;
-  private refreshPromise: Promise<void> | null = null;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-  ) {
-    this.initializeTokenFromDB();
-  }
+  ) {}
 
-  private async initializeTokenFromDB(): Promise<void> {
-    try {
-      const storedToken = await this.prisma.proceqToken.findUnique({
-        where: { operatorEmail: this.OPERATOR_EMAIL },
-      });
-
-      if (
-        storedToken &&
-        new Date(storedToken.expiresAt) > new Date(Date.now() + 60_000)
-      ) {
-        this.token = {
-          accessToken: storedToken.accessToken,
-          refreshToken: storedToken.refreshToken,
-          expiresAt: storedToken.expiresAt.getTime(),
-        };
-        this.logger.log('Proceq token loaded from database');
-      } else if (storedToken?.refreshToken) {
-        await this.refreshAndStoreToken(storedToken.refreshToken);
-      }
-    } catch (error) {
-      this.logger.error('Failed to initialize token from DB', error);
-    }
-  }
-  private async storeTokenInDB(token: ProceqTokenDto): Promise<void> {
+  private async storeTokenInDB(
+    token: ProceqTokenDto,
+    email: string,
+  ): Promise<void> {
     try {
       const expiresAt = new Date(token.expiresAt);
 
       await this.prisma.proceqToken.upsert({
-        where: { operatorEmail: this.OPERATOR_EMAIL },
+        where: { operatorEmail: email },
         update: {
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
@@ -65,7 +39,7 @@ export class ProceqAuthService {
           updatedAt: new Date(),
         },
         create: {
-          operatorEmail: this.OPERATOR_EMAIL,
+          operatorEmail: email,
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
           expiresAt: expiresAt,
@@ -78,22 +52,24 @@ export class ProceqAuthService {
     }
   }
 
-  private async refreshAndStoreToken(refreshToken: string): Promise<void> {
+  private async refreshAndStoreToken(
+    refreshToken: string,
+    email: string,
+  ): Promise<ProceqTokenDto> {
     try {
       const newToken = await this.refreshTokenFlow(refreshToken);
-      this.token = newToken;
-      await this.storeTokenInDB(newToken);
+      await this.storeTokenInDB(newToken, email);
+      return newToken;
     } catch (error) {
       this.logger.error('Failed to refresh and store token', error);
       throw error;
     }
   }
 
-  async setAuthorizationCode(code: string): Promise<void> {
+  async setAuthorizationCode(code: string, email: string): Promise<void> {
     try {
       const newToken = await this.exchangeCodeForToken(code);
-      this.token = newToken;
-      await this.storeTokenInDB(newToken);
+      await this.storeTokenInDB(newToken, email);
 
       this.logger.log(
         'Proceq access token acquired successfully via authorization code flow',
@@ -107,36 +83,34 @@ export class ProceqAuthService {
     }
   }
 
-  async authenticate(): Promise<ProceqTokenDto> {
-    if (this.token && Date.now() < this.token.expiresAt - 60_000) {
-      return this.token;
-    }
-
-    if (this.refreshPromise) {
-      await this.refreshPromise;
-      if (this.token && Date.now() < this.token.expiresAt - 60_000) {
-        return this.token;
-      }
-    }
-
+  async authenticate(email: string): Promise<ProceqTokenDto> {
     const storedToken = await this.prisma.proceqToken.findUnique({
-      where: { operatorEmail: this.OPERATOR_EMAIL },
+      where: { operatorEmail: email },
     });
+
+    if (
+      storedToken &&
+      new Date(storedToken.expiresAt) > new Date(Date.now() + 60_000)
+    ) {
+      return {
+        accessToken: storedToken.accessToken,
+        refreshToken: storedToken.refreshToken,
+        expiresAt: storedToken.expiresAt.getTime(),
+      };
+    }
 
     if (storedToken?.refreshToken) {
       try {
-        this.refreshPromise = this.refreshAndStoreToken(
+        const newToken = await this.refreshAndStoreToken(
           storedToken.refreshToken,
+          email,
         );
-        await this.refreshPromise;
-        return this.token!;
+        return newToken;
       } catch (error) {
         this.logger.error(
           'Failed to refresh Proceq token',
           extractErrorMessage(error),
         );
-      } finally {
-        this.refreshPromise = null;
       }
     }
 
@@ -145,7 +119,7 @@ export class ProceqAuthService {
     );
   }
 
-  getAuthorizationUrl(): string {
+  getAuthorizationUrl(email: string, callbackUrl: string): string {
     const clientId = this.configService.get<string>('PROCEQ_CLIENT_ID');
     const redirectUri = this.configService.get<string>('PROCEQ_REDIRECT_URI');
     const baseURL = this.configService.get<string>('PROCEQ_WORKSPACE_DOMAIN');
@@ -154,12 +128,17 @@ export class ProceqAuthService {
       throw new Error('Missing Proceq OAuth configuration');
     }
 
+    // Encode email and callbackUrl into the state
+    const statePayload = Buffer.from(
+      JSON.stringify({ email, callbackUrl }),
+    ).toString('base64');
+
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: clientId,
       redirect_uri: redirectUri,
       scope: 'openid email profile offline',
-      state: 'foobar',
+      state: statePayload,
     });
     return `https://${baseURL}/api/id/v1/auth/authorize?${params.toString()}`;
   }
@@ -247,12 +226,14 @@ export class ProceqAuthService {
     };
   }
 
-  async getValidToken(): Promise<ProceqTokenDto> {
-    return this.authenticate();
+  async getValidToken(email: string): Promise<ProceqTokenDto> {
+    return this.authenticate(email);
   }
 
-  async getAuthorizationHeader(): Promise<{ Authorization: string }> {
-    const token = await this.authenticate();
+  async getAuthorizationHeader(
+    email: string,
+  ): Promise<{ Authorization: string }> {
+    const token = await this.authenticate(email);
     return { Authorization: `Bearer ${token.accessToken}` };
   }
 }

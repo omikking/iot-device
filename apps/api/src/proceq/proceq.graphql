@@ -1,6 +1,5 @@
 scalar DateTime
 scalar JSON
-scalar BigInt
 
 type ProceqReading {
   id: String!
@@ -33,24 +32,24 @@ type ProceqData {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  
+
   measurementId: String!
   fileName: String!
   operator: String
   email: String
-  
-  comments: JSON
+
+  comments: String!
   temperature: Float
-  
+
   rawDataZipId: String
   rawDataZipPath: String
   status: String
-  
-  attachmentIds: [String!]!
-  
+
+  attachmentIds: [String]
+
   createdTimestamp: DateTime
   updatedTimestamp: DateTime
-  
+
   bansheeRequest: BansheeRequest
   proceqAttachments: [ProceqAttachment!]
   readings: [ProceqReading!]
@@ -60,7 +59,7 @@ type ProceqAttachment {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  
+
   attachmentId: String!
   measurementId: String!
   fileName: String!
@@ -69,4 +68,11 @@ type ProceqAttachment {
   fileSize: Int
   attachmentType: String!
   description: String
+}
+type ProceqLoginUrlResponse {
+  url: String!
+}
+
+type Query {
+  proceqLoginUrl(callbackUrl: String!): ProceqLoginUrlResponse!
 }

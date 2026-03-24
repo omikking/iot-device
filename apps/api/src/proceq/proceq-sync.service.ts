@@ -15,7 +15,7 @@ import {
   SyncResult,
   BoltConstants,
 } from './interfaces/proceq-sync.interfaces';
-import { BoltType } from '@prisma/client';
+import { BoltType, ProceqStatus } from '@prisma/client';
 
 @Injectable()
 export class ProceqSyncService {
@@ -114,6 +114,7 @@ export class ProceqSyncService {
         gate1SoundPathDistance: null,
         gate1SoundPathDistanceInTimeUnit: null,
         elongation: null,
+        status: null,
       });
     } else {
       for (let idx = 0; idx < readingsArray.length; idx++) {
@@ -167,6 +168,7 @@ export class ProceqSyncService {
           gate1SoundPathDistanceInTimeUnit:
             readingToolBarOptions?.gate1SoundPathDistanceInTimeUnit || null,
           elongation: null,
+          status: null,
         });
       }
     }
@@ -190,10 +192,11 @@ export class ProceqSyncService {
       rawDataZipId: null,
       rawDataZipPath: null,
       readings: extractedReadings,
+      status: null,
     };
   }
 
-  async syncAllMeasurements(): Promise<SyncResult> {
+  async syncAllMeasurements(email: string): Promise<SyncResult> {
     if (this.isSyncing) {
       this.logger.debug('Sync already in progress, skipping');
       return {
@@ -217,7 +220,7 @@ export class ProceqSyncService {
       const allNewMeasurementIds: string[] = [];
       let totalMeasurements = 0;
 
-      const { data } = await this.api.getMeasurements(1, 1);
+      const { data } = await this.api.getMeasurements(email, 1, 1);
       this.logger.log(data.meta);
       const totalCount = data?.meta?.pagination?.totalCount || 0;
       const totalPages = Math.ceil(totalCount / size);
@@ -226,11 +229,14 @@ export class ProceqSyncService {
         `Found ${totalCount} total measurements, ${totalPages} pages to process`,
       );
 
-      const measurementTimestampMap = new Map<string, { created: string | null; updated: string | null }>();
+      const measurementTimestampMap = new Map<
+        string,
+        { created: string | null; updated: string | null }
+      >();
       const allUpdatedMeasurementIds: string[] = [];
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const { data } = await this.api.getMeasurements(currentPage, size);
+        const { data } = await this.api.getMeasurements(email, currentPage, size);
 
         const measurements = data.data || [];
         if (!measurements.length) break;
@@ -310,7 +316,7 @@ export class ProceqSyncService {
           const batch = allMeasurementIdsToSync.slice(i, i + adaptiveBatchSize);
 
           try {
-            await this.processMeasurementsBatch(batch, measurementTimestampMap);
+            await this.processMeasurementsBatch(email, batch, measurementTimestampMap);
           } catch (error) {
             failedBatches++;
             this.logger.error(
@@ -358,13 +364,17 @@ export class ProceqSyncService {
   }
 
   private async processMeasurementsBatch(
+    email: string,
     ids: string[],
-    measurementTimestampMap: Map<string, { created: string | null; updated: string | null }>,
+    measurementTimestampMap: Map<
+      string,
+      { created: string | null; updated: string | null }
+    >,
   ): Promise<void> {
     if (!ids.length) return;
 
     try {
-      const exportResponse = await this.api.exportMeasurementData(ids, 'json');
+      const exportResponse = await this.api.exportMeasurementData(email, ids, 'json');
       const exportId = exportResponse.data.data.exportID;
 
       const startTime = Date.now();
@@ -381,20 +391,24 @@ export class ProceqSyncService {
           );
         }
 
-        const statusResponse = await this.api.getExportStatus(exportId);
+        const statusResponse = await this.api.getExportStatus(email, exportId);
         exportStatus = statusResponse.data.data.status;
 
         if (exportStatus === 'completed') {
           const downloadUrl = statusResponse.data.data.url;
           const downloadPath = await downloadAndSaveFile(downloadUrl);
 
-          await this.processExportArchive(downloadPath, ids, measurementTimestampMap);
+          await this.processExportArchive(
+            downloadPath,
+            ids,
+            measurementTimestampMap,
+          );
 
           setImmediate(() => {
             this.logger.log(
               `Starting background attachment processing for ${ids.length} measurements`,
             );
-            this.processAttachments(ids).catch((err) => {
+            this.processAttachments(email, ids).catch((err) => {
               this.logger.error(
                 `Background attachment processing failed for ${ids.length} measurements [${ids.slice(0, 3).join(',')}...]: ${err.message}`,
               );
@@ -417,7 +431,10 @@ export class ProceqSyncService {
     }
   }
 
-  private async processAttachments(measurementIds: string[]): Promise<void> {
+  private async processAttachments(
+    email: string,
+    measurementIds: string[],
+  ): Promise<void> {
     const concurrencyLimit = 5;
 
     for (let i = 0; i < measurementIds.length; i += concurrencyLimit) {
@@ -439,7 +456,7 @@ export class ProceqSyncService {
             }
 
             const attachmentsResponse =
-              await this.api.getMeasurementAttachments(measurementId);
+              await this.api.getMeasurementAttachments(email, measurementId);
             const attachments = attachmentsResponse.data.data || [];
 
             if (!attachments.length) return;
@@ -448,6 +465,7 @@ export class ProceqSyncService {
               attachments.map(async (attachment: Record<string, any>) => {
                 try {
                   const response = await this.api.downloadAttachment(
+                    email,
                     attachment.mID,
                     attachment.id,
                   );
@@ -474,7 +492,6 @@ export class ProceqSyncService {
                       },
                       create: {
                         attachmentId: attachment.id,
-                        measurementId,
                         fileName,
                         filePath,
                         fileType,
@@ -577,7 +594,10 @@ export class ProceqSyncService {
   private async processExportArchive(
     archivePath: string,
     measurementIds: string[],
-    measurementTimestampMap: Map<string, { created: string | null; updated: string | null }>,
+    measurementTimestampMap: Map<
+      string,
+      { created: string | null; updated: string | null }
+    >,
   ): Promise<void> {
     const extractedDir = archivePath;
 
@@ -756,8 +776,7 @@ export class ProceqSyncService {
           );
         } else {
           for (const idx of indices) {
-            (recordsToUpsert[idx] as any).bansheeRequestId =
-              bansheeRequest.id;
+            (recordsToUpsert[idx] as any).bansheeRequestId = bansheeRequest.id;
           }
           bansheeRequestsToUpdate.push(bansheeRequest.id);
         }
@@ -765,15 +784,13 @@ export class ProceqSyncService {
       const uniqueBoltTypes: BoltType[] = [
         ...new Set([
           BoltType.D47_MD_1_8_M,
-          ...bansheeRequests
-            .filter((b) => b.boltType)
-            .map((b) => b.boltType),
+          ...bansheeRequests.filter((b) => b.boltType).map((b) => b.boltType),
         ]),
       ];
 
       const boltConstantsMap = new Map<string, BoltConstants>();
       const boltTypeConstants =
-        await this.prisma.boltTypeConstant.findMany({
+        await this.prisma.bansheeBoltTypeConstant.findMany({
           where: { boltType: { in: uniqueBoltTypes } },
         });
       boltTypeConstants.forEach((constant) => {
@@ -816,15 +833,17 @@ export class ProceqSyncService {
 
     for (let i = 0; i < records.length; i += chunkSize) {
       const chunk = records.slice(i, i + chunkSize);
-     //for event logs
+      //for event logs
       const measurementIds = chunk.map((r) => r.measurementId);
       const existingRecords = await this.prisma.proceqData.findMany({
         where: { measurementId: { in: measurementIds } },
         select: { measurementId: true, status: true, bansheeRequestId: true },
       });
       const existingStatusMap = new Map(
-      existingRecords.map(e => [e.measurementId,
-         { status: e.status, bansheeRequestId: e.bansheeRequestId }]),
+        existingRecords.map((e) => [
+          e.measurementId,
+          { status: e.status, bansheeRequestId: e.bansheeRequestId },
+        ]),
       );
 
       const parentOps = chunk.map((record) =>
@@ -840,8 +859,8 @@ export class ProceqSyncService {
             updatedTimestamp: record.updatedTimestamp,
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
-            bansheeRequestId: (record as any).bansheeRequestId || null,
-            status: record.status || null,
+            bansheeRequestId: record.bansheeRequestId,
+            status: record.status || ProceqStatus.UNMEASURED,
           },
           create: {
             measurementId: record.measurementId,
@@ -854,8 +873,8 @@ export class ProceqSyncService {
             updatedTimestamp: record.updatedTimestamp,
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
-            bansheeRequestId: (record as any).bansheeRequestId || null,
-            status: record.status || null,
+            bansheeRequestId: record.bansheeRequestId,
+            status: record.status || ProceqStatus.UNMEASURED,
           },
         }),
       );
@@ -897,10 +916,14 @@ export class ProceqSyncService {
                 gate1SoundPathDistanceInTimeUnit:
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
-                status: reading.status || null,
+                status: reading.status || ProceqStatus.UNMEASURED,
               },
               create: {
-                proceqDataId: parentId,
+                proceqData: {
+                  connect: {
+                    id: parentId,
+                  },
+                },
                 readingIndex: reading.readingIndex,
                 indicationSetupFileName: reading.indicationSetupFileName,
                 measuringMode: reading.measuringMode,
@@ -922,7 +945,7 @@ export class ProceqSyncService {
                 gate1SoundPathDistanceInTimeUnit:
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
-                status: reading.status || null,
+                status: reading.status as ProceqStatus,
               },
             }),
           );
@@ -934,9 +957,12 @@ export class ProceqSyncService {
       }
 
       const eventLogs: Array<{
-        eventType: string; previousStatus: string; newStatus: string;
-         measurementId: string; bansheeRequestId: string;
-        createdAt: Date| null;
+        eventType: string;
+        previousStatus: ProceqStatus;
+        newStatus: ProceqStatus;
+        measurementId: string;
+        bansheeRequestId: string;
+        createdAt: Date | null;
       }> = [];
 
       for (const record of chunk) {
@@ -979,7 +1005,10 @@ export class ProceqSyncService {
         : [];
 
     const bansheeMap = new Map(
-      bansheeRequests.map((b) => [b.serialNumber, { companyId: b.companyId, siteId: b.siteId }]),
+      bansheeRequests.map((b) => [
+        b.serialNumber,
+        { companyId: b.companyId, siteId: b.siteId },
+      ]),
     );
 
     const STATS_CONCURRENCY = 5;
@@ -1002,6 +1031,7 @@ export class ProceqSyncService {
             record.comments || '',
             siteId,
             companyId,
+            'create',
           );
         }),
       );
@@ -1063,11 +1093,11 @@ export class ProceqSyncService {
           : '';
 
         if (commentsStr.includes('broken')) {
-          record.status = 'broken';
+          record.status = ProceqStatus.BROKEN;
           continue;
         }
         if (commentsStr.includes('not measurable')) {
-          record.status = 'not measurable';
+          record.status = ProceqStatus.NOT_MEASURABLE;
           continue;
         }
 
@@ -1079,8 +1109,7 @@ export class ProceqSyncService {
           continue;
         }
 
-        const boltType =
-          recordBoltTypeMap.get(idx) || BoltType.D47_MD_1_8_M;
+        const boltType = recordBoltTypeMap.get(idx) || BoltType.D47_MD_1_8_M;
         const boltConstants =
           boltConstantsMap.get(boltType) ||
           boltConstantsMap.get(BoltType.D47_MD_1_8_M)!;
@@ -1100,8 +1129,7 @@ export class ProceqSyncService {
           const L_UT_T =
             L_UT *
             boltConstants.tempCorrectionFactor *
-            (1 +
-              (boltConstants.tempCoeff * (20 - temp)) / Math.pow(10, 6));
+            (1 + (boltConstants.tempCoeff * (20 - temp)) / Math.pow(10, 6));
 
           const L0 = boltConstants.nominalLength;
 
@@ -1118,14 +1146,14 @@ export class ProceqSyncService {
               boltConstants.linCoeff2 * diff -
               boltConstants.constTerm;
           }
-          
-          let readingStatus: string;
+
+          let readingStatus: ProceqStatus;
           if (E_LUT_T_L < boltConstants.elasticLimit) {
-            readingStatus = 'Elastic';
+            readingStatus = ProceqStatus.ELASTIC;
           } else if (E_LUT_T_L <= boltConstants.lowPlasticLimit) {
-            readingStatus = 'Low plastic';
+            readingStatus = ProceqStatus.LOW_PLASTIC;
           } else {
-            readingStatus = 'High plastic';
+            readingStatus = ProceqStatus.HIGH_PLASTIC;
           }
 
           reading.elongation = E_LUT_T_L;
@@ -1138,7 +1166,8 @@ export class ProceqSyncService {
 
         if (readingStatuses.length > 0) {
           readingStatuses.sort((a, b) => a.readingIndex - b.readingIndex);
-          record.status = readingStatuses[readingStatuses.length - 1].status;
+          record.status = readingStatuses[readingStatuses.length - 1]
+            .status as ProceqStatus;
         }
       } catch (error) {
         this.logger.warn(

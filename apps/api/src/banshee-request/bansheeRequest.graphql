@@ -4,25 +4,7 @@
 scalar DateTime
 scalar Upload
 scalar JSON
-scalar BigInt
 
-enum RingPosition {
-  RH_BACKS
-  RH_SHOULDER
-  RH_WALL_UPPER
-  RH_WALL_CENTER
-  RH_WALL_LOWER
-  RH_FACE_HIGH
-  RH_FACE_LOW
-  LH_BACKS
-  LH_SHOULDER
-  LH_WALL_UPPER
-  LH_WALL_CENTER
-  LH_WALL_LOWER
-  LH_FACE_HIGH
-  LH_FACE_LOW
-  CENTER_BACKS
-}
 """
 BansheeRequest model
 Define the BansheeRequest model and its fields
@@ -42,17 +24,21 @@ type BansheeRequest {
   period: Int!
   locationDetails: String
   boltInstallationDateTime: DateTime
-  ringPosition: RingPosition
+  ringPosition: String!
   comment: String
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
   images: [String!]
-  deviceAndMeasurements: [ProceqData!]!
-  eventLogs: [BansheeEventLog!]!
+  proceqData: [ProceqData!]
+  eventLogs: [BansheeEventLog!]
   measured: Boolean!
 
   createdBy: String!
   updatedBy: String
+
+  # Field resolver - fetches the full User object from createdBy ID
+  # Only returns users within the same company (SANDVIK_ADMIN can see all)
+  createdByUser: User
 
   level: Level
   drive: Drive
@@ -77,7 +63,7 @@ input CreateBansheeRequestInput {
   period: Int!
   locationDetails: String
   boltInstallationDateTime: DateTime
-  ringPosition: RingPosition
+  ringPosition: RingPosition!
   comment: String
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
@@ -111,6 +97,7 @@ input UpdateBansheeRequestInput {
   companyId: String
   siteId: String
 }
+
 """
 BansheeRequestResponse
 Response structure for paginated list of banshee requests
@@ -145,11 +132,13 @@ type Query {
     measured: Boolean
     period: Int
     driveId: String
+    levelId: String
     locationId: String
     createdBy: String
     companyId: String
     siteId: String
-    timeFilter: String
+    startDate: DateTime
+    endDate: DateTime
   ): BansheeRequestResponse!
 
   bansheeRequest(id: String!): BansheeRequest!
@@ -158,7 +147,8 @@ type Query {
     companyId: String
     siteId: String
     locationId: String
-    timeFilter: String
+    startDate: DateTime
+    endDate: DateTime
   ): BansheeStatusDistribution!
 
   bansheeEventLogs(
@@ -174,17 +164,14 @@ type StatusCount {
   count: Int!
 }
 
-type BansheeStatusDistribution {
-  total: Int!
-  statusCounts: [StatusCount!]!
-}
-
 """
 Mutation
 Define the mutations that can be made to the BansheeRequest model
 """
 type Mutation {
-  createBansheeRequest(createBansheeRequestInput: CreateBansheeRequestInput!): BansheeRequest!
+  createBansheeRequest(
+    createBansheeRequestInput: CreateBansheeRequestInput!
+  ): BansheeRequest!
 
   updateBansheeRequest(
     id: String!
@@ -192,10 +179,6 @@ type Mutation {
   ): BansheeRequest!
 
   deleteBansheeRequest(id: String!): BansheeRequest!
-
-  markBansheeRequestMeasured(id: String!): BansheeRequest!
-
-  finalizeBansheeSession: Int!
 }
 
 type BansheeEventLog {

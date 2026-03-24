@@ -6,8 +6,10 @@ import { Logger } from '@nestjs/common';
 
 const logger = new Logger('DownloadFile');
 
-export async function downloadAndSaveFile(downloadUrl: string): Promise<string> {
-  const logsDir = path.join(process.cwd(), 'logs');
+export async function downloadAndSaveFile(
+  downloadUrl: string,
+): Promise<string> {
+  const logsDir = path.join(process.cwd(), 'proceq-logs');
   fs.mkdirSync(logsDir, { recursive: true });
 
   const fileName =
@@ -32,4 +34,3 @@ export async function downloadAndSaveFile(downloadUrl: string): Promise<string> 
   logger.log(`Extracted to ${extractPath}`);
   return extractPath;
 }
-

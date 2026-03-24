@@ -209,7 +209,10 @@ export const errorTexts = {
   otpTokenExpired_message:
     'The reset password code has expired. Please request a new one.',
 
-  // banshee request
-  createBansheeRequestInputResultCreationError_title:
-    'Failed to create banshee request.',
+  // Banshee request
+  bansheeRequestCreateError_title: 'Failed to create banshee request.',
+
+  bansheeRequestUpdateError_title: 'Failed to update banshee request.',
+
+  bansheeRequestDeleteError_title: 'Failed to delete banshee request.',
 };

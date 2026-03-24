@@ -16,30 +16,55 @@ export class ProceqAuthController {
 
   constructor(private readonly authService: ProceqAuthService) {}
 
-  @Get('proceq/auth/login')
-  login(@Res() res: Response) {
-    return res.redirect(this.authService.getAuthorizationUrl());
-  }
-
   @Get('callback')
-  async callback(@Query('code') code: string) {
-    if (!code) {
+  async callback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Res() res: Response,
+  ) {
+    if (!code || !state) {
       throw new BadRequestException(
-        'Missing authorization code in callback query parameters',
+        'Missing authorization code or state in callback query parameters',
       );
     }
 
+    let decodedState: any;
     try {
-      await this.authService.setAuthorizationCode(code);
-      return {
-        status: 'ok',
-        message: 'Proceq authentication completed successfully',
-      };
+      decodedState = JSON.parse(Buffer.from(state, 'base64').toString('ascii'));
+    } catch (e) {
+      throw new BadRequestException('Invalid state payload');
+    }
+
+    const { email, callbackUrl } = decodedState;
+    console.log('EMAIL', email);
+    console.log('CALLBACK URL', callbackUrl);
+    if (!email || !callbackUrl) {
+      throw new BadRequestException('Incomplete state payload');
+    }
+
+    try {
+      await this.authService.setAuthorizationCode(code, email);
+
+      const redirectUrl = new URL(callbackUrl);
+      redirectUrl.searchParams.append('proceq', 'success');
+
+      return res.redirect(redirectUrl.toString());
     } catch (error) {
       this.logger.error(
         'OAuth callback failed',
         error instanceof Error ? error.message : String(error),
       );
+
+      if (callbackUrl) {
+        try {
+          const redirectUrl = new URL(callbackUrl);
+          redirectUrl.searchParams.append('proceq', 'failed');
+          return res.redirect(redirectUrl.toString());
+        } catch (e) {
+          // ignore error if URL parsing fails on fallback
+        }
+      }
+
       throw new InternalServerErrorException(
         'Failed to complete Proceq authentication',
       );

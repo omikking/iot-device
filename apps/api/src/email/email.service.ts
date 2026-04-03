@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { GlobalRole, Role } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import { EmailTemplateService } from './email-template.service';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import {EmailSesService} from './email.ses-service';
 
 @Injectable()
 export class EmailService {
@@ -11,6 +13,7 @@ export class EmailService {
   constructor(
     private configService: ConfigService,
     private emailTemplateService: EmailTemplateService,
+    private emailSesService : EmailSesService
   ) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('SMTP_HOST'),
@@ -61,17 +64,41 @@ export class EmailService {
       Need help? Contact your administrator for assistance.
     `.trim();
 
-    await this.transporter.sendMail({
-      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
-      to: email,
-      subject: `You're invited to join ${companyName} as ${this.emailTemplateService.getRoleDisplayName(userRole)}`,
-      text: textContent,
-      html: htmlTemplate,
-      headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-      },
-    });
+    const subject = `You're invited to join ${companyName} as ${this.emailTemplateService.getRoleDisplayName(userRole)}`;
+
+    const provider = this.configService.get('EMAIL_PROVIDER') || 'smtp';
+
+    if (provider === 'ses') {
+      await this.emailSesService.sendEmail(
+        email,
+        subject,
+        textContent,
+        htmlTemplate,
+      );
+    } else {
+      await this.transporter.sendMail({
+        from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlTemplate,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
+      });
+    }
+    // await this.transporter.sendMail({
+    //   from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+    //   to: email,
+    //   subject: `You're invited to join ${companyName} as ${this.emailTemplateService.getRoleDisplayName(userRole)}`,
+    //   text: textContent,
+    //   html: htmlTemplate,
+    //   headers: {
+    //     'X-Priority': '1',
+    //     'X-MSMail-Priority': 'High',
+    //   },
+    // });
   }
 
   // 2: For non-existing user receiving global role invitation
@@ -117,17 +144,41 @@ export class EmailService {
       Note: This invitation was sent by a Sandvik Administrator.
     `.trim();
 
-    await this.transporter.sendMail({
-      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
-      to: email,
-      subject: `You're invited to join Ground Support Platform as ${roleDisplayName}`,
-      text: textContent,
-      html: htmlTemplate,
-      headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-      },
-    });
+    const subject = `You're invited to join Ground Support Platform as ${roleDisplayName}`;
+
+    const provider = this.configService.get('EMAIL_PROVIDER') || 'smtp';
+
+    if (provider === 'ses') {
+      await this.emailSesService.sendEmail(
+        email,
+        subject,
+        textContent,
+        htmlTemplate,
+      );
+    } else {
+      await this.transporter.sendMail({
+        from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlTemplate,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
+      });
+    }
+    // await this.transporter.sendMail({
+    //   from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+    //   to: email,
+    //   subject: `You're invited to join Ground Support Platform as ${roleDisplayName}`,
+    //   text: textContent,
+    //   html: htmlTemplate,
+    //   headers: {
+    //     'X-Priority': '1',
+    //     'X-MSMail-Priority': 'High',
+    //   },
+    // });
   }
 
   // 3: For existing user invitations on company level
@@ -165,17 +216,42 @@ export class EmailService {
       Need help? Contact your administrator for assistance.
     `.trim();
 
-    await this.transporter.sendMail({
-      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
-      to: email,
-      subject: `You have been assigned as ${roleDisplayName} for ${companyName} in Ground Support Platform`,
-      text: textContent,
-      html: htmlTemplate,
-      headers: {
-        'X-Priority': '2',
-        'X-MSMail-Priority': 'Normal',
-      },
-    });
+    const subject = `You have been assigned as ${roleDisplayName} for ${companyName} in Ground Support Platform`;
+
+    const provider = this.configService.get('EMAIL_PROVIDER') || 'smtp';
+
+    if (provider === 'ses') {
+      await this.emailSesService.sendEmail(
+        email,
+        subject,
+        textContent,
+        htmlTemplate,
+      );
+    } else {
+      await this.transporter.sendMail({
+        from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlTemplate,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
+      });
+    }
+
+    // await this.transporter.sendMail({
+    //   from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+    //   to: email,
+    //   subject: `You have been assigned as ${roleDisplayName} for ${companyName} in Ground Support Platform`,
+    //   text: textContent,
+    //   html: htmlTemplate,
+    //   headers: {
+    //     'X-Priority': '2',
+    //     'X-MSMail-Priority': 'Normal',
+    //   },
+    // });
   }
 
   // 4: For existing user receiving global role invitation
@@ -208,17 +284,41 @@ export class EmailService {
       Note: This invitation was sent by a Sandvik Administrator.
     `.trim();
 
-    await this.transporter.sendMail({
-      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
-      to: email,
-      subject: `You have been assigned as ${roleDisplayName} in Ground Support Platform`,
-      text: textContent,
-      html: htmlTemplate,
-      headers: {
-        'X-Priority': '2',
-        'X-MSMail-Priority': 'Normal',
-      },
-    });
+    const subject = `You have been assigned as ${roleDisplayName} in Ground Support Platform`;
+
+    const provider = this.configService.get('EMAIL_PROVIDER') || 'smtp';
+
+    if (provider === 'ses') {
+      await this.emailSesService.sendEmail(
+        email,
+        subject,
+        textContent,
+        htmlTemplate,
+      );
+    } else {
+      await this.transporter.sendMail({
+        from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlTemplate,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
+      });
+    }
+    // await this.transporter.sendMail({
+    //   from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+    //   to: email,
+    //   subject: `You have been assigned as ${roleDisplayName} in Ground Support Platform`,
+    //   text: textContent,
+    //   html: htmlTemplate,
+    //   headers: {
+    //     'X-Priority': '2',
+    //     'X-MSMail-Priority': 'Normal',
+    //   },
+    // });
   }
 
   // 5: Password reset with OTP
@@ -244,16 +344,40 @@ export class EmailService {
       Need help? Contact your administrator for assistance.
     `.trim();
 
-    await this.transporter.sendMail({
-      from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
-      to: email,
-      subject: 'Password Reset - Ground Support Platform',
-      text: textContent,
-      html: htmlTemplate,
-      headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-      },
-    });
+    const subject = `Password Reset - Ground Support Platform`;
+
+    const provider = this.configService.get('EMAIL_PROVIDER') || 'smtp';
+
+    if (provider === 'ses') {
+      await this.emailSesService.sendEmail(
+        email,
+        subject,
+        textContent,
+        htmlTemplate,
+      );
+    } else {
+      await this.transporter.sendMail({
+        from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+        to: email,
+        subject,
+        text: textContent,
+        html: htmlTemplate,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+        },
+      });
+    }
+    // await this.transporter.sendMail({
+    //   from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
+    //   to: email,
+    //   subject: 'Password Reset - Ground Support Platform',
+    //   text: textContent,
+    //   html: htmlTemplate,
+    //   headers: {
+    //     'X-Priority': '1',
+    //     'X-MSMail-Priority': 'High',
+    //   },
+    // });
   }
 }

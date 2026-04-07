@@ -38,8 +38,8 @@ export const generateBoltSpecifications = (
 ) => {
   return [
     {
-      title: 'Created at',
-      text: new Date(Number(boltData.createdAt)).toLocaleString() || 'N/A',
+      title: 'Measured at',
+      text: new Date(Number(boltData.measuredAt)).toLocaleString() || 'N/A',
     },
     {
       title: 'Bolt number',
@@ -201,6 +201,10 @@ export const convertBoltType = (boltType: BoltType): string => {
     [BoltType.D47MdPegBolt_2_4M]: 'D47 MD - Peg Bolt - 2.4 m',
     [BoltType.D47MdPegBolt_3_0M]: 'D47 MD - Peg Bolt - 3.0 m',
     [BoltType.FrictionBolt_47Mm]: 'Friction Bolt Ø47 mm',
+    [BoltType.FrictionBolt_47Mm_1_8M]: 'Friction Bolt Ø47 mm - 1.8 m',
+    [BoltType.FrictionBolt_47Mm_2_1M]: 'Friction Bolt Ø47 mm - 2.1 m',
+    [BoltType.FrictionBolt_47Mm_2_4M]: 'Friction Bolt Ø47 mm - 2.4 m',
+    [BoltType.FrictionBolt_47Mm_3_0M]: 'Friction Bolt Ø47 mm - 3.0 m',
     [BoltType.FrictionBolt_39Mm]: 'Friction Bolt Ø39 mm',
     [BoltType.FrictionBolt_33Mm]: 'Friction Bolt Ø33 mm',
     [BoltType.SpiralFrictionBolt]: 'Spiral Friction Bolt',
@@ -228,6 +232,9 @@ export const convertAbortReason = (reason: PullTestAbortReason): string => {
       'Rebar ejected from bolt, visually popped, stopper has caught the bar',
     [PullTestAbortReason.BoltEndDamageRigNotEngaging]:
       'End of the bolt damage, rig not engaging the rock plate properly',
+    [PullTestAbortReason.PullTestCollarInstalledBackwards]:
+      'Pull test collar installed backwards',
+    [PullTestAbortReason.BrokenBoltNut]: 'Broken bolt nut',
   };
 
   if (reason in abortReasonDisplayMap) {

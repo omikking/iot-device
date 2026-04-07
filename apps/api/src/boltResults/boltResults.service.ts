@@ -94,7 +94,7 @@ export class BoltResultsService {
       ...(withComment === true ? { comment: { not: null } } : {}),
       ...(startDate && endDate
         ? {
-            createdAt: {
+            measuredAt: {
               gte: new Date(startDate),
               lte: new Date(endDate),
             },
@@ -136,7 +136,7 @@ export class BoltResultsService {
         location: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        measuredAt: 'desc',
       },
     };
 
@@ -207,6 +207,7 @@ export class BoltResultsService {
 
       const createdBoltResult = await this.prisma.boltResult.create({
         data: {
+          measuredAt: createBoltResultInput.measuredAt,
           boltNumber: createBoltResultInput.boltNumber,
           boltType: createBoltResultInput.boltType as BoltType,
           peakLoad: createBoltResultInput.peakLoad,
@@ -282,6 +283,7 @@ export class BoltResultsService {
             undefined,
           comment: updateBoltResultInput?.comment || undefined,
           image: imagePath || undefined,
+          measuredAt: updateBoltResultInput?.measuredAt || undefined,
         },
       });
 
@@ -388,6 +390,7 @@ export class BoltResultsService {
         abortReason: input.abortReason as PullTestAbortReason | undefined,
         comment: input.comment || undefined,
         image: imagePath || undefined,
+        measuredAt: input.measuredAt,
         siteId: input.siteId,
         levelId: input.levelId,
         driveId: input.driveId,

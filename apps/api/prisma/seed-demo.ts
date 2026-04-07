@@ -1086,9 +1086,15 @@ async function main() {
     const isHazard =
       boltData.result === Result.FAIL || boltData.result === Result.ABORT;
 
+    // Calculate measuredAt to be 1-3 days before createdAt
+    const daysOffset = Math.floor(Math.random() * 3) + 1; // Random 1-3 days
+    const measuredAtDate = new Date(boltData.createdAt);
+    measuredAtDate.setDate(measuredAtDate.getDate() - daysOffset);
+
     await prisma.boltResult.create({
       data: {
         ...boltData,
+        measuredAt: measuredAtDate,
         isHazard,
         hazardCompletedDate: [],
       },

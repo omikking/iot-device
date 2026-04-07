@@ -1,5 +1,6 @@
 export const boltResultDesignSystemMock = [
   {
+    measuredAt: 1741005675314,
     abortReason: 'NOT_TESTED_VOID_CAVITY',
     boltNumber: 3,
     boltType: 'MD47',

@@ -208,7 +208,7 @@ export const CompanyForm = ({
         plans: company.plans || [],
       });
     }
-  }, [company]);
+  }, [company, companyForm]);
 
   const formValues = companyForm.watch();
   const isDirty = companyForm.formState.isDirty;

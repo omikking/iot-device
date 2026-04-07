@@ -33,7 +33,7 @@ export default function Page(): JSX.Element | null {
     if (companies.length === 1) {
       router.push(`/select-application/${companies[0].id}`);
     }
-  }, [companies]);
+  }, [companies, router]);
 
   if (fetching || companies.length === 1) {
     return null;

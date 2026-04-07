@@ -50,6 +50,8 @@ export default function SignIn() {
         router.push(redirectTo);
       }
     }
+    // status already re-triggers when auth state changes, making session a spurious dep here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, router, searchParams]);
 
   const form = useForm<SignInFormValues>({

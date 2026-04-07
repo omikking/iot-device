@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, use, type JSX } from 'react';
+import { useEffect, useState, use, useMemo, type JSX } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
@@ -71,7 +71,10 @@ export default function Page(props: {
     variables: { id: params.id },
     pause: !params.id,
   });
-  const sites = (sitesData.data?.company?.sites as Site[]) || [];
+  const sites = useMemo(
+    () => (sitesData.data?.company?.sites as Site[]) ?? [],
+    [sitesData.data?.company?.sites],
+  );
   const companyName = sitesData.data?.company?.name;
 
   const sitesOptions: DropdownItem[] = sites.map((site) => ({

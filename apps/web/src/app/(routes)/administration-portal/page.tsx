@@ -31,7 +31,7 @@ export default function Page(): JSX.Element {
     ) {
       router.push('/404');
     }
-  }, [session, router]);
+  }, [session, router, status]);
 
   if (
     status === 'authenticated' &&

@@ -76,7 +76,7 @@ export class InvitationService {
           );
 
           return { userId: existingUser.id, isNewUser: false };
-        } catch (error) {
+        } catch {
           throw new UserInputError('', {
             extensions: {
               code: 'INVITATION_CREATE_ERROR',
@@ -125,7 +125,7 @@ export class InvitationService {
         );
 
         return { userId: existingUser.id, isNewUser: false };
-      } catch (error) {
+      } catch {
         throw new UserInputError('', {
           extensions: {
             code: 'INVITATION_CREATE_ERROR',
@@ -191,7 +191,7 @@ export class InvitationService {
         invitationId: invitation.id,
         isNewUser: true,
       };
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_CREATE_ERROR',
@@ -236,7 +236,7 @@ export class InvitationService {
         await this.emailService.sendExistingGlobalUserEmail(email, globalRole);
 
         return { userId: existingUser.id, isNewUser: false };
-      } catch (error) {
+      } catch {
         throw new UserInputError('', {
           extensions: {
             code: 'INVITATION_CREATE_ERROR',
@@ -301,7 +301,7 @@ export class InvitationService {
         invitationId: invitation.id,
         isNewUser: true,
       };
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_CREATE_ERROR',
@@ -339,7 +339,7 @@ export class InvitationService {
           },
         });
       }
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_INVALID_TOKEN_ERROR',
@@ -455,7 +455,7 @@ export class InvitationService {
       );
 
       return result;
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_COMPLETE_ERROR',
@@ -492,7 +492,7 @@ export class InvitationService {
         globalRole: null, // Company invitations don't have global roles
         role: invitation.role,
       }));
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_FETCH_ERROR',
@@ -530,7 +530,7 @@ export class InvitationService {
         role: invitation.globalRole,
         isGlobalVisibility: invitation.isGlobalVisibility,
       }));
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_FETCH_ERROR',
@@ -615,7 +615,7 @@ export class InvitationService {
       }
 
       return updatedInvitation;
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_RESEND_ERROR',
@@ -657,7 +657,7 @@ export class InvitationService {
       });
 
       return deletedInvitation;
-    } catch (error) {
+    } catch {
       throw new UserInputError('', {
         extensions: {
           code: 'INVITATION_REMOVE_ERROR',

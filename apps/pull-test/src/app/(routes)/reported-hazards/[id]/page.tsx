@@ -54,6 +54,15 @@ const getCompanyName = graphql(`
   }
 `);
 
+const NotFoundHazardMessage = () => (
+  <div className="w-full flex h-80 flex-col justify-center items-center gap-5">
+    <Text color="foreground" variant="medium">
+      No reported hazards were found.
+    </Text>
+    <LucideSearchX className="text-neutral-5" />
+  </div>
+);
+
 export default function Page(props: {
   params: Promise<{ id: string }>;
 }): JSX.Element {
@@ -107,15 +116,6 @@ export default function Page(props: {
       }, 200);
     }
   };
-
-  const NotFoundHazardMessage = () => (
-    <div className="w-full flex h-80 flex-col justify-center items-center gap-5">
-      <Text color="foreground" variant="medium">
-        No reported hazards were found.
-      </Text>
-      <LucideSearchX className="text-neutral-5" />
-    </div>
-  );
 
   const selectedHazard = hazards.find((h) => h.id === selectedHazardId);
 

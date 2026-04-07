@@ -279,11 +279,9 @@ export default function Page() {
               </Text>
               <span className="flex">
                 <Text variant="small" color="destructive" className="mr-1">
-                  <Link href="/api/auth/reset-password" passHref legacyBehavior>
-                    <Anchor isUnderline color="destructive">
-                      Resend
-                    </Anchor>
-                  </Link>
+                  <Anchor asChild isUnderline color="destructive">
+                    <Link href="/api/auth/reset-password">Resend</Link>
+                  </Anchor>
                 </Text>
                 <Text variant="small" color="foreground">
                   code if you didn&apos;t receive it.

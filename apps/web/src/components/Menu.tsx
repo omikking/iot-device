@@ -90,25 +90,18 @@ export const Menu = () => {
 
           {!companyId && (
             <>
-              <Link
-                href={
-                  globalRole === Role.SandvikAdmin
-                    ? '/administration-portal'
-                    : '/select-company'
-                }
-                passHref
-                legacyBehavior
-              >
-                <Button
-                  className="mt-4"
-                  variant="secondary"
-                  size="large"
-                  tabIndex={-1}
+              <Button asChild className="mt-4" variant="secondary" size="large">
+                <Link
+                  href={
+                    globalRole === Role.SandvikAdmin
+                      ? '/administration-portal'
+                      : '/select-company'
+                  }
                 >
                   <LucideBuilding2 />
                   Select company
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               <hr className="border-neutral-2" />
             </>
           )}
@@ -123,12 +116,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href={`/company/${companyId}`} passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/company/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Company overview
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
               </div>
               <hr className="border-neutral-2" />
@@ -144,12 +137,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href={`/users/${companyId}`} passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/users/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Users
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -158,12 +151,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href={`/sites/${companyId}`} passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/sites/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Sites
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -172,16 +165,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link
-                    href={`/site-locations/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/site-locations/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Site locations
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -190,39 +179,33 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link
-                    href={`/select-application/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/select-application/${companyId}`}>
                       <LucideLayoutGrid className="text-orange-primary transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 {(globalRole === Role.SandvikAdmin ||
                   companiesWithAccess.length > 1) && (
-                  <Link
-                    href={
-                      globalRole === Role.SandvikAdmin
-                        ? '/administration-portal'
-                        : '/select-company'
-                    }
-                    passHref
-                    legacyBehavior
+                  <Button
+                    asChild
+                    className="mt-4"
+                    variant="secondary"
+                    size="large"
                   >
-                    <Button
-                      className="mt-4"
-                      variant="secondary"
-                      size="large"
-                      tabIndex={-1}
+                    <Link
+                      href={
+                        globalRole === Role.SandvikAdmin
+                          ? '/administration-portal'
+                          : '/select-company'
+                      }
                     >
                       <LucideBuilding2 />
                       Change company
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 )}
               </div>
               <hr className="border-neutral-2" />
@@ -238,12 +221,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/administration-portal" passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href="/administration-portal">
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Administration Portal
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -252,12 +235,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/administrators" passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href="/administrators">
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Administrators
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -266,12 +249,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/technicians" passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href="/technicians">
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Technicians
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -280,12 +263,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href="/company/new" passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href="/company/new">
                       <LucidePlus className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:rotate-90" />
                       Add new company
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
               </div>
               <hr className="border-neutral-2" />
@@ -299,19 +282,18 @@ export const Menu = () => {
               as="h3"
               className="group"
             >
-              <Link href="/account-settings" passHref legacyBehavior>
-                <Anchor color="foreground">
+              <Anchor asChild color="foreground">
+                <Link href="/account-settings">
                   <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings
-                </Anchor>
-              </Link>
+                </Link>
+              </Anchor>
             </Headline>
 
             <Button
               className="mt-4"
               variant="outline"
               size="large"
-              tabIndex={-1}
               onClick={() => signOut({ callbackUrl: '/api/auth/signin' })}
             >
               <LucideLogOut />

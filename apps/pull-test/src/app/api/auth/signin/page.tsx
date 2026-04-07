@@ -153,15 +153,13 @@ export default function SignIn() {
                   Forgot your password?
                 </Text>
                 <Text variant="small" color="accent">
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/api/auth/reset-password`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor isUnderline color="accent">
+                  <Anchor asChild isUnderline color="accent">
+                    <Link
+                      href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/api/auth/reset-password`}
+                    >
                       Click here to reset.
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Text>
               </div>
             </div>

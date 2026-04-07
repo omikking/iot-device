@@ -93,12 +93,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link href={`/overview/${companyId}`} passHref legacyBehavior>
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/overview/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Pull Test Overview
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -107,16 +107,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link
-                    href={`/bolt-results/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/bolt-results/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Bolt results
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -125,16 +121,12 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link
-                    href={`/reported-hazards/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link href={`/reported-hazards/${companyId}`}>
                       <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                       Reported hazards
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 <Headline
@@ -143,39 +135,35 @@ export const Menu = () => {
                   as="h3"
                   className="group"
                 >
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/select-application/${companyId}`}
-                    passHref
-                    legacyBehavior
-                  >
-                    <Anchor color="foreground">
+                  <Anchor asChild color="foreground">
+                    <Link
+                      href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/select-application/${companyId}`}
+                    >
                       <LucideLayoutGrid className="text-orange-primary transition-all ease-in-out group-hover:rotate-45" />
                       Browse apps
-                    </Anchor>
-                  </Link>
+                    </Link>
+                  </Anchor>
                 </Headline>
 
                 {(globalRole === Role.SandvikAdmin ||
                   companiesWithAccess.length > 1) && (
-                  <Link
-                    href={
-                      globalRole === Role.SandvikAdmin
-                        ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
-                        : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`
-                    }
-                    passHref
-                    legacyBehavior
+                  <Button
+                    asChild
+                    className="mt-4"
+                    variant="secondary"
+                    size="large"
                   >
-                    <Button
-                      className="mt-4"
-                      variant="secondary"
-                      size="large"
-                      tabIndex={-1}
+                    <Link
+                      href={
+                        globalRole === Role.SandvikAdmin
+                          ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+                          : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`
+                      }
                     >
                       <LucideBuilding2 />
                       Change company
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 )}
               </div>
 
@@ -189,16 +177,14 @@ export const Menu = () => {
                     as="h3"
                     className="group"
                   >
-                    <Link
-                      href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`}
-                      passHref
-                      legacyBehavior
-                    >
-                      <Anchor color="foreground">
+                    <Anchor asChild color="foreground">
+                      <Link
+                        href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`}
+                      >
                         <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
                         Administration Portal
-                      </Anchor>
-                    </Link>
+                      </Link>
+                    </Anchor>
                   </Headline>
                 </>
               )}
@@ -214,16 +200,14 @@ export const Menu = () => {
               as="h3"
               className="group"
             >
-              <Link
-                href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/account-settings`}
-                passHref
-                legacyBehavior
-              >
-                <Anchor color="foreground">
+              <Anchor asChild color="foreground">
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_PORTAL_URL}/account-settings`}
+                >
                   <LucideSettings className="transition-all ease-in-out group-hover:rotate-180" />
                   Account settings
-                </Anchor>
-              </Link>
+                </Link>
+              </Anchor>
             </Headline>
 
             <Button

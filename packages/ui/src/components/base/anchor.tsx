@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../../lib/utils';
 
-// We need to use this component with Link from Next when we want text styling. Include props href, passHref, legacyBehavior on Link if used with Anchor.
-// https://nextjs.org/docs/pages/api-reference/components/link
+// Use asChild to compose with Next.js <Link> without nesting <a> tags:
+// <Anchor asChild color="accent" isUnderline><Link href="/path">label</Link></Anchor>
+// https://www.radix-ui.com/primitives/docs/utilities/slot
 
 const anchorVariants = cva(
   'ui-font-sandvik-text ui-transition ease-in-out ui-duration-200 ui-flex gap-4 ui-items-center',
@@ -33,18 +35,20 @@ export interface AnchorProps
     Required<Pick<VariantProps<typeof anchorVariants>, 'color'>> {
   href?: string;
   isUnderline?: boolean;
+  asChild?: boolean;
 }
 
 const Anchor = React.forwardRef<HTMLAnchorElement, AnchorProps>(
-  ({ className, isUnderline, color, href, children }, ref) => {
+  ({ className, isUnderline, color, href, children, asChild = false }, ref) => {
+    const Component = asChild ? Slot : 'a';
     return (
-      <a
+      <Component
         className={cn(anchorVariants({ color, isUnderline }), className)}
         href={href}
         ref={ref}
       >
         {children}
-      </a>
+      </Component>
     );
   },
 );

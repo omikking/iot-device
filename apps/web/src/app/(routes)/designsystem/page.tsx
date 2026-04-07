@@ -447,28 +447,24 @@ export default function Page(): JSX.Element {
       </Headline>
       <div className="flex flex-col items-center gap-12 relative">
         <Text variant="xs" color="foreground">
-          <Link href="#" passHref legacyBehavior>
-            <Anchor isUnderline color="foreground">
-              Link and black underline
-            </Anchor>
-          </Link>
+          <Anchor asChild isUnderline color="foreground">
+            <Link href="#">Link and black underline</Link>
+          </Anchor>
         </Text>
 
         <Text variant="medium" color="destructive">
-          <Link href="#" passHref legacyBehavior>
-            <Anchor isUnderline color="destructive">
-              Link and destructive underline
-            </Anchor>
-          </Link>
+          <Anchor asChild isUnderline color="destructive">
+            <Link href="#">Link and destructive underline</Link>
+          </Anchor>
         </Text>
 
         <Headline variant="medium" color="foreground" as="h2" className="group">
-          <Link href="#" passHref legacyBehavior>
-            <Anchor color="foreground">
+          <Anchor asChild color="foreground">
+            <Link href="#">
               <LucideMoveRight className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:translate-x-1.5" />
               Link with icon and no underline
-            </Anchor>
-          </Link>
+            </Link>
+          </Anchor>
         </Headline>
       </div>
       <hr className="w-full border-neutral-2" />

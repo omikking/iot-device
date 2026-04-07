@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
+  IsDate,
   IsNumber,
   IsOptional,
   IsString,
@@ -49,6 +50,9 @@ export class CreateBoltResultInput extends GraphQLTypes.CreateBoltResultInput {
 
   @IsOptional()
   image: Upload;
+
+  @IsDate()
+  measuredAt: Date;
 
   @IsUUID()
   siteId: string;

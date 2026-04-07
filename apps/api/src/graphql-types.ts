@@ -50,6 +50,10 @@ export enum BoltType {
     D47_MD_PEG_BOLT_2_4_M = "D47_MD_PEG_BOLT_2_4_M",
     D47_MD_PEG_BOLT_3_0_M = "D47_MD_PEG_BOLT_3_0_M",
     FRICTION_BOLT_47_MM = "FRICTION_BOLT_47_MM",
+    FRICTION_BOLT_47_MM_1_8_M = "FRICTION_BOLT_47_MM_1_8_M",
+    FRICTION_BOLT_47_MM_2_1_M = "FRICTION_BOLT_47_MM_2_1_M",
+    FRICTION_BOLT_47_MM_2_4_M = "FRICTION_BOLT_47_MM_2_4_M",
+    FRICTION_BOLT_47_MM_3_0_M = "FRICTION_BOLT_47_MM_3_0_M",
     FRICTION_BOLT_39_MM = "FRICTION_BOLT_39_MM",
     FRICTION_BOLT_33_MM = "FRICTION_BOLT_33_MM",
     SPIRAL_FRICTION_BOLT = "SPIRAL_FRICTION_BOLT",
@@ -81,7 +85,9 @@ export enum PullTestAbortReason {
     PEG_NOT_EXTRUDED = "PEG_NOT_EXTRUDED",
     HIGH_ANGLE_NOT_PERPENDICULAR = "HIGH_ANGLE_NOT_PERPENDICULAR",
     REBAR_EJECTED_STOPPER_CAUGHT = "REBAR_EJECTED_STOPPER_CAUGHT",
-    BOLT_END_DAMAGE_RIG_NOT_ENGAGING = "BOLT_END_DAMAGE_RIG_NOT_ENGAGING"
+    BOLT_END_DAMAGE_RIG_NOT_ENGAGING = "BOLT_END_DAMAGE_RIG_NOT_ENGAGING",
+    PULL_TEST_COLLAR_INSTALLED_BACKWARDS = "PULL_TEST_COLLAR_INSTALLED_BACKWARDS",
+    BROKEN_BOLT_NUT = "BROKEN_BOLT_NUT"
 }
 
 export enum Application {
@@ -97,6 +103,7 @@ export enum PlanLevel {
 }
 
 export class CreateBoltResultInput {
+    measuredAt: DateTime;
     boltNumber: number;
     boltType: string;
     peakLoad: number[];
@@ -127,6 +134,7 @@ export class UpdateBoltResultInput {
     abortReason?: Nullable<string>;
     comment?: Nullable<string>;
     image?: Nullable<Upload>;
+    measuredAt?: Nullable<DateTime>;
 }
 
 export class CreateCoffeeInput {
@@ -292,6 +300,7 @@ export class BoltResult {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
+    measuredAt: DateTime;
     boltNumber: number;
     boltType: string;
     peakLoad: number[];
@@ -335,8 +344,11 @@ export abstract class IQuery {
     getRoles: Role[];
     getResults: Result[];
     getBoltTypes?: Nullable<BoltType[]>;
+    getBoltTypesOptions: EnumOption[];
     getRingPosition?: Nullable<RingPosition[]>;
+    getRingPositionOptions: EnumOption[];
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
+    getPullTestAbortReasonOptions: EnumOption[];
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
@@ -450,6 +462,11 @@ export class Drive {
     levelId: string;
     locations?: Nullable<Location[]>;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class EnumOption {
+    value: string;
+    label: string;
 }
 
 export class Invitation {

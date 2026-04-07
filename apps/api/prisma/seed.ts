@@ -792,6 +792,14 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
         }
       }
 
+      // Generate createdAt date
+      const createdAtDate = faker.date.recent({ days: 60 });
+
+      // Calculate measuredAt to be 1-3 days before createdAt
+      const daysOffset = Math.floor(Math.random() * 3) + 1; // Random 1-3 days
+      const measuredAtDate = new Date(createdAtDate);
+      measuredAtDate.setDate(measuredAtDate.getDate() - daysOffset);
+
       const boltResult = await prisma.boltResult.create({
         data: {
           boltNumber: faker.number.int({ min: 100, max: 999 }),
@@ -813,8 +821,9 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
               : null,
           comment: faker.datatype.boolean(0.6) ? faker.lorem.sentence() : null,
           image: null, // skip images for now
-          createdAt: faker.date.recent({ days: 60 }),
-          updatedAt: faker.date.recent({ days: 60 }),
+          createdAt: createdAtDate,
+          measuredAt: measuredAtDate,
+          updatedAt: createdAtDate,
           siteId: site.id,
           levelId: level.id,
           driveId: drive.id,

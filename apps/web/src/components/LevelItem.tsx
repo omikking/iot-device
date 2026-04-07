@@ -14,7 +14,11 @@ import {
   LevelValue,
   siteLocationsSchema,
 } from '@/components/schemas/SiteLocationsFormSchema';
-import { handleGraphQLErrors, isCompanyAdmin } from '@/libs/utils';
+import {
+  handleGraphQLErrors,
+  isCompanyAdmin,
+  isSandvikTechnician,
+} from '@/libs/utils';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 
@@ -74,6 +78,10 @@ export const LevelItem = ({
   const { data: session } = useSession();
   const isUserSandvikAdmin = session?.user?.globalRole === Role.SandvikAdmin;
   const isUserCompanyAdmin = isCompanyAdmin(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const isUserSandvikTechnician = isSandvikTechnician(
     session?.user?.userPermissions,
     companyId,
   );
@@ -244,7 +252,9 @@ export const LevelItem = ({
               {level.levelName}
             </Text>
 
-            {(isUserSandvikAdmin || isUserCompanyAdmin) && (
+            {(isUserSandvikAdmin ||
+              isUserCompanyAdmin ||
+              isUserSandvikTechnician) && (
               <DeleteEditDropdown
                 itemSelected={level.id}
                 handleEdit={handleEditLevel}

@@ -34,7 +34,11 @@ export class EmailService {
     token: string,
     companyName: string,
     userRole?: string,
-  ) {
+  ) 
+  {
+	  console.log(" sendInvitationEmail CALLED");
+console.log("Email:", email);
+console.log(" Company:", companyName);
     const inviteUrl = `${this.configService.get('FRONTEND_URL')}/setup-account?id=${invitationId}&token=${token}`;
 
     const htmlTemplate = this.emailTemplateService.buildInvitationTemplate(
@@ -42,7 +46,8 @@ export class EmailService {
       companyName,
       userRole,
     );
-
+   console.log(" Template generated");
+console.log("Invite URL:", inviteUrl);
     const roleText = this.emailTemplateService.getRoleDisplayText(userRole);
 
     const textContent = `
@@ -60,7 +65,13 @@ export class EmailService {
 
       Need help? Contact your administrator for assistance.
     `.trim();
-
+    console.log(" About to send email...");
+console.log("⚙️ SMTP CONFIG:", {
+  host: this.configService.get('SMTP_HOST'),
+  port: this.configService.get('SMTP_PORT'),
+  secure: this.configService.get('SMTP_SECURE'),
+  user: this.configService.get('SMTP_USER'),
+});
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
       to: email,
@@ -72,6 +83,7 @@ export class EmailService {
         'X-MSMail-Priority': 'High',
       },
     });
+    console.log(" Email sent successfully");
   }
 
   // 2: For non-existing user receiving global role invitation

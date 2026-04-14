@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, type JSX } from 'react';
+import { useEffect, useMemo, type JSX } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
@@ -27,7 +27,7 @@ export default function Page(): JSX.Element | null {
       limit: 100,
     },
   });
-  const companies = data?.companies?.results || [];
+  const companies = useMemo(() => data?.companies?.results || [], [data]);
 
   useEffect(() => {
     if (companies.length === 1) {

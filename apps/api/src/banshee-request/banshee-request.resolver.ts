@@ -18,7 +18,7 @@ import { ActiveUser } from 'src/auth/decorators';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { BansheeRequestsService } from './banshee-request.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Application, GlobalRole } from '@prisma/client';
+import { Application, BoltType, GlobalRole } from '@prisma/client';
 import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -78,9 +78,12 @@ export class BansheeRequestsResolver {
     @Args('createdBy', { nullable: true }) createdBy?: string,
     @Args('companyId', { nullable: true }) companyId?: string,
     @Args('siteId', { nullable: true }) siteId?: string,
+    @Args('activateNotifications', { nullable: true })
+    activateNotifications?: boolean,
     @Args('startDate', { type: () => Date, nullable: true }) startDate?: Date,
     @Args('endDate', { type: () => Date, nullable: true }) endDate?: Date,
   ) {
+    const allowedApps = [Application.BANSHEE];
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
     return this.bansheeRequestsService.findAll(
@@ -96,10 +99,12 @@ export class BansheeRequestsResolver {
         createdBy,
         companyId,
         siteId,
+        activateNotifications,
         startDate,
         endDate,
       },
       allowedCompanyIds,
+      allowedApps,
       user,
     );
   }
@@ -113,7 +118,6 @@ export class BansheeRequestsResolver {
     return this.bansheeRequestsService.findOne(id, user);
   }
 
-  @Roles([], [Application.BANSHEE], 'bansheeRequest')
   @Query('bansheeStatusDistribution')
   async getStatusDistribution(
     @ActiveUser() user: ActiveUserData,
@@ -123,16 +127,17 @@ export class BansheeRequestsResolver {
     @Args('startDate', { type: () => Date, nullable: true }) startDate?: Date,
     @Args('endDate', { type: () => Date, nullable: true }) endDate?: Date,
   ) {
+    const allowedApps = [Application.BANSHEE];
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
     return this.bansheeRequestsService.getStatusDistribution(
       { companyId, siteId, locationId, startDate, endDate },
       allowedCompanyIds,
       user,
+      allowedApps,
     );
   }
 
-  @Roles([], [Application.BANSHEE], 'bansheeRequest')
   @Query('bansheeEventLogs')
   async bansheeEventLogs(
     @ActiveUser() user: ActiveUserData,
@@ -141,12 +146,14 @@ export class BansheeRequestsResolver {
     @Args('companyId', { nullable: true }) companyId?: string,
     @Args('siteId', { nullable: true }) siteId?: string,
   ) {
+    const allowedApps = [Application.BANSHEE];
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
     return this.bansheeRequestsService.getEventLogs(
       { offset, limit, companyId, siteId },
       allowedCompanyIds,
       user,
+      allowedApps,
     );
   }
 
@@ -204,7 +211,15 @@ export class BansheeRequestsResolver {
       where: { bansheeRequestId: bansheeRequest.id },
     });
   }
-
+  @ResolveField()
+  async boltTypeConstant(
+    @Parent() bansheeRequest: GraphQLTypes.BansheeRequest,
+  ) {
+    if (!bansheeRequest.boltType) return null;
+    return this.prisma.bansheeBoltTypeConstant.findFirst({
+      where: { boltType: bansheeRequest.boltType as BoltType },
+    });
+  }
   @ResolveField()
   async createdByUser(
     @Parent() bansheeRequest: GraphQLTypes.BansheeRequest,

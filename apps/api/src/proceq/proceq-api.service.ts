@@ -5,7 +5,7 @@ import { ProceqAuthService } from './proceq-auth.service';
 @Injectable()
 export class ProceqApiService implements OnModuleInit {
   private readonly logger = new Logger(ProceqApiService.name);
-  private client: AxiosInstance;
+  private client!: AxiosInstance;
   private readonly PRODUCT = 'fdl';
   private readonly MAX_RETRIES = 1;
   private readonly RETRY_DELAY_MS = 1000;
@@ -84,7 +84,10 @@ export class ProceqApiService implements OnModuleInit {
     email: string,
     measurementId: string,
   ): Promise<AxiosResponse<any>> {
-    return this.retryableGet(email, `/${this.PRODUCT}/measurement/${measurementId}`);
+    return this.retryableGet(
+      email,
+      `/${this.PRODUCT}/measurement/${measurementId}`,
+    );
   }
 
   async getMeasurementAttachments(

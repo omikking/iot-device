@@ -136,6 +136,7 @@ model Company {
   invitation          Invitation[]
   bansheeSessionStats BansheeSessionStats[]
   bansheeRequests     BansheeRequest[]
+  templates           Template[]
 
   @@map("companies")
 }
@@ -243,6 +244,7 @@ model Site {
   boltResult          BoltResult[]
   bansheeRequests     BansheeRequest[]
   bansheeSessionStats BansheeSessionStats[]
+  templates           Template[]
 
   @@map("sites")
 }
@@ -260,6 +262,7 @@ model Level {
   drive           Drive[]
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
+  templates       Template[]
 
   @@map("levels")
 }
@@ -277,6 +280,7 @@ model Drive {
   location        Location[]
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
+  templates       Template[]
 
   @@map("drives")
 }
@@ -293,6 +297,7 @@ model Location {
 
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
+  templates       Template[]
 
   @@map("locations")
 }
@@ -412,6 +417,7 @@ model BansheeRequest {
   proceqData               ProceqData[]
   eventLogs                BansheeEventLog[]
   isProceqSynced           Boolean           @default(false)
+  activateNotifications    Boolean           @default(false)
 
   createdBy String
   updatedBy String?
@@ -458,11 +464,11 @@ enum ProceqStatus {
 }
 
 model ProceqData {
-  id               String       @id @default(uuid())
+  id               String        @id @default(uuid())
   fileName         String
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  measurementId    String       @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  measurementId    String        @unique
   operatorEmail    String?
   comments         String?
   temperature      Float?
@@ -471,6 +477,7 @@ model ProceqData {
   rawDataZipPath   String?
   createdTimestamp DateTime?
   updatedTimestamp DateTime?
+  dueDate          DateTime?
   status           ProceqStatus?
 
   bansheeRequestId  String?
@@ -486,7 +493,7 @@ model ProceqReading {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  readingIndex                     Int          @default(0)
+  readingIndex                     Int           @default(0)
   indicationSetupFileName          String?
   measuringMode                    String?
   frequency                        Float?
@@ -507,7 +514,7 @@ model ProceqReading {
   gate1SoundPathDistanceInTimeUnit Float?
   status                           ProceqStatus?
   elongation                       Float?
-  proceqData                       ProceqData   @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
+  proceqData                       ProceqData    @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
   proceqDataId                     String
 
   @@unique([proceqDataId, readingIndex])
@@ -565,4 +572,40 @@ model BansheeSessionStats {
 
   @@unique([companyId, siteId, sessionDate])
   @@map("banshee_session_stats")
+}
+
+model Template {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy String
+  updatedBy String
+
+  templateName             String
+  period                   Int       @default(0)
+  boltInstallationDateTime DateTime?
+
+  siteId          String?
+  site            Site?     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  levelId         String?
+  level           Level?    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  driveId         String?
+  drive           Drive?    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  locationId      String?
+  locationDetails String?
+  location        Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  coordinates Json?
+
+  activateNotifications Boolean @default(false)
+  comment               String?
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  ringPosition RingPosition? //need to check
+
+  @@index([companyId])
+  @@map("templates")
 }

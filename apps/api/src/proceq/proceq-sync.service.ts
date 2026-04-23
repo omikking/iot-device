@@ -189,6 +189,7 @@ export class ProceqSyncService {
       userPhoto: userPhotos,
       createdTimestamp: null,
       updatedTimestamp: null,
+      dueDate: null,
       rawDataZipId: null,
       rawDataZipPath: null,
       readings: extractedReadings,
@@ -236,7 +237,11 @@ export class ProceqSyncService {
       const allUpdatedMeasurementIds: string[] = [];
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const { data } = await this.api.getMeasurements(email, currentPage, size);
+        const { data } = await this.api.getMeasurements(
+          email,
+          currentPage,
+          size,
+        );
 
         const measurements = data.data || [];
         if (!measurements.length) break;
@@ -316,11 +321,16 @@ export class ProceqSyncService {
           const batch = allMeasurementIdsToSync.slice(i, i + adaptiveBatchSize);
 
           try {
-            await this.processMeasurementsBatch(email, batch, measurementTimestampMap);
+            await this.processMeasurementsBatch(
+              email,
+              batch,
+              measurementTimestampMap,
+            );
           } catch (error) {
+            const err = error as Error;
             failedBatches++;
             this.logger.error(
-              `Batch ${Math.floor(i / adaptiveBatchSize) + 1} failed, continuing with remaining batches: ${error.message}`,
+              `Batch ${Math.floor(i / adaptiveBatchSize) + 1} failed, continuing with remaining batches: ${err.message}`,
             );
             continue;
           }
@@ -356,8 +366,9 @@ export class ProceqSyncService {
         failedBatches,
       };
     } catch (error) {
-      this.logger.error('Proceq sync failed', error.stack || error.message);
-      throw error;
+      const err = error as Error;
+      this.logger.error('Proceq sync failed', err.stack || err.message);
+      throw err;
     } finally {
       this.isSyncing = false;
     }
@@ -374,7 +385,11 @@ export class ProceqSyncService {
     if (!ids.length) return;
 
     try {
-      const exportResponse = await this.api.exportMeasurementData(email, ids, 'json');
+      const exportResponse = await this.api.exportMeasurementData(
+        email,
+        ids,
+        'json',
+      );
       const exportId = exportResponse.data.data.exportID;
 
       const startTime = Date.now();
@@ -424,10 +439,11 @@ export class ProceqSyncService {
         }
       } while (['pending', 'processing'].includes(exportStatus));
     } catch (error) {
+      const err = error as Error;
       this.logger.error(
-        `Failed to process batch with ${ids.length} measurements: ${error.message}`,
+        `Failed to process batch with ${ids.length} measurements: ${err.message}`,
       );
-      throw error;
+      throw err;
     }
   }
 
@@ -501,14 +517,16 @@ export class ProceqSyncService {
                       },
                     });
                   }
-                } catch (err) {
+                } catch (error) {
+                  const err = error as Error;
                   this.logger.warn(
                     `Failed to download attachment ${attachment.id} for measurement ${measurementId}: ${err.message}`,
                   );
                 }
               }),
             );
-          } catch (err) {
+          } catch (error) {
+            const err = error as Error;
             this.logger.warn(
               `Failed to fetch attachments for ${measurementId}: ${err.message}`,
             );
@@ -751,8 +769,9 @@ export class ProceqSyncService {
           indices.push(recordIndex);
           baseFileNameToRecordIndices.set(baseFileName, indices);
         } catch (error) {
+          const err = error as Error;
           this.logger.error(
-            `Failed to process log file ${logFile} for measurement ${measurementId}: ${error.message}`,
+            `Failed to process log file ${logFile} for measurement ${measurementId}: ${err.message}`,
           );
         }
       }
@@ -776,7 +795,15 @@ export class ProceqSyncService {
           );
         } else {
           for (const idx of indices) {
-            (recordsToUpsert[idx] as any).bansheeRequestId = bansheeRequest.id;
+            recordsToUpsert[idx].bansheeRequestId = bansheeRequest.id;
+
+            const updatedTs = recordsToUpsert[idx].updatedTimestamp;
+            if (updatedTs && bansheeRequest.period) {
+              const dueDate = new Date(updatedTs);
+              dueDate.setMonth(dueDate.getMonth() + bansheeRequest.period);
+
+              recordsToUpsert[idx].dueDate = dueDate;
+            }
           }
           bansheeRequestsToUpdate.push(bansheeRequest.id);
         }
@@ -818,11 +845,12 @@ export class ProceqSyncService {
         });
       }
     } catch (error) {
+      const err = error as Error;
       this.logger.error(
         'Error processing export archive',
-        error.stack || error.message,
+        err.stack || err.message,
       );
-      throw error;
+      throw err;
     }
   }
 
@@ -860,6 +888,7 @@ export class ProceqSyncService {
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
             bansheeRequestId: record.bansheeRequestId,
+            dueDate: record.dueDate,
             status: record.status || ProceqStatus.UNMEASURED,
           },
           create: {
@@ -874,6 +903,7 @@ export class ProceqSyncService {
             rawDataZipId: record.rawDataZipId,
             rawDataZipPath: record.rawDataZipPath,
             bansheeRequestId: record.bansheeRequestId,
+            dueDate: record.dueDate,
             status: record.status || ProceqStatus.UNMEASURED,
           },
         }),
@@ -1170,8 +1200,9 @@ export class ProceqSyncService {
             .status as ProceqStatus;
         }
       } catch (error) {
+        const err = error as Error;
         this.logger.warn(
-          `Failed to compute status for measurement ${record.measurementId}: ${error.message}`,
+          `Failed to compute status for measurement ${record.measurementId}: ${err.message}`,
         );
       }
     }

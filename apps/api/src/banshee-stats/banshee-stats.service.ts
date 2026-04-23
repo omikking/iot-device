@@ -134,7 +134,11 @@ export class BansheeStatsService {
         `Updated stats for ${sessionDate.toISOString().split('T')[0]} (${operation})`,
       );
     } catch (error) {
-      this.logger.error('Failed to update banshee stats', error.message);
+      if (error instanceof Error) {
+        this.logger.error('Failed to update banshee stats', error.message);
+      } else {
+        this.logger.error('Failed to update banshee stats', error);
+      }
     }
   }
 

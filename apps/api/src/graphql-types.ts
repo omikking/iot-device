@@ -86,7 +86,8 @@ export enum PullTestAbortReason {
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN"
+    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN",
+    BANSHEE = "BANSHEE"
 }
 
 export enum PlanLevel {
@@ -94,6 +95,15 @@ export enum PlanLevel {
     SILVER = "SILVER",
     BRONZE = "BRONZE",
     INACTIVE = "INACTIVE"
+}
+
+export enum ProceqStatus {
+    ELASTIC = "ELASTIC",
+    LOW_PLASTIC = "LOW_PLASTIC",
+    HIGH_PLASTIC = "HIGH_PLASTIC",
+    BROKEN = "BROKEN",
+    NOT_MEASURABLE = "NOT_MEASURABLE",
+    UNMEASURED = "UNMEASURED"
 }
 
 export class CreateBansheeRequestInput {
@@ -135,6 +145,23 @@ export class UpdateBansheeRequestInput {
     boltType?: Nullable<string>;
     companyId?: Nullable<string>;
     siteId?: Nullable<string>;
+    activateNotifications?: Nullable<boolean>;
+}
+
+export class BansheeTemplateInput {
+    templateName: string;
+    period?: Nullable<number>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    locationDetails?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    activateNotifications?: Nullable<boolean>;
+    comment?: Nullable<string>;
+    companyId: string;
+    ringPosition?: Nullable<RingPosition>;
 }
 
 export class CreateBoltResultInput {
@@ -361,6 +388,8 @@ export class BansheeRequest {
     site?: Nullable<Site>;
     siteId: string;
     boltType?: Nullable<string>;
+    activateNotifications?: Nullable<boolean>;
+    boltTypeConstant?: Nullable<BansheeBoltTypeConstant>;
 }
 
 export class BansheeRequestResponse {
@@ -373,6 +402,7 @@ export class LocationDistribution {
     locationName: string;
     total: number;
     statusCounts: StatusCount[];
+    results: BansheeRequest[];
 }
 
 export class BansheeStatusDistribution {
@@ -387,6 +417,8 @@ export abstract class IQuery {
     bansheeStatusDistribution?: BansheeStatusDistribution;
     bansheeEventLogs?: BansheeEventLogResponse;
     bansheeSessionStats?: BansheeSessionStats[];
+    getBansheeTemplates?: BansheeTemplate[];
+    getBansheeTemplateById?: Nullable<BansheeTemplate>;
     boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
@@ -402,6 +434,7 @@ export abstract class IQuery {
     getPullTestAbortReason?: Nullable<PullTestAbortReason[]>;
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
+    getProceqStatus?: Nullable<ProceqStatus[]>;
     hazards?: Nullable<BoltResult[]>;
     validateInvitation?: InvitationValidation;
     pendingInvitations?: Invitation[];
@@ -410,6 +443,7 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
+    proceqLoginUrl?: ProceqLoginUrlResponse;
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -427,6 +461,9 @@ export abstract class IMutation {
     createBansheeRequest?: BansheeRequest;
     updateBansheeRequest?: BansheeRequest;
     deleteBansheeRequest?: BansheeRequest;
+    createBansheeTemplate?: BansheeTemplate;
+    updateBansheeTemplate?: BansheeTemplate;
+    deleteBansheeTemplate?: BansheeTemplate;
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
@@ -483,6 +520,25 @@ export class BansheeEventLogResponse {
     results: BansheeEventLog[];
 }
 
+export class BansheeBoltTypeConstant {
+    id: string;
+    boltType: string;
+    velocity: number;
+    tempCorrectionFactor: number;
+    tempCoeff: number;
+    quadCoeff1: number;
+    linCoeff1: number;
+    quadCoeff2: number;
+    linCoeff2: number;
+    constTerm: number;
+    nominalLength: number;
+    linearLimit: number;
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export class BansheeSessionStats {
     id: string;
     createdAt: DateTime;
@@ -493,6 +549,23 @@ export class BansheeSessionStats {
     broken: number;
     site: Site;
     company?: Nullable<Company>;
+}
+
+export class BansheeTemplate {
+    id: string;
+    templateName: string;
+    period?: Nullable<number>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    locationDetails?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    comment?: Nullable<string>;
+    companyId: string;
+    activateNotifications?: Nullable<boolean>;
+    ringPosition?: Nullable<RingPosition>;
 }
 
 export class BoltResult {
@@ -666,6 +739,7 @@ export class ProceqData {
     fileName: string;
     operator?: Nullable<string>;
     email?: Nullable<string>;
+    dueDate: DateTime;
     comments: string;
     temperature?: Nullable<number>;
     rawDataZipId?: Nullable<string>;
@@ -691,6 +765,10 @@ export class ProceqAttachment {
     fileSize?: Nullable<number>;
     attachmentType: string;
     description?: Nullable<string>;
+}
+
+export class ProceqLoginUrlResponse {
+    url: string;
 }
 
 export class Site {

@@ -37,7 +37,7 @@ type ProceqData {
   fileName: String!
   operator: String
   email: String
-
+  dueDate: DateTime!
   comments: String!
   temperature: Float
 

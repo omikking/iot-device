@@ -12,20 +12,20 @@ import { Upload } from 'graphql-upload-ts';
 
 export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequestInput {
   @IsString()
-  serialNumber: string;
+  serialNumber!: string;
 
   @IsString()
   @IsOptional()
   name?: string;
 
   @IsUUID()
-  levelId: string;
+  levelId!: string;
 
   @IsUUID()
-  driveId: string;
+  driveId!: string;
 
   @IsUUID()
-  locationId: string;
+  locationId!: string;
 
   @IsOptional()
   @IsObject()
@@ -33,7 +33,7 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
 
   @IsInt()
   @Min(1)
-  period: number;
+  period!: number;
 
   @IsString()
   @IsOptional()
@@ -47,22 +47,22 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   comment?: string;
 
   @IsBoolean()
-  isBrokenBolt: boolean;
+  isBrokenBolt!: boolean;
 
   @IsBoolean()
-  isNotMeasurable: boolean;
+  isNotMeasurable!: boolean;
 
   @IsOptional()
   images?: Upload[];
 
   @IsString()
-  boltType: string;
+  boltType!: string;
 
   @IsString()
   @IsUUID()
-  companyId: string;
+  companyId!: string;
 
   @IsString()
   @IsUUID()
-  siteId: string;
+  siteId!: string;
 }

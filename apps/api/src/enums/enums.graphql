@@ -82,7 +82,7 @@ enum PullTestAbortReason {
 enum Application {
   PULL_TEST
   PULL_TEST_TECHNICIAN
-  # BANSHEE
+  BANSHEE
 }
 
 enum PlanLevel {
@@ -90,6 +90,15 @@ enum PlanLevel {
   SILVER
   BRONZE
   INACTIVE
+}
+
+enum ProceqStatus {
+  ELASTIC
+  LOW_PLASTIC
+  HIGH_PLASTIC
+  BROKEN
+  NOT_MEASURABLE
+  UNMEASURED
 }
 
 type Query {
@@ -100,4 +109,5 @@ type Query {
   getPullTestAbortReason: [PullTestAbortReason!]
   getApplication: [Application!]
   getPlanLevel: [PlanLevel!]
+  getProceqStatus: [ProceqStatus!]
 }

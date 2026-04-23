@@ -8,8 +8,14 @@ import { extname, join } from 'path';
 import { createWriteStream } from 'fs';
 import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
-import { BansheeRequest, BoltType, GlobalRole } from '@prisma/client';
+import {
+  Application,
+  BansheeRequest,
+  BoltType,
+  GlobalRole,
+} from '@prisma/client';
 import { BansheeStatsService } from 'src/banshee-stats/banshee-stats.service';
+import { hasAppAccessForCompany } from 'src/utils';
 
 @Injectable()
 export class BansheeRequestsService {
@@ -100,7 +106,11 @@ export class BansheeRequestsService {
       if (error instanceof UserInputError) {
         throw error;
       }
-      this.logger.error('Error creating banshee request', error.stack);
+      if (error instanceof Error) {
+        this.logger.error('Error creating banshee request', error.stack);
+      } else {
+        this.logger.error('Error creating banshee request', error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_CREATION_ERROR_GENERIC',
@@ -162,6 +172,29 @@ export class BansheeRequestsService {
         imagePaths = [...(existingRequest.images ?? []), ...newPaths];
       }
 
+      if (
+        updateBansheeRequestInput.period !== undefined &&
+        existingRequest.period !== updateBansheeRequestInput.period
+      ) {
+        const allProceqData = await this.prisma.proceqData.findMany({
+          where: { bansheeRequestId: id },
+          select: { id: true, updatedTimestamp: true },
+        });
+
+        await Promise.all(
+          allProceqData
+            .filter((p) => p.updatedTimestamp !== null)
+            .map((p) => {
+              const due = new Date(p.updatedTimestamp!);
+              due.setMonth(due.getMonth() + updateBansheeRequestInput.period!);
+              return this.prisma.proceqData.update({
+                where: { id: p.id },
+                data: { dueDate: due },
+              });
+            }),
+        );
+      }
+
       const updatedBansheeRequest = await this.prisma.bansheeRequest.update({
         where: { id },
         data: {
@@ -195,7 +228,11 @@ export class BansheeRequestsService {
       if (error instanceof UserInputError) {
         throw error;
       }
-      this.logger.error(`Error updating banshee request #${id}`, error.stack);
+      if (error instanceof Error) {
+        this.logger.error(`Error updating banshee request #${id}`, error.stack);
+      } else {
+        this.logger.error(`Error updating banshee request #${id}`, error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_UPDATE_ERROR_GENERIC',
@@ -257,7 +294,11 @@ export class BansheeRequestsService {
         ...deletedRequest,
       };
     } catch (error) {
-      this.logger.error(`Error deleting banshee request #${id}`, error.stack);
+      if (error instanceof Error) {
+        this.logger.error(`Error deleting banshee request #${id}`, error.stack);
+      } else {
+        this.logger.error(`Error deleting banshee request #${id}`, error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_DELETE_ERROR_GENERIC',
@@ -280,14 +321,34 @@ export class BansheeRequestsService {
       createdBy?: string;
       companyId?: string;
       siteId?: string;
+      activateNotifications?: boolean;
       startDate?: Date;
       endDate?: Date;
     },
     allowedCompanyIds: string[],
+    allowedApps: Application[],
     user: ActiveUserData,
   ): Promise<GraphQLTypes.BansheeRequestResponse> {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
+
+      const { companyId } = filters || {};
+
+      // Extract companyId and check if the user has access to the any of the applications
+      if (companyId) {
+        const hasAccess = await hasAppAccessForCompany(
+          this.prisma,
+          user,
+          allowedApps,
+          companyId,
+        );
+
+        if (!hasAccess) {
+          throw new ForbiddenException(
+            'User missing access to this application for this company.',
+          );
+        }
+      }
 
       const where: any = {};
 
@@ -346,8 +407,7 @@ export class BansheeRequestsService {
       if (
         restFilters.startDate &&
         restFilters.endDate &&
-        restFilters.companyId &&
-        restFilters.siteId
+        restFilters.companyId
       ) {
         if (restFilters.startDate && restFilters.endDate) {
           where.proceqData = {
@@ -360,7 +420,6 @@ export class BansheeRequestsService {
           };
         }
       }
-
       const totalRecords = await this.prisma.bansheeRequest.count({
         where,
       });
@@ -379,7 +438,11 @@ export class BansheeRequestsService {
         results: results,
       };
     } catch (error) {
-      this.logger.error('Error fetching banshee requests', error.stack);
+      if (error instanceof Error) {
+        this.logger.error('Error fetching banshee requests', error.stack);
+      } else {
+        this.logger.error('Error fetching banshee requests', error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUESTS_FETCH_ERROR',
@@ -422,7 +485,11 @@ export class BansheeRequestsService {
       if (error instanceof UserInputError) {
         throw error;
       }
-      this.logger.error(`Error fetching banshee request #${id}`, error.stack);
+      if (error instanceof Error) {
+        this.logger.error(`Error fetching banshee request #${id}`, error.stack);
+      } else {
+        this.logger.error(`Error fetching banshee request #${id}`, error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'BANSHEE_REQUEST_FETCH_ERROR',
@@ -443,7 +510,26 @@ export class BansheeRequestsService {
     },
     allowedCompanyIds: string[],
     user: ActiveUserData,
+    allowedApps: Application[],
   ): Promise<GraphQLTypes.BansheeStatusDistribution> {
+    const { companyId } = filters || {};
+
+    // Extract companyId and check if the user has access to the any of the applications
+    if (companyId) {
+      const hasAccess = await hasAppAccessForCompany(
+        this.prisma,
+        user,
+        allowedApps,
+        companyId,
+      );
+
+      if (!hasAccess) {
+        throw new ForbiddenException(
+          'User missing access to this application for this company.',
+        );
+      }
+    }
+
     const where: any = {};
 
     if (filters.companyId) where.companyId = filters.companyId;
@@ -478,9 +564,7 @@ export class BansheeRequestsService {
           },
         }),
       },
-      select: {
-        id: true,
-        locationId: true,
+      include: {
         location: {
           select: { locationName: true },
         },
@@ -508,7 +592,12 @@ export class BansheeRequestsService {
     const counts: Record<string, number> = {};
     const locationCountsMap: Record<
       string,
-      { locationName: string; total: number; counts: Record<string, number> }
+      {
+        locationName: string;
+        total: number;
+        counts: Record<string, number>;
+        results: BansheeRequest[];
+      }
     > = {};
 
     for (const br of bansheeRequests) {
@@ -522,12 +611,14 @@ export class BansheeRequestsService {
           locationName: br.location?.locationName || 'Unknown',
           total: 0,
           counts: {},
+          results: [],
         };
       }
 
       locationCountsMap[locId].total += 1;
       locationCountsMap[locId].counts[status] =
         (locationCountsMap[locId].counts[status] || 0) + 1;
+      locationCountsMap[locId].results.push(br as BansheeRequest);
     }
 
     return {
@@ -544,6 +635,7 @@ export class BansheeRequestsService {
           status,
           count,
         })),
+        results: locData.results,
       })),
     };
   }
@@ -703,9 +795,26 @@ export class BansheeRequestsService {
     },
     allowedCompanyIds: string[],
     user: ActiveUserData,
+    allowedApps: Application[],
   ): Promise<GraphQLTypes.BansheeEventLogResponse> {
     try {
       const { offset = 0, limit = 100, companyId, siteId } = filters;
+
+      // Extract companyId and check if the user has access to the any of the applications
+      if (companyId) {
+        const hasAccess = await hasAppAccessForCompany(
+          this.prisma,
+          user,
+          allowedApps,
+          companyId,
+        );
+
+        if (!hasAccess) {
+          throw new ForbiddenException(
+            'User missing access to this application for this company.',
+          );
+        }
+      }
 
       const where: any = {};
 
@@ -758,7 +867,11 @@ export class BansheeRequestsService {
         results: results as unknown as GraphQLTypes.BansheeEventLog[],
       };
     } catch (error) {
-      this.logger.error('Error fetching event logs', error.stack);
+      if (error instanceof Error) {
+        this.logger.error('Error fetching event logs', error.stack);
+      } else {
+        this.logger.error('Error fetching event logs', error);
+      }
       throw new UserInputError('', {
         extensions: {
           code: 'EVENT_LOGS_FETCH_ERROR',

@@ -25,6 +25,7 @@ import { BansheeRequestModule } from './banshee-request/banshee-request.module';
 import { ProceqModule } from './proceq/proceq.module';
 import { BansheeStatsModule } from './banshee-stats/banshee-stats.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BansheeTemplateModule } from './banshee-template/banshee-template.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
@@ -56,6 +57,7 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     BansheeRequestModule,
     ProceqModule,
     BansheeStatsModule,
+    BansheeTemplateModule,
   ],
   providers: [DateScalar],
 })

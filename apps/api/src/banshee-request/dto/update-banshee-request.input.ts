@@ -57,6 +57,10 @@ export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequest
 
   @IsBoolean()
   @IsOptional()
+  activateNotifications?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   isNotMeasurable?: boolean;
 
   @IsBoolean()

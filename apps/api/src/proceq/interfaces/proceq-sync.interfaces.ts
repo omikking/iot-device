@@ -114,6 +114,7 @@ export interface ExtractedProceqFields {
   temperature: number | null;
   userPhoto: UserPhotoEntry[];
   createdTimestamp: Date | null;
+  dueDate: Date | null;
   updatedTimestamp: Date | null;
   rawDataZipId: string | null;
   rawDataZipPath: string | null;

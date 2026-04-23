@@ -47,6 +47,10 @@ type BansheeRequest {
   site: Site
   siteId: String!
   boltType: String
+  activateNotifications: Boolean
+
+  # Field resolver - fetches BansheeBoltTypeConstant based on boltType
+  boltTypeConstant: BansheeBoltTypeConstant
 }
 
 """
@@ -96,6 +100,7 @@ input UpdateBansheeRequestInput {
   boltType: String
   companyId: String
   siteId: String
+  activateNotifications: Boolean
 }
 
 """
@@ -112,6 +117,7 @@ type LocationDistribution {
   locationName: String!
   total: Int!
   statusCounts: [StatusCount!]!
+  results: [BansheeRequest!]!
 }
 
 type BansheeStatusDistribution {
@@ -139,6 +145,7 @@ type Query {
     siteId: String
     startDate: DateTime
     endDate: DateTime
+    activateNotifications: Boolean
   ): BansheeRequestResponse!
 
   bansheeRequest(id: String!): BansheeRequest!
@@ -196,4 +203,23 @@ type BansheeEventLog {
 type BansheeEventLogResponse {
   totalRecords: Int!
   results: [BansheeEventLog!]!
+}
+
+type BansheeBoltTypeConstant {
+  id: String!
+  boltType: String!
+  velocity: Float!
+  tempCorrectionFactor: Float!
+  tempCoeff: Float!
+  quadCoeff1: Float!
+  linCoeff1: Float!
+  quadCoeff2: Float!
+  linCoeff2: Float!
+  constTerm: Float!
+  nominalLength: Float!
+  linearLimit: Float!
+  elasticLimit: Float!
+  lowPlasticLimit: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }

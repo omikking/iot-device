@@ -44,17 +44,17 @@ export class ProceqSchedulerService {
             );
           }
         } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
           this.logger.error(
-            `Proceq sync failed for ${token.operatorEmail}`,
-            error.stack || error.message,
+            `Proceq sync failed for ${token.operatorEmail}: ${errorMessage}`,
           );
         }
       }
     } catch (error) {
-      this.logger.error(
-        'Proceq data synchronization failed',
-        error.stack || error.message,
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(`Proceq data synchronization failed: ${errorMessage}`);
     }
   }
 }

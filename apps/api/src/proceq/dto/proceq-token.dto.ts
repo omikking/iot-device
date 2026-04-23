@@ -1,5 +1,5 @@
 export class ProceqTokenDto {
-  accessToken: string;
-  expiresAt: number;
-  refreshToken: string;
+  accessToken!: string;
+  expiresAt!: number;
+  refreshToken!: string;
 }

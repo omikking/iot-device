@@ -215,4 +215,10 @@ export const errorTexts = {
   bansheeRequestUpdateError_title: 'Failed to update banshee request.',
 
   bansheeRequestDeleteError_title: 'Failed to delete banshee request.',
+
+  // Banshee template
+  bansheeTemplateCreateError_title: 'Failed to create banshee template.',
+  bansheeTemplateUpdateError_title: 'Failed to update banshee template.',
+  bansheeTemplateDeleteError_title: 'Failed to delete banshee template.',
+  bansheeTemplateFetchError_title: 'Failed to fetch banshee template.',
 };

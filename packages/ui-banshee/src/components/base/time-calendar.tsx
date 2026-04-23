@@ -55,7 +55,9 @@ const TimeCalendar = ({
     onTimeChange?.(timeString);
     setIsOpen(false);
   };
-
+  React.useEffect(() => {
+    setTime(selectedTime || defaultValue);
+  }, [selectedTime]);
   return (
     <div className={cn('relative', className)} {...props}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>

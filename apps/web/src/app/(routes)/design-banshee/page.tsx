@@ -59,7 +59,6 @@ import {
   lineDataConfigMock,
   usersDesignSystemMock,
   optionsDesignSystemMock,
-  tableViewDesignSystemMock,
 } from '@/app/mock/mock';
 import { z } from 'zod';
 import { useState } from 'react';
@@ -67,7 +66,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/banshee-components/ConfirmModal';
 import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
-import { Footer } from '@/components/Footer';
 
 type Technician = UserSchema;
 
@@ -89,12 +87,10 @@ export default function Page() {
     },
   });
 
-  const [dropdownValue, setDropdownValue] = useState<string | undefined>(
-    undefined,
-  );
-  const [filterValues, setFilterValues] = useState<string[]>([]);
+  const [, setDropdownValue] = useState<string | undefined>(undefined);
+  const [, setFilterValues] = useState<string[]>([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isConfirming] = useState(false);
 
   const closeConfirmModal = () => {
     setIsConfirmModalOpen(false);

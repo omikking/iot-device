@@ -1,0 +1,104 @@
+'use client';
+import { SidebarInset } from '@gsp/ui-banshee';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { SchedulerOverviewTable } from '@/components/SchedulerOverviewTable';
+import { BansheeInfoCard } from '@/components/BansheeInfoCard';
+import { StatusDistributionChart } from '@/components/StatusDistributionChart';
+import { StatusOverviewChart } from '@/components/StatusOverviewChart';
+
+export default function Page({ params }: { params: { companyId: string } }) {
+  const { companyId } = params;
+  const bansheeStatusDistributionQuery = graphql(`
+    query bansheeStatusDistribution($companyId: String) {
+      bansheeStatusDistribution(companyId: $companyId) {
+        total
+        statusCounts {
+          status
+          count
+        }
+      }
+    }
+  `);
+  const bansheeRequestsListQuery = graphql(`
+    query overviewBansheeRequestsList($companyId: String) {
+      bansheeRequests(measured: false, limit: 100, companyId: $companyId) {
+        results {
+          id
+          serialNumber
+          site {
+            siteName
+          }
+          drive {
+            driveName
+          }
+          level {
+            levelName
+          }
+          location {
+            locationName
+          }
+          comment
+          proceqData {
+            status
+            dueDate
+            createdTimestamp
+            readings {
+              elongation
+              status
+            }
+          }
+          eventLogs {
+            createdAt
+            eventType
+            previousStatus
+            newStatus
+          }
+        }
+      }
+    }
+  `);
+
+  const [{ data }] = useQuery({
+    query: bansheeStatusDistributionQuery,
+    variables: { companyId },
+  });
+  const [{ data: bansheeData, fetching: bansheeRequestsFetching }] = useQuery({
+    query: bansheeRequestsListQuery,
+    variables: { companyId },
+  });
+  const { statusCounts } = data?.bansheeStatusDistribution || {};
+
+  const sanitizedBansheeEntries =
+    bansheeData?.bansheeRequests?.results.map((entry) => ({
+      status: entry?.proceqData?.[0]?.status ?? 'UNKNOWN',
+      statusColor: '#FF0000',
+      banshee: entry?.serialNumber ?? '',
+      location: entry?.location?.locationName ?? '',
+      dueDate: entry?.proceqData?.[0]?.dueDate
+        ? new Date(entry.proceqData[0].dueDate).toLocaleDateString('en-GB')
+        : '-',
+    })) ?? [];
+  return (
+    <SidebarInset>
+      <main className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-6 ui-banshee-bg-main-white ui-banshee-box-border">
+        <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
+          <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-5 ui-banshee-gap-6">
+            <BansheeInfoCard />
+
+            <StatusDistributionChart statusCounts={statusCounts || []} />
+          </div>
+
+          <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-4 ui-banshee-gap-6">
+            <StatusOverviewChart
+              bansheeRequests={bansheeData?.bansheeRequests?.results ?? []}
+              fetching={bansheeRequestsFetching}
+            />
+
+            <SchedulerOverviewTable entries={sanitizedBansheeEntries ?? []} />
+          </div>
+        </div>
+      </main>
+    </SidebarInset>
+  );
+}

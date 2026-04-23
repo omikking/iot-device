@@ -6,6 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeft } from 'lucide-react';
 
 import { useIsMobile } from '../../hooks/use-mobile';
+import { useIsTablet } from '../../hooks/use-tablet';
 import { cn } from '../../lib/utils';
 import { Button } from './button';
 import { Input } from './input';
@@ -27,7 +28,7 @@ import {
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = '16rem';
+const SIDEBAR_WIDTH = '20rem';
 const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
@@ -39,6 +40,8 @@ type SidebarContextProps = {
   openMobile: boolean;
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
+  isTablet: boolean;
+  isCompact: boolean;
   toggleSidebar: () => void;
 };
 
@@ -74,6 +77,8 @@ const SidebarProvider = React.forwardRef<
     ref,
   ) => {
     const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+    const isCompact = isMobile || isTablet;
     const [openMobile, setOpenMobile] = React.useState(false);
 
     // This is the internal state of the sidebar.
@@ -97,12 +102,12 @@ const SidebarProvider = React.forwardRef<
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      if (isMobile) {
+      if (isCompact) {
         setOpenMobile((open) => !open);
       } else {
         setOpen((open) => !open);
       }
-    }, [isMobile, setOpen, setOpenMobile]);
+    }, [isCompact, setOpen, setOpenMobile]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -132,6 +137,8 @@ const SidebarProvider = React.forwardRef<
         open,
         setOpen,
         isMobile,
+        isTablet,
+        isCompact,
         openMobile,
         setOpenMobile,
         toggleSidebar,
@@ -141,6 +148,8 @@ const SidebarProvider = React.forwardRef<
         open,
         setOpen,
         isMobile,
+        isTablet,
+        isCompact,
         openMobile,
         setOpenMobile,
         toggleSidebar,
@@ -193,7 +202,7 @@ const Sidebar = React.forwardRef<
     },
     ref,
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const { isCompact, state, openMobile, setOpenMobile } = useSidebar();
 
     if (collapsible === 'none') {
       return (
@@ -210,7 +219,7 @@ const Sidebar = React.forwardRef<
       );
     }
 
-    if (isMobile) {
+    if (isCompact) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -349,7 +358,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        'ui-banshee-relative ui-banshee-flex ui-banshee-w-full ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background',
+        'ui-banshee-w-[4vw] ui-banshee-relative ui-banshee-flex ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background',
         'md:peer-data-[variant=inset]:ui-banshee-m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ui-banshee-ml-2 md:peer-data-[variant=inset]:ui-banshee-ml-0 md:peer-data-[variant=inset]:ui-banshee-rounded-xl md:peer-data-[variant=inset]:ui-banshee-shadow',
         className,
       )}
@@ -458,7 +467,7 @@ const SidebarGroup = React.forwardRef<
       ref={ref}
       data-sidebar="group"
       className={cn(
-        'ui-banshee-relative ui-banshee-flex ui-banshee-w-full ui-banshee-min-w-0 ui-banshee-flex-col ui-banshee-py-2 ui-banshee-pl-2',
+        'ui-banshee-relative ui-banshee-flex ui-banshee-w-full ui-banshee-min-w-0 ui-banshee-flex-col ui-banshee-py-10 ui-banshee-pl-2',
         className,
       )}
       {...props}
@@ -554,7 +563,7 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = 'SidebarMenuItem';
 
 const sidebarMenuButtonVariants = cva(
-  'ui-banshee-peer/menu-button ui-banshee-flex ui-banshee-w-full ui-banshee-items-center ui-banshee-gap-4 hover:ui-banshee-border-l-2 hover:ui-banshee-border-gold-primary  ui-banshee-overflow-hidden ui-banshee-p-2 ui-banshee-text-left ui-banshee-text-sm ui-banshee-outline-none ui-banshee-ring-sidebar-ring ui-banshee-transition-[width,height,padding] hover:ui-banshee-bg-sidebar-accent hover:ui-banshee-text-sidebar-accent-foreground focus-visible:ui-banshee-ring-2 active:ui-banshee-bg-sidebar-accent active:ui-banshee-text-sidebar-accent-foreground disabled:ui-banshee-pointer-events-none disabled:ui-banshee-opacity-50 ui-banshee-group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:ui-banshee-pointer-events-none aria-disabled:ui-banshee-opacity-50 data-[active=true]:ui-banshee-bg-sidebar-accent data-[active=true]:ui-banshee-font-medium data-[active=true]:ui-banshee-text-sidebar-accent-foreground data-[state=open]:hover:ui-banshee-bg-sidebar-accent data-[state=open]:hover:ui-banshee-text-sidebar-accent-foreground group-data-[collapsible=icon]:ui-banshee-!size-8 group-data-[collapsible=icon]:ui-banshee-!p-2 [&>span:last-child]:ui-banshee-truncate [&>svg]:ui-banshee-size-4 [&>svg]:ui-banshee-shrink-0',
+  'ui-banshee-peer/menu-button ui-banshee-flex ui-banshee-w-full ui-banshee-items-center ui-banshee-gap-4 ui-banshee-overflow-hidden ui-banshee-p-2 ui-banshee-text-left ui-banshee-text-sm ui-banshee-outline-none ui-banshee-ring-sidebar-ring ui-banshee-transition-[width,height,padding] hover:ui-banshee-bg-sidebar-accent hover:ui-banshee-text-sidebar-accent-foreground focus-visible:ui-banshee-ring-2 active:ui-banshee-bg-sidebar-accent active:ui-banshee-text-sidebar-accent-foreground disabled:ui-banshee-pointer-events-none disabled:ui-banshee-opacity-50 ui-banshee-group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:ui-banshee-pointer-events-none aria-disabled:ui-banshee-opacity-50 data-[active=true]:ui-banshee-border-l-2 data-[active=true]:ui-banshee-border-gold-primary data-[active=true]:ui-banshee-bg-sidebar-accent data-[active=true]:ui-banshee-font-medium data-[active=true]:ui-banshee-text-sidebar-accent-foreground data-[state=open]:hover:ui-banshee-bg-sidebar-accent data-[state=open]:hover:ui-banshee-text-sidebar-accent-foreground group-data-[collapsible=icon]:ui-banshee-!size-8 group-data-[collapsible=icon]:ui-banshee-!p-2 [&>span:last-child]:ui-banshee-truncate [&>svg]:ui-banshee-size-4 [&>svg]:ui-banshee-shrink-0',
   {
     variants: {
       variant: {
@@ -597,7 +606,7 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : 'button';
-    const { isMobile, state } = useSidebar();
+    const { isMobile, isTablet, state } = useSidebar();
 
     const button = (
       <Comp
@@ -627,7 +636,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== 'collapsed' || isMobile}
+          hidden={state !== 'collapsed' || isMobile || isTablet}
           {...tooltipContent}
         />
       </Tooltip>

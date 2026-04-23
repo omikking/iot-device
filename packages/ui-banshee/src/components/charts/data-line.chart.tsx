@@ -1,150 +1,186 @@
-import {
-  Line,
-  XAxis,
-  YAxis,
-  LineChart,
-  ReferenceArea,
-  ReferenceLine,
-} from 'recharts';
-import {
-  ChartConfig,
-  ChartLegend,
-  ChartTooltip,
-  ChartContainer,
-  ChartLegendContent,
-} from './chart';
+'use client';
 
-import { Text } from '../base/text';
+import type { EChartsOption, ECharts } from 'echarts';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { ChartContainer, EChart } from './chart';
+import type { ChartConfig } from './chart';
 
 export type DataLineChartProps = {
   yAxisLabel?: string;
   yAxisDomain?: [number, number];
   lines?: { dataKey: string; label: string; color: string }[];
   data: { date: string; [key: string]: string | number | undefined }[];
+  enableZoom?: boolean;
+  onResetZoom?: () => void;
+};
+
+export type DataLineChartHandle = {
+  resetZoom: () => void;
 };
 
 const chartConfig = {
-  line1: {
-    label: 'Line 1',
-    color: '#0066cc',
-  },
-  line2: {
-    label: 'Line 2',
-    color: '#ff6b6b',
-  },
-  line3: {
-    label: 'Line 3',
-    color: '#aaaaaa',
-  },
-  line4: {
-    label: 'Line 4',
-    color: '#00c853',
-  },
+  line1: { label: 'Line 1', color: '#0066cc' },
+  line2: { label: 'Line 2', color: '#ff6b6b' },
+  line3: { label: 'Line 3', color: '#aaaaaa' },
+  line4: { label: 'Line 4', color: '#00c853' },
 } satisfies ChartConfig;
 
-const CustomChartTooltip = ({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: { value: number; name: string }[];
-}) => {
-  if (!active || !payload?.length) return null;
+export const DataLineChart = forwardRef<
+  DataLineChartHandle,
+  DataLineChartProps
+>(function DataLineChart(
+  {
+    data,
+    lines,
+    yAxisLabel = 'Elongation (mm)',
+    yAxisDomain = [0, 12],
+    enableZoom = false,
+  },
+  ref,
+) {
+  const chartRef = useRef<ECharts | null>(null);
 
-  return (
-    <div className="ui-banshee-bg-black ui-banshee-text-main-white ui-banshee-p-2 ui-banshee-rounded-sm">
-      {payload.map((item) => (
-        <div key={item.name}>
-          <Text color="background" variant="small">
-            {item.name}: {item.value}%
-          </Text>
-        </div>
-      ))}
-    </div>
-  );
-};
+  useImperativeHandle(ref, () => ({
+    resetZoom: () => {
+      chartRef.current?.dispatchAction({
+        type: 'dataZoom',
+        start: 0,
+        end: 100,
+      });
+    },
+  }));
+  const xAxisDates = data.map((d) => d.date);
 
-export function DataLineChart({
-  data,
-  lines,
-  yAxisLabel = 'Elongation (mm)',
-  yAxisDomain = [0, 12],
-}: DataLineChartProps) {
-  // Generate vertical alternating stripes
-  const stripes = [];
+  const markAreas: [{ xAxis: string | number }, { xAxis: string | number }][] =
+    [];
   for (let i = 0; i < data.length; i += 2) {
-    stripes.push({
-      x1: data[i]?.date,
-      x2: data[i + 1]?.date || data[i]?.date,
-    });
+    const start = data[i].date;
+    const end = data[i + 1]?.date ?? start;
+    markAreas.push([{ xAxis: start }, { xAxis: end }]);
   }
 
+  const option: EChartsOption = {
+    grid: {
+      top: 20,
+      right: 30,
+      bottom: 60,
+      left: 60,
+    },
+    xAxis: {
+      type: 'category',
+      data: xAxisDates,
+      axisLabel: { fontSize: 12 },
+      axisTick: { alignWithLabel: true },
+      axisLine: { show: false },
+    },
+    yAxis: {
+      type: 'value',
+      min: yAxisDomain[0],
+      max: yAxisDomain[1],
+      axisLabel: { fontSize: 12 },
+      axisLine: { show: false },
+      splitLine: { show: false },
+      name: yAxisLabel,
+      nameLocation: 'middle',
+      nameGap: 45,
+      nameTextStyle: { fontSize: 12 },
+    },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: '#000',
+      borderColor: '#000',
+      textStyle: { color: '#fff', fontSize: 12 },
+      formatter: (params) => {
+        const items = Array.isArray(params) ? params : [params];
+        return items
+          .map((p) => `<div>${String(p.seriesName)}: ${String(p.value)}</div>`)
+          .join('');
+      },
+    },
+    legend: {
+      type: 'scroll',
+      bottom: 0,
+      icon: 'circle',
+      itemWidth: 8,
+      itemHeight: 8,
+      itemGap: 20,
+      width: '90%',
+      textStyle: { fontSize: 11, color: '#666' },
+      data:
+        lines?.map((l) => ({
+          name: l.label,
+          itemStyle: { color: l.color },
+        })) ?? [],
+    },
+    dataZoom: enableZoom
+      ? [
+          { type: 'inside', xAxisIndex: 0, start: 0, end: 100 },
+          { type: 'inside', yAxisIndex: 0, start: 0, end: 100 },
+        ]
+      : undefined,
+    toolbox: enableZoom
+      ? {
+          feature: {
+            dataZoom: {
+              title: { zoom: 'Zoom', back: 'Reset zoom' },
+            },
+            saveAsImage: { title: 'Save' },
+          },
+        }
+      : undefined,
+    series: [
+      ...(markAreas.length > 0
+        ? [
+            {
+              type: 'line' as const,
+              data: [],
+              silent: true,
+              markArea: {
+                silent: true,
+                itemStyle: { color: '#EAEAEA', opacity: 1 },
+                data: markAreas,
+              },
+            },
+          ]
+        : []),
+      {
+        type: 'line' as const,
+        data: [],
+        silent: true,
+        markLine: {
+          silent: true,
+          symbol: 'none',
+          lineStyle: { color: '#E4E4E4', width: 1 },
+          label: { show: false },
+          data: [{ yAxis: 3 }, { yAxis: 6 }, { yAxis: 9 }, { yAxis: 12 }],
+        },
+      },
+      ...(lines?.map((line) => ({
+        type: 'line' as const,
+        name: line.label,
+        data: data.map((d) => d[line.dataKey] ?? null),
+        smooth: false,
+        lineStyle: { color: line.color, width: 2 },
+        itemStyle: { color: line.color },
+        symbol: 'circle',
+        symbolSize: 6,
+        connectNulls: false,
+      })) ?? []),
+    ],
+  };
+
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="ui-banshee-w-full ui-banshee-h-[400px]"
-    >
-      <LineChart
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
-        data={data}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 10,
-          bottom: 20,
-        }}
+    <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-bg-neutral-1">
+      <ChartContainer
+        config={chartConfig}
+        className="ui-banshee-w-full ui-banshee-h-[400px]"
       >
-        <ChartTooltip cursor={false} content={<CustomChartTooltip />} />
-        {/* Vertical alternating stripes */}
-        {stripes.map((stripe) => (
-          <ReferenceArea
-            key={`${stripe.x1}-${stripe.x2}`}
-            x1={stripe.x1}
-            x2={stripe.x2}
-            fill="#EAEAEA"
-            fillOpacity={1}
-          />
-        ))}
-
-        {/* Horizontal grid lines at 3, 6, 9, 12 */}
-        <ReferenceLine y={3} stroke="#E4E4E4" strokeWidth={1} />
-        <ReferenceLine y={6} stroke="#E4E4E4" strokeWidth={1} />
-        <ReferenceLine y={9} stroke="#E4E4E4" strokeWidth={1} />
-        <ReferenceLine y={12} stroke="#E4E4E4" strokeWidth={1} />
-
-        <XAxis dataKey="date" tick={{ fontSize: 12 }} tickMargin={10} />
-        <YAxis
-          label={{
-            value: yAxisLabel,
-            angle: -90,
-            position: 'center',
-          }}
-          tick={{ fontSize: 12 }}
-          domain={yAxisDomain}
+        <EChart
+          chartRef={chartRef}
+          option={option}
+          className="ui-banshee-w-full ui-banshee-h-full"
         />
-        <ChartLegend
-          verticalAlign="bottom"
-          height={36}
-          content={
-            <ChartLegendContent className="ui-banshee-gap-10" iconType="line" />
-          }
-          wrapperStyle={{ paddingTop: '20px' }}
-        />
-        {lines?.map((line) => (
-          <Line
-            key={line.dataKey}
-            name={line.label}
-            type="linear"
-            dataKey={line.dataKey}
-            stroke={line.color}
-            strokeWidth={2}
-            dot={{ fill: line.color, r: 3 }}
-          />
-        ))}
-      </LineChart>
-    </ChartContainer>
+      </ChartContainer>
+    </div>
   );
-}
+});

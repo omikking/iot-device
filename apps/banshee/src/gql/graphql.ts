@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,13 +16,167 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Date custom scalar type */
   DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   Upload: { input: any; output: any; }
 };
 
 export enum Application {
+  Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
   PullTestTechnician = 'PULL_TEST_TECHNICIAN'
 }
+
+export type BansheeBoltTypeConstant = {
+  __typename?: 'BansheeBoltTypeConstant';
+  boltType: Scalars['String']['output'];
+  constTerm: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  elasticLimit: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  linCoeff1: Scalars['Float']['output'];
+  linCoeff2: Scalars['Float']['output'];
+  linearLimit: Scalars['Float']['output'];
+  lowPlasticLimit: Scalars['Float']['output'];
+  nominalLength: Scalars['Float']['output'];
+  quadCoeff1: Scalars['Float']['output'];
+  quadCoeff2: Scalars['Float']['output'];
+  tempCoeff: Scalars['Float']['output'];
+  tempCorrectionFactor: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  velocity: Scalars['Float']['output'];
+};
+
+export type BansheeEventLog = {
+  __typename?: 'BansheeEventLog';
+  bansheeRequest?: Maybe<BansheeRequest>;
+  bansheeRequestId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  eventType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId?: Maybe<Scalars['String']['output']>;
+  newStatus: Scalars['String']['output'];
+  previousStatus: Scalars['String']['output'];
+  source?: Maybe<Scalars['String']['output']>;
+};
+
+export type BansheeEventLogResponse = {
+  __typename?: 'BansheeEventLogResponse';
+  results: Array<BansheeEventLog>;
+  totalRecords: Scalars['Int']['output'];
+};
+
+/**
+ * BansheeRequest model
+ * Define the BansheeRequest model and its fields
+ */
+export type BansheeRequest = {
+  __typename?: 'BansheeRequest';
+  activateNotifications?: Maybe<Scalars['Boolean']['output']>;
+  boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
+  boltType?: Maybe<Scalars['String']['output']>;
+  boltTypeConstant?: Maybe<BansheeBoltTypeConstant>;
+  comment?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Company>;
+  companyId: Scalars['String']['output'];
+  coordinates?: Maybe<Scalars['JSON']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  createdByUser?: Maybe<User>;
+  drive?: Maybe<Drive>;
+  driveId: Scalars['String']['output'];
+  eventLogs?: Maybe<Array<BansheeEventLog>>;
+  id: Scalars['String']['output'];
+  images?: Maybe<Array<Scalars['String']['output']>>;
+  isBrokenBolt: Scalars['Boolean']['output'];
+  isNotMeasurable: Scalars['Boolean']['output'];
+  level?: Maybe<Level>;
+  levelId: Scalars['String']['output'];
+  location?: Maybe<Location>;
+  locationDetails?: Maybe<Scalars['String']['output']>;
+  locationId: Scalars['String']['output'];
+  measured: Scalars['Boolean']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  period: Scalars['Int']['output'];
+  proceqData?: Maybe<Array<ProceqData>>;
+  ringPosition: Scalars['String']['output'];
+  serialNumber: Scalars['String']['output'];
+  site?: Maybe<Site>;
+  siteId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * BansheeRequestResponse
+ * Response structure for paginated list of banshee requests
+ */
+export type BansheeRequestResponse = {
+  __typename?: 'BansheeRequestResponse';
+  results: Array<BansheeRequest>;
+  totalRecords: Scalars['Int']['output'];
+};
+
+export type BansheeSessionStats = {
+  __typename?: 'BansheeSessionStats';
+  broken: Scalars['Int']['output'];
+  company?: Maybe<Company>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  notMeasurable: Scalars['Int']['output'];
+  sessionDate: Scalars['DateTime']['output'];
+  site: Site;
+  totalMeasured: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BansheeStatusDistribution = {
+  __typename?: 'BansheeStatusDistribution';
+  byLocation?: Maybe<Array<LocationDistribution>>;
+  statusCounts: Array<StatusCount>;
+  total: Scalars['Int']['output'];
+};
+
+/**
+ * BansheeTemplate model
+ * Define the BansheeTemplate model and its fields
+ */
+export type BansheeTemplate = {
+  __typename?: 'BansheeTemplate';
+  activateNotifications?: Maybe<Scalars['Boolean']['output']>;
+  boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  companyId: Scalars['String']['output'];
+  coordinates?: Maybe<Scalars['JSON']['output']>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  levelId?: Maybe<Scalars['String']['output']>;
+  locationDetails?: Maybe<Scalars['String']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  period?: Maybe<Scalars['Int']['output']>;
+  ringPosition?: Maybe<RingPosition>;
+  siteId?: Maybe<Scalars['String']['output']>;
+  templateName: Scalars['String']['output'];
+};
+
+/**
+ * BansheeTemplateInput
+ * Define the input fields to create a new BansheeTemplate or update an existing BansheeTemplate
+ */
+export type BansheeTemplateInput = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  ringPosition?: InputMaybe<RingPosition>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  templateName: Scalars['String']['input'];
+};
 
 /**
  * BoltResult model
@@ -165,6 +320,30 @@ export type ConfirmPasswordResetInput = {
   email: Scalars['String']['input'];
   newPassword: Scalars['String']['input'];
   token: Scalars['String']['input'];
+};
+
+/**
+ * CreateBansheeRequestInput
+ * Define the input fields to create a new banshee request
+ */
+export type CreateBansheeRequestInput = {
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId: Scalars['String']['input'];
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  isBrokenBolt: Scalars['Boolean']['input'];
+  isNotMeasurable: Scalars['Boolean']['input'];
+  levelId: Scalars['String']['input'];
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  period: Scalars['Int']['input'];
+  ringPosition: RingPosition;
+  serialNumber: Scalars['String']['input'];
+  siteId: Scalars['String']['input'];
 };
 
 /**
@@ -368,6 +547,15 @@ export type Location = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type LocationDistribution = {
+  __typename?: 'LocationDistribution';
+  locationId: Scalars['String']['output'];
+  locationName: Scalars['String']['output'];
+  results: Array<BansheeRequest>;
+  statusCounts: Array<StatusCount>;
+  total: Scalars['Int']['output'];
+};
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
@@ -376,6 +564,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   completeInvitation: User;
   confirmPasswordReset: Scalars['Boolean']['output'];
+  createBansheeRequest: BansheeRequest;
+  createBansheeTemplate: BansheeTemplate;
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -387,6 +577,8 @@ export type Mutation = {
   createLocation: Location;
   createSite: Site;
   createUserPermission: UserPermission;
+  deleteBansheeRequest: BansheeRequest;
+  deleteBansheeTemplate: BansheeTemplate;
   removeBoltResult: BoltResult;
   removeBoltResults: Array<BoltResult>;
   removeCoffee: Coffee;
@@ -400,6 +592,8 @@ export type Mutation = {
   removeUserPermission: UserPermission;
   requestPasswordReset: Scalars['Boolean']['output'];
   resendInvitation: Invitation;
+  updateBansheeRequest: BansheeRequest;
+  updateBansheeTemplate: BansheeTemplate;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -429,6 +623,24 @@ export type MutationCompleteInvitationArgs = {
  */
 export type MutationConfirmPasswordResetArgs = {
   input: ConfirmPasswordResetInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateBansheeRequestArgs = {
+  createBansheeRequestInput: CreateBansheeRequestInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateBansheeTemplateArgs = {
+  createBansheeTemplateInput: BansheeTemplateInput;
 };
 
 
@@ -529,6 +741,24 @@ export type MutationCreateSiteArgs = {
  */
 export type MutationCreateUserPermissionArgs = {
   createUserPermissionInput: CreateUserPermissionInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationDeleteBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationDeleteBansheeTemplateArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -646,6 +876,26 @@ export type MutationRequestPasswordResetArgs = {
  */
 export type MutationResendInvitationArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+  updateBansheeRequestInput: UpdateBansheeRequestInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateBansheeTemplateArgs = {
+  id: Scalars['String']['input'];
+  updateBansheeTemplateInput: BansheeTemplateInput;
 };
 
 
@@ -779,6 +1029,85 @@ export enum PlanLevel {
   Silver = 'SILVER'
 }
 
+export type ProceqAttachment = {
+  __typename?: 'ProceqAttachment';
+  attachmentId: Scalars['String']['output'];
+  attachmentType: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  fileName: Scalars['String']['output'];
+  filePath: Scalars['String']['output'];
+  fileSize?: Maybe<Scalars['Int']['output']>;
+  fileType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProceqData = {
+  __typename?: 'ProceqData';
+  attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  bansheeRequest?: Maybe<BansheeRequest>;
+  comments: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  dueDate: Scalars['DateTime']['output'];
+  email?: Maybe<Scalars['String']['output']>;
+  fileName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId: Scalars['String']['output'];
+  operator?: Maybe<Scalars['String']['output']>;
+  proceqAttachments?: Maybe<Array<ProceqAttachment>>;
+  rawDataZipId?: Maybe<Scalars['String']['output']>;
+  rawDataZipPath?: Maybe<Scalars['String']['output']>;
+  readings?: Maybe<Array<ProceqReading>>;
+  status?: Maybe<Scalars['String']['output']>;
+  temperature?: Maybe<Scalars['Float']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProceqLoginUrlResponse = {
+  __typename?: 'ProceqLoginUrlResponse';
+  url: Scalars['String']['output'];
+};
+
+export type ProceqReading = {
+  __typename?: 'ProceqReading';
+  analogueFilter?: Maybe<Scalars['Int']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  damping?: Maybe<Scalars['Int']['output']>;
+  elongation?: Maybe<Scalars['Float']['output']>;
+  frequency?: Maybe<Scalars['Float']['output']>;
+  gain?: Maybe<Scalars['Float']['output']>;
+  gate1MaximumAmplitude?: Maybe<Scalars['Float']['output']>;
+  gate1SoundPathDistance?: Maybe<Scalars['Float']['output']>;
+  gate1SoundPathDistanceInTimeUnit?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['String']['output'];
+  indicationSetupFileName?: Maybe<Scalars['String']['output']>;
+  level?: Maybe<Scalars['Float']['output']>;
+  measurementLevel?: Maybe<Scalars['Float']['output']>;
+  measuringMode?: Maybe<Scalars['String']['output']>;
+  readingIndex: Scalars['Int']['output'];
+  referenceSamplingRate?: Maybe<Scalars['Int']['output']>;
+  sampleAveraging?: Maybe<Scalars['Int']['output']>;
+  start?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  voltage?: Maybe<Scalars['Int']['output']>;
+  width?: Maybe<Scalars['Float']['output']>;
+  zeroOffset?: Maybe<Scalars['Float']['output']>;
+};
+
+export enum ProceqStatus {
+  Broken = 'BROKEN',
+  Elastic = 'ELASTIC',
+  HighPlastic = 'HIGH_PLASTIC',
+  LowPlastic = 'LOW_PLASTIC',
+  NotMeasurable = 'NOT_MEASURABLE',
+  Unmeasured = 'UNMEASURED'
+}
+
 export enum PullTestAbortReason {
   BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
   HighAngleNotPerpendicular = 'HIGH_ANGLE_NOT_PERPENDICULAR',
@@ -794,6 +1123,11 @@ export enum PullTestAbortReason {
  */
 export type Query = {
   __typename?: 'Query';
+  bansheeEventLogs: BansheeEventLogResponse;
+  bansheeRequest: BansheeRequest;
+  bansheeRequests: BansheeRequestResponse;
+  bansheeSessionStats: Array<BansheeSessionStats>;
+  bansheeStatusDistribution: BansheeStatusDistribution;
   boltResult: BoltResult;
   boltResults: BoltResultResponse;
   coffee: Coffee;
@@ -803,8 +1137,11 @@ export type Query = {
   drive: Drive;
   drives: Array<Drive>;
   getApplication?: Maybe<Array<Application>>;
+  getBansheeTemplateById?: Maybe<BansheeTemplate>;
+  getBansheeTemplates: Array<BansheeTemplate>;
   getBoltTypes?: Maybe<Array<BoltType>>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
+  getProceqStatus?: Maybe<Array<ProceqStatus>>;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
   getResults: Array<Result>;
   getRingPosition?: Maybe<Array<RingPosition>>;
@@ -816,6 +1153,7 @@ export type Query = {
   locations: Array<Location>;
   pendingGlobalInvitations: Array<Invitation>;
   pendingInvitations: Array<Invitation>;
+  proceqLoginUrl: ProceqLoginUrlResponse;
   site: Site;
   sites: Array<Site>;
   user: User;
@@ -823,6 +1161,74 @@ export type Query = {
   userPermissions: Array<UserPermission>;
   users: Array<User>;
   validateInvitation: InvitationValidation;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeEventLogsArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeRequestsArgs = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeSessionStatsArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeStatusDistributionArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -897,6 +1303,24 @@ export type QueryDriveArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
+export type QueryGetBansheeTemplateByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryGetBansheeTemplatesArgs = {
+  companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
 export type QueryHazardsArgs = {
   companyId: Scalars['String']['input'];
 };
@@ -926,6 +1350,15 @@ export type QueryLocationArgs = {
  */
 export type QueryPendingInvitationsArgs = {
   companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryProceqLoginUrlArgs = {
+  callbackUrl: Scalars['String']['input'];
 };
 
 
@@ -1026,6 +1459,38 @@ export type Site = {
   postalCode: Scalars['String']['output'];
   siteName: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type StatusCount = {
+  __typename?: 'StatusCount';
+  count: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+};
+
+/**
+ * UpdateBansheeRequestInput
+ * Define the input fields to update an existing banshee request
+ */
+export type UpdateBansheeRequestInput = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  isBrokenBolt?: InputMaybe<Scalars['Boolean']['input']>;
+  isNotMeasurable?: InputMaybe<Scalars['Boolean']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  ringPosition?: InputMaybe<RingPosition>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -1195,3 +1660,170 @@ export type ValidateResetTokenInput = {
   email: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
+
+export type BansheeRequestConfigQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type BansheeRequestConfigQuery = { __typename?: 'Query', bansheeRequest: { __typename?: 'BansheeRequest', id: string, serialNumber: string, name?: string | null, boltInstallationDateTime?: any | null, period: number, coordinates?: any | null, boltType?: string | null, locationDetails?: string | null, comment?: string | null, activateNotifications?: boolean | null, ringPosition: string, companyId: string, boltTypeConstant?: { __typename?: 'BansheeBoltTypeConstant', lowPlasticLimit: number, elasticLimit: number } | null, site?: { __typename?: 'Site', id: string, siteName: string } | null, level?: { __typename?: 'Level', id: string, levelName: string } | null, drive?: { __typename?: 'Drive', id: string, driveName: string } | null, location?: { __typename?: 'Location', id: string, locationName: string } | null } };
+
+export type UpdateBansheeRequestMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  updateBansheeRequestInput: UpdateBansheeRequestInput;
+}>;
+
+
+export type UpdateBansheeRequestMutation = { __typename?: 'Mutation', updateBansheeRequest: { __typename?: 'BansheeRequest', id: string } };
+
+export type HierarchyQueryVariables = Exact<{
+  companyId: Scalars['String']['input'];
+}>;
+
+
+export type HierarchyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, sites?: Array<{ __typename?: 'Site', id: string, siteName: string, levels?: Array<{ __typename?: 'Level', id: string, levelName: string, drives?: Array<{ __typename?: 'Drive', id: string, driveName: string, locations?: Array<{ __typename?: 'Location', id: string, locationName: string }> | null }> | null }> | null }> | null } };
+
+export type BansheeDetailQueryQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type BansheeDetailQueryQuery = { __typename?: 'Query', bansheeRequest: { __typename?: 'BansheeRequest', id: string, serialNumber: string, name?: string | null, boltInstallationDateTime?: any | null, period: number, coordinates?: any | null, boltType?: string | null, locationDetails?: string | null, comment?: string | null, activateNotifications?: boolean | null, ringPosition: string, companyId: string, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, createdTimestamp?: any | null, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null, boltTypeConstant?: { __typename?: 'BansheeBoltTypeConstant', lowPlasticLimit: number, elasticLimit: number } | null, site?: { __typename?: 'Site', id: string, siteName: string } | null, level?: { __typename?: 'Level', id: string, levelName: string } | null, drive?: { __typename?: 'Drive', id: string, driveName: string } | null, location?: { __typename?: 'Location', id: string, locationName: string } | null } };
+
+export type BansheeRequestsListQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type BansheeRequestsListQuery = { __typename?: 'Query', bansheeRequests: { __typename?: 'BansheeRequestResponse', results: Array<{ __typename?: 'BansheeRequest', id: string, serialNumber: string, comment?: string | null, site?: { __typename?: 'Site', siteName: string } | null, drive?: { __typename?: 'Drive', driveName: string } | null, level?: { __typename?: 'Level', levelName: string } | null, location?: { __typename?: 'Location', locationName: string } | null, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, createdTimestamp?: any | null, updatedTimestamp?: any | null, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null, eventLogs?: Array<{ __typename?: 'BansheeEventLog', createdAt: any, eventType: string, previousStatus: string, newStatus: string }> | null }> } };
+
+export type BansheePageStatusDistributionQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type BansheePageStatusDistributionQuery = { __typename?: 'Query', bansheeStatusDistribution: { __typename?: 'BansheeStatusDistribution', total: number, statusCounts: Array<{ __typename?: 'StatusCount', status: string, count: number }>, byLocation?: Array<{ __typename?: 'LocationDistribution', locationId: string, locationName: string, total: number, statusCounts: Array<{ __typename?: 'StatusCount', status: string, count: number }> }> | null } };
+
+export type BansheeStatusDistributionQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type BansheeStatusDistributionQuery = { __typename?: 'Query', bansheeStatusDistribution: { __typename?: 'BansheeStatusDistribution', total: number, statusCounts: Array<{ __typename?: 'StatusCount', status: string, count: number }> } };
+
+export type OverviewBansheeRequestsListQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type OverviewBansheeRequestsListQuery = { __typename?: 'Query', bansheeRequests: { __typename?: 'BansheeRequestResponse', results: Array<{ __typename?: 'BansheeRequest', id: string, serialNumber: string, comment?: string | null, site?: { __typename?: 'Site', siteName: string } | null, drive?: { __typename?: 'Drive', driveName: string } | null, level?: { __typename?: 'Level', levelName: string } | null, location?: { __typename?: 'Location', locationName: string } | null, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, dueDate: any, createdTimestamp?: any | null, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null, eventLogs?: Array<{ __typename?: 'BansheeEventLog', createdAt: any, eventType: string, previousStatus: string, newStatus: string }> | null }> } };
+
+export type BansheeSchedulerListQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type BansheeSchedulerListQuery = { __typename?: 'Query', bansheeRequests: { __typename?: 'BansheeRequestResponse', results: Array<{ __typename?: 'BansheeRequest', id: string, serialNumber: string, period: number, comment?: string | null, site?: { __typename?: 'Site', siteName: string } | null, drive?: { __typename?: 'Drive', driveName: string } | null, level?: { __typename?: 'Level', levelName: string } | null, location?: { __typename?: 'Location', locationName: string } | null, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, createdTimestamp?: any | null, updatedTimestamp?: any | null, dueDate: any, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null, eventLogs?: Array<{ __typename?: 'BansheeEventLog', createdAt: any, eventType: string, previousStatus: string, newStatus: string }> | null }> } };
+
+export type SiteInfoHierarchyQueryVariables = Exact<{
+  companyId: Scalars['String']['input'];
+}>;
+
+
+export type SiteInfoHierarchyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, name: string, plans?: Array<{ __typename?: 'Plan', id: string, applicationName: string, planLevel: string, expiringDate?: any | null }> | null, sites?: Array<{ __typename?: 'Site', id: string, siteName: string, levels?: Array<{ __typename?: 'Level', id: string, levelName: string, drives?: Array<{ __typename?: 'Drive', id: string, driveName: string, locations?: Array<{ __typename?: 'Location', id: string, locationName: string }> | null }> | null }> | null }> | null } };
+
+export type SiteInfoUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SiteInfoUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, fullName: string, userPermissions?: Array<{ __typename?: 'UserPermission', id: string, role: string, appsAccess: Array<string> }> | null }> };
+
+export type TemplateHierarchyQueryVariables = Exact<{
+  companyId: Scalars['String']['input'];
+}>;
+
+
+export type TemplateHierarchyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: string, sites?: Array<{ __typename?: 'Site', id: string, siteName: string, levels?: Array<{ __typename?: 'Level', id: string, levelName: string, drives?: Array<{ __typename?: 'Drive', id: string, driveName: string, locations?: Array<{ __typename?: 'Location', id: string, locationName: string }> | null }> | null }> | null }> | null } };
+
+export type GetBansheeTemplatesQueryVariables = Exact<{
+  companyId: Scalars['String']['input'];
+}>;
+
+
+export type GetBansheeTemplatesQuery = { __typename?: 'Query', getBansheeTemplates: Array<{ __typename?: 'BansheeTemplate', id: string, templateName: string }> };
+
+export type GetBansheeTemplateByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetBansheeTemplateByIdQuery = { __typename?: 'Query', getBansheeTemplateById?: { __typename?: 'BansheeTemplate', id: string, templateName: string, period?: number | null, boltInstallationDateTime?: any | null, siteId?: string | null, levelId?: string | null, driveId?: string | null, locationId?: string | null, locationDetails?: string | null, coordinates?: any | null, comment?: string | null, activateNotifications?: boolean | null } | null };
+
+export type CreateBansheeTemplateMutationVariables = Exact<{
+  createBansheeTemplateInput: BansheeTemplateInput;
+}>;
+
+
+export type CreateBansheeTemplateMutation = { __typename?: 'Mutation', createBansheeTemplate: { __typename?: 'BansheeTemplate', id: string, templateName: string } };
+
+export type UpdateBansheeTemplateMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  updateBansheeTemplateInput: BansheeTemplateInput;
+}>;
+
+
+export type UpdateBansheeTemplateMutation = { __typename?: 'Mutation', updateBansheeTemplate: { __typename?: 'BansheeTemplate', id: string, templateName: string } };
+
+export type DeleteBansheeTemplateMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteBansheeTemplateMutation = { __typename?: 'Mutation', deleteBansheeTemplate: { __typename?: 'BansheeTemplate', id: string } };
+
+export type BansheeRequestDetailQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type BansheeRequestDetailQuery = { __typename?: 'Query', bansheeRequest: { __typename?: 'BansheeRequest', id: string, serialNumber: string, boltInstallationDateTime?: any | null, period: number, coordinates?: any | null, boltType?: string | null, site?: { __typename?: 'Site', siteName: string } | null, level?: { __typename?: 'Level', levelName: string } | null, drive?: { __typename?: 'Drive', driveName: string } | null, location?: { __typename?: 'Location', locationName: string } | null, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, createdTimestamp?: any | null, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null } };
+
+export type BansheeDetailEventQueryQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type BansheeDetailEventQueryQuery = { __typename?: 'Query', bansheeRequest: { __typename?: 'BansheeRequest', id: string, serialNumber: string, boltInstallationDateTime?: any | null, period: number, coordinates?: any | null, boltType?: string | null, site?: { __typename?: 'Site', siteName: string } | null, level?: { __typename?: 'Level', levelName: string } | null, drive?: { __typename?: 'Drive', driveName: string } | null, location?: { __typename?: 'Location', locationName: string } | null, boltTypeConstant?: { __typename?: 'BansheeBoltTypeConstant', lowPlasticLimit: number, elasticLimit: number } | null, proceqData?: Array<{ __typename?: 'ProceqData', status?: string | null, dueDate: any, createdTimestamp?: any | null, readings?: Array<{ __typename?: 'ProceqReading', elongation?: number | null, status?: string | null }> | null }> | null } };
+
+export type EventsPageTableQueryQueryVariables = Exact<{
+  companyId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type EventsPageTableQueryQuery = { __typename?: 'Query', bansheeEventLogs: { __typename?: 'BansheeEventLogResponse', totalRecords: number, results: Array<{ __typename?: 'BansheeEventLog', id: string, createdAt: any, eventType: string, previousStatus: string, newStatus: string, bansheeRequest?: { __typename?: 'BansheeRequest', serialNumber: string, id: string, location?: { __typename?: 'Location', locationName: string } | null } | null }> } };
+
+
+export const BansheeRequestConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BansheeRequestConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"boltInstallationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"coordinates"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"locationDetails"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"activateNotifications"}},{"kind":"Field","name":{"kind":"Name","value":"ringPosition"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"boltTypeConstant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lowPlasticLimit"}},{"kind":"Field","name":{"kind":"Name","value":"elasticLimit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]} as unknown as DocumentNode<BansheeRequestConfigQuery, BansheeRequestConfigQueryVariables>;
+export const UpdateBansheeRequestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBansheeRequest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateBansheeRequestInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBansheeRequestInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBansheeRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateBansheeRequestInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateBansheeRequestInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateBansheeRequestMutation, UpdateBansheeRequestMutationVariables>;
+export const HierarchyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Hierarchy"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteName"}},{"kind":"Field","name":{"kind":"Name","value":"levels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}},{"kind":"Field","name":{"kind":"Name","value":"drives"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}},{"kind":"Field","name":{"kind":"Name","value":"locations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<HierarchyQuery, HierarchyQueryVariables>;
+export const BansheeDetailQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheeDetailQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"boltInstallationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"coordinates"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"locationDetails"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"activateNotifications"}},{"kind":"Field","name":{"kind":"Name","value":"ringPosition"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"boltTypeConstant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lowPlasticLimit"}},{"kind":"Field","name":{"kind":"Name","value":"elasticLimit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]} as unknown as DocumentNode<BansheeDetailQueryQuery, BansheeDetailQueryQueryVariables>;
+export const BansheeRequestsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheeRequestsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locationId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"measured"},"value":{"kind":"BooleanValue","value":false}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}},{"kind":"Argument","name":{"kind":"Name","value":"locationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"updatedTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"eventLogs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"previousStatus"}},{"kind":"Field","name":{"kind":"Name","value":"newStatus"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BansheeRequestsListQuery, BansheeRequestsListQueryVariables>;
+export const BansheePageStatusDistributionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheePageStatusDistribution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeStatusDistribution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"statusCounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}},{"kind":"Field","name":{"kind":"Name","value":"byLocation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationId"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"statusCounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BansheePageStatusDistributionQuery, BansheePageStatusDistributionQueryVariables>;
+export const BansheeStatusDistributionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheeStatusDistribution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeStatusDistribution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"statusCounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<BansheeStatusDistributionQuery, BansheeStatusDistributionQueryVariables>;
+export const OverviewBansheeRequestsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"overviewBansheeRequestsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"measured"},"value":{"kind":"BooleanValue","value":false}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"eventLogs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"previousStatus"}},{"kind":"Field","name":{"kind":"Name","value":"newStatus"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OverviewBansheeRequestsListQuery, OverviewBansheeRequestsListQueryVariables>;
+export const BansheeSchedulerListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheeSchedulerList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequests"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"measured"},"value":{"kind":"BooleanValue","value":false}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"updatedTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"eventLogs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"previousStatus"}},{"kind":"Field","name":{"kind":"Name","value":"newStatus"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BansheeSchedulerListQuery, BansheeSchedulerListQueryVariables>;
+export const SiteInfoHierarchyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"siteInfoHierarchy"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteName"}},{"kind":"Field","name":{"kind":"Name","value":"levels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}},{"kind":"Field","name":{"kind":"Name","value":"drives"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}},{"kind":"Field","name":{"kind":"Name","value":"locations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteInfoHierarchyQuery, SiteInfoHierarchyQueryVariables>;
+export const SiteInfoUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"siteInfoUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"userPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"appsAccess"}}]}}]}}]}}]} as unknown as DocumentNode<SiteInfoUsersQuery, SiteInfoUsersQueryVariables>;
+export const TemplateHierarchyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TemplateHierarchy"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sites"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteName"}},{"kind":"Field","name":{"kind":"Name","value":"levels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"levelName"}},{"kind":"Field","name":{"kind":"Name","value":"drives"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"driveName"}},{"kind":"Field","name":{"kind":"Name","value":"locations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TemplateHierarchyQuery, TemplateHierarchyQueryVariables>;
+export const GetBansheeTemplatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBansheeTemplates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getBansheeTemplates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}}]}}]} as unknown as DocumentNode<GetBansheeTemplatesQuery, GetBansheeTemplatesQueryVariables>;
+export const GetBansheeTemplateByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBansheeTemplateById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getBansheeTemplateById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"boltInstallationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"siteId"}},{"kind":"Field","name":{"kind":"Name","value":"levelId"}},{"kind":"Field","name":{"kind":"Name","value":"driveId"}},{"kind":"Field","name":{"kind":"Name","value":"locationId"}},{"kind":"Field","name":{"kind":"Name","value":"locationDetails"}},{"kind":"Field","name":{"kind":"Name","value":"coordinates"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"activateNotifications"}}]}}]}}]} as unknown as DocumentNode<GetBansheeTemplateByIdQuery, GetBansheeTemplateByIdQueryVariables>;
+export const CreateBansheeTemplateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBansheeTemplate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createBansheeTemplateInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BansheeTemplateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createBansheeTemplate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createBansheeTemplateInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createBansheeTemplateInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}}]}}]} as unknown as DocumentNode<CreateBansheeTemplateMutation, CreateBansheeTemplateMutationVariables>;
+export const UpdateBansheeTemplateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBansheeTemplate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateBansheeTemplateInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BansheeTemplateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBansheeTemplate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"updateBansheeTemplateInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateBansheeTemplateInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}}]}}]} as unknown as DocumentNode<UpdateBansheeTemplateMutation, UpdateBansheeTemplateMutationVariables>;
+export const DeleteBansheeTemplateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteBansheeTemplate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteBansheeTemplate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteBansheeTemplateMutation, DeleteBansheeTemplateMutationVariables>;
+export const BansheeRequestDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BansheeRequestDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"boltInstallationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"coordinates"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BansheeRequestDetailQuery, BansheeRequestDetailQueryVariables>;
+export const BansheeDetailEventQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"bansheeDetailEventQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"boltInstallationDateTime"}},{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"coordinates"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"site"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"level"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"levelName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"drive"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"driveName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"boltTypeConstant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lowPlasticLimit"}},{"kind":"Field","name":{"kind":"Name","value":"elasticLimit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"proceqData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elongation"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]}}]} as unknown as DocumentNode<BansheeDetailEventQueryQuery, BansheeDetailEventQueryQueryVariables>;
+export const EventsPageTableQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"eventsPageTableQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bansheeEventLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"companyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"companyId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalRecords"}},{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"previousStatus"}},{"kind":"Field","name":{"kind":"Name","value":"newStatus"}},{"kind":"Field","name":{"kind":"Name","value":"bansheeRequest"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<EventsPageTableQueryQuery, EventsPageTableQueryQueryVariables>;

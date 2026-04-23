@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Column } from '@tanstack/react-table';
-import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
+import { LucideArrowDownUp, LucideArrowUpDown, LucideFilter } from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Text } from './text';
 
 import { cn } from '../../lib/utils';
 
@@ -166,7 +167,7 @@ const TableHeadWithSorting = <TData,>({
       type="button"
       onClick={handleClick}
       className={cn(
-        'ui-banshee-cursor-pointer ui-banshee-flex ui-banshee-justify-center',
+        'ui-banshee-cursor-pointer ui-banshee-flex ui-banshee-justify-center ui-banshee-items-center',
         className,
       )}
     >
@@ -192,6 +193,30 @@ const TableHeadWithSorting = <TData,>({
     </button>
   );
 };
+
+interface TableHeadWithFilterProps {
+  header: string;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const TableHeadWithFilter = ({
+  header,
+  className,
+  children,
+}: TableHeadWithFilterProps) => {
+  return (
+    <div className={cn('ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5 ui-banshee-px-3', className)}>
+      <LucideFilter size={11} className="ui-banshee-text-neutral-5" />
+      {children || (
+        <Text variant="small" color="foreground" className="ui-banshee-font-bold">
+          {header}
+        </Text>
+      )}
+    </div>
+  );
+};
+
 export {
   Table,
   TableHeader,
@@ -202,5 +227,6 @@ export {
   TableCell,
   TableCaption,
   TableHeadWithSorting,
+  TableHeadWithFilter,
   tableVariants,
 };

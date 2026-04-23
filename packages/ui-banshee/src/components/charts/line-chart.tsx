@@ -1,23 +1,18 @@
 'use client';
 
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceArea,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+import type { EChartsOption, ECharts } from 'echarts';
+import type { TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-} from './chart';
+import { ChartConfig, ChartContainer, EChart } from './chart';
 import { Text } from '../base/text';
+
+export type StatusBand = {
+  from: number;
+  to: number;
+  label: string;
+  color: string;
+};
 
 export type ChartLineLinearProps = {
   showAxis?: boolean;
@@ -26,11 +21,15 @@ export type ChartLineLinearProps = {
   showLegend?: boolean;
   data?: { time: string; [key: string]: string | number }[];
   lines?: { dataKey: string; label: string; color: string }[];
+  bands?: StatusBand[];
+};
+
+export type ChartLineLinearHandle = {
+  resetZoom: () => void;
 };
 
 export const description = 'A status plot chart';
 
-// Something that checks if its bellow 1, It gets gray
 const defaultChartData = [
   { time: 'T1', line1: 2.5, line2: 2.3, line3: 3.0 },
   { time: 'T2', line1: 3.5, line2: 2.4, line3: 3.1 },
@@ -43,7 +42,6 @@ const defaultChartData = [
   { time: 'T9', line1: 4.5, line2: 4.0, line3: 4.9 },
 ];
 
-// TODO Fix propps
 const defaultLineConfig = [
   { dataKey: 'line1', label: 'Line 1', color: '#0066cc' },
   { dataKey: 'line2', label: 'Line 2', color: '#ff6b6b' },
@@ -65,161 +63,220 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// Status bands mapping (from top to bottom)
-const bands = [
+const defaultBands: StatusBand[] = [
   { from: 5, to: 4, label: 'Broken', color: '#ff9999' },
   { from: 4, to: 3, label: 'High Plastic', color: '#ffcc99' },
   { from: 3, to: 2, label: 'Low Plastic', color: '#ffff99' },
-  {
-    from: 2,
-    to: 1,
-    label: 'Elastic',
-    color: '#99ff99',
-  },
-  {
-    from: 1,
-    to: 0,
-    label: 'Not Measurable',
-    color: '#cccccc',
-  },
+  { from: 2, to: 1, label: 'Elastic', color: '#99ff99' },
+  { from: 1, to: 0, label: 'Not Measurable', color: '#cccccc' },
 ];
 
-export function ChartLineLinear({
-  showAxis,
-  hideXAxisLabel,
-  chartLabel,
-  showLegend,
-  data = defaultChartData,
-  lines = defaultLineConfig,
-}: ChartLineLinearProps) {
-  const CustomChartHeight = () => {
-    if (!hideXAxisLabel && showLegend) {
-      return 'ui-banshee-h-[296px] ui-banshee-flex ui-banshee-flex-col ui-banshee-items-end ui-banshee-pb-5 ui-banshee-pointer-events-none ';
-    } else if (hideXAxisLabel && showLegend) {
-      return 'ui-banshee-h-[324px] ui-banshee-flex ui-banshee-flex-col ui-banshee-items-end ui-banshee-pb-5 ui-banshee-pointer-events-none ';
-    } else if (!hideXAxisLabel && !showLegend) {
-      return 'ui-banshee-h-[331px] ui-banshee-flex ui-banshee-flex-col ui-banshee-items-end ui-banshee-pb-5 ui-banshee-pointer-events-none ';
-    }
-    // else {
-    //   return 'ui-banshee-h-[360px] ui-banshee-flex ui-banshee-flex-col ui-banshee-items-end ui-banshee-pb-5 ui-banshee-pointer-events-none ';
-    // }
+export const ChartLineLinear = forwardRef<
+  ChartLineLinearHandle,
+  ChartLineLinearProps
+>(function ChartLineLinear(
+  {
+    showAxis,
+    hideXAxisLabel,
+    chartLabel,
+    showLegend,
+    data = defaultChartData,
+    lines = defaultLineConfig,
+    bands = defaultBands,
+  },
+  ref,
+) {
+  const chartRef = useRef<ECharts | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    resetZoom: () => {
+      chartRef.current?.dispatchAction({
+        type: 'dataZoom',
+        start: 0,
+        end: 100,
+      });
+    },
+  }));
+
+  const xAxisData = data.map((d) => d.time);
+
+  const hasBands = bands.length > 0;
+
+  // Compute Y-axis range from bands (guard against empty array)
+  const yMin = hasBands ? Math.min(...bands.map((b) => b.to)) : undefined;
+  const yMax = hasBands ? Math.max(...bands.map((b) => b.from)) : undefined;
+
+  // Build markArea data from bands
+  const markAreaData: [Record<string, unknown>, Record<string, unknown>][] =
+    bands.map((band) => [
+      { yAxis: band.to, itemStyle: { color: band.color, opacity: 0.95 } },
+      { yAxis: band.from },
+    ]);
+
+  const boundaryValues = hasBands
+    ? [...new Set(([] as number[]).concat(...bands.map((b) => [b.from, b.to])))]
+        .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
+        .sort((a: number, b: number) => a - b)
+    : [];
+
+  const bandMidpoints = new Map<number, string>();
+  for (const band of bands) {
+    const mid = (band.from + band.to) / 2;
+    bandMidpoints.set(mid, band.label);
+  }
+
+  const minBandHeight = hasBands
+    ? Math.min(...bands.map((b) => b.from - b.to))
+    : 1;
+  const yAxisInterval = minBandHeight / 2;
+
+  const option: EChartsOption = {
+    grid: {
+      top: 10,
+      right: 30,
+      bottom: showLegend ? 60 : 40,
+      left: showAxis ? 100 : 40,
+    },
+    xAxis: {
+      type: 'category',
+      data: xAxisData,
+      show: !hideXAxisLabel,
+      axisLabel: { fontSize: 12, color: '#000000',  },
+      axisTick: { alignWithLabel: true },
+      axisLine: { show: false },
+    },
+    yAxis: {
+      type: 'value',
+      min: yMin,
+      max: yMax,
+      interval: yAxisInterval,
+      axisLabel: {
+        show: showAxis,
+        formatter: (value: number) => {
+          // Round to avoid floating-point comparison issues
+          const rounded = Math.round(value * 1000) / 1000;
+          return bandMidpoints.get(rounded) ?? '';
+        },
+        fontSize: 12,
+        color: '#000000',
+      },
+      axisTick: { show: false },
+      axisLine: { show: false },
+      splitLine: { show: false },
+    },
+    tooltip: {
+      trigger: 'axis',
+      confine: true,
+      axisPointer: {
+        type: 'line',
+        snap: true,
+      },
+      formatter: (params: TopLevelFormatterParams) => {
+        const paramArray = Array.isArray(params) ? params : [params];
+
+        if (!paramArray.length) return '';
+
+        const validPoints = paramArray.filter(
+          (p) => p.value !== null && p.value !== undefined,
+        );
+
+        if (!validPoints.length) return '';
+
+        const header = `<strong>${validPoints[0].name}</strong><br/>`;
+
+        const body = validPoints
+          .map((p) => {
+            const marker = (p.marker as string) || '';
+            const name = p.seriesName ?? '';
+            const value = (p.value as string) ?? '';
+
+            return `${marker} ${name}: ${value}`;
+          })
+          .join('<br/>');
+
+        return header + body;
+      },
+    },
+    legend: showLegend
+      ? {
+          type: 'scroll',
+          bottom: 0,
+          icon: 'circle',
+          itemWidth: 8,
+          itemHeight: 8,
+          itemGap: 20,
+          width: '90%',
+          textStyle: { fontSize: 11, color: '#666' },
+          data: lines.map((l) => ({
+            name: l.label,
+            itemStyle: { color: l.color },
+          })),
+        }
+      : undefined,
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, start: 0, end: 100 }],
+    series: [
+      // Status band areas
+      {
+        type: 'line',
+        data: [],
+        silent: true,
+        markArea: {
+          silent: true,
+          data: markAreaData,
+        },
+      },
+      {
+        type: 'line',
+        data: [],
+        silent: true,
+        markLine: {
+          silent: true,
+          symbol: 'none',
+          lineStyle: { color: 'rgba(0, 0, 0, 0.15)', width: 1, type: 'solid' },
+          label: { show: false },
+          data: boundaryValues.map((v: number) => ({ yAxis: v })),
+        },
+      },
+      // Data lines
+      ...lines.map((line) => ({
+        type: 'line' as const,
+        name: line.label,
+        data: data.map((d) => {
+          const value = d[line.dataKey as keyof typeof d];
+          return value ?? null;
+        }),
+        smooth: false,
+        lineStyle: { color: line.color, width: 2 },
+        itemStyle: { color: line.color },
+        symbol: 'circle',
+        symbolSize: 6,
+      })),
+    ],
   };
 
   return (
-    <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-items-center">
+    <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-items-center ui-banshee-h-full">
       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-w-full ui-banshee-h-full">
-        {showAxis && (
-          <div className={CustomChartHeight()}>
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right" />
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right">
-              <Text variant="small" color="foreground">
-                Broken
-              </Text>
-            </div>
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right">
-              <Text variant="small" color="foreground">
-                High Plastic
-              </Text>
-            </div>
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right">
-              <Text variant="small" color="foreground">
-                Low Plastic
-              </Text>
-            </div>
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right">
-              <Text variant="small" color="foreground">
-                Elastic
-              </Text>
-            </div>
-            <div className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-text-right">
-              <Text variant="small" color="foreground">
-                Not Measurable
-              </Text>
-            </div>
-          </div>
-        )}
         <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full">
           <ChartContainer
             config={chartConfig}
-            className="ui-banshee-h-[360px] ui-banshee-w-full ui-banshee-relative ui-banshee-z-10"
+            className="ui-banshee-w-full ui-banshee-relative ui-banshee-z-10 ui-banshee-h-[42vh]"
           >
-            <LineChart
-              data={data}
-              margin={{ right: 30, left: -40, bottom: 20, top: 0 }}
-            >
-              {/* Perfectly aligned horizontal bands */}
-              {bands.map((band) => (
-                <ReferenceArea
-                  key={band.label}
-                  y1={band.to}
-                  y2={band.from}
-                  fill={band.color}
-                  fillOpacity={0.95}
-                  stroke="none"
-                />
-              ))}
-
-              {/* Top and bottom borders for each band */}
-              {bands.map((band) => (
-                <ReferenceLine
-                  key={`${band.label}-top`}
-                  y={band.from}
-                  x={band.to}
-                  stroke="#EEE"
-                  strokeWidth={1}
-                />
-              ))}
-
-              <CartesianGrid
-                vertical={false}
-                horizontal={false}
-                stroke="#e0e0e0"
-              />
-              <XAxis dataKey="time" hide={hideXAxisLabel} />
-
-              <YAxis
-                type="number"
-                domain={[0, 6]}
-                ticks={[0, 1, 2, 3, 4, 5, 6]}
-                // ticks={['', '', '', '', '', '', '']}
-                padding={{ top: 0, bottom: 0 }}
-              />
-
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-
-              {lines.map((line) => (
-                <Line
-                  key={line.dataKey}
-                  name={line.label}
-                  dataKey={line.dataKey}
-                  type="linear"
-                  stroke={line.color}
-                  strokeWidth={2}
-                  dot={{ fill: line.color, r: 3 }}
-                />
-              ))}
-
-              {showLegend && (
-                <ChartLegend
-                  verticalAlign="bottom"
-                  align="center"
-                  margin={{ left: -40, right: 40 }}
-                  height={36}
-                />
-              )}
-            </LineChart>
+            <EChart
+              chartRef={chartRef}
+              option={option}
+              className="ui-banshee-w-full ui-banshee-h-full"
+            />
           </ChartContainer>
         </div>
       </div>
-      {/* LABEL */}
-      <div>
-        <Text variant="small" color="foreground">
-          {chartLabel}
-        </Text>
-      </div>
+      {chartLabel && (
+        <div>
+          <Text variant="small" color="foreground">
+            {chartLabel}
+          </Text>
+        </div>
+      )}
     </div>
   );
-}
+});

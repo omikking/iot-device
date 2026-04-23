@@ -1,10 +1,9 @@
 'use client';
 
-import { Pie, PieChart } from 'recharts';
+import type { EChartsOption } from 'echarts';
 
 import { Card, CardContent, CardFooter } from '../base/card';
-import { Text } from '../base/text';
-import { ChartConfig, ChartContainer, ChartTooltip } from './chart';
+import { ChartConfig, ChartContainer, EChart } from './chart';
 
 type DonutChartProps = {
   footerText?: string;
@@ -17,57 +16,60 @@ type DonutChartProps = {
   }[];
 };
 
-const CustomChartTooltip = ({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: { value: number; payload: { label: string } }[];
-}) => {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div className="ui-banshee-bg-black ui-banshee-text-main-white ui-banshee-p-2 ui-banshee-rounded-sm">
-      <p className="ui-banshee-font-sm">{payload[0].payload.label}</p>
-      <p className="ui-banshee-font-sm">{payload[0].value}%</p>
-    </div>
-  );
-};
-
 export function SmallChartPieDonut({
   footerText,
   chartData,
   chartConfig,
 }: DonutChartProps) {
+  const option: EChartsOption = {
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: '#000',
+      borderColor: '#333',
+      textStyle: { color: '#fff', fontSize: 12 },
+      formatter: (params) => {
+        const p = Array.isArray(params) ? params[0] : params;
+        return `<div style="padding:2px 4px">
+          <div>${String(p.name)}</div>
+          <div>${String(p.value)}</div>
+        </div>`;
+      },
+    },
+    series: [
+      {
+        type: 'pie',
+        radius: ['60%', '85%'],
+        center: ['50%', '50%'],
+        data: chartData.map((d) => ({
+          name: d.label,
+          value: d.value,
+          itemStyle: { color: d.fill },
+        })),
+        itemStyle: {
+          borderWidth: 0,
+        },
+        label: { show: false },
+        emphasis: { scale: false },
+      },
+    ],
+  };
+
   return (
-    <Card className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-2 ui-banshee-border-none ui-banshee-rounded-none ui-banshee-justify-center ui-banshee-items-center">
+    <Card className="ui-banshee-flex ui-banshee-p-2 ui-banshee-flex-col ui-banshee-bg-neutral-1 ui-banshee-border-none ui-banshee-rounded-none ui-banshee-justify-center ui-banshee-items-center">
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-justify-center ui-banshee-w-full ui-banshee-h-full">
-        <div className="ui-banshee-relative ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-justify-center ui-banshee-h-[180px] ui-banshee-w-[150px]">
+        <div className="ui-banshee-relative ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-justify-center ui-banshee-h-[165px] ui-banshee-w-[150px]">
           <CardContent className="!ui-banshee-p-0">
             <ChartContainer
               config={chartConfig}
-              className="ui-banshee-mx-auto ui-banshee-aspect-square ui-banshee-max-h-[150px] ui-banshee-w-[150px]"
+              className="ui-banshee-mx-auto ui-banshee-aspect-square ui-banshee-max-h-[140px] ui-banshee-w-[140px]"
             >
-              <PieChart>
-                <ChartTooltip cursor={false} content={<CustomChartTooltip />} />
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="label"
-                  innerRadius={40}
-                  stroke="none"
-                />
-              </PieChart>
+              <EChart
+                option={option}
+                className="ui-banshee-w-full ui-banshee-h-full"
+              />
             </ChartContainer>
           </CardContent>
-          <div className="ui-banshee-pb-4">
-            <Text
-              color="foreground"
-              variant="large"
-              className="ui-banshee-absolute ui-banshee-inset-0 ui-banshee-bottom-9 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-pointer-events-none"
-            >
-              Total
-            </Text>
+          <div>
             <CardFooter className="ui-banshee-pb-0 ui-banshee-min-h-[24px]">
               {footerText}
             </CardFooter>

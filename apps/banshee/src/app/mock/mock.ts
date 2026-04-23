@@ -8,11 +8,11 @@ export type ChartConfig = {
 };
 
 export const chartDataMock = [
-  { label: 'Elastic', value: 55, fill: 'var(--color-elastic)' },
-  { label: 'Plastic Low', value: 10, fill: 'var(--color-plasticLow)' },
-  { label: 'Plastic High', value: 5, fill: 'var(--color-plasticHigh)' },
-  { label: 'Not Measurable', value: 5, fill: 'var(--color-notMeasurable)' },
-  { label: 'Broken', value: 25, fill: 'var(--color-broken)' },
+  { label: 'Elastic', value: 55, fill: '#62CE47' },
+  { label: 'Plastic Low', value: 10, fill: '#FFD50C' },
+  { label: 'Plastic High', value: 5, fill: '#FF7938' },
+  { label: 'Not Measurable', value: 5, fill: '#9C9C9C' },
+  { label: 'Broken', value: 25, fill: '#FF0000' },
 ];
 
 export const lineDataChartMock = [
@@ -581,5 +581,156 @@ export const sitesDesignSystemMock = [
     id: '3',
     name: 'Kiruna site',
     levels: [],
+  },
+];
+
+export type SchedulerEntry = {
+  status: string;
+  statusColor: string;
+  banshee: string;
+  location: string;
+  dueDate: string;
+};
+
+export const schedulerOverviewMock: SchedulerEntry[] = [
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 06',
+    location: 'P4039-ACC-left',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Plastic High',
+    statusColor: '#FF7938',
+    banshee: '100000 10',
+    location: 'P4039-ACC-right',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Broken',
+    statusColor: '#FF0000',
+    banshee: '100000 08',
+    location: 'P4039-ACC-right',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Plastic High',
+    statusColor: '#FF7938',
+    banshee: '100000 11',
+    location: 'P3940-XC2',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Plastic Low',
+    statusColor: '#FFD50C',
+    banshee: '100000 12',
+    location: 'P3940-XC2',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Plastic Low',
+    statusColor: '#FFD50C',
+    banshee: '100000 13',
+    location: 'P3940-XC2',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Elastic',
+    statusColor: '#62CE47',
+    banshee: '100000 14',
+    location: 'P3940-XC2',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Elastic',
+    statusColor: '#62CE47',
+    banshee: '100000 15',
+    location: 'P3940-XC3',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Elastic',
+    statusColor: '#62CE47',
+    banshee: '100000 07',
+    location: 'P4039-ACC-right',
+    dueDate: '13/03/2025',
+  },
+  {
+    status: 'Elastic',
+    statusColor: '#62CE47',
+    banshee: '100000 09',
+    location: 'P4039-ACC-right',
+    dueDate: '13/03/2025',
   },
 ];

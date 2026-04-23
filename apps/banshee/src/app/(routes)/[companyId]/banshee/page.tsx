@@ -1,0 +1,335 @@
+'use client';
+
+import { SidebarInset } from '@gsp/ui-banshee';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@gsp/ui-banshee';
+import { BansheePageFilters } from '@/components/BansheePageFilters';
+import { BansheePageDonuts } from '@/components/BansheePageDonuts';
+import { BansheeListView } from '@/components/BansheeListView';
+import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';
+import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import BansheeDataPlot from '@/components/BansheeDataPlot';
+import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
+import { useState, useCallback, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { ShareForm } from '@/components/ShareForm';
+import type { BansheeRequestsListQuery } from '@/gql/graphql';
+
+//TODO : need to change it measured true
+const bansheeRequestsListQuery = graphql(`
+  query bansheeRequestsList(
+    $companyId: String
+    $locationId: String
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    bansheeRequests(
+      measured: false
+      limit: 100
+      companyId: $companyId
+      locationId: $locationId
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      results {
+        id
+        serialNumber
+        site {
+          siteName
+        }
+        drive {
+          driveName
+        }
+        level {
+          levelName
+        }
+        location {
+          locationName
+        }
+        comment
+        proceqData {
+          status
+          createdTimestamp
+          updatedTimestamp
+          readings {
+            elongation
+            status
+          }
+        }
+        eventLogs {
+          createdAt
+          eventType
+          previousStatus
+          newStatus
+        }
+      }
+    }
+  }
+`);
+
+const bansheeStatusDistributionQuery = graphql(`
+  query bansheePageStatusDistribution(
+    $companyId: String
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    bansheeStatusDistribution(
+      companyId: $companyId
+      startDate: $startDate
+      endDate: $endDate
+    ) {
+      total
+      statusCounts {
+        status
+        count
+      }
+      byLocation {
+        locationId
+        locationName
+        total
+        statusCounts {
+          status
+          count
+        }
+      }
+    }
+  }
+`);
+type ShareFormValues = {
+  email: string;
+};
+type BansheeRequestResult =
+  BansheeRequestsListQuery['bansheeRequests']['results'][number];
+
+export default function Page({ params }: { params: { companyId: string } }) {
+  const companyId = params.companyId;
+
+  const statusPlotRef = useRef<BansheeStatusPlotHandle>(null);
+  const dataPlotRef = useRef<BansheeDataPlotHandle>(null);
+
+  const [timeframe, setTimeframe] = useState('ALL');
+  const [activeLocationDonut, setActiveLocationDonut] = useState('total');
+  const [dateRange, setDateRange] = useState<{
+    startDate?: string;
+    endDate?: string;
+  }>({});
+
+  const handleDateChange = useCallback(
+    (startDate?: string, endDate?: string) => {
+      setDateRange({ startDate, endDate });
+    },
+    [],
+  );
+
+  const [{ data: distData }] = useQuery({
+    query: bansheeStatusDistributionQuery,
+    variables: {
+      companyId,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    },
+  });
+
+  const [{ data, fetching }] = useQuery({
+    query: bansheeRequestsListQuery,
+    variables: {
+      companyId,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+      locationId:
+        activeLocationDonut !== 'total' ? activeLocationDonut : undefined,
+    },
+  });
+
+  const bansheeRequests = data?.bansheeRequests?.results || [];
+  const distributionData = distData?.bansheeStatusDistribution ?? null;
+  const form = useForm<ShareFormValues>();
+
+  const exportToCsv = (
+    data: BansheeRequestResult[],
+    filename = 'banshee_data.csv',
+  ) => {
+    if (!data.length) return;
+    console.log('Exporting flattened data:', data);
+
+    // Define CSV headers for flattened structure
+    const headers = [
+      'Serial Number',
+      'Site Name',
+      'Drive Name',
+      'Level Name',
+      'Location Name',
+      'Comment',
+      'Proceq Status',
+      'Proceq Created Timestamp',
+      'Reading Elongation',
+      'Reading Status',
+    ];
+
+    const csvRows: string[] = [headers.join(',')];
+
+    data.forEach((request) => {
+      const serialNumber = request.serialNumber ?? '';
+      const siteName = request.site?.siteName ?? '';
+      const driveName = request.drive?.driveName ?? '';
+      const levelName = request.level?.levelName ?? '';
+      const locationName = request.location?.locationName ?? '';
+      const comment = request.comment ?? '';
+
+      // Each BansheeRequest can have multiple ProceqData entries
+      request.proceqData?.forEach((proceq) => {
+        const proceqStatus = proceq.status ?? '';
+        const createdTimestamp = proceq.createdTimestamp
+          ? new Date(proceq.createdTimestamp).toISOString() // converts to readable ISO format
+          : '';
+
+        // Each ProceqData can have multiple readings
+        proceq.readings?.forEach((reading) => {
+          const elongation = reading.elongation ?? '';
+          const readingStatus = reading.status ?? '';
+
+          const row = [
+            serialNumber,
+            siteName,
+            driveName,
+            levelName,
+            locationName,
+            comment,
+            proceqStatus,
+            createdTimestamp,
+            elongation,
+            readingStatus,
+          ]
+            .map((v) => JSON.stringify(v)) // ensures proper CSV escaping
+            .join(',');
+
+          csvRows.push(row);
+        });
+      });
+    });
+
+    const csvString = csvRows.join('\n');
+
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <SidebarInset>
+      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-8 ui-banshee-bg-main-white ui-banshee-w-full">
+        <BansheePageFilters
+          active={timeframe}
+          setActive={setTimeframe}
+          onDateChange={handleDateChange}
+        />
+
+        <BansheePageDonuts
+          activeDonut={activeLocationDonut}
+          setActiveDonut={setActiveLocationDonut}
+          distributionData={distributionData ?? null}
+        />
+
+        <div className="ui-banshee-mt-8 ">
+          <Tabs defaultValue="statusPlot" className="ui-banshee-w-full">
+            <TabsList className="ui-banshee-justify-start ui-banshee-border-none ui-banshee-p-0 ui-banshee-h-auto">
+              <TabsTrigger
+                value="statusPlot"
+                className="data-[state=active]:ui-banshee-bg-neutral-1  ui-banshee-px-12 ui-banshee-py-3 data-[state=active]:ui-banshee-text-black"
+              >
+                Status Plot
+              </TabsTrigger>
+              <TabsTrigger
+                value="list"
+                className="data-[state=active]:ui-banshee-bg-neutral-1  ui-banshee-px-12 ui-banshee-py-3 data-[state=active]:ui-banshee-text-black"
+              >
+                List
+              </TabsTrigger>
+              <TabsTrigger
+                value="dataPlot"
+                className="data-[state=active]:ui-banshee-bg-neutral-1  ui-banshee-px-12 ui-banshee-py-3 data-[state=active]:ui-banshee-text-black"
+              >
+                Data Plot
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent
+              value="statusPlot"
+              className="!ui-banshee-mt-0 ui-banshee-px-2"
+            >
+              <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
+                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-8">
+                  <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
+                    Click and drag in the plot area to zoom in. Hold CTRL and
+                    drag to pan
+                  </p>
+                  <div className="ui-banshee-flex ui-banshee-gap-2">
+                    <button
+                      className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                      onClick={() => exportToCsv(bansheeRequests)}
+                    >
+                      Export CSV
+                    </button>
+                    <button
+                      className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                      onClick={() => statusPlotRef.current?.resetZoom()}
+                    >
+                      Reset zoom
+                    </button>
+                  </div>
+                </div>
+
+                <BansheeStatusPlot
+                  ref={statusPlotRef}
+                  bansheeRequests={bansheeRequests}
+                  fetching={fetching}
+                />
+              </div>
+              <ShareForm form={form} />
+            </TabsContent>
+
+            <TabsContent
+              value="list"
+              className="!ui-banshee-mt-0  ui-banshee-px-2"
+            >
+              <BansheeListView entries={bansheeRequests} loading={fetching} />
+            </TabsContent>
+
+            <TabsContent
+              value="dataPlot"
+              className="!ui-banshee-mt-0 ui-banshee-px-2"
+            >
+              <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
+                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-8">
+                  <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
+                    Click and drag in the plot area to zoom in. Hold CTRL and
+                    drag to pan
+                  </p>
+                  <button
+                    className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                    onClick={() => dataPlotRef.current?.resetZoom()}
+                  >
+                    Reset zoom
+                  </button>
+                </div>
+                <BansheeDataPlot
+                  ref={dataPlotRef}
+                  bansheeRequests={bansheeRequests}
+                  fetching={fetching}
+                />
+              </div>
+              <ShareForm form={form} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+    </SidebarInset>
+  );
+}

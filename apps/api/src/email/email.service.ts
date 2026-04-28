@@ -26,7 +26,14 @@ export class EmailService {
   // ================================================================================
   // PUBLIC EMAIL SENDING METHODS
   // ================================================================================
-
+  private getSesHeaders() {
+    return {
+      'X-SES-SOURCE-ARN': this.configService.get('SES_SOURCE_ARN'),
+      'X-SES-FROM-ARN': this.configService.get('SES_FROM_ARN'),
+      'X-SES-CONFIGURATION-SET':
+        this.configService.get('SES_CONFIGURATION_SET'),
+    };
+  }
   // 1: For non-existing user invitations on company level
   async sendInvitationEmail(
     email: string,
@@ -34,11 +41,7 @@ export class EmailService {
     token: string,
     companyName: string,
     userRole?: string,
-  ) 
-  {
-	  console.log(" sendInvitationEmail CALLED");
-console.log("Email:", email);
-console.log(" Company:", companyName);
+  ) {
     const inviteUrl = `${this.configService.get('FRONTEND_URL')}/setup-account?id=${invitationId}&token=${token}`;
 
     const htmlTemplate = this.emailTemplateService.buildInvitationTemplate(
@@ -46,8 +49,7 @@ console.log(" Company:", companyName);
       companyName,
       userRole,
     );
-   console.log(" Template generated");
-console.log("Invite URL:", inviteUrl);
+
     const roleText = this.emailTemplateService.getRoleDisplayText(userRole);
 
     const textContent = `
@@ -65,13 +67,7 @@ console.log("Invite URL:", inviteUrl);
 
       Need help? Contact your administrator for assistance.
     `.trim();
-    console.log(" About to send email...");
-console.log("⚙️ SMTP CONFIG:", {
-  host: this.configService.get('SMTP_HOST'),
-  port: this.configService.get('SMTP_PORT'),
-  secure: this.configService.get('SMTP_SECURE'),
-  user: this.configService.get('SMTP_USER'),
-});
+
     await this.transporter.sendMail({
       from: `"Ground Support Platform" <${this.configService.get('SMTP_FROM')}>`,
       to: email,
@@ -81,9 +77,9 @@ console.log("⚙️ SMTP CONFIG:", {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
-    console.log(" Email sent successfully");
   }
 
   // 2: For non-existing user receiving global role invitation
@@ -138,6 +134,7 @@ console.log("⚙️ SMTP CONFIG:", {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -186,6 +183,7 @@ console.log("⚙️ SMTP CONFIG:", {
       headers: {
         'X-Priority': '2',
         'X-MSMail-Priority': 'Normal',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -229,6 +227,7 @@ console.log("⚙️ SMTP CONFIG:", {
       headers: {
         'X-Priority': '2',
         'X-MSMail-Priority': 'Normal',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -265,6 +264,7 @@ console.log("⚙️ SMTP CONFIG:", {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
   }

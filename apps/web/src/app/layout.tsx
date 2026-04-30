@@ -2,6 +2,7 @@ import './globals.css';
 import '@gsp/ui/styles.css';
 import { Toaster } from '@gsp/ui';
 import type { Metadata } from 'next';
+import { NavBar } from '@/components/NavBar';
 import { authOptions } from '@/libs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
@@ -23,7 +24,10 @@ export default async function RootLayout({
       <body className="min-h-screen">
         <NextAuthProvider session={session}>
           <Toaster duration={8000} />
-          <UrqlProvider>{children}</UrqlProvider>
+          <UrqlProvider>
+            <NavBar />
+            {children}
+          </UrqlProvider>
         </NextAuthProvider>
       </body>
     </html>

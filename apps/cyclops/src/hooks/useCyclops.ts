@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { saveToDB, loadFromDB } from "./useIndexedDB";
 import { CyclopsBLE } from "../ble/cyclopsBle";
 import { parseDeviceStatus, parseMeta, parsePacket } from "../ble/cyclopsParser";
 import { formatCommandResponse } from "../constants/commands";
@@ -39,6 +40,28 @@ export function useCyclops() {
   const log = useCallback((msg: string, type: LogType = "info") => {
     setLogs(p => [{ ts: Date.now(), msg, type }, ...p].slice(0, 200));
   }, []);
+
+  useEffect(() => {
+    async function loadData() {
+      const cachedLogs = await loadFromDB<LogEntry[]>('logs');
+      if (cachedLogs) setLogs(cachedLogs);
+
+      const cachedHistory = await loadFromDB<Sample[]>('history');
+      if (cachedHistory) {
+        setHistory(cachedHistory);
+        cachedHistory.forEach(s => seenIds.current.add(s.sampleId));
+      }
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    saveToDB('logs', logs);
+  }, [logs.length]);
+
+  useEffect(() => {
+    saveToDB('history', history);
+  }, [history.length]);
 
   // ── Connection ──────────────────────────────────────────────────────────
 

@@ -20,6 +20,7 @@ export default function DeviceInfoTab({ connected, deviceInfo }: DeviceInfoTabPr
     return (
       <Card>
         <div className="text-center px-6 py-12 text-text-muted">
+          <div className="text-[52px] mb-4">ℹ️</div>
           <div className="text-base font-bold mb-1.5 text-text">No device connected</div>
           <div className="text-[13px] text-text-faint">
             Connect to a device to view its information
@@ -42,7 +43,7 @@ export default function DeviceInfoTab({ connected, deviceInfo }: DeviceInfoTabPr
 
   return (
     <Card>
-      <SectionTitle >Device Information (BLE SIG 0x180A)</SectionTitle>
+      <SectionTitle> Device Information (BLE SIG 0x180A)</SectionTitle>
       {FIELDS.map(f => (
         <StatRow
           key={f.key}

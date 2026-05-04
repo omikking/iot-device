@@ -37,8 +37,8 @@
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { @apply bg-surface-alt rounded; }
-  ::-webkit-scrollbar-thumb { @apply bg-border rounded; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-text-muted; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-text-faint; }
 
   select { appearance: auto; }
 

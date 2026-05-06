@@ -16,7 +16,7 @@ export class BansheeTemplateResolver {
     private readonly bansheeTemplateService: BansheeTemplateService,
   ) {}
 
-  @Roles([], [Application.BANSHEE], 'template')
+  @Roles([], [Application.BANSHEE], 'bansheeTemplate')
   @Mutation('createBansheeTemplate')
   async createBansheeTemplate(
     @Args('createBansheeTemplateInput')
@@ -29,7 +29,7 @@ export class BansheeTemplateResolver {
     );
   }
 
-  @Roles([], [Application.BANSHEE], 'template')
+  @Roles([], [Application.BANSHEE], 'bansheeTemplate')
   @Mutation('updateBansheeTemplate')
   async updateBansheeTemplate(
     @Args('id', ParseUUIDPipe) id: string,
@@ -44,7 +44,7 @@ export class BansheeTemplateResolver {
     );
   }
 
-  @Roles([], [Application.BANSHEE], 'template')
+  @Roles([], [Application.BANSHEE], 'bansheeTemplate')
   @Mutation('deleteBansheeTemplate')
   async deleteBansheeTemplate(
     @Args('id', ParseUUIDPipe) id: string,
@@ -53,7 +53,7 @@ export class BansheeTemplateResolver {
     return this.bansheeTemplateService.deleteBansheeTemplate(id, user);
   }
 
-  @Roles([], [Application.BANSHEE], 'template')
+  @Roles([], [Application.BANSHEE], 'bansheeTemplate')
   @Query('getBansheeTemplateById')
   async getBansheeTemplateById(
     @Args('id', ParseUUIDPipe) id: string,

@@ -50,8 +50,8 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: 'siteId',
     parentModel: 'site',
   },
-  template: {
-    model: 'template',
+  bansheeTemplate: {
+    model: 'bansheeTemplate',
     idField: 'id',
     parentField: 'companyId',
     parentModel: 'company',

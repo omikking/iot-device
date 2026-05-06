@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BansheeTemplateInputDto } from './dto/banshee-template.input';
-import { Application, GlobalRole, Template } from '@prisma/client';
+import { Application, GlobalRole, BansheeTemplate } from '@prisma/client';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { UserInputError } from '@nestjs/apollo/dist/errors/user-input.error';
 import { errorTexts } from 'src/errorTexts/errorTexts';
@@ -16,7 +16,7 @@ export class BansheeTemplateService {
   async createBansheeTemplate(
     createBansheeTemplateInput: BansheeTemplateInputDto,
     user: ActiveUserData,
-  ): Promise<Template> {
+  ): Promise<BansheeTemplate> {
     try {
       if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
         try {
@@ -30,7 +30,7 @@ export class BansheeTemplateService {
           );
         }
       }
-      const existingTemplate = await this.prisma.template.findFirst({
+      const existingTemplate = await this.prisma.bansheeTemplate.findFirst({
         where: {
           templateName: createBansheeTemplateInput.templateName,
           companyId: createBansheeTemplateInput.companyId,
@@ -51,7 +51,7 @@ export class BansheeTemplateService {
         createBansheeTemplateInput.locationId,
       );
 
-      const createdBansheeTemplate = await this.prisma.template.create({
+      const createdBansheeTemplate = await this.prisma.bansheeTemplate.create({
         data: {
           templateName: createBansheeTemplateInput.templateName,
           period: createBansheeTemplateInput.period,
@@ -97,7 +97,7 @@ export class BansheeTemplateService {
     id: string,
     updateBansheeTemplateInput: BansheeTemplateInputDto,
     user: ActiveUserData,
-  ): Promise<Template> {
+  ): Promise<BansheeTemplate> {
     try {
       if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
         try {
@@ -111,7 +111,7 @@ export class BansheeTemplateService {
           );
         }
       }
-      const existingTemplate = await this.prisma.template.findUnique({
+      const existingTemplate = await this.prisma.bansheeTemplate.findUnique({
         where: { id },
       });
 
@@ -124,12 +124,13 @@ export class BansheeTemplateService {
         });
       }
 
-      const existingTemplateByName = await this.prisma.template.findFirst({
-        where: {
-          templateName: updateBansheeTemplateInput.templateName,
-          companyId: updateBansheeTemplateInput.companyId,
-        },
-      });
+      const existingTemplateByName =
+        await this.prisma.bansheeTemplate.findFirst({
+          where: {
+            templateName: updateBansheeTemplateInput.templateName,
+            companyId: updateBansheeTemplateInput.companyId,
+          },
+        });
       if (existingTemplateByName && existingTemplateByName.id !== id) {
         throw new UserInputError('', {
           extensions: {
@@ -157,7 +158,7 @@ export class BansheeTemplateService {
         );
       }
 
-      const updatedTemplate = await this.prisma.template.update({
+      const updatedTemplate = await this.prisma.bansheeTemplate.update({
         where: { id },
         data: {
           templateName: updateBansheeTemplateInput.templateName,
@@ -202,8 +203,8 @@ export class BansheeTemplateService {
   async deleteBansheeTemplate(
     id: string,
     user: ActiveUserData,
-  ): Promise<Template> {
-    const existingTemplate = await this.prisma.template.findUnique({
+  ): Promise<BansheeTemplate> {
+    const existingTemplate = await this.prisma.bansheeTemplate.findUnique({
       where: { id },
     });
 
@@ -227,7 +228,7 @@ export class BansheeTemplateService {
     }
 
     try {
-      const deletedTemplate = await this.prisma.template.delete({
+      const deletedTemplate = await this.prisma.bansheeTemplate.delete({
         where: { id },
       });
 
@@ -250,9 +251,9 @@ export class BansheeTemplateService {
   async findBansheeTemplateById(
     id: string,
     user: ActiveUserData,
-  ): Promise<Template> {
+  ): Promise<BansheeTemplate> {
     try {
-      const template = await this.prisma.template.findUnique({
+      const template = await this.prisma.bansheeTemplate.findUnique({
         where: { id },
       });
 
@@ -300,7 +301,7 @@ export class BansheeTemplateService {
   async findBansheeTemplates(
     companyId: string,
     user: ActiveUserData,
-  ): Promise<Template[]> {
+  ): Promise<BansheeTemplate[]> {
     try {
       const hasAccess = await hasAppAccessForCompany(
         this.prisma,
@@ -315,7 +316,7 @@ export class BansheeTemplateService {
         );
       }
 
-      const templates = await this.prisma.template.findMany({
+      const templates = await this.prisma.bansheeTemplate.findMany({
         where: { companyId },
         orderBy: { createdAt: 'desc' },
       });

@@ -136,7 +136,9 @@ model Company {
   invitation          Invitation[]
   bansheeSessionStats BansheeSessionStats[]
   bansheeRequests     BansheeRequest[]
-  templates           Template[]
+  templates           BansheeTemplate[]
+  cartItems           BansheeCartItem[]
+  orders              BansheeOrder[]
 
   @@map("companies")
 }
@@ -244,7 +246,7 @@ model Site {
   boltResult          BoltResult[]
   bansheeRequests     BansheeRequest[]
   bansheeSessionStats BansheeSessionStats[]
-  templates           Template[]
+  templates           BansheeTemplate[]
 
   @@map("sites")
 }
@@ -262,7 +264,7 @@ model Level {
   drive           Drive[]
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
-  templates       Template[]
+  templates       BansheeTemplate[]
 
   @@map("levels")
 }
@@ -280,7 +282,7 @@ model Drive {
   location        Location[]
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
-  templates       Template[]
+  templates       BansheeTemplate[]
 
   @@map("drives")
 }
@@ -297,7 +299,7 @@ model Location {
 
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
-  templates       Template[]
+  templates       BansheeTemplate[]
 
   @@map("locations")
 }
@@ -429,6 +431,9 @@ model BansheeRequest {
   companyId String
   siteId    String
   site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  cartItems  BansheeCartItem[]
+  orderItems BansheeOrderItem[]
 
   @@index([createdBy])
   @@index([serialNumber])
@@ -574,7 +579,7 @@ model BansheeSessionStats {
   @@map("banshee_session_stats")
 }
 
-model Template {
+model BansheeTemplate {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -608,4 +613,94 @@ model Template {
 
   @@index([companyId])
   @@map("templates")
+}
+
+// ===== Banshee Cart / Order Flow =====
+
+enum BansheeCartItemType {
+  NEW_BANSHEE
+  SERVICE_EXISTING
+}
+
+enum BansheeOrderStatus {
+  PENDING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  CANCELLED
+}
+
+enum BansheeOrderItemStatus {
+  PENDING
+  FULFILLED
+  CANCELLED
+}
+
+model BansheeCartItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemType BansheeCartItemType
+
+  // --- SERVICE_EXISTING ---
+  bansheeRequestId String?
+
+  // --- NEW_BANSHEE ---
+  name     String?
+  quantity Int     @default(1)
+  location String?
+  period   Int?
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  bansheeRequest BansheeRequest? @relation(fields: [bansheeRequestId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@map("cart_items")
+}
+
+model BansheeOrder {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status      BansheeOrderStatus @default(PENDING)
+  attachments String[]
+  comment     String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  orderItems BansheeOrderItem[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("orders")
+}
+
+model BansheeOrderItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemType BansheeCartItemType
+  status   BansheeOrderItemStatus @default(PENDING)
+
+  bansheeRequestId String?
+
+  // NEW_BANSHEE snapshot (copied from CartItem at submission time)
+  name     String?
+  quantity Int     @default(1)
+  location String?
+  period   Int?
+
+  order   BansheeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  bansheeRequest BansheeRequest? @relation(fields: [bansheeRequestId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("order_items")
 }

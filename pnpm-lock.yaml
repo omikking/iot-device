@@ -201,9 +201,6 @@ importers:
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.10.0)
-      '@gsp/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@gsp/ui-banshee':
         specifier: workspace:*
         version: link:../../packages/ui-banshee
@@ -307,6 +304,9 @@ importers:
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.10.0)
+      '@gsp/ui-banshee':
+        specifier: workspace:*
+        version: link:../../packages/ui-banshee
       '@hookform/resolvers':
         specifier: ^3.4.2
         version: 3.6.0(react-hook-form@7.51.5(react@18.2.0))

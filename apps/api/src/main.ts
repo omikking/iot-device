@@ -24,7 +24,7 @@ async function bootstrap() {
       // whitelist: true,
     }),
   );
-  await app.listen(3000);
+  await app.listen(3333);
   console.log(`GraphQL Playground: http://localhost:3333/graphql`);
 }
 bootstrap();

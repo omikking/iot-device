@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Table,
   TableHeader,
@@ -8,53 +9,156 @@ import {
   TableCell,
   SidebarInset,
   Form,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { Text } from '@gsp/ui-banshee';
 import { CircleX, Menu } from 'lucide-react';
 import { Button } from 'node_modules/@gsp/ui-banshee/src/components/base/button';
-import { FormField } from './FormField';
-import { useRef, useState } from 'react';
+import { FormField } from '@/components/FormField';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import { SubmitOrderFormValues } from '@/components/schemas/SubmitOrderFormSchema';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Textarea } from 'node_modules/@gsp/ui-banshee/src/components/base/textarea';
 import { Headline } from 'node_modules/@gsp/ui-banshee/src/components/base/headline';
+import { useQuery, useMutation } from 'urql';
+import { graphql } from '@/gql';
+import { BansheeCartItemType } from '@/gql/graphql';
+import { useParams } from 'next/navigation';
+import { handleGraphQLErrors } from '@/libs/utils';
+
+const cartItemsQuery = graphql(`
+  query cartItems($companyId: String!) {
+    cartItems(companyId: $companyId) {
+      id
+      itemType
+      name
+      quantity
+      location
+      bansheeRequest {
+        serialNumber
+        location {
+          locationName
+        }
+      }
+    }
+  }
+`);
+
+const submitOrderMutation = graphql(`
+  mutation submitOrder($input: SubmitOrderInput!) {
+    submitOrder(input: $input) {
+      id
+    }
+  }
+`);
+
+const deleteCartItemMutation = graphql(`
+  mutation deleteCartItem($id: String!) {
+    deleteCartItem(id: $id) {
+      id
+    }
+  }
+`);
+
+const updateNewBansheeCartItemMutation = graphql(`
+  mutation updateNewBansheeCartItem(
+    $companyId: String!
+    $cartItemId: String!
+    $input: UpdateNewBansheeCartItemInput!
+  ) {
+    updateNewBansheeCartItem(
+      companyId: $companyId
+      cartItemId: $cartItemId
+      input: $input
+    ) {
+      id
+      quantity
+    }
+  }
+`);
 
 interface Attachment {
   id: string;
   name: string;
   size: string;
 }
-export const BansheeCheckoutPage = () => {
-  const PLACEHOLDER_ORDERS = [
-    { id: 1, item: 'New Banshee', location: 'New Location 1', qty: 10 },
-    { id: 2, item: 'New Banshee', location: 'New Location 2', qty: 10 },
-    { id: 3, item: 'New Banshee', location: 'New Location 3', qty: 10 },
-    { id: 4, item: '100000 06', location: 'P4039-ACC-left', qty: 1 },
-    { id: 5, item: '100000 10', location: 'P4039-ACC-right', qty: 1 },
-    { id: 6, item: '100000 08', location: 'P4039-ACC-right', qty: 1 },
-    { id: 7, item: '100000 11', location: 'P3940-XC2', qty: 1 },
-    { id: 8, item: '100000 12', location: 'P3940-XC2', qty: 1 },
-    { id: 9, item: '100000 13', location: 'P3940-XC2', qty: 1 },
-    { id: 10, item: '100000 14', location: 'P3940-XC2', qty: 1 },
-    { id: 11, item: '100000 15', location: 'P3940-XC2', qty: 1 },
-    { id: 12, item: '100000 07', location: 'P4039-ACC-right', qty: 1 },
-    { id: 13, item: '100000 09', location: 'P4039-ACC-right', qty: 1 },
-    { id: 14, item: '100000 21', location: 'P3940-XC4', qty: 1 },
-    { id: 15, item: '100000 22', location: 'P3940-XC4', qty: 1 },
-    { id: 16, item: '100000 03', location: 'P4039-ACC-left', qty: 1 },
-    { id: 17, item: '100000 04', location: 'P4039-ACC-left', qty: 1 },
-  ];
-  type Order = {
-    id: number;
-    item: string;
-    location: string;
-    qty: number;
+export default function CartPage() {
+  const params = useParams();
+  const companyId = params.companyId as string;
+
+  const [
+    { data, fetching: cartItemsFetching, error: cartItemsError },
+    reexecuteCartItems,
+  ] = useQuery({
+    query: cartItemsQuery,
+    variables: { companyId },
+    requestPolicy: 'cache-and-network',
+  });
+
+  useEffect(() => {
+    handleGraphQLErrors(cartItemsError);
+  }, [cartItemsError]);
+  const [{ fetching: submittingOrder }, executeSubmitOrder] =
+    useMutation(submitOrderMutation);
+  const [, executeDeleteCartItem] = useMutation(deleteCartItemMutation);
+  const [, executeUpdateNewBansheeCartItem] = useMutation(
+    updateNewBansheeCartItemMutation,
+  );
+
+  const [editedQuantities, setEditedQuantities] = useState<
+    Record<string, string>
+  >({});
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
+
+  useEffect(() => {
+    const timers = debounceTimers.current;
+    return () => {
+      Object.values(timers).forEach((timer) => clearTimeout(timer));
+    };
+  }, []);
+
+  const handleQuantityChange = (cartItemId: string, value: string) => {
+    setEditedQuantities((prev) => ({ ...prev, [cartItemId]: value }));
+
+    if (debounceTimers.current[cartItemId]) {
+      clearTimeout(debounceTimers.current[cartItemId]);
+    }
+
+    debounceTimers.current[cartItemId] = setTimeout(() => {
+      const parsed = parseInt(value, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        executeUpdateNewBansheeCartItem({
+          companyId,
+          cartItemId,
+          input: { quantity: parsed },
+        }).then((result) => {
+          handleGraphQLErrors(result.error);
+        });
+      }
+    }, 3000);
   };
-  const [orders, setOrders] = useState<Order[]>(PLACEHOLDER_ORDERS);
-  const [attachments, setAttachments] = useState<Attachment[]>([
-    { id: '1', name: 'File name', size: 'size kb' },
-    { id: '2', name: 'File name', size: 'size kb' },
-  ]);
+
+  const cartItems = data?.cartItems ?? [];
+
+  const newBansheeCount = useMemo(
+    () =>
+      cartItems
+        .filter((item) => item.itemType === BansheeCartItemType.NewBanshee)
+        .reduce((sum, item) => sum + (item.quantity ?? 1), 0),
+    [cartItems],
+  );
+  const recurringCount = useMemo(
+    () =>
+      cartItems.filter(
+        (item) => item.itemType === BansheeCartItemType.ServiceExisting,
+      ).length,
+    [cartItems],
+  );
+  const totalCount = newBansheeCount + recurringCount;
+
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const form = useForm<SubmitOrderFormValues>({
     defaultValues: {
       orderComments: '',
@@ -62,12 +166,19 @@ export const BansheeCheckoutPage = () => {
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDelete = (id: number) => {
-    setOrders((prev) => prev.filter((row) => row.id !== id));
-  };
-
   const onSubmit: SubmitHandler<SubmitOrderFormValues> = async (values) => {
-    console.log(values);
+    const result = await executeSubmitOrder({
+      input: {
+        companyId,
+        comment: values.orderComments ?? '',
+        attachments: attachments.map((a) => a.name),
+      },
+    });
+    handleGraphQLErrors(result.error);
+
+    if (!result.error) {
+      reexecuteCartItems({ requestPolicy: 'network-only' });
+    }
   };
 
   const handleAddAttachments = (
@@ -93,6 +204,10 @@ export const BansheeCheckoutPage = () => {
   const handleRemoveAttachment = (id: string) => {
     setAttachments((prev) => prev.filter((attachment) => attachment.id !== id));
   };
+  const handleDeleteCartItem = async (id: string) => {
+    const result = await executeDeleteCartItem({ id });
+    handleGraphQLErrors(result.error);
+  };
   const handleAddAttachmentButtonClick = () => {
     inputRef.current?.click();
   };
@@ -109,16 +224,16 @@ export const BansheeCheckoutPage = () => {
               <Table variant="border">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[15%]">
                       <Text
                         variant="small"
                         color="foreground"
-                        className="ui-banshee-font-semibold"
+                        className="ui-banshee-font-semibold ui-banshee-w-6"
                       >
                         Item
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[15%]">
                       <Text
                         variant="small"
                         color="foreground"
@@ -127,40 +242,88 @@ export const BansheeCheckoutPage = () => {
                         Location
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[10%]">
                       <Text
                         variant="small"
                         color="foreground"
-                        className="ui-banshee-font-semibold"
+                        className="ui-banshee-font-semibold ui-banshee-text-center"
                       >
                         Quantity
                       </Text>
                     </TableHead>
                     <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
-                      <Menu size={20} />
+                      <Menu size={20} className="ui-banshee-m-auto" />
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => (
+                  {cartItemsFetching && cartItems.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="ui-banshee-text-center ui-banshee-py-8"
+                      >
+                        <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+                          <LoadingSpinner size={16} />
+                          <Text variant="small" color="muted">
+                            Loading cart...
+                          </Text>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!cartItemsFetching && cartItems.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="ui-banshee-text-center ui-banshee-py-8"
+                      >
+                        <Text variant="small" color="muted">
+                          Your cart is empty.
+                        </Text>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {cartItems.map((item) => (
                     <TableRow
-                      key={order.id}
+                      key={item.id}
                       className="ui-banshee-cursor-pointer"
                     >
                       <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
                         <Text variant="small" color="foreground">
-                          {order?.item}
+                          {item.itemType === BansheeCartItemType.NewBanshee
+                            ? item.name ?? '-'
+                            : item.bansheeRequest?.serialNumber ?? '-'}
                         </Text>
                       </TableCell>
                       <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
                         <Text variant="small" color="foreground">
-                          {order?.location}
+                          {item?.bansheeRequest?.location?.locationName ?? '-'}
                         </Text>
                       </TableCell>
-                      <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
-                        <Text variant="small" color="foreground">
-                          {order?.qty}
-                        </Text>
+                      <TableCell className="!ui-banshee-text-center !ui-banshee-bg-neutral-1 ui-banshee-px-3">
+                        {item.itemType === BansheeCartItemType.NewBanshee ? (
+                          <input
+                            type="number"
+                            min={1}
+                            value={
+                              editedQuantities[item.id] ?? String(item.quantity)
+                            }
+                            onChange={(e) =>
+                              handleQuantityChange(item.id, e.target.value)
+                            }
+                            style={{
+                              MozAppearance: 'textfield',
+                              WebkitAppearance: 'none',
+                              appearance: 'textfield',
+                            }}
+                            className="ui-banshee-m-auto ui-banshee-w-10 ui-banshee-h-6 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-0 ui-banshee-text-sm focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring ui-banshee-text-center [&::-webkit-inner-spin-button]:ui-banshee-appearance-none [&::-webkit-outer-spin-button]:ui-banshee-appearance-none [&::-webkit-inner-spin-button]:ui-banshee-m-0 [&::-webkit-outer-spin-button]:ui-banshee-m-0"
+                          />
+                        ) : (
+                          <Text variant="small" color="foreground">
+                            {item.quantity}
+                          </Text>
+                        )}
                       </TableCell>
                       <TableCell
                         style={{ width: '1%' }}
@@ -168,8 +331,9 @@ export const BansheeCheckoutPage = () => {
                       >
                         <button
                           type="button"
-                          onClick={() => handleDelete(order.id)}
-                          className="ui-banshee-text-neutral-400 hover:ui-banshee-text-red-500 ui-banshee-transition-colors ui-banshee-flex ui-banshee-m-auto"
+                          onClick={() => handleDeleteCartItem(item.id)}
+                          aria-label="Remove cart item"
+                          className="ui-banshee-flex ui-banshee-justify-center ui-banshee-items-center ui-banshee-w-full ui-banshee-cursor-pointer ui-banshee-bg-transparent ui-banshee-border-0 ui-banshee-p-0"
                         >
                           <CircleX size={16} />
                         </button>
@@ -196,7 +360,7 @@ export const BansheeCheckoutPage = () => {
                   New Banshee Request
                 </p>
                 <p className="ui-banshee-w-fit  ui-banshee-text-[.825rem]">
-                  20
+                  {newBansheeCount}
                 </p>
               </div>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
@@ -204,7 +368,7 @@ export const BansheeCheckoutPage = () => {
                   Recurring Banshee Request
                 </p>
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
-                  130
+                  {recurringCount}
                 </p>
               </div>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
@@ -212,7 +376,7 @@ export const BansheeCheckoutPage = () => {
                   Total Measurement Request
                 </p>
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
-                  150
+                  {totalCount}
                 </p>
               </div>
             </div>
@@ -245,7 +409,7 @@ export const BansheeCheckoutPage = () => {
                             {attachment.name} - {attachment.size}
                           </Text>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             onClick={() =>
                               handleRemoveAttachment(attachment.id)
                             }
@@ -284,8 +448,13 @@ export const BansheeCheckoutPage = () => {
                     >
                       Attach file
                     </Button>
-                    <Button variant="primary" type="submit">
-                      Submit Order
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={submittingOrder}
+                    >
+                      {submittingOrder && <LoadingSpinner size={16} />}
+                      {submittingOrder ? 'Submitting...' : 'Submit Order'}
                     </Button>
                   </div>
                 </div>
@@ -296,4 +465,4 @@ export const BansheeCheckoutPage = () => {
       </main>
     </SidebarInset>
   );
-};
+}

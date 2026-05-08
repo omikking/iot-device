@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -7,6 +8,8 @@ import {
   TwitterIcon,
   LinkedinIcon,
   FacebookIcon,
+  useIsMobile,
+  useIsTablet,
 } from '@gsp/ui-banshee';
 import { SandvikLogo } from 'public/SandvikLogo';
 import { LucideGlobe } from 'lucide-react';
@@ -36,6 +39,14 @@ const legalLinks = [
 ];
 
 export const FooterBanshee = () => {
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const isCompact = isMobile || isTablet;
+
+  if (isCompact) {
+    return null;
+  }
+
   return (
     <div className="ui-banshee-bottom-0 ui-banshee-w-full ui-banshee-h-[460px] ui-banshee-z-10 ui-banshee-bg-main-black ui-banshee-text-main-white">
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-h-full ui-banshee-justify-between ui-banshee-pt-16 ui-banshee-pr-36 ui-banshee-pb-5 ui-banshee-pl-16">

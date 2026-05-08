@@ -9,13 +9,15 @@ import {
   TableHead,
   TableCell,
   TableHeadWithSorting,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { gql, useQuery } from 'urql';
-import { ComponentProps, useMemo, useState } from 'react';
+import { ComponentProps, useEffect, useMemo, useState } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
 import { Plus } from 'lucide-react';
 import { EventDetailModal } from './EventDetailModal';
 import { BansheeEventLog } from '@/gql/graphql';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
@@ -43,10 +45,14 @@ const eventsPageTableQuery = gql`
 
 export const EventsPageTable = ({ params }: { params: { companyId: string } }) => {
   const { companyId } = params;
-  const [{ data, fetching }] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: eventsPageTableQuery,
     variables: { companyId },
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(error);
+  }, [error]);
 
   const flattenedEvents = data?.bansheeEventLogs?.results || [];
 
@@ -58,7 +64,6 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
     null,
   );
 
-  console.log('selectedEvent', selectedEvent);
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (
@@ -168,9 +173,12 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                     colSpan={6}
                     className="ui-banshee-text-center ui-banshee-py-8"
                   >
-                    <Text variant="small" color="foreground">
-                      Loading events...
-                    </Text>
+                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
+                      <LoadingSpinner size={16} />
+                      <Text variant="small" color="foreground">
+                        Loading events...
+                      </Text>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : flattenedEvents.length === 0 ? (

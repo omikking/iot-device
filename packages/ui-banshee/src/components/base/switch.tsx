@@ -11,7 +11,14 @@ const Switch = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SwitchPrimitives.Root
     className={cn(
-      'disabled:ui-banshee-border-neutral-2 disabled:!ui-banshee-bg-main-white disabled:ui-banshee-cursor-default',
+      // Disabled base styles
+      'disabled:ui-banshee-border-neutral-2 disabled:ui-banshee-cursor-default',
+
+      // ✅ Compound variants override the state-based bg when disabled
+      'disabled:data-[state=checked]:ui-banshee-bg-main-white',
+      'disabled:data-[state=unchecked]:ui-banshee-bg-main-white',
+
+      // Normal interactive styles
       'ui-banshee-peer ui-banshee-inline-flex ui-banshee-h-8 ui-banshee-w-16 ui-banshee-shrink-0 ui-banshee-cursor-pointer ui-banshee-items-center ui-banshee-rounded-full ui-banshee-border-2 ui-banshee-border-transparent ui-banshee-transition-colors focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 focus-visible:ui-banshee-ring-offset-main-white data-[state=checked]:ui-banshee-bg-orange-primary data-[state=unchecked]:ui-banshee-bg-neutral-3',
       className,
     )}

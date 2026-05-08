@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
+import { handleGraphQLErrors } from '@/libs/utils';
 import {
   SidebarInset,
   Tabs,
@@ -21,6 +22,7 @@ import {
   DialogTitle,
   Dialog,
   Table,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { useParams } from 'next/navigation';
 import { getStatusLabel } from '@/libs/status-color-utils';
@@ -137,11 +139,15 @@ export default function BansheeDashboardPage() {
   const { id } = useParams();
   const bansheeId = id as string;
 
-  const [{ data, fetching }] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: bansheeDetailQuery,
     variables: { id: bansheeId ?? '' },
     pause: !bansheeId,
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(error);
+  }, [error]);
 
   const shareForm = useForm<ShareFormValues>();
 
@@ -202,8 +208,11 @@ export default function BansheeDashboardPage() {
     return (
       <SidebarInset>
         <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-6 ui-banshee-bg-main-white ui-banshee-w-full">
-          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-h-64 ui-banshee-text-neutral-500">
-            Loading dashboard...
+          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3 ui-banshee-h-64 ui-banshee-text-neutral-500">
+            <LoadingSpinner />
+            <Text variant="medium" color="muted">
+              Loading dashboard...
+            </Text>
           </div>
         </main>
       </SidebarInset>
@@ -283,7 +292,10 @@ export default function BansheeDashboardPage() {
           </div>
 
           <div className="lg:ui-banshee-col-span-7">
-            <Tabs defaultValue="statusPlot" className="ui-banshee-w-full ui-banshee-p-0">
+            <Tabs
+              defaultValue="statusPlot"
+              className="ui-banshee-w-full ui-banshee-p-0"
+            >
               <TabsList className="ui-banshee-justify-start ui-banshee-border-none ui-banshee-p-0 ui-banshee-h-auto">
                 <TabsTrigger
                   value="statusPlot"

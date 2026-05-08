@@ -4,17 +4,16 @@
     "private": true,
     "scripts": {
         "dev": "concurrently -k --raw \"pnpm:dev:*\"",
-        "dev:next": "next dev --port 3002",
+        "dev:next": "next dev --port 3000",
         "dev:graphql-types": "pnpm graphql-types --watch",
         "graphql-types": "graphql-codegen --config codegen.ts",
         "build": "next build",
-        "start": "next start --port 3002",
+        "start": "next start --port 3000",
         "lint": "next lint",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {
         "@graphql-typed-document-node/core": "^3.2.0",
-        "@gsp/ui": "workspace:*",
         "@gsp/ui-banshee": "workspace:*",
         "@hookform/resolvers": "^3.4.2",
         "@svgr/webpack": "^8.1.0",

@@ -11,8 +11,9 @@ import {
   BoltLocator,
   Form,
   SingleDateCalendar,
+  showAlertToast,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
-import { showAlertToast } from '@gsp/ui';
 import { TimePicker } from '@/components/TimePicker';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useQuery, useMutation } from 'urql';
@@ -25,7 +26,11 @@ import {
 import { FormField } from '@/components/FormField';
 import { HierarchyDropdown } from '@/components/HierarchyDropdown';
 import { useHierarchySelections } from '@/components/Usehierarchyselections';
-import { buildInstallationDateTime, parseCoordinates } from '@/libs/utils';
+import {
+  buildInstallationDateTime,
+  handleGraphQLErrors,
+  parseCoordinates,
+} from '@/libs/utils';
 import {
   Table,
   TableHeader,
@@ -36,6 +41,7 @@ import {
 } from '@gsp/ui-banshee';
 import { Headline } from '@gsp/ui-banshee';
 import { CircleX, Menu } from 'lucide-react';
+import { RingPosition } from '@/gql/graphql';
 
 const hierarchyQuery = graphql(`
   query TemplateHierarchy($companyId: String!) {
@@ -87,6 +93,7 @@ const getBansheeTemplateByIdQuery = graphql(`
       coordinates
       comment
       activateNotifications
+      ringPosition
     }
   }
 `);
@@ -135,6 +142,7 @@ const DEFAULT_VALUES: BansheeTemplateFormValues = {
   installationDate: new Date(),
   installationTime: '12:00 PM',
   locationDetails: '',
+  ringPosition: null,
   comment: '',
   siteId: null,
   levelId: null,
@@ -156,6 +164,7 @@ function buildTemplateFormValues(template: {
   coordinates?: unknown;
   comment?: string | null;
   activateNotifications?: boolean | null;
+  ringPosition?: RingPosition | null;
 }): BansheeTemplateFormValues {
   const installDate = template.boltInstallationDateTime
     ? new Date(template.boltInstallationDateTime)
@@ -177,20 +186,29 @@ function buildTemplateFormValues(template: {
     locationId: template.locationId ?? null,
     activateNotifications: template.activateNotifications ?? false,
     coordinates: parseCoordinates(template.coordinates),
+    ringPosition: template.ringPosition ?? null,
   };
 }
 
-export default function TemplatePage({ params }: { params: { companyId: string } }) {
+export default function TemplatePage({
+  params,
+}: {
+  params: { companyId: string };
+}) {
   const { companyId } = params;
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     null,
   );
 
-  const [{ data: hierarchyData }] = useQuery({
+  const [{ data: hierarchyData, error: hierarchyError }] = useQuery({
     query: hierarchyQuery,
     variables: { companyId },
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(hierarchyError);
+  }, [hierarchyError]);
 
   // additionalTypenames tells cacheExchange that these queries return BansheeTemplate
   // objects, so it can invalidate them when a BansheeTemplate mutation completes.
@@ -199,18 +217,30 @@ export default function TemplatePage({ params }: { params: { companyId: string }
     [],
   );
 
-  const [{ data: templatesData, fetching: templatesFetching }] = useQuery({
+  const [
+    { data: templatesData, fetching: templatesFetching, error: templatesError },
+  ] = useQuery({
     query: getBansheeTemplatesQuery,
     variables: { companyId },
     context: templateListContext,
   });
 
-  const [{ data: templateDetailData, fetching: detailFetching }] = useQuery({
+  useEffect(() => {
+    handleGraphQLErrors(templatesError);
+  }, [templatesError]);
+
+  const [
+    { data: templateDetailData, fetching: detailFetching, error: detailError },
+  ] = useQuery({
     query: getBansheeTemplateByIdQuery,
     variables: { id: selectedTemplateId ?? '' },
     pause: !selectedTemplateId,
     context: templateListContext,
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(detailError);
+  }, [detailError]);
 
   const [, createTemplate] = useMutation(createBansheeTemplateMutation);
   const [, updateTemplate] = useMutation(updateBansheeTemplateMutation);
@@ -257,12 +287,18 @@ export default function TemplatePage({ params }: { params: { companyId: string }
   }, [templateDetail, selectedTemplateId]);
 
   const onSubmit: SubmitHandler<BansheeTemplateFormValues> = async (values) => {
-    const { installationDate, installationTime, ...restValues } = values;
+    const { installationDate, installationTime, ringPosition, ...restValues } =
+      values;
     const boltInstallationDateTime =
       installationDate && installationTime
         ? buildInstallationDateTime(installationDate, installationTime)
         : null;
-    const input = { ...restValues, boltInstallationDateTime, companyId };
+    const input = {
+      ...restValues,
+      boltInstallationDateTime,
+      companyId,
+      ringPosition: ringPosition ?? null,
+    };
 
     // additionalTypenames causes cacheExchange to auto-invalidate GetBansheeTemplates
     // and GetBansheeTemplateById after the mutation — no manual refetch needed.
@@ -281,6 +317,8 @@ export default function TemplatePage({ params }: { params: { companyId: string }
       ).catch(() => null);
     }
 
+    if (handleGraphQLErrors(result?.error)) return;
+
     if (!result || result.error) {
       showAlertToast({
         title: 'Failed to save template',
@@ -290,9 +328,16 @@ export default function TemplatePage({ params }: { params: { companyId: string }
       return;
     }
 
-    showAlertToast({ title: 'Template saved successfully', variant: 'success' });
+    showAlertToast({
+      title: 'Template saved successfully',
+      variant: 'success',
+    });
 
-    if (!selectedTemplateId && result.data && 'createBansheeTemplate' in result.data) {
+    if (
+      !selectedTemplateId &&
+      result.data &&
+      'createBansheeTemplate' in result.data
+    ) {
       // After create, switch to the new template — detail query activates automatically
       const newId = result.data.createBansheeTemplate?.id;
       if (newId) setSelectedTemplateId(newId);
@@ -306,6 +351,8 @@ export default function TemplatePage({ params }: { params: { companyId: string }
       { additionalTypenames: ['BansheeTemplate'] },
     ).catch(() => null);
 
+    if (handleGraphQLErrors(result?.error)) return;
+
     if (!result || result.error) {
       showAlertToast({
         title: 'Failed to delete template',
@@ -318,7 +365,6 @@ export default function TemplatePage({ params }: { params: { companyId: string }
     showAlertToast({ title: 'Template deleted', variant: 'success' });
 
     if (selectedTemplateId === id) setSelectedTemplateId(null);
-
   };
 
   const handleNewTemplate = () => {
@@ -376,9 +422,12 @@ export default function TemplatePage({ params }: { params: { companyId: string }
                     colSpan={2}
                     className="ui-banshee-text-center ui-banshee-py-4"
                   >
-                    <Text variant="small" color="muted">
-                      Loading templates...
-                    </Text>
+                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
+                      <LoadingSpinner size={16} />
+                      <Text variant="small" color="muted">
+                        Loading templates...
+                      </Text>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -430,7 +479,8 @@ export default function TemplatePage({ params }: { params: { companyId: string }
         </div>
 
         {detailFetching ? (
-          <div className="ui-banshee-p-10 ui-banshee-text-center">
+          <div className="ui-banshee-p-10 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3">
+            <LoadingSpinner />
             <Text variant="small" color="muted">
               Loading template...
             </Text>
@@ -439,8 +489,8 @@ export default function TemplatePage({ params }: { params: { companyId: string }
           <div className="ui-banshee-p-6 md:ui-banshee-p-10 ui-banshee-w-100 lg:ui-banshee-w-3/4 ui-banshee-bg-neutral-50">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-12 ui-banshee-gap-10">
-                  <div className="lg:ui-banshee-col-span-5 ui-banshee-space-y-6">
+                <div className="ui-banshee-grid ui-banshee-grid-cols-1 xl:ui-banshee-grid-cols-12 ui-banshee-gap-10">
+                  <div className="xl:ui-banshee-col-span-5 ui-banshee-space-y-6">
                     <FormField label="Template Name">
                       <Input
                         placeholder="Template Name"
@@ -475,12 +525,17 @@ export default function TemplatePage({ params }: { params: { companyId: string }
 
                     <div className="ui-banshee-flex ui-banshee-justify-center ui-banshee-bg-neutral-1 ui-banshee-p-8 ui-banshee-rounded-lg ui-banshee-border ui-banshee-border-neutral-2">
                       <div className="ui-banshee-scale-[0.7] ui-banshee-origin-center">
-                        <BoltLocator />
+                        <BoltLocator
+                          onChange={(key) =>
+                            form.setValue('ringPosition', key as RingPosition)
+                          }
+                          activeBolt={form.watch('ringPosition')}
+                        />
                       </div>
                     </div>
                   </div>
 
-                  <div className="lg:ui-banshee-col-span-7 ui-banshee-space-y-6">
+                  <div className="xl:ui-banshee-col-span-7 ui-banshee-space-y-6">
                     <HierarchyDropdown
                       id="site-dropdown"
                       label="Site"
@@ -559,9 +614,7 @@ export default function TemplatePage({ params }: { params: { companyId: string }
                             >
                               {axis.toUpperCase()}
                             </Text>
-                            <Input
-                              {...form.register(`coordinates.${axis}`)}
-                            />
+                            <Input {...form.register(`coordinates.${axis}`)} />
                           </div>
                         ))}
                       </div>

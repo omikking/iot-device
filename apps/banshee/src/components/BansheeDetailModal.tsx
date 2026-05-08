@@ -1,12 +1,19 @@
 'use client';
 
-import React, { useCallback, useMemo, memo } from 'react';
+import React, { useCallback, useEffect, useMemo, memo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { Modal, ModalContent, ModalHeader, ModalTitle } from '@gsp/ui-banshee';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  LoadingSpinner,
+} from '@gsp/ui-banshee';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
@@ -124,11 +131,15 @@ export const BansheeDetailModal = memo(
       [router, bansheeId],
     );
 
-    const [{ data, fetching }] = useQuery({
+    const [{ data, fetching, error }] = useQuery({
       query: bansheeDetailQuery,
       variables: { id: bansheeId ?? '' },
       pause: !bansheeId,
     });
+
+    useEffect(() => {
+      handleGraphQLErrors(error);
+    }, [error]);
 
     const details = useMemo(() => {
       const request = data?.bansheeRequest;
@@ -170,7 +181,8 @@ export const BansheeDetailModal = memo(
           </ModalHeader>
 
           {fetching && (
-            <div className="ui-banshee-mt-6 ui-banshee-text-center ui-banshee-text-gray-500">
+            <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-gray-500">
+              <LoadingSpinner size={18} />
               Loading details...
             </div>
           )}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import '@gsp/ui/styles.css';
+import '@gsp/ui-banshee/styles.css';
 import '@gsp/ui-banshee/styles.css';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/libs/authOptions';
@@ -8,6 +8,7 @@ import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import { NavbarBanshee } from '@/components/NavbarBanshee';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
 import { FooterBanshee } from '@/components/FooterBanshee';
+import { Toaster } from '@gsp/ui-banshee';
 export const metadata: Metadata = {
   title: 'Banshee | Ground Support Platform | Sandvik',
   description: 'For all your ground support needs.',
@@ -27,6 +28,7 @@ export default async function RootLayout({
             <NavbarBanshee />
             {children}
             <FooterBanshee />
+            <Toaster duration={8000} />
           </UrqlProvider>
         </NextAuthProvider>
       </body>

@@ -10,8 +10,9 @@ import {
   BoltLocator,
   Form,
   SingleDateCalendar,
+  showAlertToast,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
-import { showAlertToast } from '@gsp/ui';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
@@ -25,8 +26,13 @@ import {
 import { FormField, StaticField } from '@/components/FormField';
 import { HierarchyDropdown } from '@/components/HierarchyDropdown';
 import { useHierarchySelections } from '@/components/Usehierarchyselections';
-import { buildInstallationDateTime, parseCoordinates } from '@/libs/utils';
+import {
+  buildInstallationDateTime,
+  handleGraphQLErrors,
+  parseCoordinates,
+} from '@/libs/utils';
 import { TimePicker } from '@/components/TimePicker';
+import { RingPosition } from '@/gql/graphql';
 
 const bansheeConfigQuery = graphql(`
   query BansheeRequestConfig($id: String!) {
@@ -120,16 +126,23 @@ const DEFAULT_VALUES: BansheeConfigFormValues = {
   locationId: '',
   activateNotifications: false,
   coordinates: { x: '0', y: '0', z: '0' },
+  ringPosition: null,
 };
 
 export default function BansheeConfigPage() {
   const { id } = useParams();
   const router = useCompanyRouter();
 
-  const [{ data, fetching }] = useQuery({
+  const [{ data, fetching, error: bansheeConfigError }] = useQuery({
     query: bansheeConfigQuery,
     variables: { id: id as string },
   });
+
+  console.log('shlok data', data);
+
+  useEffect(() => {
+    handleGraphQLErrors(bansheeConfigError);
+  }, [bansheeConfigError]);
 
   const [, updateBansheeRequest] = useMutation(updateBansheeRequestMutation);
 
@@ -140,11 +153,15 @@ export default function BansheeConfigPage() {
 
   const request = data?.bansheeRequest;
 
-  const [{ data: hierarchyData }] = useQuery({
+  const [{ data: hierarchyData, error: hierarchyError }] = useQuery({
     query: hierarchyQuery,
     variables: { companyId: request?.companyId ?? '' },
     pause: !request?.companyId,
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(hierarchyError);
+  }, [hierarchyError]);
 
   const sites = useMemo(
     () => hierarchyData?.company?.sites || [],
@@ -178,11 +195,13 @@ export default function BansheeConfigPage() {
       locationId: request.location?.id ?? '',
       activateNotifications: request.activateNotifications ?? false,
       coordinates: parseCoordinates(request.coordinates),
+      ringPosition: (request.ringPosition as RingPosition) ?? null,
     });
   }, [request]);
 
   const onSubmit: SubmitHandler<BansheeConfigFormValues> = async (values) => {
-    const { installationDate, installationTime, ...restValues } = values;
+    const { installationDate, installationTime, ringPosition, ...restValues } =
+      values;
     const boltInstallationDateTime = buildInstallationDateTime(
       installationDate,
       installationTime,
@@ -190,8 +209,14 @@ export default function BansheeConfigPage() {
 
     const result = await updateBansheeRequest({
       id: id as string,
-      updateBansheeRequestInput: { ...restValues, boltInstallationDateTime },
+      updateBansheeRequestInput: {
+        ...restValues,
+        boltInstallationDateTime,
+        ringPosition: ringPosition ?? null,
+      },
     }).catch(() => null);
+
+    if (handleGraphQLErrors(result?.error)) return;
 
     showAlertToast(
       result?.error || !result
@@ -207,8 +232,11 @@ export default function BansheeConfigPage() {
   if (fetching) {
     return (
       <SidebarInset>
-        <div className="ui-banshee-p-8 ui-banshee-text-center">
-          Loading configuration...
+        <div className="ui-banshee-p-8 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3 ui-banshee-text-neutral-500">
+          <LoadingSpinner />
+          <Text variant="medium" color="muted">
+            Loading configuration...
+          </Text>
         </div>
       </SidebarInset>
     );
@@ -229,8 +257,8 @@ export default function BansheeConfigPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <main className="ui-banshee-p-6 md:ui-banshee-p-10 ui-banshee-w-100 lg:ui-banshee-w-3/4 ui-banshee-bg-neutral-50 ui-banshee-min-h-screen">
-            <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-12 ui-banshee-gap-10">
-              <div className="lg:ui-banshee-col-span-5 ui-banshee-space-y-6">
+            <div className="ui-banshee-grid ui-banshee-grid-cols-1 xl:ui-banshee-grid-cols-12 ui-banshee-gap-10">
+              <div className="xl:ui-banshee-col-span-5 ui-banshee-space-y-6">
                 <FormField label="Name">
                   <Input placeholder="banshee01" {...form.register('name')} />
                 </FormField>
@@ -260,13 +288,18 @@ export default function BansheeConfigPage() {
 
                 <div className="ui-banshee-flex ui-banshee-justify-center ui-banshee-bg-neutral-1 ui-banshee-p-8 ui-banshee-rounded-lg ui-banshee-border ui-banshee-border-neutral-2">
                   <div className="ui-banshee-scale-[0.7] ui-banshee-origin-center">
-                    <BoltLocator />
+                    <BoltLocator
+                      onChange={(key) =>
+                        form.setValue('ringPosition', key as RingPosition)
+                      }
+                      activeBolt={form.watch('ringPosition')}
+                    />
                   </div>
                 </div>
               </div>
 
               {/* ── Right Column ── */}
-              <div className="lg:ui-banshee-col-span-7 ui-banshee-space-y-6">
+              <div className="xl:ui-banshee-col-span-7 ui-banshee-space-y-6">
                 <StaticField
                   label="Serial Number"
                   value={request.serialNumber}

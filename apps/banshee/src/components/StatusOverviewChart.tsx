@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { ChartLineLinear, Headline } from '@gsp/ui-banshee';
+import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
 import type { StatusBand } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 
@@ -142,7 +142,8 @@ export const StatusOverviewChart = ({
 
       <div className="ui-banshee-bg-neutral-1 ui-banshee-p-4 ui-banshee-h-full">
         {fetching ? (
-          <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+          <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+            <LoadingSpinner />
             Loading plot...
           </div>
         ) : (

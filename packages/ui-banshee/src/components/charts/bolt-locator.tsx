@@ -1,75 +1,60 @@
 'use client';
 
-import { useState } from 'react';
 import { ActiveBoltLocator } from '../svg/active-bolt-locator';
 
-export const BoltLocator = () => {
-  const [activeBolt, setActiveBolt] = useState<number | null>(null);
-
+export const BoltLocator = ({
+  onChange,
+  activeBolt,
+}: {
+  onChange: (key: string | null) => void;
+  activeBolt: string | null;
+}) => {
   const angles = [
-    { x: 4, y: 30 },
-    { x: 20, y: 10 },
-    { x: 50, y: 0 },
-    { x: 80, y: 10 },
-    { x: 96, y: 30 },
+    { x: 4, y: 30, key: 'LH_SHOULDER' },
+    { x: 20, y: 10, key: 'LH_BACKS' },
+    { x: 50, y: 0, key: 'CENTER_BACKS' },
+    { x: 80, y: 10, key: 'RH_BACKS' },
+    { x: 96, y: 30, key: 'RH_SHOULDER' },
   ]; // Curved top portion (bolt IDs 3-7)
 
   // Vertical sides
-  const leftSidePoints = [100, 77, 55]; // Left side (bolt IDs 0-2)
-  const rightSidePoints = [55, 77, 100]; // Right side (bolt IDs 12-14)
+  const leftSidePoints = [
+    { coordinate: 100, key: 'LH_WALL_LOWER' },
+    { coordinate: 77, key: 'LH_WALL_CENTER' },
+    { coordinate: 55, key: 'LH_WALL_UPPER' },
+  ]; // Left side (bolt IDs 0-2)
+
+  const rightSidePoints = [
+    { coordinate: 55, key: 'RH_WALL_UPPER' },
+    { coordinate: 77, key: 'RH_WALL_CENTER' },
+    { coordinate: 100, key: 'RH_WALL_LOWER' },
+  ]; // Right side (bolt IDs 12-14)
 
   // Internal bolts
   const centerPoints = [
-    { x: 40, y: 77 },
-    { x: 40, y: 55 },
-    { x: 60, y: 55 },
-    { x: 60, y: 77 },
+    { x: 40, y: 77, key: 'LH_FACE_HIGH' },
+    { x: 40, y: 55, key: 'LH_FACE_LOW' },
+    { x: 60, y: 55, key: 'RH_FACE_HIGH' },
+    { x: 60, y: 77, key: 'RH_FACE_LOW' },
   ]; // Center points (bolt IDs 8-11)
 
-  const toggleBolt = (
-    side: 'left' | 'right' | 'curve' | 'center',
-    index: number,
-  ) => {
-    let boltId: number;
-    if (side === 'left') {
-      boltId = index; // IDs: 0, 1, 2
-    } else if (side === 'curve') {
-      boltId = index + 3; // IDs: 3, 4, 5, 6, 7
-    } else if (side === 'center') {
-      boltId = index + 8; // IDs: 8, 9, 10, 11
-    } else {
-      boltId = index + 12; // IDs: 12, 13, 14
-    }
-
+  const toggleBolt = (key: string) => {
     // Only one bolt active at a time - toggle off if clicking same bolt
-    setActiveBolt((prev) => (prev === boltId ? null : boltId));
+    onChange(activeBolt === key ? null : key);
   };
 
-  const isBoltActive = (
-    side: 'left' | 'right' | 'curve' | 'center',
-    index: number,
-  ) => {
-    let boltId: number;
-    if (side === 'left') {
-      boltId = index; // IDs: 0, 1, 2
-    } else if (side === 'curve') {
-      boltId = index + 3; // IDs: 3, 4, 5, 6, 7
-    } else if (side === 'center') {
-      boltId = index + 8; // IDs: 8, 9, 10, 11
-    } else {
-      boltId = index + 12; // IDs: 12, 13, 14
-    }
-    return activeBolt === boltId;
+  const isBoltActive = (key: string) => {
+    return activeBolt === key;
   };
 
   return (
-    <div className="ui-banshee-relative md:ui-banshee-w-[60vw] md:ui-banshee-h-[42vh] lg:ui-banshee-w-[25vw] lg:ui-banshee-h-[42vh] ui-banshee-border-4 ui-banshee-border-blue-primary ui-banshee-rounded-t-[50%]">
+    <div className="ui-banshee-relative md:ui-banshee-w-[60vw] md:ui-banshee-h-[42vh] xl:ui-banshee-w-[25vw] xl:ui-banshee-h-[42vh] ui-banshee-border-4 ui-banshee-border-blue-primary ui-banshee-rounded-t-[50%]">
       {/* Curved top portion */}
-      {angles.map(({ x, y }, index) => {
+      {angles.map(({ x, y, key }) => {
         // Only show points above the center line
         return (
           <div
-            key={`curve-${index}`}
+            key={key}
             className="ui-banshee-absolute ui-banshee-cursor-pointer"
             style={{
               left: `${x}%`,
@@ -79,23 +64,23 @@ export const BoltLocator = () => {
             role="button"
             tabIndex={0}
             onClick={() => {
-              toggleBolt('curve', index);
+              toggleBolt(key);
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                toggleBolt('curve', index);
+                toggleBolt(key);
               }
             }}
           >
-            <ActiveBoltLocator active={isBoltActive('curve', index)} />
+            <ActiveBoltLocator active={isBoltActive(key)} />
           </div>
         );
       })}
       {/* Center points */}
-      {centerPoints.map(({ x, y }, index) => (
+      {centerPoints.map(({ x, y, key }) => (
         <div
-          key={`center-${index}`}
+          key={key}
           className="ui-banshee-absolute ui-banshee-cursor-pointer"
           style={{
             left: `${x}%`,
@@ -105,68 +90,68 @@ export const BoltLocator = () => {
           role="button"
           tabIndex={0}
           onClick={() => {
-            toggleBolt('center', index);
+            toggleBolt(key);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              toggleBolt('center', index);
+              toggleBolt(key);
             }
           }}
         >
-          <ActiveBoltLocator active={isBoltActive('center', index)} />
+          <ActiveBoltLocator active={isBoltActive(key)} />
         </div>
       ))}
 
       {/* Left side */}
-      {leftSidePoints.map((y, index) => (
+      {leftSidePoints.map((point) => (
         <div
-          key={`left-${index}`}
+          key={`left-${point.coordinate}`}
           className="ui-banshee-absolute ui-banshee-cursor-pointer"
           style={{
             left: '0%',
-            top: `${y}%`,
+            top: `${point.coordinate}%`,
             transform: 'translate(-50%, -50%)',
           }}
           role="button"
           tabIndex={0}
           onClick={() => {
-            toggleBolt('left', index);
+            toggleBolt(point.key);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              toggleBolt('left', index);
+              toggleBolt(point.key);
             }
           }}
         >
-          <ActiveBoltLocator active={isBoltActive('left', index)} />
+          <ActiveBoltLocator active={isBoltActive(point.key)} />
         </div>
       ))}
 
       {/* Right side */}
-      {rightSidePoints.map((y, index) => (
+      {rightSidePoints.map((point) => (
         <div
-          key={`right-${index}`}
+          key={`right-${point.key}`}
           className="ui-banshee-absolute ui-banshee-cursor-pointer"
           style={{
             left: '100%',
-            top: `${y}%`,
+            top: `${point.coordinate}%`,
             transform: 'translate(-50%, -50%)',
           }}
           role="button"
           tabIndex={0}
           onClick={() => {
-            toggleBolt('right', index);
+            toggleBolt(point.key);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              toggleBolt('right', index);
+              toggleBolt(point.key);
             }
           }}
         >
-          <ActiveBoltLocator active={isBoltActive('right', index)} />
+          <ActiveBoltLocator active={isBoltActive(point.key)} />
         </div>
       ))}
     </div>

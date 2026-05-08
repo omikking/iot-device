@@ -1,4 +1,4 @@
-import { UpdateBansheeRequestInput } from '@/gql/graphql';
+import { UpdateBansheeRequestInput, RingPosition } from '@/gql/graphql';
 import { z } from 'zod';
 
 export const updateBansheeConfigSchema = z.object({
@@ -13,6 +13,7 @@ export const updateBansheeConfigSchema = z.object({
   driveId: z.string(),
   locationId: z.string(),
   activateNotifications: z.boolean(),
+  ringPosition: z.nativeEnum(RingPosition).nullable(),
   coordinates: z.object({
     x: z.string(),
     y: z.string(),

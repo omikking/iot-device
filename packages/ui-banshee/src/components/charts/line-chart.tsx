@@ -6,6 +6,7 @@ import type { TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
 import { ChartConfig, ChartContainer, EChart } from './chart';
 import { Text } from '../base/text';
+import { escapeHtml } from '../../lib/utils';
 
 export type StatusBand = {
   from: number;
@@ -141,7 +142,7 @@ export const ChartLineLinear = forwardRef<
       type: 'category',
       data: xAxisData,
       show: !hideXAxisLabel,
-      axisLabel: { fontSize: 12, color: '#000000',  },
+      axisLabel: { fontSize: 12, color: '#000000' },
       axisTick: { alignWithLabel: true },
       axisLine: { show: false },
     },
@@ -182,13 +183,13 @@ export const ChartLineLinear = forwardRef<
 
         if (!validPoints.length) return '';
 
-        const header = `<strong>${validPoints[0].name}</strong><br/>`;
-
+        const header = `<strong>${escapeHtml(String(validPoints[0].name ?? ''))}</strong><br/>`;
+    
         const body = validPoints
           .map((p) => {
             const marker = (p.marker as string) || '';
-            const name = p.seriesName ?? '';
-            const value = (p.value as string) ?? '';
+            const name = escapeHtml(p.seriesName ?? '');
+            const value = escapeHtml(String(p.value ?? ''));
 
             return `${marker} ${name}: ${value}`;
           })

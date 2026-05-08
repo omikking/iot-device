@@ -13,6 +13,7 @@ import {
   Headline,
   Input,
   Text,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,8 +30,7 @@ export default function SignIn() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { data: session, status } = useSession();
-  console.log(session);
+  const { data: session, status } = useSession(); // eslint-disable-line
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -154,7 +154,7 @@ export default function SignIn() {
               type="submit"
               disabled={isAnyFieldEmpty}
             >
-              {!isLoading && <LucideLogIn />}
+              {isLoading ? <LoadingSpinner size={18} /> : <LucideLogIn />}
               Login
             </Button>
           </form>

@@ -19,17 +19,65 @@ import { LucideUser } from 'lucide-react';
 import { ShoppingCart } from '../../../../packages/ui-banshee/src/components/svg/shopping-cart';
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname, useParams } from 'next/navigation';
+import { graphql } from '@/gql/gql';
+import { useQuery } from 'urql';
+import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
+import { useEffect, useState } from 'react';
+import { handleGraphQLErrors } from '@/libs/utils';
+const getCompanyName = graphql(`
+  query getCompanyName($id: String!) {
+    company(id: $id) {
+      id
+      name
+    }
+  }
+`);
 
+const cartItemsStatsQuery = graphql(`
+  query cartItemsStats($companyId: String!) {
+    cartItemsStats(companyId: $companyId) {
+      newBanshee
+      serviceExisting
+      total
+    }
+  }
+`);
 export const NavbarBanshee = () => {
   const { data: session, status } = useSession();
-  console.log(session);
+
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
+  const router = useCompanyRouter();
   const isCompact = isMobile || isTablet;
   const pathname = usePathname();
   // Navigation items (same as sidebar)
   const params = useParams();
   const companyId = params.companyId as string;
+  const [{ data, error: companyNameError }] = useQuery({
+    query: getCompanyName,
+    variables: { id: companyId },
+    pause: !companyId,
+  });
+
+  useEffect(() => {
+    handleGraphQLErrors(companyNameError);
+  }, [companyNameError]);
+
+  const companyName = data?.company?.name;
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [{ data: cartStatsData, error: cartStatsError }, refetchCartStats] =
+    useQuery({
+      query: cartItemsStatsQuery,
+      variables: { companyId },
+      pause: !companyId,
+    });
+
+  useEffect(() => {
+    handleGraphQLErrors(cartStatsError);
+  }, [cartStatsError]);
+  const newBansheeCount = cartStatsData?.cartItemsStats.newBanshee ?? 0;
+  const recurringCount = cartStatsData?.cartItemsStats.serviceExisting ?? 0;
+  const totalCount = cartStatsData?.cartItemsStats.total ?? 0;
   const navItems = [
     { title: 'Home', url: `/${companyId}/overview` },
     { title: 'Banshee', url: `/${companyId}/banshee` },
@@ -71,7 +119,7 @@ export const NavbarBanshee = () => {
         {/* Mobile/Tablet Navigation - Icons */}
         {isCompact && status === 'authenticated' && (
           <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-2 md:ui-banshee-gap-4">
-            {navItems.slice(0, 5).map((item) => {
+            {navItems.map((item) => {
               const isActive = pathname === item.url;
               return (
                 <Link
@@ -96,9 +144,62 @@ export const NavbarBanshee = () => {
         {status === 'authenticated' && (
           <div className="ui-banshee-flex ui-banshee-gap-6 ui-banshee-items-center">
             <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-4">
-              <Link href={`/${companyId}/order-summary`}>
-                <ShoppingCart notification={false} />
-              </Link>
+              <Popover
+                open={isCartOpen}
+                onOpenChange={(open) => {
+                  setIsCartOpen(open);
+                  if (open && companyId) {
+                    refetchCartStats({ requestPolicy: 'network-only' });
+                  }
+                }}
+              >
+                <PopoverTrigger>
+                  <ShoppingCart notification={false} />
+                </PopoverTrigger>
+                <PopoverContent
+                  sideOffset={29}
+                  align="end"
+                  alignOffset={-24}
+                  className="ui-banshee-border-none ui-banshee-shadow-2xl ui-banshee-p-8 ui-banshee-pb-4 ui-banshee-min-w-64 ui-banshee-w-fit"
+                >
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                      New Banshee Request
+                    </p>
+                    <p className="ui-banshee-w-fit  ui-banshee-text-[.825rem]">
+                      {newBansheeCount}
+                    </p>
+                  </div>
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                      Recurring Banshee Request
+                    </p>
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                      {recurringCount}
+                    </p>
+                  </div>
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                      Total Measurement Request
+                    </p>
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                      {totalCount}
+                    </p>
+                  </div>
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-2 ui-banshee-flex-row-reverse ui-banshee-w-full">
+                    <Button
+                      variant="primary"
+                      type="button"
+                      onClick={() => {
+                        setIsCartOpen(false);
+                        router.push('/cart');
+                      }}
+                    >
+                      View Cart
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Popover>
                 <PopoverTrigger>
                   <LucideUser size={24} />
@@ -122,24 +223,21 @@ export const NavbarBanshee = () => {
                           as="p"
                           className="ui-banshee-mt-[-2px]"
                         >
-                          Cool Morty
+                          {session?.user?.fullName}
                         </Text>
                         <Text variant="small" color="foreground" as="p">
-                          mortyfor@president.now
+                          {session?.user?.email}
                         </Text>
                       </div>
                       <div>
                         <Text variant="small" color="foreground" as="p">
-                          Dimension C-131
-                        </Text>
-                        <Text variant="small" color="foreground" as="p">
-                          Ricks side kick
+                          {companyName}
                         </Text>
                       </div>
                       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-4 ui-banshee-pt-2">
                         {/* might be tailwind config that prefix is missing in the WEB 
                       but once this is in project BANSHEE it maybe be resolved */}
-                        <Button className="!p-0" variant="ghost">
+                        <Button className="!ui-banshee-p-0" variant="outline">
                           Browse apps
                         </Button>
                         <Button

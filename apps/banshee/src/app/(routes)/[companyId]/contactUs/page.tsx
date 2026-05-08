@@ -207,7 +207,7 @@ export default function ContactUsPage() {
                         {attachment.name} - {attachment.size}
                       </Text>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => handleRemoveAttachment(attachment.id)}
                         className="ui-banshee-text-red-500 ui-banshee-transition-colors"
                       >

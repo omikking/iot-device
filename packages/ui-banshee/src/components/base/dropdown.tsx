@@ -190,7 +190,7 @@ const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
 
           <PopoverContent
             align="start"
-            className="ui-banshee-w-[--radix-popover-trigger-width]"
+            className="ui-banshee-w-[var(--radix-popover-trigger-width)]"
           >
             <div aria-label="Dropdown menu" className={dropdownVariants}>
               <ul role="menu" aria-labelledby={id} aria-orientation="vertical">
@@ -376,7 +376,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
 
           <PopoverContent
             align="start"
-            className="ui-banshee-w-[--radix-popover-trigger-width] ui-banshee-min-w-[200px] ui-banshee-p-0 ui-banshee-mt-[-4px]"
+            className="ui-banshee-w-[var(--radix-popover-trigger-width)] ui-banshee-min-w-[200px] ui-banshee-p-0 ui-banshee-mt-[-4px]"
           >
             <Command>
               <CommandInput
@@ -416,7 +416,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
             <div className="ui-banshee-flex ui-banshee-p-2 ui-banshee-justify-between ui-banshee-items-center ui-banshee-gap-2  ui-banshee-border-t ui-banshee-border-neutral-3">
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="small"
                 tabIndex={-1}
                 onClick={handleClear}
@@ -537,7 +537,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
 
           <PopoverContent
             align="start"
-            className="ui-banshee-w-[--radix-popover-trigger-width] ui-banshee-min-w-[200px] ui-banshee-p-0 ui-banshee-mt-[-4px]"
+            className="ui-banshee-w-[var(--radix-popover-trigger-width)] ui-banshee-min-w-[200px] ui-banshee-p-0 ui-banshee-mt-[-4px]"
           >
             <Command>
               <CommandInput
@@ -574,7 +574,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
             <div className="ui-banshee-flex ui-banshee-p-2 ui-banshee-justify-between ui-banshee-items-center ui-banshee-gap-2 ui-banshee-border-t ui-banshee-border-neutral-3">
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="small"
                 tabIndex={-1}
                 onClick={handleClear}

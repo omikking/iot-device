@@ -90,10 +90,6 @@
   }
 }
 
-@layer base {
-  * {
-    border-color: hsl(var(--border));
-}
 body {
     @apply ui-banshee-bg-background ui-banshee-text-foreground;
   }

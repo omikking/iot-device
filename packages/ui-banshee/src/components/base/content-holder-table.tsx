@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { UseFormReturn, FieldValues } from 'react-hook-form';
 import { ContentHolder, type ContentHolderProps } from './content-holder';

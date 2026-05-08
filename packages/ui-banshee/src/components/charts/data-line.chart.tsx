@@ -4,6 +4,7 @@ import type { EChartsOption, ECharts } from 'echarts';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { ChartContainer, EChart } from './chart';
 import type { ChartConfig } from './chart';
+import { escapeHtml } from '../../lib/utils';
 
 export type DataLineChartProps = {
   yAxisLabel?: string;
@@ -59,6 +60,20 @@ export const DataLineChart = forwardRef<
     markAreas.push([{ xAxis: start }, { xAxis: end }]);
   }
 
+  const normalizeValue = (value: unknown): string => {
+    if (value === null) return '';
+
+    if (Array.isArray(value)) {
+      return String(value[1] ?? value[0] ?? '');
+    }
+
+    if (typeof value === 'object') {
+      return String((value as Record<string, unknown>).value ?? '');
+    }
+
+    return String(value);
+  };
+
   const option: EChartsOption = {
     grid: {
       top: 20,
@@ -92,8 +107,14 @@ export const DataLineChart = forwardRef<
       textStyle: { color: '#fff', fontSize: 12 },
       formatter: (params) => {
         const items = Array.isArray(params) ? params : [params];
+
         return items
-          .map((p) => `<div>${String(p.seriesName)}: ${String(p.value)}</div>`)
+          .filter((p) => p.value !== null)
+          .map((p) => {
+            const value = Array.isArray(p.value) ? p.value[1] : p.value;
+
+            return `<div>${escapeHtml(String(p.seriesName ?? ''))}: ${normalizeValue(value)}</div>`;
+          })
           .join('');
       },
     },
@@ -158,7 +179,9 @@ export const DataLineChart = forwardRef<
       ...(lines?.map((line) => ({
         type: 'line' as const,
         name: line.label,
-        data: data.map((d) => d[line.dataKey] ?? null),
+        data: data.map((d) => ({
+          value: d[line.dataKey] ?? null,
+        })),
         smooth: false,
         lineStyle: { color: line.color, width: 2 },
         itemStyle: { color: line.color },

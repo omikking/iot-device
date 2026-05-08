@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
-import { ChartLineLinear } from '@gsp/ui-banshee';
+import { ChartLineLinear, LoadingSpinner } from '@gsp/ui-banshee';
 import type { StatusBand } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 
@@ -150,7 +150,8 @@ export const BansheeStatusPlot = forwardRef<
 
   if (fetching) {
     return (
-      <div className="ui-banshee-h-[400px] ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+      <div className="ui-banshee-h-[400px] ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+        <LoadingSpinner />
         Loading plot...
       </div>
     );

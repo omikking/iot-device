@@ -11,10 +11,11 @@ import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
 import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 //TODO : need to change it measured true
 const bansheeRequestsListQuery = graphql(`
@@ -122,7 +123,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
     [],
   );
 
-  const [{ data: distData }] = useQuery({
+  const [{ data: distData, error: distError }] = useQuery({
     query: bansheeStatusDistributionQuery,
     variables: {
       companyId,
@@ -131,7 +132,11 @@ export default function Page({ params }: { params: { companyId: string } }) {
     },
   });
 
-  const [{ data, fetching }] = useQuery({
+  useEffect(() => {
+    handleGraphQLErrors(distError);
+  }, [distError]);
+
+  const [{ data, fetching, error: bansheeListError }] = useQuery({
     query: bansheeRequestsListQuery,
     variables: {
       companyId,
@@ -142,6 +147,10 @@ export default function Page({ params }: { params: { companyId: string } }) {
     },
   });
 
+  useEffect(() => {
+    handleGraphQLErrors(bansheeListError);
+  }, [bansheeListError]);
+
   const bansheeRequests = data?.bansheeRequests?.results || [];
   const distributionData = distData?.bansheeStatusDistribution ?? null;
   const form = useForm<ShareFormValues>();
@@ -151,7 +160,6 @@ export default function Page({ params }: { params: { companyId: string } }) {
     filename = 'banshee_data.csv',
   ) => {
     if (!data.length) return;
-    console.log('Exporting flattened data:', data);
 
     // Define CSV headers for flattened structure
     const headers = [

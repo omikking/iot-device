@@ -9,6 +9,7 @@ import {
   TableCell,
   TableHeadWithSorting,
   DropdownMultiSelectSearch,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { Settings, BarChart2, MessageSquare } from 'lucide-react';
 import { BansheeDetailModal } from './BansheeDetailModal';
@@ -233,8 +234,11 @@ export const BansheeListView = ({
 
   if (loading) {
     return (
-      <div className="ui-banshee-p-8 ui-banshee-text-center ui-banshee-text-gray-500">
-        Loading banshee list...
+      <div className="ui-banshee-p-8 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3 ui-banshee-text-gray-500">
+        <LoadingSpinner />
+        <Text variant="medium" color="muted">
+          Loading banshee list...
+        </Text>
       </div>
     );
   }

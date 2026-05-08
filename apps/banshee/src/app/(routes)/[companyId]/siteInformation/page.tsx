@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { Application } from '@/gql/graphql';
+import { handleGraphQLErrors } from '@/libs/utils';
 import {
   DropdownMultiSelectSearch,
   SidebarInset,
   Headline,
   Text,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import {
   Table,
@@ -117,13 +119,29 @@ export default function SiteInformationPage({
 }) {
   const { companyId } = params;
 
-  const [{ data: hierarchyData }] = useQuery({
+  const [
+    {
+      data: hierarchyData,
+      fetching: hierarchyFetching,
+      error: hierarchyError,
+    },
+  ] = useQuery({
     query: companyHierarchyQuery,
     variables: { companyId },
   });
-  const [{ data: usersData }] = useQuery({
-    query: usersQuery,
-  });
+
+  useEffect(() => {
+    handleGraphQLErrors(hierarchyError);
+  }, [hierarchyError]);
+
+  const [{ data: usersData, fetching: usersFetching, error: usersError }] =
+    useQuery({
+      query: usersQuery,
+    });
+
+  useEffect(() => {
+    handleGraphQLErrors(usersError);
+  }, [usersError]);
   const companyName = hierarchyData?.company?.name ?? 'Company Name';
 
   const sites = hierarchyData?.company?.sites ?? [];
@@ -199,6 +217,23 @@ export default function SiteInformationPage({
       ),
     [allRows, selectedSites, selectedLocations, selectedLevels, selectedDrives],
   );
+
+  const isFetching = hierarchyFetching || usersFetching;
+
+  if (isFetching) {
+    return (
+      <SidebarInset>
+        <main className="ui-banshee-bg-main-white ui-banshee-box-border">
+          <div className="ui-banshee-p-8 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3 ui-banshee-text-neutral-500">
+            <LoadingSpinner />
+            <Text variant="medium" color="muted">
+              Loading site information...
+            </Text>
+          </div>
+        </main>
+      </SidebarInset>
+    );
+  }
 
   return (
     <SidebarInset>

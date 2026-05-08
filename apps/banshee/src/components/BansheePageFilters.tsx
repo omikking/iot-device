@@ -4,12 +4,12 @@ import { useEffect } from 'react';
 
 const timeframes = ['7D', '1M', '3M', '1Y', 'ALL'];
 
-export const BansheePageFilters = ({ 
-  active, 
-  setActive, 
-  onDateChange 
-}: { 
-  active: string; 
+export const BansheePageFilters = ({
+  active,
+  setActive,
+  onDateChange,
+}: {
+  active: string;
   setActive: (val: string) => void;
   onDateChange: (startDate?: string, endDate?: string) => void;
 }) => {
@@ -20,13 +20,13 @@ export const BansheePageFilters = ({
     }
     const end = new Date();
     const start = new Date();
-    
+
     if (active === '7D') start.setDate(end.getDate() - 7);
     else if (active === '1M') start.setMonth(end.getMonth() - 1);
     else if (active === '3M') start.setMonth(end.getMonth() - 3);
     else if (active === '1Y') start.setFullYear(end.getFullYear() - 1);
     else start.setDate(end.getDate() - 7);
-    
+
     onDateChange(start.toISOString(), end.toISOString());
   }, [active, onDateChange]);
 
@@ -35,7 +35,7 @@ export const BansheePageFilters = ({
       {timeframes.map((tf) => (
         <Button
           key={tf}
-          variant={active === tf ? 'primary' : 'ghost'}
+          variant={active === tf ? 'primary' : 'outline'}
           size="small"
           onClick={() => setActive(tf)}
           className={

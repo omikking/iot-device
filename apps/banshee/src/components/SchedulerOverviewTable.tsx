@@ -10,6 +10,7 @@ import {
   TableHead,
   TableCell,
   TableHeadWithSorting,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { useState, useMemo, ComponentProps } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
@@ -23,8 +24,10 @@ type SortConfig = {
 
 export const SchedulerOverviewTable = ({
   entries,
+  fetching = false,
 }: {
   entries: SchedulerEntry[];
+  fetching?: boolean;
 }) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>(null);
 
@@ -67,9 +70,39 @@ export const SchedulerOverviewTable = ({
       toggleSorting: () => requestSort(key),
     }) as ColumnProp;
 
+  if (fetching) {
+    return (
+      <div className="ui-banshee-col-span-1 lg:ui-banshee-col-span-2 ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full  ui-banshee-h-full">
+        <Headline
+          variant="small"
+          color="foreground"
+          as="h3"
+          isBold
+          className="ui-banshee-mb-2"
+        >
+          Scheduler Overview
+        </Headline>
+        <div className="ui-banshee-flex ui-banshee-h-[45vh]">
+          <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-overflow-x-auto ui-banshee-min-h-0 ui-banshee-w-full">
+            <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+              <LoadingSpinner />
+              Loading Scheduler Overview...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ui-banshee-col-span-1 lg:ui-banshee-col-span-2 ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full  ui-banshee-h-full">
-      <Headline variant="small" color="foreground" as="h3" isBold className='ui-banshee-mb-2'>
+      <Headline
+        variant="small"
+        color="foreground"
+        as="h3"
+        isBold
+        className="ui-banshee-mb-2"
+      >
         Scheduler Overview
       </Headline>
       <div className="ui-banshee-flex ui-banshee-h-[45vh]">
@@ -116,25 +149,35 @@ export const SchedulerOverviewTable = ({
                     <div
                       className="ui-banshee-w-3 ui-banshee-mx-auto ui-banshee-h-3 ui-banshee-rounded-full"
                       style={{
-                        backgroundColor: getStatusColorHex(
-                          entry?.status,
-                        ),
+                        backgroundColor: getStatusColorHex(entry?.status),
                       }}
                       title={getStatusLabel(entry?.status)}
                     />
                   </TableCell>
-                  <TableCell className='ui-banshee-px-4'>
-                    <Text variant="small" color="foreground" className='ui-banshee-text-left'>
+                  <TableCell className="ui-banshee-px-4">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-text-left"
+                    >
                       {entry?.banshee}
                     </Text>
                   </TableCell>
-                  <TableCell className='ui-banshee-px-4'>
-                    <Text variant="small" color="foreground" className='ui-banshee-text-left'>
+                  <TableCell className="ui-banshee-px-4">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-text-left"
+                    >
                       {entry?.location}
                     </Text>
                   </TableCell>
-                  <TableCell className='ui-banshee-px-4'>
-                    <Text variant="small" color="foreground" className='ui-banshee-text-left'>
+                  <TableCell className="ui-banshee-px-4">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-text-left"
+                    >
                       {entry?.dueDate}
                     </Text>
                   </TableCell>

@@ -25,7 +25,7 @@ export interface ScheduleTableProps
 
 const ScheduleTable = React.forwardRef<HTMLTableElement, ScheduleTableProps>(
   ({ className, variant = 'border', ...props }, ref) => (
-    <div className={cn(tableVariants({ variant }), className)} ref={ref}>
+    <div className={cn(tableVariants({ variant }))}>
       <table
         ref={ref}
         className={cn(

@@ -13,13 +13,37 @@ import {
   TableHead,
   TableCell,
   DropdownMultiSelectSearch,
+  showAlertToast,
+  LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { Plus, Star, Check, ShoppingCart as CartIcon } from 'lucide-react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeDetailModal } from '@/components/BansheeDetailModal';
-import { useQuery } from 'urql';
+import { ConfirmAddToCartModal } from '@/components/ConfirmAddToCartModal';
+import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
-import { BansheeSchedulerListQuery, ProceqStatus } from '@/gql/graphql';
+import {
+  BansheeSchedulerListQuery,
+  BansheeCartItemType,
+  ProceqStatus,
+} from '@/gql/graphql';
+import { handleGraphQLErrors } from '@/libs/utils';
+
+const addCartItemsMutation = graphql(`
+  mutation addCartItems($input: [AddCartItemInput!]!) {
+    addCartItems(input: $input) {
+      added {
+        id
+        itemType
+      }
+      skipped {
+        bansheeRequestId
+        serialNumber
+        reason
+      }
+    }
+  }
+`);
 
 //TODO : need to change it measured true
 const bansheeSchedulerList = graphql(`
@@ -157,7 +181,11 @@ const SELECT_OPTIONS: { id: SelectOption; name: string }[] = [
   { id: 'clear', name: 'Clear' },
 ];
 
-export default function SchedulerPage({ params }: { params: { companyId: string } }) {
+export default function SchedulerPage({
+  params,
+}: {
+  params: { companyId: string };
+}) {
   const { companyId } = params;
   const router = useCompanyRouter();
   // Form state
@@ -171,6 +199,10 @@ export default function SchedulerPage({ params }: { params: { companyId: string 
   );
 
   const [banshees, setBanshees] = useState<SchedulerBanshee[]>([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isSubmittingCart, setIsSubmittingCart] = useState(false);
+
+  const [, executeAddCartItems] = useMutation(addCartItemsMutation);
 
   const selectedCount = useMemo(
     () => banshees.filter((b) => b.isSelected).length,
@@ -183,23 +215,93 @@ export default function SchedulerPage({ params }: { params: { companyId: string 
     );
   };
 
-  const handleAddNewBanshees = () => {
-    console.log('Add new banshees:', { quantity, name, location, period });
+  const handleAddNewBanshees = async () => {
+    const qty = parseInt(quantity, 10) || 1;
+    const result = await executeAddCartItems({
+      input: [
+        {
+          itemType: BansheeCartItemType.NewBanshee,
+          name: name || undefined,
+          location: location || undefined,
+          quantity: qty,
+          period: period ? parseInt(period) || undefined : undefined,
+          companyId,
+        },
+      ],
+    });
+    handleGraphQLErrors(result.error);
   };
 
   const handleAddToCart = () => {
-    const selectedBanshees = banshees.filter((b) => b.isSelected);
-    // TODO: Implement API call to add to cart
-    console.log('Add to cart:', selectedBanshees);
-    router.push('/scheduler/cart');
+    setShowConfirmModal(true);
   };
 
-  const [{ data, fetching }] = useQuery({
+  const handleConfirmAddToCart = async () => {
+    setIsSubmittingCart(true);
+
+    try {
+      const selectedBanshees = banshees.filter((b) => b.isSelected);
+
+      const result = await executeAddCartItems({
+        input: selectedBanshees.map((b) => ({
+          itemType: BansheeCartItemType.ServiceExisting,
+          bansheeRequestId: b.id,
+          companyId,
+        })),
+      });
+
+      if (handleGraphQLErrors(result.error)) {
+        return false;
+      }
+
+      const response = result.data?.addCartItems;
+
+      const skipped = response?.skipped ?? [];
+      const added = response?.added ?? [];
+
+      if (skipped.length > 0) {
+        showAlertToast({
+          title: `${skipped.length} item(s) could not be added`,
+          description: skipped
+            .slice(0, 3)
+            .map((s) => `${s.serialNumber} — ${s.reason}`)
+            .join('\n'),
+          variant: 'warning',
+        });
+      }
+
+      if (added.length === 0) {
+        return false;
+      }
+
+      setShowConfirmModal(false);
+      router.push('/cart');
+
+      return true;
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+
+      showAlertToast({
+        title: 'Failed to add items to cart',
+        variant: 'error',
+      });
+
+      return false;
+    } finally {
+      setIsSubmittingCart(false);
+    }
+  };
+
+  const [{ data, fetching, error: schedulerListError }] = useQuery({
     query: bansheeSchedulerList,
     variables: {
       companyId,
     },
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(schedulerListError);
+  }, [schedulerListError]);
   const bansheeRequests = data?.bansheeRequests?.results || [];
 
   // Transform API data to scheduler format when data changes
@@ -218,8 +320,11 @@ export default function SchedulerPage({ params }: { params: { companyId: string 
 
   if (fetching) {
     return (
-      <div className="ui-banshee-p-8 ui-banshee-text-center ui-banshee-text-gray-500">
-        Loading banshee list...
+      <div className="ui-banshee-w-full ui-banshee-p-8 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3 ui-banshee-text-gray-500">
+        <LoadingSpinner />
+        <Text variant="medium" color="muted">
+          Loading banshee list...
+        </Text>
       </div>
     );
   }
@@ -475,6 +580,7 @@ export default function SchedulerPage({ params }: { params: { companyId: string 
             </div>
             <div className="ui-banshee-flex ui-banshee-justify-end ui-banshee-mt-6">
               <Button
+                variant="primary"
                 onClick={handleAddToCart}
                 disabled={selectedCount === 0}
                 className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-2"
@@ -486,6 +592,20 @@ export default function SchedulerPage({ params }: { params: { companyId: string 
           </div>
         </main>
       </SidebarInset>
+      <ConfirmAddToCartModal
+        isOpen={showConfirmModal}
+        selectedBanshees={banshees
+          .filter((b) => b.isSelected)
+          .map((b) => ({
+            id: b.id,
+            serialNumber: b.serialNumber,
+            location: b.location,
+          }))}
+        isLoading={isSubmittingCart}
+        onClose={() => setShowConfirmModal(false)}
+        onOpenChange={setShowConfirmModal}
+        onConfirm={handleConfirmAddToCart}
+      />
       <BansheeDetailModal
         bansheeId={selectedBansheeId}
         onClose={() => setSelectedBansheeId(null)}

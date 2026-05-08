@@ -53,7 +53,7 @@ function ChartContainer({
       <div
         data-slot="chart"
         data-chart={chartId}
-        className={cn('flex justify-center text-xs', className)}
+        className={cn('ui-banshee-flex ui-banshee-justify-center ui-banshee-text-xs', className)}
         {...props}
       >
         {children}

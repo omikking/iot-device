@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartPieDonut } from '@gsp/ui-banshee';
+import { ChartPieDonut, LoadingSpinner } from '@gsp/ui-banshee';
 import { useMemo } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
 
@@ -30,8 +30,10 @@ type ChartConfig = Record<string, ChartConfigItem>;
 
 export const StatusDistributionChart = ({
   statusCounts,
+  fetching=false,
 }: {
   statusCounts: StatusCount[];
+  fetching?: boolean;
 }) => {
   const filteredCounts = useMemo(
     () =>
@@ -84,11 +86,18 @@ export const StatusDistributionChart = ({
 
   return (
     <div className="ui-banshee-col-span-1 lg:ui-banshee-col-span-3 ui-banshee-bg-neutral-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-p-10">
-      <ChartPieDonut
-        chartData={chartData}
-        chartConfig={chartConfigDynamic}
-        chartItems={chartItems}
-      />
+      {fetching ? (
+        <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+          <LoadingSpinner />
+          Loading Distribution...
+        </div>
+      ) : (
+        <ChartPieDonut
+          chartData={chartData}
+          chartConfig={chartConfigDynamic}
+          chartItems={chartItems}
+        />
+      )}
     </div>
   );
 };

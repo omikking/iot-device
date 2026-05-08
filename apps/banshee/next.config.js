@@ -1,4 +1,4 @@
-/** @ytype  {import('next').NextConfig} */
+/** @type {import('next').NextConfig} */
 module.exports = {
     webpack(config) {
         // Grab the existing rule that handles SVG imports

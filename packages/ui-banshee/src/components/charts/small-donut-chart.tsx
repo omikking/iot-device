@@ -4,6 +4,7 @@ import type { EChartsOption } from 'echarts';
 
 import { Card, CardContent, CardFooter } from '../base/card';
 import { ChartConfig, ChartContainer, EChart } from './chart';
+import { escapeHtml } from '../../lib/utils';
 
 type DonutChartProps = {
   footerText?: string;
@@ -30,8 +31,8 @@ export function SmallChartPieDonut({
       formatter: (params) => {
         const p = Array.isArray(params) ? params[0] : params;
         return `<div style="padding:2px 4px">
-          <div>${String(p.name)}</div>
-          <div>${String(p.value)}</div>
+          <div>${escapeHtml(String(p.name ?? ''))}</div>
+          <div>${escapeHtml(String(p.value ?? ''))}</div>
         </div>`;
       },
     },

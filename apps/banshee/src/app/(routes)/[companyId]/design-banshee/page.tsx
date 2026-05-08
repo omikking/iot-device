@@ -65,7 +65,7 @@ import { useState } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/ConfirmModal';
-import bansheeImage from '../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+import bansheeImage from '../../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
 // import { Footer } from '@/components/Footer';
 
 type Technician = UserSchema;
@@ -182,7 +182,7 @@ export default function Page() {
           footerText="Group 1"
         />
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Modal */}
       <Headline variant="large" as="h1" color="foreground">
         Modal 🚀
@@ -217,15 +217,15 @@ export default function Page() {
       <Headline variant="large" as="h1" color="foreground">
         Table Row & Table Header 🚀
       </Headline>
-      <div className="w-[700px] h-40 overflow-y-auto border-b">
+      <div className="ui-banshee-w-[700px] ui-banshee-h-40 ui-banshee-overflow-y-auto ui-banshee-border-b">
         {/* TODO Fix border bottom on the headers */}
         <ScheduleDataTable columns={columns} data={usersDesignSystemMock} />
       </div>
       <ScheduleTable>
         <TableHeader>
           <TableRow>
-            <ScheduleTableHead className="w-4">A</ScheduleTableHead>
-            <ScheduleTableHead className="w-[220px]">
+            <ScheduleTableHead className="ui-banshee-w-4">A</ScheduleTableHead>
+            <ScheduleTableHead className="ui-banshee-w-[220px]">
               Full name
             </ScheduleTableHead>
             <ScheduleTableHead>Email</ScheduleTableHead>
@@ -245,11 +245,11 @@ export default function Page() {
           })}
         </TableBody>
       </ScheduleTable>
-      <div className="max-w-[1320px] w-full h-40 overflow-y-auto border-b">
+      <div className="ui-banshee-max-w-[1320px] ui-banshee-w-full ui-banshee-h-40 ui-banshee-overflow-y-auto ui-banshee-border-b">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[220px]">Full name</TableHead>
+              <TableHead className="ui-banshee-w-[220px]">Full name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>App access</TableHead>
               <TableHead>Phone number</TableHead>
@@ -273,7 +273,7 @@ export default function Page() {
         </Table>
       </div>
       <div></div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Content Holder */}
       <Headline variant="large" as="h1" color="foreground">
         Content Holder 🚀
@@ -288,20 +288,11 @@ export default function Page() {
           control={form.control}
           name="input"
           render={({ field }) => (
-            <FormItem className="w-48">
-              <Input placeholder="Input field..." {...field} className="w-48" />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="input"
-          render={({ field }) => (
-            <FormItem className="w-48">
+            <FormItem className="ui-banshee-w-48">
               <Input
                 placeholder="Input field..."
                 {...field}
-                className="w-full"
+                className="ui-banshee-w-48"
               />
             </FormItem>
           )}
@@ -310,11 +301,24 @@ export default function Page() {
           control={form.control}
           name="input"
           render={({ field }) => (
-            <FormItem className="w-72">
+            <FormItem className="ui-banshee-w-48">
               <Input
                 placeholder="Input field..."
                 {...field}
-                className="w-full"
+                className="ui-banshee-w-full"
+              />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="input"
+          render={({ field }) => (
+            <FormItem className="ui-banshee-w-72">
+              <Input
+                placeholder="Input field..."
+                {...field}
+                className="ui-banshee-w-full"
               />
             </FormItem>
           )}
@@ -323,7 +327,7 @@ export default function Page() {
           Add New Banshee
         </Button>
       </ContentHolderTable>
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <ContentHolder variant="image" headlineText="Content Holder Image">
           <Image
             src={bansheeImage}
@@ -336,11 +340,11 @@ export default function Page() {
       <Form {...form}>
         <form
           onSubmit={() => console.log('submit form')}
-          className="w-full max-w-[1200px] flex flex-row justify-center flex-nowrap gap-12"
+          className="ui-banshee-w-full ui-banshee-max-w-[1200px] ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-center ui-banshee-flex-nowrap ui-banshee-gap-12"
         >
           <ContentHolder
             variant="general"
-            className="w-full flex flex-wrap gap-12"
+            className="ui-banshee-w-full ui-banshee-flex ui-banshee-flex-wrap ui-banshee-gap-12"
             headlineText="Example with inputs"
           >
             <FormField
@@ -349,13 +353,13 @@ export default function Page() {
               render={({ field }) => {
                 return (
                   // TODO Find a better solution for the width calc
-                  <FormItem className="w-[calc(50%-12px)]">
+                  <FormItem className="ui-banshee-w-[calc(50%-12px)]">
                     <FormLabel>Textarea Field</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Textarea..."
                         {...field}
-                        className="w-full"
+                        className="ui-banshee-w-full"
                         rows={5}
                       />
                     </FormControl>
@@ -390,13 +394,13 @@ export default function Page() {
               name="input"
               render={({ field }) => {
                 return (
-                  <FormItem className="w-[calc(50%-12px)]">
+                  <FormItem className="ui-banshee-w-[calc(50%-12px)]">
                     <FormLabel>Input Field </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="I field..."
                         {...field}
-                        className="w-full"
+                        className="ui-banshee-w-full"
                       />
                     </FormControl>
                     <FormMessage />
@@ -417,7 +421,7 @@ export default function Page() {
                         disabled
                         placeholder="Disabled input field..."
                         {...field}
-                        className="w-full"
+                        className="ui-banshee-w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -428,9 +432,9 @@ export default function Page() {
           </ContentHolder>
         </form>
       </Form>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Filter Dropdown */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Filter Dropdown 🚀
         </Headline>
@@ -442,28 +446,28 @@ export default function Page() {
           className="w-96"
         /> */}
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Checkbox */}
-      <div className="flex flex-col items-center gap-6">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-6">
         <Headline variant="large" as="h1" color="foreground">
           Checkbox 🚀
         </Headline>
-        <div className="flex flex-row items-center gap-3">
+        <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
           Select All
         </div>
-        <div className="flex flex-row items-center gap-3">
+        <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
           Select This
         </div>
-        <div className="flex flex-row items-center gap-3">
+        <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
           Select That
         </div>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Tabs */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Tabs 🚀
         </Headline>
@@ -485,32 +489,32 @@ export default function Page() {
           </TabsContent>
         </Tabs>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Switch */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Switch 🚀
         </Headline>
         <Switch />
         <Switch disabled />
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Textarea */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Textarea 🚀
         </Headline>
 
         <Textarea
-          className="w-96"
+          className="ui-banshee-w-96"
           resize={false}
           placeholder="Textarea..."
           rows={5}
         />
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Input Field, Dropdown, Calendar & Time Select */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Input Field, Dropdown, Calendar & Time Select 🚀
         </Headline>
@@ -518,7 +522,7 @@ export default function Page() {
         <Form {...form}>
           <form
             onSubmit={() => console.log('submit form')}
-            className="w-full max-w-[1200px] flex flex-row justify-center flex-wrap gap-12"
+            className="ui-banshee-w-full ui-banshee-max-w-[1200px] ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-center ui-banshee-flex-wrap ui-banshee-gap-12"
           >
             <FormField
               control={form.control}
@@ -529,7 +533,7 @@ export default function Page() {
                     {/* TODO disabled should change color of text */}
                     <FormLabel>Time Select</FormLabel>
                     <FormControl>
-                      <TimeCalendar id="time" className="w-96" />
+                      <TimeCalendar id="time" className="ui-banshee-w-96" />
                     </FormControl>
                   </FormItem>
                 );
@@ -545,7 +549,7 @@ export default function Page() {
                     <FormLabel>Calendar Select</FormLabel>
                     <FormControl>
                       <SingleDateCalendar
-                        className="w-96"
+                        className="ui-banshee-w-96"
                         onDateChange={() => console.log('date change')}
                       />
                     </FormControl>
@@ -609,7 +613,7 @@ export default function Page() {
                       <Input
                         placeholder="Default input field..."
                         {...field}
-                        className="w-96"
+                        className="ui-banshee-w-96"
                       />
                     </FormControl>
                     <FormMessage />
@@ -640,11 +644,10 @@ export default function Page() {
           </form>
         </Form>
         <div>
-          {/*TODO check why padding not working as it should */}
           <Label className="">Combobox WONKY</Label>
           <Combobox
             id="combobox"
-            className="w-96"
+            className="ui-banshee-w-96"
             options={optionsDesignSystemMock}
             disabled={false}
             placeholder="Technician..."
@@ -652,9 +655,9 @@ export default function Page() {
           />
         </div>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Tooltip */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Tooltips 🚀 (not done)
         </Headline>
@@ -700,17 +703,17 @@ export default function Page() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Badge */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Badges 🚀
         </Headline>
         <Badge>Neutral</Badge>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Graph Time Range */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Graph Time Range 🚀
         </Headline>
@@ -718,9 +721,9 @@ export default function Page() {
           (Component coming soon...)
         </Headline>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Button */}
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Buttons 🚀
         </Headline>
@@ -733,7 +736,7 @@ export default function Page() {
       </div>
       {/* Texts */}
       <hr className="w-full border-neutral-2" />
-      <div className="flex flex-col items-center gap-12">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
           Texts 🚀
         </Headline>
@@ -741,7 +744,7 @@ export default function Page() {
           Medium text
         </Text>
         <Text variant="medium" color={'foreground'} isBold>
-          <a className="underline" href="https://www.google.se">
+          <a className="ui-banshee-underline" href="https://www.google.se">
             Medium bold text
           </a>
         </Text>
@@ -752,7 +755,7 @@ export default function Page() {
           XS text
         </Text>
       </div>
-      <hr className="w-full border-neutral-2" />
+      <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
     </main>
   );
 }

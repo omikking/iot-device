@@ -2,10 +2,12 @@
 import { SidebarInset } from '@gsp/ui-banshee';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { useEffect } from 'react';
 import { SchedulerOverviewTable } from '@/components/SchedulerOverviewTable';
 import { BansheeInfoCard } from '@/components/BansheeInfoCard';
 import { StatusDistributionChart } from '@/components/StatusDistributionChart';
 import { StatusOverviewChart } from '@/components/StatusOverviewChart';
+import { handleGraphQLErrors } from '@/libs/utils';
 
 export default function Page({ params }: { params: { companyId: string } }) {
   const { companyId } = params;
@@ -59,14 +61,30 @@ export default function Page({ params }: { params: { companyId: string } }) {
     }
   `);
 
-  const [{ data }] = useQuery({
-    query: bansheeStatusDistributionQuery,
-    variables: { companyId },
-  });
-  const [{ data: bansheeData, fetching: bansheeRequestsFetching }] = useQuery({
+  const [{ data: data, fetching: bansheeDistFetching, error: distError }] =
+    useQuery({
+      query: bansheeStatusDistributionQuery,
+      variables: { companyId },
+    });
+
+  useEffect(() => {
+    handleGraphQLErrors(distError);
+  }, [distError]);
+
+  const [
+    {
+      data: bansheeData,
+      fetching: bansheeRequestsFetching,
+      error: bansheeListError,
+    },
+  ] = useQuery({
     query: bansheeRequestsListQuery,
     variables: { companyId },
   });
+
+  useEffect(() => {
+    handleGraphQLErrors(bansheeListError);
+  }, [bansheeListError]);
   const { statusCounts } = data?.bansheeStatusDistribution || {};
 
   const sanitizedBansheeEntries =
@@ -86,7 +104,10 @@ export default function Page({ params }: { params: { companyId: string } }) {
           <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-5 ui-banshee-gap-6">
             <BansheeInfoCard />
 
-            <StatusDistributionChart statusCounts={statusCounts || []} />
+            <StatusDistributionChart
+              statusCounts={statusCounts || []}
+              fetching={bansheeDistFetching}
+            />
           </div>
 
           <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-4 ui-banshee-gap-6">
@@ -94,8 +115,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
               bansheeRequests={bansheeData?.bansheeRequests?.results ?? []}
               fetching={bansheeRequestsFetching}
             />
-
-            <SchedulerOverviewTable entries={sanitizedBansheeEntries ?? []} />
+            <SchedulerOverviewTable entries={sanitizedBansheeEntries ?? []} fetching={bansheeRequestsFetching}/>
           </div>
         </div>
       </main>

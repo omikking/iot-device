@@ -1,3 +1,4 @@
+import { RingPosition } from '@/gql/graphql';
 import { z } from 'zod';
 
 export const bansheeTemplateSchema = z.object({
@@ -14,6 +15,7 @@ export const bansheeTemplateSchema = z.object({
   locationDetails: z.string().optional(),
   comment: z.string().optional(),
   activateNotifications: z.boolean(),
+  ringPosition: z.nativeEnum(RingPosition).nullable(),
   coordinates: z.object({
     x: z.string(),
     y: z.string(),

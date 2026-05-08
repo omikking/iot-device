@@ -36,7 +36,7 @@ export type FilterDropdownProps = {
 };
 
 const buttonStyling =
-  'flex justify-between items-center ui-h-12 ui-border ui-border-neutral-3 ui-rounded ui-w-full ui-bg-main-white ui-px-4 ui-text-md ui-font-sandvik-text ui-text-main-black placeholder:ui-text-neutral-5 ui-outline-none hover:ui-border-blue-primary focus:ui-border-blue-primary ui-transition ease-in-out ui-duration-200 disabled:ui-bg-neutral-2 disabled:ui-text-neutral-5 disabled:ui-border-transparent disabled:ui-pointer-events-none';
+  'ui-banshee-flex ui-banshee-justify-between ui-banshee-items-center ui-banshee-h-12 ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-w-full ui-banshee-bg-main-white ui-banshee-px-4 ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none hover:ui-banshee-border-blue-primary focus:ui-banshee-border-blue-primary ui-banshee-transition ease-in-out ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none';
 
 const FilterDropdown = React.forwardRef<HTMLDivElement, FilterDropdownProps>(
   (
@@ -120,12 +120,12 @@ const FilterDropdown = React.forwardRef<HTMLDivElement, FilterDropdownProps>(
                   isOpen && 'ui-banshee-rotate-180',
                 )}
               />
-            </button>
+            </button> 
           </PopoverTrigger>
 
           <PopoverContent
             align="start"
-            className="ui-banshee-w-[--radix-popover-trigger-width]  ui-banshee-p-0 ui-banshee-mt-[-4px]"
+            className="ui-banshee-w-[var(--radix-popover-trigger-width)] ui-banshee-p-0 ui-banshee-mt-[-4px]"
           >
             <Command>
               <CommandInput

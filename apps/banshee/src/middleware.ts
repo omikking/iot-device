@@ -3,24 +3,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Application, Role } from 'src/gql/graphql';
 
 const extractCompanyId = (pathname: string): string | null => {
-  const companyIdRoutes = [
-    /^\/overview\/([^/]+)/,
-    /^\/banshee\/([^/]+)/,
-    /^\/events\/([^/]+)/,
-    /^\/design-banshee\/([^/]+)/,
+  const segments = pathname.split('/').filter(Boolean);
+
+  if (segments.length < 2) return null;
+
+  const [, route] = segments;
+
+  const protectedRoutes = [
+    'overview',
+    'banshee',
+    'events',
+    'design-banshee',
+    'cart',
   ];
-  for (const regex of companyIdRoutes) {
-    const match = pathname.match(regex);
-    if (match) return match[1];
+
+  if (!protectedRoutes.includes(route)) {
+    return null;
   }
-  return null;
+
+  return segments[0];
 };
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  
+
   if (!token) {
     const callbackUrl = encodeURIComponent(pathname + search);
     const signinUrl = `/api/auth/signin?callbackUrl=${callbackUrl}`;

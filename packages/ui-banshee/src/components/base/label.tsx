@@ -36,7 +36,7 @@ const Label = React.forwardRef<
     ref={ref}
     className={cn(
       labelVariants({ variant }),
-      disabled && '!ui-banshee-text-neutral-5',
+      disabled && 'ui-banshee-text-neutral-5',
       className,
     )}
     {...props}

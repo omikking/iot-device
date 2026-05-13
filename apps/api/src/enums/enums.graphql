@@ -45,6 +45,10 @@ enum BoltType {
   D47_MD_PEG_BOLT_2_4_M
   D47_MD_PEG_BOLT_3_0_M
   FRICTION_BOLT_47_MM
+  FRICTION_BOLT_47_MM_1_8_M
+  FRICTION_BOLT_47_MM_2_1_M
+  FRICTION_BOLT_47_MM_2_4_M
+  FRICTION_BOLT_47_MM_3_0_M
   FRICTION_BOLT_39_MM
   FRICTION_BOLT_33_MM
   SPIRAL_FRICTION_BOLT
@@ -77,6 +81,8 @@ enum PullTestAbortReason {
   HIGH_ANGLE_NOT_PERPENDICULAR
   REBAR_EJECTED_STOPPER_CAUGHT
   BOLT_END_DAMAGE_RIG_NOT_ENGAGING
+  PULL_TEST_COLLAR_INSTALLED_BACKWARDS
+  BROKEN_BOLT_NUT
 }
 
 enum Application {
@@ -101,12 +107,20 @@ enum ProceqStatus {
   UNMEASURED
 }
 
+type EnumOption {
+  value: String!
+  label: String!
+}
+
 type Query {
   getRoles: [Role!]!
   getResults: [Result!]!
   getBoltTypes: [BoltType!]
+  getBoltTypesOptions: [EnumOption!]!
   getRingPosition: [RingPosition!]
+  getRingPositionOptions: [EnumOption!]!
   getPullTestAbortReason: [PullTestAbortReason!]
+  getPullTestAbortReasonOptions: [EnumOption!]!
   getApplication: [Application!]
   getPlanLevel: [PlanLevel!]
   getProceqStatus: [ProceqStatus!]

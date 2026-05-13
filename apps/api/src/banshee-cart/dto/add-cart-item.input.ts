@@ -25,9 +25,21 @@ export class AddCartItemInput {
   @IsOptional()
   quantity?: number;
 
-  @IsString()
+  @IsUUID()
   @IsOptional()
-  location?: string;
+  siteId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  levelId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  driveId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  locationId?: string;
 
   @IsInt()
   @IsOptional()

@@ -10,6 +10,7 @@ import {
   SidebarInset,
   Form,
   LoadingSpinner,
+  showAlertToast,
 } from '@gsp/ui-banshee';
 import { Text } from '@gsp/ui-banshee';
 import { CircleX, Menu } from 'lucide-react';
@@ -33,7 +34,10 @@ const cartItemsQuery = graphql(`
       itemType
       name
       quantity
-      location
+      bansheeRequestId
+      location {
+        locationName
+      }
       bansheeRequest {
         serialNumber
         location {
@@ -134,7 +138,18 @@ export default function CartPage() {
           cartItemId,
           input: { quantity: parsed },
         }).then((result) => {
-          handleGraphQLErrors(result.error);
+          if (handleGraphQLErrors(result.error)) return;
+          if (result.error) {
+            showAlertToast({
+              title: 'Failed to update quantity',
+              variant: 'error',
+            });
+            return;
+          }
+          showAlertToast({
+            title: 'Quantity updated',
+            variant: 'success',
+          });
         });
       }
     }, 3000);
@@ -174,11 +189,26 @@ export default function CartPage() {
         attachments: attachments.map((a) => a.name),
       },
     });
-    handleGraphQLErrors(result.error);
 
-    if (!result.error) {
-      reexecuteCartItems({ requestPolicy: 'network-only' });
+    if (handleGraphQLErrors(result.error)) return;
+
+    if (result.error) {
+      showAlertToast({
+        title: 'Failed to submit order',
+        description: 'Please try again or contact support.',
+        variant: 'error',
+      });
+      return;
     }
+
+    showAlertToast({
+      title: 'Order submitted successfully',
+      variant: 'success',
+    });
+
+    form.reset({ orderComments: '' });
+    setAttachments([]);
+    reexecuteCartItems({ requestPolicy: 'network-only' });
   };
 
   const handleAddAttachments = (
@@ -206,7 +236,21 @@ export default function CartPage() {
   };
   const handleDeleteCartItem = async (id: string) => {
     const result = await executeDeleteCartItem({ id });
-    handleGraphQLErrors(result.error);
+
+    if (handleGraphQLErrors(result.error)) return;
+
+    if (result.error) {
+      showAlertToast({
+        title: 'Failed to remove item',
+        variant: 'error',
+      });
+      return;
+    }
+
+    showAlertToast({
+      title: 'Item removed from cart',
+      variant: 'success',
+    });
   };
   const handleAddAttachmentButtonClick = () => {
     inputRef.current?.click();
@@ -215,7 +259,7 @@ export default function CartPage() {
   return (
     <SidebarInset>
       <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen">
-        <h1 className="ui-banshee-text-2xl ui-banshee-font-bold ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
+        <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
           Order Summary
         </h1>
         <div className="ui-banshee-flex ui-banshee-flex-wrap ui-banshee-h-full">
@@ -224,16 +268,16 @@ export default function CartPage() {
               <Table variant="border">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[15%]">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
                       <Text
                         variant="small"
                         color="foreground"
-                        className="ui-banshee-font-semibold ui-banshee-w-6"
+                        className="ui-banshee-font-semibold"
                       >
                         Item
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[15%]">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
                       <Text
                         variant="small"
                         color="foreground"
@@ -242,7 +286,7 @@ export default function CartPage() {
                         Location
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2 ui-banshee-w-[10%]">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
                       <Text
                         variant="small"
                         color="foreground"
@@ -251,8 +295,10 @@ export default function CartPage() {
                         Quantity
                       </Text>
                     </TableHead>
-                    <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
-                      <Menu size={20} className="ui-banshee-m-auto" />
+                    <TableHead className="ui-banshee-px-3 ui-banshee-py-2">
+                      <div className="ui-banshee-min-w-80 ui-banshee-w-full ui-banshee-flex ui-banshee-justify-end">
+                        <Menu size={20} />
+                      </div>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -276,11 +322,13 @@ export default function CartPage() {
                     <TableRow>
                       <TableCell
                         colSpan={4}
-                        className="ui-banshee-text-center ui-banshee-py-8"
+                        className="ui-banshee-text-center ui-banshee-py-4"
                       >
-                        <Text variant="small" color="muted">
-                          Your cart is empty.
-                        </Text>
+                        <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+                          <Text variant="small" color="muted">
+                            Your cart is empty.
+                          </Text>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -298,7 +346,10 @@ export default function CartPage() {
                       </TableCell>
                       <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
                         <Text variant="small" color="foreground">
-                          {item?.bansheeRequest?.location?.locationName ?? '-'}
+                          {item.itemType === BansheeCartItemType.NewBanshee
+                            ? item?.location?.locationName ?? '-'
+                            : item?.bansheeRequest?.location?.locationName ??
+                              '-'}
                         </Text>
                       </TableCell>
                       <TableCell className="!ui-banshee-text-center !ui-banshee-bg-neutral-1 ui-banshee-px-3">
@@ -333,7 +384,7 @@ export default function CartPage() {
                           type="button"
                           onClick={() => handleDeleteCartItem(item.id)}
                           aria-label="Remove cart item"
-                          className="ui-banshee-flex ui-banshee-justify-center ui-banshee-items-center ui-banshee-w-full ui-banshee-cursor-pointer ui-banshee-bg-transparent ui-banshee-border-0 ui-banshee-p-0"
+                          className="ui-banshee-flex ui-banshee-justify-end ui-banshee-items-center ui-banshee-w-full ui-banshee-cursor-pointer ui-banshee-bg-transparent ui-banshee-border-0 ui-banshee-py-0 ui-banshee-px-[.225rem]"
                         >
                           <CircleX size={16} />
                         </button>
@@ -345,7 +396,7 @@ export default function CartPage() {
             </div>
           </div>
 
-          <div className="ui-banshee-p-6 md:ui-banshee-p-10 md:ui-banshee-w-2/5 ui-banshee-bg-neutral-50">
+          <div className="ui-banshee-p-8 md:ui-banshee-p-10 md:ui-banshee-w-2/5 ui-banshee-bg-neutral-50">
             <div>
               <Headline
                 as="h4"
@@ -395,7 +446,7 @@ export default function CartPage() {
                       as="h4"
                       variant="small"
                       color="foreground"
-                      className="ui-banshee-mb-4 ui-banshee-border-b ui-banshee-border-gray-200"
+                      className="ui-banshee-border-b ui-banshee-border-gray-200"
                     >
                       Attachments
                     </Headline>
@@ -403,9 +454,13 @@ export default function CartPage() {
                       {attachments.map((attachment) => (
                         <div
                           key={attachment.id}
-                          className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-border-gray-200 ui-banshee-justify-between ui-banshee-p-2 ui-banshee-bg-neutral-1 ui-banshee-rounded"
+                          className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-border-gray-200 ui-banshee-justify-between ui-banshee-p-2 ui-banshee-bg-neutral-1 ui-banshee-rounded !ui-banshee-m-0"
                         >
-                          <Text variant="small" color="foreground">
+                          <Text
+                            variant="small"
+                            color="foreground"
+                            className="ui-banshee-underline"
+                          >
                             {attachment.name} - {attachment.size}
                           </Text>
                           <Button

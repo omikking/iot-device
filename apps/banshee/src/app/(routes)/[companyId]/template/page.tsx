@@ -410,7 +410,7 @@ export default function TemplatePage({
                     Banshee Template Library
                   </Text>
                 </TableHead>
-                <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
+                <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
                   <Menu size={20} />
                 </TableHead>
               </TableRow>
@@ -437,7 +437,7 @@ export default function TemplatePage({
                     colSpan={2}
                     className="ui-banshee-text-center ui-banshee-py-4"
                   >
-                    <Text variant="small" color="muted">
+                    <Text variant="small" color="muted" className='ui-banshee-text-center'>
                       No templates found
                     </Text>
                   </TableCell>

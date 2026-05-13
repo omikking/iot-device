@@ -21,7 +21,13 @@ export class BansheeOrderService {
 
   private readonly orderInclude = {
     orderItems: {
-      include: { bansheeRequest: true },
+      include: {
+        bansheeRequest: true,
+        site: true,
+        level: true,
+        drive: true,
+        location: true,
+      },
     },
     company: true,
   };
@@ -105,8 +111,10 @@ export class BansheeOrderService {
         status: BansheeOrderItemStatus.PENDING,
         bansheeRequestId: item.bansheeRequestId,
         name: item.name,
-        quantity: 1,
-        location: item.location,
+        siteId: item.siteId,
+        levelId: item.levelId,
+        driveId: item.driveId,
+        locationId: item.locationId,
         period: item.period,
       }));
     });
@@ -205,7 +213,14 @@ export class BansheeOrderService {
       const updatedItem = await tx.bansheeOrderItem.update({
         where: { id },
         data: { status: BansheeOrderItemStatus.FULFILLED },
-        include: { bansheeRequest: true, order: true },
+        include: {
+          bansheeRequest: true,
+          order: true,
+          site: true,
+          level: true,
+          drive: true,
+          location: true,
+        },
       });
 
       await this.recomputeOrderStatus(tx, orderItem.orderId);
@@ -234,7 +249,14 @@ export class BansheeOrderService {
       const updatedItem = await tx.bansheeOrderItem.update({
         where: { id },
         data: { status: BansheeOrderItemStatus.CANCELLED },
-        include: { bansheeRequest: true, order: true },
+        include: {
+          bansheeRequest: true,
+          order: true,
+          site: true,
+          level: true,
+          drive: true,
+          location: true,
+        },
       });
 
       await this.recomputeOrderStatus(tx, orderItem.orderId);

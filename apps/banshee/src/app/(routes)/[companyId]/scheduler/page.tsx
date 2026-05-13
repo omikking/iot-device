@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, ComponentProps } from 'react';
 import {
   SidebarInset,
   Headline,
@@ -13,13 +13,17 @@ import {
   TableHead,
   TableCell,
   DropdownMultiSelectSearch,
+  Dropdown,
   showAlertToast,
   LoadingSpinner,
+  TableHeadWithSorting,
 } from '@gsp/ui-banshee';
 import { Plus, Star, Check, ShoppingCart as CartIcon } from 'lucide-react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeDetailModal } from '@/components/BansheeDetailModal';
 import { ConfirmAddToCartModal } from '@/components/ConfirmAddToCartModal';
+import { ConfirmAddNewBansheeModal } from '@/components/ConfirmAddNewBansheeModal';
+import { HierarchyDropdown } from '@/components/HierarchyDropdown';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
 import {
@@ -28,6 +32,51 @@ import {
   ProceqStatus,
 } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
+
+const schedulerHierarchyQuery = graphql(`
+  query TemplateHierarchy($companyId: String!) {
+    company(id: $companyId) {
+      id
+      sites {
+        id
+        siteName
+        levels {
+          id
+          levelName
+          drives {
+            id
+            driveName
+            locations {
+              id
+              locationName
+            }
+          }
+        }
+      }
+    }
+  }
+`);
+
+const schedulerCartItemsQuery = graphql(`
+  query cartItems($companyId: String!) {
+    cartItems(companyId: $companyId) {
+      id
+      itemType
+      name
+      quantity
+      bansheeRequestId
+      location {
+        locationName
+      }
+      bansheeRequest {
+        serialNumber
+        location {
+          locationName
+        }
+      }
+    }
+  }
+`);
 
 const addCartItemsMutation = graphql(`
   mutation addCartItems($input: [AddCartItemInput!]!) {
@@ -86,6 +135,8 @@ const bansheeSchedulerList = graphql(`
     }
   }
 `);
+
+type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
 // Types for scheduler data
 type BansheeStatus = 'red' | 'orange' | 'yellow' | 'green' | 'gray';
@@ -178,8 +229,19 @@ const SELECT_OPTIONS: { id: SelectOption; name: string }[] = [
   { id: 'due', name: 'Select due' },
   { id: 'overdue', name: 'Select overdue' },
   { id: 'others', name: 'Select others' },
-  { id: 'clear', name: 'Clear' },
 ];
+
+const PERIOD_OPTIONS = [
+  { id: '1', name: '1 Month' },
+  { id: '3', name: '3 Months' },
+  { id: '6', name: '6 Months' },
+  { id: '12', name: '12 Months' },
+];
+
+type SortConfig = {
+  key: keyof SchedulerBanshee;
+  direction: 'asc' | 'desc';
+} | null;
 
 export default function SchedulerPage({
   params,
@@ -191,8 +253,11 @@ export default function SchedulerPage({
   // Form state
   const [quantity, setQuantity] = useState('20');
   const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
-  const [period, setPeriod] = useState('3 Months');
+  const [siteId, setSiteId] = useState<string | null>(null);
+  const [levelId, setLevelId] = useState<string | null>(null);
+  const [driveId, setDriveId] = useState<string | null>(null);
+  const [locationId, setLocationId] = useState<string | null>(null);
+  const [period, setPeriod] = useState('3');
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedBansheeId, setSelectedBansheeId] = useState<string | null>(
     null,
@@ -200,9 +265,136 @@ export default function SchedulerPage({
 
   const [banshees, setBanshees] = useState<SchedulerBanshee[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showNewBansheeModal, setShowNewBansheeModal] = useState(false);
   const [isSubmittingCart, setIsSubmittingCart] = useState(false);
+  const [isSubmittingNewBanshee, setIsSubmittingNewBanshee] = useState(false);
 
   const [, executeAddCartItems] = useMutation(addCartItemsMutation);
+
+  const [{ data: cartData, error: cartItemsError }, reexecuteCartItems] =
+    useQuery({
+      query: schedulerCartItemsQuery,
+      variables: { companyId },
+      requestPolicy: 'cache-and-network',
+    });
+
+  useEffect(() => {
+    handleGraphQLErrors(cartItemsError);
+  }, [cartItemsError]);
+
+  const cartBansheeRequestIds = useMemo(
+    () =>
+      new Set(
+        (cartData?.cartItems ?? [])
+          .map((item) => item.bansheeRequestId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [cartData?.cartItems],
+  );
+
+  const [{ data: hierarchyData, error: hierarchyError }] = useQuery({
+    query: schedulerHierarchyQuery,
+    variables: { companyId },
+  });
+
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+
+  const sortedEntries = useMemo(() => {
+    const sortable = [...banshees];
+
+    if (sortConfig !== null) {
+      sortable.sort((a, b) => {
+        let aValue: string | number =
+          a[sortConfig.key] == null
+            ? ''
+            : (a[sortConfig.key] as string | number);
+
+        let bValue: string | number =
+          b[sortConfig.key] == null
+            ? ''
+            : (b[sortConfig.key] as string | number);
+
+        if (sortConfig.key === 'dueDate' || sortConfig.key === 'lastMeasured') {
+          aValue =
+            aValue && typeof aValue !== 'boolean'
+              ? new Date(aValue).getTime()
+              : 0;
+
+          bValue =
+            bValue && typeof bValue !== 'boolean'
+              ? new Date(bValue).getTime()
+              : 0;
+        }
+
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+
+        return 0;
+      });
+    }
+
+    return sortable;
+  }, [banshees, sortConfig]);
+
+  const requestSort = (key: keyof SchedulerBanshee) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === 'asc'
+    ) {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const createMockColumn = (key: keyof SchedulerBanshee) =>
+    ({
+      getIsSorted: () =>
+        sortConfig?.key === key ? sortConfig.direction : false,
+      toggleSorting: () => requestSort(key),
+    }) as ColumnProp;
+
+  useEffect(() => {
+    handleGraphQLErrors(hierarchyError);
+  }, [hierarchyError]);
+
+  const sites = useMemo(
+    () => hierarchyData?.company?.sites ?? [],
+    [hierarchyData?.company?.sites],
+  );
+  const levels = useMemo(() => {
+    if (siteId) return sites.find((s) => s.id === siteId)?.levels ?? [];
+    return sites.flatMap((s) => s.levels ?? []);
+  }, [sites, siteId]);
+  const drives = useMemo(() => {
+    if (levelId) return levels.find((l) => l.id === levelId)?.drives ?? [];
+    return levels.flatMap((l) => l.drives ?? []);
+  }, [levels, levelId]);
+  const locations = useMemo(() => {
+    if (driveId) return drives.find((d) => d.id === driveId)?.locations ?? [];
+    return drives.flatMap((d) => d.locations ?? []);
+  }, [drives, driveId]);
+
+  const handleSiteChange = (id: string) => {
+    setSiteId(id || null);
+    setLevelId(null);
+    setDriveId(null);
+    setLocationId(null);
+  };
+  const handleLevelChange = (id: string) => {
+    setLevelId(id || null);
+    setDriveId(null);
+    setLocationId(null);
+  };
+  const handleDriveChange = (id: string) => {
+    setDriveId(id || null);
+    setLocationId(null);
+  };
+  const handleLocationChange = (id: string) => {
+    setLocationId(id || null);
+  };
 
   const selectedCount = useMemo(
     () => banshees.filter((b) => b.isSelected).length,
@@ -215,21 +407,59 @@ export default function SchedulerPage({
     );
   };
 
-  const handleAddNewBanshees = async () => {
+  const handleAddNewBanshees = () => {
+    setShowNewBansheeModal(true);
+  };
+
+  const handleConfirmAddNewBanshees = async () => {
     const qty = parseInt(quantity, 10) || 1;
-    const result = await executeAddCartItems({
-      input: [
-        {
-          itemType: BansheeCartItemType.NewBanshee,
-          name: name || undefined,
-          location: location || undefined,
-          quantity: qty,
-          period: period ? parseInt(period) || undefined : undefined,
-          companyId,
-        },
-      ],
-    });
-    handleGraphQLErrors(result.error);
+    setIsSubmittingNewBanshee(true);
+
+    try {
+      const result = await executeAddCartItems({
+        input: [
+          {
+            itemType: BansheeCartItemType.NewBanshee,
+            name: name || undefined,
+            siteId: siteId ?? undefined,
+            levelId: levelId ?? undefined,
+            driveId: driveId ?? undefined,
+            locationId: locationId ?? undefined,
+            quantity: qty,
+            period: period ? parseInt(period, 10) || undefined : undefined,
+            companyId,
+          },
+        ],
+      });
+
+      if (handleGraphQLErrors(result.error)) return false;
+
+      if (result.error) {
+        showAlertToast({
+          title: 'Failed to add new banshees',
+          description: 'Please try again or contact support.',
+          variant: 'error',
+        });
+        return false;
+      }
+
+      showAlertToast({
+        title: `${qty} new banshee${qty > 1 ? 's' : ''} added to cart`,
+        variant: 'success',
+      });
+
+      reexecuteCartItems({ requestPolicy: 'network-only' });
+      return true;
+    } finally {
+      setIsSubmittingNewBanshee(false);
+      setQuantity('2');
+      setName('');
+      setSiteId(null);
+      setLevelId(null);
+      setDriveId(null);
+      setLocationId(null);
+      setQuantity('20');
+    }
   };
 
   const handleAddToCart = () => {
@@ -274,7 +504,13 @@ export default function SchedulerPage({
         return false;
       }
 
+      showAlertToast({
+        title: `${added.length} item${added.length > 1 ? 's' : ''} added to cart`,
+        variant: 'success',
+      });
+
       setShowConfirmModal(false);
+      reexecuteCartItems({ requestPolicy: 'network-only' });
       router.push('/cart');
 
       return true;
@@ -302,20 +538,24 @@ export default function SchedulerPage({
   useEffect(() => {
     handleGraphQLErrors(schedulerListError);
   }, [schedulerListError]);
-  const bansheeRequests = data?.bansheeRequests?.results || [];
+  const bansheeRequests = useMemo(
+    () =>
+      (data?.bansheeRequests?.results ?? []).filter(
+        (r) => !cartBansheeRequestIds.has(r.id),
+      ),
+    [data?.bansheeRequests?.results, cartBansheeRequestIds],
+  );
 
   // Transform API data to scheduler format when data changes
   useEffect(() => {
-    if (bansheeRequests.length > 0) {
-      const transformedData = transformBansheeRequests(bansheeRequests);
-      setBanshees(
-        transformedData.map((b) => ({
-          ...b,
-          isSelected: false,
-          isExpanded: false,
-        })),
-      );
-    }
+    const transformedData = transformBansheeRequests(bansheeRequests);
+    setBanshees(
+      transformedData.map((b) => ({
+        ...b,
+        isSelected: false,
+        isExpanded: false,
+      })),
+    );
   }, [bansheeRequests]);
 
   if (fetching) {
@@ -340,49 +580,103 @@ export default function SchedulerPage({
 
             <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-[#F8F8F8] ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-[#DADADA]">
               <div className="ui-banshee-flex-shrink-0">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                  Quantity
+                </p>
                 <input
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="20 (suggested quantity)"
-                  className="ui-banshee-flex ui-banshee-h-10 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
               <div className="ui-banshee-flex-1 ui-banshee-min-w-[200px]">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                  Name
+                </p>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name (optional)"
-                  className="ui-banshee-flex ui-banshee-h-10 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
-              <div className="ui-banshee-flex-1 ui-banshee-min-w-[200px]">
-                <input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Location (optional)"
-                  className="ui-banshee-flex ui-banshee-h-10 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+              <div className="ui-banshee-flex-1 ui-banshee-min-w-[160px]">
+                <HierarchyDropdown
+                  id="scheduler-site-dropdown"
+                  label="Site"
+                  placeholder="Select site"
+                  options={sites.map((s) => ({
+                    id: s.id,
+                    name: s.siteName,
+                  }))}
+                  selectedId={siteId ?? ''}
+                  onSelect={handleSiteChange}
                 />
               </div>
 
-              <div className="ui-banshee-flex-shrink-0">
-                <select
-                  value={period}
-                  onChange={(e) => setPeriod(e.target.value)}
-                  className="ui-banshee-flex ui-banshee-h-10 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring ui-banshee-w-32"
-                >
-                  <option value="1 Month">1 Month</option>
-                  <option value="3 Months">3 Months</option>
-                  <option value="6 Months">6 Months</option>
-                  <option value="12 Months">12 Months</option>
-                </select>
+              <div className="ui-banshee-flex-1 ui-banshee-min-w-[160px]">
+                <HierarchyDropdown
+                  id="scheduler-level-dropdown"
+                  label="Level"
+                  placeholder="Select level"
+                  options={levels.map((l) => ({
+                    id: l.id,
+                    name: l.levelName,
+                  }))}
+                  selectedId={levelId ?? ''}
+                  onSelect={handleLevelChange}
+                />
+              </div>
+
+              <div className="ui-banshee-flex-1 ui-banshee-min-w-[160px]">
+                <HierarchyDropdown
+                  id="scheduler-drive-dropdown"
+                  label="Drive"
+                  placeholder="Select drive"
+                  options={drives.map((d) => ({
+                    id: d.id,
+                    name: d.driveName,
+                  }))}
+                  selectedId={driveId ?? ''}
+                  onSelect={handleDriveChange}
+                />
+              </div>
+
+              <div className="ui-banshee-flex-1 ui-banshee-min-w-[160px]">
+                <HierarchyDropdown
+                  id="scheduler-location-dropdown"
+                  label="Location"
+                  placeholder="Select location"
+                  options={locations.map((l) => ({
+                    id: l.id,
+                    name: l.locationName,
+                  }))}
+                  selectedId={locationId ?? ''}
+                  onSelect={handleLocationChange}
+                />
+              </div>
+
+              <div className="ui-banshee-flex-shrink-0 ui-banshee-w-40">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                  Duration
+                </p>
+                <Dropdown
+                  id="scheduler-period-dropdown"
+                  placeholder="Select period"
+                  options={PERIOD_OPTIONS}
+                  selectedId={period}
+                  onSelect={(id) => setPeriod(id ?? '')}
+                  className="ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-h-12"
+                />
               </div>
 
               <Button
                 onClick={handleAddNewBanshees}
-                className="ui-banshee-flex-shrink-0"
+                className="ui-banshee-flex-shrink-0 ui-banshee-h-12"
               >
                 Add New Banshees
               </Button>
@@ -401,78 +695,66 @@ export default function SchedulerPage({
                         </Text>
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
+                        <TableHeadWithSorting
+                          header="Status"
                           className="ui-banshee-w-24"
-                        >
-                          Status
-                        </Text>
+                          column={createMockColumn('status')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-32"
-                        >
-                          Banshee
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Banshee"
+                          className="ui-banshee-w-32 !ui-banshee-justify-start"
+                          column={createMockColumn('serialNumber')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-40"
-                        >
-                          Location
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Location"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start"
+                          column={createMockColumn('location')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-48 ui-banshee-text-left"
-                        >
-                          Total Elongation (mm)
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Total Elongation (mm)"
+                          className="ui-banshee-w-48 !ui-banshee-justify-start"
+                          column={createMockColumn('totalElongation')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-32"
-                        >
-                          Last Measured
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Last Measured"
+                          className="ui-banshee-w-32 !ui-banshee-justify-start"
+                          column={createMockColumn('lastMeasured')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-24"
-                        >
-                          Period
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Period"
+                          className="ui-banshee-w-24 !ui-banshee-justify-start"
+                          column={createMockColumn('period')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
-                        <Text
-                          variant="small"
-                          color="foreground"
-                          className="ui-banshee-w-24"
-                        >
-                          Due Date
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Due Date"
+                          className="ui-banshee-w-24 !ui-banshee-justify-start"
+                          column={createMockColumn('dueDate')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap ui-banshee-px-3">
-                        <Text variant="small" color="foreground">
-                          Suggested
-                        </Text>
+                        <TableHeadWithSorting
+                          header="Suggested"
+                          className="!ui-banshee-justify-start"
+                          column={createMockColumn('isSuggested')}
+                        />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <DropdownMultiSelectSearch
                           id="site-filter"
-                          placeholder="Site"
-                          searchPlaceholder="Search site..."
+                          placeholder="Select"
+                          searchPlaceholder="Search filter..."
                           variant="compact"
                           options={SELECT_OPTIONS}
                           selectedIds={selectedFilters}
@@ -483,7 +765,7 @@ export default function SchedulerPage({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {banshees.map((banshee) => (
+                    {sortedEntries.map((banshee) => (
                       <TableRow key={banshee.id}>
                         <TableCell>
                           <button
@@ -605,6 +887,15 @@ export default function SchedulerPage({
         onClose={() => setShowConfirmModal(false)}
         onOpenChange={setShowConfirmModal}
         onConfirm={handleConfirmAddToCart}
+      />
+      <ConfirmAddNewBansheeModal
+        isOpen={showNewBansheeModal}
+        name={name}
+        quantity={parseInt(quantity, 10) || 1}
+        isLoading={isSubmittingNewBanshee}
+        onClose={() => setShowNewBansheeModal(false)}
+        onOpenChange={setShowNewBansheeModal}
+        onConfirm={handleConfirmAddNewBanshees}
       />
       <BansheeDetailModal
         bansheeId={selectedBansheeId}

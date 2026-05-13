@@ -17,8 +17,17 @@ type BansheeCartItem {
 
   name: String
   quantity: Int!
-  location: String
   period: Int
+
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+
+  site: Site
+  level: Level
+  drive: Drive
+  location: Location
 
   companyId: String!
   company: Company
@@ -29,7 +38,10 @@ input AddCartItemInput {
   bansheeRequestId: String
   name: String
   quantity: Int
-  location: String
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
   period: Int
   companyId: String!
 }
@@ -37,7 +49,10 @@ input AddCartItemInput {
 input UpdateNewBansheeCartItemInput {
   quantity: Int
   name: String
-  location: String
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
   period: Int
 }
 

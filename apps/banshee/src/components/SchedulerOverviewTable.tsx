@@ -14,9 +14,15 @@ import {
 } from '@gsp/ui-banshee';
 import { useState, useMemo, ComponentProps } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
-import { SchedulerEntry } from '@/app/mock/mock';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
+type SchedulerEntry = {
+  status: string;
+  statusColor: string;
+  banshee: string;
+  location: string;
+  dueDate: string;
+};
 type SortConfig = {
   key: keyof SchedulerEntry;
   direction: 'asc' | 'desc';

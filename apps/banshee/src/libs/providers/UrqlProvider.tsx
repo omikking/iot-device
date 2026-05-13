@@ -12,7 +12,7 @@ const useClient = () => {
   return useMemo(() => {
     const client = new Client({
       // TODO: set url to 'process.env.NEXT_PUBLIC_GRAPHQL_URL'
-      url: 'http://localhost:3333/graphql',
+      url: 'http://localhost:3000/graphql',
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {

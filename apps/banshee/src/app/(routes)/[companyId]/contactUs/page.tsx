@@ -101,7 +101,7 @@ export default function ContactUsPage() {
         </Headline>
 
         <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-[1fr_2fr] ui-banshee-gap-8">
-          <div className="ui-banshee-bg-white ui-banshee-p-6">
+          <div className="ui-banshee-bg-white ui-banshee-p-8">
             <Text
               variant="small"
               color="foreground"
@@ -134,7 +134,7 @@ export default function ContactUsPage() {
             </div>
           </div>
 
-          <div className="ui-banshee-bg-neutral-1 ui-banshee-p-6 ui-banshee-h-full">
+          <div className="ui-banshee-bg-neutral-1 ui-banshee-p-8 ui-banshee-pr-16 ui-banshee-h-full">
             <Form {...form}>
               <div className="ui-banshee-grid ui-banshee-grid-cols-2 ui-banshee-gap-6 ui-banshee-mb-4">
                 <FormField
@@ -193,7 +193,7 @@ export default function ContactUsPage() {
                   as="h4"
                   variant="small"
                   color="foreground"
-                  className="ui-banshee-mb-4 ui-banshee-border-b ui-banshee-border-gray-200"
+                  className="ui-banshee-border-b ui-banshee-border-gray-200"
                 >
                   Attachments
                 </Headline>
@@ -201,9 +201,9 @@ export default function ContactUsPage() {
                   {attachments.map((attachment) => (
                     <div
                       key={attachment.id}
-                      className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-border-gray-200 ui-banshee-justify-between ui-banshee-p-2 ui-banshee-bg-neutral-1 ui-banshee-rounded"
+                      className="ui-banshee-flex ui-banshee-items-center ui-banshee-border-b ui-banshee-border-gray-200 ui-banshee-justify-between ui-banshee-p-2 ui-banshee-bg-neutral-1 ui-banshee-rounded !ui-banshee-m-0"
                     >
-                      <Text variant="small" color="foreground">
+                      <Text variant="small" color="foreground" className='ui-banshee-underline'>
                         {attachment.name} - {attachment.size}
                       </Text>
                       <Button

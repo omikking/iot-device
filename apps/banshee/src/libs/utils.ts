@@ -103,3 +103,19 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
     return true;
   }
 };
+
+export function formatDateTime(dt: string | null | undefined): string {
+  if (!dt) return 'N/A';
+  try {
+    return new Date(dt).toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } catch {
+    return dt;
+  }
+}

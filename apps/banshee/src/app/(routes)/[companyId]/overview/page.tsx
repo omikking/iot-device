@@ -88,15 +88,20 @@ export default function Page({ params }: { params: { companyId: string } }) {
   const { statusCounts } = data?.bansheeStatusDistribution || {};
 
   const sanitizedBansheeEntries =
-    bansheeData?.bansheeRequests?.results.map((entry) => ({
-      status: entry?.proceqData?.[0]?.status ?? 'UNKNOWN',
-      statusColor: '#FF0000',
-      banshee: entry?.serialNumber ?? '',
-      location: entry?.location?.locationName ?? '',
-      dueDate: entry?.proceqData?.[0]?.dueDate
-        ? new Date(entry.proceqData[0].dueDate).toLocaleDateString('en-GB')
-        : '-',
-    })) ?? [];
+    bansheeData?.bansheeRequests?.results.map((entry) => {
+      const latestMeasurement = entry?.proceqData?.at(-1);
+
+      return {
+        status: latestMeasurement?.status ?? 'UNKNOWN',
+        statusColor: '#FF0000',
+        banshee: entry?.serialNumber ?? '',
+        location: entry?.location?.locationName ?? '',
+        dueDate: latestMeasurement?.dueDate
+          ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
+          : '-',
+      };
+    }) ?? [];
+
   return (
     <SidebarInset>
       <main className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-6 ui-banshee-bg-main-white ui-banshee-box-border">
@@ -115,7 +120,10 @@ export default function Page({ params }: { params: { companyId: string } }) {
               bansheeRequests={bansheeData?.bansheeRequests?.results ?? []}
               fetching={bansheeRequestsFetching}
             />
-            <SchedulerOverviewTable entries={sanitizedBansheeEntries ?? []} fetching={bansheeRequestsFetching}/>
+            <SchedulerOverviewTable
+              entries={sanitizedBansheeEntries ?? []}
+              fetching={bansheeRequestsFetching}
+            />
           </div>
         </div>
       </main>

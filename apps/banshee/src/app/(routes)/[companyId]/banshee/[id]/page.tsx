@@ -138,8 +138,6 @@ export default function BansheeConfigPage() {
     variables: { id: id as string },
   });
 
-  console.log('shlok data', data);
-
   useEffect(() => {
     handleGraphQLErrors(bansheeConfigError);
   }, [bansheeConfigError]);

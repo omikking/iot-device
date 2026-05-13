@@ -12,6 +12,15 @@ export class BansheeCartService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  private readonly cartItemInclude = {
+    bansheeRequest: true,
+    company: true,
+    site: true,
+    level: true,
+    drive: true,
+    location: true,
+  } as const;
+
   async getCartItemsStats(companyId: string) {
     const statsDbResponse = await this.prisma.bansheeCartItem.groupBy({
       by: ['itemType'],
@@ -54,6 +63,10 @@ export class BansheeCartService {
           },
         },
         company: true,
+        site: true,
+        level: true,
+        drive: true,
+        location: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -159,11 +172,14 @@ export class BansheeCartService {
                   bansheeRequestId: item.bansheeRequestId,
                   name: item.name,
                   quantity: item.quantity ?? 1,
-                  location: item.location,
+                  siteId: item.siteId,
+                  levelId: item.levelId,
+                  driveId: item.driveId,
+                  locationId: item.locationId,
                   period: item.period,
                   companyId: item.companyId,
                 },
-                include: { bansheeRequest: true, company: true },
+                include: this.cartItemInclude,
               }),
             ),
           )
@@ -202,10 +218,13 @@ export class BansheeCartService {
       data: {
         ...(input.quantity !== undefined && { quantity: input.quantity }),
         ...(input.name !== undefined && { name: input.name }),
-        ...(input.location !== undefined && { location: input.location }),
+        ...(input.siteId !== undefined && { siteId: input.siteId }),
+        ...(input.levelId !== undefined && { levelId: input.levelId }),
+        ...(input.driveId !== undefined && { driveId: input.driveId }),
+        ...(input.locationId !== undefined && { locationId: input.locationId }),
         ...(input.period !== undefined && { period: input.period }),
       },
-      include: { bansheeRequest: true, company: true },
+      include: this.cartItemInclude,
     });
   }
 
@@ -220,7 +239,7 @@ export class BansheeCartService {
 
     return this.prisma.bansheeCartItem.delete({
       where: { id },
-      include: { bansheeRequest: true, company: true },
+      include: this.cartItemInclude,
     });
   }
 

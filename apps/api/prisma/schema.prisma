@@ -247,6 +247,8 @@ model Site {
   bansheeRequests     BansheeRequest[]
   bansheeSessionStats BansheeSessionStats[]
   templates           BansheeTemplate[]
+  cartItems           BansheeCartItem[]
+  orderItems          BansheeOrderItem[]
 
   @@map("sites")
 }
@@ -265,6 +267,8 @@ model Level {
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
   templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("levels")
 }
@@ -283,6 +287,8 @@ model Drive {
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
   templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("drives")
 }
@@ -300,6 +306,8 @@ model Location {
   boltResult      BoltResult[]
   bansheeRequests BansheeRequest[]
   templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("locations")
 }
@@ -648,8 +656,17 @@ model BansheeCartItem {
   // --- NEW_BANSHEE ---
   name     String?
   quantity Int     @default(1)
-  location String?
   period   Int?
+
+  siteId     String?
+  levelId    String?
+  driveId    String?
+  locationId String?
+
+  site     Site?     @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  drive    Drive?    @relation(fields: [driveId], references: [id], onDelete: SetNull)
+  location Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
 
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
@@ -690,10 +707,18 @@ model BansheeOrderItem {
   bansheeRequestId String?
 
   // NEW_BANSHEE snapshot (copied from CartItem at submission time)
-  name     String?
-  quantity Int     @default(1)
-  location String?
-  period   Int?
+  name   String?
+  period Int?
+
+  siteId     String?
+  levelId    String?
+  driveId    String?
+  locationId String?
+
+  site     Site?     @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  drive    Drive?    @relation(fields: [driveId], references: [id], onDelete: SetNull)
+  location Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
 
   order   BansheeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String

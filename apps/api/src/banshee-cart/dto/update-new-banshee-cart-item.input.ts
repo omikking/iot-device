@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, Min } from 'class-validator';
+import { IsString, IsOptional, IsInt, Min, IsUUID } from 'class-validator';
 
 export class UpdateNewBansheeCartItemInput {
   @IsInt()
@@ -10,9 +10,21 @@ export class UpdateNewBansheeCartItemInput {
   @IsOptional()
   name?: string;
 
-  @IsString()
+  @IsUUID()
   @IsOptional()
-  location?: string;
+  siteId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  levelId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  driveId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  locationId?: string;
 
   @IsInt()
   @IsOptional()

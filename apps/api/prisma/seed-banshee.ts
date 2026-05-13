@@ -1253,6 +1253,27 @@ async function seedBanshee() {
     'MD01-00001',
     'MD01-001001',
     'MDX-00001',
+    '1000000001001',
+    '1000000001002',
+    '1000000002001',
+    '1000000003001',
+    'Data-with-log001',
+    '1423245354465',
+    '1111111111',
+    'Data-with-log005',
+    'Data-with-log006',
+    '00000001',
+    'Data-with-log009',
+    'Data-with-log010',
+    'Data-with-log012',
+    'Data-with-log013',
+    'Data-with-log014',
+    'Data-with-log015',
+    'Data-with-log017',
+    'Data-with-log016',
+    'Data-with-log019',
+    'Data-with-log018',
+    'vel-6000-test001',
   ];
 
   // Seed BoltTypeConstant with default values for D47_MD_1_8_M
@@ -1289,7 +1310,13 @@ async function seedBanshee() {
     select: { fileName: true },
     distinct: ['fileName'],
   });
-  const proceqSerialNumbers = proceqFileNames.map((p) => p.fileName);
+
+  const TIMESTAMP_SUFFIX = /_\d{13}$/;
+  const stripTimestampSuffix = (fileName: string) =>
+    fileName.replace(TIMESTAMP_SUFFIX, '');
+  const proceqSerialNumbers = [
+    ...new Set(proceqFileNames.map((p) => stripTimestampSuffix(p.fileName))),
+  ];
   const existingSet = new Set(serialNumbers);
   const newFromProceq = proceqSerialNumbers.filter(
     (fn) => !existingSet.has(fn),

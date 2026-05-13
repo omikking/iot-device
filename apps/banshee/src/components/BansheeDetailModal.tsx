@@ -14,6 +14,7 @@ import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { formatDateTime } from '@/libs/utils';
 
 const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
@@ -39,10 +40,15 @@ const bansheeDetailQuery = graphql(`
       proceqData {
         status
         createdTimestamp
+        dueDate
         readings {
           elongation
           status
         }
+      }
+      boltTypeConstant {
+        lowPlasticLimit
+        elasticLimit
       }
     }
   }
@@ -73,7 +79,7 @@ interface DetailRowProps {
 }
 
 const DetailRow = memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-3 ui-banshee-border-b ui-banshee-border-gray-50 ui-banshee-text-sm">
+  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-3 ui-banshee-border-b ui-banshee-border-[#E6E6E6] ui-banshee-text-sm ">
     <div className="ui-banshee-font-medium ui-banshee-text-neutral-500 ui-banshee-w-1/2 ui-banshee-pr-4">
       {label}
     </div>
@@ -161,13 +167,19 @@ export const BansheeDetailModal = memo(
         driveName: request.drive?.driveName ?? 'N/A',
         locationName: request.location?.locationName ?? 'N/A',
         coordsDisplay: parseCoordinates(request.coordinates),
-        boltInstallationDateTime: request.boltInstallationDateTime ?? 'N/A',
+        boltInstallationDateTime:
+          formatDateTime(request.boltInstallationDateTime) ?? 'N/A',
         elongation:
           lastReading?.elongation != null
             ? lastReading.elongation.toFixed(1)
             : '-',
         boltType: request.boltType ?? 'N/A',
         period: formatPeriod(request.period),
+        lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit || 'N/A',
+        elasticLimit: request.boltTypeConstant?.elasticLimit || 'N/A',
+        dueDate: latestMeasurement?.dueDate
+          ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
+          : '-',
       };
     }, [data]);
 
@@ -216,9 +228,15 @@ export const BansheeDetailModal = memo(
                   label="Period for automatic service reminder"
                   value={details.period}
                 />
-                <DetailRow label="Due Date" value="N/A" />
-                <DetailRow label="Low Plastic Limit (mm)" value="N/A" />
-                <DetailRow label="High Plastic Limit (mm)" value="N/A" />
+                <DetailRow label="Due Date" value={details.dueDate} />
+                <DetailRow
+                  label="Low Plastic Limit (mm)"
+                  value={details.lowPlasticLimit}
+                />
+                <DetailRow
+                  label="High Plastic Limit (mm)"
+                  value={details.elasticLimit}
+                />
               </div>
 
               <ActionBar

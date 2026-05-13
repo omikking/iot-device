@@ -40,9 +40,17 @@ type BansheeOrderItem {
   bansheeRequest: BansheeRequest
 
   name: String
-  quantity: Int!
-  location: String
   period: Int
+
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+
+  site: Site
+  level: Level
+  drive: Drive
+  location: Location
 
   orderId: String!
   order: BansheeOrder

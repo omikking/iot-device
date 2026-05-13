@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, formatDateTime } from '@/libs/utils';
 import {
   SidebarInset,
   Tabs,
@@ -50,6 +50,7 @@ const bansheeDetailQuery = graphql(`
       proceqData {
         status
         createdTimestamp
+        dueDate
         readings {
           elongation
           status
@@ -96,22 +97,6 @@ function formatPeriod(period: number | null | undefined): string {
   if (period === 1) return '1 month';
   if (period > 1) return `${period} months`;
   return 'N/A';
-}
-
-function formatDateTime(dt: string | null | undefined): string {
-  if (!dt) return 'N/A';
-  try {
-    return new Date(dt).toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  } catch {
-    return dt;
-  }
 }
 
 interface DetailRowProps {
@@ -172,6 +157,7 @@ export default function BansheeDashboardPage() {
       locationName: request.location?.locationName ?? 'N/A',
       coordsDisplay: parseCoordinatesDisplay(request.coordinates),
       installationDate: formatDateTime(request.boltInstallationDateTime),
+      comment: request?.comment || 'No comment available.',
       elongation:
         lastReading?.elongation != null
           ? lastReading.elongation.toFixed(1)
@@ -180,6 +166,9 @@ export default function BansheeDashboardPage() {
       period: formatPeriod(request.period),
       lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit,
       elasticLimit: request.boltTypeConstant?.elasticLimit,
+      dueDate: latestMeasurement?.dueDate
+        ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
+        : '-',
     };
   }, [data]);
 
@@ -271,7 +260,7 @@ export default function BansheeDashboardPage() {
                 label="Period for automatic service reminder"
                 value={details.period}
               />
-              <DetailRow label="Due Date" value="N/A" />
+              <DetailRow label="Due Date" value={details.dueDate} />
               <DetailRow
                 label="Low Plastic Limit (mm)"
                 value={details.lowPlasticLimit}
@@ -280,14 +269,7 @@ export default function BansheeDashboardPage() {
                 label="High Plastic (mm)"
                 value={details.elasticLimit}
               />
-              <DetailRow
-                label="Comment"
-                value={
-                  <span className="ui-banshee-whitespace-pre-line">
-                    text{'\n'}text
-                  </span>
-                }
-              />
+              <DetailRow label="Comment" value={details.comment} />
             </div>
           </div>
 
@@ -374,9 +356,13 @@ export default function BansheeDashboardPage() {
                         <TableRow>
                           <TableCell
                             colSpan={3}
-                            className="ui-banshee-text-center ui-banshee-text-neutral-500 ui-banshee-py-8"
+                            className="ui-banshee-text-center ui-banshee-py-8"
                           >
-                            No comments or photos available
+                            <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
+                              <Text variant="small" color="muted">
+                                No comments or photos available.
+                              </Text>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ) : (

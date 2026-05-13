@@ -516,6 +516,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
               className={cn(
                 buttonStyling(variant),
                 isOpen && 'ui-banshee-rounded-b-none',
+                'ui-banshee-h-full ui-banshee-rounded'
               )}
             >
               <Text

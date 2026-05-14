@@ -565,7 +565,7 @@ model ProceqAttachment {
   attachmentType String
   description    String?
 
-  proceqData   ProceqData @relation(fields: [proceqDataId], references: [id])
+  proceqData   ProceqData @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
   proceqDataId String
 
   @@map("proceq_attachments")

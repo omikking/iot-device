@@ -8,11 +8,13 @@ import { signOut, useSession } from 'next-auth/react';
 const useClient = () => {
   const { data: session } = useSession();
   const token = session?.accessToken;
+  const error = session?.error;
 
   return useMemo(() => {
+    // This client manages all of our GraphQL requests and results.
     const client = new Client({
       // TODO: set url to 'process.env.NEXT_PUBLIC_GRAPHQL_URL'
-      url: 'http://localhost:3000/graphql',
+      url: 'http://localhost:3333/graphql',
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {
@@ -45,10 +47,9 @@ const useClient = () => {
             // NextAuth is responsible for refreshing the token, not urql.
             async refreshAuth() {
               // TODO: This needs more testing/work.
-              // if (error === 'RefreshAccessTokenError') {
-              //   console.log('RefreshAccessTokenError', error);
+              if (error === 'RefreshAccessTokenError') {
                 signOut();
-              // }
+              }
             },
           };
         }),

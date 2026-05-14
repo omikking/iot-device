@@ -55,6 +55,19 @@ export class BansheeOrderResolver {
     return this.bansheeOrderService.cancelOrder(id, companyId, user);
   }
 
+  @Roles([], [Application.BANSHEE], 'bansheeOrder')
+  @Mutation('completeOrder')
+  async completeOrder(
+    @Args('id', ParseUUIDPipe) id: string,
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    let companyId;
+    if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+      companyId = this.resolveCompanyId(user);
+    }
+    return this.bansheeOrderService.completeOrder(id, companyId, user);
+  }
+
   @Roles([], [Application.BANSHEE], 'bansheeOrderItem')
   @Mutation('fulfillOrderItem')
   async fulfillOrderItem(@Args('id', ParseUUIDPipe) id: string) {

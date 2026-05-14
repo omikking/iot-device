@@ -82,6 +82,8 @@ export class BansheeRequestsResolver {
     activateNotifications?: boolean,
     @Args('startDate', { type: () => Date, nullable: true }) startDate?: Date,
     @Args('endDate', { type: () => Date, nullable: true }) endDate?: Date,
+    @Args('isBrokenBolt', { nullable: true }) isBrokenBolt?: boolean,
+    @Args('isNotMeasurable', { nullable: true }) isNotMeasurable?: boolean,
   ) {
     const allowedApps = [Application.BANSHEE];
     const allowedCompanyIds = getAllowedCompanyIds(user);
@@ -102,6 +104,8 @@ export class BansheeRequestsResolver {
         activateNotifications,
         startDate,
         endDate,
+        isBrokenBolt,
+        isNotMeasurable,
       },
       allowedCompanyIds,
       allowedApps,

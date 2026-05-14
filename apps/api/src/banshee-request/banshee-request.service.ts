@@ -324,6 +324,8 @@ export class BansheeRequestsService {
       activateNotifications?: boolean;
       startDate?: Date;
       endDate?: Date;
+      isNotMeasurable?: boolean;
+      isBrokenBolt?: boolean;
     },
     allowedCompanyIds: string[],
     allowedApps: Application[],
@@ -385,6 +387,14 @@ export class BansheeRequestsService {
 
       if (restFilters.siteId) {
         where.siteId = restFilters.siteId;
+      }
+
+      if (restFilters.isBrokenBolt != null) {
+        where.isBrokenBolt = restFilters.isBrokenBolt;
+      }
+
+      if (restFilters.isNotMeasurable != null) {
+        where.isNotMeasurable = restFilters.isNotMeasurable;
       }
 
       if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {

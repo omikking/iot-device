@@ -193,6 +193,52 @@ export class BansheeOrderService {
     });
   }
 
+  async completeOrder(
+    id: string,
+    companyId: string | undefined,
+    user: ActiveUserData,
+  ) {
+    const order = await this.prisma.bansheeOrder.findUnique({
+      where: { id },
+      include: { orderItems: true },
+    });
+
+    if (!order) {
+      throw new UserInputError(`Order with id ${id} not found`);
+    }
+
+    if (
+      order.companyId !== companyId &&
+      user.globalRole !== GlobalRole.SANDVIK_ADMIN
+    ) {
+      throw new UserInputError('You can only complete your own orders');
+    }
+
+    if (order.status === BansheeOrderStatus.COMPLETED) {
+      throw new UserInputError('Order is already completed');
+    }
+
+    if (order.status === BansheeOrderStatus.CANCELLED) {
+      throw new UserInputError('Cannot complete a cancelled order');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.bansheeOrderItem.updateMany({
+        where: {
+          orderId: id,
+          status: BansheeOrderItemStatus.PENDING,
+        },
+        data: { status: BansheeOrderItemStatus.FULFILLED },
+      });
+
+      return tx.bansheeOrder.update({
+        where: { id },
+        data: { status: BansheeOrderStatus.COMPLETED },
+        include: this.orderInclude,
+      });
+    });
+  }
+
   async fulfillOrderItem(id: string) {
     const orderItem = await this.prisma.bansheeOrderItem.findUnique({
       where: { id },

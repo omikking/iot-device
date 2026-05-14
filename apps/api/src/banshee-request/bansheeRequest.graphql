@@ -146,6 +146,8 @@ type Query {
     startDate: DateTime
     endDate: DateTime
     activateNotifications: Boolean
+    isBrokenBolt: Boolean
+    isNotMeasurable: Boolean
   ): BansheeRequestResponse!
 
   bansheeRequest(id: String!): BansheeRequest!

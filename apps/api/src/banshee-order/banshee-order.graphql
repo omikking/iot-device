@@ -82,6 +82,7 @@ extend type Query {
 extend type Mutation {
   submitOrder(input: SubmitOrderInput!): BansheeOrder!
   cancelOrder(id: String!): BansheeOrder!
+  completeOrder(id: String!): BansheeOrder!
   fulfillOrderItem(id: String!): BansheeOrderItem!
   cancelOrderItem(id: String!): BansheeOrderItem!
 }

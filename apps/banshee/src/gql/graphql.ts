@@ -682,6 +682,7 @@ export type Mutation = {
   cancelOrderItem: BansheeOrderItem;
   clearCart: Scalars['Boolean']['output'];
   completeInvitation: User;
+  completeOrder: BansheeOrder;
   confirmPasswordReset: Scalars['Boolean']['output'];
   createBansheeRequest: BansheeRequest;
   createBansheeTemplate: BansheeTemplate;
@@ -773,6 +774,15 @@ export type MutationClearCartArgs = {
  */
 export type MutationCompleteInvitationArgs = {
   input: CompleteInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCompleteOrderArgs = {
+  id: Scalars['String']['input'];
 };
 
 

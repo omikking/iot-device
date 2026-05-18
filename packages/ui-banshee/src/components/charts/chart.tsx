@@ -66,11 +66,16 @@ type EChartProps = {
   option: EChartsOption;
   className?: string;
   chartRef?: React.MutableRefObject<EChartsInstance | null>;
+  onEvents?: Record<string, (params: unknown) => void>;
 };
 
-function EChart({ option, className, chartRef }: EChartProps) {
+function EChart({ option, className, chartRef, onEvents }: EChartProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const instanceRef = React.useRef<EChartsInstance | null>(null);
+  const onEventsRef = React.useRef(onEvents);
+  React.useEffect(() => {
+    onEventsRef.current = onEvents;
+  }, [onEvents]);
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -82,6 +87,13 @@ function EChart({ option, className, chartRef }: EChartProps) {
     }
 
     instance.setOption(option);
+
+    const events = onEventsRef.current;
+    if (events) {
+      for (const [name, handler] of Object.entries(events)) {
+        instance.on(name, handler);
+      }
+    }
 
     const handleResize = () => {
       instance.resize();

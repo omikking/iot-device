@@ -154,7 +154,7 @@ export const NavbarBanshee = () => {
                 }}
               >
                 <PopoverTrigger>
-                  <ShoppingCart notification={false} />
+                  <ShoppingCart notification={totalCount > 0} />
                 </PopoverTrigger>
                 <PopoverContent
                   sideOffset={29}

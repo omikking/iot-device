@@ -1,5 +1,5 @@
 import { Button, Input, Text } from '@gsp/ui-banshee';
-import { Form, FormProvider, UseFormReturn } from 'react-hook-form';
+import { FormProvider, UseFormReturn } from 'react-hook-form';
 
 type ShareFormValues = {
   email: string;
@@ -10,7 +10,7 @@ export const ShareForm = ({
   form: UseFormReturn<ShareFormValues>;
 }) => (
   <FormProvider {...form}>
-    <Form {...form}>
+    <form>
       <div className="ui-banshee-flex ui-banshee-mt-2 ui-banshee-flex-col ui-banshee-gap-2">
         <Text color="foreground" variant="small">
           Share Plot List
@@ -24,6 +24,6 @@ export const ShareForm = ({
           <Button type="submit">Share</Button>
         </span>
       </div>
-    </Form>
+    </form>
   </FormProvider>
 );

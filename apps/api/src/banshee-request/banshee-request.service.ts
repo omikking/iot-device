@@ -13,6 +13,7 @@ import {
   BansheeRequest,
   BoltType,
   GlobalRole,
+  ProceqStatus,
 } from '@prisma/client';
 import { BansheeStatsService } from 'src/banshee-stats/banshee-stats.service';
 import { hasAppAccessForCompany } from 'src/utils';
@@ -611,7 +612,7 @@ export class BansheeRequestsService {
     > = {};
 
     for (const br of bansheeRequests) {
-      const status = br.proceqData[0]?.status ?? 'unmeasured';
+      const status = br.proceqData[0]?.status ?? ProceqStatus.UNMEASURED;
 
       counts[status] = (counts[status] || 0) + 1;
 

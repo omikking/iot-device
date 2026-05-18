@@ -1,7 +1,13 @@
 'use client';
 
 import { DataLineChart, LoadingSpinner } from '@gsp/ui-banshee';
-import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
+import {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 
 type BansheeRequestResult =
@@ -14,7 +20,9 @@ export type BansheeDataPlotHandle = {
 
 // TODO: replace these constants with values fetched from BoltTypeConstant DB
 const ELONGATION_MIN = 0;
-const ELONGATION_MAX = 150;
+const ELONGATION_MAX = 300;
+const Y_AXIS_FALLBACK = 10;
+const Y_AXIS_STEP = 10;
 
 const stringToColor = (str: string) => {
   let hash = 0;
@@ -43,8 +51,13 @@ const BansheeDataPlot = forwardRef<
     },
   }));
 
-  const { lineConfig, chartData, yMax } = useMemo(() => {
+  const [legendSelected, setLegendSelected] = useState<
+    Record<string, boolean>
+  >({});
+
+  const { lineConfig, chartData, seriesMax } = useMemo(() => {
     const config: { dataKey: string; label: string; color: string }[] = [];
+    const maxByKey: Record<string, number> = {};
 
     bansheeRequests.forEach((br) => {
       if (!br.serialNumber) return;
@@ -65,8 +78,6 @@ const BansheeDataPlot = forwardRef<
       value: number;
     }[] = [];
 
-    let maxElongation = 0;
-
     bansheeRequests.forEach((br) => {
       if (!br.serialNumber) return;
       const dataKey = `banshee_${br.serialNumber.replace(/\s/g, '_')}`;
@@ -84,7 +95,9 @@ const BansheeDataPlot = forwardRef<
             ELONGATION_MIN,
             Math.min(r.elongation, ELONGATION_MAX),
           );
-          if (elongation > maxElongation) maxElongation = elongation;
+          if (elongation > (maxByKey[dataKey] ?? 0)) {
+            maxByKey[dataKey] = elongation;
+          }
           const timeLabel =
             readings.length > 1 ? `${dateStr} R${idx + 1}` : dateStr;
 
@@ -111,22 +124,33 @@ const BansheeDataPlot = forwardRef<
       }
     });
 
-    const data = uniqueTimes.map((time) => {
-      const row: { date: string; [key: string]: string | number } = {
-        date: time,
-      };
-      xEntries
-        .filter((e) => e.time === time)
-        .forEach((e) => {
-          row[e.dataKey] = e.value;
-        });
-      return row;
+    const rowsByTime = new Map<
+      string,
+      { date: string; [key: string]: string | number }
+    >();
+    uniqueTimes.forEach((time) => {
+      rowsByTime.set(time, { date: time });
     });
+    xEntries.forEach((e) => {
+      const row = rowsByTime.get(e.time);
+      if (row) row[e.dataKey] = e.value;
+    });
+    const data = uniqueTimes.map((t) => rowsByTime.get(t)!);
 
-    const computedYMax = ELONGATION_MAX;
-
-    return { lineConfig: config, chartData: data, yMax: computedYMax };
+    return { lineConfig: config, chartData: data, seriesMax: maxByKey };
   }, [bansheeRequests]);
+
+  const yMax = useMemo(() => {
+    let max = 0;
+    for (const cfg of lineConfig) {
+      if (legendSelected[cfg.label] === false) continue;
+      const m = seriesMax[cfg.dataKey] ?? 0;
+      if (m > max) max = m;
+    }
+    if (max <= 0) return Y_AXIS_FALLBACK;
+    const rounded = Math.ceil(max / Y_AXIS_STEP) * Y_AXIS_STEP;
+    return Math.min(rounded, ELONGATION_MAX);
+  }, [lineConfig, seriesMax, legendSelected]);
 
   if (fetching) {
     return (
@@ -145,6 +169,8 @@ const BansheeDataPlot = forwardRef<
       yAxisLabel="Elongation (µm)"
       yAxisDomain={[0, yMax]}
       enableZoom
+      legendSelected={legendSelected}
+      onLegendChange={setLegendSelected}
     />
   );
 });

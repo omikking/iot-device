@@ -25,6 +25,7 @@ export function SmallChartPieDonut({
   const option: EChartsOption = {
     tooltip: {
       trigger: 'item',
+      appendToBody: true,
       backgroundColor: '#000',
       borderColor: '#333',
       textStyle: { color: '#fff', fontSize: 12 },

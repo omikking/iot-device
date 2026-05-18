@@ -136,31 +136,31 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                     column={createMockColumn('newStatus')}
                   />
                 </TableHead>
-                <TableHead className="ui-banshee-p-0">
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[15%]">
                   <TableHeadWithSorting
                     header="Banshee"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
                     column={createMockColumn('banshee')}
                   />
                 </TableHead>
-                <TableHead className="ui-banshee-p-0">
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
                   <TableHeadWithSorting
                     header="Location"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
                     column={createMockColumn('location')}
                   />
                 </TableHead>
-                <TableHead className="ui-banshee-p-0">
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
                   <TableHeadWithSorting
                     header="Created on"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
                     column={createMockColumn('createdAt')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Description"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
                     column={createMockColumn('eventType')}
                   />
                 </TableHead>
@@ -214,23 +214,23 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-left">
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
                       <Text variant="small" color="foreground">
                         {event.bansheeRequest?.serialNumber || 'N/A'}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-center">
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
                       <Text variant="small" color="foreground">
                         {event.bansheeRequest?.location?.locationName || 'N/A'}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-center">
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
                       <Text variant="small" color="foreground">
                         {new Date(event.createdAt).toLocaleDateString()}
                       </Text>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left">
-                      <Text variant="small" color="foreground">
+                      <Text className="ui-banshee-px-4 ui-banshee-text-left" variant="small" color="foreground">
                         {event.eventType === 'STATUS_CHANGE'
                           ? `Status changed from ${getStatusLabel(
                               event.previousStatus,

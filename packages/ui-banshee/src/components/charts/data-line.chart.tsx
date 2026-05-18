@@ -13,6 +13,8 @@ export type DataLineChartProps = {
   data: { date: string; [key: string]: string | number | undefined }[];
   enableZoom?: boolean;
   onResetZoom?: () => void;
+  legendSelected?: Record<string, boolean>;
+  onLegendChange?: (selected: Record<string, boolean>) => void;
 };
 
 export type DataLineChartHandle = {
@@ -36,6 +38,8 @@ export const DataLineChart = forwardRef<
     yAxisLabel = 'Elongation (mm)',
     yAxisDomain = [0, 12],
     enableZoom = false,
+    legendSelected,
+    onLegendChange,
   },
   ref,
 ) {
@@ -132,6 +136,7 @@ export const DataLineChart = forwardRef<
           name: l.label,
           itemStyle: { color: l.color },
         })) ?? [],
+      selected: legendSelected,
     },
     dataZoom: enableZoom
       ? [
@@ -202,6 +207,18 @@ export const DataLineChart = forwardRef<
           chartRef={chartRef}
           option={option}
           className="ui-banshee-w-full ui-banshee-h-full"
+          onEvents={
+            onLegendChange
+              ? {
+                  legendselectchanged: (params) => {
+                    const selected = (
+                      params as { selected?: Record<string, boolean> }
+                    ).selected;
+                    if (selected) onLegendChange(selected);
+                  },
+                }
+              : undefined
+          }
         />
       </ChartContainer>
     </div>

@@ -11,7 +11,7 @@ import {
   DropdownMultiSelectSearch,
   LoadingSpinner,
 } from '@gsp/ui-banshee';
-import { Settings, BarChart2, MessageSquare } from 'lucide-react';
+import { Settings, BarChart2, MessageSquare, Menu } from 'lucide-react';
 import { BansheeDetailModal } from './BansheeDetailModal';
 import { useState, useMemo, ComponentProps } from 'react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
@@ -265,7 +265,7 @@ export const BansheeListView = ({
                   <Text
                     variant="small"
                     color="foreground"
-                    className="ui-banshee-font-bold"
+                    className="ui-banshee-font-bold ui-banshee-px-4"
                   >
                     Details
                   </Text>
@@ -340,37 +340,33 @@ export const BansheeListView = ({
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Elongation"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
                     column={createMockColumn('elongation')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Last Measured"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start"
                     column={createMockColumn('lastMeasured')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Status Change"
-                    className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start"
                     column={createMockColumn('status')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Comment"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-center"
                     column={createMockColumn('comment')}
                   />
                 </TableHead>
-                <TableHead className="ui-banshee-text-right">
-                  <Text
-                    variant="small"
-                    color="foreground"
-                    className="ui-banshee-font-bold"
-                  />
+                <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-py-2">
+                  <Menu size={20} />
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -395,48 +391,76 @@ export const BansheeListView = ({
                     </div>
                   </TableCell>
                   <TableCell className="ui-banshee-text-left">
-                    <Text variant="small" color="foreground">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className=" ui-banshee-pl-8"
+                    >
                       {row.banshee}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-8"
+                    >
                       {row.site}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-8"
+                    >
                       {row.level}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-8"
+                    >
                       {row.drive}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-8"
+                    >
                       {row.location}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-4"
+                    >
                       {row.elongation}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    <Text variant="small" color="foreground">
+                  <TableCell className="ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-pl-4"
+                    >
                       {row.lastMeasured}
                     </Text>
                   </TableCell>
-                  <TableCell className="ui-banshee-text-center">
+                  <TableCell className="ui-banshee-text-left">
                     <Text
                       variant="small"
                       color="foreground"
                       className={
                         row.statusChange === 'Yes'
-                          ? 'ui-banshee-text-blue-500'
-                          : 'ui-banshee-text-gray-600'
+                          ? 'ui-banshee-text-blue-500 ui-banshee-pl-4'
+                          : 'ui-banshee-text-gray-600 ui-banshee-pl-4'
                       }
                     >
                       {row.statusChange}
@@ -461,7 +485,7 @@ export const BansheeListView = ({
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="ui-banshee-flex ui-banshee-px-8 ui-banshee-justify-end ui-banshee-gap-2 ui-banshee-text-gray-400">
+                    <div className="ui-banshee-flex ui-banshee-px-8 ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-gray-400">
                       <Settings
                         size={16}
                         className="ui-banshee-cursor-pointer ui-banshee-text-gray-500 hover:ui-banshee-text-[#101010]"

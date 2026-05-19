@@ -7,8 +7,21 @@ import { graphqlUploadExpress } from 'graphql-upload-ts';
 
 async function bootstrap() {
   // We need to look over our cors settings before deploying to production!
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.enableCors({
+    origin: [
+      'http://localhost',
+      'http://localhost:3000',
+      'http://localhost:3001',
+
+      // production origins
+      'https://portal.groundsupport.mining.sandvik',
+      'https://pulltest.groundsupport.mining.sandvik',
+      'https://groundsupport.mining.sandvik',
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   });
 
   // Enable multipart form data processing for file uploads
@@ -24,7 +37,7 @@ async function bootstrap() {
       // whitelist: true,
     }),
   );
-  await app.listen(3333);
+  await app.listen(3333, '0.0.0.0');
   console.log(`GraphQL Playground: http://localhost:3333/graphql`);
 }
 bootstrap();

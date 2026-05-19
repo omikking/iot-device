@@ -29,4 +29,17 @@ module.exports = {
   },
   reactStrictMode: true,
   transpilePackages: ["@gsp/ui"],
+
+   async rewrites() {
+    return [
+      {
+        source: '/overview/:companyId/:path*',
+        destination: 'http://pull-test:3001/overview/:companyId/:path*'
+      },
+      {
+      source: '/overview/_next/:path*',
+      destination: 'http://pull-test:3001/_next/:path*'
+    },
+    ]
+  },
 };

@@ -33,6 +33,16 @@ export default function Page({
 }): JSX.Element {
   const { data: session } = useSession();
 
+  // Function to get application name based URL
+  const getAppUrl = (app: Application): string => {
+    const applicationNames = {
+      [Application.PullTest]: `${process.env.NEXT_PUBLIC_PULL_TEST_URL}/overview/${companyId}`,
+      [Application.PullTestTechnician]: 'Pull Test Technician',
+      [Application.Banshee]: `${process.env.NEXT_PUBLIC_BANSHEE_URL}/${companyId}/overview`,
+    };
+    return applicationNames[app];
+  };
+
   const displayPlans = (
     companyId: string,
     companyPlans?: Plan[],
@@ -108,9 +118,7 @@ export default function Page({
         <div className="flex flex-row justify-center gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
           {availableApps.map((plan, index) => (
             <div className="flex flex-row gap-12 justify-center" key={index}>
-              <Link
-                href={`${process.env.NEXT_PUBLIC_PULL_TEST_URL}/overview/${companyId}`}
-              >
+              <Link href={getAppUrl(plan)}>
                 <NavigationCard size="small">
                   <Headline
                     as="h3"

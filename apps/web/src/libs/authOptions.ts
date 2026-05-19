@@ -87,7 +87,12 @@ export const authOptions: NextAuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: '__Secure-next-auth.session-token',
+      // `__Secure-` prefix is browser-enforced HTTPS-only. Use it only in prod;
+      // in dev we run on http://localhost, where the browser silently drops it.
+      name:
+        process.env.NODE_ENV === 'production'
+          ? '__Secure-next-auth.session-token'
+          : 'next-auth.session-token',
       options: {
         httpOnly: true,
         path: '/',

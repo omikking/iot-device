@@ -1023,7 +1023,7 @@ flowchart LR
     O --> OI[BansheeOrderItem<br/>PENDING]
     OI -->|TSR Mobile App| TSR{Fulfil}
     TSR -->|SERVICE_EXISTING| BR1[Update existing<br/>BansheeRequest]
-    TSR -->|NEW_BANSHEE| BR2[Create new<br/>BansheeRequest]
+    TSR -->|NEW_BANSHEE| BR2[createBansheeRequest<br/>with bansheeOrderItemId<br/>$transaction:<br/>create BR + link OrderItem]
     BR1 --> F[OrderItem: FULFILLED]
     BR2 --> F
     F --> RC{All items resolved?}
@@ -1039,7 +1039,7 @@ flowchart LR
     class F,OC,OP,OX done;
 ```
 
-**Non-technical:** A Company User picks/creates a Banshee from the Scheduler, drops it into the Cart, then submits an Order with optional attachments and a comment. The Order shows up on the TSR's mobile app where each line item is either serviced (existing bolt) or registered (new bolt). The Order auto-rolls up to `COMPLETED` / `PARTIALLY_COMPLETED` / `CANCELLED` based on its line-items.
+**Non-technical:** A Company User picks/creates a Banshee from the Scheduler, drops it into the Cart, then submits an Order with optional attachments and a comment. The Order shows up on the TSR's mobile app where each line item is either serviced (existing bolt) or registered (new bolt). For a `NEW_BANSHEE` item the fulfilment call (`createBansheeRequest`) carries the originating `bansheeOrderItemId` so the new `BansheeRequest` and the `BansheeOrderItem` are linked atomically in a single transaction — the order item's scaffold fields (`name`/`site`/`level`/`drive`/`location`/`period`) are nulled out once the real request exists. The Order auto-rolls up to `COMPLETED` / `PARTIALLY_COMPLETED` / `CANCELLED` based on its line-items; admins/company-owners can also call `completeOrder` to bulk-finish all remaining pending items at once.
 
 ---
 
@@ -1109,8 +1109,11 @@ erDiagram
         string bansheeRequestId FK
         string name
         int quantity
-        string location
         int period
+        string siteId FK "nullable, onDelete: SetNull"
+        string levelId FK "nullable, onDelete: SetNull"
+        string driveId FK "nullable, onDelete: SetNull"
+        string locationId FK "nullable, onDelete: SetNull"
         string companyId FK
     }
 
@@ -1128,9 +1131,11 @@ erDiagram
         enum status "PENDING | FULFILLED | CANCELLED"
         string bansheeRequestId FK
         string name
-        int quantity
-        string location
         int period
+        string siteId FK "nullable, onDelete: SetNull"
+        string levelId FK "nullable, onDelete: SetNull"
+        string driveId FK "nullable, onDelete: SetNull"
+        string locationId FK "nullable, onDelete: SetNull"
         string orderId FK
     }
 
@@ -1146,6 +1151,16 @@ erDiagram
 ```
 
 Migration reference: `apps/api/prisma/migrations/20260424105736_added/migration.sql` introduces `cart_items`, `orders`, `order_items` tables and the `BansheeCartItemType`, `BansheeOrderStatus`, `BansheeOrderItemStatus` enums.
+
+#### 20.1 Subsequent Schema Refinements
+
+| Migration | Change |
+|---|---|
+| Cart/Order hierarchy migration | Replaced the free-text `location String?` column on `BansheeCartItem` and `BansheeOrderItem` with four nullable FK columns — `siteId`, `levelId`, `driveId`, `locationId` — each with `onDelete: SetNull` so deleting a site/level/drive/location does not orphan an order. Added reverse relations (`cartItems`, `orderItems`) on `Site`, `Level`, `Drive`, `Location`. |
+| `BoltType` enum extension | Added four sized friction-bolt variants: `FRICTION_BOLT_47_MM_1_8_M`, `FRICTION_BOLT_47_MM_2_1_M`, `FRICTION_BOLT_47_MM_2_4_M`, `FRICTION_BOLT_47_MM_3_0_M`. |
+| `PullTestAbortReason` enum rename | `NOT_TESTED_BROKEN_BOLT_NUT` → `BROKEN_BOLT_NUT`; `NOT_TESTED_PULL_TEST_COLLAR_INSTALLED_BACKWARDS` → `PULL_TEST_COLLAR_INSTALLED_BACKWARDS`. |
+| `BoltResult.measuredAt` | New required `DateTime` column capturing the actual measurement moment (separate from `createdAt`/`updatedAt`). |
+| `20260514071906_update_proceq_attachment_by_add_cascading` | `proceq_attachments.proceqDataId` FK now `onDelete: Cascade` so deleting a `ProceqData` row cleans up its attachments. |
 
 ---
 
@@ -1219,13 +1234,48 @@ All mutations and the by-id query are guarded by `@Roles([], [Application.BANSHE
 
 | Method | Role |
 |---|---|
-| `create(input, user)` | Creates a new request. Rejects duplicate `serialNumber`. Validates Level/Drive/Location chain. Persists uploaded images via `saveImage`. |
+| `create(input, user)` | Creates a new request. Rejects duplicate `serialNumber`. Validates Level/Drive/Location chain. If `bansheeOrderItemId` is supplied, validates the order item upfront, then wraps the request creation + order-item linkage in a single `prisma.$transaction` (see 22.3). Persists uploaded images via `saveImage` outside the transaction. |
 | `update(id, input, user)` | Updates the request. Re-validates relations on hierarchical changes. Stamps `updatedBy`. |
 | `remove(id, user)` | Deletes a request. Cascades to `ProceqData`, `BansheeEventLog`, `BansheeCartItem`, `BansheeOrderItem` per Prisma relations. |
-| `findAll(filter, allowedCompanyIds, allowedApps, user)` | Paginated list with multi-field filter (serialNumber, period, level/drive/location, dates, activateNotifications) and RBAC scoping. |
+| `findAll(filter, allowedCompanyIds, allowedApps, user)` | Paginated list with multi-field filter (serialNumber, period, level/drive/location, dates, activateNotifications, `isBrokenBolt`, `isNotMeasurable`) and RBAC scoping. |
 | `findOne(id, user)` | Single-request fetch with company-scope guard. |
-| `getStatusDistribution({...}, allowedCompanyIds, user, allowedApps)` | Aggregates Proceq status counts grouped by location. |
+| `getStatusDistribution({...}, allowedCompanyIds, user, allowedApps)` | Aggregates Proceq status counts grouped by location. Falls back to `ProceqStatus.UNMEASURED` enum (not the legacy string `'unmeasured'`) when a request has no proceq data. |
 | `getEventLogs({...}, allowedCompanyIds, user, allowedApps)` | Paginated event-log feed across requests. |
+
+### 22.2.1 NEW_BANSHEE Fulfilment — `bansheeOrderItemId` Linkage
+
+`CreateBansheeRequestInput` accepts an optional `bansheeOrderItemId: String`. When a TSR fulfils a `NEW_BANSHEE` order item from the mobile app, the create-request mutation is invoked with this id so that the resulting `BansheeRequest` is wired back to the originating `BansheeOrderItem` (and therefore to the `BansheeOrder`).
+
+```mermaid
+flowchart TD
+    Call[createBansheeRequest input including bansheeOrderItemId] --> Dup[Duplicate serialNumber check]
+    Dup --> Rel[validateRelations Level/Drive/Location]
+    Rel --> Has{bansheeOrderItemId present?}
+    Has -->|No| Img[saveImages outside txn]
+    Has -->|Yes| OI[Lookup bansheeOrderItem with order.companyId]
+    OI -->|Not found| F1[BANSHEE_ORDER_ITEM_NOTFOUND_ERROR]
+    OI -->|Found| Acc{user is SANDVIK_ADMIN?}
+    Acc -->|No| VAcc[validateUserCompanyAccess for order.companyId]
+    VAcc -->|Missing permission| F2[ForbiddenException]
+    Acc -->|Yes| St
+    VAcc -->|OK| St{orderItem.status = PENDING?}
+    St -->|No| F3[BANSHEE_ORDER_ITEM_INVALID_TYPE]
+    St -->|Yes| Tp{orderItem.itemType = NEW_BANSHEE?}
+    Tp -->|No| F4[BANSHEE_ORDER_ITEM_INVALID_TYPE]
+    Tp -->|Yes| Img
+    Img --> Tx[prisma.$transaction]
+    Tx --> Cr[tx.bansheeRequest.create]
+    Cr --> Up[tx.bansheeOrderItem.update<br/>bansheeRequestId = created.id<br/>name/site/level/drive/location/period = null]
+    Up --> Ok[Return BansheeRequest]
+```
+
+Implementation notes:
+
+- **Pre-transaction validation** keeps the transaction window small and avoids holding row-locks during lookups. Order-item validations (existence, RBAC, `PENDING` status, `NEW_BANSHEE` type) all run before `$transaction` opens.
+- **Atomicity** — the create + update pair are inside `prisma.$transaction(async (tx) => …)`. If either fails, both roll back, so a partially-created `BansheeRequest` can never reference an unmodified order item or vice-versa.
+- **Scaffold field nullification** — once the order item is materialised into a real `BansheeRequest`, its snapshot fields (`name`, `siteId`, `levelId`, `driveId`, `locationId`, `period`) are set to `null` because they now live on the `BansheeRequest`.
+- **Image side-effects** — `saveImage()` writes to local disk and runs outside the transaction. If the DB transaction rolls back, the uploaded files remain on disk (orphan files); cleaning these up is tracked as a follow-up.
+- **Error propagation** — the outer catch now allows both `UserInputError` *and* `ForbiddenException` to escape unchanged so RBAC denials surface as 403, not as the generic creation error.
 
 ### 22.3 dueDate Derivation (Proceq Table Enhancement)
 
@@ -1247,11 +1297,11 @@ Source: [`proceq-sync.service.ts:800-806`](apps/api/src/proceq/proceq-sync.servi
 
 | Operation | Args | Returns |
 |---|---|---|
-| Query `bansheeRequests` | `offset, limit, serialNumber, measured, period, levelId, driveId, locationId, createdBy, companyId, siteId, startDate, endDate, activateNotifications` | `BansheeRequestResponse` |
+| Query `bansheeRequests` | `offset, limit, serialNumber, measured, period, levelId, driveId, locationId, createdBy, companyId, siteId, startDate, endDate, activateNotifications, isBrokenBolt, isNotMeasurable` | `BansheeRequestResponse` |
 | Query `bansheeRequest` | `id` | `BansheeRequest` |
 | Query `bansheeStatusDistribution` | `companyId, siteId, locationId, startDate, endDate` | `BansheeStatusDistribution` |
 | Query `bansheeEventLogs` | `offset, limit, companyId, siteId` | `BansheeEventLogResponse` |
-| Mutation `createBansheeRequest` | `createBansheeRequestInput` | `BansheeRequest!` |
+| Mutation `createBansheeRequest` | `createBansheeRequestInput` (now accepts optional `bansheeOrderItemId` for NEW_BANSHEE fulfilment — see 22.2.1) | `BansheeRequest!` |
 | Mutation `updateBansheeRequest` | `id, updateBansheeRequestInput` | `BansheeRequest!` |
 | Mutation `deleteBansheeRequest` | `id` | `BansheeRequest!` |
 
@@ -1270,18 +1320,22 @@ The cart is an **ephemeral, per-company staging area** between the Scheduler and
 ```mermaid
 flowchart TD
     Item[BansheeCartItem] --> Type{itemType?}
-    Type -->|SERVICE_EXISTING| SE[Required: bansheeRequestId<br/>Optional: location, period override<br/>quantity defaults to 1]
-    Type -->|NEW_BANSHEE| NB[Required: name<br/>Optional: location, period<br/>quantity ≥ 1]
+    Type -->|SERVICE_EXISTING| SE[Required: bansheeRequestId<br/>Optional: siteId/levelId/driveId/locationId override<br/>quantity defaults to 1]
+    Type -->|NEW_BANSHEE| NB[Required: name<br/>Optional: siteId/levelId/driveId/locationId, period<br/>quantity ≥ 1]
     SE --> Common[Common fields:<br/>companyId, createdAt, updatedAt]
     NB --> Common
 ```
+
+> **Schema change** — the legacy free-text `location: String?` column was replaced with four nullable foreign keys (`siteId`, `levelId`, `driveId`, `locationId`) backed by `onDelete: SetNull` relations on `Site`, `Level`, `Drive`, `Location`. The Scheduler UI now renders a hierarchical dropdown (`HierarchyDropdown` / `TemplateHierarchy` query) that drives each ID independently, replacing the previous free-text input. The DTOs (`AddCartItemInput`, `UpdateNewBansheeCartItemInput`) enforce `IsUUID` on all four columns.
 
 ### 23.3 Service Methods (`banshee-cart.service.ts`)
 
 | Method | Role |
 |---|---|
-| `getCartItems(companyId)` | Lists all cart items for a company, includes `bansheeRequest` & `company`, ordered by `createdAt DESC`. |
+| `getCartItems(companyId)` | Lists all cart items for a company, includes `bansheeRequest`, `company`, `site`, `level`, `drive`, `location`, ordered by `createdAt DESC`. The full include shape is centralised in the private `cartItemInclude` constant and reused across `addCartItems`, `updateCartItem`, `deleteCartItem` for consistent payloads. |
+| `getCartItemsStats(companyId)` | Group-by aggregation returning `NEW_BANSHEE` / `SERVICE_EXISTING` totals — feeds the cart-summary widgets. |
 | `addCartItems(input[])` | Bulk add. Validates: `SERVICE_EXISTING` requires `bansheeRequestId`; `NEW_BANSHEE` requires `name`. Verifies every referenced `BansheeRequest` exists. Wraps inserts in a `prisma.$transaction`. |
+| `updateCartItem(id, input)` | Patch a single `NEW_BANSHEE` cart item — only mutates `quantity`, `name`, `siteId`, `levelId`, `driveId`, `locationId`, `period` when present (each guarded by an `!== undefined` check so explicit `null` is honoured). |
 | `deleteCartItem(id)` | Removes one cart item. Throws if not found. |
 | `clearCart(companyId)` | Bulk delete every cart item for a company. Returns `true`. |
 
@@ -1294,8 +1348,10 @@ flowchart TD
 
 | Operation | Args | Returns |
 |---|---|---|
-| Query `cartItems` | `companyId` | `[BansheeCartItem!]!` |
-| Mutation `addCartItems` | `input: [AddCartItemInput!]!` | `[BansheeCartItem!]!` |
+| Query `cartItems` | `companyId` | `[BansheeCartItem!]!` (now includes resolved `site`, `level`, `drive`, `location` objects) |
+| Query `cartItemsStats` | `companyId` | Per-`itemType` totals |
+| Mutation `addCartItems` | `input: [AddCartItemInput!]!` (location replaced by `siteId/levelId/driveId/locationId`) | `[BansheeCartItem!]!` |
+| Mutation `updateCartItem` | `cartItemId, input: UpdateNewBansheeCartItemInput!` | `BansheeCartItem!` |
 | Mutation `deleteCartItem` | `id` | `BansheeCartItem!` |
 | Mutation `clearCart` | `companyId` | `Boolean!` |
 
@@ -1307,7 +1363,7 @@ All routes are guarded by `@Roles([], [Application.BANSHEE], 'bansheeCartItem')`
 
 ### 24.1 Purpose
 
-The Order module finalises the cart into an immutable record consumed by Sandvik technicians via the TSR mobile app. Cart items are *snapshot-copied* into `BansheeOrderItem` rows at submission time so that subsequent edits to a `BansheeRequest` do not mutate historical orders.
+The Order module finalises the cart into an immutable record consumed by Sandvik technicians via the TSR mobile app. Cart items are *snapshot-copied* into `BansheeOrderItem` rows at submission time — including the hierarchy snapshot (`siteId`, `levelId`, `driveId`, `locationId`) — so that subsequent edits to a `BansheeRequest` or site/level/drive/location reorganisation do not mutate historical orders. The four hierarchy FKs use `onDelete: SetNull` so deleting a site/level/drive/location preserves the order row.
 
 ### 24.2 `submitOrder` Flow
 
@@ -1370,9 +1426,9 @@ Source: [`banshee-order.service.ts:180-279`](apps/api/src/banshee-order/banshee-
 stateDiagram-v2
     [*] --> PENDING : submitOrder()
     PENDING --> PARTIALLY_COMPLETED : on next fulfil — some FULFILLED, some still pending
-    PENDING --> COMPLETED : all items FULFILLED
+    PENDING --> COMPLETED : all items FULFILLED  /  completeOrder()
     PENDING --> CANCELLED : cancelOrder() / all items CANCELLED
-    PARTIALLY_COMPLETED --> COMPLETED : remaining items resolved (no PENDING left)
+    PARTIALLY_COMPLETED --> COMPLETED : remaining items resolved  /  completeOrder()
     COMPLETED --> [*]
     CANCELLED --> [*]
 ```
@@ -1392,12 +1448,13 @@ stateDiagram-v2
 
 | Method | Role |
 |---|---|
-| `findAll(filter, offset, limit, user)` | Paginated order listing scoped by `getAllowedCompanyIds(user)`. Optional filters: status, companyId, startDate, endDate. |
+| `findAll(filter, offset, limit, user)` | Paginated order listing scoped by `getAllowedCompanyIds(user)`. Optional filters: status, companyId, startDate, endDate. Order items are returned with resolved `site`, `level`, `drive`, `location` objects in addition to `bansheeRequest`. |
 | `findOne(id, user)` | Single order fetch with company-scope guard. |
-| `submitOrder(input)` | Atomic cart→order conversion (see 24.2). |
-| `cancelOrder(id, companyId)` | Cancels a non-completed order; sets all `PENDING` line-items to `CANCELLED`. |
-| `fulfillOrderItem(id)` | Marks an order item `FULFILLED` and recomputes parent order status. |
-| `cancelOrderItem(id)` | Marks an order item `CANCELLED` and recomputes parent order status. |
+| `submitOrder(input)` | Atomic cart→order conversion (see 24.2). Cart-item hierarchy fields (`siteId/levelId/driveId/locationId`) are snapshot-copied into `BansheeOrderItem` rows; the legacy `location` string column was removed. |
+| `cancelOrder(id, companyId, user)` | Cancels a non-completed order; sets all `PENDING` line-items to `CANCELLED`. |
+| `completeOrder(id, companyId, user)` | **(New)** Bulk-finishes an order. Validates ownership (`order.companyId === companyId` unless caller is `SANDVIK_ADMIN`) and refuses on `COMPLETED`/`CANCELLED` orders. In a single `prisma.$transaction`, flips all `PENDING` items to `FULFILLED` via `updateMany` and updates the parent order to `COMPLETED`. Skips `recomputeOrderStatus` since the status is deterministic. |
+| `fulfillOrderItem(id)` | Marks an order item `FULFILLED`, returns it with `bansheeRequest`, `order`, `site`, `level`, `drive`, `location` includes, and recomputes parent order status. |
+| `cancelOrderItem(id)` | Marks an order item `CANCELLED` and recomputes parent order status. Same include shape as `fulfillOrderItem`. |
 | `recomputeOrderStatus(tx, orderId)` | Internal — derives parent `BansheeOrderStatus` from the set of child statuses. |
 
 ### 24.6 GraphQL API
@@ -1408,10 +1465,11 @@ stateDiagram-v2
 | Query `order` | `id` | `BansheeOrder` |
 | Mutation `submitOrder` | `input: SubmitOrderInput!` | `BansheeOrder!` |
 | Mutation `cancelOrder` | `id` | `BansheeOrder!` |
+| Mutation `completeOrder` | `id` | `BansheeOrder!` — admin / company-owner bulk-completion (see 24.5) |
 | Mutation `fulfillOrderItem` | `id` | `BansheeOrderItem!` |
 | Mutation `cancelOrderItem` | `id` | `BansheeOrderItem!` |
 
-Order routes are guarded by `@Roles([], [Application.BANSHEE], 'bansheeOrder')`; order-item routes by `@Roles([], [Application.BANSHEE], 'bansheeOrderItem')`.
+Order routes (`submitOrder`, `cancelOrder`, `completeOrder`) are guarded by `@Roles([], [Application.BANSHEE], 'bansheeOrder')`; order-item routes (`fulfillOrderItem`, `cancelOrderItem`) by `@Roles([], [Application.BANSHEE], 'bansheeOrderItem')`. `BansheeOrderItem` also exposes its `site`, `level`, `drive`, `location` relations in GraphQL so the mobile/web UIs can render the hierarchical context for each `NEW_BANSHEE` line without a follow-up query.
 
 ---
 
@@ -1453,11 +1511,16 @@ flowchart LR
 - **`RolesGuard`** (`src/auth/guard/roles.guard.ts`) — reads the `@Roles` decorator and enforces both Global Role and Application × Resource permissions.
 - **`getAllowedCompanyIds(user)`** (`src/utils/resolveAllowedCompanyIds.ts`) — derives the set of companies the user can see from `userPermission` rows; used inside services to scope queries.
 - **`hasAppAccessForCompany(prisma, user, [Application.BANSHEE], companyId)`** — used by template list to short-circuit if the user lacks the BANSHEE app on that company.
-- **`validateUserCompanyAccess(user, companyId)`** — service-level fallback used by the template module for write operations; bypassed for `GlobalRole.SANDVIK_ADMIN`.
+- **`validateUserCompanyAccess(user, companyId)`** — service-level fallback used by the template module for write operations; bypassed for `GlobalRole.SANDVIK_ADMIN`. Now also invoked from `BansheeRequestsService.create` when a `bansheeOrderItemId` is supplied, scoped to the *order's* `companyId`.
+- **`resolveCompanyId(user, resource, id)`** (`src/utils/resolveCompanyId.ts`) — resolves a resource's owning company by walking the `parentChain` map. Recent additions: `bansheeCartItem`, `bansheeOrder` (own `companyId`), and `bansheeOrderItem` (resolved via `orderId → bansheeOrder.companyId`). This is what the `BansheeOrderResolver` calls before delegating to `cancelOrder` / `completeOrder`.
 
 ### 25.4 Approval Workflow
 
-Order fulfilment endpoints (`fulfillOrderItem`, `cancelOrderItem`) are scoped to the `bansheeOrderItem` resource key so that only roles with that permission grant — typically Sandvik TSR / official employees on the mobile app — can transition an Order Item to `FULFILLED`. Web-app Company Users hold `bansheeOrder` write permission (submit / cancel order) but not `bansheeOrderItem` fulfilment permission.
+Order fulfilment endpoints (`fulfillOrderItem`, `cancelOrderItem`) are scoped to the `bansheeOrderItem` resource key so that only roles with that permission grant — typically Sandvik TSR / official employees on the mobile app — can transition an Order Item to `FULFILLED`. Web-app Company Users hold `bansheeOrder` write permission (submit / cancel / complete order) but not `bansheeOrderItem` fulfilment permission. `completeOrder` adds an additional ownership check: a non-admin caller must match the order's `companyId`.
+
+### 25.5 Site Locations CRUD — Extended to Sandvik Technician
+
+Previously, only `SANDVIK_ADMIN` and Company Admin roles could edit the Site/Level/Drive/Location hierarchy in the web app (`apps/web/src/components/{Drive,Level,Location}*.tsx`). The CRUD permission set has been widened to include `SANDVIK_TECHNICIAN` via the new `isSandvikTechnician(userPermissions, companyId)` helper in `apps/web/src/libs/utils.ts`. The three role-checks now compose as `(isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician)` across the `DriveItem`, `DrivesList`, `LevelItem`, `LevelsList`, `LocationItem`, and `LocationList` components, so technicians can add/edit/delete site locations on-site without escalating to a company admin.
 
 ---
 
@@ -1473,18 +1536,25 @@ sequenceDiagram
 
     U->>API: createBansheeTemplate / pick existing template
     API->>DB: insert BansheeTemplate
-    U->>API: addCartItems(NEW_BANSHEE / SERVICE_EXISTING)
-    API->>DB: insert BansheeCartItem rows
+    U->>API: addCartItems(NEW_BANSHEE / SERVICE_EXISTING)<br/>(hierarchy passed as siteId/levelId/driveId/locationId)
+    API->>DB: insert BansheeCartItem rows (with hierarchy FKs)
     U->>API: submitOrder(companyId, attachments, comment)
-    API->>DB: $transaction(create BansheeOrder + items, deleteMany cart_items)
+    API->>DB: $transaction(create BansheeOrder + items snapshot, deleteMany cart_items)
     DB-->>API: BansheeOrder (PENDING)
     API-->>U: BansheeOrder
     T->>API: orders(filter status PENDING)
     API->>DB: select scoped by allowedCompanyIds
-    DB-->>API: Order[]
+    DB-->>API: Order[] (with site/level/drive/location resolved)
     API-->>T: Order list
-    T->>API: fulfillOrderItem(id)
-    API->>DB: update item FULFILLED + recomputeOrderStatus
+    alt SERVICE_EXISTING
+        T->>API: fulfillOrderItem(id)
+        API->>DB: update item FULFILLED + recomputeOrderStatus
+    else NEW_BANSHEE
+        T->>API: createBansheeRequest(input incl. bansheeOrderItemId)
+        API->>DB: $transaction(create BansheeRequest + link OrderItem, null scaffold fields)
+        T->>API: fulfillOrderItem(id) (or completeOrder for bulk close)
+        API->>DB: update item FULFILLED + recomputeOrderStatus
+    end
     Note over PR,DB: Field measurements arrive via Proceq cloud
     PR->>DB: upsert ProceqData (computes dueDate = updatedTimestamp + period months)
     DB-->>U: Scheduler shows due / overdue Banshees -> next cart cycle

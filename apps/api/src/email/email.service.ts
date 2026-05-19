@@ -16,6 +16,7 @@ export class EmailService {
       host: this.configService.get('SMTP_HOST'),
       port: this.configService.get('SMTP_PORT'),
       secure: this.configService.get('SMTP_SECURE') === 'true',
+      requireTLS: true,
       auth: {
         user: this.configService.get('SMTP_USER'),
         pass: this.configService.get('SMTP_PASSWORD'),
@@ -26,7 +27,14 @@ export class EmailService {
   // ================================================================================
   // PUBLIC EMAIL SENDING METHODS
   // ================================================================================
-
+  private getSesHeaders() {
+    return {
+      'X-SES-SOURCE-ARN': this.configService.get('SES_SOURCE_ARN'),
+      'X-SES-FROM-ARN': this.configService.get('SES_FROM_ARN'),
+      'X-SES-CONFIGURATION-SET':
+        this.configService.get('SES_CONFIGURATION_SET'),
+    };
+  }
   // 1: For non-existing user invitations on company level
   async sendInvitationEmail(
     email: string,
@@ -70,6 +78,7 @@ export class EmailService {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -126,6 +135,7 @@ export class EmailService {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -174,6 +184,7 @@ export class EmailService {
       headers: {
         'X-Priority': '2',
         'X-MSMail-Priority': 'Normal',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -217,6 +228,7 @@ export class EmailService {
       headers: {
         'X-Priority': '2',
         'X-MSMail-Priority': 'Normal',
+        ...this.getSesHeaders(),
       },
     });
   }
@@ -253,6 +265,7 @@ export class EmailService {
       headers: {
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
+        ...this.getSesHeaders(),
       },
     });
   }

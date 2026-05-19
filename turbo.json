@@ -11,7 +11,10 @@
         "FRONTEND_URL",
         "NEXT_PUBLIC_PORTAL_URL",
         "NEXT_PUBLIC_PULL_TEST_URL",
-        "NEXT_PUBLIC_API_URL"
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_API_IMAGE_URL",
+        "COOKIE_DOMAIN",
+        "NODE_ENV"
       ]
     },
     "start": {

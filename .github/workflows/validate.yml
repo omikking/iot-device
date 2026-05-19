@@ -6,6 +6,7 @@ on:
       - main
       - dev
       - dev-2
+      - test-docker
     paths-ignore:
       - '**.md'
 

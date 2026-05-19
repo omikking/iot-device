@@ -58,6 +58,7 @@ CreateBansheeRequestInput
 Define the input fields to create a new banshee request
 """
 input CreateBansheeRequestInput {
+  bansheeOrderItemId: String
   serialNumber: String!
   name: String
   levelId: String!

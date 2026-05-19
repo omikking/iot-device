@@ -435,6 +435,7 @@ export type ConfirmPasswordResetInput = {
  * Define the input fields to create a new banshee request
  */
 export type CreateBansheeRequestInput = {
+  bansheeOrderItemId?: InputMaybe<Scalars['String']['input']>;
   boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
   boltType?: InputMaybe<Scalars['String']['input']>;
   comment?: InputMaybe<Scalars['String']['input']>;

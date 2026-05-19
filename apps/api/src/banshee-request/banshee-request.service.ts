@@ -10,6 +10,8 @@ import { promises as fs } from 'fs';
 import { randomBytes } from 'crypto';
 import {
   Application,
+  BansheeCartItemType,
+  BansheeOrderItemStatus,
   BansheeRequest,
   BoltType,
   GlobalRole,
@@ -53,6 +55,58 @@ export class BansheeRequestsService {
         createBansheeRequestInput.locationId,
       );
 
+      if (createBansheeRequestInput.bansheeOrderItemId) {
+        const orderItem = await this.prisma.bansheeOrderItem.findUnique({
+          where: { id: createBansheeRequestInput.bansheeOrderItemId },
+          select: {
+            id: true,
+            itemType: true,
+            status: true,
+            order: { select: { companyId: true } },
+          },
+        });
+
+        if (!orderItem) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'BANSHEE_ORDER_ITEM_NOTFOUND_ERROR',
+              title: `Banshee order item #${createBansheeRequestInput.bansheeOrderItemId} not found`,
+            },
+          });
+        }
+
+        if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
+          try {
+            await this.validateUserCompanyAccess(
+              user,
+              orderItem.order.companyId,
+            );
+          } catch {
+            throw new ForbiddenException(
+              'User does not have access to this banshee order.',
+            );
+          }
+        }
+
+        if (orderItem.status !== BansheeOrderItemStatus.PENDING) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'BANSHEE_ORDER_ITEM_INVALID_TYPE',
+              title: 'Banshee order item must be of pending status',
+            },
+          });
+        }
+
+        if (orderItem.itemType !== BansheeCartItemType.NEW_BANSHEE) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'BANSHEE_ORDER_ITEM_INVALID_TYPE',
+              title: 'Banshee order item must be of type NEW_BANSHEE',
+            },
+          });
+        }
+      }
+
       let imagePaths: string[] | undefined;
       if (
         createBansheeRequestInput.images &&
@@ -65,46 +119,62 @@ export class BansheeRequestsService {
         }
       }
 
-      const createdBansheeRequest = await this.prisma.bansheeRequest.create({
-        data: {
-          serialNumber: createBansheeRequestInput.serialNumber,
-          name: createBansheeRequestInput.name || undefined,
-          levelId: createBansheeRequestInput.levelId,
-          driveId: createBansheeRequestInput.driveId,
-          locationId: createBansheeRequestInput.locationId,
-          coordinates: createBansheeRequestInput.coordinates || undefined,
-          period: createBansheeRequestInput.period,
-          locationDetails:
-            createBansheeRequestInput.locationDetails || undefined,
-          boltInstallationDateTime:
-            createBansheeRequestInput.boltInstallationDateTime || undefined,
-          ringPosition: createBansheeRequestInput.ringPosition || undefined,
-          comment: createBansheeRequestInput.comment || undefined,
-          isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
-          isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
-          images: imagePaths && imagePaths.length > 0 ? imagePaths : undefined,
-          boltType: createBansheeRequestInput.boltType as BoltType,
-          createdBy: user.id,
-          updatedBy: user.id,
-          companyId: createBansheeRequestInput.companyId,
-          siteId: createBansheeRequestInput.siteId,
-        },
-      });
+      const createdBansheeRequest = await this.prisma.$transaction(
+        async (tx) => {
+          const created = await tx.bansheeRequest.create({
+            data: {
+              serialNumber: createBansheeRequestInput.serialNumber,
+              name: createBansheeRequestInput.name || undefined,
+              levelId: createBansheeRequestInput.levelId,
+              driveId: createBansheeRequestInput.driveId,
+              locationId: createBansheeRequestInput.locationId,
+              coordinates: createBansheeRequestInput.coordinates || undefined,
+              period: createBansheeRequestInput.period,
+              locationDetails:
+                createBansheeRequestInput.locationDetails || undefined,
+              boltInstallationDateTime:
+                createBansheeRequestInput.boltInstallationDateTime || undefined,
+              ringPosition: createBansheeRequestInput.ringPosition || undefined,
+              comment: createBansheeRequestInput.comment || undefined,
+              isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
+              isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
+              images:
+                imagePaths && imagePaths.length > 0 ? imagePaths : undefined,
+              boltType: createBansheeRequestInput.boltType as BoltType,
+              createdBy: user.id,
+              updatedBy: user.id,
+              companyId: createBansheeRequestInput.companyId,
+              siteId: createBansheeRequestInput.siteId,
+            },
+          });
 
-      if (!createdBansheeRequest) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'BANSHEE_REQUEST_CREATION_ERROR',
-            title: errorTexts.bansheeRequestCreateError_title,
-          },
-        });
-      }
+          if (createBansheeRequestInput.bansheeOrderItemId) {
+            await tx.bansheeOrderItem.update({
+              where: { id: createBansheeRequestInput.bansheeOrderItemId },
+              data: {
+                bansheeRequestId: created.id,
+                name: null,
+                siteId: null,
+                locationId: null,
+                levelId: null,
+                driveId: null,
+                period: null,
+              },
+            });
+          }
+
+          return created;
+        },
+      );
 
       return {
         ...createdBansheeRequest,
       };
     } catch (error) {
-      if (error instanceof UserInputError) {
+      if (
+        error instanceof UserInputError ||
+        error instanceof ForbiddenException
+      ) {
         throw error;
       }
       if (error instanceof Error) {

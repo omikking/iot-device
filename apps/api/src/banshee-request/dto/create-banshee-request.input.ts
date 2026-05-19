@@ -11,6 +11,10 @@ import * as GraphQLTypes from '../../graphql-types';
 import { Upload } from 'graphql-upload-ts';
 
 export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequestInput {
+  @IsUUID()
+  @IsOptional()
+  bansheeOrderItemId!: string;
+
   @IsString()
   serialNumber!: string;
 

@@ -121,9 +121,7 @@ export const SchedulerOverviewTable = ({
                     variant="small"
                     color="foreground"
                     className="ui-banshee-font-bold"
-                  >
-                    •
-                  </Text>
+                  />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0 ui-banshee-w-[40%]">
                   <TableHeadWithSorting

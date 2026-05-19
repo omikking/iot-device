@@ -167,6 +167,7 @@ export class OrderFilterInput {
 }
 
 export class CreateBansheeRequestInput {
+    bansheeOrderItemId?: Nullable<string>;
     serialNumber: string;
     name?: Nullable<string>;
     levelId: string;

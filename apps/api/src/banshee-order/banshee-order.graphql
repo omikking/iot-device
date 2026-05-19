@@ -1,0 +1,88 @@
+# ===== Banshee Orders =====
+
+enum BansheeOrderStatus {
+  PENDING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  CANCELLED
+}
+
+enum BansheeOrderItemStatus {
+  PENDING
+  FULFILLED
+  CANCELLED
+}
+
+type BansheeOrder {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  status: BansheeOrderStatus!
+  attachments: [String!]!
+  comment: String!
+
+  companyId: String!
+  company: Company
+
+  orderItems: [BansheeOrderItem!]!
+}
+
+type BansheeOrderItem {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  itemType: BansheeCartItemType!
+  status: BansheeOrderItemStatus!
+
+  bansheeRequestId: String
+  bansheeRequest: BansheeRequest
+
+  name: String
+  period: Int
+
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+
+  site: Site
+  level: Level
+  drive: Drive
+  location: Location
+
+  orderId: String!
+  order: BansheeOrder
+}
+
+input SubmitOrderInput {
+  companyId: String!
+  attachments: [String!]
+  comment: String!
+}
+
+input OrderFilterInput {
+  status: BansheeOrderStatus
+  companyId: String
+  startDate: DateTime
+  endDate: DateTime
+}
+
+type OrdersResponse {
+  totalRecords: Int!
+  results: [BansheeOrder!]!
+}
+
+extend type Query {
+  orders(filter: OrderFilterInput, offset: Int, limit: Int): OrdersResponse!
+  order(id: String!): BansheeOrder!
+}
+
+extend type Mutation {
+  submitOrder(input: SubmitOrderInput!): BansheeOrder!
+  cancelOrder(id: String!): BansheeOrder!
+  completeOrder(id: String!): BansheeOrder!
+  fulfillOrderItem(id: String!): BansheeOrderItem!
+  cancelOrderItem(id: String!): BansheeOrderItem!
+}

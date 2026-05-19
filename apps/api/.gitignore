@@ -4,13 +4,16 @@
 /build
 
 # Logs
-logs
+proceq-logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+#Data
+proceq-data
 
 # OS
 .DS_Store

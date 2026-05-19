@@ -1,0 +1,90 @@
+# ===== Banshee Cart =====
+
+enum BansheeCartItemType {
+  NEW_BANSHEE
+  SERVICE_EXISTING
+}
+
+type BansheeCartItem {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  itemType: BansheeCartItemType!
+
+  bansheeRequestId: String
+  bansheeRequest: BansheeRequest
+
+  name: String
+  quantity: Int!
+  period: Int
+
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+
+  site: Site
+  level: Level
+  drive: Drive
+  location: Location
+
+  companyId: String!
+  company: Company
+}
+
+input AddCartItemInput {
+  itemType: BansheeCartItemType!
+  bansheeRequestId: String
+  name: String
+  quantity: Int
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  period: Int
+  companyId: String!
+}
+
+input UpdateNewBansheeCartItemInput {
+  quantity: Int
+  name: String
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  period: Int
+}
+
+type BansheeCartItemStats {
+  newBanshee: Int!
+  serviceExisting: Int!
+  total: Int!
+}
+
+type SkippedBansheeRequest {
+  bansheeRequestId: String!
+  serialNumber: String
+  reason: String!
+}
+
+type AddCartItemsResult {
+  added: [BansheeCartItem!]!
+  skipped: [SkippedBansheeRequest!]!
+}
+
+extend type Query {
+  cartItems(companyId: String!): [BansheeCartItem!]!
+  cartItemsStats(companyId: String!): BansheeCartItemStats!
+}
+
+extend type Mutation {
+  addCartItems(input: [AddCartItemInput!]!): AddCartItemsResult!
+  updateNewBansheeCartItem(
+    companyId: String!
+    cartItemId: String!
+    input: UpdateNewBansheeCartItemInput!
+  ): BansheeCartItem!
+  deleteCartItem(id: String!): BansheeCartItem!
+  clearCart(companyId: String!): Boolean!
+}

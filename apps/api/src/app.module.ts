@@ -21,11 +21,20 @@ import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
 
+import { BansheeRequestModule } from './banshee-request/banshee-request.module';
+import { ProceqModule } from './proceq/proceq.module';
+import { BansheeStatsModule } from './banshee-stats/banshee-stats.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BansheeTemplateModule } from './banshee-template/banshee-template.module';
+import { BansheeCartModule } from './banshee-cart/banshee-cart.module';
+import { BansheeOrderModule } from './banshee-order/banshee-order.module';
+
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     AuthModule,
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -49,6 +58,12 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     ResetPasswordModule,
     EmailModule,
     InvitationModule,
+    BansheeRequestModule,
+    ProceqModule,
+    BansheeStatsModule,
+    BansheeTemplateModule,
+    BansheeCartModule,
+    BansheeOrderModule,
   ],
   providers: [DateScalar],
 })

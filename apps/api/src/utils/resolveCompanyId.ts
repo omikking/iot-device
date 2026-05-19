@@ -44,6 +44,36 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: 'siteId',
     parentModel: 'site',
   },
+  bansheeRequest: {
+    model: 'bansheeRequest',
+    idField: 'id',
+    parentField: 'siteId',
+    parentModel: 'site',
+  },
+  bansheeTemplate: {
+    model: 'bansheeTemplate',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
+  bansheeCartItem: {
+    model: 'bansheeCartItem',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
+  bansheeOrder: {
+    model: 'bansheeOrder',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
+  bansheeOrderItem: {
+    model: 'bansheeOrderItem',
+    idField: 'id',
+    parentField: 'orderId',
+    parentModel: 'bansheeOrder',
+  },
   invitation: {
     model: 'invitation',
     idField: 'id',
@@ -77,10 +107,28 @@ export async function resolveCompanyId(
       let parentId = args[parentField as string];
 
       if (!parentId) {
-        parentId = Object.values(args)
-          .filter((v) => typeof v === 'object' && v !== null)
-          .map((v) => v[parentField as string])
-          .find((v) => typeof v === 'string');
+        const candidates: string[] = [];
+        for (const value of Object.values(args)) {
+          if (value === null || typeof value !== 'object') continue;
+
+          if (Array.isArray(value)) {
+            for (const item of value) {
+              const v = item?.[parentField as string];
+              if (typeof v === 'string') candidates.push(v);
+            }
+          } else {
+            const v = (value as Record<string, any>)[parentField as string];
+            if (typeof v === 'string') candidates.push(v);
+          }
+        }
+
+        // Batch mutations must target a single parent — reject if items disagree.
+        if (
+          candidates.length > 0 &&
+          candidates.every((c) => c === candidates[0])
+        ) {
+          parentId = candidates[0];
+        }
       }
 
       if (!parentId) {

@@ -86,7 +86,7 @@ export default function Page() {
       textarea: '',
     },
   });
-
+  const [activeBolt, setActiveBolt] = useState<string | null>(null);
   const [, setDropdownValue] = useState<string | undefined>(undefined);
   const [, setFilterValues] = useState<string[]>([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -135,7 +135,11 @@ export default function Page() {
         Bolt Locator 🚀
       </Headline>
       <div className="w-full flex justify-center">
-        <BoltLocator />
+        {/* <BoltLocator /> */}
+        <BoltLocator
+          activeBolt={activeBolt}
+          onChange={setActiveBolt}
+        />
       </div>
       <hr className="w-full border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

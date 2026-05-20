@@ -81,6 +81,23 @@ services:
     networks:
       - playground
 
+  banshee:
+    build:
+      context: .
+      dockerfile: apps/banshee/Dockerfile
+    image: ground-support-platform-banshee:1.0.0
+    depends_on:
+      - api
+    ports:
+      - '3002:3002'
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:3333/graphql
+    env_file:
+      - ./apps/banshee/.env.dev
+    command: pnpm start
+    networks:
+      - playground
+
 networks:
   playground:
 

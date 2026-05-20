@@ -1,5 +1,141 @@
 import { Application } from '@/gql/graphql';
 
+export const chartDataMock = [
+  { label: 'Elastic', value: 55, fill: 'var(--color-elastic)' },
+  { label: 'Plastic Low', value: 10, fill: 'var(--color-plasticLow)' },
+  { label: 'Plastic High', value: 5, fill: 'var(--color-plasticHigh)' },
+  { label: 'Not Measurable', value: 5, fill: 'var(--color-notMeasurable)' },
+  { label: 'Broken', value: 25, fill: 'var(--color-broken)' },
+];
+
+export const lineDataChartMock = [
+  {
+    date: "Jan '24",
+    line1: 2,
+    line2: 7.8,
+    line3: 9,
+    line4: 6.8,
+    line5: 3.2,
+  },
+  {
+    date: "Feb '24",
+    line1: 8.5,
+    line2: 9,
+    line3: 7,
+    line4: 6.7,
+    line5: 3.1,
+  },
+  {
+    date: "Mar '24",
+    line1: 8.4,
+    line2: 7,
+    line3: 7.1,
+    line4: 6.5,
+    line5: 3.0,
+  },
+  {
+    date: "Apr '24",
+    line1: 7,
+    line2: 5,
+    line3: 6,
+    line4: 6,
+    line5: 2.8,
+  },
+  {
+    date: "May '24",
+    line1: 6,
+    line2: 6,
+    line3: 5,
+    line4: 8,
+    line5: 2.6,
+  },
+  {
+    date: "Jun '24",
+    line1: 4.5,
+    // line2: 7.3,
+    line3: 1,
+    line4: 7,
+    line5: 2.4,
+  },
+  {
+    date: "Jul '24",
+    line1: 2,
+    line2: 3,
+    line3: 0,
+    line4: 8,
+    line5: 2.2,
+  },
+  {
+    date: "Aug '24",
+    line1: 4,
+    line2: 6.9,
+    line3: 0,
+    line4: 12,
+    line5: 2.0,
+  },
+];
+
+export const lineDataConfigMock = [
+  { dataKey: 'line1', label: 'Line 1', color: '#0066cc' },
+  { dataKey: 'line2', label: 'Line 2', color: '#ff6b6b' },
+  { dataKey: 'line3', label: 'Line 3', color: '#aaaaaa' },
+  { dataKey: 'line4', label: 'Line 4', color: '#00c853' },
+];
+
+export const chartConfigMock = {
+  status: {
+    label: 'status',
+  },
+  elastic: {
+    label: 'Elastic',
+    color: '#62CE47',
+  },
+  plasticLow: {
+    label: 'Plastic Low',
+    color: '#FFD50C',
+  },
+  plasticHigh: {
+    label: 'Plastic High',
+    color: '#FF7938',
+  },
+  notMeasurable: {
+    label: 'Not Measurable',
+    color: '#9C9C9C',
+  },
+  broken: {
+    label: 'Broken',
+    color: '#FF0000',
+  },
+} satisfies ChartConfig;
+
+export const chartItemsMock = [
+  {
+    label: 'Elastic',
+    value: '55%',
+    color: '#62CE47',
+  },
+  {
+    label: 'Plastic Low',
+    value: '10%',
+    color: '#FFD50C',
+  },
+  {
+    label: 'Plastic High',
+    value: '5%',
+    color: '#FF7938',
+  },
+  {
+    label: 'Not Measurable',
+    value: '5%',
+    color: '#9C9C9C',
+  },
+  {
+    label: 'Broken',
+    value: '25%',
+    color: '#FF0000',
+  },
+];
+
 export const optionsDesignSystemMock = [
   {
     id: '1',
@@ -34,6 +170,23 @@ export type UserSchema = {
     appAccess: string[];
   };
 };
+
+export const tableViewDesignSystemMock = [
+  { title: 'Status', value: 'Low Plastic' },
+  {
+    title: 'Location',
+    value: 'Garpenberg, Level 4002, Drive 2001, Location 20,42',
+  },
+  { title: 'Last inspection', value: '2023-10-10' },
+  { title: 'Next inspection', value: '2024-04-10' },
+  { title: 'Assigned to', value: ['Elliot Alderson', 'Jimmy Nwadinkpa'] },
+  { title: 'Tags', value: ['Critical', 'Outdoor'] },
+  {
+    title: 'Comments',
+    value: 'Requires special handling during winter months.',
+  },
+  { title: 'Created by', value: 'Admin User' },
+];
 
 export const usersDesignSystemMock: UserSchema[] = [
   {

@@ -1,12 +1,17 @@
 import './globals.css';
 import '@gsp/ui/styles.css';
+import '@gsp/ui-banshee/styles.css';
 import { Toaster } from '@gsp/ui';
 import type { Metadata } from 'next';
-import { NavBar } from '@/components/NavBar';
 import { authOptions } from '@/libs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';
+import { NavbarBanshee } from '@/components/banshee-components/NavbarBanshee';
+
+import { SidebarProvider } from '@gsp/ui-banshee';
+import { AppSidebar } from '@gsp/ui-banshee';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Portal | Ground Support Platform | Sandvik',
@@ -25,8 +30,12 @@ export default async function RootLayout({
         <NextAuthProvider session={session}>
           <Toaster duration={8000} />
           <UrqlProvider>
-            <NavBar />
-            {children}
+            <NavbarBanshee />
+            <SidebarProvider>
+              <AppSidebar />
+              {children}
+            </SidebarProvider>
+            <Footer />
           </UrqlProvider>
         </NextAuthProvider>
       </body>

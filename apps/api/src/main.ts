@@ -14,6 +14,7 @@ async function bootstrap() {
       'http://localhost',
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002',
 
       // production origins
       'https://staging-portal.groundsupport.mining.sandvik',

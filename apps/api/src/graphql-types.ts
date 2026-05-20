@@ -181,6 +181,7 @@ export class CreateBansheeRequestInput {
     comment?: Nullable<string>;
     isBrokenBolt: boolean;
     isNotMeasurable: boolean;
+    measured?: Nullable<boolean>;
     images?: Nullable<Upload[]>;
     boltType?: Nullable<string>;
     companyId: string;
@@ -513,6 +514,7 @@ export abstract class IMutation {
     clearCart?: boolean;
     submitOrder?: BansheeOrder;
     cancelOrder?: BansheeOrder;
+    completeOrder?: BansheeOrder;
     fulfillOrderItem?: BansheeOrderItem;
     cancelOrderItem?: BansheeOrderItem;
     createBansheeRequest?: BansheeRequest;

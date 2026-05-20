@@ -72,6 +72,7 @@ input CreateBansheeRequestInput {
   comment: String
   isBrokenBolt: Boolean!
   isNotMeasurable: Boolean!
+  measured: Boolean
   images: [Upload!]
   boltType: String
   companyId: String!

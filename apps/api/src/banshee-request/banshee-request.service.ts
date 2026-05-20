@@ -138,6 +138,7 @@ export class BansheeRequestsService {
               comment: createBansheeRequestInput.comment || undefined,
               isBrokenBolt: createBansheeRequestInput.isBrokenBolt,
               isNotMeasurable: createBansheeRequestInput.isNotMeasurable,
+              measured: createBansheeRequestInput.measured ?? undefined,
               images:
                 imagePaths && imagePaths.length > 0 ? imagePaths : undefined,
               boltType: createBansheeRequestInput.boltType as BoltType,

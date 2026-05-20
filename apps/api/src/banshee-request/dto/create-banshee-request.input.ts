@@ -56,6 +56,10 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
   @IsBoolean()
   isNotMeasurable!: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  measured?: boolean;
+
   @IsOptional()
   images?: Upload[];
 

@@ -448,6 +448,7 @@ export type CreateBansheeRequestInput = {
   levelId: Scalars['String']['input'];
   locationDetails?: InputMaybe<Scalars['String']['input']>;
   locationId: Scalars['String']['input'];
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   period: Scalars['Int']['input'];
   ringPosition: RingPosition;

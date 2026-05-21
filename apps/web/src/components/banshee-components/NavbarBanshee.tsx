@@ -88,7 +88,7 @@ export const NavbarBanshee = () => {
                     <div className="flex flex-row gap-4 pt-2">
                       {/* might be tailwind config that prefix is missing in the WEB 
                       but once this is in project BANSHEE it maybe be resolved */}
-                      <Button className="!p-0" variant="ghost">
+                      <Button className="!p-0" variant="outline">
                         Browse apps
                       </Button>
                       <Button variant="primary">Logut</Button>

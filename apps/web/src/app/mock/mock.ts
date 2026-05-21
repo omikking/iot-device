@@ -1,5 +1,5 @@
 import { Application } from '@/gql/graphql';
-
+import type { ChartConfig } from '@gsp/ui-banshee';
 export const chartDataMock = [
   { label: 'Elastic', value: 55, fill: 'var(--color-elastic)' },
   { label: 'Plastic Low', value: 10, fill: 'var(--color-plasticLow)' },

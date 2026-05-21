@@ -1,5 +1,5 @@
 'use client';
-import type { TopLevelFormatterParams } from 'echarts/types/dist/shared';
+
 import type { EChartsOption } from 'echarts';
 
 import { Card, CardContent, CardFooter } from '../base/card';
@@ -28,18 +28,11 @@ export function ChartPieDonut({
       backgroundColor: '#000',
       borderColor: '#000',
       textStyle: { color: '#fff', fontSize: 12 },
-      formatter: (params: TopLevelFormatterParams) => {
-        const p = Array.isArray(params) ? params[0] : params;
-    
-        const value = Array.isArray(p.value)
-          ? p.value.join(', ')
-          : String(p.value ?? '');
-    
-        return `<div style="padding:2px 4px">
-          <div>${escapeHtml(String(p.name ?? ''))}</div>
-          <div>${escapeHtml(value)}</div>
-        </div>`;
-      },
+      formatter: (params: { name: string; value: number }) =>
+        `<div style="padding:2px 4px">
+          <div>${escapeHtml(String(params.name ?? ''))}</div>
+          <div>${escapeHtml(String(params.value ?? ''))}</div>
+        </div>`,
     },
     series: [
       {

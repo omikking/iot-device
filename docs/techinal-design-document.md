@@ -1024,6 +1024,7 @@ flowchart LR
     OI -->|TSR Mobile App| TSR{Fulfil}
     TSR -->|SERVICE_EXISTING| BR1[Update existing<br/>BansheeRequest]
     TSR -->|NEW_BANSHEE| BR2[createBansheeRequest<br/>with bansheeOrderItemId<br/>$transaction:<br/>create BR + link OrderItem]
+    TSR -->|NEW_BANSHEE| BR2[Create new<br/>BansheeRequest]
     BR1 --> F[OrderItem: FULFILLED]
     BR2 --> F
     F --> RC{All items resolved?}
@@ -1114,6 +1115,8 @@ erDiagram
         string levelId FK "nullable, onDelete: SetNull"
         string driveId FK "nullable, onDelete: SetNull"
         string locationId FK "nullable, onDelete: SetNull"
+        string location
+        int period
         string companyId FK
     }
 
@@ -1136,6 +1139,9 @@ erDiagram
         string levelId FK "nullable, onDelete: SetNull"
         string driveId FK "nullable, onDelete: SetNull"
         string locationId FK "nullable, onDelete: SetNull"
+        int quantity
+        string location
+        int period
         string orderId FK
     }
 

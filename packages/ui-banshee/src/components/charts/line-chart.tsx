@@ -114,12 +114,21 @@ export const ChartLineLinear = forwardRef<
       { yAxis: band.from },
     ]);
 
-  const boundaryValues = hasBands
-    ? [...new Set(([] as number[]).concat(...bands.map((b) => [b.from, b.to])))]
-        .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
-        .sort((a: number, b: number) => a - b)
-    : [];
+  // const boundaryValues = hasBands
+  //   ? [...new Set(([] as number[]).concat(...bands.map((b) => [b.from, b.to])))]
+  //       .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
+  //       .sort((a: number, b: number) => a - b)
+  //   : [];
 
+  const boundaryValues = hasBands
+  ? Array.from(
+      new Set(
+        ([] as number[]).concat(...bands.map((b) => [b.from, b.to]))
+      )
+    )
+      .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
+      .sort((a, b) => a - b)
+  : [];
   const bandMidpoints = new Map<number, string>();
   for (const band of bands) {
     const mid = (band.from + band.to) / 2;

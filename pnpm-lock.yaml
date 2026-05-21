@@ -30,6 +30,9 @@ importers:
       turbo:
         specifier: ^1.13.4
         version: 1.13.4
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
 
   apps/api:
     dependencies:
@@ -423,6 +426,9 @@ importers:
       '@gsp/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@gsp/ui-banshee':
+        specifier: workspace:*
+        version: link:../../packages/ui-banshee
       '@hookform/resolvers':
         specifier: ^3.4.2
         version: 3.6.0(react-hook-form@7.51.5(react@18.2.0))
@@ -4222,6 +4228,9 @@ packages:
     resolution: {integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==}
   bintrees@0.0.10:
     resolution: {integrity: sha512-BkR37mfNUjTN36dENR1V6BlW8rqzpJnqCBhe2ZtWXJ1UgTVPHIlWSfYX7Ap/FlAgl7XWRr3mG4eR2LFnezBG1g==}
+
+  bl@1.2.3:
+    resolution: {integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==}
 
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
@@ -13356,6 +13365,11 @@ snapshots:
       readable-stream: 2.3.8
       safe-buffer: 5.2.1
   bintrees@0.0.10: {}
+
+  bl@1.2.3:
+    dependencies:
+      readable-stream: 2.3.8
+      safe-buffer: 5.2.1
 
   bl@4.1.0:
     dependencies:

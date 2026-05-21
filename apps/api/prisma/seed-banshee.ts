@@ -61,6 +61,29 @@ async function seedBanshee() {
     );
   }
 
+  const serialNumbers = [
+    '1000000001001',
+    '1000000001002',
+    '1000000002001',
+    '1000000003001',
+    'Data-with-log001',
+    '1423245354465',
+    'Data-with-log005',
+    'Data-with-log006',
+    '00000001',
+    'Data-with-log009',
+    'Data-with-log010',
+    'Data-with-log012',
+    'Data-with-log013',
+    'Data-with-log014',
+    'Data-with-log015',
+    'Data-with-log017',
+    'Data-with-log016',
+    'Data-with-log019',
+    'Data-with-log018',
+    'vel-6000-test001',
+    '1111111111',
+  ];
   // Seed BoltTypeConstant with default values for D47_MD_1_8_M
   const existingBoltConstant = await prisma.bansheeBoltTypeConstant.findFirst({
     where: { boltType: BoltType.D47_MD_1_8_M },
@@ -101,6 +124,8 @@ async function seedBanshee() {
   const TIMESTAMP_SUFFIX = /_\d{13}$/;
   const stripTimestampSuffix = (fileName: string) =>
     fileName.replace(TIMESTAMP_SUFFIX, '');
+
+  //for logging serial numbers from proceq API
   const proceqSerialNumbers = [
     ...new Set(proceqFileNames.map((p) => stripTimestampSuffix(p.fileName))),
   ];
@@ -108,7 +133,10 @@ async function seedBanshee() {
   // const newFromProceq = proceqSerialNumbers.filter(
   //   (fn) => !existingSet.has(fn),
   // );
-  const allSerialNumbers = [...proceqSerialNumbers];
+
+  console.log('serial number from proceq api', proceqSerialNumbers);
+
+  const allSerialNumbers = [...serialNumbers];
   console.log(
     `Serial numbers: hardcoded + from proceqData = ${allSerialNumbers.length} total`,
   );

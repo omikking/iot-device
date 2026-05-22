@@ -97,11 +97,23 @@ export const NavbarBanshee = () => {
     })
     .replace(/\//g, '.');
 
-  const time = new Date().toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+  // const time = new Date().toLocaleTimeString('en-GB', {
+  // hour: '2-digit',
+  //minute: '2-digit',
+  //hour12: false,
+  //});
+
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    setTime(
+      new Date().toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }),
+    );
+  }, []);
 
   return (
     <header className="ui-banshee-h-20 ui-banshee-mx-4 md:ui-banshee-mx-8 lg:ui-banshee-mx-16 ui-banshee-w-[calc(100%-2rem)] md:ui-banshee-w-[calc(100%-4rem)] lg:ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">

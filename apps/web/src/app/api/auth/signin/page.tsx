@@ -48,6 +48,8 @@ export default function SignIn() {
           ? '/administration-portal'
           : '/select-company';
         window.location.href = redirectTo;
+        console.log(` {session?.user?.globalRole || 'No role found'}`);
+        console.log(`{searchParams.get('callbackUrl') || 'No callbackUrl'}`);
       }
     }
   }, [status, router, searchParams]);

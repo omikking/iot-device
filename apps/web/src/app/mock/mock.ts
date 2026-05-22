@@ -1,5 +1,5 @@
 import { Application } from '@/gql/graphql';
-
+//import type { ChartConfig } from '@gsp/ui-banshee';
 export const optionsDesignSystemMock = [
   {
     id: '1',

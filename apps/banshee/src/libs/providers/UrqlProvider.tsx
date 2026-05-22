@@ -14,7 +14,8 @@ const useClient = () => {
     // This client manages all of our GraphQL requests and results.
     const client = new Client({
       // TODO: set url to 'process.env.NEXT_PUBLIC_GRAPHQL_URL'
-      url: 'http://localhost:3333/graphql',
+      url: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333/graphql',
+      //url: 'http://localhost:3333/graphql',
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {

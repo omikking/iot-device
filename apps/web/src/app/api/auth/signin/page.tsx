@@ -38,7 +38,7 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.globalRole) {
+    if (status === 'authenticated') {
       const callbackUrl = searchParams.get('callbackUrl');
       if (callbackUrl) {
         window.location.href = callbackUrl;

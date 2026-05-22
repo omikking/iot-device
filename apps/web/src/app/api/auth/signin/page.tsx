@@ -98,6 +98,25 @@ export default function SignIn() {
 
   return (
     <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-neutral-1 min-h-[calc(100vh-64px)]">
+      <div className="w-full max-w-2xl rounded-md border border-red-500 bg-red-50 p-4 text-sm text-red-800">
+        <p>
+          <strong>DEBUG BUILD:</strong> Banshee SignIn Debug v1
+        </p>
+        <p>
+          <strong>Status:</strong> {status}
+        </p>
+        <p>
+          <strong>User Role:</strong>{' '}
+          {session?.user?.globalRole || 'No role found'}
+        </p>
+        <p>
+          <strong>Callback URL:</strong>{' '}
+          {searchParams.get('callbackUrl') || 'No callbackUrl'}
+        </p>
+        <p>
+          <strong>Current Time:</strong> {new Date().toISOString()}
+        </p>
+      </div>
       <Headline as="h1" variant="xl" color="foreground" className="text-center">
         Ground Support Platform
       </Headline>

@@ -12,10 +12,15 @@ const useClient = () => {
 
   return useMemo(() => {
     // This client manages all of our GraphQL requests and results.
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/graphql`
+    : undefined;
+
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
     const client = new Client({
-      // TODO: set url to 'process.env.NEXT_PUBLIC_GRAPHQL_URL'
-      url: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333/graphql',
-      //url: 'http://localhost:3333/graphql',
+      url: apiUrl,
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {

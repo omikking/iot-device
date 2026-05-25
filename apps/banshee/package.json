@@ -37,6 +37,7 @@
         "@gsp/eslint-config": "workspace:*",
         "@gsp/tailwind-config": "workspace:*",
         "@gsp/typescript-config": "workspace:*",
+        "@next/env": "^16.2.6",
         "@next/eslint-plugin-next": "^14.1.1",
         "@parcel/watcher": "^2.5.0",
         "@types/node": "^20.11.24",

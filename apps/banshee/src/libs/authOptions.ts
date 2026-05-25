@@ -84,6 +84,22 @@ export const authOptions: NextAuthOptions = {
     signIn: '/api/auth/signin',
   },
 
+  cookies: {
+    sessionToken: {
+      name: '__Secure-next-auth.session-token',
+      options: {
+        httpOnly: true,
+        path: '/',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // none required for cross-subdomain, but only enable in prod
+        secure: process.env.NODE_ENV === 'production',
+        // Only attach domain in prod and only if COOKIE_DOMAIN is set to avoid invalid config in dev
+        ...(process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
+          ? { domain: process.env.COOKIE_DOMAIN }
+          : {}),
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) return { ...token, ...user };

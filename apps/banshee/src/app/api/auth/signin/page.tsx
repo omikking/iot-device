@@ -25,6 +25,7 @@ import {
   signInFormSchema,
 } from '@/components/schemas/SignInFormSchema';
 import { placeholder } from '@/app/uitexts/placeholder';
+import { Role } from '@/gql/graphql';
 
 export default function SignIn() {
   const router = useRouter();
@@ -40,7 +41,11 @@ export default function SignIn() {
       if (callbackUrl) {
         window.location.href = callbackUrl;
       } else {
-        router.push(`${process.env.NEXT_PUBLIC_PORTAL_URL}/overview`);
+        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
+        const redirectTo = isAdmin
+          ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+          : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
+        router.push(redirectTo);
       }
     }
   }, [status, router, searchParams]);

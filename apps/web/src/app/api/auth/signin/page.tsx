@@ -40,19 +40,25 @@ export default function SignIn() {
   useEffect(() => {
     if (status === 'authenticated') {
       const callbackUrl = searchParams.get('callbackUrl');
+
+      const isAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+
+      // technicians should never land on admin portal
+      if (!isAdmin && callbackUrl?.startsWith('/administration-portal')) {
+        window.location.href = '/select-company';
+        return;
+      }
+
       if (callbackUrl) {
         window.location.href = callbackUrl;
-      } else {
-        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-        const redirectTo = isAdmin
-          ? '/administration-portal'
-          : '/select-company';
-        window.location.href = redirectTo;
-        console.log(` {session?.user?.globalRole || 'No role found'}`);
-        console.log(`{searchParams.get('callbackUrl') || 'No callbackUrl'}`);
+        return;
       }
+
+      const redirectTo = isAdmin ? '/administration-portal' : '/select-company';
+
+      window.location.href = redirectTo;
     }
-  }, [status, router, searchParams]);
+  }, [status, searchParams, session]);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInFormSchema),

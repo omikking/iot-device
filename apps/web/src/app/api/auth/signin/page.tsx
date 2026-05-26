@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Role } from '@/gql/graphql';
 import {
   Button,
@@ -30,7 +30,7 @@ import {
 import { placeholder } from '@/app/uitexts/placeholder';
 
 export default function SignIn() {
-  const router = useRouter();
+  //const router = useRouter();
   const searchParams = useSearchParams();
 
   const { data: session, status } = useSession();

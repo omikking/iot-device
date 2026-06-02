@@ -17,9 +17,10 @@ async function bootstrap() {
       'http://localhost:3002',
 
       // production origins
-      'https://portal.groundsupport.mining.sandvik',
-      'https://pulltest.groundsupport.mining.sandvik',
-      'https://groundsupport.mining.sandvik',
+      'https://staging-portal.groundsupport.mining.sandvik',
+      'https://staging-pulltest.groundsupport.mining.sandvik',
+      'https://staging.groundsupport.mining.sandvik',
+      'https://staging-xcellbanshee.groundsupport.mining.sandvik',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,

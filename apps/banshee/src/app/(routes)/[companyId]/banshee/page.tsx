@@ -26,7 +26,6 @@ const bansheeRequestsListQuery = graphql(`
     $endDate: DateTime
   ) {
     bansheeRequests(
-      measured: false
       limit: 100
       companyId: $companyId
       locationId: $locationId

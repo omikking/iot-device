@@ -97,7 +97,7 @@ const addCartItemsMutation = graphql(`
 //TODO : need to change it measured true
 const bansheeSchedulerList = graphql(`
   query bansheeSchedulerList($companyId: String) {
-    bansheeRequests(measured: false, limit: 100, companyId: $companyId) {
+    bansheeRequests(limit: 100, companyId: $companyId) {
       results {
         id
         serialNumber

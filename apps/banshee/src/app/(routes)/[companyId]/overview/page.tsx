@@ -24,7 +24,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
   `);
   const bansheeRequestsListQuery = graphql(`
     query overviewBansheeRequestsList($companyId: String) {
-      bansheeRequests(measured: false, limit: 100, companyId: $companyId) {
+      bansheeRequests(limit: 100, companyId: $companyId) {
         results {
           id
           serialNumber

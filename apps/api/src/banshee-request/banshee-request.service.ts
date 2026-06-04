@@ -289,6 +289,8 @@ export class BansheeRequestsService {
           images: imagePaths ?? undefined,
           updatedBy: user.id,
           measured: updateBansheeRequestInput.measured ?? undefined,
+          activateNotifications:
+            updateBansheeRequestInput.activateNotifications ?? undefined,
           siteId: updateBansheeRequestInput.siteId || undefined,
         },
       });

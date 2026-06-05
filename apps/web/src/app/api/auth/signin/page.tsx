@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Role } from '@/gql/graphql';
 import {
   Button,
@@ -30,7 +30,7 @@ import {
 import { placeholder } from '@/app/uitexts/placeholder';
 
 export default function SignIn() {
-  const router = useRouter();
+  //const router = useRouter();
   const searchParams = useSearchParams();
 
   const { data: session, status } = useSession();
@@ -40,17 +40,25 @@ export default function SignIn() {
   useEffect(() => {
     if (status === 'authenticated') {
       const callbackUrl = searchParams.get('callbackUrl');
+
+      const isAdmin = session?.user?.globalRole === Role.SandvikAdmin;
+
+      // technicians should never land on admin portal
+      if (!isAdmin && callbackUrl?.startsWith('/administration-portal')) {
+        window.location.href = '/select-company';
+        return;
+      }
+
       if (callbackUrl) {
         window.location.href = callbackUrl;
-      } else {
-        const isAdmin = session.user.globalRole === Role.SandvikAdmin;
-        const redirectTo = isAdmin
-          ? '/administration-portal'
-          : '/select-company';
-        window.location.href = redirectTo;
+        return;
       }
+
+      const redirectTo = isAdmin ? '/administration-portal' : '/select-company';
+
+      window.location.href = redirectTo;
     }
-  }, [status, router, searchParams]);
+  }, [status, searchParams, session]);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInFormSchema),

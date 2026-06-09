@@ -8,6 +8,7 @@ import * as decompress from 'decompress';
 import * as fsNode from 'fs';
 import * as archiver from 'archiver';
 import { BansheeStatsService } from '../banshee-stats/banshee-stats.service';
+import { BansheeOrderService } from '../banshee-order/banshee-order.service';
 import {
   ExtractedProceqFields,
   ExtractedProceqReading,
@@ -30,6 +31,7 @@ export class ProceqSyncService {
     private readonly api: ProceqApiService,
     private readonly prisma: PrismaService,
     private readonly statsService: BansheeStatsService,
+    private readonly orderService: BansheeOrderService,
   ) {}
 
   private extractProceqFields(
@@ -844,6 +846,8 @@ export class ProceqSyncService {
           data: { isProceqSynced: true },
         });
       }
+
+      await this.processOrderFulfillment(recordsToUpsert);
     } catch (error) {
       const err = error as Error;
       this.logger.error(
@@ -1205,6 +1209,65 @@ export class ProceqSyncService {
           `Failed to compute status for measurement ${record.measurementId}: ${err.message}`,
         );
       }
+    }
+  }
+
+  /**
+   * A Proceq record represents a completed measurement when either a reading
+   * has a `gate1SoundPathDistanceInTimeUnit` value, or the comment marks it as
+   * "Not measurable" or "Broken". Anything else is still in progress and does
+   * not trigger order fulfillment.
+   */
+  private isMeasurementCompleted(record: ExtractedProceqFields): boolean {
+    const hasMeasuredReading = record.readings.some(
+      (reading) => reading.gate1SoundPathDistanceInTimeUnit != null,
+    );
+
+    const comment = (record.comments ?? '').toLowerCase();
+    const hasTerminalComment =
+      comment.includes('not measurable') || comment.includes('broken');
+
+    return hasMeasuredReading || hasTerminalComment;
+  }
+
+  /**
+   * Marks order items as fulfilled for any synced record that represents a
+   * completed measurement and is mapped to a Banshee request. Records reaching
+   * this point are already limited to new/updated measurements, and the order
+   * service performs the update idempotently, so reprocessing the same record
+   * never double-fulfills. The whole batch is rolled up in one transaction; a
+   * failure is logged here so it cannot abort the surrounding sync batch.
+   */
+  private async processOrderFulfillment(
+    records: ExtractedProceqFields[],
+  ): Promise<void> {
+    // One representative measurementId per Banshee request, for audit logging.
+    const requestToMeasurement = new Map<string, string>();
+
+    for (const record of records) {
+      if (!record.bansheeRequestId) continue;
+      if (!this.isMeasurementCompleted(record)) continue;
+      if (!requestToMeasurement.has(record.bansheeRequestId)) {
+        requestToMeasurement.set(record.bansheeRequestId, record.measurementId);
+      }
+    }
+
+    if (requestToMeasurement.size === 0) return;
+
+    const entries = [...requestToMeasurement].map(
+      ([bansheeRequestId, measurementId]) => ({
+        bansheeRequestId,
+        measurementId,
+      }),
+    );
+
+    try {
+      await this.orderService.fulfillOrderItemsForBansheeRequests(entries);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `Order fulfillment batch failed for ${entries.length} request(s): ${err.message}`,
+      );
     }
   }
 }

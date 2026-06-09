@@ -5,5 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   providers: [BansheeOrderService, BansheeOrderResolver, PrismaService],
+  exports: [BansheeOrderService],
 })
 export class BansheeOrderModule {}

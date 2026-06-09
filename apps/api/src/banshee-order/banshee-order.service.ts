@@ -275,6 +275,118 @@ export class BansheeOrderService {
     });
   }
 
+  async fulfillOrderItemsForBansheeRequests(
+    entries: Array<{ bansheeRequestId: string; measurementId?: string }>,
+  ): Promise<void> {
+    if (entries.length === 0) return;
+
+    const measurementByRequest = new Map(
+      entries.map((e) => [e.bansheeRequestId, e.measurementId]),
+    );
+    const requestIds = [...measurementByRequest.keys()];
+
+    await this.prisma.$transaction(async (tx) => {
+      const pendingItems = await tx.bansheeOrderItem.findMany({
+        where: {
+          bansheeRequestId: { in: requestIds },
+          status: BansheeOrderItemStatus.PENDING,
+        },
+        select: {
+          id: true,
+          orderId: true,
+          itemType: true,
+          bansheeRequestId: true,
+        },
+      });
+
+
+      if (pendingItems.length === 0) return;
+
+      const itemsByRequest = new Map<string, typeof pendingItems>();
+      for (const item of pendingItems) {
+        if (!item.bansheeRequestId) continue;
+        const list = itemsByRequest.get(item.bansheeRequestId) ?? [];
+        list.push(item);
+        itemsByRequest.set(item.bansheeRequestId, list);
+      }
+
+      const itemIdsToFulfill: string[] = [];
+      const affectedOrderIds = new Set<string>();
+      const auditLines: string[] = [];
+
+      for (const [bansheeRequestId, items] of itemsByRequest) {
+        const measurementId = measurementByRequest.get(bansheeRequestId);
+
+        if (items.length > 1) {
+          this.logger.warn(
+            `Found ${items.length} PENDING order items for bansheeRequest=${bansheeRequestId} (measurement=${measurementId ?? 'n/a'}); skipping automatic fulfillment to avoid an ambiguous update`,
+          );
+          continue;
+        }
+
+        const item = items[0];
+
+        if (
+          item.itemType !== BansheeCartItemType.NEW_BANSHEE &&
+          item.itemType !== BansheeCartItemType.SERVICE_EXISTING
+        ) {
+          this.logger.warn(
+            `Order item ${item.id} has unexpected itemType ${item.itemType}; skipping automatic fulfillment`,
+          );
+          continue;
+        }
+
+        itemIdsToFulfill.push(item.id);
+        affectedOrderIds.add(item.orderId);
+        auditLines.push(
+          `Order fulfillment | measurement=${measurementId ?? 'n/a'} ` +
+            `bansheeRequest=${bansheeRequestId} orderItem=${item.id} ` +
+            `order=${item.orderId} status: ${BansheeOrderItemStatus.PENDING} -> ${BansheeOrderItemStatus.FULFILLED}`,
+        );
+      }
+
+      if (itemIdsToFulfill.length === 0) return;
+
+      await tx.bansheeOrderItem.updateMany({
+        where: { id: { in: itemIdsToFulfill } },
+        data: { status: BansheeOrderItemStatus.FULFILLED },
+      });
+
+      const orderIds = [...affectedOrderIds];
+      const ordersStillPending = await tx.bansheeOrderItem.findMany({
+        where: {
+          orderId: { in: orderIds },
+          status: BansheeOrderItemStatus.PENDING,
+        },
+        select: { orderId: true },
+        distinct: ['orderId'],
+      });
+      const ordersWithPending = new Set(
+        ordersStillPending.map((i) => i.orderId),
+      );
+
+      const completedOrderIds = orderIds.filter(
+        (id) => !ordersWithPending.has(id),
+      );
+
+      if (completedOrderIds.length > 0) {
+        await tx.bansheeOrder.updateMany({
+          where: {
+            id: { in: completedOrderIds },
+            status: { not: BansheeOrderStatus.CANCELLED },
+          },
+          data: { status: BansheeOrderStatus.COMPLETED },
+        });
+      }
+
+      auditLines.forEach((line) => this.logger.log(line));
+      this.logger.log(
+        `Order fulfillment batch: fulfilled ${itemIdsToFulfill.length} order item(s); ` +
+          `${completedOrderIds.length} order(s) COMPLETED`,
+      );
+    });
+  }
+
   async cancelOrderItem(id: string) {
     const orderItem = await this.prisma.bansheeOrderItem.findUnique({
       where: { id },

@@ -287,6 +287,19 @@ export const Menu = () => {
                     </Anchor>
                   </Link>
                 </Headline>
+                <Headline
+                  variant="medium"
+                  color="foreground"
+                  as="h3"
+                  className="group"
+                >
+                  <Link href="/select-device" passHref legacyBehavior>
+                    <Anchor color="foreground">
+                      <LucidePlus className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:rotate-90" />
+                      Add new device
+                    </Anchor>
+                  </Link>
+                </Headline>
               </div>
               <hr className="border-neutral-2" />
             </>

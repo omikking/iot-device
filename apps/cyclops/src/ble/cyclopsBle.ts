@@ -15,9 +15,17 @@ export class CyclopsBLE {
   server: BluetoothRemoteGATTServer | null = null;
   characteristics: BleCharacteristicMap = {};
 
-  async connect(): Promise<void> {
+    async connect(): Promise<void> {
     this.device = await navigator.bluetooth.requestDevice({
-      filters: [{ namePrefix: "SVK" }],
+      filters: [
+
+        {
+          manufacturerData: [{
+            companyIdentifier: 0xffff,
+          }]
+        }
+
+      ],
       optionalServices: Object.values(SERVICES),
     });
     this.server = await this.device.gatt!.connect();

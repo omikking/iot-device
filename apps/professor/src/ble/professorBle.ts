@@ -11,26 +11,23 @@ export class ProfessorBLE {
   chars: BleCharMap = {};
 
   async connect(): Promise<void> {
-    try {
-      this.device = await navigator.bluetooth.requestDevice({
-        filters: [{ namePrefix: 'SVK' }],
-        optionalServices: Object.values(SERVICES),
-      });
-  
-      console.log('Bluetooth Device:', this.device);
-  
-      this.server = await this.device.gatt!.connect();
-  
-      console.log('GATT Server:', this.server);
-  
-      await this._cacheChars();
-    } catch (error) {
-      console.error('Bluetooth connection failed:', error);
-  
-      // Optional: throw error again if you want caller to handle it
-      throw error;
-    }
+    console.log('connecting to cyclops');
+    this.device = await navigator.bluetooth.requestDevice({
+      filters: [
+
+        {
+          manufacturerData: [{
+            companyIdentifier: 0xffff,
+          }]
+        }
+
+      ],
+      optionalServices: Object.values(SERVICES),
+    });
+    this.server = await this.device.gatt!.connect();
+    await this._cacheChars();
   }
+
 
   disconnect(): void {
     if (this.device?.gatt?.connected) this.device.gatt.disconnect();
@@ -160,14 +157,14 @@ export class ProfessorBLE {
   // ── Internal ──────────────────────────────────────────────────────────────
 
   private async _cacheChars(): Promise<void> {
-    console.log('caching chars');
+  
     
     for (const su of Object.values(SERVICES)) {
       const svc = await this.server!.getPrimaryService(su);
       const cs = await svc.getCharacteristics();
       cs.forEach((c: BluetoothRemoteGATTCharacteristic) => (this.chars[c.uuid] = c));
     }
-    console.log(this.chars);
+
     
   }
 }

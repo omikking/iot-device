@@ -278,12 +278,13 @@ export default function TemplatePage({
   );
 
   useEffect(() => {
-    if (!templateDetail) {
-      // Only reset when there is no active selection (e.g. "New template" clicked)
-      if (!selectedTemplateId) form.reset(DEFAULT_VALUES);
+    if (!selectedTemplateId) {
+      form.reset(DEFAULT_VALUES);
       return;
     }
-    form.reset(buildTemplateFormValues(templateDetail));
+    if (templateDetail) {
+      form.reset(buildTemplateFormValues(templateDetail));
+    }
   }, [templateDetail, selectedTemplateId]);
 
   const onSubmit: SubmitHandler<BansheeTemplateFormValues> = async (values) => {
@@ -437,7 +438,11 @@ export default function TemplatePage({
                     colSpan={2}
                     className="ui-banshee-text-center ui-banshee-py-4"
                   >
-                    <Text variant="small" color="muted" className='ui-banshee-text-center'>
+                    <Text
+                      variant="small"
+                      color="muted"
+                      className="ui-banshee-text-center"
+                    >
                       No templates found
                     </Text>
                   </TableCell>

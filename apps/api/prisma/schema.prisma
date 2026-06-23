@@ -144,6 +144,7 @@ model Company {
   templates           BansheeTemplate[]
   cartItems           BansheeCartItem[]
   orders              BansheeOrder[]
+  bansheeEmails       BansheeEmail[]
 
   @@map("companies")
 }
@@ -181,6 +182,7 @@ model User {
   userRole             UserPermission[]
   boltResult           BoltResult[]
   passwordResetRequest PasswordResetRequest[]
+  bansheeEmails        BansheeEmail[]
 
   @@map("users")
 }
@@ -734,4 +736,53 @@ model BansheeOrderItem {
   @@index([orderId])
   @@index([status])
   @@map("order_items")
+}
+
+// ===== Banshee Email Service =====
+
+enum BansheeEmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model BansheeEmail {
+  id      String             @id @default(uuid())
+  status  BansheeEmailStatus @default(PENDING)
+  message String
+
+  userId    String
+  companyId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  attachments BansheeEmailAttachment[]
+
+  @@index([userId])
+  @@index([companyId])
+}
+
+model BansheeEmailAttachment {
+  id               String    @id @default(uuid())
+
+  originalFileName String
+  storedFileName   String
+  filePath         String
+  mimeType         String
+  fileSize         BigInt
+
+  createdAt        DateTime  @default(now())
+  isDeleted        Boolean   @default(false)
+  deletedAt        DateTime?
+
+  bansheeEmailId   String
+
+  email BansheeEmail @relation(fields: [bansheeEmailId], references: [id], onDelete: Cascade)
+
+  @@index([bansheeEmailId])
+  @@index([createdAt])
 }

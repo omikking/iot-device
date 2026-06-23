@@ -27,6 +27,7 @@ export type ChartLineLinearProps = {
 
 export type ChartLineLinearHandle = {
   resetZoom: () => void;
+  getPngDataUrl: () => string | undefined;
 };
 
 export const description = 'A status plot chart';
@@ -97,6 +98,12 @@ export const ChartLineLinear = forwardRef<
         end: 100,
       });
     },
+    getPngDataUrl: () =>
+      chartRef.current?.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      }),
   }));
 
   const xAxisData = data.map((d) => d.time);

@@ -21,12 +21,19 @@ import {
 describe('BansheeOrderService', () => {
   let prisma: PrismaMock;
   let service: BansheeOrderService;
+  let bansheeCommunicationService: { shareOrderDetails: jest.Mock };
 
   const companyId = 'company-1';
 
   beforeEach(() => {
     prisma = createPrismaMock();
-    service = new BansheeOrderService(prisma as unknown as PrismaService);
+    bansheeCommunicationService = {
+      shareOrderDetails: jest.fn().mockResolvedValue(undefined),
+    };
+    service = new BansheeOrderService(
+      prisma as unknown as PrismaService,
+      bansheeCommunicationService as any,
+    );
   });
 
   describe('BE-ORD-01: submit order from cart', () => {
@@ -45,10 +52,14 @@ describe('BansheeOrderService', () => {
       });
       prisma.bansheeCartItem.deleteMany.mockResolvedValue({ count: 2 });
 
-      const result = await service.submitOrder({
-        companyId,
-        comment: 'Please process',
-      } as any);
+      const result = await service.submitOrder(
+        {
+          companyId,
+          comment: 'Please process',
+        } as any,
+        [],
+        adminUser,
+      );
 
       expect(result.id).toBe('order-1');
       const createArg = prisma.bansheeOrder.create.mock.calls[0][0];
@@ -58,13 +69,40 @@ describe('BansheeOrderService', () => {
       expect(prisma.bansheeCartItem.deleteMany).toHaveBeenCalledWith({
         where: { companyId },
       });
+      // The created order (with the uploaded files) is handed off for the
+      // order-details notification.
+      expect(
+        bansheeCommunicationService.shareOrderDetails,
+      ).toHaveBeenCalledWith(result, adminUser, []);
+    });
+
+    it('still resolves the order when the notification email fails', async () => {
+      prisma.bansheeCartItem.findMany.mockResolvedValue([
+        { itemType: BansheeCartItemType.NEW_BANSHEE, quantity: 1, name: 'New' },
+      ]);
+      prisma.bansheeOrder.create.mockResolvedValue({
+        id: 'order-1',
+        status: BansheeOrderStatus.PENDING,
+      });
+      prisma.bansheeCartItem.deleteMany.mockResolvedValue({ count: 1 });
+      bansheeCommunicationService.shareOrderDetails.mockRejectedValue(
+        new Error('SMTP down'),
+      );
+
+      const result = await service.submitOrder(
+        { companyId, comment: 'x' } as any,
+        [],
+        adminUser,
+      );
+
+      expect(result.id).toBe('order-1');
     });
 
     it('rejects submitting an order from an empty cart', async () => {
       prisma.bansheeCartItem.findMany.mockResolvedValue([]);
 
       await expect(
-        service.submitOrder({ companyId, comment: 'x' } as any),
+        service.submitOrder({ companyId, comment: 'x' } as any, [], adminUser),
       ).rejects.toThrow('Cart is empty. Cannot submit an order.');
       expect(prisma.bansheeOrder.create).not.toHaveBeenCalled();
     });

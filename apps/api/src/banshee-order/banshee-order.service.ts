@@ -12,12 +12,17 @@ import { SubmitOrderInput } from './dto/submit-order.input';
 import { OrderFilterInput } from './dto/order-filter.input';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { FileUpload } from 'graphql-upload-ts';
+import { BansheeCommunicationService } from 'src/banshee-communication/banshee-communication.service';
 
 @Injectable()
 export class BansheeOrderService {
   private readonly logger = new Logger(BansheeOrderService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly bansheeCommunicationService: BansheeCommunicationService,
+  ) {}
 
   private readonly orderInclude = {
     orderItems: {
@@ -92,7 +97,11 @@ export class BansheeOrderService {
     return order;
   }
 
-  async submitOrder(input: SubmitOrderInput) {
+  async submitOrder(
+    input: SubmitOrderInput,
+    attachments: FileUpload[],
+    user: ActiveUserData,
+  ) {
     const { companyId } = input;
 
     const cartItems = await this.prisma.bansheeCartItem.findMany({
@@ -123,7 +132,7 @@ export class BansheeOrderService {
       const createdOrder = await tx.bansheeOrder.create({
         data: {
           status: BansheeOrderStatus.PENDING,
-          attachments: input.attachments ?? [],
+          attachments: input.attachmentsName ?? [],
           comment: input.comment,
           companyId,
           orderItems: {
@@ -143,6 +152,22 @@ export class BansheeOrderService {
     this.logger.log(
       `Order ${order.id} created with ${cartItems.length} items for company ${companyId}`,
     );
+
+    // Notify the company's BANSHEE users about the new order. The order is
+    // already committed, so a failure here must never fail the submission —
+    // log it and move on.
+    try {
+      await this.bansheeCommunicationService.shareOrderDetails(
+        order,
+        user,
+        attachments,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send order details email for order ${order.id}`,
+        error instanceof Error ? error.stack : error,
+      );
+    }
 
     return order;
   }
@@ -298,7 +323,6 @@ export class BansheeOrderService {
           bansheeRequestId: true,
         },
       });
-
 
       if (pendingItems.length === 0) return;
 

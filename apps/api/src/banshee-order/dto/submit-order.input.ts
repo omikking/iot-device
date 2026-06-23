@@ -7,7 +7,7 @@ export class SubmitOrderInput {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  attachments?: string[];
+  attachmentsName?: string[];
 
   @IsString()
   comment!: string;

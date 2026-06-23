@@ -21,6 +21,14 @@ const useClient = () => {
     }
     const client = new Client({
       url: apiUrl,
+      // Apollo Server 4 blocks multipart/form-data (file upload) requests as
+      // potential CSRF unless this preflight header is present. Sending it on
+      // every request keeps CSRF protection enabled while allowing uploads.
+      fetchOptions: {
+        headers: {
+          'apollo-require-preflight': 'true',
+        },
+      },
       exchanges: [
         cacheExchange,
         authExchange(async (utils) => {

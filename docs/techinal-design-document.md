@@ -112,6 +112,8 @@ flowchart LR
     Sync -->|attachment meta| PA[(proceq_attachments)]
     Sync --> Stats[BansheeStatsService]
     Stats -->|increment| BS[(banshee_session_stats)]
+    Sync -->|completed + mapped<br/>measurements| Ord[BansheeOrderService]
+    Ord -->|fulfil order items<br/>+ roll up order status| OO[(orders /<br/>order_items)]
 ```
 
 ---
@@ -126,7 +128,7 @@ flowchart LR
 | `proceq-auth.service.ts` | OAuth2 authentication & token management | 255 |
 | `proceq-auth.controller.ts` | REST endpoints for login & OAuth callback | 49 |
 | `proceq-api.service.ts` | HTTP client wrapping Proceq API calls | 127 |
-| `proceq-sync.service.ts` | Core sync engine — extraction, upsert, status computation | 1,103 |
+| `proceq-sync.service.ts` | Core sync engine — extraction, upsert, status computation, order auto-fulfilment | 1,273 |
 | `proceq-scheduler.service.ts` | Cron-based trigger for sync | 30 |
 | `proceq.graphql` | GraphQL type definitions | 70 |
 | `dto/proceq-token.dto.ts` | Token DTO class | 5 |
@@ -342,6 +344,8 @@ interface SyncResult {
 | `updateStatsForNewRecords()` | Push measurement counts to `BansheeStatsService` |
 | `saveRawDataAsZip()` | Compress raw measurement data to ZIP file on disk |
 | `computeStatusForRecords()` | Calculate elongation & bolt status (Elastic / Plastic) |
+| `isMeasurementCompleted()` | Decide whether a synced record is a finished measurement (has a measured reading, or a "broken" / "not measurable" comment) |
+| `processOrderFulfillment()` | Auto-fulfil linked `PENDING` order items for completed, mapped measurements via `BansheeOrderService` |
 
 ### 5.4 Scheduler (`proceq-scheduler.service.ts`)
 
@@ -447,6 +451,12 @@ This is the core function — the brain of the sync.
 - Calls `updateStatsForNewRecords()` — updates operator/company statistics
 - Calls `bulkUpsertProceqData()` — saves all `ProceqData` + `ProceqReading` rows
 - Marks matched `BansheeRequest` records as `isProceqSynced = true`
+
+**Step 4f — Auto-fulfil linked order items**
+
+- Calls `processOrderFulfillment(recordsToUpsert)` (see 6.10) right after the `isProceqSynced` flip
+- For every record mapped to a `BansheeRequest` **and** representing a completed measurement, the linked `PENDING` `BansheeOrderItem` is marked `FULFILLED` and its parent order rolled up
+- Wrapped in try/catch so an order-fulfilment failure never aborts the surrounding sync batch
 
 ### 6.5 `extractProceqFields()` — Lines 36–212
 
@@ -574,6 +584,26 @@ Uses a piecewise quadratic formula — different coefficients below vs above the
 
 **Technical:** Looks up the `companyId` from the banshee request matched to each measurement's serial number, then calls `statsService.updateStatsForMeasurement()` in batches of 5.
 
+### 6.10 `processOrderFulfillment()` & `isMeasurementCompleted()` — Lines 1221–1273
+
+**Non-technical:** When a measurement comes back from the field as *finished* — either it carries a real reading, or the operator flagged it as "broken" / "not measurable" — the open work item on the technician's order is ticked off automatically. The user no longer has to close it by hand.
+
+**`isMeasurementCompleted(record)`** — a record counts as completed when **either**:
+
+- any reading has a non-null `gate1SoundPathDistanceInTimeUnit` (a real measurement was taken), **or**
+- the comment contains `"not measurable"` or `"broken"` (a terminal field outcome)
+
+Anything else is treated as still in-progress and does not fulfil an order.
+
+**`processOrderFulfillment(records)`:**
+
+1. Builds a `Map<bansheeRequestId, measurementId>` — one representative measurement per request — keeping only records that are (a) mapped to a `BansheeRequest` and (b) completed per `isMeasurementCompleted()`.
+2. If nothing qualifies, returns early.
+3. Delegates the batch to `BansheeOrderService.fulfillOrderItemsForBansheeRequests(entries)` (see 24.7).
+4. Errors are caught and logged here so a fulfilment failure cannot abort the surrounding sync batch.
+
+Source: [`proceq-sync.service.ts:1221-1273`](apps/api/src/proceq/proceq-sync.service.ts#L1221-L1273). Wiring: `ProceqModule` imports `BansheeOrderModule` (which now `exports` `BansheeOrderService`), and `ProceqSyncService` injects `orderService: BansheeOrderService`.
+
 ---
 
 ## 7. Banshee Stats Module — Detailed Breakdown
@@ -644,6 +674,7 @@ sequenceDiagram
     participant DB as Postgres
     participant FS as Disk
     participant ST as BansheeStatsService
+    participant OR as BansheeOrderService
 
     CRON->>SYNC: syncAllMeasurements()
     SYNC->>API: getMeasurements(page, size)
@@ -671,6 +702,8 @@ sequenceDiagram
         ST->>DB: upsert banshee_session_stats
         SYNC->>DB: bulkUpsertProceqData ($transaction)
         SYNC->>DB: createMany BansheeEventLog (status changes)
+        SYNC->>OR: processOrderFulfillment (completed + mapped)
+        OR->>DB: $transaction: order items -> FULFILLED<br/>+ roll up parent order -> COMPLETED
         SYNC-->>SYNC: setImmediate(processAttachments)
     end
     SYNC-->>CRON: SyncResult
@@ -967,7 +1000,7 @@ interface SyncResult {
 
 This section documents the modules introduced to power the end-to-end Banshee scheduling workflow: a Company User authors a service request via a Template, queues it as Cart Items, submits an Order, and a Sandvik Technician (TSR) fulfils each Order Item from the mobile application. All routes are protected by the unified RBAC layer.
 
-## 18. Module Structure (New)
+## 18.   (New)
 
 ### Banshee Template Module (`apps/api/src/banshee-template/`)
 
@@ -1005,7 +1038,7 @@ This section documents the modules introduced to power the end-to-end Banshee sc
 | File | Role | Lines |
 |---|---|---|
 | `banshee-order.module.ts` | NestJS module registration | 9 |
-| `banshee-order.service.ts` | Order submission + fulfilment + status recompute | 279 |
+| `banshee-order.service.ts` | Order submission + fulfilment + status recompute + Proceq-driven batch auto-fulfilment | 467 |
 | `banshee-order.resolver.ts` | GraphQL resolver (RBAC-guarded) | 74 |
 | `banshee-order.graphql` | GraphQL type definitions | 79 |
 | `dto/submit-order.input.ts` | Submit DTO | 14 |
@@ -1039,7 +1072,7 @@ flowchart LR
     class F,OC,OP,OX done;
 ```
 
-**Non-technical:** A Company User picks/creates a Banshee from the Scheduler, drops it into the Cart, then submits an Order with optional attachments and a comment. The Order shows up on the TSR's mobile app where each line item is either serviced (existing bolt) or registered (new bolt). For a `NEW_BANSHEE` item the fulfilment call (`createBansheeRequest`) carries the originating `bansheeOrderItemId` so the new `BansheeRequest` and the `BansheeOrderItem` are linked atomically in a single transaction — the order item's scaffold fields (`name`/`site`/`level`/`drive`/`location`/`period`) are nulled out once the real request exists. The Order auto-rolls up to `COMPLETED` / `PARTIALLY_COMPLETED` / `CANCELLED` based on its line-items; admins/company-owners can also call `completeOrder` to bulk-finish all remaining pending items at once.
+**Non-technical:** A Company User picks/creates a Banshee from the Scheduler, drops it into the Cart, then submits an Order with optional attachments and a comment. The Order shows up on the TSR's mobile app where each line item is either serviced (existing bolt) or registered (new bolt). For a `NEW_BANSHEE` item the fulfilment call (`createBansheeRequest`) carries the originating `bansheeOrderItemId` so the new `BansheeRequest` and the `BansheeOrderItem` are linked atomically in a single transaction — the order item's scaffold fields (`name`/`site`/`level`/`drive`/`location`/`period`) are nulled out once the real request exists. The Order auto-rolls up to `COMPLETED` / `PARTIALLY_COMPLETED` / `CANCELLED` based on its line-items; admins/company-owners can also call `completeOrder` to bulk-finish all remaining pending items at once. Separately, when the field measurement for an order item later syncs in from Proceq, that order item is **auto-fulfilled** (see 24.7) — so orders can also close themselves as bolts are measured, with no manual tick-off.
 
 ---
 
@@ -1438,11 +1471,13 @@ Order Item lifecycle:
 ```mermaid
 stateDiagram-v2
     [*] --> PENDING
-    PENDING --> FULFILLED : fulfillOrderItem()
+    PENDING --> FULFILLED : fulfillOrderItem() / Proceq sync (24.7)
     PENDING --> CANCELLED : cancelOrderItem() / cancelOrder()
     FULFILLED --> [*]
     CANCELLED --> [*]
 ```
+
+The `PENDING → FULFILLED` transition fires from **two** sources: the TSR's explicit `fulfillOrderItem` mutation, and the Proceq-driven batch path `fulfillOrderItemsForBansheeRequests` (see 24.7) that runs automatically during sync when a completed measurement lands.
 
 ### 24.5 Service Methods
 
@@ -1454,6 +1489,7 @@ stateDiagram-v2
 | `cancelOrder(id, companyId, user)` | Cancels a non-completed order; sets all `PENDING` line-items to `CANCELLED`. |
 | `completeOrder(id, companyId, user)` | **(New)** Bulk-finishes an order. Validates ownership (`order.companyId === companyId` unless caller is `SANDVIK_ADMIN`) and refuses on `COMPLETED`/`CANCELLED` orders. In a single `prisma.$transaction`, flips all `PENDING` items to `FULFILLED` via `updateMany` and updates the parent order to `COMPLETED`. Skips `recomputeOrderStatus` since the status is deterministic. |
 | `fulfillOrderItem(id)` | Marks an order item `FULFILLED`, returns it with `bansheeRequest`, `order`, `site`, `level`, `drive`, `location` includes, and recomputes parent order status. |
+| `fulfillOrderItemsForBansheeRequests(entries)` | **(New)** Batch auto-fulfilment entry point used by the Proceq sync. For a list of `{ bansheeRequestId, measurementId? }`, finds the `PENDING` order item per request, flips them to `FULFILLED` in one `prisma.$transaction`, and rolls every fully-resolved parent order up to `COMPLETED`. Idempotent and ambiguity-safe (see 24.7). No GraphQL surface — called server-to-server from `ProceqSyncService`. |
 | `cancelOrderItem(id)` | Marks an order item `CANCELLED` and recomputes parent order status. Same include shape as `fulfillOrderItem`. |
 | `recomputeOrderStatus(tx, orderId)` | Internal — derives parent `BansheeOrderStatus` from the set of child statuses. |
 
@@ -1470,6 +1506,44 @@ stateDiagram-v2
 | Mutation `cancelOrderItem` | `id` | `BansheeOrderItem!` |
 
 Order routes (`submitOrder`, `cancelOrder`, `completeOrder`) are guarded by `@Roles([], [Application.BANSHEE], 'bansheeOrder')`; order-item routes (`fulfillOrderItem`, `cancelOrderItem`) by `@Roles([], [Application.BANSHEE], 'bansheeOrderItem')`. `BansheeOrderItem` also exposes its `site`, `level`, `drive`, `location` relations in GraphQL so the mobile/web UIs can render the hierarchical context for each `NEW_BANSHEE` line without a follow-up query.
+
+### 24.7 Automatic Order Fulfillment via Proceq Sync
+
+Previously an order item could only reach `FULFILLED` through the TSR's explicit `fulfillOrderItem` mutation (or a bulk `completeOrder`). It now **also closes automatically** the moment the corresponding field measurement lands through the Proceq sync — so an order self-completes as bolts are measured, with no manual tick-off.
+
+**Wiring:** `BansheeOrderModule` now `exports` `BansheeOrderService`, and `ProceqModule` imports `BansheeOrderModule`, so `ProceqSyncService` can inject and call it. After `processExportArchive()` links measurements to `BansheeRequest`s and flips `isProceqSynced = true`, it calls `processOrderFulfillment()` (see 6.10), which forwards completed-and-mapped records to `fulfillOrderItemsForBansheeRequests(entries)`.
+
+```mermaid
+flowchart TD
+    Start[fulfillOrderItemsForBansheeRequests entries] --> Tx[prisma.$transaction]
+    Tx --> Find[findMany PENDING bansheeOrderItem<br/>where bansheeRequestId IN requestIds]
+    Find --> Empty{any PENDING items?}
+    Empty -->|No| Ret[return — nothing to do]
+    Empty -->|Yes| Grp[Group items by bansheeRequestId]
+    Grp --> Amb{Multiple PENDING items<br/>for one request?}
+    Amb -->|Yes| Warn[log warning, skip request<br/>ambiguous — won't guess]
+    Amb -->|No| TypeChk{itemType is<br/>NEW_BANSHEE or<br/>SERVICE_EXISTING?}
+    TypeChk -->|No| Warn2[log warning, skip]
+    TypeChk -->|Yes| Collect[collect itemId + orderId<br/>+ audit line]
+    Collect --> UpdItems[updateMany order items to FULFILLED]
+    UpdItems --> Pend[findMany orders still having a<br/>PENDING item, distinct orderId]
+    Pend --> Calc[completedOrderIds = affected minus stillPending]
+    Calc --> UpdOrders[updateMany orders to COMPLETED<br/>where status not CANCELLED]
+    UpdOrders --> Audit[emit per-item + batch audit logs]
+```
+
+    **Design guarantees:**
+
+    - **Idempotent** — only `PENDING` items are selected, and records reaching this point are already filtered to new/updated measurements, so re-syncing the same measurement never double-fulfils.
+    - **Ambiguity-safe** — if a single `BansheeRequest` maps to more than one `PENDING` order item, the batch logs a warning and skips that request rather than guessing which item to close.
+    - **Type-guarded** — items whose `itemType` is neither `NEW_BANSHEE` nor `SERVICE_EXISTING` are skipped with a warning.
+    - **Order roll-up** — after the items flip, orders that no longer have *any* `PENDING` item are bulk-updated to `COMPLETED` (unless already `CANCELLED`). Unlike per-item `recomputeOrderStatus`, this batch path computes completion set-wise with a single `updateMany`.
+    - **Failure isolation** — the whole operation runs in one `prisma.$transaction`; the caller (`processOrderFulfillment`) wraps it in try/catch so a fulfilment failure is logged but never aborts the Proceq sync batch.
+    - **Audit trail** — every fulfilled item emits a structured log line (`measurement → bansheeRequest → orderItem → order`, `PENDING -> FULFILLED`) plus a batch summary count.
+
+Source: [`banshee-order.service.ts:278`](apps/api/src/banshee-order/banshee-order.service.ts#L278).
+
+**Scheduler UI consequence** — once a Banshee is committed to a `PENDING` order, its cart row is deleted at submit time, which would otherwise let it reappear in the schedulable list before its measurement arrives. The Scheduler page now also queries open orders (`schedulerOrders`, `limit: 1000`, `cache-and-network`) and filters any `BansheeRequest` already present on a `PENDING` order item (`pendingOrderBansheeRequestIds`) out of the displayed `bansheeRequests`. See [`scheduler/page.tsx`](apps/banshee/src/app/(routes)/[companyId]/scheduler/page.tsx).
 
 ---
 
@@ -1522,6 +1596,13 @@ Order fulfilment endpoints (`fulfillOrderItem`, `cancelOrderItem`) are scoped to
 
 Previously, only `SANDVIK_ADMIN` and Company Admin roles could edit the Site/Level/Drive/Location hierarchy in the web app (`apps/web/src/components/{Drive,Level,Location}*.tsx`). The CRUD permission set has been widened to include `SANDVIK_TECHNICIAN` via the new `isSandvikTechnician(userPermissions, companyId)` helper in `apps/web/src/libs/utils.ts`. The three role-checks now compose as `(isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician)` across the `DriveItem`, `DrivesList`, `LevelItem`, `LevelsList`, `LocationItem`, and `LocationList` components, so technicians can add/edit/delete site locations on-site without escalating to a company admin.
 
+### 25.6 Local Development Fixes (Banshee Web App)
+
+| Change | File | Detail |
+|---|---|---|
+| Env-aware session cookie | [`authOptions.ts`](apps/banshee/src/libs/authOptions.ts) | The NextAuth session-token cookie name is now `__Secure-next-auth.session-token` **only** when `NODE_ENV === 'production'`; non-production (local `http://`) falls back to the unprefixed `next-auth.session-token`. The `__Secure-` prefix requires HTTPS, so the hardcoded name previously broke local sign-in. |
+| Codegen env loading | [`codegen.ts`](apps/banshee/codegen.ts) | `loadEnvConfig(process.cwd(), true)` — the added `true` (dev-mode) flag makes GraphQL codegen load `.env.local` / dev env files when resolving `NEXT_PUBLIC_API_URL` for the schema URL. |
+
 ---
 
 ## 26. End-to-End Walkthrough
@@ -1557,5 +1638,6 @@ sequenceDiagram
     end
     Note over PR,DB: Field measurements arrive via Proceq cloud
     PR->>DB: upsert ProceqData (computes dueDate = updatedTimestamp + period months)
-    DB-->>U: Scheduler shows due / overdue Banshees -> next cart cycle
+    PR->>DB: auto-fulfil linked PENDING order items + roll up order (24.7)
+    DB-->>U: Scheduler hides ordered/measured Banshees; surfaces due / overdue -> next cart cycle
 ```

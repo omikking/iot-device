@@ -2,8 +2,9 @@
 
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
 import { ChartLineLinear, LoadingSpinner } from '@gsp/ui-banshee';
-import type { StatusBand } from '@gsp/ui-banshee';
+import type { StatusBand, ChartLineLinearHandle } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
+import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 
 type BansheeRequestResult =
   BansheeRequestsListQuery['bansheeRequests']['results'][number];
@@ -11,6 +12,8 @@ type BansheeRequestResult =
 // Export the handle type so page.tsx can use it
 export type BansheeStatusPlotHandle = {
   resetZoom: () => void;
+  downloadPng: (filename?: string) => void;
+  getPngFile: (filename?: string) => Promise<File | undefined>;
 };
 
 const stringToColor = (str: string) => {
@@ -64,12 +67,25 @@ export const BansheeStatusPlot = forwardRef<
     fetching: boolean;
   }
 >(function BansheeStatusPlot({ bansheeRequests, fetching }, ref) {
-  const chartRef = useRef<{ resetZoom: () => void }>(null);
+  const chartRef = useRef<ChartLineLinearHandle>(null);
 
-  // Expose resetZoom to parent component
+  // Expose resetZoom and PNG download to parent component
   useImperativeHandle(ref, () => ({
     resetZoom: () => {
       chartRef.current?.resetZoom();
+    },
+    downloadPng: (filename = 'banshee_status_plot.png') => {
+      const dataUrl = chartRef.current?.getPngDataUrl();
+      if (dataUrl) downloadDataUrl(dataUrl, filename);
+    },
+    getPngFile: async (filename = 'banshee_status_plot.png') => {
+      // wait for chart layers (bands + series + markers) to fully paint
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const dataUrl = chartRef.current?.getPngDataUrl();
+
+      return dataUrl ? dataUrlToFile(dataUrl, filename) : undefined;
     },
   }));
 

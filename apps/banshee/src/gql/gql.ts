@@ -21,7 +21,7 @@ const documents = {
     "\n  query bansheeRequestsList(\n    $companyId: String\n    $locationId: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    bansheeRequests(\n      limit: 100\n      companyId: $companyId\n      locationId: $locationId\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      results {\n        id\n        serialNumber\n        site {\n          siteName\n        }\n        drive {\n          driveName\n        }\n        level {\n          levelName\n        }\n        location {\n          locationName\n        }\n        comment\n        proceqData {\n          status\n          createdTimestamp\n          updatedTimestamp\n          readings {\n            elongation\n            status\n          }\n        }\n        eventLogs {\n          createdAt\n          eventType\n          previousStatus\n          newStatus\n        }\n      }\n    }\n  }\n": types.BansheeRequestsListDocument,
     "\n  query bansheePageStatusDistribution(\n    $companyId: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    bansheeStatusDistribution(\n      companyId: $companyId\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      total\n      statusCounts {\n        status\n        count\n      }\n      byLocation {\n        locationId\n        locationName\n        total\n        statusCounts {\n          status\n          count\n        }\n      }\n    }\n  }\n": types.BansheePageStatusDistributionDocument,
     "\n  query cartItems($companyId: String!) {\n    cartItems(companyId: $companyId) {\n      id\n      itemType\n      name\n      quantity\n      bansheeRequestId\n      location {\n        locationName\n      }\n      bansheeRequest {\n        serialNumber\n        location {\n          locationName\n        }\n      }\n    }\n  }\n": types.CartItemsDocument,
-    "\n  mutation submitOrder($input: SubmitOrderInput!) {\n    submitOrder(input: $input) {\n      id\n    }\n  }\n": types.SubmitOrderDocument,
+    "\n  mutation submitOrder(\n    $input: SubmitOrderInput!\n    $attachments: [Upload!]\n  ) {\n    submitOrder(input: $input, attachments: $attachments) {\n      id\n    }\n  }\n": types.SubmitOrderDocument,
     "\n  mutation deleteCartItem($id: String!) {\n    deleteCartItem(id: $id) {\n      id\n    }\n  }\n": types.DeleteCartItemDocument,
     "\n  mutation updateNewBansheeCartItem(\n    $companyId: String!\n    $cartItemId: String!\n    $input: UpdateNewBansheeCartItemInput!\n  ) {\n    updateNewBansheeCartItem(\n      companyId: $companyId\n      cartItemId: $cartItemId\n      input: $input\n    ) {\n      id\n      quantity\n    }\n  }\n": types.UpdateNewBansheeCartItemDocument,
     "\n    query bansheeStatusDistribution($companyId: String) {\n      bansheeStatusDistribution(companyId: $companyId) {\n        total\n        statusCounts {\n          status\n          count\n        }\n      }\n    }\n  ": types.BansheeStatusDistributionDocument,
@@ -42,6 +42,8 @@ const documents = {
     "\n  query eventsPageTableQuery($companyId: String) {\n    bansheeEventLogs(companyId: $companyId) {\n      totalRecords\n      results {\n        id\n        createdAt\n        eventType\n        previousStatus\n        newStatus\n        bansheeRequest {\n          serialNumber\n          id\n          location {\n            locationName\n          }\n        }\n      }\n    }\n  }\n": types.EventsPageTableQueryDocument,
     "\n  query getCompanyName($id: String!) {\n    company(id: $id) {\n      id\n      name\n    }\n  }\n": types.GetCompanyNameDocument,
     "\n  query cartItemsStats($companyId: String!) {\n    cartItemsStats(companyId: $companyId) {\n      newBanshee\n      serviceExisting\n      total\n    }\n  }\n": types.CartItemsStatsDocument,
+    "\n  mutation bansheeContactUs(\n    $input: BansheeContactUsInput!\n    $attachments: [Upload!]\n  ) {\n    bansheeContactUs(input: $input, attachments: $attachments) {\n      success\n      message\n    }\n  }\n": types.BansheeContactUsDocument,
+    "\n  mutation bansheeSharePlotList(\n    $input: BansheeSharePlotListInput!\n    $image: Upload!\n    $csv: Upload!\n  ) {\n    bansheeSharePlotList(input: $input, image: $image, csv: $csv) {\n      success\n      sentTo\n      message\n    }\n  }\n": types.BansheeSharePlotListDocument,
 };
 
 /**
@@ -89,7 +91,7 @@ export function graphql(source: "\n  query cartItems($companyId: String!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation submitOrder($input: SubmitOrderInput!) {\n    submitOrder(input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation submitOrder($input: SubmitOrderInput!) {\n    submitOrder(input: $input) {\n      id\n    }\n  }\n"];
+export function graphql(source: "\n  mutation submitOrder(\n    $input: SubmitOrderInput!\n    $attachments: [Upload!]\n  ) {\n    submitOrder(input: $input, attachments: $attachments) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation submitOrder(\n    $input: SubmitOrderInput!\n    $attachments: [Upload!]\n  ) {\n    submitOrder(input: $input, attachments: $attachments) {\n      id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -170,6 +172,14 @@ export function graphql(source: "\n  query getCompanyName($id: String!) {\n    c
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query cartItemsStats($companyId: String!) {\n    cartItemsStats(companyId: $companyId) {\n      newBanshee\n      serviceExisting\n      total\n    }\n  }\n"): (typeof documents)["\n  query cartItemsStats($companyId: String!) {\n    cartItemsStats(companyId: $companyId) {\n      newBanshee\n      serviceExisting\n      total\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation bansheeContactUs(\n    $input: BansheeContactUsInput!\n    $attachments: [Upload!]\n  ) {\n    bansheeContactUs(input: $input, attachments: $attachments) {\n      success\n      message\n    }\n  }\n"): (typeof documents)["\n  mutation bansheeContactUs(\n    $input: BansheeContactUsInput!\n    $attachments: [Upload!]\n  ) {\n    bansheeContactUs(input: $input, attachments: $attachments) {\n      success\n      message\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation bansheeSharePlotList(\n    $input: BansheeSharePlotListInput!\n    $image: Upload!\n    $csv: Upload!\n  ) {\n    bansheeSharePlotList(input: $input, image: $image, csv: $csv) {\n      success\n      sentTo\n      message\n    }\n  }\n"): (typeof documents)["\n  mutation bansheeSharePlotList(\n    $input: BansheeSharePlotListInput!\n    $image: Upload!\n    $csv: Upload!\n  ) {\n    bansheeSharePlotList(input: $input, image: $image, csv: $csv) {\n      success\n      sentTo\n      message\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

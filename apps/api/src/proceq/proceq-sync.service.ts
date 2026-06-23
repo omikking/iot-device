@@ -9,14 +9,16 @@ import * as fsNode from 'fs';
 import * as archiver from 'archiver';
 import { BansheeStatsService } from '../banshee-stats/banshee-stats.service';
 import { BansheeOrderService } from '../banshee-order/banshee-order.service';
+import { BansheeCommunicationService } from '../banshee-communication/banshee-communication.service';
 import {
   ExtractedProceqFields,
   ExtractedProceqReading,
   UserPhotoEntry,
   SyncResult,
   BoltConstants,
+  ProceqStatusChangeInfo,
 } from './interfaces/proceq-sync.interfaces';
-import { BoltType, ProceqStatus } from '@prisma/client';
+import { BansheeRequest, BoltType, ProceqStatus } from '@prisma/client';
 
 @Injectable()
 export class ProceqSyncService {
@@ -32,6 +34,7 @@ export class ProceqSyncService {
     private readonly prisma: PrismaService,
     private readonly statsService: BansheeStatsService,
     private readonly orderService: BansheeOrderService,
+    private readonly communicationService: BansheeCommunicationService,
   ) {}
 
   private extractProceqFields(
@@ -789,6 +792,10 @@ export class ProceqSyncService {
         bansheeRequests.map((b) => [b.serialNumber, b]),
       );
 
+      // Same requests keyed by id — used by the notification flows, which work
+      // off the upserted records' bansheeRequestId.
+      const bansheeRequestById = new Map(bansheeRequests.map((b) => [b.id, b]));
+
       for (const [baseFileName, indices] of baseFileNameToRecordIndices) {
         const bansheeRequest = bansheeBySerial.get(baseFileName);
         if (!bansheeRequest) {
@@ -837,14 +844,45 @@ export class ProceqSyncService {
 
       await this.updateStatsForNewRecords(recordsToUpsert, serialNumberMap);
 
+      let statusChanges: ProceqStatusChangeInfo[] = [];
       if (recordsToUpsert.length > 0) {
-        await this.bulkUpsertProceqData(recordsToUpsert);
+        statusChanges = await this.bulkUpsertProceqData(recordsToUpsert);
       }
       if (bansheeRequestsToUpdate.length > 0) {
         await this.prisma.bansheeRequest.updateMany({
           where: { id: { in: bansheeRequestsToUpdate } },
           data: { isProceqSynced: true },
         });
+      }
+
+      // Notification flows (Flow 1: measurement completion, Flow 2: status
+      // change). This service only detects the events and prepares payloads;
+      // recipient resolution, plan validation and sending live in the Banshee
+      // communication layer. Each is isolated in its own try/catch so a
+      // notification failure can never abort the surrounding sync batch, and
+      // they run *before* order fulfillment so Flow 1's PENDING order-item gate
+      // still sees the open items that fulfillment is about to close.
+      try {
+        await this.handleMeasurementNotification(
+          recordsToUpsert,
+          bansheeRequestById,
+        );
+      } catch (error) {
+        const err = error as Error;
+        this.logger.error(
+          `Measurement notification flow failed: ${err.message}`,
+        );
+      }
+      try {
+        await this.handleStatusChangeNotification(
+          statusChanges,
+          bansheeRequestById,
+        );
+      } catch (error) {
+        const err = error as Error;
+        this.logger.error(
+          `Status change notification flow failed: ${err.message}`,
+        );
       }
 
       await this.processOrderFulfillment(recordsToUpsert);
@@ -860,8 +898,11 @@ export class ProceqSyncService {
 
   private async bulkUpsertProceqData(
     records: ExtractedProceqFields[],
-  ): Promise<void> {
+  ): Promise<ProceqStatusChangeInfo[]> {
     const chunkSize = 50;
+    // Collected across chunks and returned so the status-change notification
+    // flow can reuse the same comparison that writes BansheeEventLog rows.
+    const statusChanges: ProceqStatusChangeInfo[] = [];
 
     for (let i = 0; i < records.length; i += chunkSize) {
       const chunk = records.slice(i, i + chunkSize);
@@ -1013,6 +1054,13 @@ export class ProceqSyncService {
             measurementId: record.measurementId,
             bansheeRequestId: existing.bansheeRequestId,
           });
+          statusChanges.push({
+            measurementId: record.measurementId,
+            bansheeRequestId: existing.bansheeRequestId,
+            previousStatus: oldStatus,
+            newStatus: newStatus,
+            changedAt: record?.updatedTimestamp ?? null,
+          });
         }
       }
 
@@ -1021,6 +1069,7 @@ export class ProceqSyncService {
         this.logger.log(`Created ${eventLogs.length} status change event logs`);
       }
     }
+    return statusChanges;
   }
 
   private async updateStatsForNewRecords(
@@ -1267,6 +1316,156 @@ export class ProceqSyncService {
       const err = error as Error;
       this.logger.error(
         `Order fulfillment batch failed for ${entries.length} request(s): ${err.message}`,
+      );
+    }
+  }
+
+  // ================================================================================
+  // NOTIFICATION FLOWS
+  // ================================================================================
+
+  /**
+   * Flow 1 — Measurement Completion Notification.
+   *
+   * Sends one consolidated summary email per company, covering every Banshee
+   * measurement received in this sync. The surrounding sync only reprocesses a
+   * measurement when its Proceq `updatedTimestamp` changes, so the same data is
+   * never re-summarised on later polls. Each measurement is classified via
+   * `isMeasurementCompleted()` into "measured" or "not measured"; the
+   * communication layer owns plan validation, recipient resolution and sending.
+   */
+  private async handleMeasurementNotification(
+    records: ExtractedProceqFields[],
+    bansheeRequestById: Map<string, BansheeRequest>,
+  ): Promise<void> {
+    type SummaryItem = {
+      serialNumber: string;
+      bansheeName: string | null;
+      measurementId: string;
+      status: string;
+    };
+
+    // Group this sync's measurements by company, classifying each as measured
+    // or not measured. Records not mapped to a Banshee request have no company
+    // and therefore no recipients, so they are skipped.
+    const byCompany = new Map<
+      string,
+      { measured: SummaryItem[]; notMeasured: SummaryItem[] }
+    >();
+
+    for (const record of records) {
+      if (!record.bansheeRequestId) continue;
+      const request = bansheeRequestById.get(record.bansheeRequestId);
+      if (!request) continue;
+
+      const item: SummaryItem = {
+        serialNumber: request.serialNumber,
+        bansheeName: request.name,
+        measurementId: record.measurementId,
+        status: record.status ?? ProceqStatus.UNMEASURED,
+      };
+
+      const bucket = byCompany.get(request.companyId) ?? {
+        measured: [],
+        notMeasured: [],
+      };
+      if (this.isMeasurementCompleted(record)) {
+        bucket.measured.push(item);
+      } else {
+        bucket.notMeasured.push(item);
+      }
+      byCompany.set(request.companyId, bucket);
+    }
+
+    if (byCompany.size === 0) return;
+
+    this.logger.log(
+      `Measurement notification: dispatching consolidated summary for ${byCompany.size} compan${byCompany.size === 1 ? 'y' : 'ies'}`,
+    );
+
+    const companies = [...byCompany.entries()];
+    const CONCURRENCY = 5;
+    for (let i = 0; i < companies.length; i += CONCURRENCY) {
+      const batch = companies.slice(i, i + CONCURRENCY);
+      await Promise.allSettled(
+        batch.map(async ([companyId, bucket]) => {
+          try {
+            // Hand the prepared payload to the communication layer, which owns
+            // plan validation, recipient resolution and the actual send.
+            await this.communicationService.shareProceqMeasurementInsights({
+              companyId,
+              measured: bucket.measured,
+              notMeasured: bucket.notMeasured,
+            });
+          } catch (error) {
+            const err = error as Error;
+            this.logger.error(
+              `Failed to send measurement summary email for company ${companyId}: ${err.message}`,
+            );
+          }
+        }),
+      );
+    }
+  }
+
+  /**
+   * Flow 2 — Status Change Trigger Notification.
+   *
+   * Emits one alert per Proceq record whose status changed (a single Banshee
+   * can have many Proceq entries, each evaluated independently), provided the
+   * Banshee has its alarm trigger enabled (`activateNotifications`). The
+   * previous/new status comparison is supplied by `bulkUpsertProceqData`, so no
+   * extra query is needed here; recipient resolution and sending are delegated
+   * to the communication layer.
+   */
+  private async handleStatusChangeNotification(
+    statusChanges: ProceqStatusChangeInfo[],
+    bansheeRequestById: Map<string, BansheeRequest>,
+  ): Promise<void> {
+    if (statusChanges.length === 0) return;
+
+    // Alarm-trigger validation — `activateNotifications` doubles as the alarm
+    // toggle (there is no separate field in the schema).
+    const alarmed = statusChanges.filter((change) => {
+      const request = bansheeRequestById.get(change.bansheeRequestId);
+      return !!request?.activateNotifications;
+    });
+
+    if (alarmed.length === 0) {
+      this.logger.debug(
+        `Status change notification: ${statusChanges.length} status change(s) detected but none have alarm notifications enabled; nothing to notify`,
+      );
+      return;
+    }
+
+    this.logger.log(
+      `Status change notification: dispatching alerts for ${alarmed.length} status change(s)`,
+    );
+
+    const CONCURRENCY = 5;
+    for (let i = 0; i < alarmed.length; i += CONCURRENCY) {
+      const batch = alarmed.slice(i, i + CONCURRENCY);
+      await Promise.allSettled(
+        batch.map(async (change) => {
+          const request = bansheeRequestById.get(change.bansheeRequestId);
+          if (!request) return;
+
+          try {
+            await this.communicationService.shareProceqStatusChange({
+              companyId: request.companyId,
+              serialNumber: request.serialNumber,
+              bansheeName: request.name,
+              measurementId: change.measurementId,
+              previousStatus: change.previousStatus,
+              newStatus: change.newStatus,
+            });
+          } catch (error) {
+            const err = error as Error;
+            this.logger.error(
+              `Failed to send status change email for ${change.measurementId}: ${err.message}`,
+            );
+          }
+        }),
       );
     }
   }

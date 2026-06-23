@@ -58,7 +58,7 @@ type BansheeOrderItem {
 
 input SubmitOrderInput {
   companyId: String!
-  attachments: [String!]
+  attachmentsName: [String!]
   comment: String!
 }
 
@@ -80,7 +80,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  submitOrder(input: SubmitOrderInput!): BansheeOrder!
+  submitOrder(input: SubmitOrderInput! attachments: [Upload!]): BansheeOrder!
   cancelOrder(id: String!): BansheeOrder!
   completeOrder(id: String!): BansheeOrder!
   fulfillOrderItem(id: String!): BansheeOrderItem!

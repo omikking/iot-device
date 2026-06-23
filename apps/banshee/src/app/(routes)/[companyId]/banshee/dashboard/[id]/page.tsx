@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import { handleGraphQLErrors, formatDateTime } from '@/libs/utils';
+import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import {
   SidebarInset,
   Tabs,
@@ -27,6 +28,7 @@ import {
 import { useParams } from 'next/navigation';
 import { getStatusLabel } from '@/libs/status-color-utils';
 import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';
+import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
@@ -121,8 +123,10 @@ type ShareFormValues = {
 };
 
 export default function BansheeDashboardPage() {
-  const { id } = useParams();
+  const { id, companyId } = useParams();
   const bansheeId = id as string;
+
+  const statusPlotRef = useRef<BansheeStatusPlotHandle>(null);
 
   const [{ data, fetching, error }] = useQuery({
     query: bansheeDetailQuery,
@@ -135,6 +139,7 @@ export default function BansheeDashboardPage() {
   }, [error]);
 
   const shareForm = useForm<ShareFormValues>();
+  const sharePlotList = useSharePlotList(companyId as string);
 
   const details = useMemo(() => {
     const request = data?.bansheeRequest;
@@ -314,6 +319,7 @@ export default function BansheeDashboardPage() {
                     </button>
                   </div>
                   <BansheeStatusPlot
+                    ref={statusPlotRef}
                     bansheeRequests={bansheeRequestsArray}
                     fetching={false}
                   />
@@ -413,7 +419,19 @@ export default function BansheeDashboardPage() {
             </Tabs>
           </div>
         </div>
-        <ShareForm form={shareForm} />
+        <ShareForm
+          form={shareForm}
+          onShare={async (email) =>
+            sharePlotList({
+              email,
+              rows: bansheeRequestsArray,
+              pngFile: await statusPlotRef.current?.getPngFile(
+                'banshee_status_plot.png',
+              ),
+              onSuccess: () => shareForm.reset({ email: '' }),
+            })
+          }
+        />
       </main>
     </SidebarInset>
   );

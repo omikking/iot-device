@@ -1,6 +1,7 @@
 'use client';
 
 import { DataLineChart, LoadingSpinner } from '@gsp/ui-banshee';
+import type { DataLineChartHandle } from '@gsp/ui-banshee';
 import {
   forwardRef,
   useImperativeHandle,
@@ -9,6 +10,7 @@ import {
   useState,
 } from 'react';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
+import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 
 type BansheeRequestResult =
   BansheeRequestsListQuery['bansheeRequests']['results'][number];
@@ -16,6 +18,8 @@ type BansheeRequestResult =
 // Export the handle type so page.tsx can use it
 export type BansheeDataPlotHandle = {
   resetZoom: () => void;
+  downloadPng: (filename?: string) => void;
+  getPngFile: (filename?: string) => Promise<File | undefined>;
 };
 
 // TODO: replace these constants with values fetched from BoltTypeConstant DB
@@ -42,18 +46,30 @@ const BansheeDataPlot = forwardRef<
     fetching: boolean;
   }
 >(function BansheeDataPlot({ bansheeRequests, fetching }, ref) {
-  const chartRef = useRef<{ resetZoom: () => void }>(null);
+  const chartRef = useRef<DataLineChartHandle>(null);
 
-  // Expose resetZoom to parent component
+  // Expose resetZoom and PNG download to parent component
   useImperativeHandle(ref, () => ({
     resetZoom: () => {
       chartRef.current?.resetZoom();
     },
+    downloadPng: (filename = 'banshee_data_plot.png') => {
+      const dataUrl = chartRef.current?.getPngDataUrl();
+      if (dataUrl) downloadDataUrl(dataUrl, filename);
+    },
+    getPngFile: async (filename = 'banshee_data_plot.png') => {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const dataUrl = chartRef.current?.getPngDataUrl();
+
+      return dataUrl ? dataUrlToFile(dataUrl, filename) : undefined;
+    },
   }));
 
-  const [legendSelected, setLegendSelected] = useState<
-    Record<string, boolean>
-  >({});
+  const [legendSelected, setLegendSelected] = useState<Record<string, boolean>>(
+    {},
+  );
 
   const { lineConfig, chartData, seriesMax } = useMemo(() => {
     const config: { dataKey: string; label: string; color: string }[] = [];
@@ -169,6 +185,7 @@ const BansheeDataPlot = forwardRef<
       yAxisLabel="Elongation (µm)"
       yAxisDomain={[0, yMax]}
       enableZoom
+      showToolbox={false}
       legendSelected={legendSelected}
       onLegendChange={setLegendSelected}
     />

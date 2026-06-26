@@ -364,3 +364,41 @@ model CoffeeFlavor {
   @@id([coffeeId, flavorId])
   @@map("coffee_flavors")
 }
+
+
+model OpticboltTestResult {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  serialNumber      String   @map("serial_number") @db.VarChar(50)
+  drawingNumber     String?  @map("drawing_number") @db.VarChar(100)
+  boltType          String?  @map("bolt_type") @db.VarChar(50)
+  description       String?  @db.VarChar(255)
+  testedAt          DateTime @map("tested_at") @db.Timestamptz
+  testedBy          String   @map("tested_by") @db.VarChar(100)
+  result            String   @db.VarChar(10)
+  fibreCheck1       Boolean  @default(false) @map("fibre_check_1")
+  fibreCheck2       Boolean  @default(false) @map("fibre_check_2")
+  psi20             Int?     @map("psi_20")
+  psi100            Int?     @map("psi_100")
+  spectrumIndex     Int      @map("spectrum_index")
+  amplitude20       Decimal? @map("amplitude_20") @db.Decimal(10, 4)
+  wavelength20      Decimal? @map("wavelength_20") @db.Decimal(10, 4)
+  amplitude100      Decimal? @map("amplitude_100") @db.Decimal(10, 4)
+  wavelength100     Decimal? @map("wavelength_100") @db.Decimal(10, 4)
+  peakInitialNm     Decimal? @map("peak_initial_nm") @db.Decimal(10, 4)
+  peak20Nm          Decimal? @map("peak_20_nm") @db.Decimal(10, 4)
+  peak100Nm         Decimal? @map("peak_100_nm") @db.Decimal(10, 4)
+  strain20          Decimal? @map("strain_20") @db.Decimal(10, 6)
+  strain100         Decimal? @map("strain_100") @db.Decimal(10, 6)
+  load20            Decimal? @map("load_20") @db.Decimal(10, 4)
+  load100           Decimal? @map("load_100") @db.Decimal(10, 4)
+  time20Ms          Int?     @map("time_20_ms")
+  time100Ms         Int?     @map("time_100_ms")
+  calibrationFactor Decimal? @map("calibration_factor") @db.Decimal(10, 6)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([serialNumber, testedAt, spectrumIndex])
+  @@map("opticbolt_test_results")
+}
+
+ 

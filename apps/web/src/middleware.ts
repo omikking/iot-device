@@ -12,6 +12,8 @@ const sandvikAdminRoutes = [
   '/administrators',
   '/technicians',
   '/company/new',
+  '/select-device',
+  '/optic-bolt',
 ];
 
 const extractCompanyId = (pathname: string): string | null => {

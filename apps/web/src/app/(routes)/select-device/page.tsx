@@ -11,6 +11,7 @@ import {
   LucideShield,
   LucideGraduationCap,
   LucideMoveRight,
+  LucideZap,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -43,7 +44,7 @@ export default function Page(): JSX.Element {
           Select Device
         </Headline>
 
-        <div className="flex gap-8">
+        <div className="flex gap-8 flex-wrap" >
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Cyclops
@@ -63,7 +64,7 @@ export default function Page(): JSX.Element {
             </Headline>
             <LucideShield />
             <Button variant="secondary" size="small" asChild>
-              <Link href="http://localhost:3011">
+              <Link href="http://localhost:3003">
                 <LucideMoveRight />
                 Open Hydra
               </Link>
@@ -76,9 +77,22 @@ export default function Page(): JSX.Element {
             </Headline>
             <LucideGraduationCap />
             <Button variant="secondary" size="small" asChild>
-              <Link href="http://localhost:3010">
+              <Link href="http://localhost:3004">
                 <LucideMoveRight />
                 Open Professor
+              </Link>
+            </Button>
+          </NavigationCard>
+
+          <NavigationCard>
+            <Headline as="h3" variant="medium" color="foreground">
+              Optic Bolt
+            </Headline>
+            <LucideZap />
+            <Button variant="secondary" size="small" asChild>
+              <Link href="/optic-bolt">
+                <LucideMoveRight />
+                Open Optic Bolt
               </Link>
             </Button>
           </NavigationCard>

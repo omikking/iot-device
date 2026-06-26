@@ -2,7 +2,7 @@
   "prettier.enable": true,
   "editor.formatOnSave": true,
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -18,19 +18,31 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   // This adds IntelliSense for Tailwind classnames in cva.
   "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
   ],
   // vscode-icons extension settings
   "vsicons.associations.folders": [
     {
       "icon": "www",
-      "extensions": ["pull-test"],
+      "extensions": [
+        "pull-test"
+      ],
       "format": "svg"
     },
     {
       "icon": "config",
-      "extensions": ["eslint-config", "tailwind-config", "typescript-config"],
+      "extensions": [
+        "eslint-config",
+        "tailwind-config",
+        "typescript-config"
+      ],
       "format": "svg"
     }
   ]

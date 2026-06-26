@@ -20,6 +20,7 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
 import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { OpticboltModule } from './opticbolt/opticbolt.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
@@ -47,7 +48,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     ResetPasswordModule,
     EmailModule,
     InvitationModule,
+    OpticboltModule
   ],
   providers: [DateScalar],
 })
-export class AppModule {}
+export class AppModule { }

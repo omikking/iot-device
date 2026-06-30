@@ -1,49 +1,21 @@
-import { IsBoolean, IsDate, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsDate,
+  IsInt,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class CreateOpticboltTestResultInput extends GraphQLTypes.CreateOpticboltTestResultInput {
-  @IsString()
-  serialNumber: string;
-
-  @IsOptional()
-  @IsString()
-  drawingNumber?: string;
-
-  @IsOptional()
-  @IsString()
-  boltType?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsDate()
-  testedAt: Date;
-
-  @IsString()
-  testedBy: string;
-
-  @IsString()
-  result: string;
-
-  @IsOptional()
-  @IsBoolean()
-  fibreCheck1?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  fibreCheck2?: boolean;
-
-  @IsOptional()
+export class CreateOpticboltSpectrumInput extends GraphQLTypes.CreateOpticboltSpectrumInput {
   @IsInt()
-  psi20?: number;
-
-  @IsOptional()
-  @IsInt()
-  psi100?: number;
-
-  @IsInt()
-  spectrumIndex: number;
+  @IsNotEmpty()
+  fbgIndex: number;
 
   @IsOptional()
   @IsNumber()
@@ -100,4 +72,55 @@ export class CreateOpticboltTestResultInput extends GraphQLTypes.CreateOpticbolt
   @IsOptional()
   @IsNumber()
   calibrationFactor?: number;
+}
+
+export class CreateOpticboltTestResultWithSpectrumsInput extends GraphQLTypes.CreateOpticboltTestResultWithSpectrumsInput {
+  @IsString()
+  @IsNotEmpty()
+  serialNumber: string;
+
+  @IsOptional()
+  @IsString()
+  drawingNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  boltType?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  testedAt: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  testedBy: string;
+
+  @IsString()
+  @IsNotEmpty()
+  result: string;
+
+  @IsOptional()
+  @IsBoolean()
+  fibreCheck1?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  fibreCheck2?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  psi20?: number;
+
+  @IsOptional()
+  @IsInt()
+  psi100?: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateOpticboltSpectrumInput)
+  spectrums: CreateOpticboltSpectrumInput[];
 }

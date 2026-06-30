@@ -22,40 +22,20 @@ const getOpticboltTestResultsQuery = graphql(`
     opticboltTestResults {
       id
       serialNumber
+      boltType
+      testedAt
     }
   }
 `);
 
-const getOpticboltTestResultQuery = graphql(`
-  query GetOpticboltTestResult($id: String!) {
-    opticboltTestResult(id: $id) {
+const getOpticboltSpectrumsBySerialNumberQuery = graphql(`
+  query GetOpticboltSpectrumsBySerialNumber($serialNumber: String!) {
+    opticboltSpectrumsBySerialNumber(serialNumber: $serialNumber) {
       id
-      serialNumber
-      drawingNumber
-      boltType
-      description
-      testedAt
-      testedBy
-      result
-      fibreCheck1
-      fibreCheck2
-      psi20
-      psi100
-      spectrumIndex
-      amplitude20
-      wavelength20
-      amplitude100
-      wavelength100
-      peakInitialNm
-      peak20Nm
-      peak100Nm
+      fbgIndex
+      calibrationFactor
       strain20
       strain100
-      load20
-      load100
-      time20Ms
-      time100Ms
-      calibrationFactor
     }
   }
 `);
@@ -79,23 +59,29 @@ export default function Page(): JSX.Element {
     query: getOpticboltTestResultsQuery,
   });
 
-  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState<string | undefined>();
 
-  // Query specific test result when a serial number is selected
-  const [{ data: resultData, fetching: fetchingResult }] = useQuery({
-    query: getOpticboltTestResultQuery,
-    variables: { id: selectedId || '' },
-    pause: !selectedId,
+  // Query specific spectrum records when a serial number is selected
+  const [{ data: spectrumsData, fetching: fetchingSpectrums }] = useQuery({
+    query: getOpticboltSpectrumsBySerialNumberQuery,
+    variables: { serialNumber: selectedSerialNumber || '' },
+    pause: !selectedSerialNumber,
   });
 
-  const dropdownOptions: DropdownItem[] = (
-    resultsData?.opticboltTestResults || []
-  ).map((res) => ({
-    id: res.id,
-    name: res.serialNumber,
+  // Extract unique serial numbers to show only distinct values in the dropdown
+  const allResults = resultsData?.opticboltTestResults || [];
+  const uniqueSerialNumbers = Array.from(
+    new Set(allResults.map((r) => r.serialNumber))
+  ).sort();
+
+  const dropdownOptions: DropdownItem[] = uniqueSerialNumbers.map((sn) => ({
+    id: sn,
+    name: sn,
   }));
 
-  const bolt = resultData?.opticboltTestResult;
+  const selectedResult = allResults.find((r) => r.serialNumber === selectedSerialNumber);
+  const spectrums = spectrumsData?.opticboltSpectrumsBySerialNumber || [];
+  const firstSpectrum = spectrums[0];
 
   if (
     status === 'authenticated' &&
@@ -105,14 +91,14 @@ export default function Page(): JSX.Element {
       <main className="min-h-[calc(100vh-64px)] max-w-[1320px] w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white relative">
         <GoBack />
 
-        {/* <div className="absolute top-28 right-10 text-right">
+        <div className="absolute top-28 right-10 text-right">
           <span className="text-xs font-bold text-red-500 uppercase tracking-wider block font-sandvik-text">
             Must work offline
           </span>
           <span className="text-xs text-neutral-5 block font-sandvik-text">
             upon data sync
           </span>
-        </div> */}
+        </div>
 
         <Headline as="h1" variant="xl" color="foreground" className="font-sandvik-headline">
           Opticbolt Testing
@@ -128,9 +114,9 @@ export default function Page(): JSX.Element {
               <Dropdown
                 id="serialNumber"
                 placeholder="Select SN"
-                selectedId={selectedId}
+                selectedId={selectedSerialNumber}
                 options={dropdownOptions}
-                onSelect={setSelectedId}
+                onSelect={setSelectedSerialNumber}
                 className="w-full font-sandvik-text"
               />
             </div>
@@ -141,10 +127,10 @@ export default function Page(): JSX.Element {
                   Bolt type
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded  font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingResults ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
                   ) : (
-                    bolt?.boltType || '-'
+                    selectedResult?.boltType || '-'
                   )}
                 </div>
               </div>
@@ -154,10 +140,10 @@ export default function Page(): JSX.Element {
                   FBG number
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingSpectrums ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
                   ) : (
-                    bolt?.spectrumIndex !== undefined ? bolt.spectrumIndex : '-'
+                    firstSpectrum?.fbgIndex !== undefined ? firstSpectrum.fbgIndex : '-'
                   )}
                 </div>
               </div>
@@ -167,10 +153,10 @@ export default function Page(): JSX.Element {
                   Test date
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded  font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingResults ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
                   ) : (
-                    bolt?.testedAt ? new Date(bolt.testedAt).toLocaleDateString() : '-'
+                    selectedResult?.testedAt ? new Date(selectedResult.testedAt).toLocaleDateString() : '-'
                   )}
                 </div>
               </div>
@@ -180,10 +166,10 @@ export default function Page(): JSX.Element {
                   Calculated parameter 1
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded  font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingSpectrums ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
-                  ) : bolt?.calibrationFactor !== undefined && bolt?.calibrationFactor !== null ? (
-                    `Calibration Factor: ${bolt.calibrationFactor}`
+                  ) : firstSpectrum?.calibrationFactor !== undefined && firstSpectrum?.calibrationFactor !== null ? (
+                    `Calibration Factor: ${firstSpectrum.calibrationFactor}`
                   ) : (
                     '-'
                   )}
@@ -195,10 +181,10 @@ export default function Page(): JSX.Element {
                   Calculated parameter 2
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded  font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingSpectrums ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
-                  ) : bolt?.strain20 !== undefined && bolt?.strain20 !== null ? (
-                    `Strain @ 20 PSI: ${bolt.strain20}`
+                  ) : firstSpectrum?.strain20 !== undefined && firstSpectrum?.strain20 !== null ? (
+                    `Strain @ 20 PSI: ${firstSpectrum.strain20}`
                   ) : (
                     '-'
                   )}
@@ -210,10 +196,10 @@ export default function Page(): JSX.Element {
                   Calculated parameter 3
                 </Label>
                 <div className="mt-1 flex items-center h-12 w-full border border-neutral-3 bg-main-white px-4 rounded  font-sandvik-text text-main-black font-medium">
-                  {fetchingResult ? (
+                  {fetchingSpectrums ? (
                     <LoadingSpinner className="w-4 h-4 animate-spin text-neutral-4" />
-                  ) : bolt?.strain100 !== undefined && bolt?.strain100 !== null ? (
-                    `Strain @ 100 PSI: ${bolt.strain100}`
+                  ) : firstSpectrum?.strain100 !== undefined && firstSpectrum?.strain100 !== null ? (
+                    `Strain @ 100 PSI: ${firstSpectrum.strain100}`
                   ) : (
                     '-'
                   )}
@@ -232,7 +218,7 @@ export default function Page(): JSX.Element {
                 <div className="flex-1 min-h-[220px] bg-neutral-1 border border-dashed border-neutral-3 rounded flex flex-col justify-center items-center gap-2 p-6 text-neutral-5">
                   <LucideLineChart className="w-12 h-12 stroke-[1.5] text-neutral-4" />
                   <Text variant="medium" color="foreground" className="text-center font-medium">Spectrum 1 Graph Space</Text>
-                  {/* <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text> */}
+                  <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text>
                 </div>
               </div>
 
@@ -244,7 +230,7 @@ export default function Page(): JSX.Element {
                 <div className="flex-1 min-h-[220px] bg-neutral-1 border border-dashed border-neutral-3 rounded flex flex-col justify-center items-center gap-2 p-6 text-neutral-5">
                   <LucideLineChart className="w-12 h-12 stroke-[1.5] text-neutral-4" />
                   <Text variant="medium" color="foreground" className="text-center font-medium">Spectrum 2 Graph Space</Text>
-                  {/* <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text> */}
+                  <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text>
                 </div>
               </div>
 
@@ -256,7 +242,7 @@ export default function Page(): JSX.Element {
                 <div className="flex-1 min-h-[220px] bg-neutral-1 border border-dashed border-neutral-3 rounded flex flex-col justify-center items-center gap-2 p-6 text-neutral-5">
                   <LucideLineChart className="w-12 h-12 stroke-[1.5] text-neutral-4" />
                   <Text variant="medium" color="foreground" className="text-center font-medium">Time vs Wavelength Graph Space</Text>
-                  {/* <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text> */}
+                  <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text>
                 </div>
               </div>
 
@@ -268,7 +254,7 @@ export default function Page(): JSX.Element {
                 <div className="flex-1 min-h-[220px] bg-neutral-1 border border-dashed border-neutral-3 rounded flex flex-col justify-center items-center gap-2 p-6 text-neutral-5">
                   <LucideLineChart className="w-12 h-12 stroke-[1.5] text-neutral-4" />
                   <Text variant="medium" color="foreground" className="text-center font-medium">Strain vs Load Graph Space</Text>
-                  {/* <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text> */}
+                  <Text variant="small" color="muted" className="text-center text-xs">Awaiting data visualization integration</Text>
                 </div>
               </div>
             </div>

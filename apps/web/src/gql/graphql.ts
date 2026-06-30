@@ -262,33 +262,37 @@ export type CreateLocationInput = {
   locationName: Scalars['String']['input'];
 };
 
-export type CreateOpticboltTestResultInput = {
+export type CreateOpticboltSpectrumInput = {
   amplitude20?: InputMaybe<Scalars['Float']['input']>;
   amplitude100?: InputMaybe<Scalars['Float']['input']>;
-  boltType?: InputMaybe<Scalars['String']['input']>;
   calibrationFactor?: InputMaybe<Scalars['Float']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  drawingNumber?: InputMaybe<Scalars['String']['input']>;
-  fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
-  fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
+  fbgIndex: Scalars['Int']['input'];
   load20?: InputMaybe<Scalars['Float']['input']>;
   load100?: InputMaybe<Scalars['Float']['input']>;
   peak20Nm?: InputMaybe<Scalars['Float']['input']>;
   peak100Nm?: InputMaybe<Scalars['Float']['input']>;
   peakInitialNm?: InputMaybe<Scalars['Float']['input']>;
-  psi20?: InputMaybe<Scalars['Int']['input']>;
-  psi100?: InputMaybe<Scalars['Int']['input']>;
-  result: Scalars['String']['input'];
-  serialNumber: Scalars['String']['input'];
-  spectrumIndex: Scalars['Int']['input'];
   strain20?: InputMaybe<Scalars['Float']['input']>;
   strain100?: InputMaybe<Scalars['Float']['input']>;
-  testedAt: Scalars['DateTime']['input'];
-  testedBy: Scalars['String']['input'];
   time20Ms?: InputMaybe<Scalars['Int']['input']>;
   time100Ms?: InputMaybe<Scalars['Int']['input']>;
   wavelength20?: InputMaybe<Scalars['Float']['input']>;
   wavelength100?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type CreateOpticboltTestResultWithSpectrumsInput = {
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  drawingNumber?: InputMaybe<Scalars['String']['input']>;
+  fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
+  fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
+  psi20?: InputMaybe<Scalars['Int']['input']>;
+  psi100?: InputMaybe<Scalars['Int']['input']>;
+  result: Scalars['String']['input'];
+  serialNumber: Scalars['String']['input'];
+  spectrums: Array<CreateOpticboltSpectrumInput>;
+  testedAt: Scalars['DateTime']['input'];
+  testedBy: Scalars['String']['input'];
 };
 
 /**
@@ -427,7 +431,7 @@ export type Mutation = {
   createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
-  createOpticboltTestResult: OpticboltTestResult;
+  createOpticboltTestResultWithSpectrums: OpticboltTestResult;
   createSite: Site;
   createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
@@ -438,7 +442,6 @@ export type Mutation = {
   removeInvitation: Invitation;
   removeLevel: Level;
   removeLocation: Location;
-  removeOpticboltTestResult: OpticboltTestResult;
   removeSite: Site;
   removeUser: User;
   removeUserPermission: UserPermission;
@@ -451,7 +454,6 @@ export type Mutation = {
   updateDrive: Drive;
   updateLevel: Level;
   updateLocation: Location;
-  updateOpticboltTestResult: OpticboltTestResult;
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
@@ -563,8 +565,8 @@ export type MutationCreateLocationArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
-export type MutationCreateOpticboltTestResultArgs = {
-  createOpticboltTestResultInput: CreateOpticboltTestResultInput;
+export type MutationCreateOpticboltTestResultWithSpectrumsArgs = {
+  input: CreateOpticboltTestResultWithSpectrumsInput;
 };
 
 
@@ -654,15 +656,6 @@ export type MutationRemoveLevelArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationRemoveLocationArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
-export type MutationRemoveOpticboltTestResultArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -785,16 +778,6 @@ export type MutationUpdateLocationArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
-export type MutationUpdateOpticboltTestResultArgs = {
-  id: Scalars['String']['input'];
-  updateOpticboltTestResultInput: UpdateOpticboltTestResultInput;
-};
-
-
-/**
- * Mutation
- * Define the mutations that can be made to the User model
- */
 export type MutationUpdateSiteArgs = {
   id: Scalars['String']['input'];
   updateSiteInput: UpdateSiteInput;
@@ -830,37 +813,45 @@ export type MutationValidateResetTokenArgs = {
   input: ValidateResetTokenInput;
 };
 
-export type OpticboltTestResult = {
-  __typename?: 'OpticboltTestResult';
+export type OpticboltSpectrum = {
+  __typename?: 'OpticboltSpectrum';
   amplitude20?: Maybe<Scalars['Float']['output']>;
   amplitude100?: Maybe<Scalars['Float']['output']>;
-  boltType?: Maybe<Scalars['String']['output']>;
   calibrationFactor?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  drawingNumber?: Maybe<Scalars['String']['output']>;
-  fibreCheck1: Scalars['Boolean']['output'];
-  fibreCheck2: Scalars['Boolean']['output'];
+  fbgIndex: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   load20?: Maybe<Scalars['Float']['output']>;
   load100?: Maybe<Scalars['Float']['output']>;
   peak20Nm?: Maybe<Scalars['Float']['output']>;
   peak100Nm?: Maybe<Scalars['Float']['output']>;
   peakInitialNm?: Maybe<Scalars['Float']['output']>;
+  strain20?: Maybe<Scalars['Float']['output']>;
+  strain100?: Maybe<Scalars['Float']['output']>;
+  testResultId: Scalars['String']['output'];
+  time20Ms?: Maybe<Scalars['Int']['output']>;
+  time100Ms?: Maybe<Scalars['Int']['output']>;
+  wavelength20?: Maybe<Scalars['Float']['output']>;
+  wavelength100?: Maybe<Scalars['Float']['output']>;
+};
+
+export type OpticboltTestResult = {
+  __typename?: 'OpticboltTestResult';
+  boltType?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  drawingNumber?: Maybe<Scalars['String']['output']>;
+  fibreCheck1: Scalars['Boolean']['output'];
+  fibreCheck2: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
   psi20?: Maybe<Scalars['Int']['output']>;
   psi100?: Maybe<Scalars['Int']['output']>;
   result: Scalars['String']['output'];
   serialNumber: Scalars['String']['output'];
-  spectrumIndex: Scalars['Int']['output'];
-  strain20?: Maybe<Scalars['Float']['output']>;
-  strain100?: Maybe<Scalars['Float']['output']>;
+  spectrums: Array<OpticboltSpectrum>;
   testedAt: Scalars['DateTime']['output'];
   testedBy: Scalars['String']['output'];
-  time20Ms?: Maybe<Scalars['Int']['output']>;
-  time100Ms?: Maybe<Scalars['Int']['output']>;
   updatedAt: Scalars['DateTime']['output'];
-  wavelength20?: Maybe<Scalars['Float']['output']>;
-  wavelength100?: Maybe<Scalars['Float']['output']>;
 };
 
 /**
@@ -925,7 +916,7 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
-  opticboltTestResult: OpticboltTestResult;
+  opticboltSpectrumsBySerialNumber: Array<OpticboltSpectrum>;
   opticboltTestResults: Array<OpticboltTestResult>;
   pendingGlobalInvitations: Array<Invitation>;
   pendingInvitations: Array<Invitation>;
@@ -1037,8 +1028,8 @@ export type QueryLocationArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
-export type QueryOpticboltTestResultArgs = {
-  id: Scalars['String']['input'];
+export type QueryOpticboltSpectrumsBySerialNumberArgs = {
+  serialNumber: Scalars['String']['input'];
 };
 
 
@@ -1226,35 +1217,6 @@ export type UpdateLocationInput = {
   locationName?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateOpticboltTestResultInput = {
-  amplitude20?: InputMaybe<Scalars['Float']['input']>;
-  amplitude100?: InputMaybe<Scalars['Float']['input']>;
-  boltType?: InputMaybe<Scalars['String']['input']>;
-  calibrationFactor?: InputMaybe<Scalars['Float']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  drawingNumber?: InputMaybe<Scalars['String']['input']>;
-  fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
-  fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
-  load20?: InputMaybe<Scalars['Float']['input']>;
-  load100?: InputMaybe<Scalars['Float']['input']>;
-  peak20Nm?: InputMaybe<Scalars['Float']['input']>;
-  peak100Nm?: InputMaybe<Scalars['Float']['input']>;
-  peakInitialNm?: InputMaybe<Scalars['Float']['input']>;
-  psi20?: InputMaybe<Scalars['Int']['input']>;
-  psi100?: InputMaybe<Scalars['Int']['input']>;
-  result?: InputMaybe<Scalars['String']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  spectrumIndex?: InputMaybe<Scalars['Int']['input']>;
-  strain20?: InputMaybe<Scalars['Float']['input']>;
-  strain100?: InputMaybe<Scalars['Float']['input']>;
-  testedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  testedBy?: InputMaybe<Scalars['String']['input']>;
-  time20Ms?: InputMaybe<Scalars['Int']['input']>;
-  time100Ms?: InputMaybe<Scalars['Int']['input']>;
-  wavelength20?: InputMaybe<Scalars['Float']['input']>;
-  wavelength100?: InputMaybe<Scalars['Float']['input']>;
-};
-
 export type UpdatePasswordInput = {
   confirmPassword?: InputMaybe<Scalars['String']['input']>;
   newPassword?: InputMaybe<Scalars['String']['input']>;
@@ -1382,14 +1344,14 @@ export type RemoveCompanyMutation = { __typename?: 'Mutation', removeCompany: { 
 export type GetOpticboltTestResultsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetOpticboltTestResultsQuery = { __typename?: 'Query', opticboltTestResults: Array<{ __typename?: 'OpticboltTestResult', id: string, serialNumber: string }> };
+export type GetOpticboltTestResultsQuery = { __typename?: 'Query', opticboltTestResults: Array<{ __typename?: 'OpticboltTestResult', id: string, serialNumber: string, boltType?: string | null, testedAt: any }> };
 
-export type GetOpticboltTestResultQueryVariables = Exact<{
-  id: Scalars['String']['input'];
+export type GetOpticboltSpectrumsBySerialNumberQueryVariables = Exact<{
+  serialNumber: Scalars['String']['input'];
 }>;
 
 
-export type GetOpticboltTestResultQuery = { __typename?: 'Query', opticboltTestResult: { __typename?: 'OpticboltTestResult', id: string, serialNumber: string, drawingNumber?: string | null, boltType?: string | null, description?: string | null, testedAt: any, testedBy: string, result: string, fibreCheck1: boolean, fibreCheck2: boolean, psi20?: number | null, psi100?: number | null, spectrumIndex: number, amplitude20?: number | null, wavelength20?: number | null, amplitude100?: number | null, wavelength100?: number | null, peakInitialNm?: number | null, peak20Nm?: number | null, peak100Nm?: number | null, strain20?: number | null, strain100?: number | null, load20?: number | null, load100?: number | null, time20Ms?: number | null, time100Ms?: number | null, calibrationFactor?: number | null } };
+export type GetOpticboltSpectrumsBySerialNumberQuery = { __typename?: 'Query', opticboltSpectrumsBySerialNumber: Array<{ __typename?: 'OpticboltSpectrum', id: string, fbgIndex: number, calibrationFactor?: number | null, strain20?: number | null, strain100?: number | null }> };
 
 export type GetCompanyPlansQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1696,8 +1658,8 @@ export const GetPendingGlobalInvitationsDocument = {"kind":"Document","definitio
 export const GetAdminsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAdmins"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"roles"},"value":{"kind":"StringValue","value":"SANDVIK_ADMIN","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"workPlace"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}}]}}]}}]} as unknown as DocumentNode<GetAdminsQuery, GetAdminsQueryVariables>;
 export const GetCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"orgNumber"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"companyContactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"sandvikAdminUserId"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<GetCompanyQuery, GetCompanyQueryVariables>;
 export const RemoveCompanyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"removeCompany"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeCompany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<RemoveCompanyMutation, RemoveCompanyMutationVariables>;
-export const GetOpticboltTestResultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpticboltTestResults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opticboltTestResults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}}]}}]}}]} as unknown as DocumentNode<GetOpticboltTestResultsQuery, GetOpticboltTestResultsQueryVariables>;
-export const GetOpticboltTestResultDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpticboltTestResult"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opticboltTestResult"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"drawingNumber"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"testedAt"}},{"kind":"Field","name":{"kind":"Name","value":"testedBy"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"fibreCheck1"}},{"kind":"Field","name":{"kind":"Name","value":"fibreCheck2"}},{"kind":"Field","name":{"kind":"Name","value":"psi20"}},{"kind":"Field","name":{"kind":"Name","value":"psi100"}},{"kind":"Field","name":{"kind":"Name","value":"spectrumIndex"}},{"kind":"Field","name":{"kind":"Name","value":"amplitude20"}},{"kind":"Field","name":{"kind":"Name","value":"wavelength20"}},{"kind":"Field","name":{"kind":"Name","value":"amplitude100"}},{"kind":"Field","name":{"kind":"Name","value":"wavelength100"}},{"kind":"Field","name":{"kind":"Name","value":"peakInitialNm"}},{"kind":"Field","name":{"kind":"Name","value":"peak20Nm"}},{"kind":"Field","name":{"kind":"Name","value":"peak100Nm"}},{"kind":"Field","name":{"kind":"Name","value":"strain20"}},{"kind":"Field","name":{"kind":"Name","value":"strain100"}},{"kind":"Field","name":{"kind":"Name","value":"load20"}},{"kind":"Field","name":{"kind":"Name","value":"load100"}},{"kind":"Field","name":{"kind":"Name","value":"time20Ms"}},{"kind":"Field","name":{"kind":"Name","value":"time100Ms"}},{"kind":"Field","name":{"kind":"Name","value":"calibrationFactor"}}]}}]}}]} as unknown as DocumentNode<GetOpticboltTestResultQuery, GetOpticboltTestResultQueryVariables>;
+export const GetOpticboltTestResultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpticboltTestResults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opticboltTestResults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialNumber"}},{"kind":"Field","name":{"kind":"Name","value":"boltType"}},{"kind":"Field","name":{"kind":"Name","value":"testedAt"}}]}}]}}]} as unknown as DocumentNode<GetOpticboltTestResultsQuery, GetOpticboltTestResultsQueryVariables>;
+export const GetOpticboltSpectrumsBySerialNumberDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpticboltSpectrumsBySerialNumber"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serialNumber"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opticboltSpectrumsBySerialNumber"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"serialNumber"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serialNumber"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fbgIndex"}},{"kind":"Field","name":{"kind":"Name","value":"calibrationFactor"}},{"kind":"Field","name":{"kind":"Name","value":"strain20"}},{"kind":"Field","name":{"kind":"Name","value":"strain100"}}]}}]}}]} as unknown as DocumentNode<GetOpticboltSpectrumsBySerialNumberQuery, GetOpticboltSpectrumsBySerialNumberQueryVariables>;
 export const GetCompanyPlansDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCompanyPlans"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"company"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"plans"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"applicationName"}},{"kind":"Field","name":{"kind":"Name","value":"planLevel"}},{"kind":"Field","name":{"kind":"Name","value":"expiringDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetCompanyPlansQuery, GetCompanyPlansQueryVariables>;
 export const GetAllCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllCompanies"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalRecords"}},{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>;
 export const ValidateInvitationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"validateInvitation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"validateInvitation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"token"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"valid"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"invitation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"companyId"}},{"kind":"Field","name":{"kind":"Name","value":"companyName"}},{"kind":"Field","name":{"kind":"Name","value":"globalRole"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"used"}}]}}]}}]}}]} as unknown as DocumentNode<ValidateInvitationQuery, ValidateInvitationQueryVariables>;

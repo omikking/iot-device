@@ -23,7 +23,7 @@ import { InvitationModule } from './invitation/invitation.module';
 import { OpticboltModule } from './opticbolt/opticbolt.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
-
+ 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -48,8 +48,10 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     ResetPasswordModule,
     EmailModule,
     InvitationModule,
-    OpticboltModule
+    OpticboltModule,
   ],
   providers: [DateScalar],
 })
-export class AppModule { }
+export class AppModule {}
+ 
+ 

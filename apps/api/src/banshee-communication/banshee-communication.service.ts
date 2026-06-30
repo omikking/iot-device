@@ -216,7 +216,17 @@ export class BansheeCommunicationService {
     // company name for the email body.
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
-      select: { name: true },
+      select: {
+        name: true,
+        userPermission: {
+          where: {
+            role: Role.SANDVIK_ADMIN,
+          },
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
 
     if (!company) {
@@ -240,6 +250,14 @@ export class BansheeCommunicationService {
         },
       });
     }
+
+    const sandvikAdminUserId = company.userPermission[0]?.userId;
+    const sandvikAdminInfo = sandvikAdminUserId
+      ? await this.prisma.user.findUnique({
+          where: { id: sandvikAdminUserId },
+        })
+      : null;
+    const sandvikAdminEmail = sandvikAdminInfo?.email;
 
     // Use a single id for both the on-disk attachment folder and the DB record
     // so the two always line up (and survive a partial failure).
@@ -283,6 +301,7 @@ export class BansheeCommunicationService {
         message,
         user.fullName,
         files,
+        sandvikAdminEmail,
       );
     } catch (error) {
       this.logger.error(

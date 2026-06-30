@@ -322,18 +322,25 @@ Need help? Contact your administrator for assistance.
     message: string,
     sharedByUser: string,
     attachments: any[] = [],
+    sandvikAdminEmail?: string,
   ) {
     const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
 
     // Support recipients are configurable (comma-separated) so they can differ
     // per environment, falling back to the default Sandvik support inboxes.
-    const supportRecipients = (
-      this.configService.get<string>('BANSHEE_SUPPORT_EMAIL') ??
-      'xCell@sandvik.com,localsupportexample@sandvik.com'
-    )
-      .split(',')
-      .map((address) => address.trim())
-      .filter(Boolean);
+    const supportRecipients = [
+      ...new Set(
+        [
+          this.configService.get<string>('BANSHEE_SUPPORT_EMAIL') ??
+            'xCell@sandvik.com',
+          sandvikAdminEmail,
+        ]
+          .filter((emails): emails is string => Boolean(emails))
+          .flatMap((emails) => emails.split(','))
+          .map((email) => email.trim())
+          .filter(Boolean),
+      ),
+    ];
 
     const htmlTemplate = this.emailTemplateService.buildContactUsTemplate(
       companyName,

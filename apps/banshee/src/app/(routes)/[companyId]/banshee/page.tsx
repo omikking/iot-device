@@ -37,6 +37,7 @@ const bansheeRequestsListQuery = graphql(`
     ) {
       results {
         id
+        name
         serialNumber
         site {
           siteName
@@ -90,6 +91,9 @@ const bansheeStatusDistributionQuery = graphql(`
       byLocation {
         locationId
         locationName
+        siteName
+        levelName
+        driveName
         total
         statusCounts {
           status

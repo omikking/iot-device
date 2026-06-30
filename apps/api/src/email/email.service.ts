@@ -337,8 +337,9 @@ Need help? Contact your administrator for assistance.
 
     const htmlTemplate = this.emailTemplateService.buildContactUsTemplate(
       companyName,
+      sharedByUser,
       message,
-      attachments.length,
+      attachments,
     );
 
     const textContent = `

@@ -72,11 +72,13 @@ export default function ContactUsPage({
       name: 'xCell Cyclops Instruction Manual E V2.en',
       type: 'PDF document',
       size: '1276 kB',
+      link: 'https://sandvik-my.sharepoint.com/:b:/p/amartya_srivastav_c/IQCVZI7RRl_1SYs104GspzalAX4mSe-oxYVYvZ28oKKnIrY?e=JJ7Jq2',
     },
     {
       name: 'xCell Cyclops System Overview E V2.en',
       type: 'PDF document',
       size: '1276 kB',
+      link: 'https://sandvik-my.sharepoint.com/:b:/p/amartya_srivastav_c/IQCVZI7RRl_1SYs104GspzalAX4mSe-oxYVYvZ28oKKnIrY?e=JJ7Jq2',
     },
   ];
 
@@ -180,7 +182,12 @@ export default function ContactUsPage({
             <div className="ui-banshee-space-y-4">
               {documents.map((doc, index) => (
                 <div key={index}>
-                  <div>
+                  <a
+                    target="_blank"
+                    href={doc.link}
+                    download
+                    className="ui-banshee-cursor-pointer"
+                  >
                     <Text
                       variant="medium"
                       color="foreground"
@@ -188,14 +195,15 @@ export default function ContactUsPage({
                     >
                       {doc.name}
                     </Text>
-                    <Text
-                      variant="small"
-                      color="muted"
-                      className="ui-banshee-mt-1"
-                    >
-                      {doc.type}, {doc.size}
-                    </Text>
-                  </div>
+                  </a>
+
+                  <Text
+                    variant="small"
+                    color="muted"
+                    className="ui-banshee-mt-1"
+                  >
+                    {doc.type}, {doc.size}
+                  </Text>
                 </div>
               ))}
             </div>

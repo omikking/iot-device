@@ -537,12 +537,18 @@ describe('BansheeRequestsService', () => {
         {
           id: 'req-1',
           locationId: 'loc-1',
+          site: { siteName: 'Site 1' },
+          level: { levelName: 'Level 1' },
+          drive: { driveName: 'Drive 1' },
           location: { locationName: 'Loc 1' },
           proceqData: [{ status: 'ELASTIC', createdTimestamp: new Date() }],
         },
         {
           id: 'req-2',
           locationId: 'loc-1',
+          site: { siteName: 'Site 1' },
+          level: { levelName: 'Level 1' },
+          drive: { driveName: 'Drive 1' },
           location: { locationName: 'Loc 1' },
           proceqData: [], // no measurement -> UNMEASURED
         },
@@ -565,6 +571,9 @@ describe('BansheeRequestsService', () => {
       expect(result.byLocation?.[0]).toMatchObject({
         locationId: 'loc-1',
         locationName: 'Loc 1',
+        siteName: 'Site 1',
+        levelName: 'Level 1',
+        driveName: 'Drive 1',
         total: 2,
       });
     });

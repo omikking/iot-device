@@ -403,6 +403,8 @@ export class EmailTemplateService {
   }
 
   public buildSharePlotListTemplate(companyName: string, sharedByUser: string) {
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
     return `<!DOCTYPE html>
       <html>
       <head>
@@ -441,6 +443,15 @@ export class EmailTemplateService {
                         </td>
                       </tr>
                     </table>
+
+                    <!-- Call to Action Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
@@ -460,9 +471,29 @@ export class EmailTemplateService {
 
   public buildContactUsTemplate(
     companyName: string,
+    sharedByUser: string,
     message: string,
-    attachmentsCount: number,
+    attachments: any[],
   ) {
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
+    const attachmentList =
+      attachments.length > 0
+        ? `
+      <ul style="margin:8px 0 24px 20px; padding:0;">
+        ${attachments
+          .map(
+            (file) => `
+              <li style="font-size:14px; color:#495057; margin-bottom:4px;">
+                ${file.originalFileName}
+              </li>
+            `,
+          )
+          .join('')}
+      </ul>
+    `
+        : `<p style="font-size:14px; color:#495057;">No attachments</p>`;
+
     return `<!DOCTYPE html>
       <html>
       <head>
@@ -490,13 +521,28 @@ export class EmailTemplateService {
                     <h2 style="font-size: 18px; color: #2c3e50; margin: 0 0 20px 0;">New Contact Us request</h2>
 
                     <p style="font-size: 14px; color: #2c3e50; margin: 0 0 4px 0;"><strong>Company:</strong> ${companyName}</p>
+                    <p style="font-size:14px; color:#2c3e50; margin:0 0 8px 0;"><strong>Shared By User:</strong> ${sharedByUser}</p>
 
                     <h3 style="font-size: 15px; color: #2c3e50; margin: 24px 0 8px 0;">Message</h3>
                     <p style="margin: 0 0 24px 0; padding: 12px 16px; background: #f5f5f5; border-radius: 6px; font-size: 14px; color: #495057; line-height: 1.5;">
                       ${message || 'No message provided'}
                     </p>
 
-                    <p style="font-size: 14px; color: #2c3e50; margin: 0;"><strong>Attachments:</strong> ${attachmentsCount}</p>
+                   <h3 style="font-size:15px; color:#2c3e50; margin:24px 0 8px 0;">
+                      Attachments (${attachments.length})
+                    </h3>
+                    ${attachmentList}
+                    <p>
+                    </p>
+
+                    <!-- Call to Action Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
@@ -530,6 +576,8 @@ export class EmailTemplateService {
       status: string;
     }>;
   }): string {
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
     const escape = (value: string): string =>
       value
         .replace(/&/g, '&amp;')
@@ -629,6 +677,15 @@ export class EmailTemplateService {
                     <!-- Attachments -->
                     <h3 style="font-size: 15px; color: #2c3e50; margin: 0 0 4px 0;">Attachments (${data.attachmentNames.length})</h3>
                     ${attachmentsBlock}
+
+                    <!-- Call to Action Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
@@ -665,6 +722,8 @@ export class EmailTemplateService {
       status: string;
     }>;
   }): string {
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
     const escape = (value: string): string =>
       value
         .replace(/&/g, '&amp;')
@@ -752,6 +811,15 @@ export class EmailTemplateService {
                         ${buildRows(data.notMeasured)}
                       </tbody>
                     </table>
+
+                    <!-- Call to Action Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
@@ -781,6 +849,8 @@ export class EmailTemplateService {
     previousStatus: string;
     newStatus: string;
   }): string {
+    const loginUrl = `${this.configService.get('FRONTEND_URL')}/api/auth/signin`;
+
     const escape = (value: string): string =>
       value
         .replace(/&/g, '&amp;')
@@ -831,6 +901,15 @@ export class EmailTemplateService {
                           <p style="margin: 0 0 6px 0; font-size: 14px; color: #2c3e50;"><strong>Measurement ID:</strong> ${escape(data.measurementId)}</p>
                           <p style="margin: 0 0 6px 0; font-size: 14px; color: #2c3e50;"><strong>Previous Status:</strong> ${escape(data.previousStatus)}</p>
                           <p style="margin: 0; font-size: 14px; color: #2c3e50;"><strong>Current Status:</strong> ${escape(data.newStatus)}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Call to Action Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 40px auto;">
+                      <tr>
+                        <td align="center" style="background-color: #1441F5; border-radius: 5px; padding: 0;">
+                          <a href="${loginUrl}" style="background-color: #1441F5; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: block; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; text-align: center; min-width: 140px;">Sign In</a>
                         </td>
                       </tr>
                     </table>

@@ -10,7 +10,11 @@ import { BansheeOrderModule } from '../banshee-order/banshee-order.module';
 import { BansheeCommmunicationModule } from '../banshee-communication/banshee-communication.module';
 
 @Module({
-  imports: [BansheeStatsModule, BansheeOrderModule, BansheeCommmunicationModule],
+  imports: [
+    BansheeStatsModule,
+    BansheeOrderModule,
+    BansheeCommmunicationModule,
+  ],
   providers: [
     ProceqApiService,
     ProceqAuthService,

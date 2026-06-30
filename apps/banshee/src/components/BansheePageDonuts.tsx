@@ -12,6 +12,9 @@ type StatusCount = {
 type LocationDistribution = {
   locationId: string;
   locationName: string;
+  siteName: string;
+  levelName: string;
+  driveName: string;
   statusCounts: StatusCount[];
 };
 
@@ -76,7 +79,14 @@ export const BansheePageDonuts = ({
     const locationDonuts: Donut[] = (distributionData.byLocation || []).map(
       (loc) => ({
         id: loc.locationId,
-        footerText: loc.locationName,
+        footerText: [
+          loc.siteName,
+          loc.levelName,
+          loc.driveName,
+          loc.locationName,
+        ]
+          .filter(Boolean)
+          .join(' - '),
         chartData: (loc.statusCounts || [])
           .filter((sc) => sc.status && sc.status.toLowerCase() !== 'unmeasured')
           .map((sc) => ({

@@ -649,6 +649,15 @@ export class BansheeRequestsService {
         }),
       },
       include: {
+        site: {
+          select: { siteName: true },
+        },
+        level: {
+          select: { levelName: true },
+        },
+        drive: {
+          select: { driveName: true },
+        },
         location: {
           select: { locationName: true },
         },
@@ -678,6 +687,9 @@ export class BansheeRequestsService {
       string,
       {
         locationName: string;
+        siteName: string;
+        levelName: string;
+        driveName: string;
         total: number;
         counts: Record<string, number>;
         results: BansheeRequest[];
@@ -693,6 +705,9 @@ export class BansheeRequestsService {
       if (!locationCountsMap[locId]) {
         locationCountsMap[locId] = {
           locationName: br.location?.locationName || 'Unknown',
+          siteName: br.site?.siteName || 'Unknown',
+          levelName: br.level?.levelName || 'Unknown',
+          driveName: br.drive?.driveName || 'Unknown',
           total: 0,
           counts: {},
           results: [],
@@ -714,6 +729,9 @@ export class BansheeRequestsService {
       byLocation: Object.entries(locationCountsMap).map(([locId, locData]) => ({
         locationId: locId,
         locationName: locData.locationName,
+        siteName: locData.siteName,
+        levelName: locData.levelName,
+        driveName: locData.driveName,
         total: locData.total,
         statusCounts: Object.entries(locData.counts).map(([status, count]) => ({
           status,

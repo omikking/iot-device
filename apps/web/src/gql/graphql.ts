@@ -100,6 +100,59 @@ export enum BansheeCartItemType {
   ServiceExisting = 'SERVICE_EXISTING'
 }
 
+export type BansheeContactUsInboxFilter = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  status?: InputMaybe<BansheeEmailStatus>;
+};
+
+export type BansheeContactUsInboxResponse = {
+  __typename?: 'BansheeContactUsInboxResponse';
+  items: Array<BansheeEmail>;
+  total: Scalars['Int']['output'];
+};
+
+export type BansheeContactUsInput = {
+  companyId: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+};
+
+export type BansheeContactUsResponse = {
+  __typename?: 'BansheeContactUsResponse';
+  email?: Maybe<BansheeEmail>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type BansheeEmail = {
+  __typename?: 'BansheeEmail';
+  attachments?: Maybe<Array<BansheeEmailAttachment>>;
+  companyId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  status: BansheeEmailStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type BansheeEmailAttachment = {
+  __typename?: 'BansheeEmailAttachment';
+  createdAt: Scalars['DateTime']['output'];
+  filePath: Scalars['String']['output'];
+  fileSize: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  mimeType: Scalars['String']['output'];
+  originalFileName: Scalars['String']['output'];
+  storedFileName: Scalars['String']['output'];
+};
+
+export enum BansheeEmailStatus {
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Sent = 'SENT'
+}
+
 export type BansheeEventLog = {
   __typename?: 'BansheeEventLog';
   bansheeRequest?: Maybe<BansheeRequest>;
@@ -230,6 +283,18 @@ export type BansheeSessionStats = {
   site: Site;
   totalMeasured: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BansheeSharePlotListInput = {
+  companyId: Scalars['String']['input'];
+  recipientEmail: Scalars['String']['input'];
+};
+
+export type BansheeSharePlotListResponse = {
+  __typename?: 'BansheeSharePlotListResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  sentTo?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type BansheeStatusDistribution = {
@@ -666,9 +731,12 @@ export type Location = {
 
 export type LocationDistribution = {
   __typename?: 'LocationDistribution';
+  driveName: Scalars['String']['output'];
+  levelName: Scalars['String']['output'];
   locationId: Scalars['String']['output'];
   locationName: Scalars['String']['output'];
   results: Array<BansheeRequest>;
+  siteName: Scalars['String']['output'];
   statusCounts: Array<StatusCount>;
   total: Scalars['Int']['output'];
 };
@@ -680,6 +748,8 @@ export type LocationDistribution = {
 export type Mutation = {
   __typename?: 'Mutation';
   addCartItems: AddCartItemsResult;
+  bansheeContactUs: BansheeContactUsResponse;
+  bansheeSharePlotList: BansheeSharePlotListResponse;
   cancelOrder: BansheeOrder;
   cancelOrderItem: BansheeOrderItem;
   clearCart: Scalars['Boolean']['output'];
@@ -740,6 +810,27 @@ export type Mutation = {
  */
 export type MutationAddCartItemsArgs = {
   input: Array<AddCartItemInput>;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationBansheeContactUsArgs = {
+  attachments?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: BansheeContactUsInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationBansheeSharePlotListArgs = {
+  csv: Scalars['Upload']['input'];
+  image: Scalars['Upload']['input'];
+  input: BansheeSharePlotListInput;
 };
 
 
@@ -1073,6 +1164,7 @@ export type MutationResendInvitationArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationSubmitOrderArgs = {
+  attachments?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: SubmitOrderInput;
 };
 
@@ -1273,7 +1365,7 @@ export type ProceqData = {
   comments: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  dueDate: Scalars['DateTime']['output'];
+  dueDate?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fileName: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -1347,6 +1439,8 @@ export enum PullTestAbortReason {
  */
 export type Query = {
   __typename?: 'Query';
+  bansheeContactById?: Maybe<BansheeEmail>;
+  bansheeContactUsInbox: BansheeContactUsInboxResponse;
   bansheeEventLogs: BansheeEventLogResponse;
   bansheeRequest: BansheeRequest;
   bansheeRequests: BansheeRequestResponse;
@@ -1392,6 +1486,26 @@ export type Query = {
   userPermissions: Array<UserPermission>;
   users: Array<User>;
   validateInvitation: InvitationValidation;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeContactByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeContactUsInboxArgs = {
+  filter?: InputMaybe<BansheeContactUsInboxFilter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -1746,7 +1860,7 @@ export type StatusCount = {
 };
 
 export type SubmitOrderInput = {
-  attachments?: InputMaybe<Array<Scalars['String']['input']>>;
+  attachmentsName?: InputMaybe<Array<Scalars['String']['input']>>;
   comment: Scalars['String']['input'];
   companyId: Scalars['String']['input'];
 };

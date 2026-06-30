@@ -249,7 +249,13 @@ export const NavbarBanshee = () => {
                       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-4 ui-banshee-pt-2">
                         {/* might be tailwind config that prefix is missing in the WEB 
                       but once this is in project BANSHEE it maybe be resolved */}
-                        <Button className="!ui-banshee-p-0" variant="outline">
+                        <Button
+                          className="!ui-banshee-p-0"
+                          variant="outline"
+                          onClick={() => {
+                            window.location.href = `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-application/${companyId}`;
+                          }}
+                        >
                           Browse apps
                         </Button>
                         <Button

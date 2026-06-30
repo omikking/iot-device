@@ -709,6 +709,9 @@ export class BansheeRequestResponse {
 export class LocationDistribution {
     locationId: string;
     locationName: string;
+    siteName: string;
+    levelName: string;
+    driveName: string;
     total: number;
     statusCounts: StatusCount[];
     results: BansheeRequest[];

@@ -262,6 +262,39 @@ export type CreateLocationInput = {
   locationName: Scalars['String']['input'];
 };
 
+export type CreateOpticboltSpectrumInput = {
+  amplitude20?: InputMaybe<Scalars['Float']['input']>;
+  amplitude100?: InputMaybe<Scalars['Float']['input']>;
+  calibrationFactor?: InputMaybe<Scalars['Float']['input']>;
+  fbgIndex: Scalars['Int']['input'];
+  load20?: InputMaybe<Scalars['Float']['input']>;
+  load100?: InputMaybe<Scalars['Float']['input']>;
+  peak20Nm?: InputMaybe<Scalars['Float']['input']>;
+  peak100Nm?: InputMaybe<Scalars['Float']['input']>;
+  peakInitialNm?: InputMaybe<Scalars['Float']['input']>;
+  strain20?: InputMaybe<Scalars['Float']['input']>;
+  strain100?: InputMaybe<Scalars['Float']['input']>;
+  time20Ms?: InputMaybe<Scalars['Int']['input']>;
+  time100Ms?: InputMaybe<Scalars['Int']['input']>;
+  wavelength20?: InputMaybe<Scalars['Float']['input']>;
+  wavelength100?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type CreateOpticboltTestResultWithSpectrumsInput = {
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  drawingNumber?: InputMaybe<Scalars['String']['input']>;
+  fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
+  fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
+  psi20?: InputMaybe<Scalars['Int']['input']>;
+  psi100?: InputMaybe<Scalars['Int']['input']>;
+  result: Scalars['String']['input'];
+  serialNumber: Scalars['String']['input'];
+  spectrums: Array<CreateOpticboltSpectrumInput>;
+  testedAt: Scalars['DateTime']['input'];
+  testedBy: Scalars['String']['input'];
+};
+
 /**
  * CreatePlanInput
  * Define the input fields to create a new plan
@@ -398,6 +431,7 @@ export type Mutation = {
   createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
+  createOpticboltTestResultWithSpectrums: OpticboltTestResult;
   createSite: Site;
   createUserPermission: UserPermission;
   removeBoltResult: BoltResult;
@@ -524,6 +558,15 @@ export type MutationCreateLevelArgs = {
  */
 export type MutationCreateLocationArgs = {
   createLocationInput: CreateLocationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateOpticboltTestResultWithSpectrumsArgs = {
+  input: CreateOpticboltTestResultWithSpectrumsInput;
 };
 
 
@@ -770,6 +813,47 @@ export type MutationValidateResetTokenArgs = {
   input: ValidateResetTokenInput;
 };
 
+export type OpticboltSpectrum = {
+  __typename?: 'OpticboltSpectrum';
+  amplitude20?: Maybe<Scalars['Float']['output']>;
+  amplitude100?: Maybe<Scalars['Float']['output']>;
+  calibrationFactor?: Maybe<Scalars['Float']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  fbgIndex: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  load20?: Maybe<Scalars['Float']['output']>;
+  load100?: Maybe<Scalars['Float']['output']>;
+  peak20Nm?: Maybe<Scalars['Float']['output']>;
+  peak100Nm?: Maybe<Scalars['Float']['output']>;
+  peakInitialNm?: Maybe<Scalars['Float']['output']>;
+  strain20?: Maybe<Scalars['Float']['output']>;
+  strain100?: Maybe<Scalars['Float']['output']>;
+  testResultId: Scalars['String']['output'];
+  time20Ms?: Maybe<Scalars['Int']['output']>;
+  time100Ms?: Maybe<Scalars['Int']['output']>;
+  wavelength20?: Maybe<Scalars['Float']['output']>;
+  wavelength100?: Maybe<Scalars['Float']['output']>;
+};
+
+export type OpticboltTestResult = {
+  __typename?: 'OpticboltTestResult';
+  boltType?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  drawingNumber?: Maybe<Scalars['String']['output']>;
+  fibreCheck1: Scalars['Boolean']['output'];
+  fibreCheck2: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  psi20?: Maybe<Scalars['Int']['output']>;
+  psi100?: Maybe<Scalars['Int']['output']>;
+  result: Scalars['String']['output'];
+  serialNumber: Scalars['String']['output'];
+  spectrums: Array<OpticboltSpectrum>;
+  testedAt: Scalars['DateTime']['output'];
+  testedBy: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 /**
  * Plan model
  * Define the Plan model and its fields
@@ -832,6 +916,8 @@ export type Query = {
   levels: Array<Level>;
   location: Location;
   locations: Array<Location>;
+  opticboltSpectrumsBySerialNumber: Array<OpticboltSpectrum>;
+  opticboltTestResults: Array<OpticboltTestResult>;
   pendingGlobalInvitations: Array<Invitation>;
   pendingInvitations: Array<Invitation>;
   site: Site;
@@ -935,6 +1021,15 @@ export type QueryLevelArgs = {
  */
 export type QueryLocationArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryOpticboltSpectrumsBySerialNumberArgs = {
+  serialNumber: Scalars['String']['input'];
 };
 
 

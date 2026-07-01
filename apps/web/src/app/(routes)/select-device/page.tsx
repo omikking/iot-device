@@ -52,6 +52,9 @@ export default function Page(): JSX.Element {
     const professorUrl = resolveDeviceAppUrl(
       process.env.NEXT_PUBLIC_PROFESSOR_URL,
     );
+    const opticBoltUrl = resolveDeviceAppUrl(
+      process.env.NEXT_PUBLIC_OPTIC_BOLT_URL,
+    );
 
     return (
       <main className="w-full flex flex-col m-auto items-center py-28 px-10 gap-16 bg-main-white max-w-[1400px]">
@@ -61,7 +64,7 @@ export default function Page(): JSX.Element {
           Select Device
         </Headline>
 
-        <div className="flex gap-8">
+        <div className="flex gap-8 flex-wrap gap-6 w-full">
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Cyclops
@@ -139,12 +142,23 @@ export default function Page(): JSX.Element {
               Optic Bolt
             </Headline>
             <LucideZap />
-            <Button variant="secondary" size="small" asChild>
-              <Link href="/optic-bolt">
+            {opticBoltUrl ? (
+              <Button variant="secondary" size="small" asChild>
+                <Link href={opticBoltUrl}>
+                  <LucideMoveRight />
+                  Open Optic Bolt
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => setShowNotFound(true)}
+              >
                 <LucideMoveRight />
                 Open Optic Bolt
-              </Link>
-            </Button>
+              </Button>
+            )}
           </NavigationCard>
         </div>
       </main>

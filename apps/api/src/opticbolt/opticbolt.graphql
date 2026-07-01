@@ -1,0 +1,88 @@
+scalar DateTime
+
+type OpticboltSpectrum {
+  id: String!
+  testResultId: String!
+  fbgIndex: Int!
+  amplitude20: Float
+  wavelength20: Float
+  amplitude100: Float
+  wavelength100: Float
+  peakInitialNm: Float
+  peak20Nm: Float
+  peak100Nm: Float
+  strain20: Float
+  strain100: Float
+  load20: Float
+  load100: Float
+  time20Ms: Int
+  time100Ms: Int
+  calibrationFactor: Float
+  createdAt: DateTime!
+}
+
+type OpticboltTestResult {
+  id: String!
+  serialNumber: String!
+  drawingNumber: String
+  boltType: String
+  description: String
+  testedAt: DateTime!
+  testedBy: String!
+  result: String!
+  fibreCheck1: Boolean!
+  fibreCheck2: Boolean!
+  psi20: Int
+  psi100: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  spectrums: [OpticboltSpectrum!]!
+}
+
+input CreateOpticboltSpectrumInput {
+  fbgIndex: Int!
+  amplitude20: Float
+  wavelength20: Float
+  amplitude100: Float
+  wavelength100: Float
+  peakInitialNm: Float
+  peak20Nm: Float
+  peak100Nm: Float
+  strain20: Float
+  strain100: Float
+  load20: Float
+  load100: Float
+  time20Ms: Int
+  time100Ms: Int
+  calibrationFactor: Float
+}
+
+input CreateOpticboltTestResultWithSpectrumsInput {
+  serialNumber: String!
+  drawingNumber: String
+  boltType: String
+  description: String
+  testedAt: DateTime!
+  testedBy: String!
+  result: String!
+  fibreCheck1: Boolean
+  fibreCheck2: Boolean
+  psi20: Int
+  psi100: Int
+  spectrums: [CreateOpticboltSpectrumInput!]!
+}
+
+type Query {
+  # GET all optic test result
+  opticboltTestResults: [OpticboltTestResult!]!
+
+  # GET all spectrum of a serial number
+  opticboltSpectrumsBySerialNumber(serialNumber: String!): [OpticboltSpectrum!]!
+}
+
+type Mutation {
+  # POST a optic bolt and spectrum data
+  createOpticboltTestResultWithSpectrums(
+    input: CreateOpticboltTestResultWithSpectrumsInput!
+  ): OpticboltTestResult!
+}

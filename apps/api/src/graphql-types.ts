@@ -235,6 +235,39 @@ export class UpdateLocationInput {
     locationName?: Nullable<string>;
 }
 
+export class CreateOpticboltSpectrumInput {
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+}
+
+export class CreateOpticboltTestResultWithSpectrumsInput {
+    serialNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt: DateTime;
+    testedBy: string;
+    result: string;
+    fibreCheck1?: Nullable<boolean>;
+    fibreCheck2?: Nullable<boolean>;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    spectrums: CreateOpticboltSpectrumInput[];
+}
+
 export class RequestPasswordResetInput {
     email: string;
 }
@@ -359,6 +392,8 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
+    opticboltTestResults: OpticboltTestResult[];
+    opticboltSpectrumsBySerialNumber?: OpticboltSpectrum[];
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -394,6 +429,7 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    createOpticboltTestResultWithSpectrums?: OpticboltTestResult;
     requestPasswordReset?: boolean;
     validateResetToken?: boolean;
     confirmPasswordReset?: boolean;
@@ -512,6 +548,45 @@ export class Location {
     locationName: string;
     driveId: string;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class OpticboltSpectrum {
+    id: string;
+    testResultId: string;
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+    createdAt: DateTime;
+}
+
+export class OpticboltTestResult {
+    id: string;
+    serialNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt: DateTime;
+    testedBy: string;
+    result: string;
+    fibreCheck1: boolean;
+    fibreCheck2: boolean;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    spectrums: OpticboltSpectrum[];
 }
 
 export class Site {

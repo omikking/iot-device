@@ -12,16 +12,16 @@
   },
   "dependencies": {
     "idb": "^8.0.3",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@gsp/eslint-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^20.19.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
     "@types/web-bluetooth": "^0.0.21",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",

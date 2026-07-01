@@ -1,0 +1,40 @@
+export interface OpticboltSpectrum {
+  id: string;
+  testResultId: string;
+  fbgIndex: number;
+  amplitude20?: number | null;
+  wavelength20?: number | null;
+  amplitude100?: number | null;
+  wavelength100?: number | null;
+  peakInitialNm?: number | null;
+  peak20Nm?: number | null;
+  peak100Nm?: number | null;
+  strain20?: number | null;
+  strain100?: number | null;
+  load20?: number | null;
+  load100?: number | null;
+  time20Ms?: number | null;
+  time100Ms?: number | null;
+  calibrationFactor?: number | null;
+  createdAt: string;
+}
+
+export interface OpticboltTestResultSummary {
+  id: string;
+  serialNumber: string;
+  boltType?: string | null;
+  testedAt: string;
+  psi20?: number | null;
+  psi100?: number | null;
+}
+
+export interface SerialOption {
+  serialNumber: string;
+  label: string;
+}
+
+export interface SpectrumChartPoint {
+  fbgIndex: number;
+  wavelength: number;
+  amplitude: number;
+}

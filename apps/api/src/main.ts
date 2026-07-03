@@ -34,6 +34,10 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
+  // Serve static files from public directory
+  app.useStaticAssets(join(process.cwd(), 'public'));
+
+
   app.useGlobalPipes(
     new ValidationPipe({
       // whitelist: true,

@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "HFVY6P4J37.sandvik.groundsupport.technician",
+        "paths": ["/callback", "/callback/*"]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": ["HFVY6P4J37.sandvik.groundsupport.technician"]
+  },
+  "webcredentials": {
+    "apps": ["HFVY6P4J37.sandvik.groundsupport.technician"]
+  }
+}

@@ -23,6 +23,9 @@ import {
   contactFormSchema,
 } from '@/components/schemas/ContactFormSchema';
 import { useContactUs } from '@/libs/hooks/useContactUs';
+import { graphql } from '@/gql';
+import { useQuery } from 'urql';
+import { Company } from '@/gql/graphql';
 
 interface Attachment {
   id: string;
@@ -30,6 +33,35 @@ interface Attachment {
   size: string;
   file: File;
 }
+
+const getCompanyQuery = graphql(`
+  query getCompany($id: String!) {
+    company(id: $id) {
+      id
+      name
+      orgNumber
+      address
+      postalCode
+      city
+      country
+      companyContactEmail
+      sandvikAdminUserId
+      plans {
+        id
+        companyId
+        applicationName
+        planLevel
+        expiringDate
+      }
+      users {
+        id
+        fullName
+        phoneNumber
+        email
+      }
+    }
+  }
+`);
 
 // Mirrors the backend ALLOWED_ATTACHMENT_MIME_TYPES / limits so we can fail
 // fast with a friendly message before hitting the API.
@@ -66,6 +98,16 @@ export default function ContactUsPage({
       message: '',
     },
   });
+
+  const [companyData] = useQuery({
+    query: getCompanyQuery,
+    variables: { id: params.companyId },
+  });
+  const company = companyData?.data?.company as Company;
+
+  const sandvikAdminUserInfo = company?.users?.find(
+    (user) => user.id === company.sandvikAdminUserId,
+  );
 
   const documents = [
     {
@@ -334,7 +376,8 @@ export default function ContactUsPage({
                       color="foreground"
                       className="ui-banshee-text-blue-primary hover:ui-banshee-underline ui-banshee-cursor-pointer"
                     >
-                      localsupportexample@sandvik.com
+                      {sandvikAdminUserInfo?.email ||
+                        'localsupportexample@sandvik.com'}
                     </Text>
                   </div>
                   <input

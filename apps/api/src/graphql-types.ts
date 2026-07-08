@@ -523,6 +523,7 @@ export abstract class IQuery {
     locations: Location[];
     location?: Location;
     proceqLoginUrl?: ProceqLoginUrlResponse;
+    getProceqTokenStatus: GetProceqTokenStatusResponse;
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -1000,6 +1001,13 @@ export class ProceqAttachment {
 
 export class ProceqLoginUrlResponse {
     url: string;
+}
+
+export class GetProceqTokenStatusResponse {
+    valid: boolean;
+    canRefresh: boolean;
+    expiresAt?: Nullable<string>;
+    expiresInSeconds?: Nullable<number>;
 }
 
 export class Site {

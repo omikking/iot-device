@@ -4,6 +4,10 @@ import axios, { AxiosError } from 'axios';
 import { ProceqTokenDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+// Treat tokens expiring within this window as already expired so a token
+// can't lapse mid-request between the validity check and the Proceq call.
+const TOKEN_VALIDITY_BUFFER_MS = 60_000;
+
 function extractErrorMessage(error: unknown): string {
   if (error instanceof AxiosError) {
     return JSON.stringify(error.response?.data) || error.message;
@@ -12,6 +16,16 @@ function extractErrorMessage(error: unknown): string {
     return error.message;
   }
   return String(error);
+}
+
+// A 400/401 from the token endpoint means Proceq definitively rejected the
+// refresh token (invalid_grant). Network errors and 5xx responses are
+// transient and must NOT be treated as a dead token.
+function isRefreshTokenRejected(error: unknown): boolean {
+  return (
+    error instanceof AxiosError &&
+    (error.response?.status === 400 || error.response?.status === 401)
+  );
 }
 
 @Injectable()
@@ -66,6 +80,22 @@ export class ProceqAuthService {
     }
   }
 
+  private async deleteRejectedToken(email: string): Promise<void> {
+    try {
+      await this.prisma.proceqToken.deleteMany({
+        where: { operatorEmail: email },
+      });
+      this.logger.warn(
+        `Proceq refresh token for ${email} was rejected — token deleted, user must re-authorize`,
+      );
+    } catch (dbError) {
+      this.logger.error(
+        'Failed to delete rejected Proceq token',
+        extractErrorMessage(dbError),
+      );
+    }
+  }
+
   async setAuthorizationCode(code: string, email: string): Promise<void> {
     try {
       const newToken = await this.exchangeCodeForToken(code);
@@ -90,7 +120,8 @@ export class ProceqAuthService {
 
     if (
       storedToken &&
-      new Date(storedToken.expiresAt) > new Date(Date.now() + 60_000)
+      new Date(storedToken.expiresAt) >
+        new Date(Date.now() + TOKEN_VALIDITY_BUFFER_MS)
     ) {
       return {
         accessToken: storedToken.accessToken,
@@ -111,6 +142,10 @@ export class ProceqAuthService {
           'Failed to refresh Proceq token',
           extractErrorMessage(error),
         );
+
+        if (isRefreshTokenRejected(error)) {
+          await this.deleteRejectedToken(email);
+        }
       }
     }
 
@@ -235,5 +270,34 @@ export class ProceqAuthService {
   ): Promise<{ Authorization: string }> {
     const token = await this.authenticate(email);
     return { Authorization: `Bearer ${token.accessToken}` };
+  }
+
+  async getTokenStatus(email: string) {
+    const token = await this.prisma.proceqToken.findUnique({
+      where: {
+        operatorEmail: email,
+      },
+    });
+
+    if (!token) {
+      return {
+        valid: false,
+        canRefresh: false,
+      };
+    }
+
+    const expiresInSeconds = Math.max(
+      0,
+      Math.floor((token.expiresAt.getTime() - Date.now()) / 1000),
+    );
+    const accessTokenValid = expiresInSeconds * 1000 > TOKEN_VALIDITY_BUFFER_MS;
+    const canRefresh = Boolean(token.refreshToken);
+
+    return {
+      valid: accessTokenValid || canRefresh,
+      canRefresh,
+      expiresAt: token.expiresAt.toISOString(),
+      expiresInSeconds,
+    };
   }
 }

@@ -73,6 +73,14 @@ type ProceqLoginUrlResponse {
   url: String!
 }
 
+type GetProceqTokenStatusResponse {
+  valid: Boolean!
+  canRefresh: Boolean!
+  expiresAt: String
+  expiresInSeconds: Int
+}
+
 type Query {
   proceqLoginUrl(callbackUrl: String!): ProceqLoginUrlResponse!
+  getProceqTokenStatus: GetProceqTokenStatusResponse!
 }

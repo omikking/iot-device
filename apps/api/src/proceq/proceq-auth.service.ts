@@ -297,7 +297,6 @@ export class ProceqAuthService {
       valid: accessTokenValid || canRefresh,
       canRefresh,
       expiresAt: token.expiresAt.toISOString(),
-      expiresInSeconds,
     };
   }
 }

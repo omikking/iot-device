@@ -1007,7 +1007,6 @@ export class GetProceqTokenStatusResponse {
     valid: boolean;
     canRefresh: boolean;
     expiresAt?: Nullable<string>;
-    expiresInSeconds?: Nullable<number>;
 }
 
 export class Site {

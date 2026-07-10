@@ -12,12 +12,17 @@ import { SubmitOrderInput } from './dto/submit-order.input';
 import { OrderFilterInput } from './dto/order-filter.input';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { FileUpload } from 'graphql-upload-ts';
+import { BansheeCommunicationService } from 'src/banshee-communication/banshee-communication.service';
 
 @Injectable()
 export class BansheeOrderService {
   private readonly logger = new Logger(BansheeOrderService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly bansheeCommunicationService: BansheeCommunicationService,
+  ) {}
 
   private readonly orderInclude = {
     orderItems: {
@@ -92,7 +97,11 @@ export class BansheeOrderService {
     return order;
   }
 
-  async submitOrder(input: SubmitOrderInput) {
+  async submitOrder(
+    input: SubmitOrderInput,
+    attachments: FileUpload[],
+    user: ActiveUserData,
+  ) {
     const { companyId } = input;
 
     const cartItems = await this.prisma.bansheeCartItem.findMany({
@@ -123,7 +132,7 @@ export class BansheeOrderService {
       const createdOrder = await tx.bansheeOrder.create({
         data: {
           status: BansheeOrderStatus.PENDING,
-          attachments: input.attachments ?? [],
+          attachments: input.attachmentsName ?? [],
           comment: input.comment,
           companyId,
           orderItems: {
@@ -143,6 +152,22 @@ export class BansheeOrderService {
     this.logger.log(
       `Order ${order.id} created with ${cartItems.length} items for company ${companyId}`,
     );
+
+    // Notify the company's BANSHEE users about the new order. The order is
+    // already committed, so a failure here must never fail the submission —
+    // log it and move on.
+    try {
+      await this.bansheeCommunicationService.shareOrderDetails(
+        order,
+        user,
+        attachments,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send order details email for order ${order.id}`,
+        error instanceof Error ? error.stack : error,
+      );
+    }
 
     return order;
   }
@@ -272,6 +297,117 @@ export class BansheeOrderService {
       await this.recomputeOrderStatus(tx, orderItem.orderId);
 
       return updatedItem;
+    });
+  }
+
+  async fulfillOrderItemsForBansheeRequests(
+    entries: Array<{ bansheeRequestId: string; measurementId?: string }>,
+  ): Promise<void> {
+    if (entries.length === 0) return;
+
+    const measurementByRequest = new Map(
+      entries.map((e) => [e.bansheeRequestId, e.measurementId]),
+    );
+    const requestIds = [...measurementByRequest.keys()];
+
+    await this.prisma.$transaction(async (tx) => {
+      const pendingItems = await tx.bansheeOrderItem.findMany({
+        where: {
+          bansheeRequestId: { in: requestIds },
+          status: BansheeOrderItemStatus.PENDING,
+        },
+        select: {
+          id: true,
+          orderId: true,
+          itemType: true,
+          bansheeRequestId: true,
+        },
+      });
+
+      if (pendingItems.length === 0) return;
+
+      const itemsByRequest = new Map<string, typeof pendingItems>();
+      for (const item of pendingItems) {
+        if (!item.bansheeRequestId) continue;
+        const list = itemsByRequest.get(item.bansheeRequestId) ?? [];
+        list.push(item);
+        itemsByRequest.set(item.bansheeRequestId, list);
+      }
+
+      const itemIdsToFulfill: string[] = [];
+      const affectedOrderIds = new Set<string>();
+      const auditLines: string[] = [];
+
+      for (const [bansheeRequestId, items] of itemsByRequest) {
+        const measurementId = measurementByRequest.get(bansheeRequestId);
+
+        if (items.length > 1) {
+          this.logger.warn(
+            `Found ${items.length} PENDING order items for bansheeRequest=${bansheeRequestId} (measurement=${measurementId ?? 'n/a'}); skipping automatic fulfillment to avoid an ambiguous update`,
+          );
+          continue;
+        }
+
+        const item = items[0];
+
+        if (
+          item.itemType !== BansheeCartItemType.NEW_BANSHEE &&
+          item.itemType !== BansheeCartItemType.SERVICE_EXISTING
+        ) {
+          this.logger.warn(
+            `Order item ${item.id} has unexpected itemType ${item.itemType}; skipping automatic fulfillment`,
+          );
+          continue;
+        }
+
+        itemIdsToFulfill.push(item.id);
+        affectedOrderIds.add(item.orderId);
+        auditLines.push(
+          `Order fulfillment | measurement=${measurementId ?? 'n/a'} ` +
+            `bansheeRequest=${bansheeRequestId} orderItem=${item.id} ` +
+            `order=${item.orderId} status: ${BansheeOrderItemStatus.PENDING} -> ${BansheeOrderItemStatus.FULFILLED}`,
+        );
+      }
+
+      if (itemIdsToFulfill.length === 0) return;
+
+      await tx.bansheeOrderItem.updateMany({
+        where: { id: { in: itemIdsToFulfill } },
+        data: { status: BansheeOrderItemStatus.FULFILLED },
+      });
+
+      const orderIds = [...affectedOrderIds];
+      const ordersStillPending = await tx.bansheeOrderItem.findMany({
+        where: {
+          orderId: { in: orderIds },
+          status: BansheeOrderItemStatus.PENDING,
+        },
+        select: { orderId: true },
+        distinct: ['orderId'],
+      });
+      const ordersWithPending = new Set(
+        ordersStillPending.map((i) => i.orderId),
+      );
+
+      const completedOrderIds = orderIds.filter(
+        (id) => !ordersWithPending.has(id),
+      );
+
+      if (completedOrderIds.length > 0) {
+        await tx.bansheeOrder.updateMany({
+          where: {
+            id: { in: completedOrderIds },
+            status: { not: BansheeOrderStatus.CANCELLED },
+          },
+          data: { status: BansheeOrderStatus.COMPLETED },
+        });
+      }
+
+      auditLines.forEach((line) => this.logger.log(line));
+      this.logger.log(
+        `Order fulfillment batch: fulfilled ${itemIdsToFulfill.length} order item(s); ` +
+          `${completedOrderIds.length} order(s) COMPLETED`,
+      );
     });
   }
 

@@ -104,6 +104,116 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
   }
 };
 
+/** Converts a base64 data URL (e.g. from chart export) into a File for upload. */
+export function dataUrlToFile(dataUrl: string, filename: string): File {
+  const [meta, base64] = dataUrl.split(',');
+  const mime = meta.match(/:(.*?);/)?.[1] ?? 'image/png';
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new File([bytes], filename, { type: mime });
+}
+
+/** Minimal shape needed to build the banshee CSV. Shared across plot pages. */
+export interface BansheeCsvReading {
+  elongation?: number | null;
+  status?: string | null;
+}
+export interface BansheeCsvProceqData {
+  status?: string | null;
+  createdTimestamp?: number | null;
+  readings?: readonly BansheeCsvReading[] | null;
+}
+export interface BansheeCsvRow {
+  serialNumber?: string | null;
+  site?: { siteName?: string | null } | null;
+  drive?: { driveName?: string | null } | null;
+  level?: { levelName?: string | null } | null;
+  location?: { locationName?: string | null } | null;
+  comment?: string | null;
+  proceqData?: readonly BansheeCsvProceqData[] | null;
+}
+
+const BANSHEE_CSV_HEADERS = [
+  'Serial Number',
+  'Site Name',
+  'Drive Name',
+  'Level Name',
+  'Location Name',
+  'Comment',
+  'Proceq Status',
+  'Proceq Created Timestamp',
+  'Reading Elongation',
+  'Reading Status',
+];
+
+/** Builds the flattened banshee CSV string (same format used by Export CSV). */
+export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
+  const csvRows: string[] = [BANSHEE_CSV_HEADERS.join(',')];
+
+  data.forEach((request) => {
+    const serialNumber = request.serialNumber ?? '';
+    const siteName = request.site?.siteName ?? '';
+    const driveName = request.drive?.driveName ?? '';
+    const levelName = request.level?.levelName ?? '';
+    const locationName = request.location?.locationName ?? '';
+    const comment = request.comment ?? '';
+
+    request.proceqData?.forEach((proceq) => {
+      const proceqStatus = proceq.status ?? '';
+      const createdTimestamp = proceq.createdTimestamp
+        ? new Date(proceq.createdTimestamp).toISOString()
+        : '';
+
+      proceq.readings?.forEach((reading) => {
+        const elongation = reading.elongation ?? '';
+        const readingStatus = reading.status ?? '';
+
+        const row = [
+          serialNumber,
+          siteName,
+          driveName,
+          levelName,
+          locationName,
+          comment,
+          proceqStatus,
+          createdTimestamp,
+          elongation,
+          readingStatus,
+        ]
+          .map((v) => JSON.stringify(v))
+          .join(',');
+
+        csvRows.push(row);
+      });
+    });
+  });
+
+  return csvRows.join('\n');
+}
+
+/** Builds a CSV File suitable for upload/sharing. */
+export function buildBansheeCsvFile(
+  data: readonly BansheeCsvRow[],
+  filename = 'banshee_data.csv',
+): File {
+  return new File([buildBansheeCsv(data)], filename, {
+    type: 'text/csv;charset=utf-8;',
+  });
+}
+
+export function downloadDataUrl(dataUrl: string, filename: string) {
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = filename;
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export function formatDateTime(dt: string | null | undefined): string {
   if (!dt) return 'N/A';
   try {

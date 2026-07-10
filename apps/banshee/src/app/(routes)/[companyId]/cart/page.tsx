@@ -49,8 +49,11 @@ const cartItemsQuery = graphql(`
 `);
 
 const submitOrderMutation = graphql(`
-  mutation submitOrder($input: SubmitOrderInput!) {
-    submitOrder(input: $input) {
+  mutation submitOrder(
+    $input: SubmitOrderInput!
+    $attachments: [Upload!]
+  ) {
+    submitOrder(input: $input, attachments: $attachments) {
       id
     }
   }
@@ -85,6 +88,7 @@ interface Attachment {
   id: string;
   name: string;
   size: string;
+  file: File;
 }
 export default function CartPage() {
   const params = useParams();
@@ -186,8 +190,11 @@ export default function CartPage() {
       input: {
         companyId,
         comment: values.orderComments ?? '',
-        attachments: attachments.map((a) => a.name),
+        attachmentsName: attachments.map((a) => a.name),
       },
+      // Actual files are sent outside of `input` as Upload scalars so the
+      // backend can attach them to the order-details email.
+      attachments: attachments.map((a) => a.file),
     });
 
     if (handleGraphQLErrors(result.error)) return;

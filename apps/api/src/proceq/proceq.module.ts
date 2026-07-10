@@ -6,9 +6,15 @@ import { ProceqSyncService } from './proceq-sync.service';
 import { ProceqAuthController } from './proceq-auth.controller';
 import { BansheeStatsModule } from '../banshee-stats/banshee-stats.module';
 import { ProceqAuthResolver } from './proceq-auth.resolver';
+import { BansheeOrderModule } from '../banshee-order/banshee-order.module';
+import { BansheeCommmunicationModule } from '../banshee-communication/banshee-communication.module';
 
 @Module({
-  imports: [BansheeStatsModule],
+  imports: [
+    BansheeStatsModule,
+    BansheeOrderModule,
+    BansheeCommmunicationModule,
+  ],
   providers: [
     ProceqApiService,
     ProceqAuthService,

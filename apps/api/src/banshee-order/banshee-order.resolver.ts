@@ -10,6 +10,7 @@ import { BansheeOrderService } from './banshee-order.service';
 import { SubmitOrderInput } from './dto/submit-order.input';
 import { OrderFilterInput } from './dto/order-filter.input';
 import { getAllowedCompanyIds } from 'src/utils/resolveAllowedCompanyIds';
+import { FileUpload } from 'graphql-upload-ts';
 
 @Resolver('BansheeOrder')
 @UseGuards(JwtGuard, RolesGuard)
@@ -38,8 +39,12 @@ export class BansheeOrderResolver {
 
   @Roles([], [Application.BANSHEE], 'bansheeOrder')
   @Mutation('submitOrder')
-  async submitOrder(@Args('input') input: SubmitOrderInput) {
-    return this.bansheeOrderService.submitOrder(input);
+  async submitOrder(
+    @Args('input') input: SubmitOrderInput,
+    @Args('attachments') attachments: FileUpload[],
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    return this.bansheeOrderService.submitOrder(input, attachments, user);
   }
 
   @Roles([], [Application.BANSHEE], 'bansheeOrder')

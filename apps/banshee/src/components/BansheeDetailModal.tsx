@@ -20,6 +20,7 @@ const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
     bansheeRequest(id: $id) {
       id
+      name
       serialNumber
       boltInstallationDateTime
       period
@@ -157,6 +158,7 @@ export const BansheeDetailModal = memo(
       const lastReading = readings.at(-1) ?? null;
 
       return {
+        bansheeName: request.name,
         serialNumber: request.serialNumber,
         status: getStatusLabel(latestMeasurement?.status),
         createdTimeStr: latestMeasurement?.createdTimestamp
@@ -188,7 +190,7 @@ export const BansheeDetailModal = memo(
         <ModalContent>
           <ModalHeader>
             <ModalTitle>
-              {details?.serialNumber ?? (fetching ? 'Loading...' : '—')}
+              {details?.bansheeName ?? (fetching ? 'Loading...' : '—')}
             </ModalTitle>
           </ModalHeader>
 
@@ -202,6 +204,7 @@ export const BansheeDetailModal = memo(
           {!fetching && details && (
             <>
               <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-flex-col">
+                <DetailRow label="Serial Number" value={details.serialNumber} />
                 <DetailRow label="Status" value={details.status} />
                 <DetailRow
                   label="Last Reading"

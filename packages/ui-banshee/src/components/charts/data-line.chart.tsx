@@ -12,6 +12,7 @@ export type DataLineChartProps = {
   lines?: { dataKey: string; label: string; color: string }[];
   data: { date: string; [key: string]: string | number | undefined }[];
   enableZoom?: boolean;
+  showToolbox?: boolean;
   onResetZoom?: () => void;
   legendSelected?: Record<string, boolean>;
   onLegendChange?: (selected: Record<string, boolean>) => void;
@@ -19,6 +20,7 @@ export type DataLineChartProps = {
 
 export type DataLineChartHandle = {
   resetZoom: () => void;
+  getPngDataUrl: () => string | undefined;
 };
 
 const chartConfig = {
@@ -38,6 +40,7 @@ export const DataLineChart = forwardRef<
     yAxisLabel = 'Elongation (mm)',
     yAxisDomain = [0, 12],
     enableZoom = false,
+    showToolbox = true,
     legendSelected,
     onLegendChange,
   },
@@ -53,6 +56,12 @@ export const DataLineChart = forwardRef<
         end: 100,
       });
     },
+    getPngDataUrl: () =>
+      chartRef.current?.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+      }),
   }));
   const xAxisDates = data.map((d) => d.date);
 
@@ -144,16 +153,17 @@ export const DataLineChart = forwardRef<
           { type: 'inside', yAxisIndex: 0, start: 0, end: 100 },
         ]
       : undefined,
-    toolbox: enableZoom
-      ? {
-          feature: {
-            dataZoom: {
-              title: { zoom: 'Zoom', back: 'Reset zoom' },
+    toolbox:
+      enableZoom && showToolbox
+        ? {
+            feature: {
+              dataZoom: {
+                title: { zoom: 'Zoom', back: 'Reset zoom' },
+              },
+              saveAsImage: { title: 'Save' },
             },
-            saveAsImage: { title: 'Save' },
-          },
-        }
-      : undefined,
+          }
+        : undefined,
     series: [
       ...(markAreas.length > 0
         ? [

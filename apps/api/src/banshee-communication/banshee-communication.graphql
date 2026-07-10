@@ -1,0 +1,79 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+# Use npx ts-node src/generate-types.ts to generate the types
+
+scalar Upload
+
+enum BansheeEmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+type BansheeEmailAttachment {
+  id: String!
+  originalFileName: String!
+  storedFileName: String!
+  filePath: String!
+  mimeType: String!
+  fileSize: Float!
+  createdAt: DateTime!
+}
+
+type BansheeEmail {
+  id: String!
+  status: BansheeEmailStatus!
+  message: String!
+
+  userId: String!
+  companyId: String!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  attachments: [BansheeEmailAttachment!]
+}
+
+type BansheeSharePlotListResponse {
+  success: Boolean!
+  sentTo: String
+  message: String
+}
+
+type BansheeContactUsResponse {
+  success: Boolean!
+  message: String
+  email: BansheeEmail
+}
+
+type BansheeContactUsInboxResponse {
+  items: [BansheeEmail!]!
+  total: Int!
+}
+
+input BansheeSharePlotListInput {
+  companyId: String!
+  recipientEmail: String!
+}
+
+input BansheeContactUsInput {
+  companyId: String!
+  message: String!
+}
+
+input BansheeContactUsInboxFilter {
+  status: BansheeEmailStatus
+  companyId: String
+  createdAt: DateTime
+}
+
+type Mutation{
+  bansheeSharePlotList(input:BansheeSharePlotListInput! image: Upload! csv: Upload!):BansheeSharePlotListResponse!
+  bansheeContactUs(input:BansheeContactUsInput! attachments: [Upload!]):BansheeContactUsResponse!
+}
+
+type Query{
+  bansheeContactUsInbox(filter:BansheeContactUsInboxFilter, offset: Int, limit: Int):BansheeContactUsInboxResponse!
+  bansheeContactById(id: String!): BansheeEmail
+}

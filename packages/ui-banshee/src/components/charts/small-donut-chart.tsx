@@ -22,6 +22,7 @@ export function SmallChartPieDonut({
   chartData,
   chartConfig,
 }: DonutChartProps) {
+  const total = chartData.reduce((sum, item) => sum + item.value, 0);
   const option: EChartsOption = {
     tooltip: {
       trigger: 'item',
@@ -37,6 +38,19 @@ export function SmallChartPieDonut({
         </div>`;
       },
     },
+    graphic: [
+      {
+        type: 'text',
+        left: 'center',
+        top: 'center',
+        style: {
+          text: `${total}`,
+          fill: '#333',
+          fontSize: 18,
+          fontWeight: 500,
+        },
+      },
+    ],
     series: [
       {
         type: 'pie',
@@ -71,9 +85,20 @@ export function SmallChartPieDonut({
               />
             </ChartContainer>
           </CardContent>
-          <div>
-            <CardFooter className="ui-banshee-pb-0 ui-banshee-min-h-[24px]">
-              {footerText}
+          <div className="ui-banshee-w-full ui-banshee-text-center" title={footerText}>
+            <CardFooter className="ui-banshee-pb-0 ui-banshee-min-h-[24px] ui-banshee-w-full ui-banshee-min-w-0">
+              <span
+                className="
+                  ui-banshee-block
+                  ui-banshee-w-full
+                  ui-banshee-min-w-0
+                  ui-banshee-overflow-hidden
+                  ui-banshee-whitespace-nowrap
+                  ui-banshee-text-ellipsis
+                "
+              >
+                {footerText}
+              </span>
             </CardFooter>
           </div>
         </div>

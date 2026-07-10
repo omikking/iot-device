@@ -117,6 +117,9 @@ type BansheeRequestResponse {
 type LocationDistribution {
   locationId: String!
   locationName: String!
+  siteName: String!
+  levelName: String!
+  driveName: String!
   total: Int!
   statusCounts: [StatusCount!]!
   results: [BansheeRequest!]!

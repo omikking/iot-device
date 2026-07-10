@@ -39,7 +39,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:unit": "jest --config ./jest.unit.config.js",
+    "test:unit:watch": "jest --config ./jest.unit.config.js --watch",
+    "test:unit:cov": "jest --config ./jest.unit.config.js --coverage"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
@@ -66,6 +69,7 @@
     "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pdfkit": "^0.19.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "ts-morph": "^23.0.0"
@@ -84,6 +88,7 @@
     "@types/node": "^20.3.1",
     "@types/nodemailer": "^6.4.17",
     "@types/passport-jwt": "^4.0.1",
+    "@types/pdfkit": "^0.17.6",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
@@ -109,6 +114,9 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

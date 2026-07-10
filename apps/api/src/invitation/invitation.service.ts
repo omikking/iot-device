@@ -192,7 +192,7 @@ export class InvitationService {
         isNewUser: true,
       };
     } catch (error) {
-	console.error("CREATE INVITATION ERROR:", error);
+      console.error('CREATE INVITATION ERROR:', error);
 
       throw new UserInputError('', {
         extensions: {

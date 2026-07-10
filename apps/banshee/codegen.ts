@@ -1,7 +1,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 import { loadEnvConfig } from '@next/env';
 
-loadEnvConfig(process.cwd());
+loadEnvConfig(process.cwd(), true);
 
 const schemaUrl = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/graphql`

@@ -29,6 +29,7 @@ import { graphql } from '@/gql';
 import {
   BansheeSchedulerListQuery,
   BansheeCartItemType,
+  BansheeOrderItemStatus,
   ProceqStatus,
 } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
@@ -72,6 +73,21 @@ const schedulerCartItemsQuery = graphql(`
         serialNumber
         location {
           locationName
+        }
+      }
+    }
+  }
+`);
+
+const schedulerOrdersQuery = graphql(`
+  query schedulerOrders($filter: OrderFilterInput, $limit: Int) {
+    orders(filter: $filter, limit: $limit) {
+      results {
+        id
+        orderItems {
+          id
+          status
+          bansheeRequestId
         }
       }
     }
@@ -290,6 +306,30 @@ export default function SchedulerPage({
           .filter((id): id is string => Boolean(id)),
       ),
     [cartData?.cartItems],
+  );
+
+  const [{ data: ordersData, error: ordersError }] = useQuery({
+    query: schedulerOrdersQuery,
+    variables: { filter: { companyId }, limit: 1000 },
+    requestPolicy: 'cache-and-network',
+  });
+
+  useEffect(() => {
+    handleGraphQLErrors(ordersError);
+  }, [ordersError]);
+
+  // Banshees already committed to a PENDING order item should not reappear
+  // in the scheduler (their cart entry is deleted once the order is submitted).
+  const pendingOrderBansheeRequestIds = useMemo(
+    () =>
+      new Set(
+        (ordersData?.orders?.results ?? [])
+          .flatMap((order) => order.orderItems ?? [])
+          .filter((item) => item.status === BansheeOrderItemStatus.Pending)
+          .map((item) => item.bansheeRequestId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [ordersData?.orders?.results],
   );
 
   const [{ data: hierarchyData, error: hierarchyError }] = useQuery({
@@ -541,9 +581,15 @@ export default function SchedulerPage({
   const bansheeRequests = useMemo(
     () =>
       (data?.bansheeRequests?.results ?? []).filter(
-        (r) => !cartBansheeRequestIds.has(r.id),
+        (r) =>
+          !cartBansheeRequestIds.has(r.id) &&
+          !pendingOrderBansheeRequestIds.has(r.id),
       ),
-    [data?.bansheeRequests?.results, cartBansheeRequestIds],
+    [
+      data?.bansheeRequests?.results,
+      cartBansheeRequestIds,
+      pendingOrderBansheeRequestIds,
+    ],
   );
 
   // Transform API data to scheduler format when data changes

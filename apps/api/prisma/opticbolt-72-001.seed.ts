@@ -9,6 +9,7 @@ export const OPTICBOLT_72_001_TEST_RESULT = {
   result: 'PASS',
   fibreCheck1: true,
   fibreCheck2: true,
+  fibreCheck3: true,
   psi20: 631,
   psi100: 3046,
 } as const;

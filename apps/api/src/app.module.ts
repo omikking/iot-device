@@ -21,9 +21,10 @@ import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { OpticboltModule } from './opticbolt/opticbolt.module';
+import { HydraBoltModule } from './hydra-bolt/hydra-bolt.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
- 
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -49,9 +50,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     EmailModule,
     InvitationModule,
     OpticboltModule,
+    HydraBoltModule,
   ],
   providers: [DateScalar],
 })
 export class AppModule {}
- 
- 

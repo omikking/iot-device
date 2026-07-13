@@ -195,6 +195,21 @@ export class UpdateDriveInput {
     driveName?: Nullable<string>;
 }
 
+export class CreateHydraboltInput {
+    partNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltLength: number;
+    description?: Nullable<string>;
+    numberOfFBG: number;
+    positionOfFBGs: number[];
+    initialWavelength: number[];
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    highPlasticLimit: number;
+    maxCalibrationFactor: number;
+    minCalibrationFactor: number;
+}
+
 export class CreateInvitationInput {
     email: string;
     companyId: string;
@@ -263,6 +278,7 @@ export class CreateOpticboltTestResultWithSpectrumsInput {
     result: string;
     fibreCheck1?: Nullable<boolean>;
     fibreCheck2?: Nullable<boolean>;
+    fibreCheck3?: Nullable<boolean>;
     psi20?: Nullable<number>;
     psi100?: Nullable<number>;
     spectrums: CreateOpticboltSpectrumInput[];
@@ -392,7 +408,7 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
-    opticboltTestResults: OpticboltTestResult[];
+    opticboltTestResults?: OpticboltTestResult[];
     opticboltSpectrumsBySerialNumber?: OpticboltSpectrum[];
     sites: Site[];
     site?: Site;
@@ -418,6 +434,7 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createHydrabolt?: Hydrabolt;
     createInvitation?: InvitationResponse;
     createGlobalInvitation?: InvitationResponse;
     completeInvitation?: User;
@@ -505,6 +522,24 @@ export class EnumOption {
     label: string;
 }
 
+export class Hydrabolt {
+    id: string;
+    partNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltLength: number;
+    description?: Nullable<string>;
+    numberOfFBG: number;
+    positionOfFBGs: number[];
+    initialWavelength: number[];
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    highPlasticLimit: number;
+    maxCalibrationFactor: number;
+    minCalibrationFactor: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export class Invitation {
     id: string;
     email: string;
@@ -582,6 +617,7 @@ export class OpticboltTestResult {
     result: string;
     fibreCheck1: boolean;
     fibreCheck2: boolean;
+    fibreCheck3: boolean;
     psi20?: Nullable<number>;
     psi100?: Nullable<number>;
     createdAt: DateTime;

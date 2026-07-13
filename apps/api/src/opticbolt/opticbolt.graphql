@@ -32,6 +32,7 @@ type OpticboltTestResult {
   result: String!
   fibreCheck1: Boolean!
   fibreCheck2: Boolean!
+  fibreCheck3: Boolean!
   psi20: Int
   psi100: Int
   createdAt: DateTime!
@@ -67,6 +68,7 @@ input CreateOpticboltTestResultWithSpectrumsInput {
   result: String!
   fibreCheck1: Boolean
   fibreCheck2: Boolean
+  fibreCheck3: Boolean
   psi20: Int
   psi100: Int
   spectrums: [CreateOpticboltSpectrumInput!]!
@@ -74,7 +76,7 @@ input CreateOpticboltTestResultWithSpectrumsInput {
 
 type Query {
   # GET all optic test result
-  opticboltTestResults: [OpticboltTestResult!]!
+  opticboltTestResults(since: DateTime): [OpticboltTestResult!]!
 
   # GET all spectrum of a serial number
   opticboltSpectrumsBySerialNumber(serialNumber: String!): [OpticboltSpectrum!]!
@@ -86,3 +88,4 @@ type Mutation {
     input: CreateOpticboltTestResultWithSpectrumsInput!
   ): OpticboltTestResult!
 }
+ 

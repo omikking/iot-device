@@ -376,6 +376,7 @@ model OpticboltTestResult {
   result        String   @db.VarChar(10)
   fibreCheck1   Boolean  @default(false) @map("fibre_check_1")
   fibreCheck2   Boolean  @default(false) @map("fibre_check_2")
+  fibreCheck3   Boolean  @default(false) @map("fibre_check_3")
   psi20         Int?     @map("psi_20")
   psi100        Int?     @map("psi_100")
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -411,4 +412,23 @@ model OpticboltSpectrum {
   @@unique([testResultId, fbgIndex])
   @@map("opticbolt_spectrums")
 }
- 
+
+model Hydrabolt {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partNumber           String   @map("part_number") @db.VarChar(100)
+  drawingNumber        String?  @map("drawing_number") @db.VarChar(100)
+  boltLength           Float    @map("bolt_length")
+  description          String?  @db.Text
+  numberOfFBG          Int      @map("number_of_fbg")
+  positionOfFBGs       Float[]  @map("position_of_fbgs")
+  initialWavelength    Float[]  @map("initial_wavelength")
+  elasticLimit         Float    @map("elastic_limit")
+  lowPlasticLimit      Float    @map("low_plastic_limit")
+  highPlasticLimit     Float    @map("high_plastic_limit")
+  maxCalibrationFactor Float    @map("max_calibration_factor")
+  minCalibrationFactor Float    @map("min_calibration_factor")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("hydrabolt")
+}

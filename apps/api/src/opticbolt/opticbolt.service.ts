@@ -21,20 +21,33 @@ export class OpticboltService {
       strain100: spec.strain100 ? Number(spec.strain100) : null,
       load20: spec.load20 ? Number(spec.load20) : null,
       load100: spec.load100 ? Number(spec.load100) : null,
-      calibrationFactor: spec.calibrationFactor ? Number(spec.calibrationFactor) : null,
+      calibrationFactor: spec.calibrationFactor
+        ? Number(spec.calibrationFactor)
+        : null,
     };
   }
 
-  private mapTestResultDecimals(result: (OpticboltTestResult & { spectrums?: OpticboltSpectrum[] }) | null) {
+  private mapTestResultDecimals(
+    result: (OpticboltTestResult & { spectrums?: OpticboltSpectrum[] }) | null,
+  ) {
     if (!result) return null;
     return {
       ...result,
-      spectrums: result.spectrums ? result.spectrums.map((s) => this.mapSpectrumDecimals(s)) : [],
+      spectrums: result.spectrums
+        ? result.spectrums.map((s) => this.mapSpectrumDecimals(s))
+        : [],
     };
   }
 
-  async findAll() {
+  async findAll(since?: Date) {
     const results = await this.prisma.opticboltTestResult.findMany({
+      where: since
+        ? {
+            updatedAt: {
+              gt: since,
+            },
+          }
+        : undefined,
       include: { spectrums: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -65,6 +78,7 @@ export class OpticboltService {
         result: input.result,
         fibreCheck1: input.fibreCheck1 ?? false,
         fibreCheck2: input.fibreCheck2 ?? false,
+        fibreCheck3: input.fibreCheck3 ?? false,
         psi20: input.psi20,
         psi100: input.psi100,
         spectrums: {

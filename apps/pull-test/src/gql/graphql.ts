@@ -237,6 +237,21 @@ export type CreateGlobalInvitationInput = {
   isGlobalVisibility?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type CreateHydraboltInput = {
+  boltLength: Scalars['Float']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  drawingNumber?: InputMaybe<Scalars['String']['input']>;
+  elasticLimit: Scalars['Float']['input'];
+  highPlasticLimit: Scalars['Float']['input'];
+  initialWavelength: Array<Scalars['Float']['input']>;
+  lowPlasticLimit: Scalars['Float']['input'];
+  maxCalibrationFactor: Scalars['Float']['input'];
+  minCalibrationFactor: Scalars['Float']['input'];
+  numberOfFBG: Scalars['Int']['input'];
+  partNumber: Scalars['String']['input'];
+  positionOfFBGs: Array<Scalars['Float']['input']>;
+};
+
 export type CreateInvitationInput = {
   appsAccess: Array<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
@@ -286,6 +301,7 @@ export type CreateOpticboltTestResultWithSpectrumsInput = {
   drawingNumber?: InputMaybe<Scalars['String']['input']>;
   fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
   fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
+  fibreCheck3?: InputMaybe<Scalars['Boolean']['input']>;
   psi20?: InputMaybe<Scalars['Int']['input']>;
   psi100?: InputMaybe<Scalars['Int']['input']>;
   result: Scalars['String']['input'];
@@ -354,6 +370,25 @@ export type Flavor = {
   __typename?: 'Flavor';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type Hydrabolt = {
+  __typename?: 'Hydrabolt';
+  boltLength: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  drawingNumber?: Maybe<Scalars['String']['output']>;
+  elasticLimit: Scalars['Float']['output'];
+  highPlasticLimit: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  initialWavelength: Array<Scalars['Float']['output']>;
+  lowPlasticLimit: Scalars['Float']['output'];
+  maxCalibrationFactor: Scalars['Float']['output'];
+  minCalibrationFactor: Scalars['Float']['output'];
+  numberOfFBG: Scalars['Int']['output'];
+  partNumber: Scalars['String']['output'];
+  positionOfFBGs: Array<Scalars['Float']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type Invitation = {
@@ -428,6 +463,7 @@ export type Mutation = {
   createCompany: Company;
   createDrive: Drive;
   createGlobalInvitation: InvitationResponse;
+  createHydrabolt: Hydrabolt;
   createInvitation: InvitationResponse;
   createLevel: Level;
   createLocation: Location;
@@ -531,6 +567,15 @@ export type MutationCreateDriveArgs = {
  */
 export type MutationCreateGlobalInvitationArgs = {
   input: CreateGlobalInvitationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateHydraboltArgs = {
+  input: CreateHydraboltInput;
 };
 
 
@@ -843,6 +888,7 @@ export type OpticboltTestResult = {
   drawingNumber?: Maybe<Scalars['String']['output']>;
   fibreCheck1: Scalars['Boolean']['output'];
   fibreCheck2: Scalars['Boolean']['output'];
+  fibreCheck3: Scalars['Boolean']['output'];
   id: Scalars['String']['output'];
   psi20?: Maybe<Scalars['Int']['output']>;
   psi100?: Maybe<Scalars['Int']['output']>;
@@ -1030,6 +1076,15 @@ export type QueryLocationArgs = {
  */
 export type QueryOpticboltSpectrumsBySerialNumberArgs = {
   serialNumber: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryOpticboltTestResultsArgs = {
+  since?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 

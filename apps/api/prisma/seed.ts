@@ -864,6 +864,7 @@ async function generateOpticboltTestResults() {
       result: OPTICBOLT_72_001_TEST_RESULT.result,
       fibreCheck1: OPTICBOLT_72_001_TEST_RESULT.fibreCheck1,
       fibreCheck2: OPTICBOLT_72_001_TEST_RESULT.fibreCheck2,
+      fibreCheck3: OPTICBOLT_72_001_TEST_RESULT.fibreCheck3,
       psi20: OPTICBOLT_72_001_TEST_RESULT.psi20,
       psi100: OPTICBOLT_72_001_TEST_RESULT.psi100,
       spectrums: {
@@ -906,6 +907,7 @@ async function generateOpticboltTestResults() {
         result: testResults[i % testResults.length],
         fibreCheck1: i % 2 === 0,
         fibreCheck2: i % 3 === 0,
+        fibreCheck3: i % 4 === 0,
         psi20: 20 + i * 2,
         psi100: 100 + i * 5,
         spectrums: {

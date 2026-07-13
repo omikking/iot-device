@@ -112,6 +112,10 @@ export class CreateOpticboltTestResultWithSpectrumsInput extends GraphQLTypes.Cr
   fibreCheck2?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  fibreCheck3?: boolean;
+
+  @IsOptional()
   @IsInt()
   psi20?: number;
 

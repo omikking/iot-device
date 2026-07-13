@@ -18,6 +18,15 @@ const extractCompanyId = (pathname: string): string | null => {
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
+  // Service worker scripts and offline page must never be redirected.
+  if (
+    pathname === '/workbox_pulltest.js' ||
+    pathname === '/pullTestSW.js' ||
+    pathname === '/offline.html'
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
     const callbackUrl = encodeURIComponent(pathname + search);

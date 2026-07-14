@@ -9,7 +9,6 @@ import * as fsNode from 'fs';
 import * as archiver from 'archiver';
 import { BansheeStatsService } from '../banshee-stats/banshee-stats.service';
 import { BansheeOrderService } from '../banshee-order/banshee-order.service';
-import { BansheeCommunicationService } from '../banshee-communication/banshee-communication.service';
 import {
   ExtractedProceqFields,
   ExtractedProceqReading,
@@ -19,22 +18,45 @@ import {
   ProceqStatusChangeInfo,
 } from './interfaces/proceq-sync.interfaces';
 import { BansheeRequest, BoltType, ProceqStatus } from '@prisma/client';
+import {
+  BATCH_SIZE,
+  EXPORT_POLL_INTERVAL_MS,
+  EXPORT_TIMEOUT_MS,
+  ATTACHMENT_CONCURRENCY,
+  UPSERT_CHUNK_SIZE,
+  STATS_CONCURRENCY,
+} from './sync/proceq-sync.constants';
+import { CompanyMapper, CycleContext } from './sync/company-mapper';
+import { TechnicianSyncLock } from './sync/technician-sync-lock';
+import { TimestampComparator } from './sync/timestamp-comparator';
+import { ProceqNotificationDispatcher } from './sync/proceq-notification-dispatcher.service';
+import { MeasurementSummaryItem, SyncDecision } from './sync/sync.types';
+import {
+  StructuredLogger,
+  SyncEvent,
+  formatEvent,
+} from './sync/structured-logger';
+import {
+  ErrorContext,
+  ProceqApiError,
+  ProceqCycleAbortedError,
+  ProceqExportTimeoutError,
+  isAbortError,
+  toError,
+} from './sync/errors';
 
 @Injectable()
 export class ProceqSyncService {
   private readonly logger = new Logger(ProceqSyncService.name);
-  private readonly BATCH_SIZE = 100;
-  private readonly EXPORT_POLL_INTERVAL = 3000;
-  private readonly EXPORT_TIMEOUT = 300000;
-
-  private isSyncing = false;
 
   constructor(
     private readonly api: ProceqApiService,
     private readonly prisma: PrismaService,
     private readonly statsService: BansheeStatsService,
     private readonly orderService: BansheeOrderService,
-    private readonly communicationService: BansheeCommunicationService,
+    private readonly lock: TechnicianSyncLock,
+    private readonly comparator: TimestampComparator,
+    private readonly dispatcher: ProceqNotificationDispatcher,
   ) {}
 
   private extractProceqFields(
@@ -202,38 +224,62 @@ export class ProceqSyncService {
     };
   }
 
-  async syncAllMeasurements(email: string): Promise<SyncResult> {
-    if (this.isSyncing) {
-      this.logger.debug('Sync already in progress, skipping');
-      return {
-        success: false,
-        duration: 0,
-        totalScanned: 0,
-        newMeasurements: 0,
-        updatedMeasurements: 0,
-        failedBatches: 0,
-      };
+  /**
+   * Syncs one technician's Proceq measurements into the DB and folds the
+   * results into the cycle's company mapper.
+   *
+   * Concurrency-safe across technicians: a per-technician lock (§5.1) prevents
+   * the SAME operator from being synced twice at once while allowing different
+   * operators to run in parallel inside the scheduler's window.
+   *
+   * @param email  The technician's `operatorEmail`.
+   * @param ctx    The cycle context (shared mapper + abort signal). When
+   *               omitted — e.g. a manual/administrative one-off run — a
+   *               self-contained context is created and its mapper is flushed
+   *               at the end so a direct call still sends emails.
+   */
+  async syncAllMeasurements(
+    email: string,
+    ctx?: CycleContext,
+  ): Promise<SyncResult> {
+    const standalone = !ctx;
+    const context: CycleContext = ctx ?? {
+      cycleId: `manual-${Date.now()}`,
+      mapper: new CompanyMapper(),
+      signal: new AbortController().signal,
+    };
+    const log = new StructuredLogger(this.logger, {
+      cycleId: context.cycleId,
+      technician: email,
+    });
+
+    // Per-technician lock (§5.1, Scenario 9).
+    if (!this.lock.tryAcquire(email)) {
+      log.warn(SyncEvent.TECHNICIAN_SKIP, { reason: 'already-in-flight' });
+      return this.skipResult();
     }
 
-    this.isSyncing = true;
     const startTime = Date.now();
     let failedBatches = 0;
 
     try {
-      this.logger.log('Starting Proceq data synchronization');
+      this.throwIfAborted(context.signal, { technician: email });
+      log.log(SyncEvent.TECHNICIAN_START);
 
-      const size = this.BATCH_SIZE;
+      const size = BATCH_SIZE;
       const allNewMeasurementIds: string[] = [];
       let totalMeasurements = 0;
 
-      const { data } = await this.api.getMeasurements(email, 1, 1);
-      this.logger.log(data.meta);
+      const { data } = await this.api.getMeasurements(
+        email,
+        1,
+        1,
+        context.signal,
+      );
       const totalCount = data?.meta?.pagination?.totalCount || 0;
       const totalPages = Math.ceil(totalCount / size);
 
-      this.logger.log(
-        `Found ${totalCount} total measurements, ${totalPages} pages to process`,
-      );
+      log.log(SyncEvent.PAGINATION, { totalCount, totalPages });
 
       const measurementTimestampMap = new Map<
         string,
@@ -242,10 +288,16 @@ export class ProceqSyncService {
       const allUpdatedMeasurementIds: string[] = [];
 
       for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
+        this.throwIfAborted(context.signal, {
+          technician: email,
+          page: currentPage,
+        });
+
         const { data } = await this.api.getMeasurements(
           email,
           currentPage,
           size,
+          context.signal,
         );
 
         const measurements = data.data || [];
@@ -272,37 +324,36 @@ export class ProceqSyncService {
           existing.map((e) => [e.measurementId, e.updatedTimestamp]),
         );
 
+        // Change detection (§5.4): NEW inserts, strictly-newer reprocesses,
+        // equal/older/undecidable skips.
         for (const m of measurements) {
-          const dbUpdatedTimestamp = existingMap.get(m.id);
-
-          if (dbUpdatedTimestamp === undefined) {
+          const decision = this.comparator.classify(
+            m.updatedAt ?? null,
+            existingMap.get(m.id),
+          );
+          if (decision === SyncDecision.NEW) {
             allNewMeasurementIds.push(m.id);
-          } else {
-            const apiUpdatedAt = m.updatedAt || null;
-            const apiUpdatedTimestamp = apiUpdatedAt
-              ? new Date(apiUpdatedAt)
-              : null;
-
-            if (
-              apiUpdatedTimestamp !== null &&
-              dbUpdatedTimestamp !== null &&
-              apiUpdatedTimestamp.getTime() !== dbUpdatedTimestamp.getTime()
-            ) {
-              allUpdatedMeasurementIds.push(m.id);
-            }
+          } else if (decision === SyncDecision.UPDATED) {
+            allUpdatedMeasurementIds.push(m.id);
           }
         }
 
         if (currentPage % 10 === 0 || currentPage === totalPages) {
-          this.logger.log(
-            `Processed page ${currentPage}/${totalPages}, found ${allNewMeasurementIds.length} new, ${allUpdatedMeasurementIds.length} updated measurements so far`,
-          );
+          log.log(SyncEvent.DIFF, {
+            page: currentPage,
+            totalPages,
+            new: allNewMeasurementIds.length,
+            updated: allUpdatedMeasurementIds.length,
+          });
         }
       }
 
-      this.logger.log(
-        `Total measurements processed: ${totalMeasurements}, New: ${allNewMeasurementIds.length}, Updated: ${allUpdatedMeasurementIds.length}`,
-      );
+      log.log(SyncEvent.DIFF, {
+        phase: 'complete',
+        scanned: totalMeasurements,
+        new: allNewMeasurementIds.length,
+        updated: allUpdatedMeasurementIds.length,
+      });
 
       const allMeasurementIdsToSync = [
         ...allNewMeasurementIds,
@@ -310,12 +361,10 @@ export class ProceqSyncService {
       ];
 
       if (allMeasurementIdsToSync.length > 0) {
-        const adaptiveBatchSize = this.BATCH_SIZE;
-
-        this.logger.log(
-          `Starting batch processing with batch size ${adaptiveBatchSize} for ${allMeasurementIdsToSync.length} measurements (${allNewMeasurementIds.length} new, ${allUpdatedMeasurementIds.length} updated)`,
+        const adaptiveBatchSize = BATCH_SIZE;
+        const totalBatches = Math.ceil(
+          allMeasurementIdsToSync.length / adaptiveBatchSize,
         );
-
         let processedCount = 0;
 
         for (
@@ -323,6 +372,9 @@ export class ProceqSyncService {
           i < allMeasurementIdsToSync.length;
           i += adaptiveBatchSize
         ) {
+          this.throwIfAborted(context.signal, { technician: email });
+
+          const batchNumber = Math.floor(i / adaptiveBatchSize) + 1;
           const batch = allMeasurementIdsToSync.slice(i, i + adaptiveBatchSize);
 
           try {
@@ -330,37 +382,48 @@ export class ProceqSyncService {
               email,
               batch,
               measurementTimestampMap,
+              context,
             );
           } catch (error) {
-            const err = error as Error;
+            // A cycle abort must stop this technician immediately; any other
+            // batch failure is isolated so the remaining batches still run.
+            if (isAbortError(error)) throw error;
+            const err = toError(error);
             failedBatches++;
-            this.logger.error(
-              `Batch ${Math.floor(i / adaptiveBatchSize) + 1} failed, continuing with remaining batches: ${err.message}`,
-            );
+            log.error(SyncEvent.BATCH, {
+              batchNumber,
+              totalBatches,
+              status: 'failed',
+              size: batch.length,
+              message: err.message,
+            });
             continue;
           }
 
           processedCount += batch.length;
-          const progress = (
-            (processedCount / allMeasurementIdsToSync.length) *
-            100
-          ).toFixed(2);
-
-          if (
-            processedCount % (adaptiveBatchSize * 5) === 0 ||
-            processedCount === allMeasurementIdsToSync.length
-          ) {
-            this.logger.log(
-              `Progress: ${progress}% (${processedCount}/${allMeasurementIdsToSync.length})`,
-            );
-          }
+          log.log(SyncEvent.BATCH, {
+            batchNumber,
+            totalBatches,
+            status: 'done',
+            processed: processedCount,
+            total: allMeasurementIdsToSync.length,
+          });
         }
       }
 
       const duration = Date.now() - startTime;
-      this.logger.log(
-        `Sync completed in ${duration}ms. New: ${allNewMeasurementIds.length}, Updated: ${allUpdatedMeasurementIds.length}, Failed batches: ${failedBatches}`,
-      );
+      log.log(SyncEvent.TECHNICIAN_FINISH, {
+        durationMs: duration,
+        new: allNewMeasurementIds.length,
+        updated: allUpdatedMeasurementIds.length,
+        failedBatches,
+      });
+
+      // A manual/administrative one-off run owns its mapper and must send its
+      // own emails; within a cycle the scheduler flushes once at the end.
+      if (standalone) {
+        await this.dispatcher.flush(context.mapper, context.cycleId);
+      }
 
       return {
         success: failedBatches === 0,
@@ -371,11 +434,41 @@ export class ProceqSyncService {
         failedBatches,
       };
     } catch (error) {
-      const err = error as Error;
-      this.logger.error('Proceq sync failed', err.stack || err.message);
+      const err = toError(error);
+      if (isAbortError(error)) {
+        log.warn(SyncEvent.CYCLE_ABORTED, { message: err.message });
+      } else {
+        log.error(SyncEvent.FAILURE, { message: err.stack || err.message });
+      }
       throw err;
     } finally {
-      this.isSyncing = false;
+      this.lock.release(email);
+    }
+  }
+
+  /** The result returned when a technician is skipped (lock already held). */
+  private skipResult(): SyncResult {
+    return {
+      success: false,
+      duration: 0,
+      totalScanned: 0,
+      newMeasurements: 0,
+      updatedMeasurements: 0,
+      failedBatches: 0,
+      skipped: true,
+    };
+  }
+
+  /** Throws {@link ProceqCycleAbortedError} if the cycle has been aborted. */
+  private throwIfAborted(
+    signal: AbortSignal,
+    context: ErrorContext = {},
+  ): void {
+    if (signal.aborted) {
+      throw new ProceqCycleAbortedError(
+        'Proceq cycle aborted by watchdog',
+        context,
+      );
     }
   }
 
@@ -386,68 +479,107 @@ export class ProceqSyncService {
       string,
       { created: string | null; updated: string | null }
     >,
+    ctx: CycleContext,
   ): Promise<void> {
     if (!ids.length) return;
 
+    const log = new StructuredLogger(this.logger, {
+      cycleId: ctx.cycleId,
+      technician: email,
+    });
+
     try {
+      this.throwIfAborted(ctx.signal, { technician: email });
+
       const exportResponse = await this.api.exportMeasurementData(
         email,
         ids,
         'json',
+        ctx.signal,
       );
       const exportId = exportResponse.data.data.exportID;
+      log.log(SyncEvent.EXPORT_CREATE, { exportId, measurements: ids.length });
 
       const startTime = Date.now();
       let exportStatus: string;
 
       do {
         await new Promise((resolve) =>
-          setTimeout(resolve, this.EXPORT_POLL_INTERVAL),
+          setTimeout(resolve, EXPORT_POLL_INTERVAL_MS),
         );
 
-        if (Date.now() - startTime > this.EXPORT_TIMEOUT) {
-          throw new Error(
-            `Export timeout after ${this.EXPORT_TIMEOUT}ms for export ID: ${exportId}`,
+        // Cancellation is checked between poll iterations so a watchdog abort
+        // (§5.3) stops a long export promptly instead of at the 5-min cap.
+        this.throwIfAborted(ctx.signal, { technician: email, exportId });
+
+        if (Date.now() - startTime > EXPORT_TIMEOUT_MS) {
+          throw new ProceqExportTimeoutError(
+            `Export timeout after ${EXPORT_TIMEOUT_MS}ms`,
+            { technician: email, exportId, measurements: ids.length },
           );
         }
 
-        const statusResponse = await this.api.getExportStatus(email, exportId);
+        const statusResponse = await this.api.getExportStatus(
+          email,
+          exportId,
+          ctx.signal,
+        );
         exportStatus = statusResponse.data.data.status;
+        log.debug(SyncEvent.EXPORT_POLL, { exportId, status: exportStatus });
 
         if (exportStatus === 'completed') {
           const downloadUrl = statusResponse.data.data.url;
+          this.throwIfAborted(ctx.signal, { technician: email, exportId });
           const downloadPath = await downloadAndSaveFile(downloadUrl);
+          log.log(SyncEvent.DOWNLOAD, { exportId, path: downloadPath });
 
           await this.processExportArchive(
             downloadPath,
             ids,
             measurementTimestampMap,
+            ctx,
           );
 
           setImmediate(() => {
-            this.logger.log(
-              `Starting background attachment processing for ${ids.length} measurements`,
-            );
-            this.processAttachments(email, ids).catch((err) => {
-              this.logger.error(
-                `Background attachment processing failed for ${ids.length} measurements [${ids.slice(0, 3).join(',')}...]: ${err.message}`,
-              );
+            log.log(SyncEvent.BATCH, {
+              phase: 'attachments-start',
+              measurements: ids.length,
+            });
+            this.processAttachments(email, ids, ctx.signal).catch((err) => {
+              log.error(SyncEvent.WARNING, {
+                phase: 'attachments',
+                measurements: ids.length,
+                sample: ids.slice(0, 3).join(','),
+                message: toError(err).message,
+              });
             });
           });
 
           break;
         } else if (exportStatus === 'failed') {
-          this.logger.error(
-            `Export failed for batch with IDs: ${ids.slice(0, 5).join(',')}...`,
-          );
-          throw new Error('Export failed for batch');
+          throw new ProceqApiError('Export failed for batch', {
+            technician: email,
+            exportId,
+            sample: ids.slice(0, 5).join(','),
+          });
         }
       } while (['pending', 'processing'].includes(exportStatus));
     } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `Failed to process batch with ${ids.length} measurements: ${err.message}`,
-      );
+      const err = toError(error);
+      if (isAbortError(error)) {
+        log.warn(SyncEvent.CYCLE_ABORTED, {
+          phase: 'batch',
+          measurements: ids.length,
+          message: err.message,
+        });
+      } else {
+        log.error(SyncEvent.BATCH, {
+          phase: 'process',
+          status: 'error',
+          size: ids.length,
+          message: err.message,
+        });
+      }
       throw err;
     }
   }
@@ -455,10 +587,12 @@ export class ProceqSyncService {
   private async processAttachments(
     email: string,
     measurementIds: string[],
+    signal?: AbortSignal,
   ): Promise<void> {
-    const concurrencyLimit = 5;
+    const concurrencyLimit = ATTACHMENT_CONCURRENCY;
 
     for (let i = 0; i < measurementIds.length; i += concurrencyLimit) {
+      if (signal?.aborted) return;
       const batch = measurementIds.slice(i, i + concurrencyLimit);
 
       await Promise.allSettled(
@@ -477,7 +611,11 @@ export class ProceqSyncService {
             }
 
             const attachmentsResponse =
-              await this.api.getMeasurementAttachments(email, measurementId);
+              await this.api.getMeasurementAttachments(
+                email,
+                measurementId,
+                signal,
+              );
             const attachments = attachmentsResponse.data.data || [];
 
             if (!attachments.length) return;
@@ -489,6 +627,7 @@ export class ProceqSyncService {
                     email,
                     attachment.mID,
                     attachment.id,
+                    signal,
                   );
 
                   const buffer = Buffer.from(response.data);
@@ -621,6 +760,7 @@ export class ProceqSyncService {
       string,
       { created: string | null; updated: string | null }
     >,
+    ctx: CycleContext,
   ): Promise<void> {
     const extractedDir = archivePath;
 
@@ -856,32 +996,32 @@ export class ProceqSyncService {
       }
 
       // Notification flows (Flow 1: measurement completion, Flow 2: status
-      // change). This service only detects the events and prepares payloads;
-      // recipient resolution, plan validation and sending live in the Banshee
-      // communication layer. Each is isolated in its own try/catch so a
-      // notification failure can never abort the surrounding sync batch, and
-      // they run *before* order fulfillment so Flow 1's PENDING order-item gate
-      // still sees the open items that fulfillment is about to close.
+      // change). Instead of sending inline per batch, this batch's events are
+      // accumulated into the cycle-scoped company mapper (§5.2); the scheduler
+      // flushes the mapper once, at cycle end, so a company receives a single
+      // consolidated email per cycle. This service only detects events and
+      // resolves the payloads (company, measured/not-measured, alarm toggle);
+      // recipient resolution, plan validation and sending stay in the Banshee
+      // communication layer, invoked at flush time.
+      //
+      // Accumulation is pure in-memory work but is still isolated so an
+      // unexpected failure can never abort the surrounding sync batch. Order
+      // fulfilment is unaffected by the mapper move: Flow 1/Flow 2 do not read
+      // order-item state, so deferring the send does not change their content.
       try {
-        await this.handleMeasurementNotification(
+        this.accumulateNotifications(
           recordsToUpsert,
-          bansheeRequestById,
-        );
-      } catch (error) {
-        const err = error as Error;
-        this.logger.error(
-          `Measurement notification flow failed: ${err.message}`,
-        );
-      }
-      try {
-        await this.handleStatusChangeNotification(
           statusChanges,
           bansheeRequestById,
+          ctx,
         );
       } catch (error) {
-        const err = error as Error;
         this.logger.error(
-          `Status change notification flow failed: ${err.message}`,
+          formatEvent(SyncEvent.WARNING, {
+            cycleId: ctx.cycleId,
+            phase: 'notify-aggregate',
+            message: toError(error).message,
+          }),
         );
       }
 
@@ -899,7 +1039,7 @@ export class ProceqSyncService {
   private async bulkUpsertProceqData(
     records: ExtractedProceqFields[],
   ): Promise<ProceqStatusChangeInfo[]> {
-    const chunkSize = 50;
+    const chunkSize = UPSERT_CHUNK_SIZE;
     // Collected across chunks and returned so the status-change notification
     // flow can reuse the same comparison that writes BansheeEventLog rows.
     const statusChanges: ProceqStatusChangeInfo[] = [];
@@ -1094,7 +1234,6 @@ export class ProceqSyncService {
       ]),
     );
 
-    const STATS_CONCURRENCY = 5;
     for (let i = 0; i < records.length; i += STATS_CONCURRENCY) {
       const batch = records.slice(i, i + STATS_CONCURRENCY);
 
@@ -1321,150 +1460,82 @@ export class ProceqSyncService {
   }
 
   // ================================================================================
-  // NOTIFICATION FLOWS
+  // NOTIFICATION ACCUMULATION (mapper)
   // ================================================================================
 
   /**
-   * Flow 1 — Measurement Completion Notification.
+   * Folds this batch's notification events into the cycle-scoped company mapper
+   * (§5.2). Nothing is sent here — the scheduler flushes the mapper once, at
+   * cycle end, via {@link ProceqNotificationDispatcher}. This preserves the
+   * exact classification and alarm gating of the previous inline flows while
+   * moving consolidation from per-batch to per-cycle scope (so a company gets a
+   * single email per cycle even when several technicians/batches touch it —
+   * Scenario 8).
    *
-   * Sends one consolidated summary email per company, covering every Banshee
-   * measurement received in this sync. The surrounding sync only reprocesses a
-   * measurement when its Proceq `updatedTimestamp` changes, so the same data is
-   * never re-summarised on later polls. Each measurement is classified via
-   * `isMeasurementCompleted()` into "measured" or "not measured"; the
-   * communication layer owns plan validation, recipient resolution and sending.
+   * - Flow 1: each mapped record is classified via `isMeasurementCompleted()`
+   *   into the company's measured / not-measured lists. Records not mapped to a
+   *   Banshee request have no company/recipients and are skipped (Scenario 6).
+   * - Flow 2: each status change is resolved to a fully-formed alert carrying
+   *   the per-Banshee `activateNotifications` alarm toggle, which the dispatcher
+   *   uses to gate the send. Changes whose Banshee is unknown in this batch are
+   *   skipped — identical to the previous inline behaviour.
    */
-  private async handleMeasurementNotification(
+  private accumulateNotifications(
     records: ExtractedProceqFields[],
+    statusChanges: ProceqStatusChangeInfo[],
     bansheeRequestById: Map<string, BansheeRequest>,
-  ): Promise<void> {
-    type SummaryItem = {
-      serialNumber: string;
-      bansheeName: string | null;
-      measurementId: string;
-      status: string;
-    };
-
-    // Group this sync's measurements by company, classifying each as measured
-    // or not measured. Records not mapped to a Banshee request have no company
-    // and therefore no recipients, so they are skipped.
-    const byCompany = new Map<
-      string,
-      { measured: SummaryItem[]; notMeasured: SummaryItem[] }
-    >();
+    ctx: CycleContext,
+  ): void {
+    let measured = 0;
+    let notMeasured = 0;
 
     for (const record of records) {
       if (!record.bansheeRequestId) continue;
       const request = bansheeRequestById.get(record.bansheeRequestId);
       if (!request) continue;
 
-      const item: SummaryItem = {
+      const item: MeasurementSummaryItem = {
         serialNumber: request.serialNumber,
         bansheeName: request.name,
         measurementId: record.measurementId,
         status: record.status ?? ProceqStatus.UNMEASURED,
       };
 
-      const bucket = byCompany.get(request.companyId) ?? {
-        measured: [],
-        notMeasured: [],
-      };
       if (this.isMeasurementCompleted(record)) {
-        bucket.measured.push(item);
+        ctx.mapper.addMeasured(request.companyId, item);
+        measured++;
       } else {
-        bucket.notMeasured.push(item);
+        ctx.mapper.addNotMeasured(request.companyId, item);
+        notMeasured++;
       }
-      byCompany.set(request.companyId, bucket);
     }
 
-    if (byCompany.size === 0) return;
-
-    this.logger.log(
-      `Measurement notification: dispatching consolidated summary for ${byCompany.size} compan${byCompany.size === 1 ? 'y' : 'ies'}`,
-    );
-
-    const companies = [...byCompany.entries()];
-    const CONCURRENCY = 5;
-    for (let i = 0; i < companies.length; i += CONCURRENCY) {
-      const batch = companies.slice(i, i + CONCURRENCY);
-      await Promise.allSettled(
-        batch.map(async ([companyId, bucket]) => {
-          try {
-            // Hand the prepared payload to the communication layer, which owns
-            // plan validation, recipient resolution and the actual send.
-            await this.communicationService.shareProceqMeasurementInsights({
-              companyId,
-              measured: bucket.measured,
-              notMeasured: bucket.notMeasured,
-            });
-          } catch (error) {
-            const err = error as Error;
-            this.logger.error(
-              `Failed to send measurement summary email for company ${companyId}: ${err.message}`,
-            );
-          }
-        }),
-      );
-    }
-  }
-
-  /**
-   * Flow 2 — Status Change Trigger Notification.
-   *
-   * Emits one alert per Proceq record whose status changed (a single Banshee
-   * can have many Proceq entries, each evaluated independently), provided the
-   * Banshee has its alarm trigger enabled (`activateNotifications`). The
-   * previous/new status comparison is supplied by `bulkUpsertProceqData`, so no
-   * extra query is needed here; recipient resolution and sending are delegated
-   * to the communication layer.
-   */
-  private async handleStatusChangeNotification(
-    statusChanges: ProceqStatusChangeInfo[],
-    bansheeRequestById: Map<string, BansheeRequest>,
-  ): Promise<void> {
-    if (statusChanges.length === 0) return;
-
-    // Alarm-trigger validation — `activateNotifications` doubles as the alarm
-    // toggle (there is no separate field in the schema).
-    const alarmed = statusChanges.filter((change) => {
+    let changes = 0;
+    for (const change of statusChanges) {
       const request = bansheeRequestById.get(change.bansheeRequestId);
-      return !!request?.activateNotifications;
-    });
+      if (!request) continue;
 
-    if (alarmed.length === 0) {
-      this.logger.debug(
-        `Status change notification: ${statusChanges.length} status change(s) detected but none have alarm notifications enabled; nothing to notify`,
-      );
-      return;
+      ctx.mapper.addStatusChange({
+        companyId: request.companyId,
+        serialNumber: request.serialNumber,
+        bansheeName: request.name,
+        measurementId: change.measurementId,
+        previousStatus: change.previousStatus,
+        newStatus: change.newStatus,
+        // `activateNotifications` doubles as the alarm toggle (no separate
+        // field in the schema); the dispatcher applies it as the Flow 2 gate.
+        activateNotifications: !!request.activateNotifications,
+      });
+      changes++;
     }
 
-    this.logger.log(
-      `Status change notification: dispatching alerts for ${alarmed.length} status change(s)`,
-    );
-
-    const CONCURRENCY = 5;
-    for (let i = 0; i < alarmed.length; i += CONCURRENCY) {
-      const batch = alarmed.slice(i, i + CONCURRENCY);
-      await Promise.allSettled(
-        batch.map(async (change) => {
-          const request = bansheeRequestById.get(change.bansheeRequestId);
-          if (!request) return;
-
-          try {
-            await this.communicationService.shareProceqStatusChange({
-              companyId: request.companyId,
-              serialNumber: request.serialNumber,
-              bansheeName: request.name,
-              measurementId: change.measurementId,
-              previousStatus: change.previousStatus,
-              newStatus: change.newStatus,
-            });
-          } catch (error) {
-            const err = error as Error;
-            this.logger.error(
-              `Failed to send status change email for ${change.measurementId}: ${err.message}`,
-            );
-          }
+    if (measured + notMeasured + changes > 0) {
+      this.logger.log(
+        formatEvent(SyncEvent.NOTIFY_AGGREGATE, {
+          cycleId: ctx.cycleId,
+          measured,
+          notMeasured,
+          statusChanges: changes,
         }),
       );
     }

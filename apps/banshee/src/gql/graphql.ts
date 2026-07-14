@@ -671,6 +671,13 @@ export type Flavor = {
   name: Scalars['String']['output'];
 };
 
+export type GetProceqTokenStatusResponse = {
+  __typename?: 'GetProceqTokenStatusResponse';
+  canRefresh: Scalars['Boolean']['output'];
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
 export type Invitation = {
   __typename?: 'Invitation';
   companyId?: Maybe<Scalars['String']['output']>;
@@ -1463,6 +1470,7 @@ export type Query = {
   getBoltTypesOptions: Array<EnumOption>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
   getProceqStatus?: Maybe<Array<ProceqStatus>>;
+  getProceqTokenStatus: GetProceqTokenStatusResponse;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
   getPullTestAbortReasonOptions: Array<EnumOption>;
   getResults: Array<Result>;

@@ -459,16 +459,22 @@ export class ProceqSyncService {
     };
   }
 
-  /** Throws {@link ProceqCycleAbortedError} if the cycle has been aborted. */
+  /**
+   * Throws {@link ProceqCycleAbortedError} if the cycle has been aborted.
+   *
+   * The message and cause are derived from `signal.reason` so the log reflects
+   * the real abort source (watchdog timeout, app shutdown, or any explicit
+   * reason) rather than a fixed, potentially-misleading string.
+   */
   private throwIfAborted(
     signal: AbortSignal,
     context: ErrorContext = {},
   ): void {
     if (signal.aborted) {
-      throw new ProceqCycleAbortedError(
-        'Proceq cycle aborted by watchdog',
-        context,
-      );
+      const reason = signal.reason;
+      const message =
+        reason instanceof Error ? reason.message : 'Proceq cycle aborted';
+      throw new ProceqCycleAbortedError(message, context, { cause: reason });
     }
   }
 
@@ -530,7 +536,10 @@ export class ProceqSyncService {
         if (exportStatus === 'completed') {
           const downloadUrl = statusResponse.data.data.url;
           this.throwIfAborted(ctx.signal, { technician: email, exportId });
-          const downloadPath = await downloadAndSaveFile(downloadUrl);
+          const downloadPath = await downloadAndSaveFile(
+            downloadUrl,
+            ctx.signal,
+          );
           log.log(SyncEvent.DOWNLOAD, { exportId, path: downloadPath });
 
           await this.processExportArchive(

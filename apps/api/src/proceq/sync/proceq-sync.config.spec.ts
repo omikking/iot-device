@@ -47,7 +47,7 @@ describe('ProceqSyncConfigService (§5.5 configuration)', () => {
       );
     });
 
-    it('floors at 1 for zero/negative values', () => {
+    it('falls back to the default for zero/negative values', () => {
       expect(makeConfig({ PROCEQ_SYNC_WINDOW_SIZE: '0' }).getWindowSize()).toBe(
         5,
       );

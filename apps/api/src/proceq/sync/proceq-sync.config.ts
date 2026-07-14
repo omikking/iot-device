@@ -13,8 +13,9 @@ import {
  * (§5.5). All parsing/clamping rules live here so the scheduler stays free of
  * env-string handling and the effective values can be unit-tested in isolation:
  *
- * - `PROCEQ_SYNC_DISABLED` — treated as disabled unless explicitly `false`;
- *   `'true'`/`'1'` (and a missing value) mean disabled.
+ * - `PROCEQ_SYNC_DISABLED` — disabled by default (a missing value counts as
+ *   disabled). Only `'true'`/`'1'` keep it disabled; set it to `'false'`
+ *   (or `'0'`) to enable. Any other/unrecognized value is treated as enabled.
  * - `PROCEQ_SYNC_WINDOW_SIZE` — integer floored at 1; non-numeric/invalid falls
  *   back to the default.
  * - `PROCEQ_SYNC_INTERVAL_MINUTES` — integer clamped to 1..60; non-numeric/

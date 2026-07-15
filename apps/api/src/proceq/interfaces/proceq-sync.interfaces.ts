@@ -155,6 +155,12 @@ export interface SyncResult {
   newMeasurements: number;
   updatedMeasurements: number;
   failedBatches: number;
+  /**
+   * True when the technician was skipped because a sync for the same operator
+   * was already in flight (per-technician lock held). Distinguishes a skip
+   * from a genuine zero-work success in the cycle summary.
+   */
+  skipped?: boolean;
 }
 
 export interface BoltConstants {

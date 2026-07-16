@@ -43,8 +43,8 @@ export default function SignIn() {
       } else {
         const isAdmin = session.user.globalRole === Role.SandvikAdmin;
         const redirectTo = isAdmin
-          ? `${process.env.NEXT_PUBLIC_BANSHEE_URL}/administration-portal`
-          : `${process.env.NEXT_PUBLIC_BANSHEE_URL}/select-company`;
+          ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
+          : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
         router.push(redirectTo);
       }
     }

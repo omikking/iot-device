@@ -10,10 +10,11 @@ import {
   AvatarFallback,
   useIsMobile,
   useIsTablet,
+  useMobileNav,
 } from '@gsp/ui-banshee';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
-import { LucideUser } from 'lucide-react';
+import { LucideUser, Menu } from 'lucide-react';
 // TODO fix proper import
 import { ShoppingCart } from '../../../../packages/ui-banshee/src/components/svg/shopping-cart';
 import { signOut, useSession } from 'next-auth/react';
@@ -48,6 +49,7 @@ export const NavbarBanshee = () => {
   const isTablet = useIsTablet();
   const router = useCompanyRouter();
   const isCompact = isMobile || isTablet;
+  const mobileNav = useMobileNav();
   const pathname = usePathname();
   // Navigation items (same as sidebar)
   const params = useParams();
@@ -77,15 +79,26 @@ export const NavbarBanshee = () => {
   const newBansheeCount = cartStatsData?.cartItemsStats.newBanshee ?? 0;
   const recurringCount = cartStatsData?.cartItemsStats.serviceExisting ?? 0;
   const totalCount = cartStatsData?.cartItemsStats.total ?? 0;
-  const navItems = [
-    { title: 'Home', url: `/${companyId}/overview` },
-    { title: 'Banshee', url: `/${companyId}/banshee` },
-    { title: 'Scheduler', url: `/${companyId}/scheduler` },
-    { title: 'Events', url: `/${companyId}/events` },
-    { title: 'Site Information', url: `/${companyId}/siteInformation` },
-    { title: 'Template', url: `/${companyId}/template` },
-    { title: 'Contact Us', url: `/${companyId}/contactUs` },
-  ];
+  // Human-readable page title per route segment. Keyed by the path segment that
+  // follows the companyId (deepest known segment wins, e.g. banshee/dashboard).
+  const pageTitleBySegment: Record<string, string> = {
+    overview: 'Home',
+    banshee: 'Banshee',
+    dashboard: 'Dashboard',
+    scheduler: 'Scheduler',
+    events: 'Events',
+    siteInformation: 'Site Information',
+    template: 'Template',
+    contactUs: 'Contact Us',
+    cart: 'Cart',
+  };
+
+  // Segments after the companyId, e.g. `/acme/banshee/dashboard/123` -> ['banshee','dashboard','123'].
+  const routeSegments = pathname.split('/').filter(Boolean).slice(1);
+  const pageTitle = routeSegments.reduce(
+    (title, segment) => pageTitleBySegment[segment] ?? title,
+    '',
+  );
 
   //TODO Format date and time according to where the user is.
   const today = new Date()
@@ -117,39 +130,52 @@ export const NavbarBanshee = () => {
 
   return (
     <header className="ui-banshee-h-20 ui-banshee-mx-4 md:ui-banshee-mx-8 lg:ui-banshee-mx-16 ui-banshee-w-[calc(100%-2rem)] md:ui-banshee-w-[calc(100%-4rem)] lg:ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">
-      <nav className="ui-banshee-w-full ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
-        <Link href={`/${companyId}/overview`}>
-          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-1">
-            <SandvikLogo />
-            <div className="ui-banshee-h-6 ui-banshee-border-l ui-banshee-border-black ui-banshee-mx-1" />
-            <Headline variant="medium" color="foreground" as="h3" isBold>
-              BANSHEE
-            </Headline>
-          </div>
-        </Link>
+      <nav className="ui-banshee-relative ui-banshee-w-full ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
+        <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3">
+          {/* Mobile/Tablet: hamburger toggle for the off-canvas sidebar drawer */}
+          {isCompact && status === 'authenticated' && mobileNav && (
+            <button
+              type="button"
+              onClick={mobileNav.toggleMobile}
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileNav.openMobile}
+              aria-haspopup="dialog"
+              className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-5 hover:ui-banshee-text-main-black ui-banshee-rounded-md ui-banshee-p-1 ui-banshee-transition-colors focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-gold-primary"
+            >
+              <Menu size={24} />
+            </button>
+          )}
+          <Link href={`/${companyId}/overview`}>
+            <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-1">
+              <SandvikLogo />
+              {/* Wordmark hidden on mobile to make room for the centered page
+                  title; the sidebar drawer carries the wordmark there instead. */}
+              <div className="ui-banshee-hidden md:ui-banshee-block ui-banshee-h-6 ui-banshee-border-l ui-banshee-border-black ui-banshee-mx-1" />
+              <Headline
+                variant="medium"
+                color="foreground"
+                as="h3"
+                isBold
+                className="ui-banshee-hidden md:ui-banshee-block"
+              >
+                BANSHEE
+              </Headline>
+            </div>
+          </Link>
+        </div>
 
-        {/* Mobile/Tablet Navigation - Icons */}
-        {isCompact && status === 'authenticated' && (
-          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-2 md:ui-banshee-gap-4">
-            {navItems.map((item) => {
-              const isActive = pathname === item.url;
-              return (
-                <Link
-                  key={item.title}
-                  href={item.url}
-                  className={`ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-px-2 ui-banshee-py-1 ui-banshee-text-xs ui-banshee-rounded-md ui-banshee-transition-colors ${
-                    isActive
-                      ? 'ui-banshee-text-main-black ui-banshee-font-medium ui-banshee-border-b-2 ui-banshee-border-gold-primary ui-banshee-pb-1'
-                      : 'ui-banshee-text-neutral-5 hover:ui-banshee-text-main-black'
-                  }`}
-                  title={item.title}
-                >
-                  <Text color="foreground" variant="medium">
-                    {item.title}
-                  </Text>
-                </Link>
-              );
-            })}
+        {/* Current page title, centered and route-driven */}
+        {status === 'authenticated' && pageTitle && isCompact && (
+          <div className="ui-banshee-pointer-events-none ui-banshee-absolute ui-banshee-left-1/2 ui-banshee--translate-x-1/2 ui-banshee-max-w-[40%]">
+            <Headline
+              variant="small"
+              color="foreground"
+              as="h2"
+              isBold
+              className="ui-banshee-truncate ui-banshee-text-center"
+            >
+              {pageTitle}
+            </Headline>
           </div>
         )}
 

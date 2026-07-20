@@ -8,6 +8,7 @@ import { PanelLeft } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { useIsTablet } from '../../hooks/use-tablet';
 import { cn } from '../../lib/utils';
+import { useMobileNav } from '../sidebar/mobile-nav-context';
 import { Button } from './button';
 import { Input } from './input';
 import { Separator } from './separator';
@@ -79,7 +80,15 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
     const isCompact = isMobile || isTablet;
-    const [openMobile, setOpenMobile] = React.useState(false);
+
+    // When a MobileNavProvider is mounted higher in the tree (so an out-of-tree
+    // trigger such as the navbar hamburger can drive the drawer), defer the
+    // mobile open state to it. Otherwise fall back to local state so the
+    // sidebar still works standalone.
+    const mobileNav = useMobileNav();
+    const [_openMobile, _setOpenMobile] = React.useState(false);
+    const openMobile = mobileNav ? mobileNav.openMobile : _openMobile;
+    const setOpenMobile = mobileNav ? mobileNav.setOpenMobile : _setOpenMobile;
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.

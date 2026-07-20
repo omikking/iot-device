@@ -40,6 +40,7 @@ export * from './charts/bolt-locator';
 // Sidebar
 export * from './base/sidebar';
 export * from './sidebar/app-sidebar';
+export * from './sidebar/mobile-nav-context';
 //Icons
 export * from './svg/banshee-icon';
 export * from './svg/facebook-icon';

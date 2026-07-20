@@ -93,7 +93,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'ui-banshee-bg-neutral-1 ui-banshee-transition-colors ui-banshee-border-b ui-banshee-border-neutral-3 hover:ui-banshee-bg-main-white/50 ui-banshee-duration-100 data-[state=selected]:ui-banshee-neutral-2 ',
+      'ui-banshee-bg-neutral-1 ui-banshee-transition-colors ui-banshee-border-b ui-banshee-border-neutral-3 ui-banshee-duration-100 data-[state=selected]:ui-banshee-neutral-2 ',
       className,
     )}
     {...props}

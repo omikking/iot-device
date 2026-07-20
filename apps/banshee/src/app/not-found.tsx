@@ -13,8 +13,6 @@ export default function NotFound() {
     ? `${process.env.NEXT_PUBLIC_PORTAL_URL}/administration-portal`
     : `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-company`;
 
-  console.log('shlok redirect', redirectPath);
-
   return (
     <main className="ui-banshee-w-full ui-banshee-min-h-[calc(100vh-65px)] ui-banshee-flex ui-banshee-flex-col ui-banshee-m-auto ui-banshee-items-center ui-banshee-pt-24 ui-banshee-gap-16 ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto">
       <Headline as="h1" variant="xl" color="foreground">

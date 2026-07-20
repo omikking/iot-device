@@ -4,12 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const buttonVariants = cva(
-  'ui-banshee-font-sandvik-text ui-banshee-inline-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-whitespace-nowrap ui-banshee-rounded-sm ui-banshee-transition ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-pointer-events-none ui-banshee-border-neutral-3 disabled:ui-banshee-border-neutral-2',
+  'ui-banshee-font-sandvik-text ui-banshee-inline-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-whitespace-nowrap ui-banshee-rounded-sm ui-banshee-transition ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-pointer-events-none ui-banshee-border-neutral-3 disabled:ui-banshee-border-neutral-2 hover:-ui-banshee-translate-y-px active:ui-banshee-translate-y-px',
   {
     variants: {
       variant: {
         primary:
-          'ui-banshee-bg-blue-primary ui-banshee-text-main-white hover:ui-banshee-bg-blue-2 focus:ui-banshee-bg-blue-1',
+          'ui-banshee-bg-blue-primary ui-banshee-text-main-white',
         destructive:
           'ui-banshee-bg-destructive ui-banshee-text-destructive-foreground hover:ui-banshee-bg-destructive/90',
         // outline:

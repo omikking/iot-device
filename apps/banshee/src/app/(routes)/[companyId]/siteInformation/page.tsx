@@ -249,7 +249,7 @@ export default function SiteInformationPage({
           </Headline>
         </div>
 
-        <div className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-6 ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
+        <div className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-7 lg:ui-banshee-pr-0 ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
           <div className="ui-banshee-max-h-[20vh] ui-banshee-overflow-auto">
             <Table variant="border">
               <TableHeader>

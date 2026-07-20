@@ -81,7 +81,7 @@ export const buttonStyling = (variant: ButtonVariant = 'default') =>
     'ui-banshee-flex hover:ui-banshee-bg-main-white/50 ui-banshee-justify-between ui-banshee-items-center ui-banshee-w-full ui-banshee-px-4 ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none ui-banshee-transition ease-in-out ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none',
     variant === 'default'
       ? 'ui-banshee-h-12 ui-banshee-bg-main-white hover:ui-banshee-border-blue-primary focus:ui-banshee-border-blue-primary'
-      : 'ui-banshee-h-9 ui-banshee-bg-neutral-2',
+      : 'ui-banshee-h-9 ui-banshee-bg-neutral-1 hover:ui-banshee-bg-main-white/50',
   );
 
 const dropdownItemStyling =
@@ -338,14 +338,11 @@ const DropdownMultiSelectSearch = React.forwardRef<
               className={cn(
                 buttonStyling(variant),
                 isOpen && 'ui-banshee-rounded-b-none',
+                selectedItemIds.length > 0 && '!ui-banshee-bg-neutral-2',
               )}
             >
               {selectedItemIds.length === 0 ? (
                 <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5">
-                  <LucideFilter
-                    size={11}
-                    className="ui-banshee-text-neutral-5"
-                  />
                   <Text
                     variant="small"
                     color="foreground"
@@ -358,7 +355,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
                 <Text
                   variant="small"
                   color="foreground"
-                  className="ui-banshee-font-bold"
+                  className="ui-banshee-font-bold ui-banshee-truncate ui-banshee-min-w-0"
                 >
                   {getDisplayText()}
                 </Text>
@@ -367,7 +364,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
                 height={12}
                 width={12}
                 className={cn(
-                  'ui-banshee-transform ui-banshee-duration-200 ease-in-out ui-banshee-mt-0.5',
+                  'ui-banshee-transform ui-banshee-duration-200 ease-in-out ui-banshee-mt-0.5 ui-banshee-shrink-0',
                   isOpen && 'ui-banshee-rotate-180',
                 )}
               />
@@ -471,6 +468,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
     const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
       selectedId ? options?.find((item) => item.id === selectedId) : undefined,
     );
+    
 
     const handleClear = () => {
       setSelectedItem(undefined);
@@ -516,7 +514,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
               className={cn(
                 buttonStyling(variant),
                 isOpen && 'ui-banshee-rounded-b-none',
-                'ui-banshee-h-full ui-banshee-rounded'
+                'ui-banshee-h-full ui-banshee-rounded',
               )}
             >
               <Text

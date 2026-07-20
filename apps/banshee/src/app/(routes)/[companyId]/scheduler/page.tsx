@@ -618,7 +618,7 @@ export default function SchedulerPage({
   return (
     <>
       <SidebarInset>
-        <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen ui-banshee-p-6">
+        <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen ui-banshee-p-7 ui-banshee-pr-0">
           <div className="ui-banshee-flex ui-banshee-gap-3 ui-banshee-flex-col ui-banshee-bg-white ui-banshee-border-b">
             <Headline as="h1" variant="small" color="foreground">
               New Banshee
@@ -805,7 +805,7 @@ export default function SchedulerPage({
                           options={SELECT_OPTIONS}
                           selectedIds={selectedFilters}
                           onSelect={(ids) => setSelectedFilters(ids)}
-                          className="ui-banshee-w-full"
+                          className="ui-banshee-w-full !ui-banshee-bg-white !hover:ui-banshee-bg-main-white/50"
                         />
                       </TableHead>
                     </TableRow>

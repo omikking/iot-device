@@ -191,7 +191,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-8 ui-banshee-bg-main-white ui-banshee-w-full">
+      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-7 !ui-banshee-pr-0 ui-banshee-bg-main-white ui-banshee-w-full">
         <BansheePageFilters
           active={timeframe}
           setActive={setTimeframe}
@@ -232,7 +232,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
               className="!ui-banshee-mt-0 ui-banshee-px-2"
             >
               <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
-                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-8">
+                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center">
                   <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
                     Click and drag in the plot area to zoom in. Hold CTRL and
                     drag to pan

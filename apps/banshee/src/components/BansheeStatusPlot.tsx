@@ -174,7 +174,7 @@ export const BansheeStatusPlot = forwardRef<
   }
 
   return (
-    <div className="ui-banshee-px-4">
+    <div className="ui-banshee-px-4 ui-banshee-pb-8">
       <ChartLineLinear
         ref={chartRef}
         showAxis

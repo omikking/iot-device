@@ -128,14 +128,12 @@ export const ChartLineLinear = forwardRef<
   //   : [];
 
   const boundaryValues = hasBands
-  ? Array.from(
-      new Set(
-        ([] as number[]).concat(...bands.map((b) => [b.from, b.to]))
+    ? Array.from(
+        new Set(([] as number[]).concat(...bands.map((b) => [b.from, b.to]))),
       )
-    )
-      .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
-      .sort((a, b) => a - b)
-  : [];
+        .filter((v): v is number => v > (yMin ?? 0) && v < (yMax ?? 0))
+        .sort((a, b) => a - b)
+    : [];
   const bandMidpoints = new Map<number, string>();
   for (const band of bands) {
     const mid = (band.from + band.to) / 2;
@@ -146,6 +144,8 @@ export const ChartLineLinear = forwardRef<
     ? Math.min(...bands.map((b) => b.from - b.to))
     : 1;
   const yAxisInterval = minBandHeight / 2;
+  const getStatusLabel = (value: number) =>
+    bands.find((band) => value >= band.to && value <= band.from)?.label ?? '';
 
   const option: EChartsOption = {
     grid: {
@@ -170,11 +170,17 @@ export const ChartLineLinear = forwardRef<
       axisLabel: {
         show: showAxis,
         formatter: (value: number) => {
-          // Round to avoid floating-point comparison issues
           const rounded = Math.round(value * 1000) / 1000;
-          return bandMidpoints.get(rounded) ?? '';
+          const label = bandMidpoints.get(rounded) ?? '';
+
+          const words = label.split(' ');
+          if (words.length >= 2) {
+            return words.join('\n');
+          }
+
+          return label;
         },
-        fontSize: 12,
+        fontSize: 14,
         color: '#000000',
       },
       axisTick: { show: false },
@@ -200,14 +206,14 @@ export const ChartLineLinear = forwardRef<
         if (!validPoints.length) return '';
 
         const header = `<strong>${escapeHtml(String(validPoints[0].name ?? ''))}</strong><br/>`;
-    
+
         const body = validPoints
           .map((p) => {
             const marker = (p.marker as string) || '';
             const name = escapeHtml(p.seriesName ?? '');
-            const value = escapeHtml(String(p.value ?? ''));
+            const status = escapeHtml(getStatusLabel(Number(p.value)));
 
-            return `${marker} ${name}: ${value}`;
+            return `${marker} ${name}: ${status}`;
           })
           .join('<br/>');
 

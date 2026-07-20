@@ -37,10 +37,10 @@ export const BansheeInfoCard = () => {
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           <Headline variant="medium" color="foreground" as="h3" isBold className="ui-banshee-mb-2">
-            Banshee xCell
+            xCell Banshee
           </Headline>
           <p className="ui-banshee-text-sm ui-banshee-text-neutral-500">
-            This app is used to monitor and manage Banshee sensors out in the field. View real-time ground support status, historical data, and maintenance schedules all in an integrated dashboard.
+            xCell Banshee provides digital monitoring of consumed capacity for Sandvik MD and MDX Bolts. By enabling in-service testing and condition assessment of installed bolts, the solution delivers valuable insights into bolt performance and ground support effectiveness throughout the life of an excavation. 
           </p>
         </div>
       </div>

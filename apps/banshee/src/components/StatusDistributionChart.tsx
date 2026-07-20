@@ -10,6 +10,7 @@ type StatusCount = {
 };
 
 type ChartDataItem = {
+  legend: string;
   label: string;
   value: number;
   fill: string;
@@ -30,7 +31,7 @@ type ChartConfig = Record<string, ChartConfigItem>;
 
 export const StatusDistributionChart = ({
   statusCounts,
-  fetching=false,
+  fetching = false,
 }: {
   statusCounts: StatusCount[];
   fetching?: boolean;
@@ -48,6 +49,7 @@ export const StatusDistributionChart = ({
     () =>
       filteredCounts.map((item: StatusCount): ChartDataItem => {
         return {
+          legend: getStatusLabel(item.status),
           label: item.status,
           value: item.count,
           fill: getStatusColorHex(item.status),

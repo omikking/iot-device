@@ -358,7 +358,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        'ui-banshee-w-[4vw] ui-banshee-relative ui-banshee-flex ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background',
+        'ui-banshee-w-[4vw] ui-banshee-relative ui-banshee-flex ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background md:ui-banshee-pr-8 lg:ui-banshee-pr-16',
         'md:peer-data-[variant=inset]:ui-banshee-m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ui-banshee-ml-2 md:peer-data-[variant=inset]:ui-banshee-ml-0 md:peer-data-[variant=inset]:ui-banshee-rounded-xl md:peer-data-[variant=inset]:ui-banshee-shadow',
         className,
       )}

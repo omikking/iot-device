@@ -8,7 +8,7 @@ import { ChartConfig, ChartContainer, EChart } from './chart';
 import { escapeHtml } from '../../lib/utils';
 
 type DonutChartProps = {
-  chartData: { label: string; value: number; fill: string }[];
+  chartData: { label: string; value: number; fill: string; legend: string }[];
   chartConfig: ChartConfig;
   chartItems: {
     label: string;
@@ -35,14 +35,13 @@ export function ChartPieDonut({
       //   </div>`,
       formatter: (params: TopLevelFormatterParams) => {
         const p = Array.isArray(params) ? params[0] : params;
-    
+
         const value = Array.isArray(p.value)
           ? p.value.join(', ')
           : String(p.value ?? '');
-    
+
         return `<div style="padding:2px 4px">
-          <div>${escapeHtml(String(p.name ?? ''))}</div>
-          <div>${escapeHtml(value)}</div>
+          <div>${escapeHtml(String(p.name ?? ''))}: ${escapeHtml(value)}</div>
         </div>`;
       },
     },
@@ -52,7 +51,7 @@ export function ChartPieDonut({
         radius: ['55%', '85%'],
         center: ['50%', '50%'],
         data: chartData.map((d) => ({
-          name: d.label,
+          name: d.legend,
           value: d.value,
           itemStyle: { color: d.fill },
         })),
@@ -67,7 +66,7 @@ export function ChartPieDonut({
 
   return (
     <Card className="ui-banshee-w-min-[300px] ui-banshee-w-max-[900px] ui-banshee-w-auto ui-banshee-flex ui-banshee-flex-col ui-banshee-justify-center ui-banshee-bg-neutral-1 ui-banshee-border-none">
-      <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-justify-center">
+      <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-6">
         <CardContent className="ui-banshee-pb-0 ui-banshee-px-0">
           <ChartContainer
             config={chartConfig}
@@ -80,35 +79,37 @@ export function ChartPieDonut({
           </ChartContainer>
         </CardContent>
         <CardFooter className="ui-banshee-flex-col ui-banshee-gap-1 ui-banshee-py-0 ui-banshee-text-sm">
-          {chartItems.map((item) => (
-            <div
-              key={item.label}
-              className="ui-banshee-flex ui-banshee-flex-row ui-banshee-flex-1 ui-banshee-w-full ui-banshee-items-center ui-banshee-gap-4"
-            >
+          {chartItems.map((item) => {
+            return (
               <div
-                style={{ backgroundColor: item.color }}
-                className="ui-banshee-w-fit ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-rounded-[2px] ui-banshee-h-[18px] ui-banshee-px-4"
-              />
-              <div className="ui-banshee-flex-1">
-                <Text
-                  color="foreground"
-                  variant="small"
-                  className="ui-banshee-font-medium"
-                >
-                  {item.label}
-                </Text>
+                key={item.label}
+                className="ui-banshee-flex ui-banshee-flex-row ui-banshee-flex-1 ui-banshee-w-full ui-banshee-items-center ui-banshee-gap-4"
+              >
+                <div
+                  style={{ backgroundColor: item.color }}
+                  className="ui-banshee-w-fit ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-rounded-[2px] ui-banshee-h-[18px] ui-banshee-px-4"
+                />
+                <div className="ui-banshee-flex-1">
+                  <Text
+                    color="foreground"
+                    variant="medium"
+                    className="ui-banshee-font-medium"
+                  >
+                    {item.label}
+                  </Text>
+                </div>
+                <div className="ui-banshee-w-5">
+                  <Text
+                    color="foreground"
+                    variant="medium"
+                    className="ui-banshee-text-left"
+                  >
+                    {item.value}
+                  </Text>
+                </div>
               </div>
-              <div className="ui-banshee-w-5">
-                <Text
-                  color="foreground"
-                  variant="small"
-                  className="ui-banshee-text-left"
-                >
-                  {item.value}
-                </Text>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </CardFooter>
       </div>
     </Card>

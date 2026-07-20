@@ -227,7 +227,7 @@ export default function BansheeDashboardPage() {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-p-6 ui-banshee-mb-16 ui-banshee-bg-main-white ui-banshee-w-full">
+      <main className="ui-banshee-p-7 ui-banshee-pr-0 ui-banshee-mb-16 ui-banshee-bg-main-white ui-banshee-w-full">
         <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3 ui-banshee-mb-8">
           <div className="ui-banshee-w-9 ui-banshee-h-9 ui-banshee-rounded-full ui-banshee-bg-neutral-300" />
           <h1 className="ui-banshee-text-2xl ui-banshee-font-semibold ui-banshee-text-neutral-900">

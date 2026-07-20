@@ -13,7 +13,7 @@ function Avatar({
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        'ui-banshee-relative ui-banshee-flex ui-banshee-size-8 ui-banshee-shrink-0 ui-banshee-overflow-hidden ui-banshee-rounded-full',
+        'ui-banshee-relative ui-banshee-flex ui-banshee-size-12 ui-banshee-shrink-0 ui-banshee-overflow-hidden ui-banshee-rounded-full',
         className,
       )}
       {...props}
@@ -42,7 +42,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        'ui-banshee-bg-muted ui-banshee-flex ui-banshee-size-full ui-banshee-items-center ui-banshee-justify-center ui-banshee-rounded-full',
+        ' ui-banshee-bg-[#DDD3C1] ui-banshee-text-[#A68C5B] ui-banshee-font-medium ui-banshee-text-base ui-banshee-leading-none ui-banshee-flex ui-banshee-size-full ui-banshee-items-center ui-banshee-justify-center ui-banshee-rounded-full',
         className,
       )}
       {...props}

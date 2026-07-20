@@ -5,7 +5,6 @@ import {
   Avatar,
   Popover,
   Headline,
-  AvatarImage,
   PopoverContent,
   PopoverTrigger,
   AvatarFallback,
@@ -97,11 +96,12 @@ export const NavbarBanshee = () => {
     })
     .replace(/\//g, '.');
 
-  // const time = new Date().toLocaleTimeString('en-GB', {
-  // hour: '2-digit',
-  //minute: '2-digit',
-  //hour12: false,
-  //});
+  const userNameInitials = session?.user?.fullName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
 
   const [time, setTime] = useState('');
 
@@ -119,7 +119,7 @@ export const NavbarBanshee = () => {
     <header className="ui-banshee-h-20 ui-banshee-mx-4 md:ui-banshee-mx-8 lg:ui-banshee-mx-16 ui-banshee-w-[calc(100%-2rem)] md:ui-banshee-w-[calc(100%-4rem)] lg:ui-banshee-w-[calc(100%-8rem)] ui-banshee-flex ui-banshee-border-b ui-banshee-justify-between ui-banshee-border-gold-3 ui-banshee-bg-white">
       <nav className="ui-banshee-w-full ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
         <Link href={`/${companyId}/overview`}>
-          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-[10px]">
+          <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-1">
             <SandvikLogo />
             <div className="ui-banshee-h-6 ui-banshee-border-l ui-banshee-border-black ui-banshee-mx-1" />
             <Headline variant="medium" color="foreground" as="h3" isBold>
@@ -172,36 +172,36 @@ export const NavbarBanshee = () => {
                   sideOffset={29}
                   align="end"
                   alignOffset={-24}
+                   onOpenAutoFocus={(e) => e.preventDefault()}
                   className="ui-banshee-border-none ui-banshee-shadow-2xl ui-banshee-p-8 ui-banshee-pb-4 ui-banshee-min-w-64 ui-banshee-w-fit"
                 >
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
-                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       New Banshee Request
                     </p>
-                    <p className="ui-banshee-w-fit  ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {newBansheeCount}
                     </p>
                   </div>
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
-                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       Recurring Banshee Request
                     </p>
-                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {recurringCount}
                     </p>
                   </div>
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
-                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       Total Measurement Request
                     </p>
-                    <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                    <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {totalCount}
                     </p>
                   </div>
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-2 ui-banshee-flex-row-reverse ui-banshee-w-full">
                     <Button
                       variant="primary"
-                      type="button"
                       onClick={() => {
                         setIsCartOpen(false);
                         router.push('/cart');
@@ -224,8 +224,7 @@ export const NavbarBanshee = () => {
                 >
                   <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-4 ui-banshee-w-fit">
                     <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
+                      <AvatarFallback>{userNameInitials}</AvatarFallback>
                     </Avatar>
                     <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-4">
                       <div>
@@ -250,8 +249,12 @@ export const NavbarBanshee = () => {
                         {/* might be tailwind config that prefix is missing in the WEB 
                       but once this is in project BANSHEE it maybe be resolved */}
                         <Button
-                          className="!ui-banshee-p-0"
                           variant="outline"
+                          className="
+                            !ui-banshee-p-0
+                            hover:!ui-banshee-bg-transparent
+                            hover:-ui-banshee-translate-y-px
+                            active:ui-banshee-translate-y-px                          "
                           onClick={() => {
                             window.location.href = `${process.env.NEXT_PUBLIC_PORTAL_URL}/select-application/${companyId}`;
                           }}

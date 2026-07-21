@@ -33,6 +33,11 @@ input CreateHydraboltInput {
   minCalibrationFactor: Float!
 }
 
+type Query {
+  hydrabolts(since: DateTime): [Hydrabolt!]!
+  hydraboltByPartNumber(partNumber: String!): Hydrabolt
+}
+
 type Mutation {
   createHydrabolt(input: CreateHydraboltInput!): Hydrabolt!
 }

@@ -1,4 +1,4 @@
-import type { OpticboltSpectrum, OpticboltTestResultSummary } from '../types';
+import type { HydraboltRecord, OpticboltSpectrum, OpticboltTestResultSummary } from '../types';
 
 const GRAPHQL_URL =
   import.meta.env.VITE_GRAPHQL_URL?.trim() || 'http://localhost:3333/graphql';
@@ -121,6 +121,35 @@ export async function fetchOpticboltSpectrumsBySerialNumber(
     opticboltSpectrumsBySerialNumber: OpticboltSpectrum[];
   }>(GET_SPECTRUMS_BY_SERIAL_NUMBER, { serialNumber });
   return data.opticboltSpectrumsBySerialNumber;
+}
+
+const GET_HYDRABOLTS = `
+  query GetHydrabolts($since: DateTime) {
+    hydrabolts(since: $since) {
+      id
+      partNumber
+      drawingNumber
+      boltLength
+      description
+      numberOfFBG
+      positionOfFBGs
+      initialWavelength
+      elasticLimit
+      lowPlasticLimit
+      highPlasticLimit
+      maxCalibrationFactor
+      minCalibrationFactor
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export async function fetchHydrabolts(since?: string): Promise<HydraboltRecord[]> {
+  const data = await graphqlRequest<{
+    hydrabolts: HydraboltRecord[];
+  }>(GET_HYDRABOLTS, { since });
+  return data.hydrabolts;
 }
 
 

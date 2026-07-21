@@ -41,7 +41,7 @@ export default function TimeVsWavelengthChart({
 
   return (
     <Card className="min-h-[360px] flex flex-col sm:col-span-2">
-      <SectionTitle>Time vs Wavelength (all 9 FBGs)</SectionTitle>
+      <SectionTitle>Time vs Wavelength</SectionTitle>
 
       {loading ? (
         <div className="flex-1 flex items-center justify-center min-h-[300px]">
@@ -78,7 +78,7 @@ export default function TimeVsWavelengthChart({
                   value: 'Wavelength (nm)',
                   angle: -90,
                   position: 'insideLeft',
-                  offset: 12,
+                  offset: 10,
                   style: { fontSize: 11, fill: '#64748b' },
                 }}
               />

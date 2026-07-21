@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OpticboltTestResult, OpticboltSpectrum } from '@prisma/client';
 
@@ -67,6 +67,15 @@ export class OpticboltService {
   }
 
   async createWithSpectrums(input: any) {
+    const existing = await this.prisma.opticboltTestResult.findUnique({
+      where: { serialNumber: input.serialNumber },
+    });
+    if (existing) {
+      throw new ConflictException(
+        `An optic bolt test result with serial number "${input.serialNumber}" already exists.`,
+      );
+    }
+
     const result = await this.prisma.opticboltTestResult.create({
       data: {
         serialNumber: input.serialNumber,

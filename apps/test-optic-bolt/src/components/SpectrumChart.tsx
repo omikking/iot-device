@@ -64,10 +64,10 @@ export default function SpectrumChart({
                 tickCount={7}
                 tick={{ fontSize: 11, fill: '#64748b' }}
                 label={{
-                  value: 'Amplitude (intensity, counts)',
+                  value: 'Amplitude',
                   angle: -90,
                   position: 'insideLeft',
-                  offset: 12,
+                  offset: 6,
                   style: { fontSize: 11, fill: '#64748b' },
                 }}
               />

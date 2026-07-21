@@ -68,7 +68,7 @@ export function formatCommandResponse(view: DataView): CommandResponse {
   if (!view || view.byteLength === 0)
     return { code: null, label: "Empty response", success: false, fields: [] };
 
-  const resultCode = view.getInt8(0);
+  const resultCode = view.getInt8(5);
   const success = resultCode >= 0;
   const label = resultLabel(resultCode);
 

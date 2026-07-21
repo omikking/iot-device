@@ -108,7 +108,7 @@ export default function ConfigTab({ connected, onWriteConfig, onReadConfig }: Co
 
   function renderCurrentValue(c: ConfigItem) {
     if (c.writeOnly) return <span className="text-[10px] italic text-text-faint">write-only</span>;
-    if (c.readOnly) return <span className="text-[10px] italic text-text-faint">read-only</span>;
+    // if (c.readOnly) return <span className="text-[10px] italic text-text-faint">read-only</span>;
     const entry = currentValues[c.id];
     if (!entry) return <span className="text-[10px] text-text-faint">—</span>;
     if (entry.loading) return <span className="inline-block animate-spin max-w-4 text-accent">⏳</span>;

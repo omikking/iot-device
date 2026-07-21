@@ -15,7 +15,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@gsp/eslint-config": "workspace:*",
     "@gsp/typescript-config": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^20.19.0",

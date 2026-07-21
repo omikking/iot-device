@@ -401,6 +401,8 @@ export abstract class IQuery {
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
     hazards?: Nullable<BoltResult[]>;
+    hydrabolts?: Hydrabolt[];
+    hydraboltByPartNumber?: Nullable<Hydrabolt>;
     validateInvitation?: InvitationValidation;
     pendingInvitations?: Invitation[];
     pendingGlobalInvitations: Invitation[];

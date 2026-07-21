@@ -367,7 +367,7 @@ model CoffeeFlavor {
 
 model OpticboltTestResult {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  serialNumber  String   @map("serial_number") @db.VarChar(50)
+  serialNumber  String   @unique @map("serial_number") @db.VarChar(50)
   drawingNumber String?  @map("drawing_number") @db.VarChar(100)
   boltType      String?  @map("bolt_type") @db.VarChar(50)
   description   String?  @db.Text
@@ -415,7 +415,7 @@ model OpticboltSpectrum {
 
 model Hydrabolt {
   id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  partNumber           String   @map("part_number") @db.VarChar(100)
+  partNumber           String   @unique @map("part_number") @db.VarChar(100)
   drawingNumber        String?  @map("drawing_number") @db.VarChar(100)
   boltLength           Float    @map("bolt_length")
   description          String?  @db.Text

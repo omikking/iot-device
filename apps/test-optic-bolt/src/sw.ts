@@ -2,7 +2,7 @@
 
 import { precacheAndRoute } from 'workbox-precaching';
 import { saveToDB, loadFromDB, CACHE_KEYS } from './hooks/useIndexedDB';
-import { fetchOpticboltTestResults } from './api/graphql';
+import { fetchHydrabolts, fetchOpticboltTestResults } from './api/graphql';
 import type { OpticboltTestResultSummary } from './types';
 
 declare let self: ServiceWorkerGlobalScope & typeof globalThis;
@@ -46,6 +46,11 @@ async function performBackgroundSync() {
     const newOrUpdatedResults = await fetchOpticboltTestResults(since || undefined);
     console.log("newOrUpdatedResults",newOrUpdatedResults);
     
+    const newOrUpdatedHydrabolts = await fetchHydrabolts(since || undefined);
+    console.log("newOrUpdatedHydrabolts", newOrUpdatedHydrabolts);
+
+    let maxTimestamp = since ? new Date(since).getTime() : 0;
+
     if (newOrUpdatedResults.length > 0) {
       // 3. Load the existing cached results list from DB
       const existingResults = (await loadFromDB<OpticboltTestResultSummary[]>(CACHE_KEYS.testResults)) || [];
@@ -72,17 +77,28 @@ async function performBackgroundSync() {
       // 4. Save the updated list of results back to DB
       await saveToDB(CACHE_KEYS.testResults, combinedResults);
 
-      // 5. Update latest sync timestamp to the max updatedAt among the new/updated results
-      let maxTimestamp = since ? new Date(since).getTime() : 0;
       for (const res of newOrUpdatedResults) {
         const updatedTime = new Date(res.updatedAt).getTime();
         if (updatedTime > maxTimestamp) {
           maxTimestamp = updatedTime;
         }
       }
-      if (maxTimestamp > 0) {
-        await saveToDB(CACHE_KEYS.latestSyncTimestamp, new Date(maxTimestamp).toISOString());
+    }
+
+    if (newOrUpdatedHydrabolts.length > 0) {
+      for (const bolt of newOrUpdatedHydrabolts) {
+        const hydraboltCacheKey = CACHE_KEYS.hydrabolt(bolt.partNumber);
+        await saveToDB(hydraboltCacheKey, bolt, 'hydraboltStore');
+
+        const updatedTime = new Date(bolt.updatedAt).getTime();
+        if (updatedTime > maxTimestamp) {
+          maxTimestamp = updatedTime;
+        }
       }
+    }
+
+    if (maxTimestamp > (since ? new Date(since).getTime() : 0)) {
+      await saveToDB(CACHE_KEYS.latestSyncTimestamp, new Date(maxTimestamp).toISOString());
     }
 
     await broadcastSyncStatus('synced');
@@ -107,5 +123,4 @@ self.addEventListener('message', (event: any) => {
     
     event.waitUntil(performBackgroundSync());
   }
-});
- 
+}); 

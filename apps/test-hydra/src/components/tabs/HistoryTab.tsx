@@ -66,12 +66,13 @@ export default function HistoryTab({
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <SectionTitle>Measurement History</SectionTitle>
+          <SectionTitle>Measurement History (
+            <span className="text-xs text-text-muted">hex parsing to be discussed</span>)</SectionTitle>
           <Btn onClick={onLoadHistory} disabled={histLoading}>
             {histLoading ? "Downloading…" : "Download History"}
           </Btn>
         </div>
-
+        
         {meta && (
           <p className="text-xs text-text-muted mb-4">
             Storage: {meta.notUploaded} not uploaded / {meta.total} total · sectors{" "}
@@ -92,19 +93,19 @@ export default function HistoryTab({
         ) : (
           <>
             <div className="rounded-lg border border-border overflow-hidden">
-              <div className="grid grid-cols-[80px_1fr_100px] px-4 py-2 text-[10px] font-bold bg-surface-alt text-text-faint border-b border-border">
-                <span>SAMPLE ID</span>
+              <div className="grid grid-cols-[1fr] px-4 py-2 text-[10px] font-bold bg-surface-alt text-text-faint border-b border-border">
+                {/* <span>SAMPLE ID</span> */}
                 <span>HEX PREVIEW</span>
-                <span>SIZE</span>
+                {/* <span>SIZE</span> */}
               </div>
               {pageData.map((row, i) => (
                 <div
                   key={`${row.receivedAt}-${i}`}
-                  className="grid grid-cols-[80px_1fr_100px] px-4 py-2 text-xs border-b border-border last:border-0 font-mono"
+                  className="grid grid-cols-[1fr] px-4 py-2 text-xs border-b border-border last:border-0 font-mono"
                 >
-                  <span className="text-accent">{row.sampleId ?? "—"}</span>
+                  {/* <span className="text-accent">{row.sampleId ?? "—"}</span> */}
                   <span className="text-text-muted break-all">{row.hexPreview}</span>
-                  <span>{row.byteLength} B</span>
+                  {/* <span>{row.byteLength} B</span> */}
                 </div>
               ))}
             </div>

@@ -958,6 +958,8 @@ export type Query = {
   getRingPositionOptions: Array<EnumOption>;
   getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
+  hydraboltByPartNumber?: Maybe<Hydrabolt>;
+  hydrabolts: Array<Hydrabolt>;
   level: Level;
   levels: Array<Level>;
   location: Location;
@@ -1049,6 +1051,24 @@ export type QueryDriveArgs = {
  */
 export type QueryHazardsArgs = {
   companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryHydraboltByPartNumberArgs = {
+  partNumber: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryHydraboltsArgs = {
+  since?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 

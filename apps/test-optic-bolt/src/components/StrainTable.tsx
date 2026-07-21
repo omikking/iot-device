@@ -1,4 +1,4 @@
-import { Card, SectionTitle } from './ui';
+import { Card, SectionTitle, TableCell } from './ui';
 import type { OpticboltSpectrum } from '../types';
 
 interface StrainTableProps {
@@ -11,7 +11,7 @@ export default function StrainTable({ spectrums, loading = false }: StrainTableP
 
   return (
     <Card className="min-h-[300px] flex flex-col sm:col-span-2">
-      <SectionTitle>Strain Data (all 9 FBGs)</SectionTitle>
+      <SectionTitle>Strain Data</SectionTitle>
 
       {loading ? (
         <div className="flex-1 flex items-center justify-center min-h-[220px]">
@@ -57,27 +57,15 @@ export default function StrainTable({ spectrums, loading = false }: StrainTableP
                     key={spectrum.id || spectrum.fbgIndex}
                     className="hover:bg-slate-50 transition-colors duration-150"
                   >
-                    <td className="py-2.5 px-4 font-sans font-medium text-text">
+                    <TableCell className="text-left font-sans font-medium">
                       FBG {fbgNumber}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {peakInitial}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {peak20}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {peak100}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {s20}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {s100}
-                    </td>
-                    <td className="py-2.5 px-4 text-right text-text">
-                      {calibration}
-                    </td>
+                    </TableCell>
+                    <TableCell>{peakInitial}</TableCell>
+                    <TableCell>{peak20}</TableCell>
+                    <TableCell>{peak100}</TableCell>
+                    <TableCell>{s20}</TableCell>
+                    <TableCell>{s100}</TableCell>
+                    <TableCell>{calibration}</TableCell>
                   </tr>
                 );
               })}

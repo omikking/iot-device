@@ -41,3 +41,21 @@ export interface SpectrumChartPoint {
   wavelength: number;
   amplitude: number;
 }
+
+export interface HydraboltRecord {
+  id: string;
+  partNumber: string;
+  drawingNumber?: string | null;
+  boltLength: number;
+  description?: string | null;
+  numberOfFBG: number;
+  positionOfFBGs: number[];
+  initialWavelength: number[];
+  elasticLimit: number;
+  lowPlasticLimit: number;
+  highPlasticLimit: number;
+  maxCalibrationFactor: number;
+  minCalibrationFactor: number;
+  createdAt: string;
+  updatedAt: string;
+}

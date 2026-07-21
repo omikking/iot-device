@@ -41,7 +41,7 @@ export default function StrainVsLoadChart({
 
   return (
     <Card className="min-h-[360px] flex flex-col sm:col-span-2">
-      <SectionTitle>Strain vs Load (all 9 FBGs)</SectionTitle>
+      <SectionTitle>Strain vs Load</SectionTitle>
 
       {loading ? (
         <div className="flex-1 flex items-center justify-center min-h-[300px]">

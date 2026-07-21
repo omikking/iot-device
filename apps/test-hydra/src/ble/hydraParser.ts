@@ -53,7 +53,7 @@ export function parseMeta(v: DataView): MeasurementMeta {
 /** Best-effort preview of a measurement notification (COBS/protobuf payload). */
 export function parseMeasurementChunk(v: DataView): HydraMeasurement {
   const fullHex = hexDump(v);
-  const hexPreview = fullHex.length > 96 ? `${fullHex.slice(0, 96)}…` : fullHex;
+  const hexPreview = fullHex.length > 96 ? `${fullHex.slice(0, 96)}` : fullHex;
   let sampleId: number | null = null;
   if (v.byteLength >= 5 && v.getUint8(0) === 1) {
     sampleId = v.getUint32(1, true);

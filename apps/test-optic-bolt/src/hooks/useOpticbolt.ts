@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CACHE_KEYS, loadFromDB } from './useIndexedDB';
-import type { OpticboltSpectrum, OpticboltTestResultSummary, SerialOption } from '../types';
+import type { HydraboltRecord, OpticboltSpectrum, OpticboltTestResultSummary, SerialOption } from '../types';
 
 function toSerialOptions(results: OpticboltTestResultSummary[]): SerialOption[] {
   return Array.from(new Set(results.map((result) => result.serialNumber)))
@@ -17,6 +17,8 @@ export function useOpticbolt(isOnline: boolean) {
   const [spectrums, setSpectrums] = useState<OpticboltSpectrum[]>([]);
   const [loadingList, setLoadingList] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [hydraboltData, setHydraboltData] = useState<HydraboltRecord | null>(null);
+  const [loadingHydrabolt, setLoadingHydrabolt] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<'syncing' | 'synced' | 'error' | null>('synced');
 
@@ -73,6 +75,23 @@ export function useOpticbolt(isOnline: boolean) {
     [],
   );
 
+  const loadHydrabolt = useCallback(async (boltType: string | null | undefined) => {
+    if (!boltType) {
+      setHydraboltData(null);
+      return;
+    }
+    setLoadingHydrabolt(true);
+    try {
+      const cached = await loadFromDB<HydraboltRecord>(CACHE_KEYS.hydrabolt(boltType), 'hydraboltStore');
+      setHydraboltData(cached);
+    } catch (err) {
+      console.error('Failed to load hydrabolt data', err);
+      setHydraboltData(null);
+    } finally {
+      setLoadingHydrabolt(false);
+    }
+  }, []);
+
   // Listen for sync messages from the Service Worker
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -87,6 +106,9 @@ export function useOpticbolt(isOnline: boolean) {
             void loadTestResults();
             if (selectedSerialNumber) {
               void loadSpectrums(selectedSerialNumber);
+            }
+            if (selectedResult?.boltType) {
+              void loadHydrabolt(selectedResult.boltType);
             }
           }
         }
@@ -107,7 +129,7 @@ export function useOpticbolt(isOnline: boolean) {
         navigator.serviceWorker.removeEventListener('message', handleMessage);
       };
     }
-  }, [loadTestResults, loadSpectrums]);
+  }, [loadTestResults, loadSpectrums, loadHydrabolt,isOnline]);
 
   // Load initial results
   useEffect(() => {
@@ -119,6 +141,11 @@ export function useOpticbolt(isOnline: boolean) {
     void loadSpectrums(selectedSerialNumber);
   }, [selectedSerialNumber, loadSpectrums]);
 
+  // Load hydrabolt data when selected result changes
+  useEffect(() => {
+    void loadHydrabolt(selectedResult?.boltType);
+  }, [selectedResult?.boltType, loadHydrabolt]);
+
   const handleSerialChange = (serialNumber: string) => {
     setSelectedSerialNumber(serialNumber);
   };
@@ -129,8 +156,10 @@ export function useOpticbolt(isOnline: boolean) {
     selectedResult,
     spectrums,
     firstSpectrum,
+    hydraboltData,
     loadingList,
     loadingDetail,
+    loadingHydrabolt,
     error,
     syncStatus,
     handleSerialChange,
@@ -140,10 +169,10 @@ export function useOpticbolt(isOnline: boolean) {
         navigator.serviceWorker.controller.postMessage({ type: 'START_SYNC' });
       } else {
         void loadTestResults();
+        if (selectedResult?.boltType) {
+          void loadHydrabolt(selectedResult.boltType);
+        }
       }
     },
   };
-}
-
-
- 
+} 

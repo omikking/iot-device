@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { OpticboltService } from './opticbolt.service';
 import { CreateOpticboltTestResultWithSpectrumsInput } from './dto/create-opticbolt.input';
+import { UseGuards } from '@nestjs/common';
+import { JwtGuard } from 'src/auth/guard';
 
 @Resolver()
 // @UseGuards(JwtGuard)
@@ -19,6 +21,7 @@ export class OpticboltResolver {
     return this.opticboltService.findSpectrumsBySerialNumber(serialNumber);
   }
 
+  @UseGuards(JwtGuard)
   @Mutation('createOpticboltTestResultWithSpectrums')
   async createWithSpectrums(
     @Args('input')

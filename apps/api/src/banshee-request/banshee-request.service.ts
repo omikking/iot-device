@@ -640,7 +640,7 @@ export class BansheeRequestsService {
         ...(hasDateFilter && {
           proceqData: {
             some: {
-              createdTimestamp: {
+              updatedTimestamp: {
                 gte: filters.startDate,
                 lte: filters.endDate,
               },
@@ -664,7 +664,7 @@ export class BansheeRequestsService {
         proceqData: {
           where: hasDateFilter
             ? {
-                createdTimestamp: {
+                updatedTimestamp: {
                   gte: filters.startDate,
                   lte: filters.endDate,
                 },
@@ -673,9 +673,10 @@ export class BansheeRequestsService {
           select: {
             status: true,
             createdTimestamp: true,
+            updatedTimestamp: true,
           },
           orderBy: {
-            createdTimestamp: 'desc',
+            updatedTimestamp: 'desc',
           },
           take: 1,
         },

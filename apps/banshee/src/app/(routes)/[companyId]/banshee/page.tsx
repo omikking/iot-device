@@ -158,6 +158,43 @@ export default function Page({ params }: { params: { companyId: string } }) {
   }, [bansheeListError]);
 
   const bansheeRequests = data?.bansheeRequests?.results || [];
+
+  // Auto-select the smallest timeframe bucket that still contains data, based
+  // on the most recent proceqData.updatedTimestamp (the field the API filters
+  // on). Runs once on the initial unbounded ("ALL") load and never overrides a
+  // manual selection.
+  const didAutoSelectTimeframe = useRef(false);
+  useEffect(() => {
+    if (didAutoSelectTimeframe.current || fetching) return;
+    if (!bansheeRequests.length) return;
+
+    // proceqData is an array; scan every entry's updatedTimestamp.
+    const mostRecent = bansheeRequests.reduce<number>((max, req) => {
+      const entryMax = (req.proceqData ?? []).reduce<number>((m, pd) => {
+        if (!pd?.updatedTimestamp) return m;
+        const time = new Date(pd.updatedTimestamp).getTime();
+        return Number.isNaN(time) ? m : Math.max(m, time);
+      }, max);
+      return entryMax;
+    }, 0);
+
+    didAutoSelectTimeframe.current = true;
+    if (!mostRecent) return;
+
+    const daysAgo = (Date.now() - mostRecent) / (1000 * 60 * 60 * 24);
+    const bucket =
+      daysAgo <= 7
+        ? '7D'
+        : daysAgo <= 30
+          ? '1M'
+          : daysAgo <= 90
+            ? '3M'
+            : daysAgo <= 365
+              ? '1Y'
+              : 'ALL';
+
+    if (bucket !== 'ALL') setTimeframe(bucket);
+  }, [bansheeRequests, fetching]);
   const distributionData = distData?.bansheeStatusDistribution ?? null;
   const form = useForm<ShareFormValues>();
   const sharePlotList = useSharePlotList(companyId);
@@ -324,3 +361,4 @@ export default function Page({ params }: { params: { companyId: string } }) {
     </SidebarInset>
   );
 }
+ 

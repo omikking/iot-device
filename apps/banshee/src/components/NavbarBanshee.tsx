@@ -109,7 +109,7 @@ export const NavbarBanshee = () => {
     })
     .replace(/\//g, '.');
 
-  const userNameInitials = session?.user?.fullName
+  const userNameInitials = (session?.user?.fullName ?? '')
     .trim()
     .split(/\s+/)
     .slice(0, 2)

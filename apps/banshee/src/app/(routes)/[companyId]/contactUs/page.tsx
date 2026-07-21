@@ -233,7 +233,6 @@ export default function ContactUsPage({
                     <Text
                       variant="small"
                       color="foreground"
-                      className="ui-banshee-font-small"
                     >
                       {doc.name}
                     </Text>

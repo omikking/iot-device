@@ -8,7 +8,7 @@ import { ChartConfig, ChartContainer, EChart } from './chart';
 import { escapeHtml } from '../../lib/utils';
 
 type DonutChartProps = {
-  chartData: { label: string; value: number; fill: string; legend: string }[];
+  chartData: { label: string; value: number; fill: string; legend?: string }[];
   chartConfig: ChartConfig;
   chartItems: {
     label: string;
@@ -51,7 +51,7 @@ export function ChartPieDonut({
         radius: ['55%', '85%'],
         center: ['50%', '50%'],
         data: chartData.map((d) => ({
-          name: d.legend,
+          name: d.legend ?? d.label,
           value: d.value,
           itemStyle: { color: d.fill },
         })),

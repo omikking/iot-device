@@ -8,7 +8,7 @@ import { escapeHtml } from '../../lib/utils';
 
 type DonutChartProps = {
   footerText?: string;
-  locationInfo: string;
+  locationInfo?: string;
   chartData: { label: string; value: number; fill: string }[];
   chartConfig: ChartConfig;
   chartItems: {
@@ -34,15 +34,19 @@ export function SmallChartPieDonut({
       textStyle: { color: '#fff', fontSize: 12 },
       formatter: (params) => {
         const p = Array.isArray(params) ? params[0] : params;
+        const displayLocation = locationInfo ?? footerText ?? '';
+        const statusKey = String(p.name ?? '');
+        const materialLabel =
+          (chartConfig[statusKey]?.label as string) || statusKey;
         return `
           <div style="padding:6px 8px;">
             <div style="font-weight:600;margin-bottom:8px;">
-              ${escapeHtml(locationInfo || '')}
+              ${escapeHtml(displayLocation)}
             </div>
 
             <div>
               <span style="color:#999;">Material:</span>
-              <strong>${escapeHtml(String(p.name ?? ''))}</strong>
+              <strong>${escapeHtml(materialLabel)}</strong>
             </div>
 
             <div>

@@ -204,6 +204,28 @@ export function buildBansheeCsvFile(
   });
 }
 
+/**
+ * Builds the banshee CSV and triggers a browser download. No-op for empty data.
+ * Shared by every plot page so the export format/behaviour stays identical.
+ */
+export function downloadBansheeCsv(
+  data: readonly BansheeCsvRow[],
+  filename = 'banshee_data.csv',
+): void {
+  if (!data.length) return;
+
+  const csvFile = buildBansheeCsvFile(data, filename);
+  const url = URL.createObjectURL(csvFile);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export function downloadDataUrl(dataUrl: string, filename: string) {
   const link = document.createElement('a');
   link.href = dataUrl;

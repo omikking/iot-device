@@ -2,7 +2,11 @@
 
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
 import { ChartLineLinear, LoadingSpinner } from '@gsp/ui-banshee';
-import type { StatusBand, ChartLineLinearHandle } from '@gsp/ui-banshee';
+import type {
+  StatusBand,
+  ChartLineLinearHandle,
+  ChartLineDatum,
+} from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 
@@ -12,6 +16,8 @@ type BansheeRequestResult =
 // Export the handle type so page.tsx can use it
 export type BansheeStatusPlotHandle = {
   resetZoom: () => void;
+  zoomToRange: (start: number, end: number) => void;
+  getCurrentZoom: () => { start: number; end: number };
   downloadPng: (filename?: string) => void;
   getPngFile: (filename?: string) => Promise<File | undefined>;
 };
@@ -52,6 +58,16 @@ const convertToStatusPlotValue = (
   return 3;
 };
 
+// Maps the raw proceq status to the band label shown in the tooltip. Using the
+// actual status avoids mis-labelling points that land on a band boundary value.
+const STATUS_TO_BAND_LABEL: Record<string, string> = {
+  NOT_MEASURABLE: 'Not Measurable',
+  BROKEN: 'Broken',
+  HIGH_PLASTIC: 'High Plastic',
+  LOW_PLASTIC: 'Low Plastic',
+  ELASTIC: 'Elastic',
+};
+
 const statusBands: StatusBand[] = [
   { from: 4, to: 3, label: 'Broken', color: '#fb9596' },
   { from: 3, to: 2, label: 'High Plastic', color: '#fbc5ab' },
@@ -74,6 +90,11 @@ export const BansheeStatusPlot = forwardRef<
     resetZoom: () => {
       chartRef.current?.resetZoom();
     },
+    zoomToRange: (start: number, end: number) => {
+      chartRef.current?.zoomToRange(start, end);
+    },
+    getCurrentZoom: () =>
+      chartRef.current?.getCurrentZoom() ?? { start: 0, end: 100 },
     downloadPng: (filename = 'banshee_status_plot.png') => {
       const dataUrl = chartRef.current?.getPngDataUrl();
       if (dataUrl) downloadDataUrl(dataUrl, filename);
@@ -109,6 +130,7 @@ export const BansheeStatusPlot = forwardRef<
       bansheeId: string;
       dataKey: string;
       value: number;
+      statusLabel?: string;
     }[] = [];
 
     bansheeRequests.forEach((br) => {
@@ -124,7 +146,8 @@ export const BansheeStatusPlot = forwardRef<
 
         readings.forEach((r, idx) => {
           if (r.elongation == null) return;
-          const value = convertToStatusPlotValue(r.elongation, r.status ?? '');
+          const status = r.status ?? '';
+          const value = convertToStatusPlotValue(r.elongation, status);
           const timeLabel =
             readings.length > 1 ? `${dateStr} R${idx + 1}` : dateStr;
 
@@ -135,6 +158,7 @@ export const BansheeStatusPlot = forwardRef<
             bansheeId: br.id,
             dataKey,
             value,
+            statusLabel: STATUS_TO_BAND_LABEL[status],
           });
         });
       });
@@ -152,11 +176,11 @@ export const BansheeStatusPlot = forwardRef<
     });
 
     const data = uniqueTimes.map((time) => {
-      const row: { time: string; [key: string]: string | number } = { time };
+      const row: ChartLineDatum = { time };
       xEntries
         .filter((e) => e.time === time)
         .forEach((e) => {
-          row[e.dataKey] = e.value;
+          row[e.dataKey] = { value: e.value, status: e.statusLabel };
         });
       return row;
     });

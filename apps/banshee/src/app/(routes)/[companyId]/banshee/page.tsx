@@ -10,7 +10,7 @@ import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
 import { BansheeExportMenu } from '@/components/BansheeExportMenu';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
-import { buildBansheeCsvFile } from '@/libs/utils';
+import { downloadBansheeCsv } from '@/libs/utils';
 import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
 import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
@@ -203,18 +203,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
     data: BansheeRequestResult[],
     filename = 'banshee_data.csv',
   ) => {
-    if (!data.length) return;
-
-    const csvFile = buildBansheeCsvFile(data, filename);
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(csvFile);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadBansheeCsv(data, filename);
   };
 
   // Shares the plot list (CSV + PNG of the given plot) via email-as-PDF.

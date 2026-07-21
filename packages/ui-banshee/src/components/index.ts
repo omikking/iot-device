@@ -36,6 +36,7 @@ export * from './charts/donut-chart';
 export * from './charts/small-donut-chart';
 export * from './charts/line-chart';
 export * from './charts/data-line.chart';
+export * from './charts/use-chart-zoom';
 export * from './charts/bolt-locator';
 // Sidebar
 export * from './base/sidebar';

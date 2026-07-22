@@ -129,6 +129,12 @@ export default function Page({ params }: { params: { companyId: string } }) {
     [],
   );
 
+  // Reset the donut/location selection back to "total" whenever the timeframe
+  // (date range) filter changes.
+  useEffect(() => {
+    setActiveLocationDonut('total');
+  }, [timeframe]);
+
   const [{ data: distData, error: distError }] = useQuery({
     query: bansheeStatusDistributionQuery,
     variables: {

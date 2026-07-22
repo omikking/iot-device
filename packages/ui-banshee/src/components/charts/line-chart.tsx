@@ -146,7 +146,6 @@ export const ChartLineLinear = forwardRef<
   },
   ref,
 ) {
-  console.log('shlok data',data);
   const chartRef = useRef<ECharts | null>(null);
 
   useImperativeHandle(ref, () => ({

@@ -1,12 +1,15 @@
 import { clientsClaim, skipWaiting } from "workbox-core";
 import { ExpirationPlugin } from "workbox-expiration";
-import { matchPrecache, precacheAndRoute } from "workbox-precaching";
+import {
+  cleanupOutdatedCaches,
+  matchPrecache,
+  precacheAndRoute,
+} from "workbox-precaching";
 import { registerRoute, setDefaultHandler } from "workbox-routing";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
-import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
+import { CacheFirst, NetworkFirst } from "workbox-strategies";
 
-const SW_VERSION = "pull-test-v1";
-const GRAPHQL_CACHE = `${SW_VERSION}-graphql`;
+const SW_VERSION = "pull-test-v16";
 const RUNTIME_CACHE = `${SW_VERSION}-runtime`;
 const OFFLINE_URL = "/offline.html";
 const ORIGIN = location.origin;
@@ -15,111 +18,78 @@ const ORIGIN = location.origin;
 skipWaiting();
 clientsClaim();
 
-// Pre-cache core shell pages used for first paint and offline fallback.
+// Precache the offline fallback page.
 precacheAndRoute([
   { url: "/", revision: SW_VERSION },
-  { url: "/overview", revision: SW_VERSION },
   { url: OFFLINE_URL, revision: SW_VERSION },
 ]);
 
-// Hashes text input to build stable cache keys for GraphQL requests.
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(digest))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+// Remove outdated Workbox precaches that no longer match current revision data.
+cleanupOutdatedCaches();
+
+// Remove older versioned runtime caches to prevent storage growth over releases.
+self.addEventListener("activate", (event) => {
+  (event as Event & { waitUntil: (promise: Promise<unknown>) => void }).waitUntil(
+    (async () => {
+      const cacheNames = await caches.keys();
+      const obsoleteRuntimeCaches = cacheNames.filter(
+        (cacheName) =>
+          cacheName.endsWith("-runtime") && cacheName !== RUNTIME_CACHE,
+      );
+
+      await Promise.all(
+        obsoleteRuntimeCaches.map((cacheName) => caches.delete(cacheName)),
+      );
+    })(),
+  );
+});
+
+// Cache key for full navigation URL (path + query).
+function createNavigationCacheKey(request: Request): string {
+  const url = new URL(request.url);
+  return `${ORIGIN}/__sw__/pages${url.pathname}${url.search}`;
 }
 
-// Converts GraphQL GET/POST requests into deterministic synthetic cache keys.
-async function createGraphQLCacheKey(
-  request: Request
-): Promise<{ cacheable: boolean; key: Request | null }> {
-  const method = request.method.toUpperCase();
-  if (method !== "GET" && method !== "POST") {
-    return { cacheable: false, key: null };
+// Writes to cache should never break online responses.
+async function safeCachePut(
+  cache: Cache,
+  key: RequestInfo | URL,
+  response: Response,
+): Promise<void> {
+  try {
+    await cache.put(key, response);
+  } catch {
+    // Ignore non-cacheable response errors and keep serving network response.
   }
-
-  const input = method === "GET" ? request.url : await request.clone().text();
-  const hash = await sha256Hex(input);
-  return { cacheable: true, key: new Request(`/__sw__/graphql/${hash}`) };
 }
 
-// Builds a cache key that includes navigation path and query string.
-function createNavigationCacheKey(request: Request): Request {
+// Fallback key for navigation path only.
+function createNavigationPathOnlyCacheKey(request: Request): string {
   const url = new URL(request.url);
-  return new Request(`/__sw__/pages${url.pathname}${url.search}`);
+  return `${ORIGIN}/__sw__/pages${url.pathname}`;
 }
 
-// Builds a fallback cache key that uses only the navigation pathname.
-function createNavigationPathOnlyCacheKey(request: Request): Request {
-  const url = new URL(request.url);
-  return new Request(`/__sw__/pages${url.pathname}`);
+// Avoid caching auth/worker utility routes as page shells.
+function isCacheableNavigationPath(pathname: string): boolean {
+  return (
+    !pathname.startsWith("/api/auth") &&
+    pathname !== OFFLINE_URL &&
+    pathname !== "/workbox_pulltest.js" &&
+    pathname !== "/pullTestSW.js"
+  );
 }
 
-// Normalizes volatile RSC request params so cached responses are reusable.
-function createRscCacheKey(request: Request): Request {
+// Normalize volatile RSC params to improve cache hit rate.
+function createRscCacheKey(request: Request): string {
   const url = new URL(request.url);
-  // Next.js app-router adds volatile query params; strip them for stable cache hits.
+  // Next.js app-router adds volatile params; remove them for stable keys.
   url.searchParams.delete("_rsc");
   url.searchParams.delete("__nextDataReq");
   url.searchParams.delete("__flight__");
-  return new Request(`/__sw__/rsc${url.pathname}${url.search}`);
+  return `${ORIGIN}/__sw__/rsc${url.pathname}${url.search}`;
 }
 
-// Applies network-first caching for GraphQL with offline GraphQL-shaped fallback.
-async function handleGraphQL(request: Request): Promise<Response> {
-  const { cacheable, key } = await createGraphQLCacheKey(request);
-  const cache = await caches.open(GRAPHQL_CACHE);
-
-  try {
-    const networkResponse = await fetch(request);
-    if (cacheable && key && networkResponse.ok) {
-      await cache.put(key, networkResponse.clone());
-    }
-    return networkResponse;
-  } catch {
-    if (cacheable && key) {
-      const cached = await cache.match(key);
-      if (cached) {
-        return cached;
-      }
-    }
-
-    const offlineMessage = cacheable
-      ? "Offline and no cached GraphQL response is available."
-      : "Offline and this GraphQL operation is not cacheable.";
-
-    return new Response(
-      JSON.stringify({
-        data: null,
-        errors: [
-          {
-            message: offlineMessage,
-            extensions: { code: "OFFLINE" },
-          },
-        ],
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "X-Service-Worker": "graphql-offline-fallback",
-        },
-      }
-    );
-  }
-}
-
-// Matches GraphQL endpoint requests routed through the app API.
-const graphQLMatch = ({ url }: { url: URL }): boolean =>
-  url.pathname.endsWith("/graphql");
-
-// Handle GraphQL requests for both GET and POST methods.
-registerRoute(graphQLMatch, ({ request }) => handleGraphQL(request), "GET");
-registerRoute(graphQLMatch, ({ request }) => handleGraphQL(request), "POST");
-
-// Cache Next.js RSC payloads with normalized keys for better offline reuse.
+// Cache Next.js RSC payloads with normalized keys.
 registerRoute(
   ({ request, url }) => {
     if (request.method !== "GET" || url.origin !== ORIGIN) {
@@ -139,7 +109,7 @@ registerRoute(
     try {
       const networkResponse = await fetch(request);
       if (networkResponse.ok) {
-        await cache.put(key, networkResponse.clone());
+        await safeCachePut(cache, key, networkResponse.clone());
       }
       return networkResponse;
     } catch {
@@ -156,13 +126,13 @@ registerRoute(
   }
 );
 
-// Cache static assets with stale-while-revalidate for fast repeat loads.
+// Cache static assets first so JS/CSS/fonts/images are available offline.
 registerRoute(
   ({ url }) =>
     url.origin === ORIGIN &&
     (url.pathname.startsWith("/_next/static/") ||
       /\.(?:js|css|png|jpg|jpeg|gif|svg|webp|ico|woff2?)$/.test(url.pathname)),
-  new StaleWhileRevalidate({
+  new CacheFirst({
     cacheName: RUNTIME_CACHE,
     plugins: [
       new ExpirationPlugin({
@@ -174,32 +144,38 @@ registerRoute(
   })
 );
 
-// Use network-first for pages and progressively fall back to cached alternatives.
+// Use network-first for HTML navigation and fall back to cache offline.
 registerRoute(
   ({ request, url }) =>
     url.origin === ORIGIN && request.mode === "navigate",
   async ({ request }) => {
     const cache = await caches.open(RUNTIME_CACHE);
+    const requestUrl = new URL(request.url);
+    const canCacheNavigation = isCacheableNavigationPath(requestUrl.pathname);
     const navKey = createNavigationCacheKey(request);
     const navPathOnlyKey = createNavigationPathOnlyCacheKey(request);
 
     try {
       const fresh = await fetch(request);
-      if (fresh && fresh.status === 200) {
-        await cache.put(request, fresh.clone());
-        await cache.put(navKey, fresh.clone());
-        await cache.put(navPathOnlyKey, fresh.clone());
+      if (fresh && fresh.status === 200 && canCacheNavigation) {
+        await Promise.all([
+          safeCachePut(cache, request, fresh.clone()),
+          safeCachePut(cache, navKey, fresh.clone()),
+          safeCachePut(cache, navPathOnlyKey, fresh.clone()),
+        ]);
       }
       return fresh;
     } catch {
-      const cachedNav = await cache.match(navKey);
-      if (cachedNav) {
-        return cachedNav;
-      }
+      if (canCacheNavigation) {
+        const cachedNav = await cache.match(navKey);
+        if (cachedNav) {
+          return cachedNav;
+        }
 
-      const cachedPathOnlyNav = await cache.match(navPathOnlyKey);
-      if (cachedPathOnlyNav) {
-        return cachedPathOnlyNav;
+        const cachedPathOnlyNav = await cache.match(navPathOnlyKey);
+        if (cachedPathOnlyNav) {
+          return cachedPathOnlyNav;
+        }
       }
 
       const cached = await caches.match(request);
@@ -225,7 +201,7 @@ registerRoute(
   }
 );
 
-// Fallback strategy for unmatched same-origin GET requests.
+// Fallback for unmatched same-origin GET requests.
 setDefaultHandler(
   new NetworkFirst({
     cacheName: RUNTIME_CACHE,

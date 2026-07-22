@@ -10,6 +10,17 @@ export default function ServiceWorkerRegistration() {
       return;
     }
 
+    const handleControllerChange = () => {
+      if (sessionStorage.getItem("pull-test-sw-reloaded") === "1") {
+        return;
+      }
+
+      sessionStorage.setItem("pull-test-sw-reloaded", "1");
+      window.location.reload();
+    };
+
+    navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
+
     navigator.serviceWorker
       .register("/workbox_pulltest.js")
       .then((registration) => {
@@ -20,6 +31,13 @@ export default function ServiceWorkerRegistration() {
       .catch((error: unknown) => {
         console.error("Service worker registration failed", error);
       });
+
+    return () => {
+      navigator.serviceWorker.removeEventListener(
+        "controllerchange",
+        handleControllerChange,
+      );
+    };
   }, []);
 
   return null;

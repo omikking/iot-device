@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { Client, Provider, cacheExchange, fetchExchange } from 'urql';
 import { authExchange } from '@urql/exchange-auth';
 import { signOut, useSession } from 'next-auth/react';
+import { offlineBoltResultsExchange } from './offlineBoltResultsExchange';
 
 const useClient = () => {
   const { data: session } = useSession();
@@ -53,6 +54,7 @@ const useClient = () => {
             },
           };
         }),
+        offlineBoltResultsExchange,
         fetchExchange,
       ],
     });

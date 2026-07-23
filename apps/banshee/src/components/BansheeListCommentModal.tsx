@@ -19,7 +19,7 @@ export const BansheeListCommentModal = ({ isOpen, bansheeName, comment, onClose 
         <ModalHeader>
           <ModalTitle>Comment: {bansheeName || 'Unknown'}</ModalTitle>
         </ModalHeader>
-        <div className="ui-banshee-mt-4 ui-banshee-text-[#101010] ui-banshee-text-base ui-banshee-whitespace-pre-wrap">
+        <div className="ui-banshee-mt-4 ui-banshee-text-main-black ui-banshee-text-base ui-banshee-whitespace-pre-wrap">
           {comment || 'No comment available.'}
         </div>
       </ModalContent>

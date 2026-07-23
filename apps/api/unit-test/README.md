@@ -6,8 +6,8 @@ smoke cases in [`BANSHEE_SMOKE_TEST_CASES.md`](../../../BANSHEE_SMOKE_TEST_CASES
 (access control, hierarchy validation, order-item linking, batch fulfilment,
 status recomputation, measurement classification, etc.).
 
-**111 tests across 5 suites** — ~86% statement / 95% function coverage of the
-five Banshee services.
+**168 tests across 6 suites** — ~95% statement / 95% function coverage of the
+six Banshee services (request, cart, order, template, stats, communication).
 
 These tests run **in isolation** from the existing test setup:
 

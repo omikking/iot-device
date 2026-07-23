@@ -80,11 +80,11 @@ interface DetailRowProps {
 }
 
 const DetailRow = memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-[#E6E6E6] ui-banshee-text-base">
-    <div className="ui-banshee-font-medium ui-banshee-text-[#101010] ui-banshee-w-1/2 ui-banshee-pr-4">
+  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-neutral-2 ui-banshee-text-base">
+    <div className="ui-banshee-font-medium ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-pr-4">
       {label}
     </div>
-    <div className="ui-banshee-text-[#101010] ui-banshee-w-1/2 ui-banshee-break-words">
+    <div className="ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-break-words">
       {value ?? 'N/A'}
     </div>
   </div>
@@ -97,7 +97,7 @@ interface ActionBarProps {
 }
 
 const ActionBar = memo(({ onSettingsClick, onBarClick }: ActionBarProps) => (
-  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-[#101010]">
+  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-main-black">
     <Settings
       size={20}
       onClick={onSettingsClick}
@@ -153,7 +153,7 @@ export const BansheeDetailModal = memo(
 
       return boltType
         .split('_')
-        .map((part, index) => {
+        .map((part) => {
           // Keep numbers as-is
           if (/^\d+$/.test(part)) return part;
 

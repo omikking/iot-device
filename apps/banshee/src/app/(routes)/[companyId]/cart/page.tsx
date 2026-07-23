@@ -15,7 +15,6 @@ import {
 import { Text } from '@gsp/ui-banshee';
 import { CircleX, Menu } from 'lucide-react';
 import { Button } from 'node_modules/@gsp/ui-banshee/src/components/base/button';
-import { FormField } from '@/components/FormField';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { SubmitOrderFormValues } from '@/components/schemas/SubmitOrderFormSchema';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -263,7 +262,7 @@ export default function CartPage() {
   return (
     <SidebarInset>
       <main className="ui-banshee-flex ui-banshee-flex-col ui-banshee-min-h-screen">
-        <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
+        <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
           Order Summary
         </h1>
         <div className="ui-banshee-flex ui-banshee-flex-wrap ui-banshee-h-full">
@@ -406,11 +405,11 @@ export default function CartPage() {
                 as="h5"
                 variant="base"
                 color="foreground"
-                className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-[#DADADA]"
+                className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
               >
                 Order Summary
               </Headline>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   New Banshee Request
                 </p>
@@ -418,7 +417,7 @@ export default function CartPage() {
                   {newBansheeCount}
                 </p>
               </div>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   Recurring Banshee Request
                 </p>
@@ -426,7 +425,7 @@ export default function CartPage() {
                   {recurringCount}
                 </p>
               </div>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   Total Measurement Request
                 </p>
@@ -457,7 +456,7 @@ export default function CartPage() {
                         as="h5"
                         variant="base"
                         color="foreground"
-                        className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-[#DADADA]"
+                        className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
                       >
                         Attachments
                       </Headline>
@@ -511,7 +510,6 @@ export default function CartPage() {
                       size="small"
                       onClick={handleAddAttachmentButtonClick}
                       type="button"
-                      // className="ui-banshee-flex-1"
                     >
                       Attach file
                     </Button>

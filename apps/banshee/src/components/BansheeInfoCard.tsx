@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Headline } from '@gsp/ui-banshee';
-import bansheeImage from '../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+import bansheeImage from '../../../../packages/ui-banshee/src/images/banshee-xcell.webp';
 
 export const BansheeInfoCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);

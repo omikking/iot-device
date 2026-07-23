@@ -223,7 +223,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-7 !ui-banshee-pr-0 ui-banshee-bg-main-white ui-banshee-w-full">
+      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-py-7 ui-banshee-pl-7 ui-banshee-bg-main-white ui-banshee-w-full">
         <BansheePageFilters
           active={timeframe}
           setActive={setTimeframe}

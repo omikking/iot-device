@@ -163,8 +163,10 @@ type SchedulerBanshee = {
   location: string;
   totalElongation: number | null;
   lastMeasured: string;
+  lastMeasuredTs: number | null;
   period: number | null;
   dueDate: string;
+  dueDateTs: number | null;
   status: BansheeStatus;
   isOverdue: boolean;
   isSuggested: boolean;
@@ -202,12 +204,18 @@ const transformBansheeRequests = (
     const proceqStatus = latestProceqData?.status;
     const status = mapProceqStatusToColor(proceqStatus);
 
-    const lastMeasured = latestProceqData?.updatedTimestamp
-      ? new Date(latestProceqData.updatedTimestamp).toLocaleDateString('en-GB')
-      : '-';
-    const dueDate = latestProceqData?.dueDate
-      ? new Date(latestProceqData.dueDate).toLocaleDateString('en-GB')
-      : '-';
+    const lastMeasuredTs = latestProceqData?.updatedTimestamp
+      ? new Date(latestProceqData.updatedTimestamp).getTime()
+      : null;
+    const lastMeasured =
+      lastMeasuredTs != null
+        ? new Date(lastMeasuredTs).toLocaleDateString('en-GB')
+        : '-';
+    const dueDateTs = latestProceqData?.dueDate
+      ? new Date(latestProceqData.dueDate).getTime()
+      : null;
+    const dueDate =
+      dueDateTs != null ? new Date(dueDateTs).toLocaleDateString('en-GB') : '-';
     return {
       id: request.id,
       serialNumber: request.serialNumber ?? '-',
@@ -215,7 +223,9 @@ const transformBansheeRequests = (
       totalElongation,
       period: request.period ?? null,
       lastMeasured,
+      lastMeasuredTs,
       dueDate, // Not available in API
+      dueDateTs,
       status,
       isOverdue: false, // Not available in API
       isSuggested: false, // Not available in API
@@ -344,27 +354,20 @@ export default function SchedulerPage({
 
     if (sortConfig !== null) {
       sortable.sort((a, b) => {
-        let aValue: string | number =
-          a[sortConfig.key] == null
-            ? ''
-            : (a[sortConfig.key] as string | number);
+        // For date columns sort by the raw timestamp, not the localized
+        // display string (DD/MM/YYYY is not parseable by `new Date`).
+        const sortKey: keyof SchedulerBanshee =
+          sortConfig.key === 'dueDate'
+            ? 'dueDateTs'
+            : sortConfig.key === 'lastMeasured'
+              ? 'lastMeasuredTs'
+              : sortConfig.key;
 
-        let bValue: string | number =
-          b[sortConfig.key] == null
-            ? ''
-            : (b[sortConfig.key] as string | number);
+        const aValue: string | number =
+          a[sortKey] == null ? '' : (a[sortKey] as string | number);
 
-        if (sortConfig.key === 'dueDate' || sortConfig.key === 'lastMeasured') {
-          aValue =
-            aValue && typeof aValue !== 'boolean'
-              ? new Date(aValue).getTime()
-              : 0;
-
-          bValue =
-            bValue && typeof bValue !== 'boolean'
-              ? new Date(bValue).getTime()
-              : 0;
-        }
+        const bValue: string | number =
+          b[sortKey] == null ? '' : (b[sortKey] as string | number);
 
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
 
@@ -624,7 +627,7 @@ export default function SchedulerPage({
               New Banshee
             </Headline>
 
-            <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-[#F8F8F8] ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-[#DADADA]">
+            <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-neutral-1 ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-neutral-3">
               <div className="ui-banshee-flex-shrink-0">
                 <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
                   Quantity
@@ -634,7 +637,7 @@ export default function SchedulerPage({
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="20 (suggested quantity)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
@@ -646,7 +649,7 @@ export default function SchedulerPage({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name (optional)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 

@@ -75,6 +75,10 @@ const config: Omit<Config, 'content'> = {
         'orange-1': '#7D2300',
         'orange-2': '#FF824B',
         'orange-3': '#FFB991',
+
+        /* Avatar */
+        'avatar-bg': '#DDD3C1',
+        'avatar-text': '#A68C5B',
       },
     },
   },

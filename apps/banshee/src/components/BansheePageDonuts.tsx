@@ -224,7 +224,7 @@ export const BansheePageDonuts = ({
           <div
             ref={trackRef}
             onPointerDown={onTrackPointerDown}
-            className="ui-banshee-relative ui-banshee-h-[14px] ui-banshee-w-[200px] ui-banshee-border ui-banshee-border-[#E6E6E6] "
+            className="ui-banshee-relative ui-banshee-h-[14px] ui-banshee-w-[200px] ui-banshee-border ui-banshee-border-neutral-2 "
           >
             <div
               ref={thumbRef}
@@ -232,7 +232,7 @@ export const BansheePageDonuts = ({
               onPointerMove={onThumbPointerMove}
               onPointerUp={onThumbPointerUp}
               onPointerCancel={onThumbPointerUp}
-              className="ui-banshee-absolute ui-banshee-top-[2px] ui-banshee-left-[2px] ui-banshee-h-2 ui-banshee-bg-[#6F6F6F] ui-banshee-rounded-full ui-banshee-cursor-grab active:ui-banshee-cursor-grabbing"
+              className="ui-banshee-absolute ui-banshee-top-[2px] ui-banshee-left-[2px] ui-banshee-h-2 ui-banshee-bg-neutral-5 ui-banshee-rounded-full ui-banshee-cursor-grab active:ui-banshee-cursor-grabbing"
               style={{
                 width: `${MIN_THUMB_PX}px`,
                 touchAction: 'none',

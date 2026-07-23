@@ -201,7 +201,7 @@ export const NavbarBanshee = () => {
                    onOpenAutoFocus={(e) => e.preventDefault()}
                   className="ui-banshee-border-none ui-banshee-shadow-2xl ui-banshee-p-8 ui-banshee-pb-4 ui-banshee-min-w-64 ui-banshee-w-fit"
                 >
-                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       New Banshee Request
                     </p>
@@ -209,7 +209,7 @@ export const NavbarBanshee = () => {
                       {newBansheeCount}
                     </p>
                   </div>
-                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       Recurring Banshee Request
                     </p>
@@ -217,7 +217,7 @@ export const NavbarBanshee = () => {
                       {recurringCount}
                     </p>
                   </div>
-                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
+                  <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       Total Measurement Request
                     </p>

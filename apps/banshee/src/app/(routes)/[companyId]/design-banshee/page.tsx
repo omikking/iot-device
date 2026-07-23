@@ -65,7 +65,7 @@ import { useState } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/ConfirmModal';
-import bansheeImage from '../../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+import bansheeImage from '../../../../../../../packages/ui-banshee/src/images/banshee-xcell.webp';
 // import { Footer } from '@/components/Footer';
 
 type Technician = UserSchema;

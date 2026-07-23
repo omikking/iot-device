@@ -104,7 +104,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-7 !ui-banshee-pr-0 ui-banshee-bg-main-white ui-banshee-box-border">
+      <main className="md:ui-banshee-py-4 md:ui-banshee-pl-4 lg:ui-banshee-py-7 lg:ui-banshee-pl-7 ui-banshee-bg-main-white ui-banshee-box-border">
         <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
           <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-5 ui-banshee-gap-6">
             <BansheeInfoCard />

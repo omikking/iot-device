@@ -12,9 +12,9 @@ export default defineConfig({
       devOptions: { enabled: true },
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Hydra Client',
-        short_name: 'Hydra',
-        description: 'Sandvik TCSS Hydra (Optic Sensing Datalogger) — BLE configuration and measurements',
+        name: 'Hydra Local',
+        short_name: 'HL',
+        description: '',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

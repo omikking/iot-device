@@ -18,9 +18,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Optic Bolt Client',
-        short_name: 'Optic Bolt',
-        description: 'Sandvik TCSS Optic Bolt — test results and spectrum analysis',
+        name: 'Hydra Bolt Local',
+        short_name: 'HBL',
+        description: '',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

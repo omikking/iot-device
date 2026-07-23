@@ -12,9 +12,9 @@ export default defineConfig({
       devOptions: { enabled: true },
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Cyclops Client',
-        short_name: 'Cyclops',
-        description: 'Cyclops application',
+        name: 'Cyclops Local',
+        short_name: 'CL',
+        description: '',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

@@ -12,9 +12,9 @@ export default defineConfig({
       devOptions: { enabled: true },
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Professor Client',
-        short_name: 'Professor',
-        description: 'Sandvik TCSS Professor — BLE configuration and status',
+        name: 'Professor Local',
+        short_name: 'PL',
+        description: '',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

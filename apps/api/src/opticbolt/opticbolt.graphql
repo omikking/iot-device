@@ -74,6 +74,40 @@ input CreateOpticboltTestResultWithSpectrumsInput {
   spectrums: [CreateOpticboltSpectrumInput!]!
 }
 
+input UpdateOpticboltSpectrumInput {
+  fbgIndex: Int!
+  amplitude20: Float
+  wavelength20: Float
+  amplitude100: Float
+  wavelength100: Float
+  peakInitialNm: Float
+  peak20Nm: Float
+  peak100Nm: Float
+  strain20: Float
+  strain100: Float
+  load20: Float
+  load100: Float
+  time20Ms: Int
+  time100Ms: Int
+  calibrationFactor: Float
+}
+
+input UpdateOpticboltTestResultInput {
+  serialNumber: String
+  drawingNumber: String
+  boltType: String
+  description: String
+  testedAt: DateTime
+  testedBy: String
+  result: String
+  fibreCheck1: Boolean
+  fibreCheck2: Boolean
+  fibreCheck3: Boolean
+  psi20: Int
+  psi100: Int
+  spectrums: [UpdateOpticboltSpectrumInput!]
+}
+
 type Query {
   # GET all optic test result
   opticboltTestResults(since: DateTime): [OpticboltTestResult!]!
@@ -87,5 +121,16 @@ type Mutation {
   createOpticboltTestResultWithSpectrums(
     input: CreateOpticboltTestResultWithSpectrumsInput!
   ): OpticboltTestResult!
+
+  updateOpticboltTestResult(
+    serialNumber: String!
+    input: UpdateOpticboltTestResultInput!
+  ): OpticboltTestResult!
+
+  updateOpticboltSpectrum(
+    serialNumber: String!
+    fbgIndex: Int!
+    input: UpdateOpticboltSpectrumInput!
+  ): OpticboltSpectrum!
 }
  

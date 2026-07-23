@@ -33,6 +33,21 @@ input CreateHydraboltInput {
   minCalibrationFactor: Float!
 }
 
+input UpdateHydraboltInput {
+  partNumber: String
+  drawingNumber: String
+  boltLength: Float
+  description: String
+  numberOfFBG: Int
+  positionOfFBGs: [Float!]
+  initialWavelength: [Float!]
+  elasticLimit: Float
+  lowPlasticLimit: Float
+  highPlasticLimit: Float
+  maxCalibrationFactor: Float
+  minCalibrationFactor: Float
+}
+
 type Query {
   hydrabolts(since: DateTime): [Hydrabolt!]!
   hydraboltByPartNumber(partNumber: String!): Hydrabolt
@@ -40,4 +55,5 @@ type Query {
 
 type Mutation {
   createHydrabolt(input: CreateHydraboltInput!): Hydrabolt!
+  updateHydrabolt(partNumber: String!, input: UpdateHydraboltInput!): Hydrabolt!
 }

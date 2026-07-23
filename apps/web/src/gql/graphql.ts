@@ -488,8 +488,11 @@ export type Mutation = {
   updateCoffee: Coffee;
   updateCompany: Company;
   updateDrive: Drive;
+  updateHydrabolt: Hydrabolt;
   updateLevel: Level;
   updateLocation: Location;
+  updateOpticboltSpectrum: OpticboltSpectrum;
+  updateOpticboltTestResult: OpticboltTestResult;
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
@@ -803,6 +806,16 @@ export type MutationUpdateDriveArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationUpdateHydraboltArgs = {
+  input: UpdateHydraboltInput;
+  partNumber: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationUpdateLevelArgs = {
   id: Scalars['String']['input'];
   updateLevelInput: UpdateLevelInput;
@@ -816,6 +829,27 @@ export type MutationUpdateLevelArgs = {
 export type MutationUpdateLocationArgs = {
   id: Scalars['String']['input'];
   updateLocationInput: UpdateLocationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateOpticboltSpectrumArgs = {
+  fbgIndex: Scalars['Int']['input'];
+  input: UpdateOpticboltSpectrumInput;
+  serialNumber: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateOpticboltTestResultArgs = {
+  input: UpdateOpticboltTestResultInput;
+  serialNumber: Scalars['String']['input'];
 };
 
 
@@ -1274,6 +1308,21 @@ export type UpdateDriveInput = {
   driveName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateHydraboltInput = {
+  boltLength?: InputMaybe<Scalars['Float']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  drawingNumber?: InputMaybe<Scalars['String']['input']>;
+  elasticLimit?: InputMaybe<Scalars['Float']['input']>;
+  highPlasticLimit?: InputMaybe<Scalars['Float']['input']>;
+  initialWavelength?: InputMaybe<Array<Scalars['Float']['input']>>;
+  lowPlasticLimit?: InputMaybe<Scalars['Float']['input']>;
+  maxCalibrationFactor?: InputMaybe<Scalars['Float']['input']>;
+  minCalibrationFactor?: InputMaybe<Scalars['Float']['input']>;
+  numberOfFBG?: InputMaybe<Scalars['Int']['input']>;
+  partNumber?: InputMaybe<Scalars['String']['input']>;
+  positionOfFBGs?: InputMaybe<Array<Scalars['Float']['input']>>;
+};
+
 /**
  * UpdateLevelInput
  * Define the input fields to update an existing level
@@ -1290,6 +1339,40 @@ export type UpdateLevelInput = {
  */
 export type UpdateLocationInput = {
   locationName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateOpticboltSpectrumInput = {
+  amplitude20?: InputMaybe<Scalars['Float']['input']>;
+  amplitude100?: InputMaybe<Scalars['Float']['input']>;
+  calibrationFactor?: InputMaybe<Scalars['Float']['input']>;
+  fbgIndex: Scalars['Int']['input'];
+  load20?: InputMaybe<Scalars['Float']['input']>;
+  load100?: InputMaybe<Scalars['Float']['input']>;
+  peak20Nm?: InputMaybe<Scalars['Float']['input']>;
+  peak100Nm?: InputMaybe<Scalars['Float']['input']>;
+  peakInitialNm?: InputMaybe<Scalars['Float']['input']>;
+  strain20?: InputMaybe<Scalars['Float']['input']>;
+  strain100?: InputMaybe<Scalars['Float']['input']>;
+  time20Ms?: InputMaybe<Scalars['Int']['input']>;
+  time100Ms?: InputMaybe<Scalars['Int']['input']>;
+  wavelength20?: InputMaybe<Scalars['Float']['input']>;
+  wavelength100?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type UpdateOpticboltTestResultInput = {
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  drawingNumber?: InputMaybe<Scalars['String']['input']>;
+  fibreCheck1?: InputMaybe<Scalars['Boolean']['input']>;
+  fibreCheck2?: InputMaybe<Scalars['Boolean']['input']>;
+  fibreCheck3?: InputMaybe<Scalars['Boolean']['input']>;
+  psi20?: InputMaybe<Scalars['Int']['input']>;
+  psi100?: InputMaybe<Scalars['Int']['input']>;
+  result?: InputMaybe<Scalars['String']['input']>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  spectrums?: InputMaybe<Array<UpdateOpticboltSpectrumInput>>;
+  testedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  testedBy?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePasswordInput = {

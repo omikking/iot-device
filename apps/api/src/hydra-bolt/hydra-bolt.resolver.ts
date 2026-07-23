@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { HydraBoltService } from './hydra-bolt.service';
 import { CreateHydraboltInput } from './dto/create-hydrabolt.input';
+import { UpdateHydraboltInput } from './dto/update-hydrabolt.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/guard';
 
@@ -22,5 +23,14 @@ export class HydraBoltResolver {
   @Mutation('createHydrabolt')
   async create(@Args('input') input: CreateHydraboltInput) {
     return this.hydraBoltService.create(input);
+  }
+
+  @UseGuards(JwtGuard)
+  @Mutation('updateHydrabolt')
+  async update(
+    @Args('partNumber') partNumber: string,
+    @Args('input') input: UpdateHydraboltInput,
+  ) {
+    return this.hydraBoltService.update(partNumber, input);
   }
 }

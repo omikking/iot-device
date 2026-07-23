@@ -210,6 +210,21 @@ export class CreateHydraboltInput {
     minCalibrationFactor: number;
 }
 
+export class UpdateHydraboltInput {
+    partNumber?: Nullable<string>;
+    drawingNumber?: Nullable<string>;
+    boltLength?: Nullable<number>;
+    description?: Nullable<string>;
+    numberOfFBG?: Nullable<number>;
+    positionOfFBGs?: Nullable<number[]>;
+    initialWavelength?: Nullable<number[]>;
+    elasticLimit?: Nullable<number>;
+    lowPlasticLimit?: Nullable<number>;
+    highPlasticLimit?: Nullable<number>;
+    maxCalibrationFactor?: Nullable<number>;
+    minCalibrationFactor?: Nullable<number>;
+}
+
 export class CreateInvitationInput {
     email: string;
     companyId: string;
@@ -282,6 +297,40 @@ export class CreateOpticboltTestResultWithSpectrumsInput {
     psi20?: Nullable<number>;
     psi100?: Nullable<number>;
     spectrums: CreateOpticboltSpectrumInput[];
+}
+
+export class UpdateOpticboltSpectrumInput {
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+}
+
+export class UpdateOpticboltTestResultInput {
+    serialNumber?: Nullable<string>;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt?: Nullable<DateTime>;
+    testedBy?: Nullable<string>;
+    result?: Nullable<string>;
+    fibreCheck1?: Nullable<boolean>;
+    fibreCheck2?: Nullable<boolean>;
+    fibreCheck3?: Nullable<boolean>;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    spectrums?: Nullable<UpdateOpticboltSpectrumInput[]>;
 }
 
 export class RequestPasswordResetInput {
@@ -437,6 +486,7 @@ export abstract class IMutation {
     updateDrive?: Drive;
     removeDrive?: Drive;
     createHydrabolt?: Hydrabolt;
+    updateHydrabolt?: Hydrabolt;
     createInvitation?: InvitationResponse;
     createGlobalInvitation?: InvitationResponse;
     completeInvitation?: User;
@@ -449,6 +499,8 @@ export abstract class IMutation {
     updateLocation?: Location;
     removeLocation?: Location;
     createOpticboltTestResultWithSpectrums?: OpticboltTestResult;
+    updateOpticboltTestResult?: OpticboltTestResult;
+    updateOpticboltSpectrum?: OpticboltSpectrum;
     requestPasswordReset?: boolean;
     validateResetToken?: boolean;
     confirmPasswordReset?: boolean;

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OpticboltTestResult, OpticboltSpectrum } from '@prisma/client';
 
@@ -44,7 +48,7 @@ export class OpticboltService {
       where: since
         ? {
             updatedAt: {
-              gt: since,
+              gte: new Date(since.getTime() + 1),
             },
           }
         : undefined,
@@ -99,5 +103,98 @@ export class OpticboltService {
       },
     });
     return this.mapTestResultDecimals(result);
+  }
+
+  async updateWithSpectrums(serialNumber: string, input: any) {
+    const existing = await this.prisma.opticboltTestResult.findUnique({
+      where: { serialNumber },
+    });
+    if (!existing) {
+      throw new NotFoundException(
+        `Optic bolt test result with serial number "${serialNumber}" not found.`,
+      );
+    }
+
+    if (input.serialNumber && input.serialNumber !== existing.serialNumber) {
+      const conflict = await this.prisma.opticboltTestResult.findUnique({
+        where: { serialNumber: input.serialNumber },
+      });
+      if (conflict) {
+        throw new ConflictException(
+          `An optic bolt test result with serial number "${input.serialNumber}" already exists.`,
+        );
+      }
+    }
+
+    const { spectrums, ...rest } = input;
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      if (spectrums) {
+        // Delete all old spectrums
+        await tx.opticboltSpectrum.deleteMany({
+          where: { testResultId: existing.id },
+        });
+      }
+
+      return tx.opticboltTestResult.update({
+        where: { serialNumber },
+        data: {
+          ...rest,
+          spectrums: spectrums
+            ? {
+                create: spectrums,
+              }
+            : undefined,
+        },
+        include: {
+          spectrums: true,
+        },
+      });
+    });
+
+    return this.mapTestResultDecimals(result);
+  }
+
+  async updateSpectrumBySerialAndFbg(
+    serialNumber: string,
+    fbgIndex: number,
+    input: any,
+  ) {
+    const testResult = await this.prisma.opticboltTestResult.findUnique({
+      where: { serialNumber },
+    });
+    if (!testResult) {
+      throw new NotFoundException(
+        `Optic bolt test result with serial number "${serialNumber}" not found.`,
+      );
+    }
+
+    const existingSpectrum = await this.prisma.opticboltSpectrum.findUnique({
+      where: {
+        testResultId_fbgIndex: {
+          testResultId: testResult.id,
+          fbgIndex,
+        },
+      },
+    });
+    if (!existingSpectrum) {
+      throw new NotFoundException(
+        `Spectrum with FBG index ${fbgIndex} under serial number "${serialNumber}" not found.`,
+      );
+    }
+
+    const { fbgIndex: _, ...dataToUpdate } = input;
+
+    const updatedSpectrum = await this.prisma.opticboltSpectrum.update({
+      where: {
+        testResultId_fbgIndex: {
+          testResultId: testResult.id,
+          fbgIndex,
+        },
+      },
+      data: dataToUpdate,
+    });
+
+    return this.mapSpectrumDecimals(updatedSpectrum);
   }
 }

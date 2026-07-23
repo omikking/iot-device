@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateHydraboltInput } from './dto/create-hydrabolt.input';
 
@@ -11,7 +15,7 @@ export class HydraBoltService {
       where: since
         ? {
             updatedAt: {
-              gt: since,
+              gte: new Date(since.getTime() + 1),
             },
           }
         : undefined,
@@ -51,6 +55,33 @@ export class HydraBoltService {
         maxCalibrationFactor: input.maxCalibrationFactor,
         minCalibrationFactor: input.minCalibrationFactor,
       },
+    });
+  }
+
+  async update(partNumber: string, input: any) {
+    const existing = await this.prisma.hydrabolt.findUnique({
+      where: { partNumber },
+    });
+    if (!existing) {
+      throw new NotFoundException(
+        `Hydra bolt with part number "${partNumber}" not found.`,
+      );
+    }
+
+    if (input.partNumber && input.partNumber !== existing.partNumber) {
+      const conflict = await this.prisma.hydrabolt.findUnique({
+        where: { partNumber: input.partNumber },
+      });
+      if (conflict) {
+        throw new ConflictException(
+          `A hydra bolt with part number "${input.partNumber}" already exists.`,
+        );
+      }
+    }
+
+    return this.prisma.hydrabolt.update({
+      where: { partNumber },
+      data: input,
     });
   }
 }

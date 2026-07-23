@@ -1,6 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { OpticboltService } from './opticbolt.service';
 import { CreateOpticboltTestResultWithSpectrumsInput } from './dto/create-opticbolt.input';
+import {
+  UpdateOpticboltTestResultInput,
+  UpdateOpticboltSpectrumInput,
+} from './dto/update-opticbolt.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/guard';
 
@@ -28,5 +32,28 @@ export class OpticboltResolver {
     input: CreateOpticboltTestResultWithSpectrumsInput,
   ) {
     return this.opticboltService.createWithSpectrums(input);
+  }
+
+  @UseGuards(JwtGuard)
+  @Mutation('updateOpticboltTestResult')
+  async updateTestResult(
+    @Args('serialNumber') serialNumber: string,
+    @Args('input') input: UpdateOpticboltTestResultInput,
+  ) {
+    return this.opticboltService.updateWithSpectrums(serialNumber, input);
+  }
+
+  @UseGuards(JwtGuard)
+  @Mutation('updateOpticboltSpectrum')
+  async updateSpectrum(
+    @Args('serialNumber') serialNumber: string,
+    @Args('fbgIndex') fbgIndex: number,
+    @Args('input') input: UpdateOpticboltSpectrumInput,
+  ) {
+    return this.opticboltService.updateSpectrumBySerialAndFbg(
+      serialNumber,
+      fbgIndex,
+      input,
+    );
   }
 }

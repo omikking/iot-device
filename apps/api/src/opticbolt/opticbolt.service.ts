@@ -183,7 +183,8 @@ export class OpticboltService {
       );
     }
 
-    const { fbgIndex: _, ...dataToUpdate } = input;
+    const dataToUpdate = { ...input };
+    delete dataToUpdate.fbgIndex;
 
     const updatedSpectrum = await this.prisma.opticboltSpectrum.update({
       where: {

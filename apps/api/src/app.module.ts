@@ -29,6 +29,8 @@ import { BansheeTemplateModule } from './banshee-template/banshee-template.modul
 import { BansheeCartModule } from './banshee-cart/banshee-cart.module';
 import { BansheeOrderModule } from './banshee-order/banshee-order.module';
 import { BansheeCommmunicationModule } from './banshee-communication/banshee-communication.module';
+import { OpticboltModule } from './opticbolt/opticbolt.module';
+import { HydraBoltModule } from './hydra-bolt/hydra-bolt.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
@@ -66,6 +68,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     BansheeCartModule,
     BansheeOrderModule,
     BansheeCommmunicationModule,
+    OpticboltModule,
+    HydraBoltModule,
   ],
   providers: [DateScalar],
 })

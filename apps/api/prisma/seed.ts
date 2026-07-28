@@ -1,3 +1,4 @@
+
 import {
   PrismaClient,
   GlobalRole,
@@ -11,6 +12,10 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as argon from 'argon2';
+import {
+  OPTICBOLT_72_001_SPECTRUMS,
+  OPTICBOLT_72_001_TEST_RESULT,
+} from './opticbolt-72-001.seed';
 
 const prisma = new PrismaClient();
 
@@ -60,6 +65,10 @@ async function main() {
   const boltResults = await generateBoltResults(locations, technicianUsers);
   console.log(`✅ Created ${boltResults.length} bolt results`);
 
+  // Generate optic bolt test results
+  const opticboltResults = await generateOpticboltTestResults();
+  console.log(`✅ Created ${opticboltResults.length} optic bolt test results`);
+
   console.log('✅ Seeding complete!');
   printLoginInstructions();
 }
@@ -86,6 +95,7 @@ async function cleanup() {
 
   // Delete data in reverse order of dependencies
   await prisma.$transaction([
+    prisma.opticboltTestResult.deleteMany(),
     prisma.boltResult.deleteMany(),
     prisma.location.deleteMany(),
     prisma.drive.deleteMany(),
@@ -839,6 +849,113 @@ async function generateBoltResults(locations: any[], technicianUsers: any[]) {
   return boltResults;
 }
 
+async function generateOpticboltTestResults() {
+  const results = [];
+
+  const realWorldResult = await prisma.opticboltTestResult.create({
+    data: {
+      id: OPTICBOLT_72_001_TEST_RESULT.id,
+      serialNumber: OPTICBOLT_72_001_TEST_RESULT.serialNumber,
+      drawingNumber: OPTICBOLT_72_001_TEST_RESULT.drawingNumber,
+      boltType: OPTICBOLT_72_001_TEST_RESULT.boltType,
+      description: OPTICBOLT_72_001_TEST_RESULT.description,
+      testedAt: OPTICBOLT_72_001_TEST_RESULT.testedAt,
+      testedBy: OPTICBOLT_72_001_TEST_RESULT.testedBy,
+      result: OPTICBOLT_72_001_TEST_RESULT.result,
+      fibreCheck1: OPTICBOLT_72_001_TEST_RESULT.fibreCheck1,
+      fibreCheck2: OPTICBOLT_72_001_TEST_RESULT.fibreCheck2,
+      fibreCheck3: OPTICBOLT_72_001_TEST_RESULT.fibreCheck3,
+      psi20: OPTICBOLT_72_001_TEST_RESULT.psi20,
+      psi100: OPTICBOLT_72_001_TEST_RESULT.psi100,
+      spectrums: {
+        create: OPTICBOLT_72_001_SPECTRUMS.map((spectrum) => ({
+          id: spectrum.id,
+          fbgIndex: spectrum.fbgIndex,
+          amplitude20: spectrum.amplitude20,
+          wavelength20: spectrum.wavelength20,
+          amplitude100: spectrum.amplitude100,
+          wavelength100: spectrum.wavelength100,
+          peakInitialNm: spectrum.peakInitialNm,
+          peak20Nm: spectrum.peak20Nm,
+          peak100Nm: spectrum.peak100Nm,
+          strain20: spectrum.strain20,
+          strain100: spectrum.strain100,
+          load20: spectrum.load20,
+          load100: spectrum.load100,
+          time20Ms: spectrum.time20Ms,
+          time100Ms: spectrum.time100Ms,
+          calibrationFactor: spectrum.calibrationFactor,
+        })),
+      },
+    },
+  });
+  results.push(realWorldResult);
+
+  const testResults = ['PASS', 'FAIL'];
+  const boltTypes = ['Optic Bolt 1.8m', 'Optic Bolt 2.1m', 'Optic Bolt 2.4m'];
+
+  for (let i = 1; i <= 5; i++) {
+    const serialNumber = `OB-${1000 + i}`;
+    const result = await prisma.opticboltTestResult.create({
+      data: {
+        serialNumber,
+        drawingNumber: `DWG-OB-00${i}`,
+        boltType: boltTypes[i % boltTypes.length],
+        description: `Optic bolt test for serial number ${serialNumber}`,
+        testedAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000), // i days ago
+        testedBy: `Technician ${i}`,
+        result: testResults[i % testResults.length],
+        fibreCheck1: i % 2 === 0,
+        fibreCheck2: i % 3 === 0,
+        fibreCheck3: i % 4 === 0,
+        psi20: 20 + i * 2,
+        psi100: 100 + i * 5,
+        spectrums: {
+          create: [
+            {
+              fbgIndex: 1,
+              amplitude20: 0.45 + i * 0.05,
+              wavelength20: 1540.23 + i * 1.5,
+              amplitude100: 0.35 + i * 0.04,
+              wavelength100: 1545.67 + i * 1.6,
+              peakInitialNm: 1538.12 + i * 1.2,
+              peak20Nm: 1540.23 + i * 1.5,
+              peak100Nm: 1545.67 + i * 1.6,
+              strain20: 0.00012 + i * 0.00005,
+              strain100: 0.00085 + i * 0.00012,
+              load20: 18.5 + i * 2.3,
+              load100: 95.4 + i * 4.7,
+              time20Ms: 120 + i * 10,
+              time100Ms: 250 + i * 15,
+              calibrationFactor: 0.00125 + i * 0.00005,
+            },
+            {
+              fbgIndex: 2,
+              amplitude20: 0.42 + i * 0.05,
+              wavelength20: 1541.23 + i * 1.5,
+              amplitude100: 0.32 + i * 0.04,
+              wavelength100: 1546.67 + i * 1.6,
+              peakInitialNm: 1539.12 + i * 1.2,
+              peak20Nm: 1541.23 + i * 1.5,
+              peak100Nm: 1546.67 + i * 1.6,
+              strain20: 0.00011 + i * 0.00005,
+              strain100: 0.00081 + i * 0.00012,
+              load20: 17.5 + i * 2.3,
+              load100: 92.4 + i * 4.7,
+              time20Ms: 115 + i * 10,
+              time100Ms: 245 + i * 15,
+              calibrationFactor: 0.00121 + i * 0.00005,
+            }
+          ]
+        }
+      },
+    });
+    results.push(result);
+  }
+
+  return results;
+}
+
 main()
   .catch((e) => {
     console.error(e);
@@ -847,3 +964,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+ 

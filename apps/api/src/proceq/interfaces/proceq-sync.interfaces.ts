@@ -123,6 +123,31 @@ export interface ExtractedProceqFields {
   bansheeRequestId?: string | null;
 }
 
+/**
+ * A status transition detected while upserting Proceq data — the raw material
+ * for Flow 2 (status-change notifications). Produced as a by-product of the
+ * same comparison that writes BansheeEventLog rows, so it costs no extra query.
+ */
+export interface ProceqStatusChangeInfo {
+  measurementId: string;
+  bansheeRequestId: string;
+  previousStatus: ProceqStatus;
+  newStatus: ProceqStatus;
+  changedAt: Date | null;
+}
+
+/**
+ * The subset of a BansheeRequest the notification flows need: which company it
+ * belongs to, whether notifications/alarms are enabled, and a human label.
+ */
+export interface BansheeNotificationInfo {
+  id: string;
+  companyId: string;
+  activateNotifications: boolean;
+  serialNumber: string;
+  name: string | null;
+}
+
 export interface SyncResult {
   success: boolean;
   duration: number;
@@ -130,6 +155,12 @@ export interface SyncResult {
   newMeasurements: number;
   updatedMeasurements: number;
   failedBatches: number;
+  /**
+   * True when the technician was skipped because a sync for the same operator
+   * was already in flight (per-technician lock held). Distinguishes a skip
+   * from a genuine zero-work success in the cycle summary.
+   */
+  skipped?: boolean;
 }
 
 export interface BoltConstants {

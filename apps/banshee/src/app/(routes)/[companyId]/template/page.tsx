@@ -278,12 +278,13 @@ export default function TemplatePage({
   );
 
   useEffect(() => {
-    if (!templateDetail) {
-      // Only reset when there is no active selection (e.g. "New template" clicked)
-      if (!selectedTemplateId) form.reset(DEFAULT_VALUES);
+    if (!selectedTemplateId) {
+      form.reset(DEFAULT_VALUES);
       return;
     }
-    form.reset(buildTemplateFormValues(templateDetail));
+    if (templateDetail) {
+      form.reset(buildTemplateFormValues(templateDetail));
+    }
   }, [templateDetail, selectedTemplateId]);
 
   const onSubmit: SubmitHandler<BansheeTemplateFormValues> = async (values) => {
@@ -397,85 +398,90 @@ export default function TemplatePage({
           </Text>
         </div>
 
-        <div className="ui-banshee-p-6">
-          <Table variant="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
-                  <Text
-                    variant="small"
-                    color="foreground"
-                    className="ui-banshee-font-semibold"
-                  >
-                    Banshee Template Library
-                  </Text>
-                </TableHead>
-                <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
-                  <Menu size={20} />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {templatesFetching && (
+        <div className="ui-banshee-border-b ui-banshee-flex ui-banshee-flex-col ui-banshee-py-7 ui-banshee-pl-7 ui-banshee-gap-7">
+          <div className="ui-banshee-max-h-[14vh] ui-banshee-overflow-auto">
+            <Table variant="border">
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={2}
-                    className="ui-banshee-text-center ui-banshee-py-4"
-                  >
-                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
-                      <LoadingSpinner size={16} />
-                      <Text variant="small" color="muted">
-                        Loading templates...
-                      </Text>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-              {!templatesFetching && templates.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={2}
-                    className="ui-banshee-text-center ui-banshee-py-4"
-                  >
-                    <Text variant="small" color="muted" className='ui-banshee-text-center'>
-                      No templates found
-                    </Text>
-                  </TableCell>
-                </TableRow>
-              )}
-              {templates.map((template) => (
-                <TableRow
-                  key={template.id}
-                  onClick={() => setSelectedTemplateId(template.id)}
-                  className="ui-banshee-cursor-pointer"
-                >
-                  <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
-                    <Text variant="small" color="foreground">
-                      {template.templateName}
-                    </Text>
-                  </TableCell>
-                  <TableCell
-                    style={{ width: '1%' }}
-                    className="!ui-banshee-text-right ui-banshee-w-auto ui-banshee-px-3"
-                  >
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteTemplate(e, template.id)}
-                      className="ui-banshee-text-neutral-400 hover:ui-banshee-text-red-500 ui-banshee-transition-colors ui-banshee-flex ui-banshee-m-auto"
+                  <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-font-semibold"
                     >
-                      <CircleX size={16} />
-                    </button>
-                  </TableCell>
+                      Banshee Template Library
+                    </Text>
+                  </TableHead>
+                  <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
+                    <Menu size={20} />
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        <div className="ui-banshee-flex ui-banshee-border-b ui-banshee-justify-end ui-banshee-px-4 ui-banshee-py-6">
-          <Button type="button" onClick={handleNewTemplate}>
-            New template
-          </Button>
+              </TableHeader>
+              <TableBody>
+                {templatesFetching && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={2}
+                      className="ui-banshee-text-center ui-banshee-py-4"
+                    >
+                      <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
+                        <LoadingSpinner size={16} />
+                        <Text variant="small" color="muted">
+                          Loading templates...
+                        </Text>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!templatesFetching && templates.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={2}
+                      className="ui-banshee-text-center ui-banshee-py-4"
+                    >
+                      <Text
+                        variant="small"
+                        color="muted"
+                        className="ui-banshee-text-center"
+                      >
+                        No templates found
+                      </Text>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {templates.map((template) => (
+                  <TableRow
+                    key={template.id}
+                    onClick={() => setSelectedTemplateId(template.id)}
+                    className="ui-banshee-cursor-pointer"
+                  >
+                    <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
+                      <Text variant="small" color="foreground">
+                        {template.templateName}
+                      </Text>
+                    </TableCell>
+                    <TableCell
+                      style={{ width: '1%' }}
+                      className="!ui-banshee-text-right ui-banshee-w-auto ui-banshee-px-3"
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteTemplate(e, template.id)}
+                        className="ui-banshee-text-neutral-400 hover:ui-banshee-text-red-500 ui-banshee-transition-colors ui-banshee-flex ui-banshee-m-auto"
+                      >
+                        <CircleX size={16} />
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="ui-banshee-flex ui-banshee-justify-end">
+            <Button type="button" onClick={handleNewTemplate}>
+              New template
+            </Button>
+          </div>
         </div>
 
         {detailFetching ? (

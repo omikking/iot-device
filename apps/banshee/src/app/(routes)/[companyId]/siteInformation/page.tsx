@@ -120,11 +120,7 @@ export default function SiteInformationPage({
   const { companyId } = params;
 
   const [
-    {
-      data: hierarchyData,
-      fetching: hierarchyFetching,
-      error: hierarchyError,
-    },
+    { data: hierarchyData, fetching: hierarchyFetching, error: hierarchyError },
   ] = useQuery({
     query: companyHierarchyQuery,
     variables: { companyId },
@@ -249,7 +245,7 @@ export default function SiteInformationPage({
           </Headline>
         </div>
 
-        <div className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-6 ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
+        <div className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-7 lg:ui-banshee-pr-0 ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
           <div className="ui-banshee-max-h-[20vh] ui-banshee-overflow-auto">
             <Table variant="border">
               <TableHeader>
@@ -267,17 +263,6 @@ export default function SiteInformationPage({
                   </TableHead>
                   <TableHead className="ui-banshee-p-0">
                     <DropdownMultiSelectSearch
-                      id="location-multi"
-                      placeholder="Location"
-                      searchPlaceholder="..."
-                      variant="compact"
-                      options={locationOptions}
-                      selectedIds={selectedLocations}
-                      onSelect={(ids) => setSelectedLocations(ids)}
-                    />
-                  </TableHead>
-                  <TableHead className="ui-banshee-p-0 [&:nth-child(3)]:ui-banshee-text-left">
-                    <DropdownMultiSelectSearch
                       id="level-multi"
                       placeholder="Level"
                       searchPlaceholder="..."
@@ -287,7 +272,7 @@ export default function SiteInformationPage({
                       onSelect={(ids) => setSelectedLevels(ids)}
                     />
                   </TableHead>
-                  <TableHead className="ui-banshee-p-0">
+                  <TableHead className="ui-banshee-p-0 [&:nth-child(3)]:ui-banshee-text-left">
                     <DropdownMultiSelectSearch
                       id="drive-multi"
                       placeholder="Drive"
@@ -296,6 +281,17 @@ export default function SiteInformationPage({
                       options={driveOptions}
                       selectedIds={selectedDrives}
                       onSelect={(ids) => setSelectedDrives(ids)}
+                    />
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <DropdownMultiSelectSearch
+                      id="location-multi"
+                      placeholder="Location"
+                      searchPlaceholder="..."
+                      variant="compact"
+                      options={locationOptions}
+                      selectedIds={selectedLocations}
+                      onSelect={(ids) => setSelectedLocations(ids)}
                       className="ui-banshee-w-full"
                     />
                   </TableHead>
@@ -311,17 +307,17 @@ export default function SiteInformationPage({
                     </TableCell>
                     <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
                       <Text variant="small" color="foreground">
-                        {row.locationName}
-                      </Text>
-                    </TableCell>
-                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
                         {row.levelName}
                       </Text>
                     </TableCell>
                     <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
                       <Text variant="small" color="foreground">
                         {row.driveName}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
+                      <Text variant="small" color="foreground">
+                        {row.locationName}
                       </Text>
                     </TableCell>
                   </TableRow>

@@ -43,7 +43,11 @@ const eventsPageTableQuery = gql`
   }
 `;
 
-export const EventsPageTable = ({ params }: { params: { companyId: string } }) => {
+export const EventsPageTable = ({
+  params,
+}: {
+  params: { companyId: string };
+}) => {
   const { companyId } = params;
   const [{ data, fetching, error }] = useQuery({
     query: eventsPageTableQuery,
@@ -115,7 +119,7 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
 
   return (
     <>
-      <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-flex-col ui-banshee-w-full ui-banshee-h-[50vh]">
+      <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-h-[50vh]">
         <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
           <Table variant="noBorder">
             <TableHeader>
@@ -124,7 +128,7 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                   <Text
                     variant="small"
                     color="foreground"
-                    className="ui-banshee-font-bold"
+                    className="ui-banshee-font-bold ui-banshee-px-4"
                   >
                     Details
                   </Text>
@@ -230,7 +234,11 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                       </Text>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left">
-                      <Text className="ui-banshee-px-4 ui-banshee-text-left" variant="small" color="foreground">
+                      <Text
+                        className="ui-banshee-px-4 ui-banshee-text-left"
+                        variant="small"
+                        color="foreground"
+                      >
                         {event.eventType === 'STATUS_CHANGE'
                           ? `Status changed from ${getStatusLabel(
                               event.previousStatus,

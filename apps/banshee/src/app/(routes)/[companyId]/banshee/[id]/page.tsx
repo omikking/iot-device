@@ -424,7 +424,7 @@ export default function BansheeConfigPage() {
                   <Button
                     variant="secondary"
                     type="button"
-                    className="!ui-banshee-bg-[#E6E6E6]"
+                    className="!ui-banshee-bg-neutral-2"
                     onClick={() => router.push(`/banshee`)}
                   >
                     Cancel

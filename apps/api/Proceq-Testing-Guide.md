@@ -24,15 +24,15 @@ For the architectural background (what each service does, the elongation maths, 
 
 ## Prerequisites
 
-| Requirement | Why |
-|---|---|
-| **Node.js** (LTS) and **pnpm** | Monorepo tooling. |
-| **PostgreSQL** running locally (or via Docker) | Backing store for `proceq_*` and `banshee_*` tables. |
-| **`DATABASE_URL`** set in `apps/api/.env` | Prisma needs it to migrate / seed. |
-| **A GraphQL client** (Insomnia, Postman, Apollo Sandbox, or `curl`) | To call the Proceq login mutation. |
-| **A GSP user account** that can sign in to `/auth/signin` | The login URL is JWT-protected. |
-| **A Screening Eagle (Proceq) account** | This is the *identity that owns the FDL measurements*. It does not have to match your GSP account email, but the email you sign in to Screening Eagle with becomes the key in `proceq_tokens`. |
-| **Proceq OAuth client credentials** | Ask the team / pull from 1Password (see [Step 2](#step-2--environment-variables)). |
+| Requirement                                                         | Why                                                                                                                                                                                            |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js** (LTS) and **pnpm**                                      | Monorepo tooling.                                                                                                                                                                              |
+| **PostgreSQL** running locally (or via Docker)                      | Backing store for `proceq_*` and `banshee_*` tables.                                                                                                                                           |
+| **`DATABASE_URL`** set in `apps/api/.env`                           | Prisma needs it to migrate / seed.                                                                                                                                                             |
+| **A GraphQL client** (Insomnia, Postman, Apollo Sandbox, or `curl`) | To call the Proceq login mutation.                                                                                                                                                             |
+| **A GSP user account** that can sign in to `/auth/signin`           | The login URL is JWT-protected.                                                                                                                                                                |
+| **A Screening Eagle (Proceq) account**                              | This is the _identity that owns the FDL measurements_. It does not have to match your GSP account email, but the email you sign in to Screening Eagle with becomes the key in `proceq_tokens`. |
+| **Proceq OAuth client credentials**                                 | Ask the team / pull from 1Password (see [Step 2](#step-2--environment-variables)).                                                                                                             |
 
 ---
 
@@ -121,7 +121,7 @@ PROCEQ_REGIONAL_DOMAIN=sg-stg-io.screeningeagle.com
 ```
 
 > **Security note**
-> Production `PROCEQ_CLIENT_SECRET` is *not* checked into this repo. Pull it from the team password manager. If you ever paste a real secret into this file, rotate it immediately.
+> Production `PROCEQ_CLIENT_SECRET` is _not_ checked into this repo. Pull it from the team password manager. If you ever paste a real secret into this file, rotate it immediately.
 
 ### Redirect URI must match exactly
 
@@ -136,7 +136,7 @@ PROCEQ_REGIONAL_DOMAIN=sg-stg-io.screeningeagle.com
 2. In `apps/api/src/main.ts`, change the API listen port from `3333` to `3000`.
 3. Restart the API and re-run [Step 4](#step-4--authenticate-with-proceq-per-user-oauth).
 
-Both values must change together — if only the env var moves but `main.ts` still listens on `3333`, the browser redirect will hit nothing. If you change to *any* other port, that exact URI must also be added to the Screening Eagle client registration by an admin.
+Both values must change together — if only the env var moves but `main.ts` still listens on `3333`, the browser redirect will hit nothing. If you change to _any_ other port, that exact URI must also be added to the Screening Eagle client registration by an admin.
 
 ---
 
@@ -167,7 +167,7 @@ with valid GSP credentials. Copy the returned JWT — you'll need it for the nex
 
 ### 4.2 Request the Proceq login URL
 
-Call the `proceqLoginUrl` GraphQL query with your JWT as `Authorization: Bearer <token>`. The `callbackUrl` is where Screening Eagle should redirect *your browser* back to after login (in local dev, point this at your web app — e.g. the banshee app — so the redirect lands on a real page).
+Call the `proceqLoginUrl` GraphQL query with your JWT as `Authorization: Bearer <token>`. The `callbackUrl` is where Screening Eagle should redirect _your browser_ back to after login (in local dev, point this at your web app — e.g. the banshee app — so the redirect lands on a real page).
 
 ```graphql
 query {
@@ -228,15 +228,15 @@ You don't need to trigger anything manually. After ~5 minutes you'll see logs of
 
 ### 5.2 Sync internals (cheat sheet)
 
-| Aspect | Value | Source |
-|---|---|---|
-| Cron expression | `0 */5 * * * *` (every 5 min) | `proceq-scheduler.service.ts` |
-| Concurrency guard | `isSyncing` flag per operator — overlapping runs are skipped | `proceq-sync.service.ts` |
-| Batch size | 100 measurements per export request | `MAX_BATCH_SIZE` |
-| Export poll interval | 3 s | `EXPORT_POLL_INTERVAL` |
-| Export timeout | 5 min per batch | `EXPORT_TIMEOUT` |
-| Attachment concurrency | 5 measurements in parallel (background, non-blocking) | `processAttachments()` |
-| Re-sync detection | Measurements with a newer `updatedAt` are re-processed; status deltas write `BansheeEventLog` rows | `bulkUpsertProceqData()` |
+| Aspect                 | Value                                                                                              | Source                        |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Cron expression        | `0 */5 * * * *` (every 5 min)                                                                      | `proceq-scheduler.service.ts` |
+| Concurrency guard      | `isSyncing` flag per operator — overlapping runs are skipped                                       | `proceq-sync.service.ts`      |
+| Batch size             | 100 measurements per export request                                                                | `MAX_BATCH_SIZE`              |
+| Export poll interval   | 3 s                                                                                                | `EXPORT_POLL_INTERVAL`        |
+| Export timeout         | 5 min per batch                                                                                    | `EXPORT_TIMEOUT`              |
+| Attachment concurrency | 5 measurements in parallel (background, non-blocking)                                              | `processAttachments()`        |
+| Re-sync detection      | Measurements with a newer `updatedAt` are re-processed; status deltas write `BansheeEventLog` rows | `bulkUpsertProceqData()`      |
 
 For the full pipeline (extract → match → compute → upsert → log status changes), see TDD §5–11.
 
@@ -255,16 +255,16 @@ cd apps/api
 pnpm run prisma:studio   # http://localhost:5555
 ```
 
-| Table | What to look for |
-|---|---|
-| `proceq_tokens` | One row per authenticated operator (`accessToken`, `refreshToken`, `expiresAt`). |
-| `proceq_data` | Synced measurements — `fileName`, `operatorEmail`, `comments`, `temperature`, `status`, `bansheeRequestId`, `dueDate`. |
-| `proceq_readings` | Per-reading values (`frequency`, `gain`, `velocity`, `gate1*`, `elongation`, `status`). |
-| `proceq_attachments` | Downloaded photo/audio metadata (`filePath`, `attachmentType`, `fileSize`). |
-| `banshee_requests` | `isProceqSynced = true` for any request matched by serial number. |
-| `banshee_event_logs` | `STATUS_CHANGE` rows when a measurement's status changes between syncs. |
-| `banshee_session_stats` | Daily aggregates: `totalMeasured`, `notMeasurable`, `broken` (per company × site × date). |
-| `bolt_type_constants` | Bolt physical constants used by `computeStatusForRecords()`. |
+| Table                   | What to look for                                                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `proceq_tokens`         | One row per authenticated operator (`accessToken`, `refreshToken`, `expiresAt`).                                       |
+| `proceq_data`           | Synced measurements — `fileName`, `operatorEmail`, `comments`, `temperature`, `status`, `bansheeRequestId`, `dueDate`. |
+| `proceq_readings`       | Per-reading values (`frequency`, `gain`, `velocity`, `gate1*`, `elongation`, `status`).                                |
+| `proceq_attachments`    | Downloaded photo/audio metadata (`filePath`, `attachmentType`, `fileSize`).                                            |
+| `banshee_requests`      | `isProceqSynced = true` for any request matched by serial number.                                                      |
+| `banshee_event_logs`    | `STATUS_CHANGE` rows when a measurement's status changes between syncs.                                                |
+| `banshee_session_stats` | Daily aggregates: `totalMeasured`, `notMeasurable`, `broken` (per company × site × date).                              |
+| `bolt_type_constants`   | Bolt physical constants used by `computeStatusForRecords()`.                                                           |
 
 ### 6.2 Local filesystem (gitignored)
 
@@ -300,7 +300,7 @@ Inspect these when DB rows look right but you want to confirm the source-of-trut
 - [ ] **Elongation computed** — `proceq_readings.elongation` is non-null wherever both `temperature` (parsed from the operator's comment) and `gate1SoundPathDistanceInTimeUnit` are present.
 - [ ] **Status assigned** — `proceq_readings.status` ∈ {`Elastic`, `Low plastic`, `High plastic`, `broken`, `not measurable`}; the parent `proceq_data.status` mirrors the last reading.
 - [ ] **dueDate projected** — for linked measurements where `BansheeRequest.period > 0`, `proceq_data.dueDate` = `updatedTimestamp + period months`.
-- [ ] **Event log** — on the *second* sync of a measurement whose status changed, a new `banshee_event_logs` row appears with `eventType = STATUS_CHANGE`.
+- [ ] **Event log** — on the _second_ sync of a measurement whose status changed, a new `banshee_event_logs` row appears with `eventType = STATUS_CHANGE`.
 - [ ] **Stats updated** — `banshee_session_stats` has a row for the measurement's date.
 - [ ] **Attachments downloaded** — `proceq-data/attachments/<measurementId>/` populated with media files; `proceq_attachments` rows reference them.
 - [ ] **Raw data saved** — `proceq-data/raw-data/` has `<measurementId>_raw.json` + `.zip`.
@@ -308,28 +308,28 @@ Inspect these when DB rows look right but you want to confirm the source-of-trut
 
 ### What's normal vs. what's wrong
 
-| Observation | Interpretation |
-|---|---|
-| Measurement saved but `bansheeRequestId` is `null` | **Normal.** No `BansheeRequest.serialNumber` matched `fileName`'s base. Seed a matching request or move on. |
-| `proceq_readings.status` and `elongation` are `null` | Either the operator's comment didn't include `"temperature NN"` (regex parse), or `gate1SoundPathDistanceInTimeUnit` is missing in the reading. Both are required for the calculation. |
-| Status is `broken` / `not measurable` with `elongation = null` | **Normal.** Comment-based pre-check short-circuits the math. |
-| Same measurement re-appears in logs after a few syncs | **Normal.** Re-sync detects changed `updatedAt` and re-upserts. |
+| Observation                                                    | Interpretation                                                                                                                                                                         |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Measurement saved but `bansheeRequestId` is `null`             | **Normal.** No `BansheeRequest.serialNumber` matched `fileName`'s base. Seed a matching request or move on.                                                                            |
+| `proceq_readings.status` and `elongation` are `null`           | Either the operator's comment didn't include `"temperature NN"` (regex parse), or `gate1SoundPathDistanceInTimeUnit` is missing in the reading. Both are required for the calculation. |
+| Status is `broken` / `not measurable` with `elongation = null` | **Normal.** Comment-based pre-check short-circuits the math.                                                                                                                           |
+| Same measurement re-appears in logs after a few syncs          | **Normal.** Re-sync detects changed `updatedAt` and re-upserts.                                                                                                                        |
 
 ---
 
 ## Troubleshooting
 
-| Issue | Fix |
-|---|---|
-| **`No Proceq tokens found, skipping sync`** | You haven't completed Step 4 yet for any operator. |
-| **`Proceq sync for <email> was skipped (already running)`** | The previous run is still active for that operator. Wait or check for a hung export. |
-| **401 from Proceq mid-sync** | Token refresh failed. Re-run Step 4 to re-issue a refresh token. |
-| **`Redirect URL is not registered for this app`** | `PROCEQ_REDIRECT_URI` doesn't match the URI registered in the Proceq client app. Either switch to the staging client (different registration), revert your local port to `3333`, or ask the team to register your URI. |
-| **`PROCEQ_REGIONAL_DOMAIN environment variable is not set`** | `.env` not loaded or variable missing. Restart the server after editing `.env`. |
-| **Export timeout** | A 100-batch export exceeded 5 min. Usually a network/Proceq-side hiccup; the failed batch is logged and skipped — the next cron will retry. |
-| **`No BansheeRequest found for serial …`** | Expected for unlinked measurements; the row is still saved. To link, seed/create a `BansheeRequest` whose `serialNumber` matches `fileName`'s base. |
-| **Status / elongation always `null` for a linked measurement** | (1) Operator comment lacks `temperature NN` ⇒ no temp parsed. (2) `gate1SoundPathDistanceInTimeUnit` missing in reading. (3) `BoltTypeConstant` row absent for that `boltType`. |
-| **`Cannot read attachment ZIP`** | Some Proceq attachments are wrapped in archives. If a specific attachment fails, the rest of the sync continues — `processAttachments` is isolated. |
+| Issue                                                          | Fix                                                                                                                                                                                                                    |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`No Proceq tokens found, skipping sync`**                    | You haven't completed Step 4 yet for any operator.                                                                                                                                                                     |
+| **`Proceq sync for <email> was skipped (already running)`**    | The previous run is still active for that operator. Wait or check for a hung export.                                                                                                                                   |
+| **401 from Proceq mid-sync**                                   | Token refresh failed. Re-run Step 4 to re-issue a refresh token.                                                                                                                                                       |
+| **`Redirect URL is not registered for this app`**              | `PROCEQ_REDIRECT_URI` doesn't match the URI registered in the Proceq client app. Either switch to the staging client (different registration), revert your local port to `3333`, or ask the team to register your URI. |
+| **`PROCEQ_REGIONAL_DOMAIN environment variable is not set`**   | `.env` not loaded or variable missing. Restart the server after editing `.env`.                                                                                                                                        |
+| **Export timeout**                                             | A 100-batch export exceeded 5 min. Usually a network/Proceq-side hiccup; the failed batch is logged and skipped — the next cron will retry.                                                                            |
+| **`No BansheeRequest found for serial …`**                     | Expected for unlinked measurements; the row is still saved. To link, seed/create a `BansheeRequest` whose `serialNumber` matches `fileName`'s base.                                                                    |
+| **Status / elongation always `null` for a linked measurement** | (1) Operator comment lacks `temperature NN` ⇒ no temp parsed. (2) `gate1SoundPathDistanceInTimeUnit` missing in reading. (3) `BoltTypeConstant` row absent for that `boltType`.                                        |
+| **`Cannot read attachment ZIP`**                               | Some Proceq attachments are wrapped in archives. If a specific attachment fails, the rest of the sync continues — `processAttachments` is isolated.                                                                    |
 
 ---
 
@@ -337,12 +337,12 @@ Inspect these when DB rows look right but you want to confirm the source-of-trut
 
 Helpful pointers if you need to dig deeper than this guide:
 
-| Concern | Code path |
-|---|---|
-| OAuth + token storage | [`proceq-auth.service.ts`](src/proceq/proceq-auth.service.ts), [`proceq-auth.controller.ts`](src/proceq/proceq-auth.controller.ts), [`proceq-auth.resolver.ts`](src/proceq/proceq-auth.resolver.ts) |
-| Cron entry point | [`proceq-scheduler.service.ts`](src/proceq/proceq-scheduler.service.ts) |
-| HTTP client (with retry) | [`proceq-api.service.ts`](src/proceq/proceq-api.service.ts) |
-| Sync pipeline (extraction → match → compute → upsert → event log) | [`proceq-sync.service.ts`](src/proceq/proceq-sync.service.ts) |
-| Elongation maths & status classification | `computeStatusForRecords()` in `proceq-sync.service.ts`; constants in `bolt_type_constants` |
-| GraphQL schema | [`proceq.graphql`](src/proceq/proceq.graphql) |
-| End-to-end design + ERD | [`docs/techinal-design-document.md`](../../docs/techinal-design-document.md) §5–13 |
+| Concern                                                           | Code path                                                                                                                                                                                           |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OAuth + token storage                                             | [`proceq-auth.service.ts`](src/proceq/proceq-auth.service.ts), [`proceq-auth.controller.ts`](src/proceq/proceq-auth.controller.ts), [`proceq-auth.resolver.ts`](src/proceq/proceq-auth.resolver.ts) |
+| Cron entry point                                                  | [`proceq-scheduler.service.ts`](src/proceq/proceq-scheduler.service.ts)                                                                                                                             |
+| HTTP client (with retry)                                          | [`proceq-api.service.ts`](src/proceq/proceq-api.service.ts)                                                                                                                                         |
+| Sync pipeline (extraction → match → compute → upsert → event log) | [`proceq-sync.service.ts`](src/proceq/proceq-sync.service.ts)                                                                                                                                       |
+| Elongation maths & status classification                          | `computeStatusForRecords()` in `proceq-sync.service.ts`; constants in `bolt_type_constants`                                                                                                         |
+| GraphQL schema                                                    | [`proceq.graphql`](src/proceq/proceq.graphql)                                                                                                                                                       |
+| End-to-end design + ERD                                           | [`docs/techinal-design-document.md`](../../docs/techinal-design-document.md) §5–13                                                                                                                  |

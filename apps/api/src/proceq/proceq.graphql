@@ -37,7 +37,7 @@ type ProceqData {
   fileName: String!
   operator: String
   email: String
-  dueDate: DateTime!
+  dueDate: DateTime
   comments: String!
   temperature: Float
 
@@ -73,6 +73,13 @@ type ProceqLoginUrlResponse {
   url: String!
 }
 
+type GetProceqTokenStatusResponse {
+  valid: Boolean!
+  canRefresh: Boolean!
+  expiresAt: String
+}
+
 type Query {
   proceqLoginUrl(callbackUrl: String!): ProceqLoginUrlResponse!
+  getProceqTokenStatus: GetProceqTokenStatusResponse!
 }

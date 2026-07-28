@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
-import type { StatusBand } from '@gsp/ui-banshee';
+import type { StatusBand, ChartLineDatum } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 
 type BansheeRequestResult =
@@ -44,6 +44,16 @@ const convertToStatusPlotValue = (
   return 3;
 };
 
+// Maps the raw proceq status to the band label shown in the tooltip. Using the
+// actual status avoids mis-labelling points that land on a band boundary value.
+const STATUS_TO_BAND_LABEL: Record<string, string> = {
+  NOT_MEASURABLE: 'Not Measurable',
+  BROKEN: 'Broken',
+  HIGH_PLASTIC: 'High Plastic',
+  LOW_PLASTIC: 'Low Plastic',
+  ELASTIC: 'Elastic',
+};
+
 const statusBands: StatusBand[] = [
   { from: 4, to: 3, label: 'Broken', color: '#fb9596' },
   { from: 3, to: 2, label: 'High Plastic', color: '#fbc5ab' },
@@ -79,6 +89,7 @@ export const StatusOverviewChart = ({
       bansheeId: string;
       dataKey: string;
       value: number;
+      statusLabel?: string;
     }[] = [];
 
     bansheeRequests.forEach((br) => {
@@ -94,7 +105,8 @@ export const StatusOverviewChart = ({
 
         readings.forEach((r, idx) => {
           if (r.elongation == null) return;
-          const value = convertToStatusPlotValue(r.elongation, r.status ?? '');
+          const status = r.status ?? '';
+          const value = convertToStatusPlotValue(r.elongation, status);
           const timeLabel =
             readings.length > 1 ? `${dateStr} R${idx + 1}` : dateStr;
 
@@ -105,6 +117,7 @@ export const StatusOverviewChart = ({
             bansheeId: br.id,
             dataKey,
             value,
+            statusLabel: STATUS_TO_BAND_LABEL[status],
           });
         });
       });
@@ -122,11 +135,11 @@ export const StatusOverviewChart = ({
     });
 
     const data = uniqueTimes.map((time) => {
-      const row: { time: string; [key: string]: string | number } = { time };
+      const row: ChartLineDatum = { time };
       xEntries
         .filter((e) => e.time === time)
         .forEach((e) => {
-          row[e.dataKey] = e.value;
+          row[e.dataKey] = { value: e.value, status: e.statusLabel };
         });
       return row;
     });
@@ -136,7 +149,13 @@ export const StatusOverviewChart = ({
 
   return (
     <div className="ui-banshee-col-span-1 lg:ui-banshee-col-span-2 ui-banshee-h-full ui-banshee-flex ui-banshee-flex-col">
-      <Headline variant="small" color="foreground" as="h3" isBold className='ui-banshee-mb-2'>
+      <Headline
+        variant="small"
+        color="foreground"
+        as="h3"
+        isBold
+        className="ui-banshee-mb-2"
+      >
         Status Overview
       </Headline>
 

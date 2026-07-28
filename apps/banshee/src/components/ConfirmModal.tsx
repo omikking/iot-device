@@ -101,7 +101,12 @@ export const ConfirmModal = ({
         {/* Confirm Button */}
         {onConfirm && (
           <div className="flex justify-end pt-9">
-            <Button variant="primary" size={'large'} className="self-end" onClick={onClose}>
+            <Button
+              variant="primary"
+              size={'large'}
+              className="self-end"
+              onClick={onClose}
+            >
               {modalConfirmButtonText}
             </Button>
           </div>

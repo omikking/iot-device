@@ -29,6 +29,7 @@ import { graphql } from '@/gql';
 import {
   BansheeSchedulerListQuery,
   BansheeCartItemType,
+  BansheeOrderItemStatus,
   ProceqStatus,
 } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
@@ -72,6 +73,21 @@ const schedulerCartItemsQuery = graphql(`
         serialNumber
         location {
           locationName
+        }
+      }
+    }
+  }
+`);
+
+const schedulerOrdersQuery = graphql(`
+  query schedulerOrders($filter: OrderFilterInput, $limit: Int) {
+    orders(filter: $filter, limit: $limit) {
+      results {
+        id
+        orderItems {
+          id
+          status
+          bansheeRequestId
         }
       }
     }
@@ -147,8 +163,10 @@ type SchedulerBanshee = {
   location: string;
   totalElongation: number | null;
   lastMeasured: string;
+  lastMeasuredTs: number | null;
   period: number | null;
   dueDate: string;
+  dueDateTs: number | null;
   status: BansheeStatus;
   isOverdue: boolean;
   isSuggested: boolean;
@@ -186,12 +204,18 @@ const transformBansheeRequests = (
     const proceqStatus = latestProceqData?.status;
     const status = mapProceqStatusToColor(proceqStatus);
 
-    const lastMeasured = latestProceqData?.updatedTimestamp
-      ? new Date(latestProceqData.updatedTimestamp).toLocaleDateString('en-GB')
-      : '-';
-    const dueDate = latestProceqData?.dueDate
-      ? new Date(latestProceqData.dueDate).toLocaleDateString('en-GB')
-      : '-';
+    const lastMeasuredTs = latestProceqData?.updatedTimestamp
+      ? new Date(latestProceqData.updatedTimestamp).getTime()
+      : null;
+    const lastMeasured =
+      lastMeasuredTs != null
+        ? new Date(lastMeasuredTs).toLocaleDateString('en-GB')
+        : '-';
+    const dueDateTs = latestProceqData?.dueDate
+      ? new Date(latestProceqData.dueDate).getTime()
+      : null;
+    const dueDate =
+      dueDateTs != null ? new Date(dueDateTs).toLocaleDateString('en-GB') : '-';
     return {
       id: request.id,
       serialNumber: request.serialNumber ?? '-',
@@ -199,7 +223,9 @@ const transformBansheeRequests = (
       totalElongation,
       period: request.period ?? null,
       lastMeasured,
+      lastMeasuredTs,
       dueDate, // Not available in API
+      dueDateTs,
       status,
       isOverdue: false, // Not available in API
       isSuggested: false, // Not available in API
@@ -292,6 +318,30 @@ export default function SchedulerPage({
     [cartData?.cartItems],
   );
 
+  const [{ data: ordersData, error: ordersError }] = useQuery({
+    query: schedulerOrdersQuery,
+    variables: { filter: { companyId }, limit: 1000 },
+    requestPolicy: 'cache-and-network',
+  });
+
+  useEffect(() => {
+    handleGraphQLErrors(ordersError);
+  }, [ordersError]);
+
+  // Banshees already committed to a PENDING order item should not reappear
+  // in the scheduler (their cart entry is deleted once the order is submitted).
+  const pendingOrderBansheeRequestIds = useMemo(
+    () =>
+      new Set(
+        (ordersData?.orders?.results ?? [])
+          .flatMap((order) => order.orderItems ?? [])
+          .filter((item) => item.status === BansheeOrderItemStatus.Pending)
+          .map((item) => item.bansheeRequestId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    [ordersData?.orders?.results],
+  );
+
   const [{ data: hierarchyData, error: hierarchyError }] = useQuery({
     query: schedulerHierarchyQuery,
     variables: { companyId },
@@ -304,27 +354,20 @@ export default function SchedulerPage({
 
     if (sortConfig !== null) {
       sortable.sort((a, b) => {
-        let aValue: string | number =
-          a[sortConfig.key] == null
-            ? ''
-            : (a[sortConfig.key] as string | number);
+        // For date columns sort by the raw timestamp, not the localized
+        // display string (DD/MM/YYYY is not parseable by `new Date`).
+        const sortKey: keyof SchedulerBanshee =
+          sortConfig.key === 'dueDate'
+            ? 'dueDateTs'
+            : sortConfig.key === 'lastMeasured'
+              ? 'lastMeasuredTs'
+              : sortConfig.key;
 
-        let bValue: string | number =
-          b[sortConfig.key] == null
-            ? ''
-            : (b[sortConfig.key] as string | number);
+        const aValue: string | number =
+          a[sortKey] == null ? '' : (a[sortKey] as string | number);
 
-        if (sortConfig.key === 'dueDate' || sortConfig.key === 'lastMeasured') {
-          aValue =
-            aValue && typeof aValue !== 'boolean'
-              ? new Date(aValue).getTime()
-              : 0;
-
-          bValue =
-            bValue && typeof bValue !== 'boolean'
-              ? new Date(bValue).getTime()
-              : 0;
-        }
+        const bValue: string | number =
+          b[sortKey] == null ? '' : (b[sortKey] as string | number);
 
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
 
@@ -541,9 +584,15 @@ export default function SchedulerPage({
   const bansheeRequests = useMemo(
     () =>
       (data?.bansheeRequests?.results ?? []).filter(
-        (r) => !cartBansheeRequestIds.has(r.id),
+        (r) =>
+          !cartBansheeRequestIds.has(r.id) &&
+          !pendingOrderBansheeRequestIds.has(r.id),
       ),
-    [data?.bansheeRequests?.results, cartBansheeRequestIds],
+    [
+      data?.bansheeRequests?.results,
+      cartBansheeRequestIds,
+      pendingOrderBansheeRequestIds,
+    ],
   );
 
   // Transform API data to scheduler format when data changes
@@ -572,13 +621,13 @@ export default function SchedulerPage({
   return (
     <>
       <SidebarInset>
-        <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen ui-banshee-p-6">
+        <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen ui-banshee-p-7 ui-banshee-pr-0">
           <div className="ui-banshee-flex ui-banshee-gap-3 ui-banshee-flex-col ui-banshee-bg-white ui-banshee-border-b">
             <Headline as="h1" variant="small" color="foreground">
               New Banshee
             </Headline>
 
-            <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-[#F8F8F8] ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-[#DADADA]">
+            <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-neutral-1 ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-neutral-3">
               <div className="ui-banshee-flex-shrink-0">
                 <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
                   Quantity
@@ -588,7 +637,7 @@ export default function SchedulerPage({
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="20 (suggested quantity)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
@@ -600,7 +649,7 @@ export default function SchedulerPage({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name (optional)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-[#DADADA] ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
@@ -759,7 +808,7 @@ export default function SchedulerPage({
                           options={SELECT_OPTIONS}
                           selectedIds={selectedFilters}
                           onSelect={(ids) => setSelectedFilters(ids)}
-                          className="ui-banshee-w-full"
+                          className="ui-banshee-w-full !ui-banshee-bg-white !hover:ui-banshee-bg-main-white/50"
                         />
                       </TableHead>
                     </TableRow>

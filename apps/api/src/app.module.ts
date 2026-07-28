@@ -28,6 +28,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BansheeTemplateModule } from './banshee-template/banshee-template.module';
 import { BansheeCartModule } from './banshee-cart/banshee-cart.module';
 import { BansheeOrderModule } from './banshee-order/banshee-order.module';
+import { BansheeCommmunicationModule } from './banshee-communication/banshee-communication.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
@@ -64,6 +65,7 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     BansheeTemplateModule,
     BansheeCartModule,
     BansheeOrderModule,
+    BansheeCommmunicationModule,
   ],
   providers: [DateScalar],
 })

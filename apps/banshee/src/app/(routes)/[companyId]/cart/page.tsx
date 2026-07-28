@@ -15,7 +15,6 @@ import {
 import { Text } from '@gsp/ui-banshee';
 import { CircleX, Menu } from 'lucide-react';
 import { Button } from 'node_modules/@gsp/ui-banshee/src/components/base/button';
-import { FormField } from '@/components/FormField';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { SubmitOrderFormValues } from '@/components/schemas/SubmitOrderFormSchema';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -49,8 +48,8 @@ const cartItemsQuery = graphql(`
 `);
 
 const submitOrderMutation = graphql(`
-  mutation submitOrder($input: SubmitOrderInput!) {
-    submitOrder(input: $input) {
+  mutation submitOrder($input: SubmitOrderInput!, $attachments: [Upload!]) {
+    submitOrder(input: $input, attachments: $attachments) {
       id
     }
   }
@@ -85,6 +84,7 @@ interface Attachment {
   id: string;
   name: string;
   size: string;
+  file: File;
 }
 export default function CartPage() {
   const params = useParams();
@@ -186,8 +186,11 @@ export default function CartPage() {
       input: {
         companyId,
         comment: values.orderComments ?? '',
-        attachments: attachments.map((a) => a.name),
+        attachmentsName: attachments.map((a) => a.name),
       },
+      // Actual files are sent outside of `input` as Upload scalars so the
+      // backend can attach them to the order-details email.
+      attachments: attachments.map((a) => a.file),
     });
 
     if (handleGraphQLErrors(result.error)) return;
@@ -258,12 +261,12 @@ export default function CartPage() {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-flex ui-banshee-gap-5 ui-banshee-flex-col ui-banshee-min-h-screen">
-        <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
+      <main className="ui-banshee-flex ui-banshee-flex-col ui-banshee-min-h-screen">
+        <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
           Order Summary
         </h1>
         <div className="ui-banshee-flex ui-banshee-flex-wrap ui-banshee-h-full">
-          <div className="ui-banshee-flex ui-banshee-h-[40vh] ui-banshee-flex-col ui-banshee-w-3/5 ui-banshee-p-3">
+          <div className="ui-banshee-flex ui-banshee-h-[40vh] ui-banshee-flex-col ui-banshee-w-3/5 ui-banshee-p-7">
             <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
               <Table variant="border">
                 <TableHeader>
@@ -399,14 +402,14 @@ export default function CartPage() {
           <div className="ui-banshee-p-8 md:ui-banshee-p-10 md:ui-banshee-w-2/5 ui-banshee-bg-neutral-50">
             <div>
               <Headline
-                as="h4"
-                variant="small"
+                as="h5"
+                variant="base"
                 color="foreground"
-                className="ui-banshee-mb-4 ui-banshee-border-b ui-banshee-border-gray-200"
+                className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
               >
                 Order Summary
               </Headline>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   New Banshee Request
                 </p>
@@ -414,7 +417,7 @@ export default function CartPage() {
                   {newBansheeCount}
                 </p>
               </div>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b  ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   Recurring Banshee Request
                 </p>
@@ -422,7 +425,7 @@ export default function CartPage() {
                   {recurringCount}
                 </p>
               </div>
-              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-[#DADADA] ui-banshee-border-b ui-banshee-w-full">
+              <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full">
                 <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
                   Total Measurement Request
                 </p>
@@ -434,22 +437,30 @@ export default function CartPage() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="lg:ui-banshee-col-span-5 ui-banshee-space-y-6 ui-banshee-mt-5">
-                  <FormField label="Order Comments">
-                    <Textarea
-                      style={{ height: '200px' }}
-                      placeholder="Optional"
-                      {...form.register('orderComments')}
-                    />
-                  </FormField>
+                  <Headline
+                    as="h6"
+                    variant="base"
+                    color="foreground"
+                    className="ui-banshee-font-bold"
+                  >
+                    Order Comments
+                  </Headline>
+                  <Textarea
+                    style={{ height: '200px' }}
+                    placeholder="Optional"
+                    {...form.register('orderComments')}
+                  />
                   <div>
-                    <Headline
-                      as="h4"
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-border-b ui-banshee-border-gray-200"
-                    >
-                      Attachments
-                    </Headline>
+                    {attachments.length !== 0 && (
+                      <Headline
+                        as="h5"
+                        variant="base"
+                        color="foreground"
+                        className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
+                      >
+                        Attachments
+                      </Headline>
+                    )}
                     <div className="ui-banshee-space-y-2">
                       {attachments.map((attachment) => (
                         <div
@@ -486,7 +497,7 @@ export default function CartPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="ui-banshee-flex ui-banshee-justify-end ui-banshee-gap-4 ui-banshee-mt-10">
+                  <div className="ui-banshee-flex ui-banshee-justify-end ui-banshee-flex-wrap ui-banshee-gap-4 ui-banshee-mt-10">
                     <input
                       ref={inputRef}
                       type="file"
@@ -499,7 +510,6 @@ export default function CartPage() {
                       size="small"
                       onClick={handleAddAttachmentButtonClick}
                       type="button"
-                      className="ui-banshee-flex-1 ui-banshee-max-w-[20%]"
                     >
                       Attach file
                     </Button>

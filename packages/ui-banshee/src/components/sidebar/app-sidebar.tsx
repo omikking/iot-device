@@ -1,13 +1,16 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '../base/sidebar';
 // import './app-sidebar.css';
 
@@ -57,13 +60,26 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ header }: { header?: ReactNode }) {
   const pathname = usePathname();
   const params = useParams();
   const companyId = params.companyId as string;
+  const { isCompact, setOpenMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
+      {/* The drawer overlays the navbar on mobile/tablet, so it carries its own
+          brand header. Not shown on desktop, where the navbar stays visible. */}
+      {header && isCompact && (
+        <SidebarHeader
+          onClick={() => {
+            setOpenMobile(false);
+          }}
+          className="ui-banshee-bg-main-white ui-banshee-flex-row ui-banshee-items-center ui-banshee-border-b ui-banshee-border-gold-3 ui-banshee-px-4 ui-banshee-py-5"
+        >
+          {header}
+        </SidebarHeader>
+      )}
       <SidebarContent className="ui-banshee-bg-main-white">
         <SidebarGroup>
           <SidebarGroupContent>
@@ -76,6 +92,11 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild isActive={isActive}>
                       <Link
                         href={href}
+                        onClick={() => {
+                          if (isCompact) {
+                            setOpenMobile(false);
+                          }
+                        }}
                         className={`ui-banshee-gap-4 ui-banshee-flex ui-banshee-items-center group
                         ${
                           isActive

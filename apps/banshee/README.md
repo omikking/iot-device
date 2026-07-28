@@ -39,15 +39,15 @@ You can start editing the pages by modifying files under `src/app/(routes)/[comp
 
 ## Scripts
 
-| Script | What it does |
-| --- | --- |
-| `pnpm dev` | Runs `next dev` and `graphql-codegen --watch` concurrently. |
-| `pnpm dev:next` | Runs only the Next.js dev server (port 3000). |
-| `pnpm dev:graphql-types` | Runs only the GraphQL codegen in watch mode. |
-| `pnpm build` | Production build via `next build`. |
-| `pnpm start` | Starts the production server on port 3000. |
-| `pnpm lint` | Runs `next lint`. |
-| `pnpm type-check` | Runs `tsc --noEmit`. |
+| Script                   | What it does                                                |
+| ------------------------ | ----------------------------------------------------------- |
+| `pnpm dev`               | Runs `next dev` and `graphql-codegen --watch` concurrently. |
+| `pnpm dev:next`          | Runs only the Next.js dev server (port 3000).               |
+| `pnpm dev:graphql-types` | Runs only the GraphQL codegen in watch mode.                |
+| `pnpm build`             | Production build via `next build`.                          |
+| `pnpm start`             | Starts the production server on port 3000.                  |
+| `pnpm lint`              | Runs `next lint`.                                           |
+| `pnpm type-check`        | Runs `tsc --noEmit`.                                        |
 
 ## Project Structure
 
@@ -103,14 +103,16 @@ import { Button, LoadingSpinner, Text } from '@gsp/ui-banshee';
 For consistent UX across pages, use the shared `LoadingSpinner` from `@gsp/ui-banshee` inside a centered flex wrapper rather than ad-hoc text-only loaders:
 
 ```tsx
-{fetching && (
-  <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3">
-    <LoadingSpinner />
-    <Text variant="medium" color="muted">
-      Loading...
-    </Text>
-  </div>
-)}
+{
+  fetching && (
+    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3">
+      <LoadingSpinner />
+      <Text variant="medium" color="muted">
+        Loading...
+      </Text>
+    </div>
+  );
+}
 ```
 
 ## Learn More

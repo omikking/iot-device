@@ -7,8 +7,11 @@ import { BansheePageDonuts } from '@/components/BansheePageDonuts';
 import { BansheeListView } from '@/components/BansheeListView';
 import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';
 import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
+import { BansheeExportMenu } from '@/components/BansheeExportMenu';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
+import { downloadBansheeCsv } from '@/libs/utils';
+import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
 import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -34,6 +37,7 @@ const bansheeRequestsListQuery = graphql(`
     ) {
       results {
         id
+        name
         serialNumber
         site {
           siteName
@@ -87,6 +91,9 @@ const bansheeStatusDistributionQuery = graphql(`
       byLocation {
         locationId
         locationName
+        siteName
+        levelName
+        driveName
         total
         statusCounts {
           status
@@ -122,6 +129,12 @@ export default function Page({ params }: { params: { companyId: string } }) {
     [],
   );
 
+  // Reset the donut/location selection back to "total" whenever the timeframe
+  // (date range) filter changes.
+  useEffect(() => {
+    setActiveLocationDonut('total');
+  }, [timeframe]);
+
   const [{ data: distData, error: distError }] = useQuery({
     query: bansheeStatusDistributionQuery,
     variables: {
@@ -151,87 +164,66 @@ export default function Page({ params }: { params: { companyId: string } }) {
   }, [bansheeListError]);
 
   const bansheeRequests = data?.bansheeRequests?.results || [];
+
+  // Auto-select the smallest timeframe bucket that still contains data, based
+  // on the most recent proceqData.updatedTimestamp (the field the API filters
+  // on). Runs once on the initial unbounded ("ALL") load and never overrides a
+  // manual selection.
+  const didAutoSelectTimeframe = useRef(false);
+  useEffect(() => {
+    if (didAutoSelectTimeframe.current || fetching) return;
+    if (!bansheeRequests.length) return;
+
+    // proceqData is an array; scan every entry's updatedTimestamp.
+    const mostRecent = bansheeRequests.reduce<number>((max, req) => {
+      const entryMax = (req.proceqData ?? []).reduce<number>((m, pd) => {
+        if (!pd?.updatedTimestamp) return m;
+        const time = new Date(pd.updatedTimestamp).getTime();
+        return Number.isNaN(time) ? m : Math.max(m, time);
+      }, max);
+      return entryMax;
+    }, 0);
+
+    didAutoSelectTimeframe.current = true;
+    if (!mostRecent) return;
+
+    const daysAgo = (Date.now() - mostRecent) / (1000 * 60 * 60 * 24);
+    const bucket =
+      daysAgo <= 7
+        ? '7D'
+        : daysAgo <= 30
+          ? '1M'
+          : daysAgo <= 90
+            ? '3M'
+            : daysAgo <= 365
+              ? '1Y'
+              : 'ALL';
+
+    if (bucket !== 'ALL') setTimeframe(bucket);
+  }, [bansheeRequests, fetching]);
   const distributionData = distData?.bansheeStatusDistribution ?? null;
   const form = useForm<ShareFormValues>();
+  const sharePlotList = useSharePlotList(companyId);
 
   const exportToCsv = (
     data: BansheeRequestResult[],
     filename = 'banshee_data.csv',
   ) => {
-    if (!data.length) return;
-
-    // Define CSV headers for flattened structure
-    const headers = [
-      'Serial Number',
-      'Site Name',
-      'Drive Name',
-      'Level Name',
-      'Location Name',
-      'Comment',
-      'Proceq Status',
-      'Proceq Created Timestamp',
-      'Reading Elongation',
-      'Reading Status',
-    ];
-
-    const csvRows: string[] = [headers.join(',')];
-
-    data.forEach((request) => {
-      const serialNumber = request.serialNumber ?? '';
-      const siteName = request.site?.siteName ?? '';
-      const driveName = request.drive?.driveName ?? '';
-      const levelName = request.level?.levelName ?? '';
-      const locationName = request.location?.locationName ?? '';
-      const comment = request.comment ?? '';
-
-      // Each BansheeRequest can have multiple ProceqData entries
-      request.proceqData?.forEach((proceq) => {
-        const proceqStatus = proceq.status ?? '';
-        const createdTimestamp = proceq.createdTimestamp
-          ? new Date(proceq.createdTimestamp).toISOString() // converts to readable ISO format
-          : '';
-
-        // Each ProceqData can have multiple readings
-        proceq.readings?.forEach((reading) => {
-          const elongation = reading.elongation ?? '';
-          const readingStatus = reading.status ?? '';
-
-          const row = [
-            serialNumber,
-            siteName,
-            driveName,
-            levelName,
-            locationName,
-            comment,
-            proceqStatus,
-            createdTimestamp,
-            elongation,
-            readingStatus,
-          ]
-            .map((v) => JSON.stringify(v)) // ensures proper CSV escaping
-            .join(',');
-
-          csvRows.push(row);
-        });
-      });
-    });
-
-    const csvString = csvRows.join('\n');
-
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadBansheeCsv(data, filename);
   };
+
+  // Shares the plot list (CSV + PNG of the given plot) via email-as-PDF.
+  const sharePlot = (email: string, pngFile: File | undefined) =>
+    sharePlotList({
+      email,
+      rows: bansheeRequests,
+      pngFile,
+      onSuccess: () => form.reset({ email: '' }),
+    });
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-p-8 ui-banshee-bg-main-white ui-banshee-w-full">
+      <main className="ui-banshee-min-h-[calc(100vh-80px)] ui-banshee-py-7 ui-banshee-pl-7 ui-banshee-bg-main-white ui-banshee-w-full">
         <BansheePageFilters
           active={timeframe}
           setActive={setTimeframe}
@@ -272,7 +264,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
               className="!ui-banshee-mt-0 ui-banshee-px-2"
             >
               <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
-                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-8">
+                <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center">
                   <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
                     Click and drag in the plot area to zoom in. Hold CTRL and
                     drag to pan
@@ -280,16 +272,14 @@ export default function Page({ params }: { params: { companyId: string } }) {
                   <div className="ui-banshee-flex ui-banshee-gap-2">
                     <button
                       className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
-                      onClick={() => exportToCsv(bansheeRequests)}
-                    >
-                      Export CSV
-                    </button>
-                    <button
-                      className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
                       onClick={() => statusPlotRef.current?.resetZoom()}
                     >
                       Reset zoom
                     </button>
+                    <BansheeExportMenu
+                      onDownloadCsv={() => exportToCsv(bansheeRequests)}
+                      onDownloadPng={() => statusPlotRef.current?.downloadPng()}
+                    />
                   </div>
                 </div>
 
@@ -299,7 +289,17 @@ export default function Page({ params }: { params: { companyId: string } }) {
                   fetching={fetching}
                 />
               </div>
-              <ShareForm form={form} />
+              <ShareForm
+                form={form}
+                onShare={async (email) =>
+                  sharePlot(
+                    email,
+                    await statusPlotRef.current?.getPngFile(
+                      'banshee_status_plot.png',
+                    ),
+                  )
+                }
+              />
             </TabsContent>
 
             <TabsContent
@@ -319,12 +319,18 @@ export default function Page({ params }: { params: { companyId: string } }) {
                     Click and drag in the plot area to zoom in. Hold CTRL and
                     drag to pan
                   </p>
-                  <button
-                    className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
-                    onClick={() => dataPlotRef.current?.resetZoom()}
-                  >
-                    Reset zoom
-                  </button>
+                  <div className="ui-banshee-flex ui-banshee-gap-2">
+                    <button
+                      className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                      onClick={() => dataPlotRef.current?.resetZoom()}
+                    >
+                      Reset zoom
+                    </button>
+                    <BansheeExportMenu
+                      onDownloadCsv={() => exportToCsv(bansheeRequests)}
+                      onDownloadPng={() => dataPlotRef.current?.downloadPng()}
+                    />
+                  </div>
                 </div>
                 <BansheeDataPlot
                   ref={dataPlotRef}
@@ -332,7 +338,17 @@ export default function Page({ params }: { params: { companyId: string } }) {
                   fetching={fetching}
                 />
               </div>
-              <ShareForm form={form} />
+              <ShareForm
+                form={form}
+                onShare={async (email) =>
+                  sharePlot(
+                    email,
+                    await dataPlotRef.current?.getPngFile(
+                      'banshee_data_plot.png',
+                    ),
+                  )
+                }
+              />
             </TabsContent>
           </Tabs>
         </div>

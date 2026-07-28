@@ -36,10 +36,12 @@ export * from './charts/donut-chart';
 export * from './charts/small-donut-chart';
 export * from './charts/line-chart';
 export * from './charts/data-line.chart';
+export * from './charts/use-chart-zoom';
 export * from './charts/bolt-locator';
 // Sidebar
 export * from './base/sidebar';
 export * from './sidebar/app-sidebar';
+export * from './sidebar/mobile-nav-context';
 //Icons
 export * from './svg/banshee-icon';
 export * from './svg/facebook-icon';

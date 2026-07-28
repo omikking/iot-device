@@ -32,12 +32,12 @@ pnpm build
 
 ## Scripts
 
-| Script | What it does |
-| --- | --- |
-| `pnpm dev` | Tailwind watcher → emits `dist/index.css`. |
-| `pnpm build` | One-shot Tailwind build → emits `dist/index.css`. |
-| `pnpm lint` | ESLint over `src/`. |
-| `pnpm type-check` | `tsc --noEmit`. |
+| Script            | What it does                                      |
+| ----------------- | ------------------------------------------------- |
+| `pnpm dev`        | Tailwind watcher → emits `dist/index.css`.        |
+| `pnpm build`      | One-shot Tailwind build → emits `dist/index.css`. |
+| `pnpm lint`       | ESLint over `src/`.                               |
+| `pnpm type-check` | `tsc --noEmit`.                                   |
 
 ## Consuming the package
 
@@ -101,7 +101,9 @@ That means every utility must be written with the prefix:
 ```tsx
 <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3">
   <LoadingSpinner />
-  <Text variant="medium" color="muted">Loading...</Text>
+  <Text variant="medium" color="muted">
+    Loading...
+  </Text>
 </div>
 ```
 
@@ -121,7 +123,10 @@ Example minimal component:
 'use client';
 import { cn } from '../../lib/utils';
 
-export const MyBadge = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
+export const MyBadge = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cn(
       'ui-banshee-inline-flex ui-banshee-items-center ui-banshee-rounded-md ui-banshee-bg-neutral-2 ui-banshee-px-2 ui-banshee-py-0.5',

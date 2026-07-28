@@ -65,7 +65,7 @@ import { useState } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmModal } from '@/components/ConfirmModal';
-import bansheeImage from '../../../../../../../packages/ui-banshee/src/images/banshee-xcell.png';
+import bansheeImage from '../../../../../../../packages/ui-banshee/src/images/banshee-xcell.webp';
 // import { Footer } from '@/components/Footer';
 
 type Technician = UserSchema;
@@ -136,7 +136,10 @@ export default function Page() {
         Bolt Locator 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
-        <BoltLocator onChange={(params)=>console.log(params)} activeBolt='LH_SHOULDER'/>
+        <BoltLocator
+          onChange={(params) => console.log(params)}
+          activeBolt="LH_SHOULDER"
+        />
       </div>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

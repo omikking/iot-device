@@ -10,10 +10,15 @@ import {
   TableHeadWithSorting,
   DropdownMultiSelectSearch,
   LoadingSpinner,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  TooltipArrow,
 } from '@gsp/ui-banshee';
 import { Settings, BarChart2, MessageSquare, Menu } from 'lucide-react';
 import { BansheeDetailModal } from './BansheeDetailModal';
-import { useState, useMemo, ComponentProps } from 'react';
+import { useState, useMemo, ComponentProps, ReactNode } from 'react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeListCommentModal } from './BansheeListCommentModal';
 import { getStatusColorHex } from '@/libs/status-color-utils';
@@ -41,7 +46,7 @@ type ProceqData = {
 
 type BansheeRequestEntry = {
   id: string;
-  serialNumber?: string | null;
+  name?: string | null;
   site?: { siteName?: string | null } | null;
   drive?: { driveName?: string | null } | null;
   level?: { levelName?: string | null } | null;
@@ -73,6 +78,50 @@ type FilterState = {
   drive: string[];
   location: string[];
 };
+
+const COLUMN_TOOLTIPS = {
+  details: 'Expand the row to open the full details of this banshee request.',
+  status:
+    'Latest measurement status of the bolt (e.g. Elastic, Plastic, Unmeasured).',
+  banshee:
+    'Unique Banshee Name identifying each banshee bolt sensor. Use the filter to narrow the list.',
+  site: 'Mine site where the banshee bolt is installed.',
+  level: 'Level within the site where the bolt is located.',
+  drive: 'Drive (tunnel) within the level where the bolt is located.',
+  location: 'Specific location within the drive where the bolt is installed.',
+  elongation:
+    'Most recent total bolt elongation measured, in millimetres (mm).',
+  lastMeasured: 'Date this bolt was most recently measured.',
+  statusChange:
+    'Whether the bolt’s status has changed since the previous measurement.',
+  comment:
+    'Notes recorded for this request. Click the icon to read the full comment.',
+  actions:
+    'Row actions — open configuration settings or the analytics dashboard.',
+} as const;
+
+const HeaderTooltip = ({
+  tip,
+  children,
+}: {
+  tip: string;
+  children: ReactNode;
+}) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className="ui-banshee-flex ui-banshee-h-full ui-banshee-w-full ui-banshee-items-center">
+        {children}
+      </div>
+    </TooltipTrigger>
+    <TooltipContent
+      side="top"
+      className="ui-banshee-max-w-[220px] ui-banshee-text-center ui-banshee-font-normal"
+    >
+      <TooltipArrow />
+      {tip}
+    </TooltipContent>
+  </Tooltip>
+);
 
 const applyFilter = (
   entries: BansheeRequestEntry[],
@@ -132,7 +181,7 @@ export const BansheeListView = ({
     ) as string[];
 
   const bansheeOptions = useMemo(
-    () => buildOptions((e) => e.serialNumber).map((n) => ({ id: n, name: n })),
+    () => buildOptions((e) => e.name).map((n) => ({ id: n, name: n })),
     [entries],
   );
   const siteOptions = useMemo(
@@ -161,11 +210,7 @@ export const BansheeListView = ({
 
   const rows = useMemo((): BansheeRow[] => {
     let filtered = entries || [];
-    filtered = applyFilter(
-      filtered,
-      selectedFilters.banshee,
-      (e) => e.serialNumber,
-    );
+    filtered = applyFilter(filtered, selectedFilters.banshee, (e) => e.name);
     filtered = applyFilter(
       filtered,
       selectedFilters.site,
@@ -194,7 +239,7 @@ export const BansheeListView = ({
 
       return {
         id: entry.id,
-        banshee: entry.serialNumber,
+        banshee: entry.name,
         site: entry.site?.siteName || 'N/A',
         drive: entry.drive?.driveName || 'N/A',
         level: entry.level?.levelName || 'N/A',
@@ -258,252 +303,278 @@ export const BansheeListView = ({
     <>
       <div className="ui-banshee-flex ui-banshee-h-[50vh] ui-banshee-flex-col ui-banshee-w-full">
         <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
-          <Table variant="noBorder">
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  <Text
-                    variant="small"
-                    color="foreground"
-                    className="ui-banshee-font-bold ui-banshee-px-4"
-                  >
-                    Details
-                  </Text>
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Status"
-                    className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
-                    column={createMockColumn('status')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-text-left ui-banshee-p-0 ui-banshee-border-0">
-                  <DropdownMultiSelectSearch
-                    id="banshee-filter"
-                    placeholder="Banshee"
-                    searchPlaceholder="Search banshee..."
-                    variant="compact"
-                    options={bansheeOptions}
-                    selectedIds={selectedFilters.banshee}
-                    onSelect={updateFilter('banshee')}
-                    className="ui-banshee-w-full"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <DropdownMultiSelectSearch
-                    id="site-filter"
-                    placeholder="Site"
-                    searchPlaceholder="Search site..."
-                    variant="compact"
-                    options={siteOptions}
-                    selectedIds={selectedFilters.site}
-                    onSelect={updateFilter('site')}
-                    className="ui-banshee-w-full"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <DropdownMultiSelectSearch
-                    id="level-filter"
-                    placeholder="Level"
-                    searchPlaceholder="Search level..."
-                    variant="compact"
-                    options={levelOptions}
-                    selectedIds={selectedFilters.level}
-                    onSelect={updateFilter('level')}
-                    className="ui-banshee-w-full"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <DropdownMultiSelectSearch
-                    id="drive-filter"
-                    placeholder="Drive"
-                    searchPlaceholder="Search drive..."
-                    variant="compact"
-                    options={driveOptions}
-                    selectedIds={selectedFilters.drive}
-                    onSelect={updateFilter('drive')}
-                    className="ui-banshee-w-full"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <DropdownMultiSelectSearch
-                    id="location-filter"
-                    placeholder="Location"
-                    searchPlaceholder="Search location..."
-                    variant="compact"
-                    options={locationOptions}
-                    selectedIds={selectedFilters.location}
-                    onSelect={updateFilter('location')}
-                    className="ui-banshee-w-full"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Elongation"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
-                    column={createMockColumn('elongation')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Last Measured"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start"
-                    column={createMockColumn('lastMeasured')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Status Change"
-                    className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start"
-                    column={createMockColumn('status')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Comment"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-center"
-                    column={createMockColumn('comment')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-py-2">
-                  <Menu size={20} />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell
-                    className="ui-banshee-text-gray-500 ui-banshee-bg-neutral-2 ui-banshee-font-mono ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
-                    onClick={() => setSelectedBansheeId(row.id)}
-                  >
-                    +
-                  </TableCell>
-                  <TableCell>
-                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                      <span
-                        className="ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full"
-                        style={{
-                          backgroundColor: getStatusColorHex(row.status),
-                        }}
-                        title={row.status}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className=" ui-banshee-pl-8"
-                    >
-                      {row.banshee}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-8"
-                    >
-                      {row.site}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-8"
-                    >
-                      {row.level}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-8"
-                    >
-                      {row.drive}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-8"
-                    >
-                      {row.location}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-4"
-                    >
-                      {row.elongation}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-pl-4"
-                    >
-                      {row.lastMeasured}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-left">
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className={
-                        row.statusChange === 'Yes'
-                          ? 'ui-banshee-text-blue-500 ui-banshee-pl-4'
-                          : 'ui-banshee-text-gray-600 ui-banshee-pl-4'
-                      }
-                    >
-                      {row.statusChange}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-text-center">
-                    {row.comment === 'icon' ? (
-                      <MessageSquare
-                        size={16}
-                        className="ui-banshee-text-gray-500 ui-banshee-mx-auto ui-banshee-cursor-pointer hover:ui-banshee-text-gray-700"
-                        onClick={() =>
-                          setSelectedComment({
-                            banshee: row.banshee || 'Unknown',
-                            comment: row.fullComment,
-                          })
-                        }
-                      />
-                    ) : (
-                      <Text variant="small" color="foreground">
-                        {row.comment}
+          <TooltipProvider delayDuration={200}>
+            <Table variant="noBorder">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.details}>
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-font-bold ui-banshee-px-2 ui-banshee-whitespace-nowrap"
+                      >
+                        Details
                       </Text>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="ui-banshee-flex ui-banshee-px-8 ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-gray-400">
-                      <Settings
-                        size={16}
-                        className="ui-banshee-cursor-pointer ui-banshee-text-gray-500 hover:ui-banshee-text-[#101010]"
-                        onClick={() => router.push(`/banshee/${row.id}`)}
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.status}>
+                      <TableHeadWithSorting
+                        header="Status"
+                        className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('status')}
                       />
-                      <BarChart2
-                        size={16}
-                        className="ui-banshee-cursor-pointer ui-banshee-text-gray-500 hover:ui-banshee-text-[#101010]"
-                        onClick={() =>
-                          router.push(`/banshee/dashboard/${row.id}`)
-                        }
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-text-left ui-banshee-p-0 ui-banshee-border-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.banshee}>
+                      <DropdownMultiSelectSearch
+                        id="banshee-filter"
+                        placeholder="Banshee"
+                        searchPlaceholder="Search banshee..."
+                        variant="compact"
+                        options={bansheeOptions}
+                        selectedIds={selectedFilters.banshee}
+                        onSelect={updateFilter('banshee')}
+                        className="ui-banshee-w-full ui-banshee-whitespace-nowrap"
                       />
-                    </div>
-                  </TableCell>
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.site}>
+                      <DropdownMultiSelectSearch
+                        id="site-filter"
+                        placeholder="Site"
+                        searchPlaceholder="Search site..."
+                        variant="compact"
+                        options={siteOptions}
+                        selectedIds={selectedFilters.site}
+                        onSelect={updateFilter('site')}
+                        className="ui-banshee-w-full ui-banshee-whitespace-nowrap"
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.level}>
+                      <DropdownMultiSelectSearch
+                        id="level-filter"
+                        placeholder="Level"
+                        searchPlaceholder="Search level..."
+                        variant="compact"
+                        options={levelOptions}
+                        selectedIds={selectedFilters.level}
+                        onSelect={updateFilter('level')}
+                        className="ui-banshee-w-full ui-banshee-whitespace-nowrap"
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.drive}>
+                      <DropdownMultiSelectSearch
+                        id="drive-filter"
+                        placeholder="Drive"
+                        searchPlaceholder="Search drive..."
+                        variant="compact"
+                        options={driveOptions}
+                        selectedIds={selectedFilters.drive}
+                        onSelect={updateFilter('drive')}
+                        className="ui-banshee-w-full ui-banshee-whitespace-nowrap"
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.location}>
+                      <DropdownMultiSelectSearch
+                        id="location-filter"
+                        placeholder="Location"
+                        searchPlaceholder="Search location..."
+                        variant="compact"
+                        options={locationOptions}
+                        selectedIds={selectedFilters.location}
+                        onSelect={updateFilter('location')}
+                        className="ui-banshee-w-full ui-banshee-whitespace-nowrap"
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.elongation}>
+                      <TableHeadWithSorting
+                        header="Total Elongation (mm)"
+                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('elongation')}
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.lastMeasured}>
+                      <TableHeadWithSorting
+                        header="Last Measured"
+                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('lastMeasured')}
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.statusChange}>
+                      <TableHeadWithSorting
+                        header="Status Change"
+                        className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('status')}
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.comment}>
+                      <TableHeadWithSorting
+                        header="Comment"
+                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-center ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('comment')}
+                      />
+                    </HeaderTooltip>
+                  </TableHead>
+                  <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-py-2">
+                    <HeaderTooltip tip={COLUMN_TOOLTIPS.actions}>
+                      <Menu size={20} className="ui-banshee-mx-auto" />
+                    </HeaderTooltip>
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell
+                      className="ui-banshee-text-gray-500 ui-banshee-bg-neutral-2 ui-banshee-text-xl ui-banshee-font-mono ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
+                      onClick={() => setSelectedBansheeId(row.id)}
+                    >
+                      +
+                    </TableCell>
+                    <TableCell>
+                      <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
+                        <span
+                          className="ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full"
+                          style={{
+                            backgroundColor: getStatusColorHex(row.status),
+                          }}
+                          title={row.status}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4 ui-banshee-text-black"
+                      >
+                        {row.banshee}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.site}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.level}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.drive}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.location}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.elongation}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-pl-4"
+                      >
+                        {row.lastMeasured}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className={
+                          row.statusChange === 'Yes'
+                            ? 'ui-banshee-text-blue-500 ui-banshee-pl-4'
+                            : 'ui-banshee-text-gray-600 ui-banshee-pl-4'
+                        }
+                      >
+                        {row.statusChange}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-center">
+                      {row.comment === 'icon' ? (
+                        <MessageSquare
+                          size={16}
+                          className="ui-banshee-text-black ui-banshee-mx-auto ui-banshee-cursor-pointer hover:ui-banshee-text-gray-700"
+                          onClick={() =>
+                            setSelectedComment({
+                              banshee: row.banshee || 'Unknown',
+                              comment: row.fullComment,
+                            })
+                          }
+                        />
+                      ) : (
+                        <Text variant="small" color="foreground">
+                          {row.comment}
+                        </Text>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="ui-banshee-flex ui-banshee-px-8 ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-gray-400">
+                        <Settings
+                          size={16}
+                          className="ui-banshee-cursor-pointer ui-banshee-text-black"
+                          onClick={() => router.push(`/banshee/${row.id}`)}
+                        />
+                        <BarChart2
+                          size={16}
+                          className="ui-banshee-cursor-pointer ui-banshee-text-black"
+                          onClick={() =>
+                            router.push(`/banshee/dashboard/${row.id}`)
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TooltipProvider>
         </div>
       </div>
       <BansheeDetailModal

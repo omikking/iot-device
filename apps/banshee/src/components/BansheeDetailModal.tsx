@@ -20,6 +20,7 @@ const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
     bansheeRequest(id: $id) {
       id
+      name
       serialNumber
       boltInstallationDateTime
       period
@@ -79,11 +80,11 @@ interface DetailRowProps {
 }
 
 const DetailRow = memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-3 ui-banshee-border-b ui-banshee-border-[#E6E6E6] ui-banshee-text-sm ">
-    <div className="ui-banshee-font-medium ui-banshee-text-neutral-500 ui-banshee-w-1/2 ui-banshee-pr-4">
+  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-neutral-2 ui-banshee-text-base">
+    <div className="ui-banshee-font-medium ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-pr-4">
       {label}
     </div>
-    <div className="ui-banshee-text-neutral-800 ui-banshee-w-1/2 ui-banshee-break-words">
+    <div className="ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-break-words">
       {value ?? 'N/A'}
     </div>
   </div>
@@ -96,16 +97,16 @@ interface ActionBarProps {
 }
 
 const ActionBar = memo(({ onSettingsClick, onBarClick }: ActionBarProps) => (
-  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-neutral-500">
+  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-main-black">
     <Settings
       size={20}
       onClick={onSettingsClick}
-      className="ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
+      className="ui-banshee-cursor-pointer hover:ui-banshee-text-black"
     />
     <BarChart2
       size={20}
       onClick={onBarClick}
-      className="ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
+      className="ui-banshee-cursor-pointer hover:ui-banshee-text-black"
     />
   </div>
 ));
@@ -147,6 +148,24 @@ export const BansheeDetailModal = memo(
       handleGraphQLErrors(error);
     }, [error]);
 
+    function formatBoltType(boltType: string | null | undefined): string {
+      if (!boltType) return 'N/A';
+
+      return boltType
+        .split('_')
+        .map((part) => {
+          // Keep numbers as-is
+          if (/^\d+$/.test(part)) return part;
+
+          // Uppercase short abbreviations like MD, HD, SS
+          if (part.length <= 3) return part.toUpperCase();
+
+          // Capitalize normal words
+          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+        })
+        .join(' ');
+    }
+
     const details = useMemo(() => {
       const request = data?.bansheeRequest;
       if (!request) return null;
@@ -157,6 +176,7 @@ export const BansheeDetailModal = memo(
       const lastReading = readings.at(-1) ?? null;
 
       return {
+        bansheeName: request.name,
         serialNumber: request.serialNumber,
         status: getStatusLabel(latestMeasurement?.status),
         createdTimeStr: latestMeasurement?.createdTimestamp
@@ -173,7 +193,7 @@ export const BansheeDetailModal = memo(
           lastReading?.elongation != null
             ? lastReading.elongation.toFixed(1)
             : '-',
-        boltType: request.boltType ?? 'N/A',
+        boltType: formatBoltType(request.boltType),
         period: formatPeriod(request.period),
         lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit || 'N/A',
         elasticLimit: request.boltTypeConstant?.elasticLimit || 'N/A',
@@ -185,10 +205,10 @@ export const BansheeDetailModal = memo(
 
     return (
       <Modal open={!!bansheeId} onOpenChange={handleOpenChange}>
-        <ModalContent>
+        <ModalContent className="!ui-banshee-max-h-[92vh] ui-banshee-overflow-auto">
           <ModalHeader>
             <ModalTitle>
-              {details?.serialNumber ?? (fetching ? 'Loading...' : '—')}
+              {details?.bansheeName ?? (fetching ? 'Loading...' : '—')}
             </ModalTitle>
           </ModalHeader>
 
@@ -201,7 +221,8 @@ export const BansheeDetailModal = memo(
 
           {!fetching && details && (
             <>
-              <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-flex-col">
+              <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-flex-col ui-banshee-text-black">
+                <DetailRow label="Serial Number" value={details.serialNumber} />
                 <DetailRow label="Status" value={details.status} />
                 <DetailRow
                   label="Last Reading"

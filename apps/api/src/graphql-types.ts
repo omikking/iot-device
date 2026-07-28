@@ -13,6 +13,12 @@ export enum BansheeCartItemType {
     SERVICE_EXISTING = "SERVICE_EXISTING"
 }
 
+export enum BansheeEmailStatus {
+    PENDING = "PENDING",
+    SENT = "SENT",
+    FAILED = "FAILED"
+}
+
 export enum BansheeOrderStatus {
     PENDING = "PENDING",
     COMPLETED = "COMPLETED",
@@ -153,9 +159,25 @@ export class UpdateNewBansheeCartItemInput {
     period?: Nullable<number>;
 }
 
+export class BansheeSharePlotListInput {
+    companyId: string;
+    recipientEmail: string;
+}
+
+export class BansheeContactUsInput {
+    companyId: string;
+    message: string;
+}
+
+export class BansheeContactUsInboxFilter {
+    status?: Nullable<BansheeEmailStatus>;
+    companyId?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+}
+
 export class SubmitOrderInput {
     companyId: string;
-    attachments?: Nullable<string[]>;
+    attachmentsName?: Nullable<string[]>;
     comment: string;
 }
 
@@ -462,6 +484,8 @@ export class AddCartItemsResult {
 export abstract class IQuery {
     cartItems?: BansheeCartItem[];
     cartItemsStats?: BansheeCartItemStats;
+    bansheeContactUsInbox?: BansheeContactUsInboxResponse;
+    bansheeContactById?: Nullable<BansheeEmail>;
     orders?: OrdersResponse;
     order?: BansheeOrder;
     bansheeRequests?: BansheeRequestResponse;
@@ -499,6 +523,7 @@ export abstract class IQuery {
     locations: Location[];
     location?: Location;
     proceqLoginUrl?: ProceqLoginUrlResponse;
+    getProceqTokenStatus: GetProceqTokenStatusResponse;
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -512,6 +537,8 @@ export abstract class IMutation {
     updateNewBansheeCartItem?: BansheeCartItem;
     deleteCartItem?: BansheeCartItem;
     clearCart?: boolean;
+    bansheeSharePlotList?: BansheeSharePlotListResponse;
+    bansheeContactUs?: BansheeContactUsResponse;
     submitOrder?: BansheeOrder;
     cancelOrder?: BansheeOrder;
     completeOrder?: BansheeOrder;
@@ -560,6 +587,44 @@ export abstract class IMutation {
     removeUserPermission?: UserPermission;
     updateUser?: User;
     removeUser?: User;
+}
+
+export class BansheeEmailAttachment {
+    id: string;
+    originalFileName: string;
+    storedFileName: string;
+    filePath: string;
+    mimeType: string;
+    fileSize: number;
+    createdAt: DateTime;
+}
+
+export class BansheeEmail {
+    id: string;
+    status: BansheeEmailStatus;
+    message: string;
+    userId: string;
+    companyId: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    attachments?: Nullable<BansheeEmailAttachment[]>;
+}
+
+export class BansheeSharePlotListResponse {
+    success: boolean;
+    sentTo?: Nullable<string>;
+    message?: Nullable<string>;
+}
+
+export class BansheeContactUsResponse {
+    success: boolean;
+    message?: Nullable<string>;
+    email?: Nullable<BansheeEmail>;
+}
+
+export class BansheeContactUsInboxResponse {
+    items: BansheeEmail[];
+    total: number;
 }
 
 export class BansheeOrder {
@@ -645,6 +710,9 @@ export class BansheeRequestResponse {
 export class LocationDistribution {
     locationId: string;
     locationName: string;
+    siteName: string;
+    levelName: string;
+    driveName: string;
     total: number;
     statusCounts: StatusCount[];
     results: BansheeRequest[];
@@ -903,7 +971,7 @@ export class ProceqData {
     fileName: string;
     operator?: Nullable<string>;
     email?: Nullable<string>;
-    dueDate: DateTime;
+    dueDate?: Nullable<DateTime>;
     comments: string;
     temperature?: Nullable<number>;
     rawDataZipId?: Nullable<string>;
@@ -933,6 +1001,12 @@ export class ProceqAttachment {
 
 export class ProceqLoginUrlResponse {
     url: string;
+}
+
+export class GetProceqTokenStatusResponse {
+    valid: boolean;
+    canRefresh: boolean;
+    expiresAt?: Nullable<string>;
 }
 
 export class Site {
@@ -972,7 +1046,7 @@ export class User {
     userPermissions?: Nullable<UserPermission[]>;
 }
 
-export type DateTime = any;
 export type Upload = any;
+export type DateTime = any;
 export type JSON = any;
 type Nullable<T> = T | null;

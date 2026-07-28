@@ -41,7 +41,7 @@ export const BansheePageFilters = ({
           className={
             active === tf
               ? 'ui-banshee-bg-blue-600 ui-banshee-text-white'
-              : 'ui-banshee-bg-gray-100 ui-banshee-text-[#101010] ui-banshee-border-gray-200'
+              : 'ui-banshee-bg-gray-100 ui-banshee-text-main-black ui-banshee-border-gray-200'
           }
         >
           {tf}

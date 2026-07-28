@@ -356,4 +356,3 @@ export default function Page({ params }: { params: { companyId: string } }) {
     </SidebarInset>
   );
 }
- 

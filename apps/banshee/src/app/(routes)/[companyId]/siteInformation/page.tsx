@@ -120,11 +120,7 @@ export default function SiteInformationPage({
   const { companyId } = params;
 
   const [
-    {
-      data: hierarchyData,
-      fetching: hierarchyFetching,
-      error: hierarchyError,
-    },
+    { data: hierarchyData, fetching: hierarchyFetching, error: hierarchyError },
   ] = useQuery({
     query: companyHierarchyQuery,
     variables: { companyId },

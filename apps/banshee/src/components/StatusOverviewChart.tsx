@@ -149,7 +149,13 @@ export const StatusOverviewChart = ({
 
   return (
     <div className="ui-banshee-col-span-1 lg:ui-banshee-col-span-2 ui-banshee-h-full ui-banshee-flex ui-banshee-flex-col">
-      <Headline variant="small" color="foreground" as="h3" isBold className='ui-banshee-mb-2'>
+      <Headline
+        variant="small"
+        color="foreground"
+        as="h3"
+        isBold
+        className="ui-banshee-mb-2"
+      >
         Status Overview
       </Headline>
 

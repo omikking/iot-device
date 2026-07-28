@@ -210,11 +210,7 @@ export const BansheeListView = ({
 
   const rows = useMemo((): BansheeRow[] => {
     let filtered = entries || [];
-    filtered = applyFilter(
-      filtered,
-      selectedFilters.banshee,
-      (e) => e.name,
-    );
+    filtered = applyFilter(filtered, selectedFilters.banshee, (e) => e.name);
     filtered = applyFilter(
       filtered,
       selectedFilters.site,

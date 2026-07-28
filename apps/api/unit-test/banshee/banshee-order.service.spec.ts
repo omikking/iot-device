@@ -144,7 +144,9 @@ describe('BansheeOrderService', () => {
 
       await service.findAll(undefined, 0, 50, makeCompanyUser(companyId));
 
-      expect(prisma.bansheeOrder.findMany.mock.calls[0][0].where.companyId).toEqual({
+      expect(
+        prisma.bansheeOrder.findMany.mock.calls[0][0].where.companyId,
+      ).toEqual({
         in: [companyId],
       });
     });
@@ -153,7 +155,12 @@ describe('BansheeOrderService', () => {
       prisma.bansheeOrder.count.mockResolvedValue(0);
       prisma.bansheeOrder.findMany.mockResolvedValue([]);
 
-      await service.findAll(undefined, undefined as any, undefined as any, adminUser);
+      await service.findAll(
+        undefined,
+        undefined as any,
+        undefined as any,
+        adminUser,
+      );
 
       const arg = prisma.bansheeOrder.findMany.mock.calls[0][0];
       expect(arg.skip).toBe(0);
@@ -169,14 +176,19 @@ describe('BansheeOrderService', () => {
       const result = await service.findOne('order-1', adminUser);
 
       expect(result).toBe(order);
-      expect(prisma.bansheeOrder.findUnique.mock.calls[0][0].include).toBeDefined();
+      expect(
+        prisma.bansheeOrder.findUnique.mock.calls[0][0].include,
+      ).toBeDefined();
     });
 
     it('returns the order for a non-admin with matching company access', async () => {
       const order = { id: 'order-1', companyId, orderItems: [] };
       prisma.bansheeOrder.findUnique.mockResolvedValue(order);
 
-      const result = await service.findOne('order-1', makeCompanyUser(companyId));
+      const result = await service.findOne(
+        'order-1',
+        makeCompanyUser(companyId),
+      );
 
       expect(result).toBe(order);
     });
@@ -222,9 +234,9 @@ describe('BansheeOrderService', () => {
         BansheeOrderStatus.CANCELLED,
       );
       // Pending items get cancelled too.
-      expect(prisma.bansheeOrderItem.updateMany.mock.calls[0][0].data.status).toBe(
-        BansheeOrderItemStatus.CANCELLED,
-      );
+      expect(
+        prisma.bansheeOrderItem.updateMany.mock.calls[0][0].data.status,
+      ).toBe(BansheeOrderItemStatus.CANCELLED);
     });
 
     it('rejects cancelling an already cancelled order', async () => {
@@ -278,7 +290,11 @@ describe('BansheeOrderService', () => {
         status: BansheeOrderStatus.COMPLETED,
       });
 
-      const result = await service.completeOrder('order-1', undefined, adminUser);
+      const result = await service.completeOrder(
+        'order-1',
+        undefined,
+        adminUser,
+      );
 
       expect(result.status).toBe(BansheeOrderStatus.COMPLETED);
       expect(prisma.bansheeOrder.update.mock.calls[0][0].data.status).toBe(
@@ -461,13 +477,15 @@ describe('BansheeOrderService', () => {
         { bansheeRequestId: 'req-1', measurementId: 'm-1' },
       ]);
 
-      expect(prisma.bansheeOrderItem.updateMany.mock.calls[0][0]).toMatchObject({
-        where: { id: { in: ['item-1'] } },
-        data: { status: BansheeOrderItemStatus.FULFILLED },
-      });
-      expect(prisma.bansheeOrder.updateMany.mock.calls[0][0].where.id.in).toContain(
-        'order-1',
+      expect(prisma.bansheeOrderItem.updateMany.mock.calls[0][0]).toMatchObject(
+        {
+          where: { id: { in: ['item-1'] } },
+          data: { status: BansheeOrderItemStatus.FULFILLED },
+        },
       );
+      expect(
+        prisma.bansheeOrder.updateMany.mock.calls[0][0].where.id.in,
+      ).toContain('order-1');
       expect(prisma.bansheeOrder.updateMany.mock.calls[0][0].data.status).toBe(
         BansheeOrderStatus.COMPLETED,
       );

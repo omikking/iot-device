@@ -143,16 +143,24 @@ describe('BansheeCartService', () => {
       const updated = { id: 'cart-1', quantity: 5, name: 'Renamed' };
       prisma.bansheeCartItem.update.mockResolvedValue(updated);
 
-      const result = await service.updateNewBansheeCartItem(companyId, 'cart-1', {
-        quantity: 5,
-        name: 'Renamed',
-        period: 12,
-      } as any);
+      const result = await service.updateNewBansheeCartItem(
+        companyId,
+        'cart-1',
+        {
+          quantity: 5,
+          name: 'Renamed',
+          period: 12,
+        } as any,
+      );
 
       expect(result).toBe(updated);
       const arg = prisma.bansheeCartItem.update.mock.calls[0][0];
       expect(arg.where).toEqual({ id: 'cart-1' });
-      expect(arg.data).toMatchObject({ quantity: 5, name: 'Renamed', period: 12 });
+      expect(arg.data).toMatchObject({
+        quantity: 5,
+        name: 'Renamed',
+        period: 12,
+      });
     });
 
     it('only writes the fields that were provided', async () => {
@@ -243,7 +251,10 @@ describe('BansheeCartService', () => {
     it('returns newBanshee, serviceExisting and total summed from quantities', async () => {
       prisma.bansheeCartItem.groupBy.mockResolvedValue([
         { itemType: BansheeCartItemType.NEW_BANSHEE, _sum: { quantity: 3 } },
-        { itemType: BansheeCartItemType.SERVICE_EXISTING, _sum: { quantity: 2 } },
+        {
+          itemType: BansheeCartItemType.SERVICE_EXISTING,
+          _sum: { quantity: 2 },
+        },
       ]);
 
       const result = await service.getCartItemsStats(companyId);

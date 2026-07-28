@@ -43,7 +43,11 @@ const eventsPageTableQuery = gql`
   }
 `;
 
-export const EventsPageTable = ({ params }: { params: { companyId: string } }) => {
+export const EventsPageTable = ({
+  params,
+}: {
+  params: { companyId: string };
+}) => {
   const { companyId } = params;
   const [{ data, fetching, error }] = useQuery({
     query: eventsPageTableQuery,
@@ -230,7 +234,11 @@ export const EventsPageTable = ({ params }: { params: { companyId: string } }) =
                       </Text>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left">
-                      <Text className="ui-banshee-px-4 ui-banshee-text-left" variant="small" color="foreground">
+                      <Text
+                        className="ui-banshee-px-4 ui-banshee-text-left"
+                        variant="small"
+                        color="foreground"
+                      >
                         {event.eventType === 'STATUS_CHANGE'
                           ? `Status changed from ${getStatusLabel(
                               event.previousStatus,

@@ -8,8 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary:
-          'ui-banshee-bg-blue-primary ui-banshee-text-main-white',
+        primary: 'ui-banshee-bg-blue-primary ui-banshee-text-main-white',
         destructive:
           'ui-banshee-bg-destructive ui-banshee-text-destructive-foreground hover:ui-banshee-bg-destructive/90',
         // outline:

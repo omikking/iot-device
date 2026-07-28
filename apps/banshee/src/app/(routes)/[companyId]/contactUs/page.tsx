@@ -230,10 +230,7 @@ export default function ContactUsPage({
                     download
                     className="ui-banshee-cursor-pointer ui-banshee-underline"
                   >
-                    <Text
-                      variant="small"
-                      color="foreground"
-                    >
+                    <Text variant="small" color="foreground">
                       {doc.name}
                     </Text>
                   </a>
@@ -311,7 +308,7 @@ export default function ContactUsPage({
                     as="h5"
                     variant="base"
                     color="foreground"
-                    className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"  
+                    className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
                   >
                     Attachments
                   </Headline>

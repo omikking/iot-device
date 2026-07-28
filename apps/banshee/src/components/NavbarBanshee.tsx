@@ -198,7 +198,7 @@ export const NavbarBanshee = () => {
                   sideOffset={29}
                   align="end"
                   alignOffset={-24}
-                   onOpenAutoFocus={(e) => e.preventDefault()}
+                  onOpenAutoFocus={(e) => e.preventDefault()}
                   className="ui-banshee-border-none ui-banshee-shadow-2xl ui-banshee-p-8 ui-banshee-pb-4 ui-banshee-min-w-64 ui-banshee-w-fit"
                 >
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">

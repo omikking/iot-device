@@ -19,8 +19,8 @@ const useClient = () => {
   return useMemo(() => {
     // This client manages all of our GraphQL requests and results.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    ? `${process.env.NEXT_PUBLIC_API_URL}/graphql`
-    : undefined;
+      ? `${process.env.NEXT_PUBLIC_API_URL}/graphql`
+      : undefined;
 
     if (!apiUrl) {
       throw new Error('NEXT_PUBLIC_API_URL is not defined');

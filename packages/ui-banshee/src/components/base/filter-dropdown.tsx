@@ -120,7 +120,7 @@ const FilterDropdown = React.forwardRef<HTMLDivElement, FilterDropdownProps>(
                   isOpen && 'ui-banshee-rotate-180',
                 )}
               />
-            </button> 
+            </button>
           </PopoverTrigger>
 
           <PopoverContent

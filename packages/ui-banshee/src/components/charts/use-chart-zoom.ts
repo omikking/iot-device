@@ -68,7 +68,9 @@ export type ZoomOptionFragment = {
   toolbox?: ToolboxComponentOption;
 };
 
-export function buildZoomOption(config: ChartZoomConfig = {}): ZoomOptionFragment {
+export function buildZoomOption(
+  config: ChartZoomConfig = {},
+): ZoomOptionFragment {
   const { enabled = true, axis = 'both', showToolbox = false } = config;
   if (!enabled) return {};
 
@@ -129,7 +131,12 @@ export function zoomChartToRange(
 ): void {
   const from = Math.max(0, Math.min(100, start));
   const to = Math.max(from, Math.min(100, end));
-  chart?.dispatchAction({ type: 'dataZoom', dataZoomIndex: 0, start: from, end: to });
+  chart?.dispatchAction({
+    type: 'dataZoom',
+    dataZoomIndex: 0,
+    start: from,
+    end: to,
+  });
 }
 
 /** Read the current x-axis window as percentages (0–100). */

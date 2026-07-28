@@ -136,7 +136,10 @@ export default function Page() {
         Bolt Locator 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
-        <BoltLocator onChange={(params)=>console.log(params)} activeBolt='LH_SHOULDER'/>
+        <BoltLocator
+          onChange={(params) => console.log(params)}
+          activeBolt="LH_SHOULDER"
+        />
       </div>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">

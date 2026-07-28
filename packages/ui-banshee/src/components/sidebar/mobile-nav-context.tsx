@@ -19,11 +19,7 @@ const MobileNavContext = React.createContext<MobileNavContextValue | null>(
   null,
 );
 
-export function MobileNavProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function MobileNavProvider({ children }: { children: React.ReactNode }) {
   const [openMobile, setOpenMobile] = React.useState(false);
 
   const toggleMobile = React.useCallback(() => {

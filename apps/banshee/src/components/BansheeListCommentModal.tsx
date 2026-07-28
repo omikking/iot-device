@@ -1,9 +1,4 @@
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-} from '@gsp/ui-banshee';
+import { Modal, ModalContent, ModalHeader, ModalTitle } from '@gsp/ui-banshee';
 
 interface BansheeListCommentModalProps {
   isOpen: boolean;
@@ -12,7 +7,12 @@ interface BansheeListCommentModalProps {
   onClose: () => void;
 }
 
-export const BansheeListCommentModal = ({ isOpen, bansheeName, comment, onClose }: BansheeListCommentModalProps) => {
+export const BansheeListCommentModal = ({
+  isOpen,
+  bansheeName,
+  comment,
+  onClose,
+}: BansheeListCommentModalProps) => {
   return (
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent>

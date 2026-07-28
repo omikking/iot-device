@@ -34,33 +34,33 @@ services.
 
 ## Coverage map
 
-| Smoke case | Test file | What it verifies |
-|---|---|---|
-| BE-REQ-01 | `banshee/banshee-request.service.spec.ts` | Create — happy path persists & returns an id |
-| BE-REQ-02 | " | Paginated list honours offset/limit + totalRecords |
-| BE-REQ-03 | " | Fetch by id (and NOT_FOUND error) |
-| BE-REQ-04 | " | Update touches only supplied fields |
-| BE-REQ-05 | " | Duplicate serial rejected, no row written |
-| BE-CRT-01 | `banshee/banshee-cart.service.spec.ts` | Add mixed items; skip-with-reason; required-field guard |
-| BE-CRT-02 | " | List cart items scoped to company w/ relations |
-| BE-CRT-03 | " | Update NEW_BANSHEE item + ownership/type guards |
-| BE-CRT-04 | " | Delete single item; clear cart returns true |
-| BE-CRT-05 | " | Stats aggregation (newBanshee/serviceExisting/total) |
-| BE-ORD-01 | `banshee/banshee-order.service.spec.ts` | Submit order from cart, expand by qty, clear cart |
-| BE-ORD-02 | " | List orders with status/company/date filters |
-| BE-ORD-03 | " | Get by id + access scoping |
-| BE-ORD-04 | " | Cancel/Complete transitions + invalid transitions |
-| BE-ORD-05 | " | Fulfil/Cancel item + order status recompute |
-| BE-TMP-01 | `banshee/banshee-template.service.spec.ts` | Create + duplicate-name rejection |
-| BE-TMP-02 | " | List by company |
-| BE-TMP-03 | " | Fetch by id (NOT_FOUND error) |
-| BE-TMP-04 | " | Update fields |
-| BE-TMP-05 | " | Delete + NOT_FOUND guard |
-| BE-STT-01 | `banshee/banshee-stats.service.spec.ts` | Session stats day-aligned date range |
-| BE-STT-02 | " | Filter by company + non-admin access denial |
-| BE-STT-03 | " | Filter by site |
-| BE-STT-04 | " | Empty range returns `[]` |
-| BE-STT-05 | " | Aggregation accuracy (increment/decrement, clamped) |
+| Smoke case | Test file                                  | What it verifies                                        |
+| ---------- | ------------------------------------------ | ------------------------------------------------------- |
+| BE-REQ-01  | `banshee/banshee-request.service.spec.ts`  | Create — happy path persists & returns an id            |
+| BE-REQ-02  | "                                          | Paginated list honours offset/limit + totalRecords      |
+| BE-REQ-03  | "                                          | Fetch by id (and NOT_FOUND error)                       |
+| BE-REQ-04  | "                                          | Update touches only supplied fields                     |
+| BE-REQ-05  | "                                          | Duplicate serial rejected, no row written               |
+| BE-CRT-01  | `banshee/banshee-cart.service.spec.ts`     | Add mixed items; skip-with-reason; required-field guard |
+| BE-CRT-02  | "                                          | List cart items scoped to company w/ relations          |
+| BE-CRT-03  | "                                          | Update NEW_BANSHEE item + ownership/type guards         |
+| BE-CRT-04  | "                                          | Delete single item; clear cart returns true             |
+| BE-CRT-05  | "                                          | Stats aggregation (newBanshee/serviceExisting/total)    |
+| BE-ORD-01  | `banshee/banshee-order.service.spec.ts`    | Submit order from cart, expand by qty, clear cart       |
+| BE-ORD-02  | "                                          | List orders with status/company/date filters            |
+| BE-ORD-03  | "                                          | Get by id + access scoping                              |
+| BE-ORD-04  | "                                          | Cancel/Complete transitions + invalid transitions       |
+| BE-ORD-05  | "                                          | Fulfil/Cancel item + order status recompute             |
+| BE-TMP-01  | `banshee/banshee-template.service.spec.ts` | Create + duplicate-name rejection                       |
+| BE-TMP-02  | "                                          | List by company                                         |
+| BE-TMP-03  | "                                          | Fetch by id (NOT_FOUND error)                           |
+| BE-TMP-04  | "                                          | Update fields                                           |
+| BE-TMP-05  | "                                          | Delete + NOT_FOUND guard                                |
+| BE-STT-01  | `banshee/banshee-stats.service.spec.ts`    | Session stats day-aligned date range                    |
+| BE-STT-02  | "                                          | Filter by company + non-admin access denial             |
+| BE-STT-03  | "                                          | Filter by site                                          |
+| BE-STT-04  | "                                          | Empty range returns `[]`                                |
+| BE-STT-05  | "                                          | Aggregation accuracy (increment/decrement, clamped)     |
 
 ## Extended coverage (beyond the smoke cases)
 
@@ -85,9 +85,10 @@ Each suite also covers, per service:
   business error; the tests assert the **real** behaviour.
 - **Access-denied errors are masked as generic errors.** In several
   `banshee-request` and `banshee-template` methods, the access-control
-  `ForbiddenException` is thrown *inside* a broad `try/catch` whose handler only
+  `ForbiddenException` is thrown _inside_ a broad `try/catch` whose handler only
   re-throws `UserInputError`. The `ForbiddenException` is therefore swallowed and
   re-wrapped as a generic error:
+
   - `BansheeRequestsService.findAll` → `BANSHEE_REQUESTS_FETCH_ERROR`
   - `BansheeRequestsService.findOne` → `BANSHEE_REQUEST_FETCH_ERROR`
   - `BansheeTemplateService.createBansheeTemplate` → `BANSHEE_TEMPLATE_CREATION_ERROR_GENERIC`
@@ -95,6 +96,6 @@ Each suite also covers, per service:
 
   The request is still correctly denied (no query runs), but the client receives
   a misleading generic error instead of an access-denied error. The tests assert
-  the *current* behaviour and mark these spots — consider re-throwing
+  the _current_ behaviour and mark these spots — consider re-throwing
   `ForbiddenException` from those catch blocks. (`remove`, `findBansheeTemplateById`
   and `getStatusDistribution` already propagate it correctly.)

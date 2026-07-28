@@ -107,7 +107,10 @@ describe('BansheeTemplateService', () => {
     it('rejects when the drive does not belong to the level', async () => {
       prisma.bansheeTemplate.findFirst.mockResolvedValue(null);
       prisma.level.findUnique.mockResolvedValue({ id: levelId });
-      prisma.drive.findUnique.mockResolvedValue({ id: driveId, levelId: 'other-level' });
+      prisma.drive.findUnique.mockResolvedValue({
+        id: driveId,
+        levelId: 'other-level',
+      });
 
       await expect(
         service.createBansheeTemplate(
@@ -130,7 +133,13 @@ describe('BansheeTemplateService', () => {
 
       await expect(
         service.createBansheeTemplate(
-          { templateName: 'Template A', companyId, levelId, driveId, locationId } as any,
+          {
+            templateName: 'Template A',
+            companyId,
+            levelId,
+            driveId,
+            locationId,
+          } as any,
           adminUser,
         ),
       ).rejects.toMatchObject({
@@ -169,7 +178,9 @@ describe('BansheeTemplateService', () => {
 
       await expect(
         service.findBansheeTemplates(companyId, makeCompanyUser(companyId)),
-      ).rejects.toThrow('User missing access to this application for this company.');
+      ).rejects.toThrow(
+        'User missing access to this application for this company.',
+      );
     });
   });
 
@@ -225,7 +236,12 @@ describe('BansheeTemplateService', () => {
 
       const result = await service.updateBansheeTemplate(
         'tpl-1',
-        { templateName: 'Template A', companyId, period: 12, comment: 'Updated' } as any,
+        {
+          templateName: 'Template A',
+          companyId,
+          period: 12,
+          comment: 'Updated',
+        } as any,
         adminUser,
       );
 

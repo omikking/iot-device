@@ -468,7 +468,6 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
     const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
       selectedId ? options?.find((item) => item.id === selectedId) : undefined,
     );
-    
 
     const handleClear = () => {
       setSelectedItem(undefined);

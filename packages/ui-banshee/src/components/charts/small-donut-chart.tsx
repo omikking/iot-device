@@ -8,6 +8,7 @@ import { escapeHtml } from '../../lib/utils';
 
 type DonutChartProps = {
   footerText?: string;
+  locationInfo?: string;
   chartData: { label: string; value: number; fill: string }[];
   chartConfig: ChartConfig;
   chartItems: {
@@ -21,6 +22,7 @@ export function SmallChartPieDonut({
   footerText,
   chartData,
   chartConfig,
+  locationInfo,
 }: DonutChartProps) {
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
   const option: EChartsOption = {
@@ -32,10 +34,27 @@ export function SmallChartPieDonut({
       textStyle: { color: '#fff', fontSize: 12 },
       formatter: (params) => {
         const p = Array.isArray(params) ? params[0] : params;
-        return `<div style="padding:2px 4px">
-          <div>${escapeHtml(String(p.name ?? ''))}</div>
-          <div>${escapeHtml(String(p.value ?? ''))}</div>
-        </div>`;
+        const displayLocation = locationInfo ?? footerText ?? '';
+        const statusKey = String(p.name ?? '');
+        const materialLabel =
+          (chartConfig[statusKey]?.label as string) || statusKey;
+        return `
+          <div style="padding:6px 8px;">
+            <div style="font-weight:600;margin-bottom:8px;">
+              ${escapeHtml(displayLocation)}
+            </div>
+
+            <div>
+              <span style="color:#999;">Material:</span>
+              <strong>${escapeHtml(materialLabel)}</strong>
+            </div>
+
+            <div>
+              <span style="color:#999;">Quantity:</span>
+              <strong>${escapeHtml(String(p.value ?? ''))}</strong>
+            </div>
+          </div>
+        `;
       },
     },
     graphic: [
@@ -85,7 +104,10 @@ export function SmallChartPieDonut({
               />
             </ChartContainer>
           </CardContent>
-          <div className="ui-banshee-w-full ui-banshee-text-center" title={footerText}>
+          <div
+            className="ui-banshee-w-full ui-banshee-text-center"
+            title={footerText}
+          >
             <CardFooter className="ui-banshee-pb-0 ui-banshee-min-h-[24px] ui-banshee-w-full ui-banshee-min-w-0">
               <span
                 className="

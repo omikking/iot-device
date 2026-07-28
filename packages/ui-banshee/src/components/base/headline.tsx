@@ -10,6 +10,7 @@ const headlineVariants = cva('ui-banshee-font-sandvik-headline', {
       large: 'ui-banshee-text-3xl',
       medium: 'ui-banshee-text-2xl',
       small: 'ui-banshee-text-xl',
+      base: 'ui-banshee-text-base',
     },
     color: {
       foreground: 'ui-banshee-text-main-black',

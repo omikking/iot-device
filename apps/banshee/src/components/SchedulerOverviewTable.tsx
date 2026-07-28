@@ -35,23 +35,45 @@ export const SchedulerOverviewTable = ({
   entries: SchedulerEntry[];
   fetching?: boolean;
 }) => {
-  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
-
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: 'dueDate',
+    direction: 'asc',
+  });
   const sortedEntries = useMemo(() => {
     const sortable = [...entries];
+    const parseDate = (date: string) => {
+      const [day, month, year] = date.split('/').map(Number);
+      return new Date(year, month - 1, day).getTime();
+    };
     if (sortConfig !== null) {
       sortable.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-
         if (sortConfig.key === 'dueDate') {
-          aValue = new Date(aValue).getTime().toString();
-          bValue = new Date(bValue).getTime().toString();
+          const aHasDate = a.dueDate !== '-';
+          const bHasDate = b.dueDate !== '-';
+
+          // Handle "-" values
+          if (!aHasDate && !bHasDate) return 0;
+
+          if (!aHasDate) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+
+          if (!bHasDate) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+
+          const aTime = parseDate(a.dueDate);
+          const bTime = parseDate(b.dueDate);
+
+          return sortConfig.direction === 'asc' ? aTime - bTime : bTime - aTime;
         }
 
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
+        const aValue = String(a[sortConfig.key] ?? '');
+        const bValue = String(b[sortConfig.key] ?? '');
+
+        const comparison = aValue.localeCompare(bValue);
+
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
     }
     return sortable;
@@ -126,21 +148,21 @@ export const SchedulerOverviewTable = ({
                 <TableHead className="ui-banshee-p-0 ui-banshee-w-[40%]">
                   <TableHeadWithSorting
                     header="Banshee"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start"
+                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
                     column={createMockColumn('banshee')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Location"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start"
+                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
                     column={createMockColumn('location')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Due date"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start"
+                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
                     column={createMockColumn('dueDate')}
                   />
                 </TableHead>
@@ -160,7 +182,7 @@ export const SchedulerOverviewTable = ({
                   </TableCell>
                   <TableCell className="ui-banshee-px-4">
                     <Text
-                      variant="small"
+                      variant="medium"
                       color="foreground"
                       className="ui-banshee-text-left"
                     >
@@ -169,7 +191,7 @@ export const SchedulerOverviewTable = ({
                   </TableCell>
                   <TableCell className="ui-banshee-px-4">
                     <Text
-                      variant="small"
+                      variant="medium"
                       color="foreground"
                       className="ui-banshee-text-left"
                     >
@@ -178,7 +200,7 @@ export const SchedulerOverviewTable = ({
                   </TableCell>
                   <TableCell className="ui-banshee-px-4">
                     <Text
-                      variant="small"
+                      variant="medium"
                       color="foreground"
                       className="ui-banshee-text-left"
                     >

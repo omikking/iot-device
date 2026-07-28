@@ -3,7 +3,11 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
-import { handleGraphQLErrors, formatDateTime } from '@/libs/utils';
+import {
+  handleGraphQLErrors,
+  formatDateTime,
+  downloadBansheeCsv,
+} from '@/libs/utils';
 import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import {
   SidebarInset,
@@ -30,6 +34,8 @@ import { getStatusLabel } from '@/libs/status-color-utils';
 import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';
 import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
+import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
+import { BansheeExportMenu } from '@/components/BansheeExportMenu';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
 import { ImageIcon } from 'lucide-react';
@@ -127,6 +133,7 @@ export default function BansheeDashboardPage() {
   const bansheeId = id as string;
 
   const statusPlotRef = useRef<BansheeStatusPlotHandle>(null);
+  const dataPlotRef = useRef<BansheeDataPlotHandle>(null);
 
   const [{ data, fetching, error }] = useQuery({
     query: bansheeDetailQuery,
@@ -227,7 +234,7 @@ export default function BansheeDashboardPage() {
 
   return (
     <SidebarInset>
-      <main className="ui-banshee-p-6 ui-banshee-mb-16 ui-banshee-bg-main-white ui-banshee-w-full">
+      <main className="ui-banshee-p-7 ui-banshee-pr-0 ui-banshee-mb-16 ui-banshee-bg-main-white ui-banshee-w-full">
         <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3 ui-banshee-mb-8">
           <div className="ui-banshee-w-9 ui-banshee-h-9 ui-banshee-rounded-full ui-banshee-bg-neutral-300" />
           <h1 className="ui-banshee-text-2xl ui-banshee-font-semibold ui-banshee-text-neutral-900">
@@ -312,11 +319,24 @@ export default function BansheeDashboardPage() {
                   <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-4">
                     <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
                       Click and drag in the plot area to zoom in. Hold CTRL and
-                      drag to pane
+                      drag to pan
                     </p>
-                    <button className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded">
-                      Reset zoom
-                    </button>
+                    <div className="ui-banshee-flex ui-banshee-gap-2">
+                      <button
+                        className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                        onClick={() => statusPlotRef.current?.resetZoom()}
+                      >
+                        Reset zoom
+                      </button>
+                      <BansheeExportMenu
+                        onDownloadCsv={() =>
+                          downloadBansheeCsv(bansheeRequestsArray)
+                        }
+                        onDownloadPng={() =>
+                          statusPlotRef.current?.downloadPng()
+                        }
+                      />
+                    </div>
                   </div>
                   <BansheeStatusPlot
                     ref={statusPlotRef}
@@ -330,8 +350,29 @@ export default function BansheeDashboardPage() {
                 value="dataPlot"
                 className="!ui-banshee-mt-0 ui-banshee-px-2"
               >
-                <div className="ui-banshee-bg-neutral-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+                <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1">
+                  <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-4">
+                    <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
+                      Click and drag in the plot area to zoom in. Hold CTRL and
+                      drag to pan
+                    </p>
+                    <div className="ui-banshee-flex ui-banshee-gap-2">
+                      <button
+                        className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                        onClick={() => dataPlotRef.current?.resetZoom()}
+                      >
+                        Reset zoom
+                      </button>
+                      <BansheeExportMenu
+                        onDownloadCsv={() =>
+                          downloadBansheeCsv(bansheeRequestsArray)
+                        }
+                        onDownloadPng={() => dataPlotRef.current?.downloadPng()}
+                      />
+                    </div>
+                  </div>
                   <BansheeDataPlot
+                    ref={dataPlotRef}
                     bansheeRequests={bansheeRequestsArray}
                     fetching={false}
                   />

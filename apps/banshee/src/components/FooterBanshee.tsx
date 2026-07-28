@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import {
   Text,
   Headline,
@@ -15,9 +16,9 @@ import { SandvikLogo } from 'public/SandvikLogo';
 import { LucideGlobe } from 'lucide-react';
 
 const navLinks = [
-  { label: 'Home', href: '/' },
+  { label: 'Home', href: '/overview' },
   { label: 'Banshee', href: '/banshee' },
-  { label: 'Schedule', href: '/overview' },
+  { label: 'Schedule', href: '/scheduler' },
   { label: 'Events', href: '/events' },
   { label: 'Settings', href: '/siteInformation' },
   { label: 'Contact Us', href: '/contactUs' },
@@ -43,6 +44,14 @@ export const FooterBanshee = () => {
   const isTablet = useIsTablet();
   const isCompact = isMobile || isTablet;
 
+  const params = useParams();
+  const companyId = params.companyId as string;
+
+  // Routes are scoped under /[companyId]; prefix internal links with the active
+  // companyId and leave placeholder (#) links untouched.
+  const withCompany = (href: string) =>
+    href === '#' || !companyId ? href : `/${companyId}${href}`;
+
   if (isCompact) {
     return null;
   }
@@ -61,7 +70,7 @@ export const FooterBanshee = () => {
           <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-56">
             <div>
               {navLinks.map(({ label, href }) => (
-                <Link key={label} href={href}>
+                <Link key={label} href={withCompany(href)}>
                   <Text color="background" variant="medium">
                     {label}
                   </Text>
@@ -70,7 +79,7 @@ export const FooterBanshee = () => {
             </div>
             <div>
               {secondaryLinks.map(({ label, href }) => (
-                <Link key={label} href={href}>
+                <Link key={label} href={withCompany(href)}>
                   <Text color="background" variant="small">
                     {label}
                   </Text>
@@ -97,7 +106,7 @@ export const FooterBanshee = () => {
           <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center ui-banshee-pt-6">
             <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-10">
               {legalLinks.map(({ label, href }) => (
-                <Link key={label} href={href}>
+                <Link key={label} href={withCompany(href)}>
                   <Text color="muted" variant="small">
                     {label}
                   </Text>

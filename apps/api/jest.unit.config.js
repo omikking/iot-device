@@ -34,6 +34,7 @@ module.exports = {
     'src/banshee-order/**/*.service.ts',
     'src/banshee-template/**/*.service.ts',
     'src/banshee-stats/**/*.service.ts',
+    'src/banshee-communication/banshee-communication.service.ts',
   ],
   coverageDirectory: '<rootDir>/coverage-unit',
 };

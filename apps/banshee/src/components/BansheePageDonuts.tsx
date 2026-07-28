@@ -25,6 +25,7 @@ type DistributionData = {
 type Donut = {
   id: string;
   footerText: string;
+  locationInfo: string;
   chartData: {
     label: string;
     value: number;
@@ -70,6 +71,7 @@ export const BansheePageDonuts = ({
     const totalDonut: Donut = {
       id: 'total',
       footerText: 'TOTAL',
+      locationInfo: 'TOTAL',
       chartData: filteredCounts.map((sc) => ({
         label: sc.status,
         value: sc.count,
@@ -79,7 +81,8 @@ export const BansheePageDonuts = ({
     const locationDonuts: Donut[] = (distributionData.byLocation || []).map(
       (loc) => ({
         id: loc.locationId,
-        footerText: [
+        footerText: loc.locationName,
+        locationInfo: [
           loc.siteName,
           loc.levelName,
           loc.driveName,
@@ -118,7 +121,8 @@ export const BansheePageDonuts = ({
     const ratio = Math.min(1, sc.clientWidth / Math.max(sc.scrollWidth, 1));
     const thumbW = Math.max(MIN_THUMB_PX, Math.floor(ratio * trackW));
     const maxScroll = sc.scrollWidth - sc.clientWidth;
-    const range = Math.max(0, trackW - thumbW);
+    const TRACK_PADDING = 2;
+    const range = Math.max(0, trackW - thumbW - TRACK_PADDING * 2);
     const left = maxScroll > 0 ? (sc.scrollLeft / maxScroll) * range : 0;
     thumb.style.width = `${thumbW}px`;
     thumb.style.transform = `translateX(${left}px)`;
@@ -207,6 +211,7 @@ export const BansheePageDonuts = ({
             <SmallChartPieDonut
               footerText={donut.footerText}
               chartData={donut.chartData}
+              locationInfo={donut.locationInfo}
               chartConfig={chartConfigDynamic}
               chartItems={[]}
             />
@@ -219,7 +224,7 @@ export const BansheePageDonuts = ({
           <div
             ref={trackRef}
             onPointerDown={onTrackPointerDown}
-            className="ui-banshee-relative ui-banshee-h-[6px] ui-banshee-w-[200px] ui-banshee-bg-[#E6E6E6] ui-banshee-rounded-full"
+            className="ui-banshee-relative ui-banshee-h-[14px] ui-banshee-w-[200px] ui-banshee-border ui-banshee-border-neutral-2 "
           >
             <div
               ref={thumbRef}
@@ -227,7 +232,7 @@ export const BansheePageDonuts = ({
               onPointerMove={onThumbPointerMove}
               onPointerUp={onThumbPointerUp}
               onPointerCancel={onThumbPointerUp}
-              className="ui-banshee-absolute ui-banshee-top-0 ui-banshee-left-0 ui-banshee-h-full ui-banshee-bg-[#6F6F6F] ui-banshee-rounded-full ui-banshee-cursor-grab active:ui-banshee-cursor-grabbing"
+              className="ui-banshee-absolute ui-banshee-top-[2px] ui-banshee-left-[2px] ui-banshee-h-2 ui-banshee-bg-neutral-5 ui-banshee-rounded-full ui-banshee-cursor-grab active:ui-banshee-cursor-grabbing"
               style={{
                 width: `${MIN_THUMB_PX}px`,
                 touchAction: 'none',

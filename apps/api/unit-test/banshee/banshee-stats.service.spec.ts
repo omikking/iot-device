@@ -83,9 +83,9 @@ describe('BansheeStatsService', () => {
         allowedApps,
       );
 
-      expect(prisma.bansheeSessionStats.findMany.mock.calls[0][0].where.companyId).toBe(
-        companyId,
-      );
+      expect(
+        prisma.bansheeSessionStats.findMany.mock.calls[0][0].where.companyId,
+      ).toBe(companyId);
     });
 
     it('denies a non-admin user without access to the requested company', async () => {
@@ -221,9 +221,10 @@ describe('BansheeStatsService', () => {
         'create',
       );
 
-      expect(prisma.bansheeSessionStats.upsert.mock.calls[0][0].update.broken.increment).toBe(
-        1,
-      );
+      expect(
+        prisma.bansheeSessionStats.upsert.mock.calls[0][0].update.broken
+          .increment,
+      ).toBe(1);
     });
 
     it('decrements (clamped at 0) when an existing measurement is deleted', async () => {
@@ -316,7 +317,9 @@ describe('BansheeStatsService', () => {
 
       expect(result).toEqual([{ id: 's1' }]);
       // non-admin queries are scoped to their allowed companies
-      expect(prisma.bansheeSessionStats.findMany.mock.calls[0][0].where.companyId).toEqual({
+      expect(
+        prisma.bansheeSessionStats.findMany.mock.calls[0][0].where.companyId,
+      ).toEqual({
         in: [companyId],
       });
     });

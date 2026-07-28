@@ -1,3 +1,6 @@
+import { Readable, Writable } from 'stream';
+import * as fsSync from 'fs';
+import { promises as fs } from 'fs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BansheeRequestsService } from 'src/banshee-request/banshee-request.service';
 import { BansheeStatsService } from 'src/banshee-stats/banshee-stats.service';
@@ -60,6 +63,10 @@ describe('BansheeRequestsService', () => {
     prisma.level.findUnique.mockResolvedValue({ id: levelId });
     prisma.drive.findUnique.mockResolvedValue({ id: driveId, levelId });
     prisma.location.findUnique.mockResolvedValue({ id: locationId, driveId });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('BE-REQ-01: create — happy path', () => {
@@ -151,7 +158,10 @@ describe('BansheeRequestsService', () => {
       );
 
       const where = prisma.bansheeRequest.findMany.mock.calls[0][0].where;
-      expect(where.serialNumber).toEqual({ contains: 'SN', mode: 'insensitive' });
+      expect(where.serialNumber).toEqual({
+        contains: 'SN',
+        mode: 'insensitive',
+      });
       expect(where.measured).toBe(true);
       expect(where.period).toBe(6);
       expect(where.driveId).toBe(driveId);
@@ -173,7 +183,9 @@ describe('BansheeRequestsService', () => {
         makeCompanyUser(companyId),
       );
 
-      expect(prisma.bansheeRequest.findMany.mock.calls[0][0].where.companyId).toEqual({
+      expect(
+        prisma.bansheeRequest.findMany.mock.calls[0][0].where.companyId,
+      ).toEqual({
         in: [companyId],
       });
     });
@@ -196,6 +208,25 @@ describe('BansheeRequestsService', () => {
       expect(prisma.bansheeRequest.findMany).not.toHaveBeenCalled();
     });
 
+    it('denies a non-admin whose requested company is outside their allowed list', async () => {
+      // App access passes (holds a BANSHEE permission for the company) but the
+      // company is not in the caller-supplied allowed list -> ForbiddenException,
+      // re-wrapped as a generic fetch error by the outer catch.
+      prisma.plan.findMany.mockResolvedValue([activeBansheePlan(companyId)]);
+
+      await expect(
+        service.findAll(
+          { companyId },
+          ['other-company'],
+          [Application.BANSHEE],
+          makeCompanyUser(companyId),
+        ),
+      ).rejects.toMatchObject({
+        extensions: { code: 'BANSHEE_REQUESTS_FETCH_ERROR' },
+      });
+      expect(prisma.bansheeRequest.findMany).not.toHaveBeenCalled();
+    });
+
     it('adds a proceqData date window when start/end/company are all present', async () => {
       const startDate = new Date('2026-01-01');
       const endDate = new Date('2026-02-01');
@@ -209,8 +240,20 @@ describe('BansheeRequestsService', () => {
         adminUser,
       );
 
-      expect(prisma.bansheeRequest.findMany.mock.calls[0][0].where.proceqData).toEqual({
+      expect(
+        prisma.bansheeRequest.findMany.mock.calls[0][0].where.proceqData,
+      ).toEqual({
         some: { updatedTimestamp: { gte: startDate, lte: endDate } },
+      });
+    });
+
+    it('wraps an unexpected query failure in a generic fetch error', async () => {
+      prisma.bansheeRequest.count.mockRejectedValue(new Error('db down'));
+
+      await expect(
+        service.findAll({ companyId }, [], [Application.BANSHEE], adminUser),
+      ).rejects.toMatchObject({
+        extensions: { code: 'BANSHEE_REQUESTS_FETCH_ERROR' },
       });
     });
   });
@@ -229,7 +272,10 @@ describe('BansheeRequestsService', () => {
     });
 
     it('returns the request for a non-admin with company access', async () => {
-      prisma.bansheeRequest.findUnique.mockResolvedValue({ id: 'req-1', companyId });
+      prisma.bansheeRequest.findUnique.mockResolvedValue({
+        id: 'req-1',
+        companyId,
+      });
       prisma.userPermission.findFirst.mockResolvedValue({ id: 'perm-1' });
 
       const result = await service.findOne('req-1', makeCompanyUser(companyId));
@@ -256,9 +302,11 @@ describe('BansheeRequestsService', () => {
     it('throws a NOT_FOUND business error when the request does not exist', async () => {
       prisma.bansheeRequest.findUnique.mockResolvedValue(null);
 
-      await expect(service.findOne('missing', adminUser)).rejects.toMatchObject({
-        extensions: { code: 'BANSHEE_REQUEST_NOTFOUND_ERROR' },
-      });
+      await expect(service.findOne('missing', adminUser)).rejects.toMatchObject(
+        {
+          extensions: { code: 'BANSHEE_REQUEST_NOTFOUND_ERROR' },
+        },
+      );
     });
   });
 
@@ -273,7 +321,11 @@ describe('BansheeRequestsService', () => {
         locationId,
         images: [],
       });
-      const updated = { id: 'req-1', comment: 'updated comment', measured: true };
+      const updated = {
+        id: 'req-1',
+        comment: 'updated comment',
+        measured: true,
+      };
       prisma.bansheeRequest.update.mockResolvedValue(updated);
 
       const result = await service.update(
@@ -308,7 +360,10 @@ describe('BansheeRequestsService', () => {
         { id: 'p2', updatedTimestamp: null }, // filtered out (no timestamp)
       ]);
       prisma.proceqData.update.mockResolvedValue({});
-      prisma.bansheeRequest.update.mockResolvedValue({ id: 'req-1', period: 12 });
+      prisma.bansheeRequest.update.mockResolvedValue({
+        id: 'req-1',
+        period: 12,
+      });
 
       await service.update('req-1', { period: 12 } as any, adminUser);
 
@@ -345,6 +400,81 @@ describe('BansheeRequestsService', () => {
         extensions: { code: 'BANSHEE_REQUEST_NOTFOUND_ERROR' },
       });
     });
+
+    it('denies the update when the caller lacks access to the target company', async () => {
+      prisma.bansheeRequest.findUnique.mockResolvedValue({
+        id: 'req-1',
+        companyId,
+        period: 6,
+        levelId,
+        driveId,
+        locationId,
+        images: [],
+      });
+      prisma.userPermission.findFirst.mockResolvedValue(null); // no access
+
+      await expect(
+        service.update(
+          'req-1',
+          { companyId: 'company-9' } as any,
+          makeCompanyUser(companyId),
+        ),
+      ).rejects.toMatchObject({
+        extensions: { code: 'USER_COMPANY_ACCESS_DENIED' },
+      });
+      expect(prisma.bansheeRequest.update).not.toHaveBeenCalled();
+    });
+
+    it('appends newly uploaded images to the existing ones', async () => {
+      prisma.bansheeRequest.findUnique.mockResolvedValue({
+        id: 'req-1',
+        companyId,
+        period: 6,
+        levelId,
+        driveId,
+        locationId,
+        images: ['/uploads/bansheeRequests/old.png'],
+      });
+      prisma.bansheeRequest.update.mockImplementation(({ data }: any) =>
+        Promise.resolve({ id: 'req-1', ...data }),
+      );
+      // Exercise the append logic without re-driving the stream pipeline
+      // (the pipeline itself is covered by the `saveImage` tests below).
+      jest
+        .spyOn(service as any, 'saveImage')
+        .mockResolvedValue('/uploads/bansheeRequests/new.png');
+
+      await service.update(
+        'req-1',
+        { images: [Promise.resolve({}) as any] } as any,
+        adminUser,
+      );
+
+      const updateArg = prisma.bansheeRequest.update.mock.calls[0][0];
+      expect(updateArg.data.images).toEqual([
+        '/uploads/bansheeRequests/old.png',
+        '/uploads/bansheeRequests/new.png',
+      ]);
+    });
+
+    it('wraps an unexpected update failure in a generic update error', async () => {
+      prisma.bansheeRequest.findUnique.mockResolvedValue({
+        id: 'req-1',
+        companyId,
+        period: 6,
+        levelId,
+        driveId,
+        locationId,
+        images: [],
+      });
+      prisma.bansheeRequest.update.mockRejectedValue(new Error('db down'));
+
+      await expect(
+        service.update('req-1', { comment: 'x' } as any, adminUser),
+      ).rejects.toMatchObject({
+        extensions: { code: 'BANSHEE_REQUEST_UPDATE_ERROR_GENERIC' },
+      });
+    });
   });
 
   describe('BE-REQ-05: reject invalid banshee request', () => {
@@ -372,13 +502,38 @@ describe('BansheeRequestsService', () => {
       expect(prisma.bansheeRequest.create).not.toHaveBeenCalled();
     });
 
-    it('rejects when the drive does not belong to the level', async () => {
+    it('rejects when the drive does not exist', async () => {
       prisma.bansheeRequest.findFirst.mockResolvedValue(null);
-      prisma.drive.findUnique.mockResolvedValue({ id: driveId, levelId: 'other' });
+      prisma.drive.findUnique.mockResolvedValue(null);
 
       await expect(
         service.create(validCreateInput as any, adminUser),
-      ).rejects.toMatchObject({ extensions: { code: 'DRIVE_LEVEL_MISMATCH_ERROR' } });
+      ).rejects.toMatchObject({ extensions: { code: 'DRIVE_NOTFOUND_ERROR' } });
+    });
+
+    it('rejects when the drive does not belong to the level', async () => {
+      prisma.bansheeRequest.findFirst.mockResolvedValue(null);
+      prisma.drive.findUnique.mockResolvedValue({
+        id: driveId,
+        levelId: 'other',
+      });
+
+      await expect(
+        service.create(validCreateInput as any, adminUser),
+      ).rejects.toMatchObject({
+        extensions: { code: 'DRIVE_LEVEL_MISMATCH_ERROR' },
+      });
+    });
+
+    it('rejects when the location does not exist', async () => {
+      prisma.bansheeRequest.findFirst.mockResolvedValue(null);
+      prisma.location.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.create(validCreateInput as any, adminUser),
+      ).rejects.toMatchObject({
+        extensions: { code: 'LOCATION_NOTFOUND_ERROR' },
+      });
     });
 
     it('rejects when the location does not belong to the drive', async () => {
@@ -447,6 +602,26 @@ describe('BansheeRequestsService', () => {
       });
     });
 
+    it('rejects a non-admin who cannot access the linked order item company', async () => {
+      prisma.bansheeRequest.findFirst.mockResolvedValue(null);
+      prisma.bansheeOrderItem.findUnique.mockResolvedValue({
+        id: 'oi-1',
+        itemType: BansheeCartItemType.NEW_BANSHEE,
+        status: BansheeOrderItemStatus.PENDING,
+        order: { companyId: 'company-9' },
+      });
+      // validateUserCompanyAccess finds no permission for company-9.
+      prisma.userPermission.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.create(
+          { ...validCreateInput, bansheeOrderItemId: 'oi-1' } as any,
+          makeCompanyUser(companyId),
+        ),
+      ).rejects.toThrow('User does not have access to this banshee order.');
+      expect(prisma.bansheeRequest.create).not.toHaveBeenCalled();
+    });
+
     it('rejects an invalid image file type', async () => {
       prisma.bansheeRequest.findFirst.mockResolvedValue(null);
       const badImage = Promise.resolve({
@@ -476,6 +651,77 @@ describe('BansheeRequestsService', () => {
       ).rejects.toMatchObject({
         extensions: { code: 'BANSHEE_REQUEST_CREATION_ERROR_GENERIC' },
       });
+    });
+  });
+
+  /**
+   * The image upload pipeline (`saveImage`) streams bytes to disk. These tests
+   * drive it through `create` with in-memory readable streams and a stubbed
+   * filesystem so nothing real is written.
+   */
+  describe('create — image upload pipeline (saveImage)', () => {
+    const makeImageUpload = (
+      content: Buffer,
+      filename = 'photo.png',
+      mimetype = 'image/png',
+    ) =>
+      Promise.resolve({
+        file: {
+          filename,
+          mimetype,
+          createReadStream: () => Readable.from([content]),
+        },
+      });
+
+    it('streams a valid image to disk and persists its path', async () => {
+      const mkdirSpy = jest
+        .spyOn(fs, 'mkdir')
+        .mockResolvedValue(undefined as never);
+      // Swallow the piped bytes so nothing touches the real filesystem.
+      const sink = new Writable({ write: (_c, _e, cb) => cb() });
+      const cwsSpy = jest
+        .spyOn(fsSync, 'createWriteStream')
+        .mockReturnValue(sink as any);
+
+      prisma.bansheeRequest.findFirst.mockResolvedValue(null);
+      prisma.bansheeRequest.create.mockImplementation(({ data }: any) =>
+        Promise.resolve({ id: 'req-img', ...data }),
+      );
+
+      const result: any = await service.create(
+        {
+          ...validCreateInput,
+          images: [makeImageUpload(Buffer.from('fake-png-bytes'))],
+        } as any,
+        adminUser,
+      );
+
+      expect(mkdirSpy).toHaveBeenCalled();
+      expect(cwsSpy).toHaveBeenCalledTimes(1);
+      expect(Array.isArray(result.images)).toBe(true);
+      expect(result.images).toHaveLength(1);
+      expect(result.images[0]).toMatch(/^\/uploads\/bansheeRequests\/.+\.png$/);
+    });
+
+    it('rejects an image that exceeds the 10MB size limit', async () => {
+      jest.spyOn(fs, 'mkdir').mockResolvedValue(undefined as never);
+      jest.spyOn(fs, 'unlink').mockResolvedValue(undefined as never);
+      const sink = new Writable({ write: (_c, _e, cb) => cb() });
+      jest.spyOn(fsSync, 'createWriteStream').mockReturnValue(sink as any);
+
+      prisma.bansheeRequest.findFirst.mockResolvedValue(null);
+
+      const oversized = Buffer.alloc(10 * 1024 * 1024 + 1);
+
+      await expect(
+        service.create(
+          { ...validCreateInput, images: [makeImageUpload(oversized)] } as any,
+          adminUser,
+        ),
+      ).rejects.toMatchObject({
+        extensions: { code: 'FILE_SIZE_EXCEEDED_ERROR' },
+      });
+      expect(prisma.bansheeRequest.create).not.toHaveBeenCalled();
     });
   });
 
@@ -529,6 +775,20 @@ describe('BansheeRequestsService', () => {
       ).rejects.toThrow('User does not have access to this banshee request.');
       expect(prisma.bansheeRequest.delete).not.toHaveBeenCalled();
     });
+
+    it('wraps an unexpected delete failure in a generic delete error', async () => {
+      prisma.bansheeRequest.findUnique.mockResolvedValue({
+        id: 'req-1',
+        companyId,
+        siteId,
+        proceqData: [],
+      });
+      prisma.bansheeRequest.delete.mockRejectedValue(new Error('fk violation'));
+
+      await expect(service.remove('req-1', adminUser)).rejects.toMatchObject({
+        extensions: { code: 'BANSHEE_REQUEST_DELETE_ERROR_GENERIC' },
+      });
+    });
   });
 
   describe('getStatusDistribution', () => {
@@ -578,6 +838,40 @@ describe('BansheeRequestsService', () => {
       });
     });
 
+    it('applies a proceqData date window and defaults missing relation names to Unknown', async () => {
+      const startDate = new Date('2026-01-01');
+      const endDate = new Date('2026-02-01');
+      prisma.bansheeRequest.findMany.mockResolvedValue([
+        {
+          id: 'req-1',
+          locationId: 'loc-1',
+          site: null,
+          level: null,
+          drive: null,
+          location: null,
+          proceqData: [{ status: 'ELASTIC', updatedTimestamp: startDate }],
+        },
+      ]);
+
+      const result = await service.getStatusDistribution(
+        { companyId, startDate, endDate },
+        [],
+        adminUser,
+        [Application.BANSHEE],
+      );
+
+      const findManyArg = prisma.bansheeRequest.findMany.mock.calls[0][0];
+      expect(findManyArg.where.proceqData).toEqual({
+        some: { updatedTimestamp: { gte: startDate, lte: endDate } },
+      });
+      expect(result.byLocation?.[0]).toMatchObject({
+        locationName: 'Unknown',
+        siteName: 'Unknown',
+        levelName: 'Unknown',
+        driveName: 'Unknown',
+      });
+    });
+
     it('denies a non-admin without app access for the company', async () => {
       prisma.plan.findMany.mockResolvedValue([]);
 
@@ -588,25 +882,58 @@ describe('BansheeRequestsService', () => {
           makeCompanyUser(companyId),
           [Application.BANSHEE],
         ),
-      ).rejects.toThrow('User missing access to this application for this company.');
+      ).rejects.toThrow(
+        'User missing access to this application for this company.',
+      );
+    });
+
+    it('denies a non-admin whose requested company is outside their allowed list', async () => {
+      // App access passes but the company is not in the allowed list.
+      prisma.plan.findMany.mockResolvedValue([activeBansheePlan(companyId)]);
+
+      await expect(
+        service.getStatusDistribution(
+          { companyId },
+          ['some-other-company'],
+          makeCompanyUser(companyId),
+          [Application.BANSHEE],
+        ),
+      ).rejects.toThrow('User does not have access to this company.');
+    });
+
+    it('scopes a non-admin without a companyId filter to their allowed companies', async () => {
+      prisma.bansheeRequest.findMany.mockResolvedValue([]);
+
+      await service.getStatusDistribution(
+        {},
+        [companyId],
+        makeCompanyUser(companyId),
+        [Application.BANSHEE],
+      );
+
+      expect(
+        prisma.bansheeRequest.findMany.mock.calls[0][0].where.companyId,
+      ).toEqual({
+        in: [companyId],
+      });
     });
   });
 
   describe('getEventLogs', () => {
-    it('returns paginated event logs for an admin', async () => {
+    it('returns paginated event logs for an admin and filters by companyId', async () => {
       prisma.bansheeEventLog.count.mockResolvedValue(3);
       const logs = [{ id: 'evt-1' }, { id: 'evt-2' }, { id: 'evt-3' }];
       prisma.bansheeEventLog.findMany.mockResolvedValue(logs);
 
-      const result = await service.getEventLogs(
-        { companyId },
-        [],
-        adminUser,
-        [Application.BANSHEE],
-      );
+      const result = await service.getEventLogs({ companyId }, [], adminUser, [
+        Application.BANSHEE,
+      ]);
 
       expect(result.totalRecords).toBe(3);
       expect(result.results).toBe(logs);
+      expect(
+        prisma.bansheeEventLog.findMany.mock.calls[0][0].where.bansheeRequest,
+      ).toMatchObject({ companyId });
     });
 
     it('scopes a non-admin to their company via the bansheeRequest relation', async () => {
@@ -621,9 +948,56 @@ describe('BansheeRequestsService', () => {
         [Application.BANSHEE],
       );
 
-      expect(prisma.bansheeEventLog.findMany.mock.calls[0][0].where.bansheeRequest).toMatchObject(
-        { companyId },
+      expect(
+        prisma.bansheeEventLog.findMany.mock.calls[0][0].where.bansheeRequest,
+      ).toMatchObject({ companyId });
+    });
+
+    it('scopes a non-admin without a companyId to their allowed companies and honours siteId', async () => {
+      prisma.bansheeEventLog.count.mockResolvedValue(0);
+      prisma.bansheeEventLog.findMany.mockResolvedValue([]);
+
+      await service.getEventLogs(
+        { siteId },
+        [companyId],
+        makeCompanyUser(companyId),
+        [Application.BANSHEE],
       );
+
+      const where = prisma.bansheeEventLog.findMany.mock.calls[0][0].where;
+      expect(where.bansheeRequest).toMatchObject({
+        companyId: { in: [companyId] },
+        siteId,
+      });
+    });
+
+    it('denies a non-admin whose requested company is outside their allowed list', async () => {
+      prisma.plan.findMany.mockResolvedValue([activeBansheePlan(companyId)]);
+
+      // The ForbiddenException is swallowed by the broad catch and re-wrapped.
+      await expect(
+        service.getEventLogs(
+          { companyId },
+          ['other-company'],
+          makeCompanyUser(companyId),
+          [Application.BANSHEE],
+        ),
+      ).rejects.toMatchObject({
+        extensions: { code: 'EVENT_LOGS_FETCH_ERROR' },
+      });
+      expect(prisma.bansheeEventLog.findMany).not.toHaveBeenCalled();
+    });
+
+    it('wraps an unexpected query failure in a generic fetch error', async () => {
+      prisma.bansheeEventLog.count.mockRejectedValue(new Error('db down'));
+
+      await expect(
+        service.getEventLogs({ companyId }, [], adminUser, [
+          Application.BANSHEE,
+        ]),
+      ).rejects.toMatchObject({
+        extensions: { code: 'EVENT_LOGS_FETCH_ERROR' },
+      });
     });
   });
 });

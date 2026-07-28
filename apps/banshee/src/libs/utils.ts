@@ -66,6 +66,19 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
   const extensions =
     graphQLError.extensions as unknown as GraphQLErrorExtensions;
 
+  // Expired/invalid token. This reaches the UI only when the token refresh in
+  // UrqlProvider has already failed, so all that's left is to tell the user.
+  // These stock auth errors carry no custom title/message, which is exactly
+  // why the old catch-all branch rendered an empty toast.
+  if (extensions?.code === 'UNAUTHENTICATED') {
+    showAlertToast({
+      title: responses.sessionExpired_title,
+      description: responses.sessionExpired_message,
+      variant: 'error',
+    });
+    return true;
+  }
+
   if (extensions?.code === 'FORBIDDEN') {
     showAlertToast({
       title: responses.accessDeniedError_title,
@@ -93,8 +106,8 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
     return true;
   }
 
-  // Custom GraphQL errors
-  if (extensions) {
+  // Custom GraphQL errors that carry their own human-readable title.
+  if (extensions?.title) {
     showAlertToast({
       title: extensions.title,
       description: extensions.message,
@@ -102,6 +115,16 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
     });
     return true;
   }
+
+  // Fallback for any error without a mapped code or title. Never show an empty
+  // toast — surface a generic message (plus the raw message if the backend
+  // provided one) so the user always sees something meaningful.
+  showAlertToast({
+    title: responses.genericError_title,
+    description: extensions?.message || responses.genericError_message,
+    variant: 'error',
+  });
+  return true;
 };
 
 /** Converts a base64 data URL (e.g. from chart export) into a File for upload. */
@@ -202,6 +225,28 @@ export function buildBansheeCsvFile(
   return new File([buildBansheeCsv(data)], filename, {
     type: 'text/csv;charset=utf-8;',
   });
+}
+
+/**
+ * Builds the banshee CSV and triggers a browser download. No-op for empty data.
+ * Shared by every plot page so the export format/behaviour stays identical.
+ */
+export function downloadBansheeCsv(
+  data: readonly BansheeCsvRow[],
+  filename = 'banshee_data.csv',
+): void {
+  if (!data.length) return;
+
+  const csvFile = buildBansheeCsvFile(data, filename);
+  const url = URL.createObjectURL(csvFile);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 export function downloadDataUrl(dataUrl: string, filename: string) {

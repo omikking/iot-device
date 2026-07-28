@@ -6,4 +6,10 @@ export const responses = {
   accessDeniedError_title: 'Access denied',
   accessDeniedError_message:
     'You do not have permission to perform this action.',
+
+  sessionExpired_title: 'Session expired',
+  sessionExpired_message: 'Your session has expired. Please sign in again.',
+
+  genericError_title: 'Something went wrong',
+  genericError_message: 'An unexpected error occurred. Please try again.',
 };

@@ -84,7 +84,10 @@ export const TimePicker = ({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild className='!ui-banshee-bg-main-white disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none'>
+      <PopoverTrigger
+        asChild
+        className="!ui-banshee-bg-main-white disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none"
+      >
         <button
           type="button"
           disabled={disabled}

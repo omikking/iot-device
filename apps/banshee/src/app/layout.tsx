@@ -8,7 +8,7 @@ import NextAuthProvider from '@/libs/providers/NextAuthProvider';
 import { NavbarBanshee } from '@/components/NavbarBanshee';
 import UrqlProvider from '@/libs/providers/UrqlProvider';
 import { FooterBanshee } from '@/components/FooterBanshee';
-import { Toaster } from '@gsp/ui-banshee';
+import { Toaster, MobileNavProvider } from '@gsp/ui-banshee';
 export const metadata: Metadata = {
   title: 'Banshee | Ground Support Platform | Sandvik',
   description: 'For all your ground support needs.',
@@ -25,10 +25,12 @@ export default async function RootLayout({
       <body className="min-h-screen">
         <NextAuthProvider session={session}>
           <UrqlProvider>
-            <NavbarBanshee />
-            {children}
-            <FooterBanshee />
-            <Toaster duration={8000} />
+            <MobileNavProvider>
+              <NavbarBanshee />
+              {children}
+              <FooterBanshee />
+              <Toaster duration={8000} />
+            </MobileNavProvider>
           </UrqlProvider>
         </NextAuthProvider>
       </body>

@@ -1,2 +1,4 @@
 # Ignore generated GraphQL types
-graphql-types.ts
+**/graphql-types.ts
+**/gql/**
+**/__generated__/**

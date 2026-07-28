@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { Column } from '@tanstack/react-table';
-import { LucideArrowDownUp, LucideArrowUpDown, LucideFilter } from 'lucide-react';
+import {
+  LucideArrowDownUp,
+  LucideArrowUpDown,
+  LucideFilter,
+} from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Text } from './text';
 
@@ -93,7 +97,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'ui-banshee-bg-neutral-1 ui-banshee-transition-colors ui-banshee-border-b ui-banshee-border-neutral-3 hover:ui-banshee-bg-main-white/50 ui-banshee-duration-100 data-[state=selected]:ui-banshee-neutral-2 ',
+      'ui-banshee-bg-neutral-1 ui-banshee-transition-colors ui-banshee-border-b ui-banshee-border-neutral-3 ui-banshee-duration-100 data-[state=selected]:ui-banshee-neutral-2 ',
       className,
     )}
     {...props}
@@ -206,10 +210,19 @@ const TableHeadWithFilter = ({
   children,
 }: TableHeadWithFilterProps) => {
   return (
-    <div className={cn('ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5 ui-banshee-px-3', className)}>
+    <div
+      className={cn(
+        'ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5 ui-banshee-px-3',
+        className,
+      )}
+    >
       <LucideFilter size={11} className="ui-banshee-text-neutral-5" />
       {children || (
-        <Text variant="small" color="foreground" className="ui-banshee-font-bold">
+        <Text
+          variant="small"
+          color="foreground"
+          className="ui-banshee-font-bold"
+        >
           {header}
         </Text>
       )}

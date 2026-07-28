@@ -8,6 +8,7 @@ import { PanelLeft } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { useIsTablet } from '../../hooks/use-tablet';
 import { cn } from '../../lib/utils';
+import { useMobileNav } from '../sidebar/mobile-nav-context';
 import { Button } from './button';
 import { Input } from './input';
 import { Separator } from './separator';
@@ -79,7 +80,15 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
     const isCompact = isMobile || isTablet;
-    const [openMobile, setOpenMobile] = React.useState(false);
+
+    // When a MobileNavProvider is mounted higher in the tree (so an out-of-tree
+    // trigger such as the navbar hamburger can drive the drawer), defer the
+    // mobile open state to it. Otherwise fall back to local state so the
+    // sidebar still works standalone.
+    const mobileNav = useMobileNav();
+    const [_openMobile, _setOpenMobile] = React.useState(false);
+    const openMobile = mobileNav ? mobileNav.openMobile : _openMobile;
+    const setOpenMobile = mobileNav ? mobileNav.setOpenMobile : _setOpenMobile;
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
@@ -358,7 +367,7 @@ const SidebarInset = React.forwardRef<
     <main
       ref={ref}
       className={cn(
-        'ui-banshee-w-[4vw] ui-banshee-relative ui-banshee-flex ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background',
+        'ui-banshee-w-[4vw] ui-banshee-relative ui-banshee-flex ui-banshee-flex-1 ui-banshee-flex-col ui-banshee-bg-background md:ui-banshee-pr-8 lg:ui-banshee-pr-16',
         'md:peer-data-[variant=inset]:ui-banshee-m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ui-banshee-ml-2 md:peer-data-[variant=inset]:ui-banshee-ml-0 md:peer-data-[variant=inset]:ui-banshee-rounded-xl md:peer-data-[variant=inset]:ui-banshee-shadow',
         className,
       )}

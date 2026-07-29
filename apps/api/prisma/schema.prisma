@@ -843,11 +843,10 @@ model BansheeEmailAttachment {
   mimeType         String
   fileSize         BigInt
 
-  createdAt DateTime  @default(now())
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-
   bansheeEmailId String
+  createdAt      DateTime  @default(now())
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
 
   email BansheeEmail @relation(fields: [bansheeEmailId], references: [id], onDelete: Cascade)
 

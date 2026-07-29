@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
@@ -18,8 +18,8 @@ export default defineConfig({
       },
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Hydra Bolt Local',
-        short_name: 'HBL',
+        name: 'Optic Bolt Local',
+        short_name: 'OBL',
         description: '',
         theme_color: '#ffffff',
         background_color: '#ffffff',
@@ -40,5 +40,4 @@ export default defineConfig({
       },
     }),
   ],
-})
- 
+});

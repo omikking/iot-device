@@ -7,6 +7,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "start": "turbo run start --filter=web --filter=pull-test --filter=banshee",
+    "preview": "turbo run preview --filter=test-cyclops --filter=test-hydra --filter=test-professor --filter=test-optic-bolt",
     "lint": "turbo lint",
     "db:seed": "pnpm --filter api db:seed",
     "type-check": "turbo type-check",

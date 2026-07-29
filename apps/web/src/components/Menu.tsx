@@ -296,7 +296,7 @@ export const Menu = () => {
                   <Link href="/select-device" passHref legacyBehavior>
                     <Anchor color="foreground">
                       <LucidePlus className="transition-all ease-in-out opacity-30 group-hover:opacity-100 group-hover:rotate-90" />
-                      Admin test
+                      Device Testing Tools
                     </Anchor>
                   </Link>
                 </Headline>

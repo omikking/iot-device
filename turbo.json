@@ -38,6 +38,12 @@
       ],
       "outputs": []
     },
+    "preview": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": []
+    },
     "lint": {},
     "type-check": {},
     "dev": {

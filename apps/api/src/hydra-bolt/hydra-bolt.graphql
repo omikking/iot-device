@@ -1,0 +1,59 @@
+scalar DateTime
+
+type Hydrabolt {
+  id: String!
+  partNumber: String!
+  drawingNumber: String
+  boltLength: Float!
+  description: String
+  numberOfFBG: Int!
+  positionOfFBGs: [Float!]!
+  initialWavelength: [Float!]!
+  elasticLimit: Float!
+  lowPlasticLimit: Float!
+  highPlasticLimit: Float!
+  maxCalibrationFactor: Float!
+  minCalibrationFactor: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input CreateHydraboltInput {
+  partNumber: String!
+  drawingNumber: String
+  boltLength: Float!
+  description: String
+  numberOfFBG: Int!
+  positionOfFBGs: [Float!]!
+  initialWavelength: [Float!]!
+  elasticLimit: Float!
+  lowPlasticLimit: Float!
+  highPlasticLimit: Float!
+  maxCalibrationFactor: Float!
+  minCalibrationFactor: Float!
+}
+
+input UpdateHydraboltInput {
+  partNumber: String
+  drawingNumber: String
+  boltLength: Float
+  description: String
+  numberOfFBG: Int
+  positionOfFBGs: [Float!]
+  initialWavelength: [Float!]
+  elasticLimit: Float
+  lowPlasticLimit: Float
+  highPlasticLimit: Float
+  maxCalibrationFactor: Float
+  minCalibrationFactor: Float
+}
+
+type Query {
+  hydrabolts(since: DateTime): [Hydrabolt!]!
+  hydraboltByPartNumber(partNumber: String!): Hydrabolt
+}
+
+type Mutation {
+  createHydrabolt(input: CreateHydraboltInput!): Hydrabolt!
+  updateHydrabolt(partNumber: String!, input: UpdateHydraboltInput!): Hydrabolt!
+}

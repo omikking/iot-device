@@ -1,0 +1,232 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+scalar DateTime
+scalar Upload
+scalar JSON
+
+"""
+BansheeRequest model
+Define the BansheeRequest model and its fields
+"""
+type BansheeRequest {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  serialNumber: String!
+  name: String
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  companyId: String!
+  coordinates: JSON
+  period: Int!
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String!
+  comment: String
+  isBrokenBolt: Boolean!
+  isNotMeasurable: Boolean!
+  images: [String!]
+  proceqData: [ProceqData!]
+  eventLogs: [BansheeEventLog!]
+  measured: Boolean!
+
+  createdBy: String!
+  updatedBy: String
+
+  # Field resolver - fetches the full User object from createdBy ID
+  # Only returns users within the same company (SANDVIK_ADMIN can see all)
+  createdByUser: User
+
+  level: Level
+  drive: Drive
+  location: Location
+  company: Company
+  site: Site
+  siteId: String!
+  boltType: String
+  activateNotifications: Boolean
+
+  # Field resolver - fetches BansheeBoltTypeConstant based on boltType
+  boltTypeConstant: BansheeBoltTypeConstant
+}
+
+"""
+CreateBansheeRequestInput
+Define the input fields to create a new banshee request
+"""
+input CreateBansheeRequestInput {
+  bansheeOrderItemId: String
+  serialNumber: String!
+  name: String
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  coordinates: JSON
+  period: Int!
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition!
+  comment: String
+  isBrokenBolt: Boolean!
+  isNotMeasurable: Boolean!
+  measured: Boolean
+  images: [Upload!]
+  boltType: String
+  companyId: String!
+  siteId: String!
+}
+
+"""
+UpdateBansheeRequestInput
+Define the input fields to update an existing banshee request
+"""
+input UpdateBansheeRequestInput {
+  serialNumber: String
+  name: String
+  levelId: String
+  driveId: String
+  locationId: String
+  coordinates: JSON
+  period: Int
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition
+  comment: String
+  isBrokenBolt: Boolean
+  isNotMeasurable: Boolean
+  images: [Upload!]
+  measured: Boolean
+  boltType: String
+  companyId: String
+  siteId: String
+  activateNotifications: Boolean
+}
+
+"""
+BansheeRequestResponse
+Response structure for paginated list of banshee requests
+"""
+type BansheeRequestResponse {
+  totalRecords: Int!
+  results: [BansheeRequest!]!
+}
+
+type LocationDistribution {
+  locationId: String!
+  locationName: String!
+  siteName: String!
+  levelName: String!
+  driveName: String!
+  total: Int!
+  statusCounts: [StatusCount!]!
+  results: [BansheeRequest!]!
+}
+
+type BansheeStatusDistribution {
+  total: Int!
+  statusCounts: [StatusCount!]!
+  byLocation: [LocationDistribution!]
+}
+
+"""
+Query
+Define the queries that can be made to the BansheeRequest model
+"""
+type Query {
+  bansheeRequests(
+    offset: Int
+    limit: Int
+    serialNumber: String
+    measured: Boolean
+    period: Int
+    driveId: String
+    levelId: String
+    locationId: String
+    createdBy: String
+    companyId: String
+    siteId: String
+    startDate: DateTime
+    endDate: DateTime
+    activateNotifications: Boolean
+    isBrokenBolt: Boolean
+    isNotMeasurable: Boolean
+  ): BansheeRequestResponse!
+
+  bansheeRequest(id: String!): BansheeRequest!
+
+  bansheeStatusDistribution(
+    companyId: String
+    siteId: String
+    locationId: String
+    startDate: DateTime
+    endDate: DateTime
+  ): BansheeStatusDistribution!
+
+  bansheeEventLogs(
+    offset: Int
+    limit: Int
+    companyId: String
+    siteId: String
+  ): BansheeEventLogResponse!
+}
+
+type StatusCount {
+  status: String!
+  count: Int!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the BansheeRequest model
+"""
+type Mutation {
+  createBansheeRequest(
+    createBansheeRequestInput: CreateBansheeRequestInput!
+  ): BansheeRequest!
+
+  updateBansheeRequest(
+    id: String!
+    updateBansheeRequestInput: UpdateBansheeRequestInput!
+  ): BansheeRequest!
+
+  deleteBansheeRequest(id: String!): BansheeRequest!
+}
+
+type BansheeEventLog {
+  id: String!
+  createdAt: DateTime!
+  eventType: String!
+  previousStatus: String!
+  newStatus: String!
+  source: String
+  measurementId: String
+  bansheeRequestId: String!
+  bansheeRequest: BansheeRequest
+}
+
+type BansheeEventLogResponse {
+  totalRecords: Int!
+  results: [BansheeEventLog!]!
+}
+
+type BansheeBoltTypeConstant {
+  id: String!
+  boltType: String!
+  velocity: Float!
+  tempCorrectionFactor: Float!
+  tempCoeff: Float!
+  quadCoeff1: Float!
+  linCoeff1: Float!
+  quadCoeff2: Float!
+  linCoeff2: Float!
+  constTerm: Float!
+  nominalLength: Float!
+  linearLimit: Float!
+  elasticLimit: Float!
+  lowPlasticLimit: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

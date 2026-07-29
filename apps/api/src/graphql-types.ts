@@ -8,6 +8,30 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum BansheeCartItemType {
+    NEW_BANSHEE = "NEW_BANSHEE",
+    SERVICE_EXISTING = "SERVICE_EXISTING"
+}
+
+export enum BansheeEmailStatus {
+    PENDING = "PENDING",
+    SENT = "SENT",
+    FAILED = "FAILED"
+}
+
+export enum BansheeOrderStatus {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+    PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED",
+    CANCELLED = "CANCELLED"
+}
+
+export enum BansheeOrderItemStatus {
+    PENDING = "PENDING",
+    FULFILLED = "FULFILLED",
+    CANCELLED = "CANCELLED"
+}
+
 export enum Role {
     COMPANY_USER = "COMPANY_USER",
     COMPANY_ADMIN = "COMPANY_ADMIN",
@@ -92,7 +116,8 @@ export enum PullTestAbortReason {
 
 export enum Application {
     PULL_TEST = "PULL_TEST",
-    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN"
+    PULL_TEST_TECHNICIAN = "PULL_TEST_TECHNICIAN",
+    BANSHEE = "BANSHEE"
 }
 
 export enum PlanLevel {
@@ -100,6 +125,127 @@ export enum PlanLevel {
     SILVER = "SILVER",
     BRONZE = "BRONZE",
     INACTIVE = "INACTIVE"
+}
+
+export enum ProceqStatus {
+    ELASTIC = "ELASTIC",
+    LOW_PLASTIC = "LOW_PLASTIC",
+    HIGH_PLASTIC = "HIGH_PLASTIC",
+    BROKEN = "BROKEN",
+    NOT_MEASURABLE = "NOT_MEASURABLE",
+    UNMEASURED = "UNMEASURED"
+}
+
+export class AddCartItemInput {
+    itemType: BansheeCartItemType;
+    bansheeRequestId?: Nullable<string>;
+    name?: Nullable<string>;
+    quantity?: Nullable<number>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    period?: Nullable<number>;
+    companyId: string;
+}
+
+export class UpdateNewBansheeCartItemInput {
+    quantity?: Nullable<number>;
+    name?: Nullable<string>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    period?: Nullable<number>;
+}
+
+export class BansheeSharePlotListInput {
+    companyId: string;
+    recipientEmail: string;
+}
+
+export class BansheeContactUsInput {
+    companyId: string;
+    message: string;
+}
+
+export class BansheeContactUsInboxFilter {
+    status?: Nullable<BansheeEmailStatus>;
+    companyId?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+}
+
+export class SubmitOrderInput {
+    companyId: string;
+    attachmentsName?: Nullable<string[]>;
+    comment: string;
+}
+
+export class OrderFilterInput {
+    status?: Nullable<BansheeOrderStatus>;
+    companyId?: Nullable<string>;
+    startDate?: Nullable<DateTime>;
+    endDate?: Nullable<DateTime>;
+}
+
+export class CreateBansheeRequestInput {
+    bansheeOrderItemId?: Nullable<string>;
+    serialNumber: string;
+    name?: Nullable<string>;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    coordinates?: Nullable<JSON>;
+    period: number;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition: RingPosition;
+    comment?: Nullable<string>;
+    isBrokenBolt: boolean;
+    isNotMeasurable: boolean;
+    measured?: Nullable<boolean>;
+    images?: Nullable<Upload[]>;
+    boltType?: Nullable<string>;
+    companyId: string;
+    siteId: string;
+}
+
+export class UpdateBansheeRequestInput {
+    serialNumber?: Nullable<string>;
+    name?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    period?: Nullable<number>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<RingPosition>;
+    comment?: Nullable<string>;
+    isBrokenBolt?: Nullable<boolean>;
+    isNotMeasurable?: Nullable<boolean>;
+    images?: Nullable<Upload[]>;
+    measured?: Nullable<boolean>;
+    boltType?: Nullable<string>;
+    companyId?: Nullable<string>;
+    siteId?: Nullable<string>;
+    activateNotifications?: Nullable<boolean>;
+}
+
+export class BansheeTemplateInput {
+    templateName: string;
+    period?: Nullable<number>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    locationDetails?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    activateNotifications?: Nullable<boolean>;
+    comment?: Nullable<string>;
+    companyId: string;
+    ringPosition?: Nullable<RingPosition>;
 }
 
 export class CreateBoltResultInput {
@@ -394,43 +540,59 @@ export class UpdatePasswordInput {
     confirmPassword?: Nullable<string>;
 }
 
-export class BoltResult {
+export class BansheeCartItem {
     id: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-    measuredAt: DateTime;
-    boltNumber: number;
-    boltType: string;
-    peakLoad: number[];
-    peakDisplacement: number[];
-    positionInRing: string;
-    result: string;
-    isHazard: boolean;
-    hazardCompletedDate?: Nullable<DateTime[]>;
-    abortReason?: Nullable<string>;
-    comment?: Nullable<string>;
-    image?: Nullable<string>;
-    siteId: string;
-    levelId: string;
-    driveId: string;
-    locationId: string;
-    userId: string;
+    itemType: BansheeCartItemType;
+    bansheeRequestId?: Nullable<string>;
+    bansheeRequest?: Nullable<BansheeRequest>;
+    name?: Nullable<string>;
+    quantity: number;
+    period?: Nullable<number>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
     site?: Nullable<Site>;
     level?: Nullable<Level>;
     drive?: Nullable<Drive>;
     location?: Nullable<Location>;
+    companyId: string;
+    company?: Nullable<Company>;
 }
 
-export class BoltResultResponse {
-    failedCount: number;
-    hazardCount: number;
-    passedCount: number;
-    totalRecords: number;
-    averageTons?: Nullable<number>;
-    results: BoltResult[];
+export class BansheeCartItemStats {
+    newBanshee: number;
+    serviceExisting: number;
+    total: number;
+}
+
+export class SkippedBansheeRequest {
+    bansheeRequestId: string;
+    serialNumber?: Nullable<string>;
+    reason: string;
+}
+
+export class AddCartItemsResult {
+    added: BansheeCartItem[];
+    skipped: SkippedBansheeRequest[];
 }
 
 export abstract class IQuery {
+    cartItems?: BansheeCartItem[];
+    cartItemsStats?: BansheeCartItemStats;
+    bansheeContactUsInbox?: BansheeContactUsInboxResponse;
+    bansheeContactById?: Nullable<BansheeEmail>;
+    orders?: OrdersResponse;
+    order?: BansheeOrder;
+    bansheeRequests?: BansheeRequestResponse;
+    bansheeRequest?: BansheeRequest;
+    bansheeStatusDistribution?: BansheeStatusDistribution;
+    bansheeEventLogs?: BansheeEventLogResponse;
+    bansheeSessionStats?: BansheeSessionStats[];
+    getBansheeTemplates?: BansheeTemplate[];
+    getBansheeTemplateById?: Nullable<BansheeTemplate>;
     boltResults?: BoltResultResponse;
     boltResult?: BoltResult;
     coffees: Coffee[];
@@ -449,6 +611,7 @@ export abstract class IQuery {
     getPullTestAbortReasonOptions: EnumOption[];
     getApplication?: Nullable<Application[]>;
     getPlanLevel?: Nullable<PlanLevel[]>;
+    getProceqStatus?: Nullable<ProceqStatus[]>;
     hazards?: Nullable<BoltResult[]>;
     hydrabolts?: Hydrabolt[];
     hydraboltByPartNumber?: Nullable<Hydrabolt>;
@@ -461,6 +624,8 @@ export abstract class IQuery {
     location?: Location;
     opticboltTestResults?: OpticboltTestResult[];
     opticboltSpectrumsBySerialNumber?: OpticboltSpectrum[];
+    proceqLoginUrl?: ProceqLoginUrlResponse;
+    getProceqTokenStatus: GetProceqTokenStatusResponse;
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -470,6 +635,23 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
+    addCartItems?: AddCartItemsResult;
+    updateNewBansheeCartItem?: BansheeCartItem;
+    deleteCartItem?: BansheeCartItem;
+    clearCart?: boolean;
+    bansheeSharePlotList?: BansheeSharePlotListResponse;
+    bansheeContactUs?: BansheeContactUsResponse;
+    submitOrder?: BansheeOrder;
+    cancelOrder?: BansheeOrder;
+    completeOrder?: BansheeOrder;
+    fulfillOrderItem?: BansheeOrderItem;
+    cancelOrderItem?: BansheeOrderItem;
+    createBansheeRequest?: BansheeRequest;
+    updateBansheeRequest?: BansheeRequest;
+    deleteBansheeRequest?: BansheeRequest;
+    createBansheeTemplate?: BansheeTemplate;
+    updateBansheeTemplate?: BansheeTemplate;
+    deleteBansheeTemplate?: BansheeTemplate;
     createBoltResult?: BoltResult;
     updateBoltResult?: BoltResult;
     removeBoltResult?: BoltResult;
@@ -512,6 +694,247 @@ export abstract class IMutation {
     removeUserPermission?: UserPermission;
     updateUser?: User;
     removeUser?: User;
+}
+
+export class BansheeEmailAttachment {
+    id: string;
+    originalFileName: string;
+    storedFileName: string;
+    filePath: string;
+    mimeType: string;
+    fileSize: number;
+    createdAt: DateTime;
+}
+
+export class BansheeEmail {
+    id: string;
+    status: BansheeEmailStatus;
+    message: string;
+    userId: string;
+    companyId: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    attachments?: Nullable<BansheeEmailAttachment[]>;
+}
+
+export class BansheeSharePlotListResponse {
+    success: boolean;
+    sentTo?: Nullable<string>;
+    message?: Nullable<string>;
+}
+
+export class BansheeContactUsResponse {
+    success: boolean;
+    message?: Nullable<string>;
+    email?: Nullable<BansheeEmail>;
+}
+
+export class BansheeContactUsInboxResponse {
+    items: BansheeEmail[];
+    total: number;
+}
+
+export class BansheeOrder {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    status: BansheeOrderStatus;
+    attachments: string[];
+    comment: string;
+    companyId: string;
+    company?: Nullable<Company>;
+    orderItems: BansheeOrderItem[];
+}
+
+export class BansheeOrderItem {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    itemType: BansheeCartItemType;
+    status: BansheeOrderItemStatus;
+    bansheeRequestId?: Nullable<string>;
+    bansheeRequest?: Nullable<BansheeRequest>;
+    name?: Nullable<string>;
+    period?: Nullable<number>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+    orderId: string;
+    order?: Nullable<BansheeOrder>;
+}
+
+export class OrdersResponse {
+    totalRecords: number;
+    results: BansheeOrder[];
+}
+
+export class BansheeRequest {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    serialNumber: string;
+    name?: Nullable<string>;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    companyId: string;
+    coordinates?: Nullable<JSON>;
+    period: number;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition: string;
+    comment?: Nullable<string>;
+    isBrokenBolt: boolean;
+    isNotMeasurable: boolean;
+    images?: Nullable<string[]>;
+    proceqData?: Nullable<ProceqData[]>;
+    eventLogs?: Nullable<BansheeEventLog[]>;
+    measured: boolean;
+    createdBy: string;
+    updatedBy?: Nullable<string>;
+    createdByUser?: Nullable<User>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+    company?: Nullable<Company>;
+    site?: Nullable<Site>;
+    siteId: string;
+    boltType?: Nullable<string>;
+    activateNotifications?: Nullable<boolean>;
+    boltTypeConstant?: Nullable<BansheeBoltTypeConstant>;
+}
+
+export class BansheeRequestResponse {
+    totalRecords: number;
+    results: BansheeRequest[];
+}
+
+export class LocationDistribution {
+    locationId: string;
+    locationName: string;
+    siteName: string;
+    levelName: string;
+    driveName: string;
+    total: number;
+    statusCounts: StatusCount[];
+    results: BansheeRequest[];
+}
+
+export class BansheeStatusDistribution {
+    total: number;
+    statusCounts: StatusCount[];
+    byLocation?: Nullable<LocationDistribution[]>;
+}
+
+export class StatusCount {
+    status: string;
+    count: number;
+}
+
+export class BansheeEventLog {
+    id: string;
+    createdAt: DateTime;
+    eventType: string;
+    previousStatus: string;
+    newStatus: string;
+    source?: Nullable<string>;
+    measurementId?: Nullable<string>;
+    bansheeRequestId: string;
+    bansheeRequest?: Nullable<BansheeRequest>;
+}
+
+export class BansheeEventLogResponse {
+    totalRecords: number;
+    results: BansheeEventLog[];
+}
+
+export class BansheeBoltTypeConstant {
+    id: string;
+    boltType: string;
+    velocity: number;
+    tempCorrectionFactor: number;
+    tempCoeff: number;
+    quadCoeff1: number;
+    linCoeff1: number;
+    quadCoeff2: number;
+    linCoeff2: number;
+    constTerm: number;
+    nominalLength: number;
+    linearLimit: number;
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class BansheeSessionStats {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    sessionDate: DateTime;
+    totalMeasured: number;
+    notMeasurable: number;
+    broken: number;
+    site: Site;
+    company?: Nullable<Company>;
+}
+
+export class BansheeTemplate {
+    id: string;
+    templateName: string;
+    period?: Nullable<number>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    locationDetails?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    comment?: Nullable<string>;
+    companyId: string;
+    activateNotifications?: Nullable<boolean>;
+    ringPosition?: Nullable<RingPosition>;
+}
+
+export class BoltResult {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    measuredAt: DateTime;
+    boltNumber: number;
+    boltType: string;
+    peakLoad: number[];
+    peakDisplacement: number[];
+    positionInRing: string;
+    result: string;
+    isHazard: boolean;
+    hazardCompletedDate?: Nullable<DateTime[]>;
+    abortReason?: Nullable<string>;
+    comment?: Nullable<string>;
+    image?: Nullable<string>;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    userId: string;
+    site?: Nullable<Site>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+}
+
+export class BoltResultResponse {
+    failedCount: number;
+    hazardCount: number;
+    passedCount: number;
+    totalRecords: number;
+    averageTons?: Nullable<number>;
+    results: BoltResult[];
 }
 
 export class Coffee {
@@ -679,6 +1102,78 @@ export class OpticboltTestResult {
     spectrums: OpticboltSpectrum[];
 }
 
+export class ProceqReading {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    readingIndex: number;
+    indicationSetupFileName?: Nullable<string>;
+    measuringMode?: Nullable<string>;
+    frequency?: Nullable<number>;
+    gain?: Nullable<number>;
+    voltage?: Nullable<number>;
+    sampleAveraging?: Nullable<number>;
+    damping?: Nullable<number>;
+    analogueFilter?: Nullable<number>;
+    zeroOffset?: Nullable<number>;
+    level?: Nullable<number>;
+    measurementLevel?: Nullable<number>;
+    referenceSamplingRate?: Nullable<number>;
+    start?: Nullable<number>;
+    width?: Nullable<number>;
+    gate1MaximumAmplitude?: Nullable<number>;
+    gate1SoundPathDistance?: Nullable<number>;
+    gate1SoundPathDistanceInTimeUnit?: Nullable<number>;
+    status?: Nullable<string>;
+    elongation?: Nullable<number>;
+}
+
+export class ProceqData {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    measurementId: string;
+    fileName: string;
+    operator?: Nullable<string>;
+    email?: Nullable<string>;
+    dueDate?: Nullable<DateTime>;
+    comments: string;
+    temperature?: Nullable<number>;
+    rawDataZipId?: Nullable<string>;
+    rawDataZipPath?: Nullable<string>;
+    status?: Nullable<string>;
+    attachmentIds?: Nullable<Nullable<string>[]>;
+    createdTimestamp?: Nullable<DateTime>;
+    updatedTimestamp?: Nullable<DateTime>;
+    bansheeRequest?: Nullable<BansheeRequest>;
+    proceqAttachments?: Nullable<ProceqAttachment[]>;
+    readings?: Nullable<ProceqReading[]>;
+}
+
+export class ProceqAttachment {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    attachmentId: string;
+    measurementId: string;
+    fileName: string;
+    filePath: string;
+    fileType: string;
+    fileSize?: Nullable<number>;
+    attachmentType: string;
+    description?: Nullable<string>;
+}
+
+export class ProceqLoginUrlResponse {
+    url: string;
+}
+
+export class GetProceqTokenStatusResponse {
+    valid: boolean;
+    canRefresh: boolean;
+    expiresAt?: Nullable<string>;
+}
+
 export class Site {
     id: string;
     createdAt: DateTime;
@@ -716,6 +1211,7 @@ export class User {
     userPermissions?: Nullable<UserPermission[]>;
 }
 
-export type DateTime = any;
 export type Upload = any;
+export type DateTime = any;
+export type JSON = any;
 type Nullable<T> = T | null;

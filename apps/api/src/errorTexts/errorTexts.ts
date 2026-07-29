@@ -208,4 +208,17 @@ export const errorTexts = {
   otpTokenExpired_title: 'Reset password code expired',
   otpTokenExpired_message:
     'The reset password code has expired. Please request a new one.',
+
+  // Banshee request
+  bansheeRequestCreateError_title: 'Failed to create banshee request.',
+
+  bansheeRequestUpdateError_title: 'Failed to update banshee request.',
+
+  bansheeRequestDeleteError_title: 'Failed to delete banshee request.',
+
+  // Banshee template
+  bansheeTemplateCreateError_title: 'Failed to create banshee template.',
+  bansheeTemplateUpdateError_title: 'Failed to update banshee template.',
+  bansheeTemplateDeleteError_title: 'Failed to delete banshee template.',
+  bansheeTemplateFetchError_title: 'Failed to fetch banshee template.',
 };

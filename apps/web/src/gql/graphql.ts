@@ -16,13 +16,335 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** Date custom scalar type */
   DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   Upload: { input: any; output: any; }
 };
 
+export type AddCartItemInput = {
+  bansheeRequestId?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  itemType: BansheeCartItemType;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddCartItemsResult = {
+  __typename?: 'AddCartItemsResult';
+  added: Array<BansheeCartItem>;
+  skipped: Array<SkippedBansheeRequest>;
+};
+
 export enum Application {
+  Banshee = 'BANSHEE',
   PullTest = 'PULL_TEST',
   PullTestTechnician = 'PULL_TEST_TECHNICIAN'
 }
+
+export type BansheeBoltTypeConstant = {
+  __typename?: 'BansheeBoltTypeConstant';
+  boltType: Scalars['String']['output'];
+  constTerm: Scalars['Float']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  elasticLimit: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  linCoeff1: Scalars['Float']['output'];
+  linCoeff2: Scalars['Float']['output'];
+  linearLimit: Scalars['Float']['output'];
+  lowPlasticLimit: Scalars['Float']['output'];
+  nominalLength: Scalars['Float']['output'];
+  quadCoeff1: Scalars['Float']['output'];
+  quadCoeff2: Scalars['Float']['output'];
+  tempCoeff: Scalars['Float']['output'];
+  tempCorrectionFactor: Scalars['Float']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  velocity: Scalars['Float']['output'];
+};
+
+export type BansheeCartItem = {
+  __typename?: 'BansheeCartItem';
+  bansheeRequest?: Maybe<BansheeRequest>;
+  bansheeRequestId?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Company>;
+  companyId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  drive?: Maybe<Drive>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  itemType: BansheeCartItemType;
+  level?: Maybe<Level>;
+  levelId?: Maybe<Scalars['String']['output']>;
+  location?: Maybe<Location>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  period?: Maybe<Scalars['Int']['output']>;
+  quantity: Scalars['Int']['output'];
+  site?: Maybe<Site>;
+  siteId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BansheeCartItemStats = {
+  __typename?: 'BansheeCartItemStats';
+  newBanshee: Scalars['Int']['output'];
+  serviceExisting: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
+export enum BansheeCartItemType {
+  NewBanshee = 'NEW_BANSHEE',
+  ServiceExisting = 'SERVICE_EXISTING'
+}
+
+export type BansheeContactUsInboxFilter = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  status?: InputMaybe<BansheeEmailStatus>;
+};
+
+export type BansheeContactUsInboxResponse = {
+  __typename?: 'BansheeContactUsInboxResponse';
+  items: Array<BansheeEmail>;
+  total: Scalars['Int']['output'];
+};
+
+export type BansheeContactUsInput = {
+  companyId: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+};
+
+export type BansheeContactUsResponse = {
+  __typename?: 'BansheeContactUsResponse';
+  email?: Maybe<BansheeEmail>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type BansheeEmail = {
+  __typename?: 'BansheeEmail';
+  attachments?: Maybe<Array<BansheeEmailAttachment>>;
+  companyId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  status: BansheeEmailStatus;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type BansheeEmailAttachment = {
+  __typename?: 'BansheeEmailAttachment';
+  createdAt: Scalars['DateTime']['output'];
+  filePath: Scalars['String']['output'];
+  fileSize: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  mimeType: Scalars['String']['output'];
+  originalFileName: Scalars['String']['output'];
+  storedFileName: Scalars['String']['output'];
+};
+
+export enum BansheeEmailStatus {
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Sent = 'SENT'
+}
+
+export type BansheeEventLog = {
+  __typename?: 'BansheeEventLog';
+  bansheeRequest?: Maybe<BansheeRequest>;
+  bansheeRequestId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  eventType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId?: Maybe<Scalars['String']['output']>;
+  newStatus: Scalars['String']['output'];
+  previousStatus: Scalars['String']['output'];
+  source?: Maybe<Scalars['String']['output']>;
+};
+
+export type BansheeEventLogResponse = {
+  __typename?: 'BansheeEventLogResponse';
+  results: Array<BansheeEventLog>;
+  totalRecords: Scalars['Int']['output'];
+};
+
+export type BansheeOrder = {
+  __typename?: 'BansheeOrder';
+  attachments: Array<Scalars['String']['output']>;
+  comment: Scalars['String']['output'];
+  company?: Maybe<Company>;
+  companyId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  orderItems: Array<BansheeOrderItem>;
+  status: BansheeOrderStatus;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BansheeOrderItem = {
+  __typename?: 'BansheeOrderItem';
+  bansheeRequest?: Maybe<BansheeRequest>;
+  bansheeRequestId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  drive?: Maybe<Drive>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  itemType: BansheeCartItemType;
+  level?: Maybe<Level>;
+  levelId?: Maybe<Scalars['String']['output']>;
+  location?: Maybe<Location>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  order?: Maybe<BansheeOrder>;
+  orderId: Scalars['String']['output'];
+  period?: Maybe<Scalars['Int']['output']>;
+  site?: Maybe<Site>;
+  siteId?: Maybe<Scalars['String']['output']>;
+  status: BansheeOrderItemStatus;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export enum BansheeOrderItemStatus {
+  Cancelled = 'CANCELLED',
+  Fulfilled = 'FULFILLED',
+  Pending = 'PENDING'
+}
+
+export enum BansheeOrderStatus {
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  PartiallyCompleted = 'PARTIALLY_COMPLETED',
+  Pending = 'PENDING'
+}
+
+/**
+ * BansheeRequest model
+ * Define the BansheeRequest model and its fields
+ */
+export type BansheeRequest = {
+  __typename?: 'BansheeRequest';
+  activateNotifications?: Maybe<Scalars['Boolean']['output']>;
+  boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
+  boltType?: Maybe<Scalars['String']['output']>;
+  boltTypeConstant?: Maybe<BansheeBoltTypeConstant>;
+  comment?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Company>;
+  companyId: Scalars['String']['output'];
+  coordinates?: Maybe<Scalars['JSON']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  createdByUser?: Maybe<User>;
+  drive?: Maybe<Drive>;
+  driveId: Scalars['String']['output'];
+  eventLogs?: Maybe<Array<BansheeEventLog>>;
+  id: Scalars['String']['output'];
+  images?: Maybe<Array<Scalars['String']['output']>>;
+  isBrokenBolt: Scalars['Boolean']['output'];
+  isNotMeasurable: Scalars['Boolean']['output'];
+  level?: Maybe<Level>;
+  levelId: Scalars['String']['output'];
+  location?: Maybe<Location>;
+  locationDetails?: Maybe<Scalars['String']['output']>;
+  locationId: Scalars['String']['output'];
+  measured: Scalars['Boolean']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  period: Scalars['Int']['output'];
+  proceqData?: Maybe<Array<ProceqData>>;
+  ringPosition: Scalars['String']['output'];
+  serialNumber: Scalars['String']['output'];
+  site?: Maybe<Site>;
+  siteId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * BansheeRequestResponse
+ * Response structure for paginated list of banshee requests
+ */
+export type BansheeRequestResponse = {
+  __typename?: 'BansheeRequestResponse';
+  results: Array<BansheeRequest>;
+  totalRecords: Scalars['Int']['output'];
+};
+
+export type BansheeSessionStats = {
+  __typename?: 'BansheeSessionStats';
+  broken: Scalars['Int']['output'];
+  company?: Maybe<Company>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  notMeasurable: Scalars['Int']['output'];
+  sessionDate: Scalars['DateTime']['output'];
+  site: Site;
+  totalMeasured: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type BansheeSharePlotListInput = {
+  companyId: Scalars['String']['input'];
+  recipientEmail: Scalars['String']['input'];
+};
+
+export type BansheeSharePlotListResponse = {
+  __typename?: 'BansheeSharePlotListResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  sentTo?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type BansheeStatusDistribution = {
+  __typename?: 'BansheeStatusDistribution';
+  byLocation?: Maybe<Array<LocationDistribution>>;
+  statusCounts: Array<StatusCount>;
+  total: Scalars['Int']['output'];
+};
+
+/**
+ * BansheeTemplate model
+ * Define the BansheeTemplate model and its fields
+ */
+export type BansheeTemplate = {
+  __typename?: 'BansheeTemplate';
+  activateNotifications?: Maybe<Scalars['Boolean']['output']>;
+  boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  companyId: Scalars['String']['output'];
+  coordinates?: Maybe<Scalars['JSON']['output']>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  levelId?: Maybe<Scalars['String']['output']>;
+  locationDetails?: Maybe<Scalars['String']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  period?: Maybe<Scalars['Int']['output']>;
+  ringPosition?: Maybe<RingPosition>;
+  siteId?: Maybe<Scalars['String']['output']>;
+  templateName: Scalars['String']['output'];
+};
+
+/**
+ * BansheeTemplateInput
+ * Define the input fields to create a new BansheeTemplate or update an existing BansheeTemplate
+ */
+export type BansheeTemplateInput = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  ringPosition?: InputMaybe<RingPosition>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  templateName: Scalars['String']['input'];
+};
 
 /**
  * BoltResult model
@@ -171,6 +493,32 @@ export type ConfirmPasswordResetInput = {
   email: Scalars['String']['input'];
   newPassword: Scalars['String']['input'];
   token: Scalars['String']['input'];
+};
+
+/**
+ * CreateBansheeRequestInput
+ * Define the input fields to create a new banshee request
+ */
+export type CreateBansheeRequestInput = {
+  bansheeOrderItemId?: InputMaybe<Scalars['String']['input']>;
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId: Scalars['String']['input'];
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  isBrokenBolt: Scalars['Boolean']['input'];
+  isNotMeasurable: Scalars['Boolean']['input'];
+  levelId: Scalars['String']['input'];
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId: Scalars['String']['input'];
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  period: Scalars['Int']['input'];
+  ringPosition: RingPosition;
+  serialNumber: Scalars['String']['input'];
+  siteId: Scalars['String']['input'];
 };
 
 /**
@@ -372,6 +720,13 @@ export type Flavor = {
   name: Scalars['String']['output'];
 };
 
+export type GetProceqTokenStatusResponse = {
+  __typename?: 'GetProceqTokenStatusResponse';
+  canRefresh: Scalars['Boolean']['output'];
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  valid: Scalars['Boolean']['output'];
+};
+
 export type Hydrabolt = {
   __typename?: 'Hydrabolt';
   boltLength: Scalars['Float']['output'];
@@ -449,14 +804,35 @@ export type Location = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type LocationDistribution = {
+  __typename?: 'LocationDistribution';
+  driveName: Scalars['String']['output'];
+  levelName: Scalars['String']['output'];
+  locationId: Scalars['String']['output'];
+  locationName: Scalars['String']['output'];
+  results: Array<BansheeRequest>;
+  siteName: Scalars['String']['output'];
+  statusCounts: Array<StatusCount>;
+  total: Scalars['Int']['output'];
+};
+
 /**
  * Mutation
  * Define the mutations that can be made to the User model
  */
 export type Mutation = {
   __typename?: 'Mutation';
+  addCartItems: AddCartItemsResult;
+  bansheeContactUs: BansheeContactUsResponse;
+  bansheeSharePlotList: BansheeSharePlotListResponse;
+  cancelOrder: BansheeOrder;
+  cancelOrderItem: BansheeOrderItem;
+  clearCart: Scalars['Boolean']['output'];
   completeInvitation: User;
+  completeOrder: BansheeOrder;
   confirmPasswordReset: Scalars['Boolean']['output'];
+  createBansheeRequest: BansheeRequest;
+  createBansheeTemplate: BansheeTemplate;
   createBoltResult: BoltResult;
   createBoltResults: Array<BoltResult>;
   createCoffee: Coffee;
@@ -470,6 +846,10 @@ export type Mutation = {
   createOpticboltTestResultWithSpectrums: OpticboltTestResult;
   createSite: Site;
   createUserPermission: UserPermission;
+  deleteBansheeRequest: BansheeRequest;
+  deleteBansheeTemplate: BansheeTemplate;
+  deleteCartItem: BansheeCartItem;
+  fulfillOrderItem: BansheeOrderItem;
   removeBoltResult: BoltResult;
   removeBoltResults: Array<BoltResult>;
   removeCoffee: Coffee;
@@ -483,6 +863,9 @@ export type Mutation = {
   removeUserPermission: UserPermission;
   requestPasswordReset: Scalars['Boolean']['output'];
   resendInvitation: Invitation;
+  submitOrder: BansheeOrder;
+  updateBansheeRequest: BansheeRequest;
+  updateBansheeTemplate: BansheeTemplate;
   updateBoltResult: BoltResult;
   updateBoltResults: Array<BoltResult>;
   updateCoffee: Coffee;
@@ -491,12 +874,70 @@ export type Mutation = {
   updateHydrabolt: Hydrabolt;
   updateLevel: Level;
   updateLocation: Location;
+  updateNewBansheeCartItem: BansheeCartItem;
   updateOpticboltSpectrum: OpticboltSpectrum;
   updateOpticboltTestResult: OpticboltTestResult;
   updateSite: Site;
   updateUser: User;
   updateUserPermission: UserPermission;
   validateResetToken: Scalars['Boolean']['output'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationAddCartItemsArgs = {
+  input: Array<AddCartItemInput>;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationBansheeContactUsArgs = {
+  attachments?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: BansheeContactUsInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationBansheeSharePlotListArgs = {
+  csv: Scalars['Upload']['input'];
+  image: Scalars['Upload']['input'];
+  input: BansheeSharePlotListInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCancelOrderArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCancelOrderItemArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationClearCartArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 
@@ -513,8 +954,35 @@ export type MutationCompleteInvitationArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationCompleteOrderArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationConfirmPasswordResetArgs = {
   input: ConfirmPasswordResetInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateBansheeRequestArgs = {
+  createBansheeRequestInput: CreateBansheeRequestInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationCreateBansheeTemplateArgs = {
+  createBansheeTemplateInput: BansheeTemplateInput;
 };
 
 
@@ -640,6 +1108,42 @@ export type MutationCreateUserPermissionArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationDeleteBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationDeleteBansheeTemplateArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationDeleteCartItemArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationFulfillOrderItemArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationRemoveBoltResultArgs = {
   id: Scalars['String']['input'];
 };
@@ -757,6 +1261,36 @@ export type MutationResendInvitationArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationSubmitOrderArgs = {
+  attachments?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: SubmitOrderInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+  updateBansheeRequestInput: UpdateBansheeRequestInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateBansheeTemplateArgs = {
+  id: Scalars['String']['input'];
+  updateBansheeTemplateInput: BansheeTemplateInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationUpdateBoltResultArgs = {
   id: Scalars['String']['input'];
   updateBoltResultInput: UpdateBoltResultInput;
@@ -829,6 +1363,17 @@ export type MutationUpdateLevelArgs = {
 export type MutationUpdateLocationArgs = {
   id: Scalars['String']['input'];
   updateLocationInput: UpdateLocationInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateNewBansheeCartItemArgs = {
+  cartItemId: Scalars['String']['input'];
+  companyId: Scalars['String']['input'];
+  input: UpdateNewBansheeCartItemInput;
 };
 
 
@@ -934,6 +1479,19 @@ export type OpticboltTestResult = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type OrderFilterInput = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  status?: InputMaybe<BansheeOrderStatus>;
+};
+
+export type OrdersResponse = {
+  __typename?: 'OrdersResponse';
+  results: Array<BansheeOrder>;
+  totalRecords: Scalars['Int']['output'];
+};
+
 /**
  * Plan model
  * Define the Plan model and its fields
@@ -956,6 +1514,85 @@ export enum PlanLevel {
   Silver = 'SILVER'
 }
 
+export type ProceqAttachment = {
+  __typename?: 'ProceqAttachment';
+  attachmentId: Scalars['String']['output'];
+  attachmentType: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  fileName: Scalars['String']['output'];
+  filePath: Scalars['String']['output'];
+  fileSize?: Maybe<Scalars['Int']['output']>;
+  fileType: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProceqData = {
+  __typename?: 'ProceqData';
+  attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  bansheeRequest?: Maybe<BansheeRequest>;
+  comments: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  dueDate?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  fileName: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  measurementId: Scalars['String']['output'];
+  operator?: Maybe<Scalars['String']['output']>;
+  proceqAttachments?: Maybe<Array<ProceqAttachment>>;
+  rawDataZipId?: Maybe<Scalars['String']['output']>;
+  rawDataZipPath?: Maybe<Scalars['String']['output']>;
+  readings?: Maybe<Array<ProceqReading>>;
+  status?: Maybe<Scalars['String']['output']>;
+  temperature?: Maybe<Scalars['Float']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProceqLoginUrlResponse = {
+  __typename?: 'ProceqLoginUrlResponse';
+  url: Scalars['String']['output'];
+};
+
+export type ProceqReading = {
+  __typename?: 'ProceqReading';
+  analogueFilter?: Maybe<Scalars['Int']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  damping?: Maybe<Scalars['Int']['output']>;
+  elongation?: Maybe<Scalars['Float']['output']>;
+  frequency?: Maybe<Scalars['Float']['output']>;
+  gain?: Maybe<Scalars['Float']['output']>;
+  gate1MaximumAmplitude?: Maybe<Scalars['Float']['output']>;
+  gate1SoundPathDistance?: Maybe<Scalars['Float']['output']>;
+  gate1SoundPathDistanceInTimeUnit?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['String']['output'];
+  indicationSetupFileName?: Maybe<Scalars['String']['output']>;
+  level?: Maybe<Scalars['Float']['output']>;
+  measurementLevel?: Maybe<Scalars['Float']['output']>;
+  measuringMode?: Maybe<Scalars['String']['output']>;
+  readingIndex: Scalars['Int']['output'];
+  referenceSamplingRate?: Maybe<Scalars['Int']['output']>;
+  sampleAveraging?: Maybe<Scalars['Int']['output']>;
+  start?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  voltage?: Maybe<Scalars['Int']['output']>;
+  width?: Maybe<Scalars['Float']['output']>;
+  zeroOffset?: Maybe<Scalars['Float']['output']>;
+};
+
+export enum ProceqStatus {
+  Broken = 'BROKEN',
+  Elastic = 'ELASTIC',
+  HighPlastic = 'HIGH_PLASTIC',
+  LowPlastic = 'LOW_PLASTIC',
+  NotMeasurable = 'NOT_MEASURABLE',
+  Unmeasured = 'UNMEASURED'
+}
+
 export enum PullTestAbortReason {
   BoltEndDamageRigNotEngaging = 'BOLT_END_DAMAGE_RIG_NOT_ENGAGING',
   BrokenBoltNut = 'BROKEN_BOLT_NUT',
@@ -973,8 +1610,17 @@ export enum PullTestAbortReason {
  */
 export type Query = {
   __typename?: 'Query';
+  bansheeContactById?: Maybe<BansheeEmail>;
+  bansheeContactUsInbox: BansheeContactUsInboxResponse;
+  bansheeEventLogs: BansheeEventLogResponse;
+  bansheeRequest: BansheeRequest;
+  bansheeRequests: BansheeRequestResponse;
+  bansheeSessionStats: Array<BansheeSessionStats>;
+  bansheeStatusDistribution: BansheeStatusDistribution;
   boltResult: BoltResult;
   boltResults: BoltResultResponse;
+  cartItems: Array<BansheeCartItem>;
+  cartItemsStats: BansheeCartItemStats;
   coffee: Coffee;
   coffees: Array<Coffee>;
   companies: CompanyListResponse;
@@ -982,9 +1628,13 @@ export type Query = {
   drive: Drive;
   drives: Array<Drive>;
   getApplication?: Maybe<Array<Application>>;
+  getBansheeTemplateById?: Maybe<BansheeTemplate>;
+  getBansheeTemplates: Array<BansheeTemplate>;
   getBoltTypes?: Maybe<Array<BoltType>>;
   getBoltTypesOptions: Array<EnumOption>;
   getPlanLevel?: Maybe<Array<PlanLevel>>;
+  getProceqStatus?: Maybe<Array<ProceqStatus>>;
+  getProceqTokenStatus: GetProceqTokenStatusResponse;
   getPullTestAbortReason?: Maybe<Array<PullTestAbortReason>>;
   getPullTestAbortReasonOptions: Array<EnumOption>;
   getResults: Array<Result>;
@@ -1000,8 +1650,11 @@ export type Query = {
   locations: Array<Location>;
   opticboltSpectrumsBySerialNumber: Array<OpticboltSpectrum>;
   opticboltTestResults: Array<OpticboltTestResult>;
+  order: BansheeOrder;
+  orders: OrdersResponse;
   pendingGlobalInvitations: Array<Invitation>;
   pendingInvitations: Array<Invitation>;
+  proceqLoginUrl: ProceqLoginUrlResponse;
   site: Site;
   sites: Array<Site>;
   user: User;
@@ -1009,6 +1662,96 @@ export type Query = {
   userPermissions: Array<UserPermission>;
   users: Array<User>;
   validateInvitation: InvitationValidation;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeContactByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeContactUsInboxArgs = {
+  filter?: InputMaybe<BansheeContactUsInboxFilter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeEventLogsArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeRequestArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeRequestsArgs = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  isBrokenBolt?: InputMaybe<Scalars['Boolean']['input']>;
+  isNotMeasurable?: InputMaybe<Scalars['Boolean']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeSessionStatsArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryBansheeStatusDistributionArgs = {
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -1038,6 +1781,24 @@ export type QueryBoltResultsArgs = {
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   withComment?: InputMaybe<Scalars['Boolean']['input']>;
   withImage?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryCartItemsArgs = {
+  companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryCartItemsStatsArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 
@@ -1076,6 +1837,24 @@ export type QueryCompanyArgs = {
  */
 export type QueryDriveArgs = {
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryGetBansheeTemplateByIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryGetBansheeTemplatesArgs = {
+  companyId: Scalars['String']['input'];
 };
 
 
@@ -1146,8 +1925,37 @@ export type QueryOpticboltTestResultsArgs = {
  * Query
  * Define the queries that can be made to the User model
  */
+export type QueryOrderArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryOrdersArgs = {
+  filter?: InputMaybe<OrderFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
 export type QueryPendingInvitationsArgs = {
   companyId: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryProceqLoginUrlArgs = {
+  callbackUrl: Scalars['String']['input'];
 };
 
 
@@ -1250,6 +2058,51 @@ export type Site = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type SkippedBansheeRequest = {
+  __typename?: 'SkippedBansheeRequest';
+  bansheeRequestId: Scalars['String']['output'];
+  reason: Scalars['String']['output'];
+  serialNumber?: Maybe<Scalars['String']['output']>;
+};
+
+export type StatusCount = {
+  __typename?: 'StatusCount';
+  count: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type SubmitOrderInput = {
+  attachmentsName?: InputMaybe<Array<Scalars['String']['input']>>;
+  comment: Scalars['String']['input'];
+  companyId: Scalars['String']['input'];
+};
+
+/**
+ * UpdateBansheeRequestInput
+ * Define the input fields to update an existing banshee request
+ */
+export type UpdateBansheeRequestInput = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  boltType?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  images?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  isBrokenBolt?: InputMaybe<Scalars['Boolean']['input']>;
+  isNotMeasurable?: InputMaybe<Scalars['Boolean']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  measured?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  ringPosition?: InputMaybe<RingPosition>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
+};
+
 /**
  * UpdateBoltResultInput
  * Define the input fields to update an existing boltResult
@@ -1339,6 +2192,16 @@ export type UpdateLevelInput = {
  */
 export type UpdateLocationInput = {
   locationName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateNewBansheeCartItemInput = {
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  period?: InputMaybe<Scalars['Int']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateOpticboltSpectrumInput = {

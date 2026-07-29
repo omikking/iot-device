@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec *)",
+      "Bash(pnpm test:unit)",
+      "Bash(pnpm test:unit:cov)",
+      "Bash(npx jest *)",
+      "Bash(sed 's/^/unit-test files seen by default config: /')",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('package.json','utf8'\\)\\); console.log\\('package.json OK'\\)\")",
+      "Bash(pnpm --filter api test:unit)",
+      "Bash(pnpm --filter api test:unit:cov)",
+      "Bash(pnpm run *)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

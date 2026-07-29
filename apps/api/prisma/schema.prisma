@@ -2,8 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  seed     = "ts-node prisma/seed.ts"
+  provider      = "prisma-client-js"
+  seed          = "ts-node prisma/seed.ts"
+  binaryTargets = ["debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -43,7 +44,7 @@ enum PullTestAbortReason {
 enum Application {
   PULL_TEST
   PULL_TEST_TECHNICIAN
-  // BANSHEE
+  BANSHEE
 }
 
 enum PlanLevel {
@@ -134,10 +135,16 @@ model Company {
   country             String
   companyContactEmail String
 
-  plan           Plan[]
-  site           Site[]
-  userPermission UserPermission[]
-  invitation     Invitation[]
+  plan                Plan[]
+  site                Site[]
+  userPermission      UserPermission[]
+  invitation          Invitation[]
+  bansheeSessionStats BansheeSessionStats[]
+  bansheeRequests     BansheeRequest[]
+  templates           BansheeTemplate[]
+  cartItems           BansheeCartItem[]
+  orders              BansheeOrder[]
+  bansheeEmails       BansheeEmail[]
 
   @@map("companies")
 }
@@ -175,6 +182,7 @@ model User {
   userRole             UserPermission[]
   boltResult           BoltResult[]
   passwordResetRequest PasswordResetRequest[]
+  bansheeEmails        BansheeEmail[]
 
   @@map("users")
 }
@@ -241,8 +249,13 @@ model Site {
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
-  level      Level[]
-  boltResult BoltResult[]
+  level               Level[]
+  boltResult          BoltResult[]
+  bansheeRequests     BansheeRequest[]
+  bansheeSessionStats BansheeSessionStats[]
+  templates           BansheeTemplate[]
+  cartItems           BansheeCartItem[]
+  orderItems          BansheeOrderItem[]
 
   @@map("sites")
 }
@@ -257,8 +270,12 @@ model Level {
   site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId String
 
-  drive      Drive[]
-  boltResult BoltResult[]
+  drive           Drive[]
+  boltResult      BoltResult[]
+  bansheeRequests BansheeRequest[]
+  templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("levels")
 }
@@ -273,8 +290,12 @@ model Drive {
   level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
   levelId String
 
-  location   Location[]
-  boltResult BoltResult[]
+  location        Location[]
+  boltResult      BoltResult[]
+  bansheeRequests BansheeRequest[]
+  templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("drives")
 }
@@ -289,7 +310,11 @@ model Location {
   drive   Drive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   driveId String
 
-  boltResult BoltResult[]
+  boltResult      BoltResult[]
+  bansheeRequests BansheeRequest[]
+  templates       BansheeTemplate[]
+  cartItems       BansheeCartItem[]
+  orderItems      BansheeOrderItem[]
 
   @@map("locations")
 }
@@ -382,7 +407,7 @@ model OpticboltTestResult {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  spectrums     OpticboltSpectrum[]
+  spectrums OpticboltSpectrum[]
 
   @@map("opticbolt_test_results")
 }
@@ -407,7 +432,7 @@ model OpticboltSpectrum {
   calibrationFactor Decimal? @map("calibration_factor") @db.Decimal(12, 6)
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  testResult        OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+  testResult OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
 
   @@unique([testResultId, fbgIndex])
   @@map("opticbolt_spectrums")
@@ -431,4 +456,401 @@ model Hydrabolt {
   updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("hydrabolt")
+}
+
+model BansheeBoltTypeConstant {
+  id                   String   @id @default(uuid())
+  boltType             BoltType
+  velocity             Float
+  tempCorrectionFactor Float
+  tempCoeff            Float
+  quadCoeff1           Float
+  linCoeff1            Float
+  quadCoeff2           Float
+  linCoeff2            Float
+  constTerm            Float
+  nominalLength        Float
+  linearLimit          Float
+  elasticLimit         Float
+  lowPlasticLimit      Float
+  createdAt            DateTime
+  updatedAt            DateTime @updatedAt
+
+  @@map("banshee_bolt_type_constants")
+}
+
+model BansheeRequest {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serialNumber             String            @unique
+  name                     String?
+  levelId                  String
+  driveId                  String
+  locationId               String
+  coordinates              Json?
+  period                   Int
+  boltType                 BoltType
+  locationDetails          String?
+  boltInstallationDateTime DateTime?
+  ringPosition             RingPosition
+  comment                  String?
+  isBrokenBolt             Boolean
+  isNotMeasurable          Boolean
+  images                   String[]
+  measured                 Boolean           @default(false)
+  proceqData               ProceqData[]
+  eventLogs                BansheeEventLog[]
+  isProceqSynced           Boolean           @default(false)
+  activateNotifications    Boolean           @default(false)
+
+  createdBy String
+  updatedBy String?
+
+  level     Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive     Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  cartItems  BansheeCartItem[]
+  orderItems BansheeOrderItem[]
+
+  @@index([createdBy])
+  @@index([serialNumber])
+  @@index([companyId])
+  @@index([siteId])
+  @@map("banshee_requests")
+}
+
+model BansheeEventLog {
+  id        String    @id @default(uuid())
+  createdAt DateTime?
+
+  eventType      String
+  previousStatus ProceqStatus
+  newStatus      ProceqStatus
+  measurementId  String?
+
+  bansheeRequest   BansheeRequest @relation(fields: [bansheeRequestId], references: [id], onDelete: Cascade)
+  bansheeRequestId String
+
+  @@index([bansheeRequestId])
+  @@index([createdAt])
+  @@map("banshee_event_logs")
+}
+
+enum ProceqStatus {
+  ELASTIC
+  LOW_PLASTIC
+  HIGH_PLASTIC
+  BROKEN
+  NOT_MEASURABLE
+  UNMEASURED
+}
+
+model ProceqData {
+  id               String        @id @default(uuid())
+  fileName         String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  measurementId    String        @unique
+  operatorEmail    String?
+  comments         String?
+  temperature      Float?
+  userPhoto        Json?
+  rawDataZipId     String?
+  rawDataZipPath   String?
+  createdTimestamp DateTime?
+  updatedTimestamp DateTime?
+  dueDate          DateTime?
+  status           ProceqStatus?
+
+  bansheeRequestId  String?
+  bansheeRequest    BansheeRequest?    @relation(fields: [bansheeRequestId], references: [id], onDelete: Cascade)
+  proceqAttachments ProceqAttachment[]
+  readings          ProceqReading[]
+
+  @@map("proceq_data")
+}
+
+model ProceqReading {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  readingIndex                     Int           @default(0)
+  indicationSetupFileName          String?
+  measuringMode                    String?
+  frequency                        Float?
+  gain                             Float?
+  voltage                          Int?
+  sampleAveraging                  Int?
+  damping                          Int?
+  analogueFilter                   Int?
+  zeroOffset                       Float?
+  velocity                         Float?
+  level                            Float?
+  measurementLevel                 Float?
+  referenceSamplingRate            Int?
+  start                            Float?
+  width                            Float?
+  gate1MaximumAmplitude            Float?
+  gate1SoundPathDistance           Float?
+  gate1SoundPathDistanceInTimeUnit Float?
+  status                           ProceqStatus?
+  elongation                       Float?
+  proceqData                       ProceqData    @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
+  proceqDataId                     String
+
+  @@unique([proceqDataId, readingIndex])
+  @@map("proceq_readings")
+}
+
+model ProceqToken {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  operatorEmail String   @unique
+  accessToken   String
+  refreshToken  String
+  expiresAt     DateTime
+
+  @@map("proceq_tokens")
+}
+
+model ProceqAttachment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachmentId   String  @unique
+  fileName       String
+  filePath       String
+  fileType       String
+  fileSize       Int
+  attachmentType String
+  description    String?
+
+  proceqData   ProceqData @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
+  proceqDataId String
+
+  @@map("proceq_attachments")
+}
+
+model BansheeSessionStats {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessionDate DateTime
+
+  totalMeasured Int @default(0)
+  notMeasurable Int @default(0)
+  broken        Int @default(0)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  siteId String?
+  site   Site?   @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, siteId, sessionDate])
+  @@map("banshee_session_stats")
+}
+
+model BansheeTemplate {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy String
+  updatedBy String
+
+  templateName             String
+  period                   Int       @default(0)
+  boltInstallationDateTime DateTime?
+
+  siteId          String?
+  site            Site?     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  levelId         String?
+  level           Level?    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  driveId         String?
+  drive           Drive?    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  locationId      String?
+  locationDetails String?
+  location        Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  coordinates Json?
+
+  activateNotifications Boolean @default(false)
+  comment               String?
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  ringPosition RingPosition? //need to check
+
+  @@index([companyId])
+  @@map("templates")
+}
+
+// ===== Banshee Cart / Order Flow =====
+
+enum BansheeCartItemType {
+  NEW_BANSHEE
+  SERVICE_EXISTING
+}
+
+enum BansheeOrderStatus {
+  PENDING
+  COMPLETED
+  PARTIALLY_COMPLETED
+  CANCELLED
+}
+
+enum BansheeOrderItemStatus {
+  PENDING
+  FULFILLED
+  CANCELLED
+}
+
+model BansheeCartItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemType BansheeCartItemType
+
+  // --- SERVICE_EXISTING ---
+  bansheeRequestId String?
+
+  // --- NEW_BANSHEE ---
+  name     String?
+  quantity Int     @default(1)
+  period   Int?
+
+  siteId     String?
+  levelId    String?
+  driveId    String?
+  locationId String?
+
+  site     Site?     @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  drive    Drive?    @relation(fields: [driveId], references: [id], onDelete: SetNull)
+  location Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  bansheeRequest BansheeRequest? @relation(fields: [bansheeRequestId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@map("cart_items")
+}
+
+model BansheeOrder {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status      BansheeOrderStatus @default(PENDING)
+  attachments String[]
+  comment     String
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  orderItems BansheeOrderItem[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("orders")
+}
+
+model BansheeOrderItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemType BansheeCartItemType
+  status   BansheeOrderItemStatus @default(PENDING)
+
+  bansheeRequestId String?
+
+  // NEW_BANSHEE snapshot (copied from CartItem at submission time)
+  name   String?
+  period Int?
+
+  siteId     String?
+  levelId    String?
+  driveId    String?
+  locationId String?
+
+  site     Site?     @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  drive    Drive?    @relation(fields: [driveId], references: [id], onDelete: SetNull)
+  location Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  order   BansheeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  bansheeRequest BansheeRequest? @relation(fields: [bansheeRequestId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("order_items")
+}
+
+// ===== Banshee Email Service =====
+
+enum BansheeEmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model BansheeEmail {
+  id      String             @id @default(uuid())
+  status  BansheeEmailStatus @default(PENDING)
+  message String
+
+  userId    String
+  companyId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  attachments BansheeEmailAttachment[]
+
+  @@index([userId])
+  @@index([companyId])
+}
+
+model BansheeEmailAttachment {
+  id String @id @default(uuid())
+
+  originalFileName String
+  storedFileName   String
+  filePath         String
+  mimeType         String
+  fileSize         BigInt
+
+  createdAt DateTime  @default(now())
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  bansheeEmailId String
+
+  email BansheeEmail @relation(fields: [bansheeEmailId], references: [id], onDelete: Cascade)
+
+  @@index([bansheeEmailId])
+  @@index([createdAt])
 }

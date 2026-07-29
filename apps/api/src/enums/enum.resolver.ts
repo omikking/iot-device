@@ -7,6 +7,7 @@ import {
   PullTestAbortReason,
   Application,
   PlanLevel,
+  ProceqStatus,
 } from '@prisma/client';
 import { UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -76,5 +77,10 @@ export class EnumResolver {
   @Query()
   getPlanLevel(): PlanLevel[] {
     return Object.values(PlanLevel);
+  }
+
+  @Query(() => [ProceqStatus])
+  getProceqStatus(): ProceqStatus[] {
+    return Object.values(ProceqStatus);
   }
 }

@@ -6,17 +6,21 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "env": [
-        "BACKEND_URL",
         "NEXTAUTH_SECRET",
+        "BACKEND_URL",
         "FRONTEND_URL",
         "NEXT_PUBLIC_PORTAL_URL",
-        "NEXT_PUBLIC_PULL_TEST_URL",
         "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_API_IMAGE_URL",
+        "NEXT_PUBLIC_PULL_TEST_URL",
+        "NEXT_PUBLIC_BANSHEE_URL",
         "NEXT_PUBLIC_CYCLOPS_URL",
         "NEXT_PUBLIC_HYDRA_URL",
         "NEXT_PUBLIC_PROFESSOR_URL",
         "NEXT_PUBLIC_OPTIC_BOLT_URL",
-        "NEXT_PUBLIC_OPTIC_BOLT_URL_DEV"
+        "NEXT_PUBLIC_OPTIC_BOLT_URL_DEV",
+        "COOKIE_DOMAIN",
+        "NODE_ENV"
       ]
     },
     "start": {

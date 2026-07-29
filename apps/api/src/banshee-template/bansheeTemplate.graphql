@@ -1,0 +1,69 @@
+# The SDL is our source of truth when building the API.
+# We can split it into multiple files, this allows schemas to be closer to their appropriate resolvers and business domain.
+
+
+"""
+BansheeTemplate model
+Define the BansheeTemplate model and its fields
+"""
+
+type BansheeTemplate {
+  id: String!
+  templateName: String!
+  period: Int
+  boltInstallationDateTime: DateTime
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  locationDetails: String
+  coordinates: JSON
+  comment: String
+  companyId: String!
+  activateNotifications: Boolean
+  ringPosition: RingPosition
+}
+
+
+"""
+BansheeTemplateInput
+Define the input fields to create a new BansheeTemplate or update an existing BansheeTemplate
+"""
+
+input BansheeTemplateInput {
+  templateName: String!
+  period: Int
+  boltInstallationDateTime: DateTime
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  locationDetails: String
+  coordinates: JSON
+  activateNotifications: Boolean
+  comment: String
+  companyId: String!
+  ringPosition: RingPosition
+}
+
+"""
+Query
+Define the queries that can be made to the BansheeTemplate model
+"""
+
+type Query{
+    getBansheeTemplates(companyId: String!): [BansheeTemplate!]!
+    getBansheeTemplateById(id: String!): BansheeTemplate
+}
+
+
+"""
+Mutation
+Define the mutations that can be made to the BansheeTemplate model
+"""
+
+type Mutation{
+    createBansheeTemplate(createBansheeTemplateInput: BansheeTemplateInput!): BansheeTemplate!
+    updateBansheeTemplate(id:String!, updateBansheeTemplateInput: BansheeTemplateInput!): BansheeTemplate!
+    deleteBansheeTemplate(id: String!): BansheeTemplate!
+}

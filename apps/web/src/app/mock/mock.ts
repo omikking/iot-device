@@ -1,5 +1,5 @@
 import { Application } from '@/gql/graphql';
-
+//import type { ChartConfig } from '@gsp/ui-banshee';
 export const optionsDesignSystemMock = [
   {
     id: '1',
@@ -53,7 +53,7 @@ export const usersDesignSystemMock: UserSchema[] = [
         // Application.Banshee,
       ],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721111',
   },
   {
     id: '2',
@@ -67,7 +67,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Technician',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721112',
   },
   {
     id: '3',
@@ -82,7 +82,7 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'User',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721113',
   },
   {
     id: '4',
@@ -96,7 +96,63 @@ export const usersDesignSystemMock: UserSchema[] = [
       role: 'Admin',
       appAccess: [Application.PullTest, Application.PullTestTechnician],
     },
-    phoneNumber: '+4683729327',
+    phoneNumber: '+4683721114',
+  },
+  {
+    id: '5',
+    fullName: 'Dominique DiPierro',
+    email: 'dominiquedipierro@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '5',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683721115',
+  },
+  {
+    id: '6',
+    fullName: 'Leon Badmon',
+    email: 'leonbadmon@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '6',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683721116',
+  },
+  {
+    id: '7',
+    fullName: 'Fernando Vera',
+    email: 'fernandovera@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '7',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683721117',
+  },
+  {
+    id: '8',
+    fullName: 'Ray Heyworth',
+    email: 'rayheyworth@sandvik.com',
+    globalRole: false,
+    isGlobalVisibility: false,
+    userPermissions: {
+      id: '100',
+      userId: '8',
+      role: 'Admin',
+      appAccess: [Application.PullTest, Application.PullTestTechnician],
+    },
+    phoneNumber: '+4683721118',
   },
 ];
 

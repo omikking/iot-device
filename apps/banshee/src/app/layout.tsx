@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@gsp/ui-banshee/styles.css';
-import '@gsp/ui-banshee/styles.css';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/libs/authOptions';
 import NextAuthProvider from '@/libs/providers/NextAuthProvider';

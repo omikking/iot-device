@@ -9,7 +9,7 @@
     "start": "turbo run start --filter=web --filter=pull-test --filter=banshee",
     "preview": "turbo run preview --filter=test-cyclops --filter=test-hydra --filter=test-professor --filter=test-optic-bolt",
     "lint": "turbo lint",
-    "db:seed": "pnpm --filter api db:seed",
+    "db:seed": "pnpm --filter api seed",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

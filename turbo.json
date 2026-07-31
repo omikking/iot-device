@@ -28,8 +28,7 @@
         "NEXT_PUBLIC_TEST_OPTIC_BOLT_URL",
         "NEXT_PUBLIC_TEST_OPTIC_BOLT_URL_DEV",
         "COOKIE_DOMAIN",
-        "NODE_ENV",
-        "NEXT_PUBLIC_BANSHEE_URL"
+        "NODE_ENV"
       ]
     },
     "start": {

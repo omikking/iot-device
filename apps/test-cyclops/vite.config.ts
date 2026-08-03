@@ -33,9 +33,11 @@ export default defineConfig({
       },
     }),
   ],
-  server: {
+  
+  preview: {
     allowedHosts: [
-      "dilute-hazily-corral.ngrok-free.dev"
+      "staging-professorlocal.groundsupport.mining.sandvik",
+      "professorlocal.groundsupport.mining.sandvik"
     ],
   },
 })

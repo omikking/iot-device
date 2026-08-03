@@ -13,16 +13,7 @@ export class ProfessorBLE {
   async connect(): Promise<void> {
     console.log('connecting to cyclops');
     this.device = await navigator.bluetooth.requestDevice({
-      filters: [
-
-        {
-          manufacturerData: [{
-            companyIdentifier: 0xffff,
-          }]
-        }
-
-      ],
-      optionalServices: Object.values(SERVICES),
+      acceptAllDevices: true,
     });
     this.server = await this.device.gatt!.connect();
     await this._cacheChars();

@@ -34,4 +34,10 @@ export default defineConfig({
       },
     }),
   ],
+  preview: {
+    allowedHosts: [
+        "staging-professorlocal.groundsupport.mining.sandvik",
+        "professorlocal.groundsupport.mining.sandvik"
+    ],
+  },
 })

@@ -371,6 +371,38 @@ export class UpdateHydraboltInput {
     minCalibrationFactor?: Nullable<number>;
 }
 
+export class CreateHydraBoltInput {
+    serialNumber: string;
+    name: string;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition: RingPosition;
+    comment?: Nullable<string>;
+    activateNotifications: boolean;
+    boltType: string;
+    companyId: string;
+}
+
+export class UpdateHydraBoltInput {
+    name: string;
+    siteId: string;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition: RingPosition;
+    comment?: Nullable<string>;
+    activateNotifications: boolean;
+    companyId: string;
+}
+
 export class CreateInvitationInput {
     email: string;
     companyId: string;
@@ -615,6 +647,9 @@ export abstract class IQuery {
     hazards?: Nullable<BoltResult[]>;
     hydrabolts?: Hydrabolt[];
     hydraboltByPartNumber?: Nullable<Hydrabolt>;
+    hydraBolt?: HydraBolt;
+    hydraBolts?: HydraBoltsResponse;
+    validateHydraBoltSerialNumber?: ValidateHydraBoltSerialNumberResponse;
     validateInvitation?: InvitationValidation;
     pendingInvitations?: Invitation[];
     pendingGlobalInvitations: Invitation[];
@@ -622,10 +657,10 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
-    proceqLoginUrl?: ProceqLoginUrlResponse;
-    getProceqTokenStatus: GetProceqTokenStatusResponse;
     opticboltTestResults?: OpticboltTestResult[];
     opticboltSpectrumsBySerialNumber?: OpticboltSpectrum[];
+    proceqLoginUrl?: ProceqLoginUrlResponse;
+    getProceqTokenStatus: GetProceqTokenStatusResponse;
     sites: Site[];
     site?: Site;
     userPermissions: UserPermission[];
@@ -669,6 +704,9 @@ export abstract class IMutation {
     removeDrive?: Drive;
     createHydrabolt?: Hydrabolt;
     updateHydrabolt?: Hydrabolt;
+    createHydraBolt?: HydraBolt;
+    updateHydraBolt?: HydraBolt;
+    deleteHydraBolt?: HydraBolt;
     createInvitation?: InvitationResponse;
     createGlobalInvitation?: InvitationResponse;
     completeInvitation?: User;
@@ -1017,6 +1055,46 @@ export class Hydrabolt {
     updatedAt: DateTime;
 }
 
+export class HydraBolt {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    serialNumber: string;
+    name?: Nullable<string>;
+    levelId: string;
+    driveId: string;
+    locationId: string;
+    companyId: string;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition: string;
+    comment?: Nullable<string>;
+    createdBy: string;
+    updatedBy?: Nullable<string>;
+    createdByUser?: Nullable<User>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+    company?: Nullable<Company>;
+    site?: Nullable<Site>;
+    siteId: string;
+    boltType: string;
+    activateNotifications?: Nullable<boolean>;
+    boltTypeConstant?: Nullable<BansheeBoltTypeConstant>;
+}
+
+export class HydraBoltsResponse {
+    totalRecords: number;
+    results: HydraBolt[];
+}
+
+export class ValidateHydraBoltSerialNumberResponse {
+    isValid: boolean;
+    errorCode?: Nullable<string>;
+    message?: Nullable<string>;
+}
+
 export class Invitation {
     id: string;
     email: string;
@@ -1060,6 +1138,46 @@ export class Location {
     locationName: string;
     driveId: string;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class OpticboltSpectrum {
+    id: string;
+    testResultId: string;
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+    createdAt: DateTime;
+}
+
+export class OpticboltTestResult {
+    id: string;
+    serialNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt: DateTime;
+    testedBy: string;
+    result: string;
+    fibreCheck1: boolean;
+    fibreCheck2: boolean;
+    fibreCheck3: boolean;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    spectrums: OpticboltSpectrum[];
 }
 
 export class ProceqReading {
@@ -1132,46 +1250,6 @@ export class GetProceqTokenStatusResponse {
     valid: boolean;
     canRefresh: boolean;
     expiresAt?: Nullable<string>;
-}
-
-export class OpticboltSpectrum {
-    id: string;
-    testResultId: string;
-    fbgIndex: number;
-    amplitude20?: Nullable<number>;
-    wavelength20?: Nullable<number>;
-    amplitude100?: Nullable<number>;
-    wavelength100?: Nullable<number>;
-    peakInitialNm?: Nullable<number>;
-    peak20Nm?: Nullable<number>;
-    peak100Nm?: Nullable<number>;
-    strain20?: Nullable<number>;
-    strain100?: Nullable<number>;
-    load20?: Nullable<number>;
-    load100?: Nullable<number>;
-    time20Ms?: Nullable<number>;
-    time100Ms?: Nullable<number>;
-    calibrationFactor?: Nullable<number>;
-    createdAt: DateTime;
-}
-
-export class OpticboltTestResult {
-    id: string;
-    serialNumber: string;
-    drawingNumber?: Nullable<string>;
-    boltType?: Nullable<string>;
-    description?: Nullable<string>;
-    testedAt: DateTime;
-    testedBy: string;
-    result: string;
-    fibreCheck1: boolean;
-    fibreCheck2: boolean;
-    fibreCheck3: boolean;
-    psi20?: Nullable<number>;
-    psi100?: Nullable<number>;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    spectrums: OpticboltSpectrum[];
 }
 
 export class Site {

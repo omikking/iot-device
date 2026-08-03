@@ -90,7 +90,29 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    const companyId = await resolveCompanyId(this.prisma, args, modelKey);
+    const resolution = await resolveCompanyId(this.prisma, args, modelKey);
+
+    let companyId: string | null = null;
+
+    if (resolution.status === 'resolved') {
+      companyId = resolution.companyId;
+    } else if (resolution.status === 'notFound') {
+      // The targeted record does not exist (already deleted, bad id), so its
+      // owning company can't be derived. If the caller stated a companyId we
+      // still authorize against that, and let the resolver report the missing
+      // resource with its own domain specific error.
+      if (typeof args.companyId === 'string') {
+        companyId = args.companyId;
+      } else {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'RESOURCE_NOTFOUND_ERROR',
+            title: errorTexts.resourceNotFound_title,
+            message: errorTexts.resourceNotFound_message,
+          },
+        });
+      }
+    }
 
     if (!companyId) {
       throw new ForbiddenException('No company id found in context');

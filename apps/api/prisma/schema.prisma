@@ -45,6 +45,7 @@ enum Application {
   PULL_TEST
   PULL_TEST_TECHNICIAN
   BANSHEE
+  HYDRA
 }
 
 enum PlanLevel {
@@ -145,6 +146,7 @@ model Company {
   cartItems           BansheeCartItem[]
   orders              BansheeOrder[]
   bansheeEmails       BansheeEmail[]
+  hydraBolts          HydraBolts[]
 
   @@map("companies")
 }
@@ -256,6 +258,7 @@ model Site {
   templates           BansheeTemplate[]
   cartItems           BansheeCartItem[]
   orderItems          BansheeOrderItem[]
+  hydraBolts          HydraBolts[]
 
   @@map("sites")
 }
@@ -276,6 +279,7 @@ model Level {
   templates       BansheeTemplate[]
   cartItems       BansheeCartItem[]
   orderItems      BansheeOrderItem[]
+  hydraBolts      HydraBolts[]
 
   @@map("levels")
 }
@@ -296,6 +300,7 @@ model Drive {
   templates       BansheeTemplate[]
   cartItems       BansheeCartItem[]
   orderItems      BansheeOrderItem[]
+  hydraBolts      HydraBolts[]
 
   @@map("drives")
 }
@@ -315,6 +320,7 @@ model Location {
   templates       BansheeTemplate[]
   cartItems       BansheeCartItem[]
   orderItems      BansheeOrderItem[]
+  hydraBolts      HydraBolts[]
 
   @@map("locations")
 }
@@ -767,7 +773,7 @@ model BansheeEmail {
 }
 
 model BansheeEmailAttachment {
-  id               String    @id @default(uuid())
+  id String @id @default(uuid())
 
   originalFileName String
   storedFileName   String
@@ -775,11 +781,11 @@ model BansheeEmailAttachment {
   mimeType         String
   fileSize         BigInt
 
-  createdAt        DateTime  @default(now())
-  isDeleted        Boolean   @default(false)
-  deletedAt        DateTime?
+  createdAt DateTime  @default(now())
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 
-  bansheeEmailId   String
+  bansheeEmailId String
 
   email BansheeEmail @relation(fields: [bansheeEmailId], references: [id], onDelete: Cascade)
 
@@ -804,7 +810,7 @@ model OpticboltTestResult {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  spectrums     OpticboltSpectrum[]
+  spectrums OpticboltSpectrum[]
 
   @@map("opticbolt_test_results")
 }
@@ -829,7 +835,7 @@ model OpticboltSpectrum {
   calibrationFactor Decimal? @map("calibration_factor") @db.Decimal(12, 6)
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  testResult        OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+  testResult OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
 
   @@unique([testResultId, fbgIndex])
   @@map("opticbolt_spectrums")
@@ -853,4 +859,39 @@ model Hydrabolt {
   updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("hydrabolt")
+}
+
+model HydraBolts {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  serialNumber             String       @unique @db.VarChar(100)
+  name                     String       @db.VarChar(255)
+  levelId                  String
+  driveId                  String
+  locationId               String
+  coordinates              Json?
+  boltType                 String       @db.VarChar(100)
+  locationDetails          String?      @db.Text
+  boltInstallationDateTime DateTime?    @db.Timestamptz
+  ringPosition             RingPosition
+  comment                  String?      @db.Text
+  activateNotifications    Boolean      @default(false)
+
+  createdBy String  @db.Uuid
+  updatedBy String? @db.Uuid
+
+  level     Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive     Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+  @@index([companyId])
+  @@index([siteId])
+  @@map("hydra_bolts")
 }

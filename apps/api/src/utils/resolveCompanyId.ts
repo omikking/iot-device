@@ -86,14 +86,29 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: null,
     parentModel: null,
   },
+  hydraBolts: {
+    model: 'hydraBolts',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
 };
+
+// Outcome of walking the parent chain.
+// 'notFound' is kept distinct from 'unresolved' so callers can tell
+// "the record does not exist" apart from "no company id in the args",
+// which are two very different errors for the client.
+export type CompanyIdResolution =
+  | { status: 'resolved'; companyId: string }
+  | { status: 'notFound'; model: string; id: string }
+  | { status: 'unresolved' };
 
 // TODO: Look over this function, check any potential security or performance issues
 export async function resolveCompanyId(
   prisma: PrismaService,
   args: Record<string, any>,
   modelKey: string,
-): Promise<string | null> {
+): Promise<CompanyIdResolution> {
   const modelKeyId = typeof args.id === 'string' ? args.id : undefined;
   let currentModel = modelKey as keyof typeof parentChain;
   let currentId = modelKeyId;
@@ -132,7 +147,7 @@ export async function resolveCompanyId(
       }
 
       if (!parentId) {
-        return null;
+        return { status: 'unresolved' };
       }
 
       currentModel = parentModel as keyof typeof parentChain;
@@ -141,12 +156,12 @@ export async function resolveCompanyId(
     }
 
     if (!currentId) {
-      return null;
+      return { status: 'unresolved' };
     }
 
     // If we're at company, return the id
     if (currentModel === 'company') {
-      return currentId;
+      return { status: 'resolved', companyId: currentId };
     }
 
     // @ts-expect-error: dynamic model access
@@ -155,16 +170,18 @@ export async function resolveCompanyId(
       select: { [parentField as string]: true },
     });
 
+    // The record itself is gone (e.g. already deleted) — this is a missing
+    // resource, not a permission problem.
     if (!resource) {
-      return null;
+      return { status: 'notFound', model: String(model), id: currentId };
     }
 
     currentId = resource[parentField as string];
 
     if (!parentModel) {
-      return null;
+      return { status: 'unresolved' };
     }
     currentModel = parentModel as keyof typeof parentChain;
   }
-  return null;
+  return { status: 'unresolved' };
 }

@@ -3,6 +3,10 @@ export const errorTexts = {
   contactSupportError: 'Please contact our support team for assistance.',
   permissionsDenied: 'Permission denied',
 
+  resourceNotFound_title: 'Not found',
+  resourceNotFound_message:
+    'The requested record no longer exists. It may have already been removed.',
+
   // Bolt result
   boltResultNotFound_title: (id: string) => `Bolt result #${id} not found`,
 
@@ -215,6 +219,11 @@ export const errorTexts = {
   bansheeRequestUpdateError_title: 'Failed to update banshee request.',
 
   bansheeRequestDeleteError_title: 'Failed to delete banshee request.',
+
+  // Hydra bolts
+  hydraBoltNotFound_title: (id: string) => `Hydra bolt #${id} not found`,
+
+  hydraBoltDeleteError_title: 'Failed to delete hydra bolt.',
 
   // Banshee template
   bansheeTemplateCreateError_title: 'Failed to create banshee template.',

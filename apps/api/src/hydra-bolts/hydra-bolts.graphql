@@ -1,0 +1,131 @@
+scalar DateTime
+
+type HydraBolt {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  serialNumber: String!
+  name: String
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  companyId: String!
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String!
+  comment: String
+
+  createdBy: String!
+  updatedBy: String
+
+  # Field resolver - fetches the full User object from createdBy ID
+  # Only returns users within the same company (SANDVIK_ADMIN can see all)
+  createdByUser: User
+
+  level: Level
+  drive: Drive
+  location: Location
+  company: Company
+  site: Site
+  siteId: String!
+  boltType: String!
+  activateNotifications: Boolean
+
+  # Field resolver - fetches BansheeBoltTypeConstant based on boltType
+  boltTypeConstant: BansheeBoltTypeConstant
+}
+
+"""
+CreateHydraBoltInput
+Define the input fields to create a new hydra bolt
+"""
+input CreateHydraBoltInput {
+  serialNumber: String!
+  name: String!
+  siteId: String!
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition!
+  comment: String
+  activateNotifications: Boolean!
+  boltType: String!
+  companyId: String!
+}
+
+"""
+UpdateHydraBoltInput
+Define the input fields to update an existing hydra bolt
+"""
+input UpdateHydraBoltInput {
+  name: String!
+  siteId: String!
+  levelId: String!
+  driveId: String!
+  locationId: String!
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition!
+  comment: String
+  activateNotifications: Boolean!
+  companyId: String!
+}
+
+type HydraBoltsResponse {
+  totalRecords: Int!
+  results: [HydraBolt!]!
+}
+
+type ValidateHydraBoltSerialNumberResponse {
+  isValid: Boolean!
+  errorCode: String
+  message: String
+}
+
+type Query {
+  hydraBolt(id: String! companyId: String!): HydraBolt!
+
+  hydraBolts(
+    offset: Int
+    limit: Int
+    serialNumber: String
+    driveId: String
+    levelId: String
+    locationId: String
+    createdBy: String
+    companyId: String
+    siteId: String
+    activateNotifications: Boolean
+  ): HydraBoltsResponse!
+
+  validateHydraBoltSerialNumber(
+    serialNumber: String!,
+    companyId: String!
+  ): ValidateHydraBoltSerialNumberResponse!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the HydraBolt model
+"""
+type Mutation {
+  createHydraBolt(
+    createHydraBoltInput: CreateHydraBoltInput!
+  ): HydraBolt!
+
+  updateHydraBolt(
+    id: String!
+    updateHydraBoltInput: UpdateHydraBoltInput!
+  ): HydraBolt!
+
+  deleteHydraBolt(
+    id: String!
+    companyId: String!
+  ): HydraBolt!
+}

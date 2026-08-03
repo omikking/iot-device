@@ -31,6 +31,7 @@ import { BansheeOrderModule } from './banshee-order/banshee-order.module';
 import { BansheeCommmunicationModule } from './banshee-communication/banshee-communication.module';
 import { OpticboltModule } from './opticbolt/opticbolt.module';
 import { HydraBoltModule } from './hydra-bolt/hydra-bolt.module';
+import { HydraBoltsModule } from './hydra-bolts/hydra-bolts.module';
 
 const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
 
@@ -70,6 +71,7 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     BansheeCommmunicationModule,
     OpticboltModule,
     HydraBoltModule,
+    HydraBoltsModule,
   ],
   providers: [DateScalar],
 })

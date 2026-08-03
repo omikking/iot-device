@@ -33,8 +33,8 @@ services:
     command: >
       sh -c "pnpm prisma:migrate:deploy && pnpm start:prod"
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:123@prod-db:5432/nest?schema=public
+      #NODE_ENV: production
+        #DATABASE_URL: postgresql://postgres:123@prod-db:5432/nest?schema=public
     env_file:
       - ./apps/api/.env.production
     ports:
@@ -52,9 +52,9 @@ services:
     image: ground-support-platform-web:1.0.0
     depends_on:
       - api
-    environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: https://portal.groundsupport.mining.sandvik/api/graphql
+        #  environment:
+      #  NODE_ENV: production
+        #   NEXT_PUBLIC_API_URL: https://portal.groundsupport.mining.sandvik/api/graphql
     env_file:
       - ./apps/web/.env.production
     command: pnpm start
@@ -72,9 +72,9 @@ services:
     depends_on:
       - api
     environment:
-      NODE_ENV: production
+      #NODE_ENV: production
       # Also used by the browser → reach api via localhost
-      NEXT_PUBLIC_API_URL: https://pulltest.groundsupport.mining.sandvik/api/graphql
+      #NEXT_PUBLIC_API_URL: https://pulltest.groundsupport.mining.sandvik/api/graphql
     env_file:
       - ./apps/pull-test/.env.production
     command: pnpm start
@@ -92,14 +92,88 @@ services:
     depends_on:
       - api
     environment:
-      NODE_ENV: production
+      #NODE_ENV: production
       # Also used by the browser → reach api via localhost
-      NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+      #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
     env_file:
       - ./apps/banshee/.env.production
     command: pnpm start
     ports:
       - '3002:3002'
+    restart: unless-stopped
+    networks:
+      - playground
+  
+  test-cyclops:
+    build:
+      context: .
+      dockerfile: apps/test-cyclops/Dockerfile
+    image: ground-support-platform-test-cyclops:1.0.0
+    depends_on:
+      - api
+    environment:
+      #NODE_ENV: production
+      # Also used by the browser → reach api via localhost
+      NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+        #env_file:
+        # - ./apps/test-cyclops/.env.production
+    command: pnpm start
+    ports:
+      - '3011:3011'
+    restart: unless-stopped
+    networks:
+      - playground
+
+  test-professor:
+    build:
+      context: .
+      dockerfile: apps/test-professor/Dockerfile
+    image: ground-support-platform-test-professor:1.0.0
+    depends_on:
+      - api
+    environment:
+      #NODE_ENV: production
+      # Also used by the browser → reach api via localhost
+      #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+        #env_file:
+        # - ./apps/test-cyclops/.env.production
+    command: pnpm start
+    ports:
+      - '3013:3013'
+    restart: unless-stopped
+    networks:
+      - playground
+
+  test-hydra:
+    build:
+      context: .
+      dockerfile: apps/test-hydra/Dockerfile
+    image: ground-support-platform-test-hydra:1.0.0
+    depends_on:
+      - api
+    environment:
+      #NODE_ENV: production
+      #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+    command: pnpm start
+    ports:
+      - '3012:3012'
+    restart: unless-stopped
+    networks:
+      - playground
+
+  test-optic-bolt:
+    build:
+      context: .
+      dockerfile: apps/test-optic-bolt/Dockerfile
+    image: ground-support-platform-test-optic-bolt:1.0.0
+    depends_on:
+      - api
+        #environment:
+      #NODE_ENV: production
+        #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+    command: pnpm start
+    ports:
+      - '3014:3014'
     restart: unless-stopped
     networks:
       - playground

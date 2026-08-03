@@ -34,7 +34,11 @@ export class LocationsResolver {
     return this.locationsService.findOne(id);
   }
 
-  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'location')
+  @Roles(
+    [Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN, Role.COMPANY_USER],
+    [],
+    'location',
+  )
   @Mutation('createLocation')
   async create(
     @Args('createLocationInput')
@@ -43,7 +47,11 @@ export class LocationsResolver {
     return this.locationsService.create(createLocationInput);
   }
 
-  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'location')
+  @Roles(
+    [Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN, Role.COMPANY_USER],
+    [],
+    'location',
+  )
   @Mutation('updateLocation')
   async update(
     @Args('id', ParseUUIDPipe) id: string,

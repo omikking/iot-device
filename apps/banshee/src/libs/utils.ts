@@ -1,5 +1,5 @@
 import { responses } from '@/app/uitexts/responses';
-import { showAlertToast } from '@gsp/ui-banshee';
+import { showAlertToast } from '@gsp/ui-core';
 import { CombinedError } from 'urql';
 
 export function buildInstallationDateTime(

@@ -6,7 +6,7 @@ import {
   ModalTitle,
   ModalHeader,
   ModalContent,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 
 import React from 'react';
 

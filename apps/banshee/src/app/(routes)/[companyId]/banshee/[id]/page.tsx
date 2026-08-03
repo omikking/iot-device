@@ -12,7 +12,7 @@ import {
   SingleDateCalendar,
   showAlertToast,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';

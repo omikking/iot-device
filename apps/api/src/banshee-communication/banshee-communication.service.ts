@@ -25,8 +25,7 @@ import {
 } from '@prisma/client';
 
 /** Flow 1 payload: measurement insights email plus the owning company. */
-export interface ProceqMeasurementInsightsPayload
-  extends ProceqMeasurementInsightsEmailData {
+export interface ProceqMeasurementInsightsPayload extends ProceqMeasurementInsightsEmailData {
   companyId: string;
 }
 
@@ -398,7 +397,7 @@ export class BansheeCommunicationService {
     // attachment names supplied in the order input.
     const attachmentNames = inMemoryFiles.length
       ? inMemoryFiles.map((file) => file.filename)
-      : order.attachments ?? [];
+      : (order.attachments ?? []);
 
     const orderDetailsToShare = {
       orderId: order.id,
@@ -416,8 +415,8 @@ export class BansheeCommunicationService {
         type: ITEM_TYPE_LABELS[item.itemType] ?? item.itemType,
         label:
           item.itemType === BansheeCartItemType.NEW_BANSHEE
-            ? item.name ?? '-'
-            : item.bansheeRequest?.serialNumber ?? item.name ?? '-',
+            ? (item.name ?? '-')
+            : (item.bansheeRequest?.serialNumber ?? item.name ?? '-'),
         location:
           [
             item.site?.siteName,

@@ -1,12 +1,12 @@
 'use client';
 
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
-import { ChartLineLinear, LoadingSpinner } from '@gsp/ui-banshee';
+import { ChartLineLinear, LoadingSpinner } from '@gsp/ui-core';
 import type {
   StatusBand,
   ChartLineLinearHandle,
   ChartLineDatum,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 

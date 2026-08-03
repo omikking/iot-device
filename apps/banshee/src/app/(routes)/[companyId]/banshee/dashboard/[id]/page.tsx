@@ -28,7 +28,7 @@ import {
   Dialog,
   Table,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { useParams } from 'next/navigation';
 import { getStatusLabel } from '@/libs/status-color-utils';
 import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';

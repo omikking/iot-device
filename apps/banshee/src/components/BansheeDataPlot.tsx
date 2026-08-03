@@ -1,7 +1,7 @@
 'use client';
 
-import { DataLineChart, LoadingSpinner } from '@gsp/ui-banshee';
-import type { DataLineChartHandle } from '@gsp/ui-banshee';
+import { DataLineChart, LoadingSpinner } from '@gsp/ui-core';
+import type { DataLineChartHandle } from '@gsp/ui-core';
 import {
   forwardRef,
   useImperativeHandle,

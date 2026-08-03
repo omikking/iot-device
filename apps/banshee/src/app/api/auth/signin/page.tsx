@@ -14,7 +14,7 @@ import {
   Input,
   Text,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';

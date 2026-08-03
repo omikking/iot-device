@@ -1,11 +1,11 @@
 'use client';
 
-import { SidebarInset } from '@gsp/ui-banshee';
-import { Headline } from '@gsp/ui-banshee';
-import { Text } from '@gsp/ui-banshee';
-import { Textarea } from '@gsp/ui-banshee';
-import { Button } from '@gsp/ui-banshee';
-import { showAlertToast } from '@gsp/ui-banshee';
+import { SidebarInset } from '@gsp/ui-core';
+import { Headline } from '@gsp/ui-core';
+import { Text } from '@gsp/ui-core';
+import { Textarea } from '@gsp/ui-core';
+import { Button } from '@gsp/ui-core';
+import { showAlertToast } from '@gsp/ui-core';
 import {
   Form,
   FormControl,
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRef, useState } from 'react';

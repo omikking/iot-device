@@ -1,6 +1,6 @@
 'use client';
 
-import { SmallChartPieDonut } from '@gsp/ui-banshee';
+import { SmallChartPieDonut } from '@gsp/ui-core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
 

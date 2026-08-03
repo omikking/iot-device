@@ -1,4 +1,4 @@
-import { SidebarProvider, AppSidebar, Headline } from '@gsp/ui-banshee';
+import { SidebarProvider, AppSidebar, Headline } from '@gsp/ui-core';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
 

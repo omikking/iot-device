@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
-WORKDIR /app/packages/ui-banshee
+WORKDIR /app/packages/ui-core
 RUN pnpm build
 WORKDIR /app/apps/web
 RUN pnpm build

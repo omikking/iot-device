@@ -11,7 +11,7 @@ import {
   Headline,
   Text,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import {
   Table,
   TableHeader,
@@ -19,7 +19,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 
 const companyHierarchyQuery = graphql(`
   query siteInfoHierarchy($companyId: String!) {

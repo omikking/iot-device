@@ -1,5 +1,5 @@
 import { EventsPageTable } from '@/components/EventsPageTable';
-import { SidebarInset } from '@gsp/ui-banshee';
+import { SidebarInset } from '@gsp/ui-core';
 
 export default function Page({ params }: { params: { companyId: string } }) {
   return (

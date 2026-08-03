@@ -50,5 +50,5 @@ module.exports = {
             ],
         },
         reactStrictMode: true,
-        transpilePackages: ['@gsp/ui-banshee'],
+        transpilePackages: ['@gsp/ui-core'],
 }

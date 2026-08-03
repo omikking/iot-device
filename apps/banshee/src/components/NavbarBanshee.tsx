@@ -11,12 +11,12 @@ import {
   useIsMobile,
   useIsTablet,
   useMobileNav,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import Link from 'next/link';
 import { SandvikLogo } from 'public/SandvikLogo';
 import { LucideUser, Menu } from 'lucide-react';
 // TODO fix proper import
-import { ShoppingCart } from '../../../../packages/ui-banshee/src/components/svg/shopping-cart';
+import { ShoppingCart } from '../../../../packages/ui-core/src/components/svg/shopping-cart';
 import { signOut, useSession } from 'next-auth/react';
 import { usePathname, useParams } from 'next/navigation';
 import { graphql } from '@/gql/gql';

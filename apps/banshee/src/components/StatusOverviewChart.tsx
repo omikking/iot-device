@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
-import type { StatusBand, ChartLineDatum } from '@gsp/ui-banshee';
+import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-core';
+import type { StatusBand, ChartLineDatum } from '@gsp/ui-core';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 
 type BansheeRequestResult =

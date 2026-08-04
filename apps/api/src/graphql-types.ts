@@ -341,6 +341,36 @@ export class UpdateDriveInput {
     driveName?: Nullable<string>;
 }
 
+export class CreateHydraboltInput {
+    partNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltLength: number;
+    description?: Nullable<string>;
+    numberOfFBG: number;
+    positionOfFBGs: number[];
+    initialWavelength: number[];
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    highPlasticLimit: number;
+    maxCalibrationFactor: number;
+    minCalibrationFactor: number;
+}
+
+export class UpdateHydraboltInput {
+    partNumber?: Nullable<string>;
+    drawingNumber?: Nullable<string>;
+    boltLength?: Nullable<number>;
+    description?: Nullable<string>;
+    numberOfFBG?: Nullable<number>;
+    positionOfFBGs?: Nullable<number[]>;
+    initialWavelength?: Nullable<number[]>;
+    elasticLimit?: Nullable<number>;
+    lowPlasticLimit?: Nullable<number>;
+    highPlasticLimit?: Nullable<number>;
+    maxCalibrationFactor?: Nullable<number>;
+    minCalibrationFactor?: Nullable<number>;
+}
+
 export class CreateInvitationInput {
     email: string;
     companyId: string;
@@ -379,6 +409,74 @@ export class CreateLocationInput {
 
 export class UpdateLocationInput {
     locationName?: Nullable<string>;
+}
+
+export class CreateOpticboltSpectrumInput {
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+}
+
+export class CreateOpticboltTestResultWithSpectrumsInput {
+    serialNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt: DateTime;
+    testedBy: string;
+    result: string;
+    fibreCheck1?: Nullable<boolean>;
+    fibreCheck2?: Nullable<boolean>;
+    fibreCheck3?: Nullable<boolean>;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    spectrums: CreateOpticboltSpectrumInput[];
+}
+
+export class UpdateOpticboltSpectrumInput {
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+}
+
+export class UpdateOpticboltTestResultInput {
+    serialNumber?: Nullable<string>;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt?: Nullable<DateTime>;
+    testedBy?: Nullable<string>;
+    result?: Nullable<string>;
+    fibreCheck1?: Nullable<boolean>;
+    fibreCheck2?: Nullable<boolean>;
+    fibreCheck3?: Nullable<boolean>;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    spectrums?: Nullable<UpdateOpticboltSpectrumInput[]>;
 }
 
 export class RequestPasswordResetInput {
@@ -515,6 +613,8 @@ export abstract class IQuery {
     getPlanLevel?: Nullable<PlanLevel[]>;
     getProceqStatus?: Nullable<ProceqStatus[]>;
     hazards?: Nullable<BoltResult[]>;
+    hydrabolts?: Hydrabolt[];
+    hydraboltByPartNumber?: Nullable<Hydrabolt>;
     validateInvitation?: InvitationValidation;
     pendingInvitations?: Invitation[];
     pendingGlobalInvitations: Invitation[];
@@ -522,6 +622,8 @@ export abstract class IQuery {
     level?: Level;
     locations: Location[];
     location?: Location;
+    opticboltTestResults?: OpticboltTestResult[];
+    opticboltSpectrumsBySerialNumber?: OpticboltSpectrum[];
     proceqLoginUrl?: ProceqLoginUrlResponse;
     getProceqTokenStatus: GetProceqTokenStatusResponse;
     sites: Site[];
@@ -565,6 +667,8 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createHydrabolt?: Hydrabolt;
+    updateHydrabolt?: Hydrabolt;
     createInvitation?: InvitationResponse;
     createGlobalInvitation?: InvitationResponse;
     completeInvitation?: User;
@@ -576,6 +680,9 @@ export abstract class IMutation {
     createLocation?: Location;
     updateLocation?: Location;
     removeLocation?: Location;
+    createOpticboltTestResultWithSpectrums?: OpticboltTestResult;
+    updateOpticboltTestResult?: OpticboltTestResult;
+    updateOpticboltSpectrum?: OpticboltSpectrum;
     requestPasswordReset?: boolean;
     validateResetToken?: boolean;
     confirmPasswordReset?: boolean;
@@ -892,6 +999,24 @@ export class EnumOption {
     label: string;
 }
 
+export class Hydrabolt {
+    id: string;
+    partNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltLength: number;
+    description?: Nullable<string>;
+    numberOfFBG: number;
+    positionOfFBGs: number[];
+    initialWavelength: number[];
+    elasticLimit: number;
+    lowPlasticLimit: number;
+    highPlasticLimit: number;
+    maxCalibrationFactor: number;
+    minCalibrationFactor: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export class Invitation {
     id: string;
     email: string;
@@ -935,6 +1060,46 @@ export class Location {
     locationName: string;
     driveId: string;
     boltResults?: Nullable<BoltResult[]>;
+}
+
+export class OpticboltSpectrum {
+    id: string;
+    testResultId: string;
+    fbgIndex: number;
+    amplitude20?: Nullable<number>;
+    wavelength20?: Nullable<number>;
+    amplitude100?: Nullable<number>;
+    wavelength100?: Nullable<number>;
+    peakInitialNm?: Nullable<number>;
+    peak20Nm?: Nullable<number>;
+    peak100Nm?: Nullable<number>;
+    strain20?: Nullable<number>;
+    strain100?: Nullable<number>;
+    load20?: Nullable<number>;
+    load100?: Nullable<number>;
+    time20Ms?: Nullable<number>;
+    time100Ms?: Nullable<number>;
+    calibrationFactor?: Nullable<number>;
+    createdAt: DateTime;
+}
+
+export class OpticboltTestResult {
+    id: string;
+    serialNumber: string;
+    drawingNumber?: Nullable<string>;
+    boltType?: Nullable<string>;
+    description?: Nullable<string>;
+    testedAt: DateTime;
+    testedBy: string;
+    result: string;
+    fibreCheck1: boolean;
+    fibreCheck2: boolean;
+    fibreCheck3: boolean;
+    psi20?: Nullable<number>;
+    psi100?: Nullable<number>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    spectrums: OpticboltSpectrum[];
 }
 
 export class ProceqReading {

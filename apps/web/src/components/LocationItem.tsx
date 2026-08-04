@@ -17,6 +17,7 @@ import {
 import {
   handleGraphQLErrors,
   isCompanyAdmin,
+  isCompanyUser,
   isSandvikTechnician,
 } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -81,6 +82,17 @@ export const LocationItem = ({
     session?.user?.userPermissions,
     companyId,
   );
+  const isUserCompanyUser = isCompanyUser(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const canManage =
+    isUserSandvikAdmin ||
+    isUserCompanyAdmin ||
+    isUserSandvikTechnician ||
+    isUserCompanyUser;
+  const canDelete =
+    isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician;
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(!location.id);
@@ -247,13 +259,13 @@ export const LocationItem = ({
               {location.locationName}
             </Text>
 
-            {(isUserSandvikAdmin ||
-              isUserCompanyAdmin ||
-              isUserSandvikTechnician) && (
+            {canManage && (
               <DeleteEditDropdown
                 itemSelected={location.id}
                 handleEdit={handleEditLocation}
-                openDeleteModal={() => setIsDeleteModalOpen(true)}
+                openDeleteModal={
+                  canDelete ? () => setIsDeleteModalOpen(true) : undefined
+                }
               />
             )}
 

@@ -43,7 +43,7 @@ export default function Page(): JSX.Element {
           Administration Portal
         </Headline>
 
-        <div className="flex gap-8">
+        <div className="flex flex-wrap justify-center gap-8 w-full">
           <NavigationCard>
             <Headline as="h3" variant="medium" color="foreground">
               Companies

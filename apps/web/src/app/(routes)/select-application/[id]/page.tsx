@@ -115,7 +115,7 @@ export default function Page({
       </Headline>
 
       {availableApps.length > 0 && (
-        <div className="flex flex-row justify-center gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
+        <div className="flex flex-row flex-wrap justify-center gap-10 max-w-[1000px] w-full pt-20 border-t border-t-neutral-2">
           {availableApps.map((plan, index) => (
             <div className="flex flex-row gap-12 justify-center" key={index}>
               <Link href={getAppUrl(plan)}>

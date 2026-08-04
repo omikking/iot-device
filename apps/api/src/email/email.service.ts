@@ -16,7 +16,8 @@ export class EmailService {
       host: this.configService.get('SMTP_HOST'),
       port: this.configService.get('SMTP_PORT'),
       secure: this.configService.get('SMTP_SECURE') === 'true',
-      requireTLS: true,
+      // Defaults to true. Set to "false" locally — smtp4dev doesn't support STARTTLS.
+      requireTLS: this.configService.get('SMTP_REQUIRE_TLS') !== 'false',
       auth: {
         user: this.configService.get('SMTP_USER'),
         pass: this.configService.get('SMTP_PASSWORD'),

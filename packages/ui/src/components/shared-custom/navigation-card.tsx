@@ -30,7 +30,7 @@ export const NavigationCard = React.forwardRef<
   NavigationCardProps
 >(({ className, size, children, ...props }, ref) => {
   return (
-    <div
+    <div 
       ref={ref}
       className={cn(navigationCardVariants({ size }), className)}
       {...props}

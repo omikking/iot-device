@@ -33,7 +33,15 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ["node_modules/", "dist/", ".eslintrc.js", "**/*.css"],
+  ignorePatterns: [
+    "node_modules/",
+    "dist/",
+    "dev-dist/",
+    ".eslintrc.js",
+    ".eslintrc.cjs",
+    "vite.config.ts",
+    "**/*.css",
+  ],
   // Add rules configurations here
   // I have disabled some of the more extreme rules. This helps fix so shadcn/ui components works without a bunch of errors.
   rules: {

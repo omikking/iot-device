@@ -36,8 +36,8 @@ export default defineConfig({
 
   preview: {
     allowedHosts: [
-      "https://staging-cyclopslocal.groundsupport.mining.sandvik",
-      "https://cyclopslocal.groundsupport.mining.sandvik"
+      "staging-cyclopslocal.groundsupport.mining.sandvik",
+      "cyclopslocal.groundsupport.mining.sandvik"
     ],
   },
 })

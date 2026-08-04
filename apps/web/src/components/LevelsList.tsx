@@ -12,7 +12,7 @@ import { LucidePlus } from 'lucide-react';
 import { Drive, Level, Role } from '@/gql/graphql';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
-import { isSandvikTechnician } from '@/libs/utils';
+import { isSandvikTechnician, isCompanyUser } from '@/libs/utils';
 
 type LevelsListProps = {
   levelsOptions: Level[];
@@ -47,6 +47,15 @@ export const LevelsList = ({
     session?.user?.userPermissions,
     companyId,
   );
+  const isUserCompanyUser = isCompanyUser(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const canManage =
+    isUserSandvikAdmin ||
+    isUserCompanyAdmin ||
+    isUserSandvikTechnician ||
+    isUserCompanyUser;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -87,9 +96,7 @@ export const LevelsList = ({
       </div>
       <div
         className={`flex flex-col gap-1 w-full h-full ${
-          isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician
-            ? 'border-y'
-            : 'border-t'
+          canManage ? 'border-y' : 'border-t'
         } py-6 px-6 overflow-auto`}
       >
         {levels.length === 0 && (
@@ -116,9 +123,7 @@ export const LevelsList = ({
           />
         ))}
       </div>
-      {(isUserSandvikAdmin ||
-        isUserCompanyAdmin ||
-        isUserSandvikTechnician) && (
+      {canManage && (
         <div className="flex justify-end w-full p-3">
           {selectedSiteId ? (
             <Button

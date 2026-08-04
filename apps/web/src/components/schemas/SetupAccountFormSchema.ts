@@ -10,7 +10,8 @@ export const setupAccountFormSchema = z.object({
     .max(50, { message: validations.max50Chars('Work place') }),
   phoneNumber: z
     .string()
-    .max(20, { message: validations.max50Chars('Phone number') }),
+    .max(20, { message: validations.max50Chars('Phone number') })
+    .optional(),
   password: z
     .string()
     .min(8, { message: validations.passwordTooShort })

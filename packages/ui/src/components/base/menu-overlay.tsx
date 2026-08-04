@@ -48,7 +48,8 @@ const sheetVariants = cva(
 );
 
 interface SheetContentProps
-  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+  extends
+    React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 
 const MenuContent = React.forwardRef<
@@ -56,7 +57,7 @@ const MenuContent = React.forwardRef<
   SheetContentProps
 >(({ side = 'right', className, children, ...props }, ref) => (
   <MenuPortal>
-    <SheetPrimitive.Close className="ui-z-50 ui-absolute ui-right-10 ui-top-4 ui-transition-opacity focus:ui-outline-0 disabled:ui-pointer-events-none data-[state=open]:ui-bg-main-white">
+    <SheetPrimitive.Close className="ui-z-50 ui-absolute ui-right-4 sm:ui-right-6 lg:ui-right-10 ui-top-4 ui-transition-opacity focus:ui-outline-0 disabled:ui-pointer-events-none data-[state=open]:ui-bg-main-white">
       <LucideX
         size="30"
         className="data-[state=open]:opacity-1 data-[state=closed]:opacity-0 transition-all duration-200"

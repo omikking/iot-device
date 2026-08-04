@@ -17,6 +17,7 @@ import {
 import {
   handleGraphQLErrors,
   isCompanyAdmin,
+  isCompanyUser,
   isSandvikTechnician,
 } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -85,6 +86,17 @@ export const LevelItem = ({
     session?.user?.userPermissions,
     companyId,
   );
+  const isUserCompanyUser = isCompanyUser(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const canManage =
+    isUserSandvikAdmin ||
+    isUserCompanyAdmin ||
+    isUserSandvikTechnician ||
+    isUserCompanyUser;
+  const canDelete =
+    isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician;
 
   const [isEditing, setIsEditing] = useState(!level.id);
 
@@ -252,13 +264,13 @@ export const LevelItem = ({
               {level.levelName}
             </Text>
 
-            {(isUserSandvikAdmin ||
-              isUserCompanyAdmin ||
-              isUserSandvikTechnician) && (
+            {canManage && (
               <DeleteEditDropdown
                 itemSelected={level.id}
                 handleEdit={handleEditLevel}
-                openDeleteModal={() => setIsDeleteModalOpen(true)}
+                openDeleteModal={
+                  canDelete ? () => setIsDeleteModalOpen(true) : undefined
+                }
               />
             )}
 

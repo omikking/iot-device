@@ -33,11 +33,11 @@ export default defineConfig({
       },
     }),
   ],
-  
+
   preview: {
     allowedHosts: [
-      "staging-professorlocal.groundsupport.mining.sandvik",
-      "professorlocal.groundsupport.mining.sandvik"
+      "https://staging-cyclopslocal.groundsupport.mining.sandvik",
+      "https://cyclopslocal.groundsupport.mining.sandvik"
     ],
   },
 })

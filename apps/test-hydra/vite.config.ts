@@ -29,8 +29,8 @@ export default defineConfig({
 
   preview: {
    allowedHosts: [
-      "https://staging-hydraboltlocal.groundsupport.mining.sandvik",
-      "https://hydraboltlocal.groundsupport.mining.sandvik"
+      "https://staging-hydralocal.groundsupport.mining.sandvik",
+      "https://hydralocal.groundsupport.mining.sandvik"
    ],
   },
 

@@ -80,10 +80,10 @@ pnpm run dev
 
 #### Running production builds locally
 
-> ❗️ `pnpm run start` (root) builds and starts the Next.js apps (`web`, `pull-test`, `banshee`) the same way they run in production. `pnpm run preview` (root) builds and previews the Vite testing apps (`test-cyclops`, `test-hydra`, `test-professor`, `test-optic-bolt`). Note that `vite preview` is not a production server, it's only meant for locally verifying a production build, so `pnpm run preview` is for local testing convenience and is not what production deployments of those apps use. ❗️
+> ❗️ `pnpm run start` (root) builds and starts the Next.js apps (`web`, `pull-test`, `banshee`, `hydra`) the same way they run in production. `pnpm run preview` (root) builds and previews the Vite testing apps (`test-cyclops`, `test-hydra`, `test-professor`, `test-optic-bolt`). Note that `vite preview` is not a production server, it's only meant for locally verifying a production build, so `pnpm run preview` is for local testing convenience and is not what production deployments of those apps use. ❗️
 
 ```sh
-pnpm run start   # web, pull-test, banshee
+pnpm run start   # web, pull-test, banshee, hydra
 pnpm run preview # test-cyclops, test-hydra, test-professor, test-optic-bolt
 ```
 

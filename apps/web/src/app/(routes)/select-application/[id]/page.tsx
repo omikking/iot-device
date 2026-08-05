@@ -39,6 +39,7 @@ export default function Page({
       [Application.PullTest]: `${process.env.NEXT_PUBLIC_PULL_TEST_URL}/overview/${companyId}`,
       [Application.PullTestTechnician]: 'Pull Test Technician',
       [Application.Banshee]: `${process.env.NEXT_PUBLIC_BANSHEE_URL}/${companyId}/overview`,
+      [Application.Hydra]: `${process.env.NEXT_PUBLIC_HYDRA_URL}/${companyId}/overview`,
     };
     return applicationNames[app];
   };

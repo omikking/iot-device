@@ -1,0 +1,20 @@
+{
+  "extends": "@gsp/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  // The d.ts file is included to fix build error of missing react-table types.
+  // Ugly fix inherited from the sibling portals, but it works for now.
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/ui-core/src/types/react-table.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

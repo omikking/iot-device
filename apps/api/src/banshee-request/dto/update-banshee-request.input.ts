@@ -79,4 +79,9 @@ export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequest
   @IsUUID()
   @IsOptional()
   siteId?: string;
+
+  // null detaches the template; @IsOptional() skips validation for null/undefined.
+  @IsUUID()
+  @IsOptional()
+  templateId?: string;
 }

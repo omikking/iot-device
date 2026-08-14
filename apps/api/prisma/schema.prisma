@@ -448,6 +448,11 @@ model BansheeRequest {
   siteId    String
   site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
+  // Template the configuration was populated from. Kept as a plain reference —
+  // deleting the template must not delete the banshee request.
+  templateId String?
+  template   BansheeTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
   cartItems  BansheeCartItem[]
   orderItems BansheeOrderItem[]
 
@@ -455,6 +460,7 @@ model BansheeRequest {
   @@index([serialNumber])
   @@index([companyId])
   @@index([siteId])
+  @@index([templateId])
   @@map("banshee_requests")
 }
 
@@ -626,6 +632,8 @@ model BansheeTemplate {
   companyId String
 
   ringPosition RingPosition? //need to check
+
+  bansheeRequests BansheeRequest[]
 
   @@index([companyId])
   @@map("templates")

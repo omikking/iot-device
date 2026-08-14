@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { Headline } from '@gsp/ui-banshee';
+import { Headline, Text } from '@gsp/ui-banshee';
 import bansheeImage from '../../../../packages/ui-banshee/src/images/banshee-xcell.webp';
 
 export const BansheeInfoCard = () => {
@@ -45,13 +45,13 @@ export const BansheeInfoCard = () => {
           >
             xCell Banshee
           </Headline>
-          <p className="ui-banshee-text-2xl ui-banshee-text-neutral-500">
+          <Text variant="2xl" color="foreground">
             xCell Banshee provides digital monitoring of consumed capacity for
             Sandvik MD and MDX Bolts. By enabling in-service testing and
             condition assessment of installed bolts, the solution delivers
             valuable insights into bolt performance and ground support
             effectiveness throughout the life of an excavation.
-          </p>
+          </Text>
         </div>
       </div>
     </div>

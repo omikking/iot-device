@@ -1,24 +1,68 @@
 import { responses } from '@/app/uitexts/responses';
 import { showAlertToast } from '@gsp/ui-banshee';
 import { CombinedError } from 'urql';
+import {
+  sortProceqDataAscending,
+  sortReadingsAscending,
+} from '@/libs/latest-measurement';
+
+// Accepts "h:mm AM/PM" as well as bare 24-hour "HH:mm". Whitespace before the
+// period is optional and may be a non-breaking space, which is what some
+// browsers/ICU versions emit for locale-formatted times.
+const TIME_OF_DAY_PATTERN = /^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i;
+
+/**
+ * Parses a time-of-day string into hours (0-23) and minutes.
+ * Returns null when the string is not a recognisable time.
+ */
+export function parseTimeOfDay(
+  time: string,
+): { hours: number; minutes: number } | null {
+  const match = time.trim().match(TIME_OF_DAY_PATTERN);
+  if (!match) return null;
+
+  const rawHours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const period = match[3]?.toUpperCase();
+
+  if (minutes > 59) return null;
+
+  let hours = rawHours;
+  if (period) {
+    if (rawHours < 1 || rawHours > 12) return null;
+    hours = period === 'PM' ? (rawHours === 12 ? 12 : rawHours + 12) : rawHours === 12 ? 0 : rawHours;
+  } else if (rawHours > 23) {
+    return null;
+  }
+
+  return { hours, minutes };
+}
+
+/**
+ * Formats hours (0-23) and minutes as the canonical "hh:mm AM/PM" string.
+ * Built by hand rather than via toLocaleTimeString so the result never depends
+ * on the browser locale (24-hour locales) or on ICU's AM/PM separator.
+ */
+export function formatTimeOfDay(hours: number, minutes: number): string {
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${String(hour12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
+/** Formats a date's local time as the canonical "hh:mm AM/PM" string. */
+export function formatDateTimeOfDay(date: Date): string {
+  return formatTimeOfDay(date.getHours(), date.getMinutes());
+}
 
 export function buildInstallationDateTime(
   installationDate: Date,
   installationTime: string,
 ): Date {
-  const [timeStr, period] = installationTime.split(' ');
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const isPM = period === 'PM';
-  const adjustedHours = isPM
-    ? hours === 12
-      ? 12
-      : hours + 12
-    : hours === 12
-      ? 0
-      : hours;
-
+  const parsed = parseTimeOfDay(installationTime);
   const result = new Date(installationDate);
-  result.setHours(adjustedHours, minutes, 0, 0);
+  if (parsed) {
+    result.setHours(parsed.hours, parsed.minutes, 0, 0);
+  }
   return result;
 }
 
@@ -141,12 +185,14 @@ export function dataUrlToFile(dataUrl: string, filename: string): File {
 
 /** Minimal shape needed to build the banshee CSV. Shared across plot pages. */
 export interface BansheeCsvReading {
+  readingIndex?: number | null;
   elongation?: number | null;
   status?: string | null;
 }
 export interface BansheeCsvProceqData {
   status?: string | null;
   createdTimestamp?: number | null;
+  updatedTimestamp?: number | null;
   readings?: readonly BansheeCsvReading[] | null;
 }
 export interface BansheeCsvRow {
@@ -166,8 +212,8 @@ const BANSHEE_CSV_HEADERS = [
   'Level Name',
   'Location Name',
   'Comment',
-  'Proceq Status',
-  'Proceq Created Timestamp',
+  'Status',
+  'Created Timestamp',
   'Reading Elongation',
   'Reading Status',
 ];
@@ -184,13 +230,15 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
     const locationName = request.location?.locationName ?? '';
     const comment = request.comment ?? '';
 
-    request.proceqData?.forEach((proceq) => {
+    // Oldest measurement first, readings in acquisition order, so the export
+    // never depends on the order the API happened to return.
+    sortProceqDataAscending(request.proceqData).forEach((proceq) => {
       const proceqStatus = proceq.status ?? '';
       const createdTimestamp = proceq.createdTimestamp
         ? new Date(proceq.createdTimestamp).toISOString()
         : '';
 
-      proceq.readings?.forEach((reading) => {
+      sortReadingsAscending(proceq.readings).forEach((reading) => {
         const elongation = reading.elongation ?? '';
         const readingStatus = reading.status ?? '';
 
@@ -257,6 +305,28 @@ export function downloadDataUrl(dataUrl: string, filename: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/**
+ * Turns a raw enum-ish bolt type (e.g. `MD_split_set_38`) into a display label
+ * (`MD Split Set 38`). Short parts are treated as abbreviations and uppercased.
+ */
+export function formatBoltType(boltType: string | null | undefined): string {
+  if (!boltType) return 'N/A';
+
+  return boltType
+    .split('_')
+    .map((part) => {
+      // Keep numbers as-is
+      if (/^\d+$/.test(part)) return part;
+
+      // Uppercase short abbreviations like MD, HD, SS
+      if (part.length <= 3) return part.toUpperCase();
+
+      // Capitalize normal words
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    })
+    .join(' ');
 }
 
 export function formatDateTime(dt: string | null | undefined): string {

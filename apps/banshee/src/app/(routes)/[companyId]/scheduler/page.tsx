@@ -17,22 +17,33 @@ import {
   showAlertToast,
   LoadingSpinner,
   TableHeadWithSorting,
+  TooltipTrigger,
+  Tooltip,
+  TooltipProvider,
+  TooltipContent,
+  TooltipArrow,
 } from '@gsp/ui-banshee';
-import { Plus, Star, Check, ShoppingCart as CartIcon } from 'lucide-react';
+import { Plus, Check, ShoppingCart as CartIcon } from 'lucide-react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeDetailModal } from '@/components/BansheeDetailModal';
 import { ConfirmAddToCartModal } from '@/components/ConfirmAddToCartModal';
 import { ConfirmAddNewBansheeModal } from '@/components/ConfirmAddNewBansheeModal';
 import { HierarchyDropdown } from '@/components/HierarchyDropdown';
+import { useHierarchyOptions } from '@/components/Usehierarchyselections';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
 import {
   BansheeSchedulerListQuery,
   BansheeCartItemType,
   BansheeOrderItemStatus,
-  ProceqStatus,
 } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
+import {
+  formatElongation,
+  getLatestMeasurement,
+} from '@/libs/latest-measurement';
+import { getStatusColorHex } from '@/libs/status-color-utils';
+import { compareValues, SortableValue } from '@/libs/sort-compare';
 
 const schedulerHierarchyQuery = graphql(`
   query TemplateHierarchy($companyId: String!) {
@@ -117,6 +128,7 @@ const bansheeSchedulerList = graphql(`
       results {
         id
         serialNumber
+        name
         site {
           siteName
         }
@@ -137,6 +149,7 @@ const bansheeSchedulerList = graphql(`
           updatedTimestamp
           dueDate
           readings {
+            readingIndex
             elongation
             status
           }
@@ -154,108 +167,168 @@ const bansheeSchedulerList = graphql(`
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
-// Types for scheduler data
-type BansheeStatus = 'red' | 'orange' | 'yellow' | 'green' | 'gray';
+/**
+ * Where a banshee already sits in the ordering flow. Anything already in the
+ * cart or on a pending order is listed for visibility only — it cannot be
+ * ticked, and the bulk-select filters skip it.
+ */
+type SchedulerStatus =
+  | 'IN_CART'
+  | 'ORDERED'
+  | 'SERVICE_DUE'
+  | 'SERVICE_OVERDUE';
+
+const mapSchedulerStatusToMessage = (
+  schedulerStatus: SchedulerStatus,
+): string => {
+  if (schedulerStatus === 'IN_CART') {
+    return 'In the Cart';
+  } else if (schedulerStatus === 'ORDERED') {
+    return 'Scheduled';
+  }
+  return '';
+};
+/**
+ * Only rows that are not already spoken for can be selected for a new order.
+ * Stated as an exclusion so any further service state stays selectable.
+ */
+const isSelectable = (banshee: Pick<SchedulerBanshee, 'schedulerStatus'>) =>
+  banshee.schedulerStatus !== 'IN_CART' &&
+  banshee.schedulerStatus !== 'ORDERED';
 
 type SchedulerBanshee = {
   id: string;
   serialNumber: string;
+  name: string;
+  site: string;
+  level: string;
+  drive: string;
   location: string;
-  totalElongation: number | null;
+  totalElongation: string | null;
   lastMeasured: string;
   lastMeasuredTs: number | null;
   period: number | null;
   dueDate: string;
   dueDateTs: number | null;
-  status: BansheeStatus;
+  status: string | null | undefined;
+  schedulerStatus: SchedulerStatus;
+  /** Due date has arrived: today or earlier. Overdue rows are also due. */
+  isDue: boolean;
   isOverdue: boolean;
-  isSuggested: boolean;
   isSelected: boolean;
   isExpanded: boolean;
 };
 
-// Map ProceqStatus to BansheeStatus color
-const mapProceqStatusToColor = (status?: string | null): BansheeStatus => {
-  switch (status) {
-    case ProceqStatus.Elastic:
-      return 'green';
-    case ProceqStatus.LowPlastic:
-      return 'yellow';
-    case ProceqStatus.HighPlastic:
-      return 'orange';
-    case ProceqStatus.Broken:
-      return 'red';
-    case ProceqStatus.NotMeasurable:
-    case ProceqStatus.Unmeasured:
-    default:
-      return 'gray';
-  }
+/** Midnight today — anything dated before this is overdue. */
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
 };
 
 const transformBansheeRequests = (
   requests: BansheeSchedulerListQuery['bansheeRequests']['results'],
+  cartRequestIds: Set<string>,
+  pendingOrderRequestIds: Set<string>,
 ): Omit<SchedulerBanshee, 'isSelected' | 'isExpanded'>[] => {
-  return requests.map((request) => {
-    const latestProceqData = request.proceqData?.[0];
-    const latestReading = latestProceqData?.readings?.[0];
+  const todayStart = startOfToday();
+  // A bolt is due once its due date lands on today or earlier, so the cut-off
+  // is the start four weeks later.
+  const fourWeeksLater = todayStart + 4 * 7 * 24 * 60 * 60 * 1000;
 
-    const totalElongation = latestReading?.elongation ?? null;
+  return requests
+    .map((request) => ({
+      request,
+      ...getLatestMeasurement(request.proceqData),
+    }))
+    .filter(({ measurement }) => measurement?.status != 'BROKEN')
+    .map(
+      ({ request, measurement: latestProceqData, reading: latestReading }) => {
+        const totalElongation = formatElongation(latestReading);
 
-    const proceqStatus = latestProceqData?.status;
-    const status = mapProceqStatusToColor(proceqStatus);
+        const status = latestProceqData?.status;
 
-    const lastMeasuredTs = latestProceqData?.updatedTimestamp
-      ? new Date(latestProceqData.updatedTimestamp).getTime()
-      : null;
-    const lastMeasured =
-      lastMeasuredTs != null
-        ? new Date(lastMeasuredTs).toLocaleDateString('en-GB')
-        : '-';
-    const dueDateTs = latestProceqData?.dueDate
-      ? new Date(latestProceqData.dueDate).getTime()
-      : null;
-    const dueDate =
-      dueDateTs != null ? new Date(dueDateTs).toLocaleDateString('en-GB') : '-';
-    return {
-      id: request.id,
-      serialNumber: request.serialNumber ?? '-',
-      location: request.location?.locationName ?? '-',
-      totalElongation,
-      period: request.period ?? null,
-      lastMeasured,
-      lastMeasuredTs,
-      dueDate, // Not available in API
-      dueDateTs,
-      status,
-      isOverdue: false, // Not available in API
-      isSuggested: false, // Not available in API
-    };
-  });
+        const lastMeasuredTs = latestProceqData?.updatedTimestamp
+          ? new Date(latestProceqData.updatedTimestamp).getTime()
+          : null;
+        const lastMeasured =
+          lastMeasuredTs != null
+            ? new Date(lastMeasuredTs).toLocaleDateString('en-GB')
+            : '-';
+        const dueDateTs = latestProceqData?.dueDate
+          ? new Date(latestProceqData.dueDate).getTime()
+          : null;
+        const dueDate =
+          dueDateTs != null
+            ? new Date(dueDateTs).toLocaleDateString('en-GB')
+            : '-';
+        const isOverdue = dueDateTs != null && dueDateTs < todayStart;
+        return {
+          id: request.id,
+          serialNumber: request.serialNumber ?? '-',
+          name: request.name ?? '-',
+          site: request.site?.siteName ?? '-',
+          level: request.level?.levelName ?? '-',
+          drive: request.drive?.driveName ?? '-',
+          location: request.location?.locationName ?? '-',
+          totalElongation,
+          period: request.period ?? null,
+          lastMeasured,
+          lastMeasuredTs,
+          dueDate, // Not available in API
+          dueDateTs,
+          status,
+          schedulerStatus: cartRequestIds.has(request.id)
+            ? 'IN_CART'
+            : pendingOrderRequestIds.has(request.id)
+              ? 'ORDERED'
+              : isOverdue
+                ? 'SERVICE_OVERDUE'
+                : 'SERVICE_DUE',
+          isDue: dueDateTs != null && dueDateTs < fourWeeksLater,
+          isOverdue,
+        };
+      },
+    );
 };
 
-const STATUS_COLORS: Record<BansheeStatus, string> = {
-  red: '#FF0000',
-  orange: '#FF7938',
-  yellow: '#FFD50C',
-  green: '#62CE47',
-  gray: '#9C9C9C',
-};
-
-type SelectOption =
-  | 'suggested'
-  | 'all'
-  | 'due'
-  | 'overdue'
-  | 'others'
-  | 'clear';
+// 'Select suggested' is intentionally absent: the API exposes no suggestion
+// signal, so there is nothing to match on. Re-add it once it does.
+type SelectOption = 'all' | 'due' | 'overdue' | 'others';
 
 const SELECT_OPTIONS: { id: SelectOption; name: string }[] = [
-  { id: 'suggested', name: 'Select suggested' },
   { id: 'all', name: 'Select all' },
-  { id: 'due', name: 'Select due' },
+  { id: 'due', name: 'Select due (4 Weeks)' },
   { id: 'overdue', name: 'Select overdue' },
   { id: 'others', name: 'Select others' },
 ];
+
+/**
+ * Which rows the header's bulk-select dropdown should tick. Chosen options are
+ * OR-ed together; an empty list selects nothing (so confirming with everything
+ * cleared deselects the table).
+ */
+const matchesSelectFilters = (
+  banshee: Pick<SchedulerBanshee, 'isDue' | 'isOverdue'>,
+  filters: string[],
+): boolean => {
+  if (filters.length === 0) return false;
+  if (filters.includes('all')) return true;
+
+  return filters.some((filter) => {
+    switch (filter as SelectOption) {
+      case 'due':
+        return banshee.isDue;
+      case 'overdue':
+        return banshee.isOverdue;
+      // Everything the due cut-off leaves out: no due date, or due in future.
+      case 'others':
+        return !banshee.isDue;
+      default:
+        return false;
+    }
+  });
+};
 
 const PERIOD_OPTIONS = [
   { id: '1', name: '1 Month' },
@@ -284,7 +357,10 @@ export default function SchedulerPage({
   const [driveId, setDriveId] = useState<string | null>(null);
   const [locationId, setLocationId] = useState<string | null>(null);
   const [period, setPeriod] = useState('3');
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([
+    'overdue',
+    'due',
+  ]);
   const [selectedBansheeId, setSelectedBansheeId] = useState<string | null>(
     null,
   );
@@ -347,7 +423,10 @@ export default function SchedulerPage({
     variables: { companyId },
   });
 
-  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: 'dueDate',
+    direction: 'desc',
+  });
 
   const sortedEntries = useMemo(() => {
     const sortable = [...banshees];
@@ -363,17 +442,11 @@ export default function SchedulerPage({
               ? 'lastMeasuredTs'
               : sortConfig.key;
 
-        const aValue: string | number =
-          a[sortKey] == null ? '' : (a[sortKey] as string | number);
-
-        const bValue: string | number =
-          b[sortKey] == null ? '' : (b[sortKey] as string | number);
-
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-
-        return 0;
+        return compareValues(
+          a[sortKey] as SortableValue,
+          b[sortKey] as SortableValue,
+          sortConfig.direction,
+        );
       });
     }
 
@@ -407,35 +480,30 @@ export default function SchedulerPage({
     () => hierarchyData?.company?.sites ?? [],
     [hierarchyData?.company?.sites],
   );
-  const levels = useMemo(() => {
-    if (siteId) return sites.find((s) => s.id === siteId)?.levels ?? [];
-    return sites.flatMap((s) => s.levels ?? []);
-  }, [sites, siteId]);
-  const drives = useMemo(() => {
-    if (levelId) return levels.find((l) => l.id === levelId)?.drives ?? [];
-    return levels.flatMap((l) => l.drives ?? []);
-  }, [levels, levelId]);
-  const locations = useMemo(() => {
-    if (driveId) return drives.find((d) => d.id === driveId)?.locations ?? [];
-    return drives.flatMap((d) => d.locations ?? []);
-  }, [drives, driveId]);
+  // Only the site is required here, so the lower dropdowns list everything
+  // under the nearest selected ancestor instead of waiting on their parent.
+  const { levels, drives, locations } = useHierarchyOptions(
+    sites,
+    { siteId, levelId, driveId },
+    { allowUnparentedSelection: true },
+  );
 
-  const handleSiteChange = (id: string) => {
+  const handleSiteChange = (id: string | null) => {
     setSiteId(id || null);
     setLevelId(null);
     setDriveId(null);
     setLocationId(null);
   };
-  const handleLevelChange = (id: string) => {
+  const handleLevelChange = (id: string | null) => {
     setLevelId(id || null);
     setDriveId(null);
     setLocationId(null);
   };
-  const handleDriveChange = (id: string) => {
+  const handleDriveChange = (id: string | null) => {
     setDriveId(id || null);
     setLocationId(null);
   };
-  const handleLocationChange = (id: string) => {
+  const handleLocationChange = (id: string | null) => {
     setLocationId(id || null);
   };
 
@@ -446,11 +514,18 @@ export default function SchedulerPage({
 
   const handleToggleSelect = (id: string) => {
     setBanshees((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, isSelected: !b.isSelected } : b)),
+      prev.map((b) =>
+        b.id === id && isSelectable(b)
+          ? { ...b, isSelected: !b.isSelected }
+          : b,
+      ),
     );
   };
 
   const handleAddNewBanshees = () => {
+    if (!siteId) {
+      return;
+    }
     setShowNewBansheeModal(true);
   };
 
@@ -581,31 +656,37 @@ export default function SchedulerPage({
   useEffect(() => {
     handleGraphQLErrors(schedulerListError);
   }, [schedulerListError]);
+  // Every banshee is listed; the ones already in the cart or on a pending order
+  // are marked by their status tag rather than hidden.
   const bansheeRequests = useMemo(
-    () =>
-      (data?.bansheeRequests?.results ?? []).filter(
-        (r) =>
-          !cartBansheeRequestIds.has(r.id) &&
-          !pendingOrderBansheeRequestIds.has(r.id),
-      ),
-    [
-      data?.bansheeRequests?.results,
-      cartBansheeRequestIds,
-      pendingOrderBansheeRequestIds,
-    ],
+    () => data?.bansheeRequests?.results ?? [],
+    [data?.bansheeRequests?.results],
   );
 
-  // Transform API data to scheduler format when data changes
+  // Transform API data to scheduler format when data changes. Also re-runs when
+  // the header's bulk-select changes, applying it as a fresh selection (which
+  // discards any per-row ticks — that is what picking "Select due" means).
   useEffect(() => {
-    const transformedData = transformBansheeRequests(bansheeRequests);
+    const transformedData = transformBansheeRequests(
+      bansheeRequests,
+      cartBansheeRequestIds,
+      pendingOrderBansheeRequestIds,
+    );
     setBanshees(
       transformedData.map((b) => ({
         ...b,
-        isSelected: false,
+        // Rows already in the cart or on a pending order stay untouched by the
+        // due/overdue bulk-select.
+        isSelected: isSelectable(b) && matchesSelectFilters(b, selectedFilters),
         isExpanded: false,
       })),
     );
-  }, [bansheeRequests]);
+  }, [
+    bansheeRequests,
+    selectedFilters,
+    cartBansheeRequestIds,
+    pendingOrderBansheeRequestIds,
+  ]);
 
   if (fetching) {
     return (
@@ -629,7 +710,7 @@ export default function SchedulerPage({
 
             <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-items-end ui-banshee-flex-wrap ui-banshee-bg-neutral-1 ui-banshee-p-4 ui-banshee-border-t ui-banshee-border-b ui-banshee-border-neutral-3">
               <div className="ui-banshee-flex-shrink-0">
-                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-md ui-banshee-tracking-wide ui-banshee-main-black ui-banshee-font-medium">
                   Quantity
                 </p>
                 <input
@@ -637,26 +718,26 @@ export default function SchedulerPage({
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="20 (suggested quantity)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-48 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-md ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
               <div className="ui-banshee-flex-1 ui-banshee-min-w-[200px]">
-                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-md ui-banshee-tracking-wide ui-banshee-text-main-black ui-banshee-font-medium">
                   Name
                 </p>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name (optional)"
-                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-sm ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
+                  className="ui-banshee-flex ui-banshee-h-12 ui-banshee-w-full ui-banshee-rounded-md ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-bg-background ui-banshee-px-3 ui-banshee-py-2 ui-banshee-text-md ui-banshee-ring-offset-background file:ui-banshee-border-0 file:ui-banshee-bg-transparent file:ui-banshee-text-sm file:ui-banshee-font-medium placeholder:ui-banshee-text-muted-foreground focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring focus-visible:ui-banshee-ring-offset-2 disabled:ui-banshee-cursor-not-allowed disabled:ui-banshee-opacity-50"
                 />
               </div>
 
               <div className="ui-banshee-flex-1 ui-banshee-min-w-[160px]">
                 <HierarchyDropdown
                   id="scheduler-site-dropdown"
-                  label="Site"
+                  label="Site *"
                   placeholder="Select site"
                   options={sites.map((s) => ({
                     id: s.id,
@@ -710,7 +791,7 @@ export default function SchedulerPage({
               </div>
 
               <div className="ui-banshee-flex-shrink-0 ui-banshee-w-40">
-                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-sm ui-banshee-tracking-wide ui-banshee-text-neutral-5 ui-banshee-font-medium">
+                <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-md ui-banshee-tracking-wide ui-banshee-text-main-black ui-banshee-font-medium">
                   Duration
                 </p>
                 <Dropdown
@@ -724,6 +805,7 @@ export default function SchedulerPage({
               </div>
 
               <Button
+                disabled={!siteId}
                 onClick={handleAddNewBanshees}
                 className="ui-banshee-flex-shrink-0 ui-banshee-h-12"
               >
@@ -733,73 +815,89 @@ export default function SchedulerPage({
           </div>
 
           <div>
-            <div className="ui-banshee-flex ui-banshee-h-[50vh] ui-banshee-flex-col ui-banshee-w-full">
+            <div className="ui-banshee-flex ui-banshee-h-[65vh] ui-banshee-flex-col ui-banshee-w-full">
               <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
                 <Table variant="border">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="ui-banshee-px-3 ui-banshee-whitespace-nowrap">
-                        <Text variant="small" color="foreground">
+                        <Text variant="medium" color="foreground">
                           Details
                         </Text>
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Status"
-                          className="ui-banshee-w-24"
+                          className="ui-banshee-w-32 ui-banshee-text-md ui-banshee-m-auto"
                           column={createMockColumn('status')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Banshee"
-                          className="ui-banshee-w-32 !ui-banshee-justify-start"
-                          column={createMockColumn('serialNumber')}
+                          className="ui-banshee-w-56 !ui-banshee-justify-start ui-banshee-text-md"
+                          column={createMockColumn('name')}
+                        />
+                      </TableHead>
+                      <TableHead className="ui-banshee-whitespace-nowrap">
+                        <TableHeadWithSorting
+                          header="Site"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start ui-banshee-text-md"
+                          column={createMockColumn('site')}
+                        />
+                      </TableHead>
+                      <TableHead className="ui-banshee-whitespace-nowrap">
+                        <TableHeadWithSorting
+                          header="Level"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start ui-banshee-text-md"
+                          column={createMockColumn('level')}
+                        />
+                      </TableHead>
+                      <TableHead className="ui-banshee-whitespace-nowrap">
+                        <TableHeadWithSorting
+                          header="Drive"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start ui-banshee-text-md"
+                          column={createMockColumn('drive')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Location"
-                          className="ui-banshee-w-40 !ui-banshee-justify-start"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('location')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Total Elongation (mm)"
-                          className="ui-banshee-w-48 !ui-banshee-justify-start"
+                          className="ui-banshee-w-56 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('totalElongation')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Last Measured"
-                          className="ui-banshee-w-32 !ui-banshee-justify-start"
+                          className="ui-banshee-w-48 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('lastMeasured')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
-                          header="Period"
-                          className="ui-banshee-w-24 !ui-banshee-justify-start"
+                          header="Period (Months)"
+                          className="ui-banshee-w-48 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('period')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Due Date"
-                          className="ui-banshee-w-24 !ui-banshee-justify-start"
+                          className="ui-banshee-w-24 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('dueDate')}
                         />
                       </TableHead>
-                      <TableHead className="ui-banshee-whitespace-nowrap ui-banshee-px-3">
-                        <TableHeadWithSorting
-                          header="Suggested"
-                          className="!ui-banshee-justify-start"
-                          column={createMockColumn('isSuggested')}
-                        />
-                      </TableHead>
-                      <TableHead className="ui-banshee-whitespace-nowrap">
+                      {/* `flex` used to come from TableHead's last-child rule;
+                          the Status column now holds that slot. */}
+                      <TableHead className="ui-banshee-whitespace-nowrap ui-banshee-flex ui-banshee-justify-center">
                         <DropdownMultiSelectSearch
                           id="site-filter"
                           placeholder="Select"
@@ -808,7 +906,7 @@ export default function SchedulerPage({
                           options={SELECT_OPTIONS}
                           selectedIds={selectedFilters}
                           onSelect={(ids) => setSelectedFilters(ids)}
-                          className="ui-banshee-w-full !ui-banshee-bg-white !hover:ui-banshee-bg-main-white/50"
+                          className="ui-banshee-gap-1 !ui-banshee-bg-white !hover:ui-banshee-bg-main-white/50"
                         />
                       </TableHead>
                     </TableRow>
@@ -816,7 +914,7 @@ export default function SchedulerPage({
                   <TableBody>
                     {sortedEntries.map((banshee) => (
                       <TableRow key={banshee.id}>
-                        <TableCell>
+                        <TableCell className="ui-banshee-bg-neutral-2">
                           <button
                             onClick={() => setSelectedBansheeId(banshee.id)}
                             className="ui-banshee-p-1 hover:ui-banshee-bg-neutral-100 ui-banshee-rounded ui-banshee-w-full ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center"
@@ -825,83 +923,235 @@ export default function SchedulerPage({
                           </button>
                         </TableCell>
 
-                        <TableCell>
-                          <div
-                            className="ui-banshee-w-4 ui-banshee-h-4 ui-banshee-rounded-full ui-banshee-m-auto"
-                            style={{
-                              backgroundColor: STATUS_COLORS[banshee.status],
-                            }}
-                          />
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="ui-banshee-inline-block ui-banshee-w-4 ui-banshee-h-4 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                                  style={{
+                                    backgroundColor: getStatusColorHex(
+                                      banshee.status,
+                                    ),
+                                  }}
+                                />
+                              </TooltipTrigger>
+
+                              <TooltipContent>
+                                {banshee?.status
+                                  ?.toLowerCase()
+                                  .split('_')
+                                  .map(
+                                    (word) =>
+                                      word.charAt(0).toUpperCase() +
+                                      word.slice(1),
+                                  )
+                                  .join(' ')}
+                                <TooltipArrow />
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </TableCell>
 
-                        <TableCell>
-                          <Text variant="small" color="foreground">
-                            {banshee.serialNumber}
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
+                            {banshee.name}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
-                          <Text variant="small" color="foreground">
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
+                            {banshee.site}
+                          </Text>
+                        </TableCell>
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
+                            {banshee.level}
+                          </Text>
+                        </TableCell>
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
+                            {banshee.drive}
+                          </Text>
+                        </TableCell>
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
                             {banshee.location}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
-                          <Text variant="small" color="foreground">
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
                             {banshee.totalElongation ?? '-'}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
-                          <Text variant="small" color="foreground">
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
                             {banshee.lastMeasured}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
-                          <Text variant="small" color="foreground">
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          <Text
+                            variant="medium"
+                            color={
+                              isSelectable(banshee) ? 'foreground' : 'muted'
+                            }
+                          >
                             {banshee.period}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          {/* Overdue is only worth flagging while the row still
+                              needs action — once it is in the cart or on a
+                              pending order, its status tag says so instead. */}
                           <Text
-                            variant="small"
-                            color="foreground"
-                            className={
-                              banshee.isOverdue ? 'ui-banshee-text-red-500' : ''
+                            variant="medium"
+                            color={
+                              !isSelectable(banshee)
+                                ? 'muted'
+                                : banshee.isOverdue
+                                  ? 'destructive'
+                                  : 'foreground'
                             }
                           >
                             {banshee.dueDate}
                           </Text>
                         </TableCell>
 
-                        <TableCell>
-                          {banshee.isSuggested && (
-                            <Star
-                              size={16}
-                              className="ui-banshee-text-yellow-500 ui-banshee-m-auto"
-                              fill="currentColor"
-                            />
+                        <TableCell
+                          className={
+                            !isSelectable(banshee)
+                              ? 'ui-banshee-bg-neutral-1-5'
+                              : ''
+                          }
+                        >
+                          {isSelectable(banshee) ? (
+                            <button
+                              onClick={() => handleToggleSelect(banshee.id)}
+                              className={`ui-banshee-m-auto ui-banshee-w-5 ui-banshee-h-5 ui-banshee-rounded ui-banshee-border-2 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center disabled:ui-banshee-cursor-not-allowed ${
+                                banshee.isSelected
+                                  ? 'ui-banshee-bg-blue-600 ui-banshee-border-blue-600'
+                                  : 'ui-banshee-border-neutral-300'
+                              }`}
+                            >
+                              {banshee.isSelected && (
+                                <Check
+                                  size={14}
+                                  className="ui-banshee-text-white"
+                                />
+                              )}
+                            </button>
+                          ) : (
+                            <Text
+                              variant="medium"
+                              color={
+                                isSelectable(banshee) ? 'foreground' : 'muted'
+                              }
+                              className="ui-banshee-text-center"
+                            >
+                              {mapSchedulerStatusToMessage(
+                                banshee.schedulerStatus,
+                              )}
+                            </Text>
                           )}
-                        </TableCell>
-
-                        <TableCell>
-                          <button
-                            onClick={() => handleToggleSelect(banshee.id)}
-                            className={`ui-banshee-m-auto ui-banshee-w-5 ui-banshee-h-5 ui-banshee-rounded ui-banshee-border-2 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ${
-                              banshee.isSelected
-                                ? 'ui-banshee-bg-blue-600 ui-banshee-border-blue-600'
-                                : 'ui-banshee-border-neutral-300'
-                            }`}
-                          >
-                            {banshee.isSelected && (
-                              <Check
-                                size={14}
-                                className="ui-banshee-text-white"
-                              />
-                            )}
-                          </button>
                         </TableCell>
                       </TableRow>
                     ))}

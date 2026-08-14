@@ -10,7 +10,7 @@ interface FormFieldProps {
 export function FormField({ label, children }: FormFieldProps) {
   return (
     <div className="ui-banshee-space-y-2">
-      <Text variant="small" color="muted" className="ui-banshee-font-medium">
+      <Text variant="medium" color="foreground">
         {label}
       </Text>
       {children}
@@ -26,7 +26,7 @@ interface StaticFieldProps {
 export function StaticField({ label, value }: StaticFieldProps) {
   return (
     <div className="ui-banshee-space-y-1">
-      <Text variant="small" color="muted" className="ui-banshee-font-medium">
+      <Text variant="medium" color="foreground">
         {label}
       </Text>
       <Text variant="medium" color="foreground">

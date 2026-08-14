@@ -7,7 +7,13 @@ import {
   handleGraphQLErrors,
   formatDateTime,
   downloadBansheeCsv,
+  formatBoltType,
 } from '@/libs/utils';
+import {
+  formatElongation,
+  getLatestMeasurement,
+  sortProceqDataAscending,
+} from '@/libs/latest-measurement';
 import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import {
   SidebarInset,
@@ -30,12 +36,13 @@ import {
   LoadingSpinner,
 } from '@gsp/ui-banshee';
 import { useParams } from 'next/navigation';
-import { getStatusLabel } from '@/libs/status-color-utils';
+import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
 import { BansheeStatusPlot } from '@/components/BansheeStatusPlot';
 import type { BansheeStatusPlotHandle } from '@/components/BansheeStatusPlot';
 import BansheeDataPlot from '@/components/BansheeDataPlot';
 import type { BansheeDataPlotHandle } from '@/components/BansheeDataPlot';
 import { BansheeExportMenu } from '@/components/BansheeExportMenu';
+import { DetailRow } from '@/components/DetailRow';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
 import { ImageIcon } from 'lucide-react';
@@ -58,8 +65,11 @@ const bansheeDetailQuery = graphql(`
       proceqData {
         status
         createdTimestamp
+        updatedTimestamp
         dueDate
+        comments
         readings {
+          readingIndex
           elongation
           status
         }
@@ -107,23 +117,6 @@ function formatPeriod(period: number | null | undefined): string {
   return 'N/A';
 }
 
-interface DetailRowProps {
-  label: string;
-  value: React.ReactNode;
-}
-
-const DetailRow = React.memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-3 ui-banshee-border-b ui-banshee-text-sm">
-    <div className="ui-banshee-font-medium ui-banshee-text-neutral-500 ui-banshee-w-[45%] ui-banshee-pr-4">
-      {label}
-    </div>
-    <div className="ui-banshee-text-neutral-800 ui-banshee-w-[55%] ui-banshee-break-words">
-      {value ?? 'N/A'}
-    </div>
-  </div>
-));
-DetailRow.displayName = 'DetailRow';
-
 type ShareFormValues = {
   email: string;
 };
@@ -152,16 +145,15 @@ export default function BansheeDashboardPage() {
     const request = data?.bansheeRequest;
     if (!request) return null;
 
-    const measurements = request?.proceqData ?? [];
-    const latestMeasurement = measurements.at(-1) ?? null;
-    const readings = latestMeasurement?.readings ?? [];
-    const lastReading = readings.at(-1) ?? null;
+    const { measurement: latestMeasurement, reading: lastReading } =
+      getLatestMeasurement(request.proceqData);
 
     return {
+      bansheeName: request?.name,
       serialNumber: request.serialNumber,
-      status: getStatusLabel(latestMeasurement?.status),
+      status: latestMeasurement?.status,
       lastReading: latestMeasurement?.createdTimestamp
-        ? formatDateTime(latestMeasurement.createdTimestamp)
+        ? formatDateTime(latestMeasurement?.createdTimestamp)
         : 'N/A',
       siteName: request.site?.siteName ?? 'N/A',
       levelName: request.level?.levelName ?? 'N/A',
@@ -170,11 +162,8 @@ export default function BansheeDashboardPage() {
       coordsDisplay: parseCoordinatesDisplay(request.coordinates),
       installationDate: formatDateTime(request.boltInstallationDateTime),
       comment: request?.comment || 'No comment available.',
-      elongation:
-        lastReading?.elongation != null
-          ? lastReading.elongation.toFixed(1)
-          : '-',
-      boltType: request.boltType ?? 'N/A',
+      elongation: formatElongation(lastReading) ?? '-',
+      boltType: formatBoltType(request?.boltType) ?? 'N/A',
       period: formatPeriod(request.period),
       lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit,
       elasticLimit: request.boltTypeConstant?.elasticLimit,
@@ -192,18 +181,21 @@ export default function BansheeDashboardPage() {
   const commentRows = useMemo(() => {
     const request = data?.bansheeRequest;
     if (!request) return [];
-    return (request.proceqData ?? []).map((pd, idx) => ({
-      key: `${pd.createdTimestamp}-${idx}`,
-      date: pd.createdTimestamp
-        ? new Date(pd.createdTimestamp)
-            .toISOString()
-            .replace(/[-T:]/g, '-')
-            .slice(0, 10)
-        : 'N/A',
-      comment: request.comment || '',
-      hasPhoto: true,
-      userPhoto: null,
-    }));
+
+    // Newest comment first, ranked the same way as the latest measurement.
+    return sortProceqDataAscending(request.proceqData)
+      .reverse()
+      .filter((pd) => pd.comments?.trim())
+      .map((pd, idx) => ({
+        key: `${pd.createdTimestamp}-${idx}`,
+        date: pd.createdTimestamp
+          ? new Date(pd.createdTimestamp)
+              .toISOString()
+              .replace(/[-T:]/g, '-')
+              .slice(0, 10)
+          : 'N/A',
+        comment: pd.comments!,
+      }));
   }, [data]);
   if (fetching) {
     return (
@@ -236,20 +228,49 @@ export default function BansheeDashboardPage() {
     <SidebarInset>
       <main className="ui-banshee-p-7 ui-banshee-pr-0 ui-banshee-mb-16 ui-banshee-bg-main-white ui-banshee-w-full">
         <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3 ui-banshee-mb-8">
-          <div className="ui-banshee-w-9 ui-banshee-h-9 ui-banshee-rounded-full ui-banshee-bg-neutral-300" />
+          <div
+            className="ui-banshee-w-9 ui-banshee-h-9 ui-banshee-rounded-full ui-banshee-bg-neutral-300"
+            style={{
+              backgroundColor: getStatusColorHex(details?.status),
+            }}
+          />
           <h1 className="ui-banshee-text-2xl ui-banshee-font-semibold ui-banshee-text-neutral-900">
-            {details.serialNumber ?? 'Banshee Name'}
+            {details.bansheeName ?? 'Banshee Name'}
           </h1>
         </div>
 
         <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-12 ui-banshee-gap-8">
           <div className="lg:ui-banshee-col-span-5 ui-banshee-bg-neutral-100 ui-banshee-border ui-banshee-border-gray-100 ui-banshee-p-6">
             <div className="ui-banshee-flex ui-banshee-flex-col">
-              <DetailRow label="Status" value={details.status} />
+              <DetailRow label="Serial Number" value={details?.serialNumber} />
+              <DetailRow
+                label="Status"
+                value={getStatusLabel(details?.status)}
+              />
               <DetailRow label="Last Reading" value={details.lastReading} />
               <DetailRow
-                label="Location Coordinates xyz"
-                value={details.coordsDisplay}
+                label="Site"
+                value={
+                  <span className="ui-banshee-whitespace-pre-line">
+                    {details.siteName}
+                  </span>
+                }
+              />
+              <DetailRow
+                label="Level"
+                value={
+                  <span className="ui-banshee-whitespace-pre-line">
+                    {details.levelName}
+                  </span>
+                }
+              />
+              <DetailRow
+                label="Drive"
+                value={
+                  <span className="ui-banshee-whitespace-pre-line">
+                    {details.driveName}
+                  </span>
+                }
               />
               <DetailRow
                 label="Location"
@@ -258,6 +279,10 @@ export default function BansheeDashboardPage() {
                     {details.locationName}
                   </span>
                 }
+              />
+              <DetailRow
+                label="Location Coordinates xyz"
+                value={details.coordsDisplay}
               />
               <DetailRow
                 label="Installation Date"
@@ -288,7 +313,7 @@ export default function BansheeDashboardPage() {
           <div className="lg:ui-banshee-col-span-7">
             <Tabs
               defaultValue="statusPlot"
-              className="ui-banshee-w-full ui-banshee-p-0"
+              className="ui-banshee-w-full ui-banshee-h-full ui-banshee-p-0 ui-banshee-flex ui-banshee-items-start ui-banshee-flex-col"
             >
               <TabsList className="ui-banshee-justify-start ui-banshee-border-none ui-banshee-p-0 ui-banshee-h-auto">
                 <TabsTrigger
@@ -304,22 +329,22 @@ export default function BansheeDashboardPage() {
                   Data Plot
                 </TabsTrigger>
                 <TabsTrigger
-                  value="commentAndPhoto"
+                  value="comment"
                   className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
                 >
-                  Comment and Photo
+                  Comment
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent
                 value="statusPlot"
-                className="!ui-banshee-mt-0 ui-banshee-px-2"
+                className="!ui-banshee-mt-0 ui-banshee-px-2 ui-banshee-flex-1"
               >
-                <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1">
+                <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ui-banshee-h-full">
                   <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-4">
                     <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
-                      Click and drag in the plot area to zoom in. Hold CTRL and
-                      drag to pan
+                      Click and drag anywhere in the plot area to zoom into a
+                      specific section of the chart.
                     </p>
                     <div className="ui-banshee-flex ui-banshee-gap-2">
                       <button
@@ -348,13 +373,13 @@ export default function BansheeDashboardPage() {
 
               <TabsContent
                 value="dataPlot"
-                className="!ui-banshee-mt-0 ui-banshee-px-2"
+                className="!ui-banshee-mt-0 ui-banshee-px-2 ui-banshee-flex-1"
               >
-                <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1">
+                <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ui-banshee-h-full">
                   <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-4">
                     <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
-                      Click and drag in the plot area to zoom in. Hold CTRL and
-                      drag to pan
+                      Click and drag anywhere in the plot area to zoom into a
+                      specific section of the chart.
                     </p>
                     <div className="ui-banshee-flex ui-banshee-gap-2">
                       <button
@@ -380,21 +405,18 @@ export default function BansheeDashboardPage() {
               </TabsContent>
 
               <TabsContent
-                value="commentAndPhoto"
-                className="!ui-banshee-mt-0 ui-banshee-px-2"
+                value="comment"
+                className="!ui-banshee-mt-0 ui-banshee-px-2 ui-banshee-w-full ui-banshee-flex-1"
               >
-                <div className="ui-banshee-bg-neutral-1">
+                <div className="ui-banshee-bg-neutral-1 ui-banshee-h-full">
                   <Table variant={'border'}>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="!ui-banshee-text-left ui-banshee-px-4 ui-banshee-font-bold">
+                        <TableHead className="!ui-banshee-text-left ui-banshee-px-4 ui-banshee-font-bold ui-banshee-text-md">
                           Date
                         </TableHead>
-                        <TableHead className="!ui-banshee-text-left ui-banshee-px-4 ui-banshee-font-bold">
+                        <TableHead className="!ui-banshee-text-left ui-banshee-px-4 ui-banshee-font-bold ui-banshee-items-center ui-banshee-text-md">
                           Comment
-                        </TableHead>
-                        <TableHead className="!ui-banshee-text-left ui-banshee-px-4 ui-banshee-font-bold">
-                          Photo
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -403,11 +425,11 @@ export default function BansheeDashboardPage() {
                         <TableRow>
                           <TableCell
                             colSpan={3}
-                            className="ui-banshee-text-center ui-banshee-py-8"
+                            className="ui-banshee-text-center ui-banshee-py-2"
                           >
                             <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
-                              <Text variant="small" color="muted">
-                                No comments or photos available.
+                              <Text variant="medium" color="muted">
+                                No comments available.
                               </Text>
                             </div>
                           </TableCell>
@@ -416,39 +438,14 @@ export default function BansheeDashboardPage() {
                         commentRows.map((row) => (
                           <TableRow key={row.key}>
                             <TableCell className="!ui-banshee-text-left ui-banshee-px-4">
-                              <Text variant="small" color="foreground">
+                              <Text variant="medium" color="foreground">
                                 {row.date}
                               </Text>
                             </TableCell>
                             <TableCell className="!ui-banshee-text-left ui-banshee-px-4">
-                              <Text variant="small" color="foreground">
+                              <Text variant="medium" color="foreground">
                                 {row.comment}
                               </Text>
-                            </TableCell>
-                            <TableCell className="!ui-banshee-text-left ui-banshee-px-4">
-                              {row.hasPhoto ? (
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <button className="ui-banshee-cursor-pointer hover:ui-banshee-opacity-70">
-                                      <ImageIcon size={20} />
-                                    </button>
-                                  </DialogTrigger>
-                                  <DialogContent className="ui-banshee-max-w-lg">
-                                    <DialogHeader>
-                                      <DialogTitle>
-                                        Photo — {row.date}
-                                      </DialogTitle>
-                                    </DialogHeader>
-                                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-p-4 ui-banshee-text-neutral-500">
-                                      No image available
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
-                              ) : (
-                                <Text variant="small" color="muted">
-                                  —
-                                </Text>
-                              )}
                             </TableCell>
                           </TableRow>
                         ))
@@ -459,7 +456,7 @@ export default function BansheeDashboardPage() {
               </TabsContent>
             </Tabs>
           </div>
-        </div>
+        </div>  
         <ShareForm
           form={shareForm}
           onShare={async (email) =>

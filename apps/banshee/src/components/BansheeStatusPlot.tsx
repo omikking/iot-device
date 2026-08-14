@@ -8,6 +8,7 @@ import type {
   ChartLineDatum,
 } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
+import { sortReadingsAscending } from '@/libs/latest-measurement';
 import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 
 type BansheeRequestResult =
@@ -139,7 +140,7 @@ export const BansheeStatusPlot = forwardRef<
 
       (br.proceqData || []).forEach((pd) => {
         if (!pd.createdTimestamp) return;
-        const readings = pd.readings || [];
+        const readings = sortReadingsAscending(pd.readings);
         const dateStr = new Date(pd.createdTimestamp)
           .toISOString()
           .split('T')[0];
@@ -198,7 +199,7 @@ export const BansheeStatusPlot = forwardRef<
   }
 
   return (
-    <div className="ui-banshee-px-4 ui-banshee-pb-8">
+    <div className="ui-banshee-px-4 ui-banshee-pb-8 ui-banshee-flex-1">
       <ChartLineLinear
         ref={chartRef}
         showAxis

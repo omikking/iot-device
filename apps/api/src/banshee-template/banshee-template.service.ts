@@ -7,6 +7,13 @@ import { UserInputError } from '@nestjs/apollo/dist/errors/user-input.error';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { hasAppAccessForCompany } from 'src/utils';
 
+/**
+ * Distinguishes "field not sent" from "field cleared" for an optional relation
+ * id: undefined leaves the column alone, anything empty unsets it.
+ */
+const clearableId = (id?: string | null): string | null | undefined =>
+  id === undefined ? undefined : id || null;
+
 @Injectable()
 export class BansheeTemplateService {
   private readonly logger = new Logger(BansheeTemplateService.name);
@@ -165,10 +172,12 @@ export class BansheeTemplateService {
           period: updateBansheeTemplateInput.period,
           boltInstallationDateTime:
             updateBansheeTemplateInput.boltInstallationDateTime,
-          siteId: updateBansheeTemplateInput.siteId || undefined,
-          levelId: updateBansheeTemplateInput.levelId || undefined,
-          driveId: updateBansheeTemplateInput.driveId || undefined,
-          locationId: updateBansheeTemplateInput.locationId || undefined,
+          // Omitted -> untouched; cleared (null/'') -> unset, since these
+          // columns are nullable and the form can clear the dropdowns.
+          siteId: clearableId(updateBansheeTemplateInput.siteId),
+          levelId: clearableId(updateBansheeTemplateInput.levelId),
+          driveId: clearableId(updateBansheeTemplateInput.driveId),
+          locationId: clearableId(updateBansheeTemplateInput.locationId),
           locationDetails:
             updateBansheeTemplateInput.locationDetails || undefined,
           coordinates: updateBansheeTemplateInput.coordinates || undefined,

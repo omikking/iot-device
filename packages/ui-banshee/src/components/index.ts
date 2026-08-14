@@ -47,4 +47,4 @@ export * from './svg/banshee-icon';
 export * from './svg/facebook-icon';
 export * from './svg/instagram-icon';
 export * from './svg/linkedin-icon';
-export * from './svg/twitter-icon';
+export * from './svg/youtube-icon';

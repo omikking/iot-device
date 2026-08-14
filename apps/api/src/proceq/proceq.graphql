@@ -38,7 +38,7 @@ type ProceqData {
   operator: String
   email: String
   dueDate: DateTime
-  comments: String!
+  comments: String
   temperature: Float
 
   rawDataZipId: String

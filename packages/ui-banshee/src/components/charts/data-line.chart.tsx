@@ -35,6 +35,12 @@ const chartConfig = {
   line4: { label: 'Line 4', color: '#00c853' },
 } satisfies ChartConfig;
 
+const hasValue = (value: unknown): boolean =>
+  value !== null &&
+  value !== undefined &&
+  value !== '' &&
+  !(typeof value === 'number' && Number.isNaN(value));
+
 const normalizeValue = (value: unknown): string => {
   if (value === null) return '';
 
@@ -78,6 +84,13 @@ export const DataLineChart = forwardRef<
         backgroundColor: '#ffffff',
       }),
   }));
+  // Only lines with at least one plottable point get a legend entry / series;
+  // a bolt with no readings would otherwise show an unusable legend swatch.
+  const visibleLines = useMemo(
+    () => lines?.filter((line) => data.some((d) => hasValue(d[line.dataKey]))),
+    [lines, data],
+  );
+
   // Memoize so unrelated parent re-renders don't rebuild the option / re-run
   // setOption; only data/config/zoom/legend changes trigger an update.
   const option = useMemo<EChartsOption>(() => {
@@ -105,7 +118,7 @@ export const DataLineChart = forwardRef<
       xAxis: {
         type: 'category',
         data: xAxisDates,
-        axisLabel: { fontSize: 12 },
+        axisLabel: { fontSize: 14, color: '#101010'},
         axisTick: { alignWithLabel: true },
         axisLine: { show: false },
       },
@@ -113,13 +126,13 @@ export const DataLineChart = forwardRef<
         type: 'value',
         min: yAxisDomain[0],
         max: yAxisDomain[1],
-        axisLabel: { fontSize: 12 },
+        axisLabel: { fontSize: 14, color: '#101010' },
         axisLine: { show: false },
         splitLine: { show: false },
         name: yAxisLabel,
         nameLocation: 'middle',
         nameGap: 45,
-        nameTextStyle: { fontSize: 12 },
+        nameTextStyle: { fontSize: 13, color: '#101010' },
       },
       tooltip: {
         trigger: 'axis',
@@ -148,9 +161,9 @@ export const DataLineChart = forwardRef<
         itemHeight: 8,
         itemGap: 20,
         width: '90%',
-        textStyle: { fontSize: 11, color: '#666' },
+        textStyle: { fontSize: 14, color: '#101010' },
         data:
-          lines?.map((l) => ({
+          visibleLines?.map((l) => ({
             name: l.label,
             itemStyle: { color: l.color },
           })) ?? [],
@@ -185,7 +198,7 @@ export const DataLineChart = forwardRef<
             data: [{ yAxis: 3 }, { yAxis: 6 }, { yAxis: 9 }, { yAxis: 12 }],
           },
         },
-        ...(lines?.map((line) => ({
+        ...(visibleLines?.map((line) => ({
           type: 'line' as const,
           name: line.label,
           data: data.map((d) => ({
@@ -204,7 +217,7 @@ export const DataLineChart = forwardRef<
     };
   }, [
     data,
-    lines,
+    visibleLines,
     yAxisLabel,
     yAxisDomain,
     enableZoom,
@@ -219,16 +232,16 @@ export const DataLineChart = forwardRef<
   });
 
   return (
-    <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-bg-neutral-1">
+    <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-bg-neutral-1 ui-banshee-flex-1 ui-banshee-justify-center">
       <ChartContainer
         config={chartConfig}
-        className="ui-banshee-w-full ui-banshee-h-[400px]"
+        className="ui-banshee-w-full ui-banshee-h-[42vh]"
       >
         <EChart
           chartRef={chartRef}
           option={option}
           preserveDataZoom={enableZoom}
-          className="ui-banshee-w-full ui-banshee-h-full"
+          className="ui-banshee-w-full ui-banshee-h-full ui-banshee-p-4"
           onEvents={
             onLegendChange
               ? {

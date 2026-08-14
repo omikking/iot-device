@@ -330,11 +330,7 @@ Need help? Contact your administrator for assistance.
     // per environment, falling back to the default Sandvik support inboxes.
     const supportRecipients = [
       ...new Set(
-        [
-          this.configService.get<string>('BANSHEE_SUPPORT_EMAIL') ??
-            'xCell@sandvik.com',
-          sandvikAdminEmail,
-        ]
+        ['xCell@sandvik.com', sandvikAdminEmail]
           .filter((emails): emails is string => Boolean(emails))
           .flatMap((emails) => emails.split(','))
           .map((email) => email.trim())

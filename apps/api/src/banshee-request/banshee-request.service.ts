@@ -231,6 +231,38 @@ export class BansheeRequestsService {
         );
       }
 
+      // A template is only a reference for "where these values came from", but it
+      // must still be a real template belonging to the same company.
+      if (updateBansheeRequestInput.templateId) {
+        const template = await this.prisma.bansheeTemplate.findUnique({
+          where: { id: updateBansheeRequestInput.templateId },
+          select: { id: true, companyId: true },
+        });
+
+        if (!template) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'BANSHEE_TEMPLATE_NOTFOUND_ERROR',
+              title: `Banshee template #${updateBansheeRequestInput.templateId} not found`,
+            },
+          });
+        }
+
+        const targetCompanyId =
+          updateBansheeRequestInput.companyId || existingRequest.companyId;
+
+        if (template.companyId !== targetCompanyId) {
+          throw new UserInputError('', {
+            extensions: {
+              code: 'BANSHEE_TEMPLATE_COMPANY_MISMATCH_ERROR',
+              title: 'Template does not belong to the specified company',
+              message:
+                'The specified template belongs to a different company than the banshee request.',
+            },
+          });
+        }
+      }
+
       let imagePaths: string[] | undefined;
       if (
         updateBansheeRequestInput &&
@@ -277,12 +309,21 @@ export class BansheeRequestsService {
           locationId: updateBansheeRequestInput.locationId || undefined,
           coordinates: updateBansheeRequestInput.coordinates || undefined,
           period: updateBansheeRequestInput.period || undefined,
+          // Nullable column, and the form can legitimately empty it (applying a
+          // template with no location details), so '' must clear rather than
+          // read as "unchanged". Omitted still leaves the column alone.
           locationDetails:
-            updateBansheeRequestInput.locationDetails || undefined,
+            updateBansheeRequestInput.locationDetails === undefined
+              ? undefined
+              : updateBansheeRequestInput.locationDetails || null,
           boltInstallationDateTime:
             updateBansheeRequestInput.boltInstallationDateTime || undefined,
           ringPosition: updateBansheeRequestInput.ringPosition || undefined,
-          comment: updateBansheeRequestInput.comment || undefined,
+          // Same as locationDetails: an emptied comment must actually clear.
+          comment:
+            updateBansheeRequestInput.comment === undefined
+              ? undefined
+              : updateBansheeRequestInput.comment || null,
           isBrokenBolt: updateBansheeRequestInput.isBrokenBolt ?? undefined,
           isNotMeasurable:
             updateBansheeRequestInput.isNotMeasurable ?? undefined,
@@ -292,6 +333,11 @@ export class BansheeRequestsService {
           activateNotifications:
             updateBansheeRequestInput.activateNotifications ?? undefined,
           siteId: updateBansheeRequestInput.siteId || undefined,
+          // Omitted -> untouched; empty/null -> detach the template.
+          templateId:
+            updateBansheeRequestInput.templateId === undefined
+              ? undefined
+              : updateBansheeRequestInput.templateId || null,
         },
       });
 
@@ -675,9 +721,14 @@ export class BansheeRequestsService {
             createdTimestamp: true,
             updatedTimestamp: true,
           },
-          orderBy: {
-            updatedTimestamp: 'desc',
-          },
+          // Latest session first, ranked the same way the frontend ranks it
+          // (see apps/banshee/src/libs/latest-measurement.ts): a session with
+          // no updatedTimestamp must never outrank one that has one, and
+          // Postgres sorts NULLs first on DESC by default.
+          orderBy: [
+            { updatedTimestamp: { sort: 'desc', nulls: 'last' } },
+            { createdTimestamp: { sort: 'desc', nulls: 'last' } },
+          ],
           take: 1,
         },
       },

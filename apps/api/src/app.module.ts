@@ -20,6 +20,8 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
 import { LogGraphQLPlugin } from './common/plugins/log-graphql.plugin';
 import { EmailModule } from './email/email.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { OpticboltModule } from './opticbolt/opticbolt.module';
+import { HydraBoltModule } from './hydra-bolt/hydra-bolt.module';
 
 import { BansheeRequestModule } from './banshee-request/banshee-request.module';
 import { ProceqModule } from './proceq/proceq.module';
@@ -59,6 +61,8 @@ const enableGraphQLLog = process.env.LOG_GRAPHQL === '1';
     ResetPasswordModule,
     EmailModule,
     InvitationModule,
+    OpticboltModule,
+    HydraBoltModule,
     BansheeRequestModule,
     ProceqModule,
     BansheeStatsModule,

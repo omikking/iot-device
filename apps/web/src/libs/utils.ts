@@ -57,6 +57,22 @@ export const isSandvikTechnician = (
   );
 };
 
+// Function to check if the user is a Company User for the company
+export const isCompanyUser = (
+  userPermissions: Session['user']['userPermissions'] | undefined,
+  companyId: string,
+): boolean => {
+  if (!userPermissions) {
+    return false;
+  }
+
+  return userPermissions.some(
+    (permission) =>
+      permission.role === Role.CompanyUser &&
+      permission.companyId === companyId,
+  );
+};
+
 // Function to handle GraphQL errors
 interface NestJsValidationError {
   message: string | string[];

@@ -141,6 +141,24 @@ export const BansheeDetailModal = memo(
       handleGraphQLErrors(error);
     }, [error]);
 
+    function formatBoltType(boltType: string | null | undefined): string {
+      if (!boltType) return 'N/A';
+
+      return boltType
+        .split('_')
+        .map((part) => {
+          // Keep numbers as-is
+          if (/^\d+$/.test(part)) return part;
+
+          // Uppercase short abbreviations like MD, HD, SS
+          if (part.length <= 3) return part.toUpperCase();
+
+          // Capitalize normal words
+          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+        })
+        .join(' ');
+    }
+
     const details = useMemo(() => {
       const request = data?.bansheeRequest;
       if (!request) return null;

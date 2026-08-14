@@ -17,6 +17,7 @@ import {
 import {
   handleGraphQLErrors,
   isCompanyAdmin,
+  isCompanyUser,
   isSandvikTechnician,
 } from '@/libs/utils';
 import { useSession } from 'next-auth/react';
@@ -84,6 +85,17 @@ export const DriveItem = ({
     session?.user?.userPermissions,
     companyId,
   );
+  const isUserCompanyUser = isCompanyUser(
+    session?.user?.userPermissions,
+    companyId,
+  );
+  const canManage =
+    isUserSandvikAdmin ||
+    isUserCompanyAdmin ||
+    isUserSandvikTechnician ||
+    isUserCompanyUser;
+  const canDelete =
+    isUserSandvikAdmin || isUserCompanyAdmin || isUserSandvikTechnician;
 
   const [isEditing, setIsEditing] = useState(!drive.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -249,13 +261,13 @@ export const DriveItem = ({
               {drive.driveName}
             </Text>
 
-            {(isUserSandvikAdmin ||
-              isUserCompanyAdmin ||
-              isUserSandvikTechnician) && (
+            {canManage && (
               <DeleteEditDropdown
                 itemSelected={drive.id}
                 handleEdit={handleEditDrive}
-                openDeleteModal={() => setIsDeleteModalOpen(true)}
+                openDeleteModal={
+                  canDelete ? () => setIsDeleteModalOpen(true) : undefined
+                }
               />
             )}
 

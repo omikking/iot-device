@@ -25,13 +25,13 @@
   "vsicons.associations.folders": [
     {
       "icon": "www",
-      "extensions": ["pull-test"],
+      "extensions": ["pull-test", "banshee"],
       "format": "svg"
     },
     {
       "icon": "config",
-      "extensions": ["eslint-config", "tailwind-config", "typescript-config"],
+      "extensions": ["eslint-config", "tailwind-config", "typescript-config", "infra"],
       "format": "svg"
-    }
+    },
   ]
 }

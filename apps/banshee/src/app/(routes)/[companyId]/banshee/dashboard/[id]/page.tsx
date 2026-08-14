@@ -362,6 +362,22 @@ export default function BansheeDashboardPage() {
                         }
                       />
                     </div>
+                    <div className="ui-banshee-flex ui-banshee-gap-2">
+                      <button
+                        className="ui-banshee-px-4 ui-banshee-py-1 ui-banshee-text-sm ui-banshee-bg-white ui-banshee-border ui-banshee-border-neutral-300 ui-banshee-rounded"
+                        onClick={() => statusPlotRef.current?.resetZoom()}
+                      >
+                        Reset zoom
+                      </button>
+                      <BansheeExportMenu
+                        onDownloadCsv={() =>
+                          downloadBansheeCsv(bansheeRequestsArray)
+                        }
+                        onDownloadPng={() =>
+                          statusPlotRef.current?.downloadPng()
+                        }
+                      />
+                    </div>
                   </div>
                   <BansheeStatusPlot
                     ref={statusPlotRef}

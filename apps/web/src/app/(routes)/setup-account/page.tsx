@@ -151,7 +151,6 @@ export default function Page(): JSX.Element {
   const isAnyFieldEmpty =
     !formValues.fullName ||
     !formValues.workPlace ||
-    !formValues.phoneNumber ||
     !formValues.password ||
     !formValues.confirmPassword;
 
@@ -285,7 +284,7 @@ export default function Page(): JSX.Element {
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone number</FormLabel>
+                    <FormLabel>Phone number (optional)</FormLabel>
                     <FormControl>
                       <Input
                         placeholder={placeholder.phoneNumberPlaceholder}

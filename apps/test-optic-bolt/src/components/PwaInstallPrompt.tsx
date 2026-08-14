@@ -1,0 +1,98 @@
+import { useState, useEffect } from 'react';
+import { CACHE_KEYS, loadFromDB, saveToDB } from '../hooks/useIndexedDB';
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
+function isInstalledPwa(): boolean {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}
+
+export default function PwaInstallPrompt() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (isInstalledPwa()) return;
+      const dismissed = await loadFromDB<boolean>(CACHE_KEYS.pwaDismiss);
+      if (!cancelled && !dismissed) setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setIsVisible(true);
+    };
+    const onInstalled = () => {
+      setIsVisible(false);
+      setDeferredPrompt(null);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, [ready]);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') await saveToDB(CACHE_KEYS.pwaDismiss, true);
+    setDeferredPrompt(null);
+    setIsVisible(false);
+  };
+
+  const handleDismiss = async () => {
+    await saveToDB(CACHE_KEYS.pwaDismiss, true);
+    setIsVisible(false);
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed bottom-6 left-6 z-50 flex flex-col gap-3 p-4 bg-surface border border-border rounded-xl shadow-card w-72">
+      <div>
+        <h3 className="font-semibold text-text">Install Optic Bolt</h3>
+        <p className="text-sm text-text-muted mt-1">
+          Install the Optic Bolt app for offline access to cached test results.
+        </p>
+      </div>
+      <div className="flex justify-end gap-2 mt-1">
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="px-3 py-1.5 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-alt rounded-lg"
+        >
+          Not Now
+        </button>
+        <button
+          type="button"
+          onClick={handleInstallClick}
+          className="px-4 py-1.5 text-sm font-medium text-white bg-accent hover:bg-accent-hover rounded-lg"
+        >
+          Install
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,7 @@
 import { responses } from '@/app/uitexts/responses';
 import { showAlertToast } from '@gsp/ui-banshee';
 import { CombinedError } from 'urql';
+import { BoltType } from '@/gql/graphql';
 import {
   sortProceqDataAscending,
   sortReadingsAscending,
@@ -30,7 +31,14 @@ export function parseTimeOfDay(
   let hours = rawHours;
   if (period) {
     if (rawHours < 1 || rawHours > 12) return null;
-    hours = period === 'PM' ? (rawHours === 12 ? 12 : rawHours + 12) : rawHours === 12 ? 0 : rawHours;
+    hours =
+      period === 'PM'
+        ? rawHours === 12
+          ? 12
+          : rawHours + 12
+        : rawHours === 12
+          ? 0
+          : rawHours;
   } else if (rawHours > 23) {
     return null;
   }
@@ -308,25 +316,63 @@ export function downloadDataUrl(dataUrl: string, filename: string) {
 }
 
 /**
- * Turns a raw enum-ish bolt type (e.g. `MD_split_set_38`) into a display label
- * (`MD Split Set 38`). Short parts are treated as abbreviations and uppercased.
+ * The established display notation for each bolt type, matching what the
+ * pull-test app renders (`convertBoltType` in apps/pull-test/src/libs/utils.ts).
+ *
+ * An explicit table rather than something derived from the token structure: the
+ * underscores do not encode where a decimal point belongs (`1_8` -> `1.8`), that
+ * the trailing `M` is a lowercase unit, that a diameter takes `Ø`, or where the
+ * family separators go. `Record<BoltType, string>` keeps this exhaustive — adding
+ * an enum value fails the build until it is given a label here.
+ */
+const BOLT_TYPE_LABELS: Record<BoltType, string> = {
+  [BoltType.D47Md_1_8M]: 'D47 MD - 1.8 m',
+  [BoltType.D47Md_2_1M]: 'D47 MD - 2.1 m',
+  [BoltType.D47Md_2_4M]: 'D47 MD - 2.4 m',
+  [BoltType.D47Md_3_0M]: 'D47 MD - 3.0 m',
+  [BoltType.D47Md_3_8M]: 'D47 MD - 3.8 m',
+  [BoltType.D47Mdx_1_8M]: 'D47 MDX - 1.8 m',
+  [BoltType.D47Mdx_2_1M]: 'D47 MDX - 2.1 m',
+  [BoltType.D47Mdx_2_4M]: 'D47 MDX - 2.4 m',
+  [BoltType.D47Mdx_3_0M]: 'D47 MDX - 3.0 m',
+  [BoltType.D47Mdx_3_8M]: 'D47 MDX - 3.8 m',
+  [BoltType.D47Mdx_4_0M]: 'D47 MDX - 4.0 m',
+  [BoltType.D39Mdx_1_8M]: 'D39 MDX - 1.8 m',
+  [BoltType.D39Mdx_2_1M]: 'D39 MDX - 2.1 m',
+  [BoltType.D39Mdx_2_4M]: 'D39 MDX - 2.4 m',
+  [BoltType.D39Mdx_3_0M]: 'D39 MDX - 3.0 m',
+  [BoltType.D47MdxPegBolt_1_8M]: 'D47 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D47MdxPegBolt_2_1M]: 'D47 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D47MdxPegBolt_2_4M]: 'D47 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D47MdxPegBolt_3_0M]: 'D47 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D39MdxPegBolt_1_8M]: 'D39 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D39MdxPegBolt_2_1M]: 'D39 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D39MdxPegBolt_2_4M]: 'D39 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D39MdxPegBolt_3_0M]: 'D39 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D47MdPegBolt_1_8M]: 'D47 MD - Peg Bolt - 1.8 m',
+  [BoltType.D47MdPegBolt_2_1M]: 'D47 MD - Peg Bolt - 2.1 m',
+  [BoltType.D47MdPegBolt_2_4M]: 'D47 MD - Peg Bolt - 2.4 m',
+  [BoltType.D47MdPegBolt_3_0M]: 'D47 MD - Peg Bolt - 3.0 m',
+  [BoltType.FrictionBolt_47Mm]: 'Friction Bolt Ø47 mm',
+  [BoltType.FrictionBolt_47Mm_1_8M]: 'Friction Bolt Ø47 mm - 1.8 m',
+  [BoltType.FrictionBolt_47Mm_2_1M]: 'Friction Bolt Ø47 mm - 2.1 m',
+  [BoltType.FrictionBolt_47Mm_2_4M]: 'Friction Bolt Ø47 mm - 2.4 m',
+  [BoltType.FrictionBolt_47Mm_3_0M]: 'Friction Bolt Ø47 mm - 3.0 m',
+  [BoltType.FrictionBolt_39Mm]: 'Friction Bolt Ø39 mm',
+  [BoltType.FrictionBolt_33Mm]: 'Friction Bolt Ø33 mm',
+  [BoltType.SpiralFrictionBolt]: 'Spiral Friction Bolt',
+  [BoltType.KinlocBolt]: 'Kinloc Bolt',
+  [BoltType.KinlocBoltIndie]: 'Kinloc Bolt Indie',
+};
+
+/**
+ * Renders a bolt type as its display label (`D47_MD_1_8_M` -> `D47 MD - 1.8 m`).
+ * An unrecognised value is passed through as-is rather than mangled.
  */
 export function formatBoltType(boltType: string | null | undefined): string {
   if (!boltType) return 'N/A';
 
-  return boltType
-    .split('_')
-    .map((part) => {
-      // Keep numbers as-is
-      if (/^\d+$/.test(part)) return part;
-
-      // Uppercase short abbreviations like MD, HD, SS
-      if (part.length <= 3) return part.toUpperCase();
-
-      // Capitalize normal words
-      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-    })
-    .join(' ');
+  return BOLT_TYPE_LABELS[boltType as BoltType] ?? boltType;
 }
 
 export function formatDateTime(dt: string | null | undefined): string {

@@ -931,6 +931,11 @@ export default function SchedulerPage({
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span
+                                  tabIndex={0}
+                                  role="img"
+                                  aria-label={
+                                    banshee.status ?? 'Not Measurable'
+                                  }
                                   className="ui-banshee-inline-block ui-banshee-w-4 ui-banshee-h-4 ui-banshee-rounded-full ui-banshee-cursor-pointer"
                                   style={{
                                     backgroundColor: getStatusColorHex(

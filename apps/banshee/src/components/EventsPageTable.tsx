@@ -253,6 +253,9 @@ export const EventsPageTable = ({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
+                                tabIndex={0}
+                                role="img"
+                                aria-label={getStatusLabel(event.newStatus)}
                                 style={{
                                   backgroundColor: getStatusColorHex(
                                     event.newStatus,

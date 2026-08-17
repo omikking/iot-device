@@ -424,7 +424,7 @@ export default function BansheeDashboardPage() {
                       {commentRows.length === 0 ? (
                         <TableRow>
                           <TableCell
-                            colSpan={3}
+                            colSpan={2}
                             className="ui-banshee-text-center ui-banshee-py-2"
                           >
                             <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">

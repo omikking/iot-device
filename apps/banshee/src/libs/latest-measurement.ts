@@ -31,28 +31,39 @@ const toTime = (value: unknown): number | null => {
   return Number.isNaN(time) ? null : time;
 };
 
-/**
- * Recency of a measurement session. `updatedTimestamp` is the field the API
- * filters and sorts on, so it wins; the others are fallbacks for queries that
- * don't select it.
- */
-const measurementTime = (proceqData: RankableProceqData): number | null =>
-  toTime(proceqData.updatedTimestamp) ??
-  toTime(proceqData.createdTimestamp) ??
-  toTime(proceqData.createdAt);
+const measurementRank = (proceqData: RankableProceqData): (number | null)[] => [
+  toTime(proceqData.updatedTimestamp),
+  toTime(proceqData.createdTimestamp),
+  toTime(proceqData.createdAt),
+];
 
 /** Unranked entries sort oldest so a ranked entry always wins. */
-const compareRank = (a: number | null, b: number | null): number => {
+const compareKey = (a: number | null, b: number | null): number => {
   if (a === b) return 0;
   if (a == null) return -1;
   if (b == null) return 1;
   return a - b;
 };
 
+/**
+ * Compares rank keys lexicographically — the first key decides and the rest only
+ * break ties, so an earlier key's presence outranks any later key's value.
+ */
+const compareRank = (
+  a: readonly (number | null)[],
+  b: readonly (number | null)[],
+): number => {
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const result = compareKey(a[i] ?? null, b[i] ?? null);
+    if (result !== 0) return result;
+  }
+  return 0;
+};
+
 /** Ascending sort that keeps the original order of equally ranked entries. */
 const sortByRank = <T>(
   items: readonly T[] | null | undefined,
-  rank: (item: T) => number | null,
+  rank: (item: T) => readonly (number | null)[],
 ): T[] =>
   (items ?? [])
     .map((item, index) => ({ item, index, rank: rank(item) }))
@@ -63,14 +74,14 @@ const sortByRank = <T>(
 export function sortProceqDataAscending<T extends RankableProceqData>(
   proceqData: readonly T[] | null | undefined,
 ): T[] {
-  return sortByRank(proceqData, measurementTime);
+  return sortByRank(proceqData, measurementRank);
 }
 
 /** Readings in acquisition order within one measurement session. */
 export function sortReadingsAscending<T extends RankableReading>(
   readings: readonly T[] | null | undefined,
 ): T[] {
-  return sortByRank(readings, (reading) => reading.readingIndex ?? null);
+  return sortByRank(readings, (reading) => [reading.readingIndex ?? null]);
 }
 
 /** The most recent measurement session, or null when the bolt is unmeasured. */

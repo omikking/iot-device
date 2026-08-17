@@ -14,6 +14,16 @@ import { hasAppAccessForCompany } from 'src/utils';
 const clearableId = (id?: string | null): string | null | undefined =>
   id === undefined ? undefined : id || null;
 
+/**
+ * The id an update will leave in place: an omitted field keeps the stored value,
+ * an explicitly cleared one stays cleared. Validating on `next || current`
+ * instead would resolve a descendant the same update is about to unset.
+ */
+const effectiveId = (
+  next: string | null | undefined,
+  current: string | null,
+): string | undefined => (next === undefined ? current : next) || undefined;
+
 @Injectable()
 export class BansheeTemplateService {
   private readonly logger = new Logger(BansheeTemplateService.name);
@@ -147,21 +157,26 @@ export class BansheeTemplateService {
         });
       }
 
+      // Any hierarchy field being sent — including one sent as cleared — means the
+      // resulting hierarchy needs checking.
       if (
-        updateBansheeTemplateInput.levelId ||
-        updateBansheeTemplateInput.driveId ||
-        updateBansheeTemplateInput.locationId
+        updateBansheeTemplateInput.levelId !== undefined ||
+        updateBansheeTemplateInput.driveId !== undefined ||
+        updateBansheeTemplateInput.locationId !== undefined
       ) {
         await this.validateRelations(
-          updateBansheeTemplateInput.levelId ||
-            existingTemplate.levelId ||
-            undefined,
-          updateBansheeTemplateInput.driveId ||
-            existingTemplate.driveId ||
-            undefined,
-          updateBansheeTemplateInput.locationId ||
-            existingTemplate.locationId ||
-            undefined,
+          effectiveId(
+            updateBansheeTemplateInput.levelId,
+            existingTemplate.levelId,
+          ),
+          effectiveId(
+            updateBansheeTemplateInput.driveId,
+            existingTemplate.driveId,
+          ),
+          effectiveId(
+            updateBansheeTemplateInput.locationId,
+            existingTemplate.locationId,
+          ),
         );
       }
 

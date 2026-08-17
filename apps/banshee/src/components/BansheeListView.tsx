@@ -452,6 +452,9 @@ export const BansheeListView = ({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
+                                tabIndex={0}
+                                role="img"
+                                aria-label={row.status}
                                 className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
                                 style={{
                                   backgroundColor: getStatusColorHex(

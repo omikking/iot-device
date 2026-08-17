@@ -13,6 +13,7 @@ export const COMMANDS: CommandDef[] = [
   { code: 11, label: "Set device time", param: "auto", description: "Sets RTC from browser Unix epoch seconds." },
   { code: 12, label: "Set time from NTP", param: null, description: "Sync time using configured NTP server." },
   { code: 13, label: "Get Wi-Fi MAC address", param: null, description: "Returns MAC in little-endian in response data." },
+  { code: 253, label: "Clear Sample Non-Volatile Memory", param: null, description: "Clears sample memory in flash. Sampling is paused in Config mode with cyan LEDs (takes up to 3 mins)." },
   { code: 254, label: "Enter shipping mode", param: null, description: "Deep sleep for shipping." },
   { code: 255, label: "Factory reset", param: null, description: "Reset config; serial, server URL, API key preserved." },
 ];
@@ -45,7 +46,7 @@ export const CONFIG_ITEMS: ConfigItem[] = [
   { id: 6, label: "Wi-Fi Upload Period (min)", type: "uint16", default: 60, developed: true, writeOnly: false },
   { id: 7, label: "Server URL (max 47)", type: "string", default: "", developed: true, writeOnly: false },
   { id: 8, label: "API Key (max 47)", type: "string", default: "", developed: true, writeOnly: true },
-  { id: 9, label: "Wavelength Priority Threshold (0.1 pm)", type: "uint32", default: 1, developed: true, writeOnly: false },
+  { id: 9, label: "Wavelength Priority Threshold (0.1 pm)", type: "uint32", default: 5000, developed: true, writeOnly: false },
   { id: 13, label: "Status LED Flash Interval (min)", type: "uint16", default: 0, developed: true, writeOnly: false },
   { id: 14, label: "Advertising Interval (ms)", type: "uint16", default: 500, developed: true, writeOnly: false },
   { id: 16, label: "Wi-Fi Key Management (0–4)", type: "uint8", default: 3, developed: true, writeOnly: false },
@@ -68,7 +69,7 @@ export const CONFIG_ITEMS: ConfigItem[] = [
   { id: 130, label: "BLE Advertising Name (max 13)", type: "string", default: "", developed: true, writeOnly: false },
   { id: 209, label: "RADIUS Server CA (AtPKI)", type: "uint8[]", default: "", developed: true, writeOnly: true, longConfig: true },
   { id: 210, label: "Client Private Key (AtPKI)", type: "uint8[]", default: "", developed: true, writeOnly: true, longConfig: true },
-  { id: 211, label: "Client Certificate (AtPKI)", type: "uint8[]", default: "", developed: true, writeOnly: false, longConfig: true },
+  { id: 211, label: "Client Certificate (AtPKI)", type: "uint8[]", default: "", developed: true, writeOnly: true, longConfig: true },
 ];
 
 export function formatCommandResponse(cmdCode: number, view: DataView): CommandResponse {

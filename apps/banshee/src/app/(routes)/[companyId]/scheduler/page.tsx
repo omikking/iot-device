@@ -173,16 +173,13 @@ type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
  * ticked, and the bulk-select filters skip it.
  */
 type SchedulerStatus =
-  | 'IN_CART'
-  | 'ORDERED'
-  | 'SERVICE_DUE'
-  | 'SERVICE_OVERDUE';
+  'IN_CART' | 'ORDERED' | 'SERVICE_DUE' | 'SERVICE_OVERDUE';
 
 const mapSchedulerStatusToMessage = (
   schedulerStatus: SchedulerStatus,
 ): string => {
   if (schedulerStatus === 'IN_CART') {
-    return 'In the Cart';
+    return 'In the cart';
   } else if (schedulerStatus === 'ORDERED') {
     return 'Scheduled';
   }
@@ -246,7 +243,7 @@ const transformBansheeRequests = (
       ({ request, measurement: latestProceqData, reading: latestReading }) => {
         const totalElongation = formatElongation(latestReading);
 
-        const status = latestProceqData?.status;
+        const status = latestProceqData?.status || 'Not Measurable';
 
         const lastMeasuredTs = latestProceqData?.updatedTimestamp
           ? new Date(latestProceqData.updatedTimestamp).getTime()

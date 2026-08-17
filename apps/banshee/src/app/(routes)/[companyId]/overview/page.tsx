@@ -96,7 +96,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
       const latestMeasurement = getLatestProceqData(entry?.proceqData);
 
       return {
-        status: latestMeasurement?.status ?? 'UNMEASURED',
+        status: latestMeasurement?.status ?? 'Not measurable',
         statusColor: '#FF0000',
         banshee: entry?.name ?? '',
         location: entry?.location?.locationName ?? '',

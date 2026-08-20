@@ -517,7 +517,7 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
               )}
             >
               <Text
-                variant="medium"
+                variant="small"
                 color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
               >
                 {selectedItem?.name || placeholder}

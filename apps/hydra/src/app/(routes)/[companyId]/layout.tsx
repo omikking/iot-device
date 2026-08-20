@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Headline } from '@gsp/ui-core';
+import { Headline, SidebarProvider } from '@gsp/ui-core';
 import { SandvikLogo } from 'public/SandvikLogo';
+import { HydraSidebar } from '@/hydra-component/HydraSidebar';
 
 export default function CompanyLayout({
   children,
@@ -23,7 +24,23 @@ export default function CompanyLayout({
           </Headline>
         </Link>
       </header>
-      {children}
+      <SidebarProvider className="flex-1">
+        <HydraSidebar
+          header={
+            <Link
+              href={`/${params.companyId}/overview`}
+              className="flex w-full items-center justify-start gap-1"
+            >
+              <SandvikLogo />
+              <div className="mx-1 h-6 border-l border-black" />
+              <Headline variant="medium" color="foreground" as="h3" isBold>
+                HYDRA
+              </Headline>
+            </Link>
+          }
+        />
+        {children}
+      </SidebarProvider>
     </div>
   );
 }

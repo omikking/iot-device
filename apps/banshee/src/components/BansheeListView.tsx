@@ -15,7 +15,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipArrow,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { Settings, BarChart2, MessageSquare, Menu } from 'lucide-react';
 import { BansheeDetailModal } from './BansheeDetailModal';
 import { useState, useMemo, ComponentProps, ReactNode } from 'react';

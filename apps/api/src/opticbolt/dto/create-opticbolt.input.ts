@@ -12,7 +12,9 @@ import {
 import { Type } from 'class-transformer';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class CreateOpticboltSpectrumInput extends GraphQLTypes.CreateOpticboltSpectrumInput {
+export class CreateOpticboltSpectrumInput
+  extends GraphQLTypes.CreateOpticboltSpectrumInput
+{
   @IsInt()
   @IsNotEmpty()
   fbgIndex: number;
@@ -74,7 +76,9 @@ export class CreateOpticboltSpectrumInput extends GraphQLTypes.CreateOpticboltSp
   calibrationFactor?: number;
 }
 
-export class CreateOpticboltTestResultWithSpectrumsInput extends GraphQLTypes.CreateOpticboltTestResultWithSpectrumsInput {
+export class CreateOpticboltTestResultWithSpectrumsInput
+  extends GraphQLTypes.CreateOpticboltTestResultWithSpectrumsInput
+{
   @IsString()
   @IsNotEmpty()
   serialNumber: string;

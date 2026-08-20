@@ -9,11 +9,7 @@ const config: Pick<
   Config,
   'content' | 'presets' | 'theme' | 'plugins' | 'prefix'
 > = {
-  content: [
-    './src/**/*.tsx',
-    '../../packages/ui-banshee/src/**/*.tsx',
-    '../../packages/ui-banshee/dist/**/*.jsx',
-  ],
+  content: ['./src/**/*.tsx'],
   presets: [sharedConfig],
   prefix: 'ui-banshee-',
   theme: {

@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useMutation } from 'urql';
-import { showAlertToast } from '@gsp/ui-banshee';
+import { showAlertToast } from '@gsp/ui-core';
 import { graphql } from '@/gql';
 import {
   buildBansheeCsvFile,

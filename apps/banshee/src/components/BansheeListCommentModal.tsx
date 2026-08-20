@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalTitle } from '@gsp/ui-banshee';
+import { Modal, ModalContent, ModalHeader, ModalTitle } from '@gsp/ui-core';
 
 interface BansheeListCommentModalProps {
   isOpen: boolean;

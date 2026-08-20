@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@gsp/ui-banshee';
+import { Button } from '@gsp/ui-core';
 import { useEffect } from 'react';
 
 const timeframes = ['7D', '1M', '3M', '1Y', 'ALL'];

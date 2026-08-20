@@ -1,5 +1,5 @@
 'use client';
-import { SidebarInset } from '@gsp/ui-banshee';
+import { SidebarInset } from '@gsp/ui-core';
 import { graphql } from '@/gql';
 import { useQuery } from 'urql';
 import { useEffect } from 'react';

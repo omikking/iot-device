@@ -17,7 +17,7 @@ import {
   showAlertToast,
   LoadingSpinner,
   TableHeadWithSorting,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { Plus, Star, Check, ShoppingCart as CartIcon } from 'lucide-react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeDetailModal } from '@/components/BansheeDetailModal';

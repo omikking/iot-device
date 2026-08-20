@@ -34,6 +34,7 @@ export const userFormSchema = z
             Application.PullTest,
             Application.PullTestTechnician,
             Application.Banshee,
+            Application.Hydra,
           ]),
         ),
       }),

@@ -1,7 +1,7 @@
 'use client';
 
-import { SidebarInset } from '@gsp/ui-banshee';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@gsp/ui-banshee';
+import { SidebarInset } from '@gsp/ui-core';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@gsp/ui-core';
 import { BansheePageFilters } from '@/components/BansheePageFilters';
 import { BansheePageDonuts } from '@/components/BansheePageDonuts';
 import { BansheeListView } from '@/components/BansheeListView';

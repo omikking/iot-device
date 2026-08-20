@@ -11,7 +11,7 @@ import {
   FacebookIcon,
   useIsMobile,
   useIsTablet,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { SandvikLogo } from 'public/SandvikLogo';
 import { LucideGlobe } from 'lucide-react';
 

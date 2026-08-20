@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { DropdownSearch } from '@gsp/ui-banshee';
+import { DropdownSearch } from '@gsp/ui-core';
 import { FormField } from './FormField';
 
 interface Option {

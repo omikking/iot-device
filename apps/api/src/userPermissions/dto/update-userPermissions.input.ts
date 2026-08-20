@@ -7,7 +7,9 @@ import {
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class UpdateUserPermissionInput extends GraphQLTypes.UpdateUserPermissionInput {
+export class UpdateUserPermissionInput
+  extends GraphQLTypes.UpdateUserPermissionInput
+{
   @IsOptional()
   @IsString()
   @MaxLength(50)

@@ -5,8 +5,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo build",
-    "dev": "turbo dev",
-    "start": "turbo run start --filter=web --filter=pull-test --filter=banshee",
+    "dev": "turbo dev --concurrency=20",
+    "start": "turbo run start --filter=web --filter=pull-test --filter=banshee --filter=hydra",
     "preview": "turbo run preview --filter=test-cyclops --filter=test-hydra --filter=test-professor --filter=test-optic-bolt",
     "lint": "turbo lint",
     "db:seed": "pnpm --filter api seed",

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Text } from '@gsp/ui-banshee';
+import { Text } from '@gsp/ui-core';
 
 interface FormFieldProps {
   label: string;

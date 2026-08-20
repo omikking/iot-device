@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger, Text } from '@gsp/ui-banshee';
+import { Popover, PopoverContent, PopoverTrigger, Text } from '@gsp/ui-core';
 
 type TimePickerProps = {
   selectedTime?: string; // format: "HH:MM AM/PM"

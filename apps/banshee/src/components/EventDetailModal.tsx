@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalTitle,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';

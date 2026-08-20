@@ -11,15 +11,15 @@ import {
   Form,
   LoadingSpinner,
   showAlertToast,
-} from '@gsp/ui-banshee';
-import { Text } from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
+import { Text } from '@gsp/ui-core';
 import { CircleX, Menu } from 'lucide-react';
-import { Button } from 'node_modules/@gsp/ui-banshee/src/components/base/button';
+import { Button } from 'node_modules/@gsp/ui-core/src/components/base/button';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { SubmitOrderFormValues } from '@/components/schemas/SubmitOrderFormSchema';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Textarea } from 'node_modules/@gsp/ui-banshee/src/components/base/textarea';
-import { Headline } from 'node_modules/@gsp/ui-banshee/src/components/base/headline';
+import { Textarea } from 'node_modules/@gsp/ui-core/src/components/base/textarea';
+import { Headline } from 'node_modules/@gsp/ui-core/src/components/base/headline';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
 import { BansheeCartItemType } from '@/gql/graphql';

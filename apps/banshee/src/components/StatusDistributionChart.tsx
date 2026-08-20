@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartPieDonut, LoadingSpinner } from '@gsp/ui-banshee';
+import { ChartPieDonut, LoadingSpinner } from '@gsp/ui-core';
 import { useMemo } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
 

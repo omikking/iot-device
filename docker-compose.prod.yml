@@ -43,7 +43,7 @@ services:
     networks:
       - playground
     volumes:
-      - /ground-support-platform/uploads:/app/apps/api/uploads  
+      - /ground-support-platform/uploads:/app/apps/api/uploads
 
   web:
     build:
@@ -103,7 +103,27 @@ services:
     restart: unless-stopped
     networks:
       - playground
-  
+
+  hydra:
+    build:
+      context: .
+      dockerfile: apps/hydra/Dockerfile
+    image: ground-support-platform-hydra:1.0.0
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      # Also used by the browser → reach api via localhost
+      NEXT_PUBLIC_API_URL: https://groundsupport.mining.sandvik
+    env_file:
+      - ./apps/hydra/.env.production
+    command: pnpm start
+    ports:
+      - '3003:3003'
+    restart: unless-stopped
+    networks:
+      - playground
+
   test-cyclops:
     build:
       context: .
@@ -177,7 +197,7 @@ services:
     restart: unless-stopped
     networks:
       - playground
-      
+
 networks:
   playground:
 

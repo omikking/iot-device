@@ -13,7 +13,7 @@ import {
   SingleDateCalendar,
   showAlertToast,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { TimePicker } from '@/components/TimePicker';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useQuery, useMutation } from 'urql';
@@ -38,8 +38,8 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from '@gsp/ui-banshee';
-import { Headline } from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
+import { Headline } from '@gsp/ui-core';
 import { CircleX, Menu } from 'lucide-react';
 import { RingPosition } from '@/gql/graphql';
 

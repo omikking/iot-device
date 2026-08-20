@@ -41,6 +41,7 @@ export type AddCartItemsResult = {
 
 export enum Application {
   Banshee = 'BANSHEE',
+  Hydra = 'HYDRA',
   PullTest = 'PULL_TEST',
   PullTestTechnician = 'PULL_TEST_TECHNICIAN'
 }

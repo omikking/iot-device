@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@gsp/ui-banshee';
+import { Popover, PopoverContent, PopoverTrigger } from '@gsp/ui-core';
 import { Menu } from 'lucide-react';
 
 type BansheeExportMenuProps = {

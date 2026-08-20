@@ -10,7 +10,7 @@ import {
   TableCell,
   TableHeadWithSorting,
   LoadingSpinner,
-} from '@gsp/ui-banshee';
+} from '@gsp/ui-core';
 import { gql, useQuery } from 'urql';
 import { ComponentProps, useEffect, useMemo, useState } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';

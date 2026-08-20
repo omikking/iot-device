@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Button, Text } from '@gsp/ui-banshee';
+import { Input, Button, Text } from '@gsp/ui-core';
 
 export const BansheeSharePlot = () => {
   return (

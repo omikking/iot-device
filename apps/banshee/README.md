@@ -2,7 +2,7 @@
 
 Banshee is the Next.js application for managing Banshee bolt-load measurement requests, scheduling, templates, and dashboards on the Ground Support Platform.
 
-It is a workspace app (`apps/banshee`) inside the GSP monorepo and consumes shared UI from [`@gsp/ui-banshee`](../../packages/ui-banshee/README.md).
+It is a workspace app (`apps/banshee`) inside the GSP monorepo and consumes shared UI from [`@gsp/ui-core`](../../packages/ui-core/README.md).
 
 ## Getting Started
 
@@ -83,8 +83,8 @@ apps/banshee/
 - [urql](https://commerce.nearform.com/open-source/urql/) for GraphQL
 - [next-auth](https://next-auth.js.org/) for authentication
 - [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/) for forms & validation
-- [Tailwind CSS](https://tailwindcss.com/) (with the `ui-banshee-` prefix — see UI package README)
-- Shared design system: [`@gsp/ui-banshee`](../../packages/ui-banshee/README.md)
+- [Tailwind CSS](https://tailwindcss.com/) (the app itself uses the `ui-banshee-` prefix; the shared `@gsp/ui-core` package uses `ds-` — see UI package README)
+- Shared design system: [`@gsp/ui-core`](../../packages/ui-core/README.md)
 
 ## GraphQL Codegen
 
@@ -92,15 +92,15 @@ GraphQL operations live alongside the components/pages that use them and are gen
 
 ## UI Components
 
-Banshee **must not** import from `@gsp/ui` directly. The Tailwind classes in `@gsp/ui` are unprefixed and won't render correctly inside this app. All shared components are re-implemented (or wrapped) in [`@gsp/ui-banshee`](../../packages/ui-banshee/README.md) with the `ui-banshee-` Tailwind prefix.
+Banshee **must not** import from `@gsp/ui` directly. The Tailwind classes in `@gsp/ui` are unprefixed and won't render correctly inside this app. All shared components are re-implemented (or wrapped) in [`@gsp/ui-core`](../../packages/ui-core/README.md) with the `ds-` Tailwind prefix.
 
 ```ts
-import { Button, LoadingSpinner, Text } from '@gsp/ui-banshee';
+import { Button, LoadingSpinner, Text } from '@gsp/ui-core';
 ```
 
 ## Loading States
 
-For consistent UX across pages, use the shared `LoadingSpinner` from `@gsp/ui-banshee` inside a centered flex wrapper rather than ad-hoc text-only loaders:
+For consistent UX across pages, use the shared `LoadingSpinner` from `@gsp/ui-core` inside a centered flex wrapper rather than ad-hoc text-only loaders:
 
 ```tsx
 {

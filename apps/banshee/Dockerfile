@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 WORKDIR /app
-RUN pnpm --filter @gsp/ui-banshee build
+RUN pnpm --filter @gsp/ui-core build
 WORKDIR /app/apps/banshee
 RUN pnpm build
 

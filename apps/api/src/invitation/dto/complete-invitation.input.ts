@@ -8,7 +8,9 @@ import {
 import * as GraphQLTypes from '../../graphql-types';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 
-export class CompleteInvitationInput extends GraphQLTypes.CompleteInvitationInput {
+export class CompleteInvitationInput
+  extends GraphQLTypes.CompleteInvitationInput
+{
   @IsString()
   id: string;
 

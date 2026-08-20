@@ -1,6 +1,6 @@
 'use client';
 import { Role } from '@/gql/graphql';
-import { Button, Headline, Text } from '@gsp/ui-banshee';
+import { Button, Headline, Text } from '@gsp/ui-core';
 import { LucideMoveRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

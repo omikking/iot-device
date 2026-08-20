@@ -1,4 +1,4 @@
-import { Button, Input, Text } from '@gsp/ui-banshee';
+import { Button, Input, Text } from '@gsp/ui-core';
 import { FormProvider, UseFormReturn } from 'react-hook-form';
 import { useState } from 'react';
 

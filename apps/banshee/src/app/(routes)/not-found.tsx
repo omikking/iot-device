@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Headline, Text } from '@gsp/ui-banshee';
+import { Button, Headline, Text } from '@gsp/ui-core';
 import { LucideMoveRight } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 

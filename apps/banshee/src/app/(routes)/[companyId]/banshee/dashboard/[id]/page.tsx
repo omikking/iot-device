@@ -33,6 +33,9 @@ import BansheeDataPlot from '@/components/BansheeDataPlot';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
 import { ImageIcon } from 'lucide-react';
+import BansheeStrainPlot from '@/components/BansheeStrainPlot';
+import BansheeTimePlot from '@/components/BansheeTimePlot';
+import BansheeHeatmapPlot from '@/components/BansheeHeatmapPlot';
 
 const bansheeDetailQuery = graphql(`
   query bansheeDetailQuery($id: String!) {
@@ -280,10 +283,16 @@ export default function BansheeDashboardPage() {
 
           <div className="lg:ui-banshee-col-span-7">
             <Tabs
-              defaultValue="statusPlot"
+              defaultValue="strainPlot"
               className="ui-banshee-w-full ui-banshee-p-0"
             >
               <TabsList className="ui-banshee-justify-start ui-banshee-border-none ui-banshee-p-0 ui-banshee-h-auto">
+                <TabsTrigger
+                  value="strainPlot"
+                  className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
+                >
+                  Strain Plot
+                </TabsTrigger>
                 <TabsTrigger
                   value="statusPlot"
                   className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
@@ -295,6 +304,18 @@ export default function BansheeDashboardPage() {
                   className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
                 >
                   Data Plot
+                </TabsTrigger>
+                <TabsTrigger
+                  value="timePlot"
+                  className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
+                >
+                  Time Plot
+                </TabsTrigger>
+                <TabsTrigger
+                  value="heatmapPlot"
+                  className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
+                >
+                  Heatmap
                 </TabsTrigger>
                 <TabsTrigger
                   value="commentAndPhoto"
@@ -414,6 +435,36 @@ export default function BansheeDashboardPage() {
                       )}
                     </TableBody>
                   </Table>
+                </div>
+              </TabsContent>
+              <TabsContent
+                value="strainPlot"
+                className="!ui-banshee-mt-0 ui-banshee-px-2"
+              >
+                <div className="ui-banshee-bg-neutral-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+                  <BansheeStrainPlot
+                    bansheeRequests={bansheeRequestsArray}
+                    fetching={false}
+                  />
+                </div>
+              </TabsContent>
+              <TabsContent
+                value="timePlot"
+                className="!ui-banshee-mt-0 ui-banshee-px-2"
+              >
+                <div className="ui-banshee-bg-neutral-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+                  <BansheeTimePlot
+                    bansheeRequests={bansheeRequestsArray}
+                    fetching={false}
+                  />
+                </div>
+              </TabsContent>
+              <TabsContent
+                value="heatmapPlot"
+                className="!ui-banshee-mt-0 ui-banshee-px-2"
+              >
+                <div className="ui-banshee-bg-neutral-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-text-neutral-500">
+                  <BansheeHeatmapPlot />
                 </div>
               </TabsContent>
             </Tabs>

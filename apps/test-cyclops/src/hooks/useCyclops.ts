@@ -203,7 +203,7 @@ export function useCyclops() {
     log(`Writing config ID ${configId.id} (${configId.label}) = "${configVal}"`);
     try {
       let val: string | Uint8Array;
-      if (configId.type === "string") {
+      if (configId.type === "string" || configId.type === "uint8[]") {
         val = configVal;
       } else {
         const n = parseInt(configVal);
@@ -219,7 +219,15 @@ export function useCyclops() {
           val = b;
         }
       }
-      await bleRef.current!.writeConfig(configId.id, val);
+
+      if (configId.type === "uint8[]") {
+        // Certificate configs (209/210/211): 0-based block indexing
+        const encoded = typeof val === "string" ? new TextEncoder().encode(val) : val;
+        await bleRef.current!.writeLongConfig(configId.id, encoded, 0, false);
+      } else {
+        await bleRef.current!.writeConfig(configId.id, val);
+      }
+
       log(`Config ${configId.id} written successfully`, "success");
       return { success: true, message: "Value written successfully", raw: null };
     } catch (e: unknown) {
@@ -227,6 +235,7 @@ export function useCyclops() {
       return { success: false, message: (e as Error).message, raw: null };
     }
   }
+
 
   // ── History Download ─────────────────────────────────────────────────────
 
@@ -373,3 +382,4 @@ export function useCyclops() {
     clearHistory,
   };
 }
+ 

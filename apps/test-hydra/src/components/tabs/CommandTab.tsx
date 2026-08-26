@@ -15,7 +15,7 @@ export default function CommandTab({ connected, onSendCommand }: CommandTabProps
   const [cmdResponse, setCmdResponse] = useState<CommandResponse | null>(null);
 
   const needsParam = selectedCmd.param && selectedCmd.param !== "auto";
-  const isDanger = [254, 255].includes(selectedCmd.code);
+  const isDanger = [253,254, 255].includes(selectedCmd.code);
 
   async function doSendCommand(): Promise<void> {
     if (cmdBusy) return;

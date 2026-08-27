@@ -3,6 +3,11 @@ import { saveToDB, loadFromDB } from "./useIndexedDB";
 import { HydraBLE } from "../ble/hydraBle";
 import { parseDeviceStatus, parseMeta, parseMeasurementChunk, hexDump } from "../ble/hydraParser";
 import { formatCommandResponse, CONFIG_ITEMS } from "../constants/commands";
+import {
+  isInterrogatorConfigId,
+  encodeInterrogatorInitString,
+  decodeInterrogatorInitString,
+} from "../ble/interrogatorText";
 import type {
   DeviceInfo,
   DeviceStatus,
@@ -293,7 +298,9 @@ export function useHydra() {
       const bytes = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join(" ");
       let decoded = "";
       try {
-        if (item?.type === "string") {
+        if (isInterrogatorConfigId(id)) {
+          decoded = decodeInterrogatorInitString(data);
+        } else if (item?.type === "string") {
           decoded = new TextDecoder().decode(data).replace(/\0/g, "");
         } else {
           decoded = bytes.slice(0, 80) + (bytes.length > 80 ? "…" : "");
@@ -319,7 +326,14 @@ export function useHydra() {
     const label = item?.label ?? `ID ${id}`;
     log(`Writing long config ID ${id} (${label})…`);
     try {
-      const data = typeof value === "string" ? new TextEncoder().encode(value) : value;
+      // Configs 28-30 send every space as CR (0x0d); everything else is
+      // encoded verbatim.
+      const data =
+        typeof value !== "string"
+          ? value
+          : isInterrogatorConfigId(id)
+            ? encodeInterrogatorInitString(value)
+            : new TextEncoder().encode(value);
 
       const oneBased = item?.type !== "uint8[]";
       await bleRef.current!.writeLongConfig(id, data, 0, oneBased);

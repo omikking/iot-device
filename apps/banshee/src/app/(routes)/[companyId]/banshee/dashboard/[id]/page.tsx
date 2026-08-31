@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import {
@@ -27,11 +27,6 @@ import {
   TableBody,
   TableCell,
   Text,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Dialog,
   Table,
   LoadingSpinner,
 } from '@gsp/ui-banshee';
@@ -45,7 +40,6 @@ import { BansheeExportMenu } from '@/components/BansheeExportMenu';
 import { DetailRow } from '@/components/DetailRow';
 import { useForm } from 'react-hook-form';
 import { ShareForm } from '@/components/ShareForm';
-import { ImageIcon } from 'lucide-react';
 
 const bansheeDetailQuery = graphql(`
   query bansheeDetailQuery($id: String!) {

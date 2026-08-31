@@ -248,8 +248,7 @@ export class BansheeRequestsService {
           });
         }
 
-        const targetCompanyId =
-          updateBansheeRequestInput.companyId || existingRequest.companyId;
+        const targetCompanyId = existingRequest.companyId;
 
         if (template.companyId !== targetCompanyId) {
           throw new UserInputError('', {

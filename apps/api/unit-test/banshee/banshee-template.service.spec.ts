@@ -303,6 +303,98 @@ describe('BansheeTemplateService', () => {
 
       expect(result).toMatchObject({ id: 'tpl-1' });
     });
+
+    // The UI clears descendants when a new level is picked. Validating the
+    // cleared drive/location against the stored ones would reject this.
+    it('accepts a new level when drive and location are cleared in the same update', async () => {
+      prisma.bansheeTemplate.findUnique.mockResolvedValue({
+        id: 'tpl-1',
+        companyId,
+        levelId,
+        driveId,
+        locationId,
+      });
+      prisma.bansheeTemplate.findFirst.mockResolvedValue(null);
+      prisma.level.findUnique.mockResolvedValue({ id: 'level-2' });
+      // Stored drive still belongs to the old level.
+      prisma.drive.findUnique.mockResolvedValue({ id: driveId, levelId });
+      prisma.bansheeTemplate.update.mockResolvedValue({ id: 'tpl-1' });
+
+      const result = await service.updateBansheeTemplate(
+        'tpl-1',
+        {
+          templateName: 'Template A',
+          companyId,
+          levelId: 'level-2',
+          driveId: null,
+          locationId: null,
+        } as any,
+        adminUser,
+      );
+
+      expect(result).toMatchObject({ id: 'tpl-1' });
+      // The cleared descendants must not be validated at all.
+      expect(prisma.drive.findUnique).not.toHaveBeenCalled();
+      expect(prisma.location.findUnique).not.toHaveBeenCalled();
+      expect(prisma.bansheeTemplate.update.mock.calls[0][0].data).toMatchObject(
+        {
+          levelId: 'level-2',
+          driveId: null,
+          locationId: null,
+        },
+      );
+    });
+
+    it('still rejects a drive that does not belong to a newly picked level', async () => {
+      prisma.bansheeTemplate.findUnique.mockResolvedValue({
+        id: 'tpl-1',
+        companyId,
+        levelId,
+        driveId,
+        locationId,
+      });
+      prisma.bansheeTemplate.findFirst.mockResolvedValue(null);
+      prisma.level.findUnique.mockResolvedValue({ id: 'level-2' });
+      prisma.drive.findUnique.mockResolvedValue({ id: driveId, levelId });
+
+      await expect(
+        service.updateBansheeTemplate(
+          'tpl-1',
+          {
+            templateName: 'Template A',
+            companyId,
+            levelId: 'level-2',
+            driveId, // kept, and it belongs to the old level
+          } as any,
+          adminUser,
+        ),
+      ).rejects.toMatchObject({
+        extensions: { code: 'DRIVE_LEVEL_MISMATCH_ERROR' },
+      });
+    });
+
+    it('validates the stored hierarchy when no hierarchy field is sent', async () => {
+      prisma.bansheeTemplate.findUnique.mockResolvedValue({
+        id: 'tpl-1',
+        companyId,
+        levelId,
+        driveId,
+        locationId,
+      });
+      prisma.bansheeTemplate.findFirst.mockResolvedValue(null);
+      prisma.bansheeTemplate.update.mockResolvedValue({ id: 'tpl-1' });
+
+      const result = await service.updateBansheeTemplate(
+        'tpl-1',
+        { templateName: 'Renamed', companyId } as any,
+        adminUser,
+      );
+
+      expect(result).toMatchObject({ id: 'tpl-1' });
+      // A pure rename should not re-check the untouched hierarchy.
+      expect(prisma.level.findUnique).not.toHaveBeenCalled();
+      expect(prisma.drive.findUnique).not.toHaveBeenCalled();
+    });
   });
 
   describe('BE-TMP-05: delete template', () => {

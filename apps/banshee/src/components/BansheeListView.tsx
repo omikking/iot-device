@@ -16,12 +16,16 @@ import {
   TooltipProvider,
   TooltipArrow,
 } from '@gsp/ui-banshee';
-import { Settings, BarChart2, MessageSquare, Menu } from 'lucide-react';
+import { Settings, BarChart2, MessageSquare } from 'lucide-react';
 import { BansheeDetailModal } from './BansheeDetailModal';
 import { useState, useMemo, ComponentProps, ReactNode } from 'react';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { BansheeListCommentModal } from './BansheeListCommentModal';
 import { getStatusColorHex } from '@/libs/status-color-utils';
+import {
+  formatElongation,
+  getLatestMeasurement,
+} from '@/libs/latest-measurement';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
@@ -33,6 +37,7 @@ type EventLog = {
 };
 
 type ProceqReading = {
+  readingIndex?: number | null;
   elongation?: number | null;
   status?: string | null;
 };
@@ -109,7 +114,7 @@ const HeaderTooltip = ({
 }) => (
   <Tooltip>
     <TooltipTrigger asChild>
-      <div className="ui-banshee-flex ui-banshee-h-full ui-banshee-w-full ui-banshee-items-center">
+      <div className="ui-banshee-flex ui-banshee-h-full ui-banshee-w-full ui-banshee-items-center ui-banshee-justify-center">
         {children}
       </div>
     </TooltipTrigger>
@@ -233,9 +238,8 @@ export const BansheeListView = ({
     );
 
     const generatedRows: BansheeRow[] = filtered.map((entry) => {
-      const measurements = entry.proceqData || [];
-      const latestMeasurement = measurements.at(-1) ?? null;
-      const lastReading = latestMeasurement?.readings?.at(-1) ?? null;
+      const { measurement: latestMeasurement, reading: lastReading } =
+        getLatestMeasurement(entry.proceqData);
 
       return {
         id: entry.id,
@@ -245,10 +249,7 @@ export const BansheeListView = ({
         level: entry.level?.levelName || 'N/A',
         location: entry.location?.locationName || 'N/A',
         status: latestMeasurement?.status || 'Not Measurable',
-        elongation:
-          lastReading?.elongation != null
-            ? lastReading.elongation.toFixed(1)
-            : '-',
+        elongation: formatElongation(lastReading) ?? '-',
         lastMeasured: latestMeasurement?.updatedTimestamp
           ? new Date(latestMeasurement.updatedTimestamp).toLocaleDateString()
           : 'N/A',
@@ -301,7 +302,7 @@ export const BansheeListView = ({
 
   return (
     <>
-      <div className="ui-banshee-flex ui-banshee-h-[50vh] ui-banshee-flex-col ui-banshee-w-full">
+      <div className="ui-banshee-flex ui-banshee-h-[62vh] ui-banshee-flex-col ui-banshee-w-full">
         <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
           <TooltipProvider delayDuration={200}>
             <Table variant="noBorder">
@@ -310,7 +311,7 @@ export const BansheeListView = ({
                   <TableHead>
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.details}>
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-font-bold ui-banshee-px-2 ui-banshee-whitespace-nowrap"
                       >
@@ -322,7 +323,7 @@ export const BansheeListView = ({
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.status}>
                       <TableHeadWithSorting
                         header="Status"
-                        className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center ui-banshee-whitespace-nowrap"
+                        className="ui-banshee-text-md ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center ui-banshee-whitespace-nowrap"
                         column={createMockColumn('status')}
                       />
                     </HeaderTooltip>
@@ -401,7 +402,7 @@ export const BansheeListView = ({
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.elongation}>
                       <TableHeadWithSorting
                         header="Total Elongation (mm)"
-                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-whitespace-nowrap"
+                        className="ui-banshee-text-md ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-whitespace-nowrap"
                         column={createMockColumn('elongation')}
                       />
                     </HeaderTooltip>
@@ -410,7 +411,7 @@ export const BansheeListView = ({
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.lastMeasured}>
                       <TableHeadWithSorting
                         header="Last Measured"
-                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
+                        className="ui-banshee-text-md ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
                         column={createMockColumn('lastMeasured')}
                       />
                     </HeaderTooltip>
@@ -419,8 +420,8 @@ export const BansheeListView = ({
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.statusChange}>
                       <TableHeadWithSorting
                         header="Status Change"
-                        className="ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
-                        column={createMockColumn('status')}
+                        className="ui-banshee-text-md ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
+                        column={createMockColumn('statusChange')}
                       />
                     </HeaderTooltip>
                   </TableHead>
@@ -428,16 +429,12 @@ export const BansheeListView = ({
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.comment}>
                       <TableHeadWithSorting
                         header="Comment"
-                        className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-center ui-banshee-whitespace-nowrap"
+                        className="ui-banshee-text-md ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-center ui-banshee-whitespace-nowrap"
                         column={createMockColumn('comment')}
                       />
                     </HeaderTooltip>
                   </TableHead>
-                  <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-py-2">
-                    <HeaderTooltip tip={COLUMN_TOOLTIPS.actions}>
-                      <Menu size={20} className="ui-banshee-mx-auto" />
-                    </HeaderTooltip>
-                  </TableHead>
+                  <TableHead className="ui-banshee-justify-center !ui-banshee-align-center ui-banshee-w-auto ui-banshee-py-2"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -451,18 +448,41 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell>
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                        <span
-                          className="ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full"
-                          style={{
-                            backgroundColor: getStatusColorHex(row.status),
-                          }}
-                          title={row.status}
-                        />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                tabIndex={0}
+                                role="img"
+                                aria-label={row.status}
+                                className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                                style={{
+                                  backgroundColor: getStatusColorHex(
+                                    row.status,
+                                  ),
+                                }}
+                              />
+                            </TooltipTrigger>
+
+                            <TooltipContent>
+                              {row.status
+                                .toLowerCase()
+                                .split('_')
+                                .map(
+                                  (word) =>
+                                    word.charAt(0).toUpperCase() +
+                                    word.slice(1),
+                                )
+                                .join(' ')}
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4 ui-banshee-text-black"
                       >
@@ -471,7 +491,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -480,7 +500,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -489,7 +509,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -498,7 +518,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -507,7 +527,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -516,7 +536,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-pl-4"
                       >
@@ -525,7 +545,7 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className={
                           row.statusChange === 'Yes'
@@ -549,7 +569,7 @@ export const BansheeListView = ({
                           }
                         />
                       ) : (
-                        <Text variant="small" color="foreground">
+                        <Text variant="medium" color="foreground">
                           {row.comment}
                         </Text>
                       )}

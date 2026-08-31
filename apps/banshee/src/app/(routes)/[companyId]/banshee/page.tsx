@@ -57,6 +57,7 @@ const bansheeRequestsListQuery = graphql(`
           createdTimestamp
           updatedTimestamp
           readings {
+            readingIndex
             elongation
             status
           }
@@ -266,8 +267,8 @@ export default function Page({ params }: { params: { companyId: string } }) {
               <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
                 <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-justify-between ui-banshee-items-center">
                   <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
-                    Click and drag in the plot area to zoom in. Hold CTRL and
-                    drag to pan
+                    Click and drag anywhere in the plot area to zoom into a
+                    specific section of the chart.
                   </p>
                   <div className="ui-banshee-flex ui-banshee-gap-2">
                     <button
@@ -316,8 +317,8 @@ export default function Page({ params }: { params: { companyId: string } }) {
               <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-bg-neutral-1 ">
                 <div className="ui-banshee-flex ui-banshee-p-6 ui-banshee-border-b ui-banshee-justify-between ui-banshee-items-center ui-banshee-mb-8">
                   <p className="ui-banshee-text-sm ui-banshee-text-neutral-500 ui-banshee-mx-auto">
-                    Click and drag in the plot area to zoom in. Hold CTRL and
-                    drag to pan
+                    Click and drag anywhere in the plot area to zoom into a
+                    specific section of the chart.
                   </p>
                   <div className="ui-banshee-flex ui-banshee-gap-2">
                     <button

@@ -127,7 +127,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'ui-banshee-border-b ui-banshee-border-neutral-3 [&:nth-child(2)]:ui-banshee-text-center [&:first-child]:ui-banshee-bg-neutral-2 [&:first-child]:ui-banshee-text-center [&:last-child]:ui-banshee-text-right ui-banshee-text-main-black ',
+      'ui-banshee-border-b ui-banshee-border-neutral-3 [&:nth-child(2)]:ui-banshee-text-center [&:first-child]:ui-banshee-text-center [&:last-child]:ui-banshee-text-right ui-banshee-text-main-black ',
       className,
     )}
     {...props}
@@ -179,19 +179,19 @@ const TableHeadWithSorting = <TData,>({
       {!isSorted && (
         <LucideArrowUpDown
           size="16"
-          className="ui-banshee-ml-1 ui-banshee-mt-0.5 ui-banshee-text-neutral-4"
+          className="ui-banshee-ml-1 ui-banshee-text-neutral-4"
         />
       )}
       {isSorted === 'asc' && (
         <LucideArrowUpDown
           size="16"
-          className="ui-banshee-ml-1 ui-banshee-mt-0.5"
+          className="ui-banshee-ml-1"
         />
       )}
       {isSorted === 'desc' && (
         <LucideArrowDownUp
           size="16"
-          className="ui-banshee-ml-1 ui-banshee-mt-0.5"
+          className="ui-banshee-ml-1"
         />
       )}
     </button>

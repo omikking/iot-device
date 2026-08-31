@@ -28,6 +28,7 @@ import { HierarchyDropdown } from '@/components/HierarchyDropdown';
 import { useHierarchySelections } from '@/components/Usehierarchyselections';
 import {
   buildInstallationDateTime,
+  formatDateTimeOfDay,
   handleGraphQLErrors,
   parseCoordinates,
 } from '@/libs/utils';
@@ -40,7 +41,7 @@ import {
   TableCell,
 } from '@gsp/ui-banshee';
 import { Headline } from '@gsp/ui-banshee';
-import { CircleX, Menu } from 'lucide-react';
+import { CircleX } from 'lucide-react';
 import { RingPosition } from '@/gql/graphql';
 
 const hierarchyQuery = graphql(`
@@ -174,10 +175,7 @@ function buildTemplateFormValues(template: {
     templateName: template.templateName ?? '',
     period: template.period ?? 1,
     installationDate: installDate,
-    installationTime: installDate.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
+    installationTime: formatDateTimeOfDay(installDate),
     locationDetails: template.locationDetails ?? '',
     comment: template.comment ?? '',
     siteId: template.siteId ?? null,
@@ -272,9 +270,13 @@ export default function TemplatePage({
     defaultValues: DEFAULT_VALUES,
   });
 
+  // Every hierarchy field on a template is optional, so each dropdown lists
+  // everything under the nearest selected ancestor rather than staying empty
+  // until its parent is picked. Selecting a parent still narrows the ones below.
   const { levels, drives, locations } = useHierarchySelections(
     sites,
     form.watch,
+    { allowUnparentedSelection: true },
   );
 
   useEffect(() => {
@@ -393,28 +395,26 @@ export default function TemplatePage({
           >
             {selectedTemplateName}
           </Headline>
-          <Text variant="small" color="muted">
-            Description
+          <Text variant="medium" color="muted">
+            Create Templates for Quick Configuration
           </Text>
         </div>
 
         <div className="ui-banshee-border-b ui-banshee-flex ui-banshee-flex-col ui-banshee-py-7 ui-banshee-pl-7 ui-banshee-gap-7">
-          <div className="ui-banshee-max-h-[14vh] ui-banshee-overflow-auto">
+          <div className="ui-banshee-max-h-[16vh] ui-banshee-overflow-auto">
             <Table variant="border">
               <TableHeader>
                 <TableRow>
                   <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
                     <Text
-                      variant="small"
+                      variant="medium"
                       color="foreground"
                       className="ui-banshee-font-semibold"
                     >
                       Banshee Template Library
                     </Text>
                   </TableHead>
-                  <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2">
-                    <Menu size={20} />
-                  </TableHead>
+                  <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -426,7 +426,7 @@ export default function TemplatePage({
                     >
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
                         <LoadingSpinner size={16} />
-                        <Text variant="small" color="muted">
+                        <Text variant="medium" color="muted">
                           Loading templates...
                         </Text>
                       </div>
@@ -440,7 +440,7 @@ export default function TemplatePage({
                       className="ui-banshee-text-center ui-banshee-py-4"
                     >
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="muted"
                         className="ui-banshee-text-center"
                       >
@@ -456,7 +456,7 @@ export default function TemplatePage({
                     className="ui-banshee-cursor-pointer"
                   >
                     <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
+                      <Text variant="medium" color="foreground">
                         {template.templateName}
                       </Text>
                     </TableCell>
@@ -467,7 +467,7 @@ export default function TemplatePage({
                       <button
                         type="button"
                         onClick={(e) => handleDeleteTemplate(e, template.id)}
-                        className="ui-banshee-text-neutral-400 hover:ui-banshee-text-red-500 ui-banshee-transition-colors ui-banshee-flex ui-banshee-m-auto"
+                        className="ui-banshee-text-main-black hover:ui-banshee-text-red-500 ui-banshee-transition-colors ui-banshee-flex ui-banshee-m-auto"
                       >
                         <CircleX size={16} />
                       </button>
@@ -487,7 +487,7 @@ export default function TemplatePage({
         {detailFetching ? (
           <div className="ui-banshee-p-10 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-3">
             <LoadingSpinner />
-            <Text variant="small" color="muted">
+            <Text variant="medium" color="muted">
               Loading template...
             </Text>
           </div>

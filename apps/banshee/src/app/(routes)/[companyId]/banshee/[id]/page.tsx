@@ -13,7 +13,7 @@ import {
   showAlertToast,
   LoadingSpinner,
 } from '@gsp/ui-banshee';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
 import { useQuery, useMutation } from 'urql';
 import { graphql } from '@/gql';
 import { useParams } from 'next/navigation';
@@ -25,11 +25,17 @@ import {
 } from '@/components/schemas/BansheeConfigSchema';
 import { FormField, StaticField } from '@/components/FormField';
 import { HierarchyDropdown } from '@/components/HierarchyDropdown';
+import {
+  BansheeTemplateDetail,
+  TemplateSelectField,
+} from '@/components/TemplateSelectField';
 import { useHierarchySelections } from '@/components/Usehierarchyselections';
 import {
   buildInstallationDateTime,
+  formatDateTimeOfDay,
   handleGraphQLErrors,
   parseCoordinates,
+  formatBoltType,
 } from '@/libs/utils';
 import { TimePicker } from '@/components/TimePicker';
 import { RingPosition } from '@/gql/graphql';
@@ -49,6 +55,7 @@ const bansheeConfigQuery = graphql(`
       activateNotifications
       ringPosition
       companyId
+      templateId
       boltTypeConstant {
         lowPlasticLimit
         elasticLimit
@@ -120,13 +127,14 @@ const DEFAULT_VALUES: BansheeConfigFormValues = {
   installationTime: '12:00 PM',
   locationDetails: '',
   comment: '',
-  siteId: '',
-  levelId: '',
-  driveId: '',
-  locationId: '',
+  siteId: null,
+  levelId: null,
+  driveId: null,
+  locationId: null,
   activateNotifications: false,
   coordinates: { x: '0', y: '0', z: '0' },
   ringPosition: null,
+  templateId: null,
 };
 
 export default function BansheeConfigPage() {
@@ -181,21 +189,56 @@ export default function BansheeConfigPage() {
       name: request.name ?? '',
       period: request.period ?? 1,
       installationDate: installDate,
-      installationTime: installDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      installationTime: formatDateTimeOfDay(installDate),
       locationDetails: request.locationDetails ?? '',
       comment: request.comment ?? '',
-      siteId: request.site?.id ?? '',
-      levelId: request.level?.id ?? '',
-      driveId: request.drive?.id ?? '',
-      locationId: request.location?.id ?? '',
+      siteId: request.site?.id ?? null,
+      levelId: request.level?.id ?? null,
+      driveId: request.drive?.id ?? null,
+      locationId: request.location?.id ?? null,
       activateNotifications: request.activateNotifications ?? false,
       coordinates: parseCoordinates(request.coordinates),
       ringPosition: (request.ringPosition as RingPosition) ?? null,
+      templateId: request.templateId ?? null,
     });
   }, [request]);
+
+  /**
+   * Copies a template onto the form. Every field the template models is applied,
+   * and the template always wins — an empty value on the template clears the
+   * corresponding value here. Fields the template does not model at all (name,
+   * serial number, bolt type) are never touched.
+   *
+   * Where this form cannot represent "empty" — the period and the installation
+   * date/time are required — an empty template value falls back to what the form
+   * shows for a banshee request that has no value either.
+   */
+  const applyTemplate = (template: BansheeTemplateDetail) => {
+    form.setValue('period', template.period ?? DEFAULT_VALUES.period);
+
+    const installDate = template.boltInstallationDateTime
+      ? new Date(template.boltInstallationDateTime)
+      : new Date();
+    const validInstallDate = Number.isNaN(installDate.getTime())
+      ? new Date()
+      : installDate;
+    form.setValue('installationDate', validInstallDate);
+    form.setValue('installationTime', formatDateTimeOfDay(validInstallDate));
+
+    form.setValue('siteId', template.siteId ?? null);
+    form.setValue('levelId', template.levelId ?? null);
+    form.setValue('driveId', template.driveId ?? null);
+    form.setValue('locationId', template.locationId ?? null);
+
+    form.setValue('locationDetails', template.locationDetails ?? '');
+    form.setValue('coordinates', parseCoordinates(template.coordinates));
+    form.setValue(
+      'activateNotifications',
+      template.activateNotifications ?? false,
+    );
+    form.setValue('ringPosition', template.ringPosition ?? null);
+    form.setValue('comment', template.comment ?? '');
+  };
 
   const onSubmit: SubmitHandler<BansheeConfigFormValues> = async (values) => {
     const { installationDate, installationTime, ringPosition, ...restValues } =
@@ -227,6 +270,21 @@ export default function BansheeConfigPage() {
     );
   };
 
+  // Without this, anything the form rejects — a cleared site, a template
+  // carrying period 0 — would block Save with no feedback at all, since no
+  // field renders its own error.
+  const onInvalid: SubmitErrorHandler<BansheeConfigFormValues> = (errors) => {
+    const details = Object.entries(errors).map(
+      ([field, error]) => (error as { message?: string })?.message || field,
+    );
+
+    showAlertToast({
+      title: 'Configuration cannot be saved',
+      description: details.join(', '),
+      variant: 'error',
+    });
+  };
+
   if (fetching) {
     return (
       <SidebarInset>
@@ -253,7 +311,7 @@ export default function BansheeConfigPage() {
   return (
     <SidebarInset>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
           <main className="ui-banshee-p-6 md:ui-banshee-p-10 ui-banshee-w-100 lg:ui-banshee-w-3/4 ui-banshee-bg-neutral-50 ui-banshee-min-h-screen">
             <div className="ui-banshee-grid ui-banshee-grid-cols-1 xl:ui-banshee-grid-cols-12 ui-banshee-gap-10">
               <div className="xl:ui-banshee-col-span-5 ui-banshee-space-y-6">
@@ -261,7 +319,19 @@ export default function BansheeConfigPage() {
                   <Input placeholder="banshee01" {...form.register('name')} />
                 </FormField>
 
-                <StaticField label="Bolt Type" value={request.boltType} />
+                <TemplateSelectField
+                  companyId={request.companyId}
+                  selectedTemplateId={form.watch('templateId')}
+                  onSelect={(templateId) =>
+                    form.setValue('templateId', templateId)
+                  }
+                  onApplyTemplate={applyTemplate}
+                />
+
+                <StaticField
+                  label="Bolt Type"
+                  value={formatBoltType(request.boltType)}
+                />
 
                 <FormField label="Period for automatic service reminder (months)">
                   <Input type="number" {...form.register('period')} />
@@ -311,9 +381,9 @@ export default function BansheeConfigPage() {
                   selectedId={form.watch('siteId')}
                   onSelect={(id) => {
                     form.setValue('siteId', id);
-                    form.setValue('levelId', '');
-                    form.setValue('driveId', '');
-                    form.setValue('locationId', '');
+                    form.setValue('levelId', null);
+                    form.setValue('driveId', null);
+                    form.setValue('locationId', null);
                   }}
                 />
 
@@ -325,8 +395,8 @@ export default function BansheeConfigPage() {
                   selectedId={form.watch('levelId')}
                   onSelect={(id) => {
                     form.setValue('levelId', id);
-                    form.setValue('driveId', '');
-                    form.setValue('locationId', '');
+                    form.setValue('driveId', null);
+                    form.setValue('locationId', null);
                   }}
                 />
 
@@ -338,7 +408,7 @@ export default function BansheeConfigPage() {
                   selectedId={form.watch('driveId')}
                   onSelect={(id) => {
                     form.setValue('driveId', id);
-                    form.setValue('locationId', '');
+                    form.setValue('locationId', null);
                   }}
                 />
 

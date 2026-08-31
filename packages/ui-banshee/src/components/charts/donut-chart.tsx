@@ -66,7 +66,7 @@ export function ChartPieDonut({
 
   return (
     <Card className="ui-banshee-w-min-[300px] ui-banshee-w-max-[900px] ui-banshee-w-auto ui-banshee-flex ui-banshee-flex-col ui-banshee-justify-center ui-banshee-bg-neutral-1 ui-banshee-border-none">
-      <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-6">
+      <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-0 xl:ui-banshee-gap-6">
         <CardContent className="ui-banshee-pb-0 ui-banshee-px-0">
           <ChartContainer
             config={chartConfig}

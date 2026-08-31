@@ -3,31 +3,34 @@
 import * as React from 'react';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger, Text } from '@gsp/ui-banshee';
+import { formatTimeOfDay, parseTimeOfDay } from '@/libs/utils';
 
 type TimePickerProps = {
-  selectedTime?: string; // format: "HH:MM AM/PM"
+  selectedTime?: string; // "hh:mm AM/PM" (24-hour "HH:mm" is also accepted)
   onTimeChange?: (time: string) => void;
   disabled?: boolean;
 };
 
-function parseTime(time: string): {
+function parseTime(time: string | undefined | null): {
   hour: number;
   minute: number;
   period: 'AM' | 'PM';
 } {
-  const match = time.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
-  if (match) {
-    return {
-      hour: parseInt(match[1], 10),
-      minute: parseInt(match[2], 10),
-      period: match[3].toUpperCase() as 'AM' | 'PM',
-    };
+  const parsed = time ? parseTimeOfDay(time) : null;
+  if (!parsed) {
+    return { hour: 12, minute: 0, period: 'PM' };
   }
-  return { hour: 12, minute: 0, period: 'PM' };
+  return {
+    hour: parsed.hours % 12 === 0 ? 12 : parsed.hours % 12,
+    minute: parsed.minutes,
+    period: parsed.hours >= 12 ? 'PM' : 'AM',
+  };
 }
 
 function formatTime(hour: number, minute: number, period: 'AM' | 'PM'): string {
-  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
+  const hours24 =
+    period === 'PM' ? (hour === 12 ? 12 : hour + 12) : hour === 12 ? 0 : hour;
+  return formatTimeOfDay(hours24, minute);
 }
 
 const triggerStyling =

@@ -14,11 +14,17 @@ import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';
 import { handleGraphQLErrors } from '@/libs/utils';
+import {
+  formatElongation,
+  getLatestMeasurement,
+} from '@/libs/latest-measurement';
+import { DetailRow } from './DetailRow';
 
 const bansheeDetailEventQuery = graphql(`
   query bansheeDetailEventQuery($id: String!) {
     bansheeRequest(id: $id) {
       id
+      name
       serialNumber
       boltInstallationDateTime
       period
@@ -44,7 +50,9 @@ const bansheeDetailEventQuery = graphql(`
         status
         dueDate
         createdTimestamp
+        updatedTimestamp
         readings {
+          readingIndex
           elongation
           status
         }
@@ -72,39 +80,22 @@ function formatPeriod(period: number | null | undefined): string {
   return 'N/A';
 }
 
-interface DetailRowProps {
-  label: string;
-  value: React.ReactNode;
-}
-
-const DetailRow = memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-3 ui-banshee-border-b ui-banshee-border-gray-50 ui-banshee-text-sm">
-    <div className="ui-banshee-font-medium ui-banshee-text-neutral-500 ui-banshee-w-1/2 ui-banshee-pr-4">
-      {label}
-    </div>
-    <div className="ui-banshee-text-neutral-800 ui-banshee-w-1/2 ui-banshee-break-words">
-      {value ?? 'N/A'}
-    </div>
-  </div>
-));
-DetailRow.displayName = 'DetailRow';
-
 interface ActionBarProps {
   onSettingsClick: () => void;
   onBarClick: () => void;
 }
 
 const ActionBar = memo(({ onSettingsClick, onBarClick }: ActionBarProps) => (
-  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-neutral-500">
+  <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-gap-4 ui-banshee-text-main-black">
     <Settings
       size={20}
       onClick={onSettingsClick}
-      className="ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
+      className="ui-banshee-cursor-pointer hover:ui-banshee-text-main-black"
     />
     <BarChart2
       size={20}
       onClick={onBarClick}
-      className="ui-banshee-cursor-pointer hover:ui-banshee-text-neutral-800"
+      className="ui-banshee-cursor-pointer hover:ui-banshee-text-main-black"
     />
   </div>
 ));
@@ -156,40 +147,36 @@ export const EventDetailModal = memo(
       const request = data?.bansheeRequest;
       if (!request) return null;
 
-      const measurements = request.proceqData ?? [];
-      const latestMeasurement = measurements.at(-1) ?? null;
-      const readings = latestMeasurement?.readings ?? [];
-      const lastReading = readings.at(-1) ?? null;
+      const { measurement: latestMeasurement, reading: lastReading } =
+        getLatestMeasurement(request.proceqData);
 
       return {
-        serialNumber: request.serialNumber,
+        name: request?.name,
+        serialNumber: request?.serialNumber,
         status: getStatusLabel(latestMeasurement?.status),
         createdTimeStr: latestMeasurement?.createdTimestamp
           ? new Date(latestMeasurement.createdTimestamp).toLocaleString()
           : 'N/A',
-        dueDate: request?.proceqData?.[0]?.dueDate
-          ? new Date(request?.proceqData?.[0]?.dueDate)?.toLocaleString()
+        dueDate: latestMeasurement?.dueDate
+          ? new Date(latestMeasurement.dueDate).toLocaleString()
           : 'N/A',
-        siteName: request.site?.siteName ?? 'N/A',
-        levelName: request.level?.levelName ?? 'N/A',
-        driveName: request.drive?.driveName ?? 'N/A',
-        locationName: request.location?.locationName ?? 'N/A',
-        coordsDisplay: parseCoordinates(request.coordinates),
+        siteName: request?.site?.siteName ?? 'N/A',
+        levelName: request?.level?.levelName ?? 'N/A',
+        driveName: request?.drive?.driveName ?? 'N/A',
+        locationName: request?.location?.locationName ?? 'N/A',
+        coordsDisplay: parseCoordinates(request?.coordinates),
         boltInstallationDateTime: request?.boltInstallationDateTime
           ? new Date(request?.boltInstallationDateTime)?.toLocaleString()
           : 'N/A',
-        lowPlasticLimit: request.boltTypeConstant?.elasticLimit
+        lowPlasticLimit: request?.boltTypeConstant?.elasticLimit
           ? request.boltTypeConstant.elasticLimit.toFixed(1)
           : 'N/A',
-        highPlasticLimit: request.boltTypeConstant?.lowPlasticLimit
+        highPlasticLimit: request?.boltTypeConstant?.lowPlasticLimit
           ? request.boltTypeConstant.lowPlasticLimit.toFixed(1)
           : 'N/A',
-        elongation:
-          lastReading?.elongation != null
-            ? lastReading.elongation.toFixed(1)
-            : '-',
-        boltType: request.boltType ?? 'N/A',
-        period: formatPeriod(request.period),
+        elongation: formatElongation(lastReading) ?? '-',
+        boltType: request?.boltType ?? 'N/A',
+        period: formatPeriod(request?.period),
       };
     }, [data]);
 
@@ -198,7 +185,7 @@ export const EventDetailModal = memo(
         <ModalContent className="ui-banshee-overflow-auto">
           <ModalHeader>
             <ModalTitle>
-              {details?.serialNumber ?? (fetching ? 'Loading...' : '—')}
+              {details?.name ?? (fetching ? 'Loading...' : '—')}
             </ModalTitle>
           </ModalHeader>
 
@@ -212,6 +199,7 @@ export const EventDetailModal = memo(
           {!fetching && details && (
             <>
               <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-flex-col">
+                <DetailRow label="Serial Number" value={details.serialNumber} />
                 <DetailRow label="Status" value={details.status} />
                 <DetailRow
                   label="Last Reading"

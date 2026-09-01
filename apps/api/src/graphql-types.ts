@@ -230,6 +230,7 @@ export class UpdateBansheeRequestInput {
     companyId?: Nullable<string>;
     siteId?: Nullable<string>;
     activateNotifications?: Nullable<boolean>;
+    templateId?: Nullable<string>;
 }
 
 export class BansheeTemplateInput {
@@ -806,6 +807,7 @@ export class BansheeRequest {
     siteId: string;
     boltType?: Nullable<string>;
     activateNotifications?: Nullable<boolean>;
+    templateId?: Nullable<string>;
     boltTypeConstant?: Nullable<BansheeBoltTypeConstant>;
 }
 
@@ -1137,7 +1139,7 @@ export class ProceqData {
     operator?: Nullable<string>;
     email?: Nullable<string>;
     dueDate?: Nullable<DateTime>;
-    comments: string;
+    comments?: Nullable<string>;
     temperature?: Nullable<number>;
     rawDataZipId?: Nullable<string>;
     rawDataZipPath?: Nullable<string>;

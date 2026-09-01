@@ -10,7 +10,6 @@ import {
   Check,
   X,
   Ban,
-  LucideFilter,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
@@ -285,6 +284,12 @@ const DropdownMultiSelectSearch = React.forwardRef<
   ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [search, setSearch] = useState('');
+    /**
+     * Pending selection, which only becomes the caller's value once the confirm
+     * tick is pressed. The open list reflects this; the trigger deliberately
+     * does not — it shows `selectedIds`, so it never reads as applied while the
+     * choice is still a draft.
+     */
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>(
       selectedIds || [],
     );
@@ -304,13 +309,23 @@ const DropdownMultiSelectSearch = React.forwardRef<
       setIsOpen(false);
     };
 
+    /** Closing any way but the confirm tick abandons the draft, so re-opening
+     * starts from what is actually applied. */
+    const handleOpenChange = (open: boolean) => {
+      if (!open) {
+        setSelectedItemIds(selectedIds || []);
+        setSearch('');
+      }
+      setIsOpen(open);
+    };
+
     const getDisplayText = () => {
-      if (selectedItemIds.length === 0) return placeholder;
-      if (selectedItemIds.length === 1) {
-        const item = options.find((opt) => opt.id === selectedItemIds[0]);
+      if (selectedIds.length === 0) return placeholder;
+      if (selectedIds.length === 1) {
+        const item = options.find((opt) => opt.id === selectedIds[0]);
         return item?.name || placeholder;
       }
-      return `${selectedItemIds.length} selected`;
+      return `${selectedIds.length} selected`;
     };
 
     useEffect(() => {
@@ -323,7 +338,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
 
     return (
       <div className={cn('relative', className)} {...props} ref={ref}>
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={handleOpenChange}>
           <PopoverTrigger asChild>
             <button
               id={id}
@@ -333,18 +348,19 @@ const DropdownMultiSelectSearch = React.forwardRef<
               type="button"
               disabled={disabled}
               onClick={() => {
-                setIsOpen(!isOpen);
+                handleOpenChange(!isOpen);
               }}
               className={cn(
                 buttonStyling(variant),
                 isOpen && 'ui-banshee-rounded-b-none',
-                selectedItemIds.length > 0 && '!ui-banshee-bg-neutral-2',
+                selectedIds.length > 0 && '!ui-banshee-bg-neutral-2',
+                'ui-banshee-gap-2',
               )}
             >
-              {selectedItemIds.length === 0 ? (
+              {selectedIds.length === 0 ? (
                 <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-1.5">
                   <Text
-                    variant="small"
+                    variant="medium"
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
@@ -353,7 +369,7 @@ const DropdownMultiSelectSearch = React.forwardRef<
                 </div>
               ) : (
                 <Text
-                  variant="small"
+                  variant="medium"
                   color="foreground"
                   className="ui-banshee-font-bold ui-banshee-truncate ui-banshee-min-w-0"
                 >
@@ -465,24 +481,30 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
   ) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [search, setSearch] = useState('');
-    const [selectedItem, setSelectedItem] = useState<DropdownItem | undefined>(
-      selectedId ? options?.find((item) => item.id === selectedId) : undefined,
+    const initialItem = selectedId
+      ? options?.find((item) => item.id === selectedId)
+      : undefined;
+    // `draftItem` is the pending pick inside the popover, `confirmedItem` is what
+    // the trigger shows - they only merge once the user confirms with the check button.
+    const [draftItem, setDraftItem] = useState<DropdownItem | undefined>(
+      initialItem,
     );
+    const [confirmedItem, setConfirmedItem] = useState<
+      DropdownItem | undefined
+    >(initialItem);
 
     const handleClear = () => {
-      setSelectedItem(undefined);
+      setDraftItem(undefined);
     };
 
     const handleConfirm = () => {
-      onSelect && onSelect(selectedItem?.id);
+      setConfirmedItem(draftItem);
+      onSelect && onSelect(draftItem?.id);
       setIsOpen(false);
     };
 
     const handleCancel = () => {
-      const originalItem = selectedId
-        ? options?.find((item) => item.id === selectedId)
-        : undefined;
-      setSelectedItem(originalItem);
+      setDraftItem(confirmedItem);
       setSearch('');
       setIsOpen(false);
     };
@@ -490,15 +512,29 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
     useEffect(() => {
       if (selectedId && options) {
         const newSelectedItem = options.find((item) => item.id === selectedId);
-        newSelectedItem && setSelectedItem(newSelectedItem);
+        if (newSelectedItem) {
+          setDraftItem(newSelectedItem);
+          setConfirmedItem(newSelectedItem);
+        }
       } else {
-        setSelectedItem(undefined);
+        setDraftItem(undefined);
+        setConfirmedItem(undefined);
       }
     }, [selectedId, options]);
 
     return (
       <div className={cn('relative', className)} {...props} ref={ref}>
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover
+          open={isOpen}
+          onOpenChange={(open) => {
+            // dismissing without confirming (outside click / escape) drops the draft
+            if (!open) {
+              setDraftItem(confirmedItem);
+              setSearch('');
+            }
+            setIsOpen(open);
+          }}
+        >
           <PopoverTrigger asChild>
             <button
               id={id}
@@ -518,9 +554,11 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
             >
               <Text
                 variant="medium"
-                color={disabled || !selectedItem?.name ? 'muted' : 'foreground'}
+                color={
+                  disabled || !confirmedItem?.name ? 'muted' : 'foreground'
+                }
               >
-                {selectedItem?.name || placeholder}
+                {confirmedItem?.name || placeholder}
               </Text>
               <ArrowDown
                 height={12}
@@ -551,17 +589,17 @@ const DropdownSearch = React.forwardRef<HTMLDivElement, DropdownSearchProps>(
                       key={option.id}
                       value={option.name}
                       onSelect={() => {
-                        setSelectedItem(option);
+                        setDraftItem(option);
                       }}
                       className={cn(
-                        selectedItem?.id === option.id &&
+                        draftItem?.id === option.id &&
                           'ui-banshee-bg-neutral-1',
                       )}
                     >
                       <Text variant="medium" color="foreground">
                         {option.name}
                       </Text>
-                      {selectedItem?.id === option.id && (
+                      {draftItem?.id === option.id && (
                         <Check className="ui-banshee-ml-auto ui-banshee-h-4 ui-banshee-w-4 ui-banshee-text-main-black" />
                       )}
                     </CommandItem>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery } from 'urql';
+import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
 import { graphql } from '@/gql';
 import { Application } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
@@ -72,6 +73,42 @@ interface LocationRow {
   locationName: string;
   levelName: string;
   driveName: string;
+}
+
+type SortableColumn = Exclude<keyof LocationRow, 'rowKey'>;
+
+type SortConfig = { key: SortableColumn; direction: 'asc' | 'desc' };
+
+function SortButton({
+  label,
+  sortKey,
+  sortConfig,
+  onSort,
+}: {
+  label: string;
+  sortKey: SortableColumn;
+  sortConfig: SortConfig | null;
+  onSort: (key: SortableColumn) => void;
+}) {
+  const direction = sortConfig?.key === sortKey ? sortConfig.direction : null;
+
+  return (
+    <button
+      type="button"
+      aria-label={`Sort by ${label}`}
+      onClick={() => onSort(sortKey)}
+      className="ui-banshee-flex-1 ui-banshee-flex ui-banshee-items-center ui-banshee-justify-start ui-banshee-h-9 ui-banshee-px-2 ui-banshee-cursor-pointer hover:ui-banshee-bg-main-white/50"
+    >
+      {direction === 'desc' ? (
+        <LucideArrowDownUp size="16" />
+      ) : (
+        <LucideArrowUpDown
+          size="16"
+          className={direction ? undefined : 'ui-banshee-text-neutral-4'}
+        />
+      )}
+    </button>
+  );
 }
 
 function getFlatLocations(
@@ -200,6 +237,14 @@ export default function SiteInformationPage({
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedDrives, setSelectedDrives] = useState<string[]>([]);
 
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+
+  const requestSort = (key: SortableColumn) =>
+    setSortConfig((prev) => ({
+      key,
+      direction: prev?.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+    }));
+
   const filteredRows = useMemo(
     () =>
       allRows.filter(
@@ -213,6 +258,22 @@ export default function SiteInformationPage({
       ),
     [allRows, selectedSites, selectedLocations, selectedLevels, selectedDrives],
   );
+
+  const visibleRows = useMemo(() => {
+    if (!sortConfig) return filteredRows;
+
+    return [...filteredRows].sort((a, b) => {
+      const comparison = a[sortConfig.key].localeCompare(
+        b[sortConfig.key],
+        undefined,
+        {
+          numeric: true,
+          sensitivity: 'base',
+        },
+      );
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+  }, [filteredRows, sortConfig]);
 
   const isFetching = hierarchyFetching || usersFetching;
 
@@ -246,77 +307,108 @@ export default function SiteInformationPage({
         </div>
 
         <div className="ui-banshee-p-3 md:ui-banshee-p-4 lg:ui-banshee-p-7 lg:ui-banshee-pr-0 ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
-          <div className="ui-banshee-max-h-[20vh] ui-banshee-overflow-auto">
+          <div className="ui-banshee-max-h-[57vh] ui-banshee-overflow-auto">
             <Table variant="border">
               <TableHeader>
                 <TableRow>
                   <TableHead className="ui-banshee-p-0">
-                    <DropdownMultiSelectSearch
-                      id="site-multi"
-                      placeholder="Site"
-                      searchPlaceholder="..."
-                      variant="compact"
-                      options={siteOptions}
-                      selectedIds={selectedSites}
-                      onSelect={(ids) => setSelectedSites(ids)}
-                    />
+                    <div className="ui-banshee-flex ui-banshee-items-center">
+                      <DropdownMultiSelectSearch
+                        id="site-multi"
+                        placeholder="Site"
+                        searchPlaceholder="..."
+                        variant="compact"
+                        options={siteOptions}
+                        selectedIds={selectedSites}
+                        onSelect={(ids) => setSelectedSites(ids)}
+                      />
+                      <SortButton
+                        label="Site"
+                        sortKey="siteName"
+                        sortConfig={sortConfig}
+                        onSort={requestSort}
+                      />
+                    </div>
                   </TableHead>
                   <TableHead className="ui-banshee-p-0">
-                    <DropdownMultiSelectSearch
-                      id="level-multi"
-                      placeholder="Level"
-                      searchPlaceholder="..."
-                      variant="compact"
-                      options={levelOptions}
-                      selectedIds={selectedLevels}
-                      onSelect={(ids) => setSelectedLevels(ids)}
-                    />
+                    <div className="ui-banshee-flex ui-banshee-items-center">
+                      <DropdownMultiSelectSearch
+                        id="level-multi"
+                        placeholder="Level"
+                        searchPlaceholder="..."
+                        variant="compact"
+                        options={levelOptions}
+                        selectedIds={selectedLevels}
+                        onSelect={(ids) => setSelectedLevels(ids)}
+                      />
+                      <SortButton
+                        label="Level"
+                        sortKey="levelName"
+                        sortConfig={sortConfig}
+                        onSort={requestSort}
+                      />
+                    </div>
                   </TableHead>
                   <TableHead className="ui-banshee-p-0 [&:nth-child(3)]:ui-banshee-text-left">
-                    <DropdownMultiSelectSearch
-                      id="drive-multi"
-                      placeholder="Drive"
-                      searchPlaceholder="..."
-                      variant="compact"
-                      options={driveOptions}
-                      selectedIds={selectedDrives}
-                      onSelect={(ids) => setSelectedDrives(ids)}
-                    />
+                    <div className="ui-banshee-flex ui-banshee-items-center">
+                      <DropdownMultiSelectSearch
+                        id="drive-multi"
+                        placeholder="Drive"
+                        searchPlaceholder="..."
+                        variant="compact"
+                        options={driveOptions}
+                        selectedIds={selectedDrives}
+                        onSelect={(ids) => setSelectedDrives(ids)}
+                      />
+                      <SortButton
+                        label="Drive"
+                        sortKey="driveName"
+                        sortConfig={sortConfig}
+                        onSort={requestSort}
+                      />
+                    </div>
                   </TableHead>
                   <TableHead className="ui-banshee-p-0">
-                    <DropdownMultiSelectSearch
-                      id="location-multi"
-                      placeholder="Location"
-                      searchPlaceholder="..."
-                      variant="compact"
-                      options={locationOptions}
-                      selectedIds={selectedLocations}
-                      onSelect={(ids) => setSelectedLocations(ids)}
-                      className="ui-banshee-w-full"
-                    />
+                    <div className="ui-banshee-flex ui-banshee-items-center">
+                      <DropdownMultiSelectSearch
+                        id="location-multi"
+                        placeholder="Location"
+                        searchPlaceholder="..."
+                        variant="compact"
+                        options={locationOptions}
+                        selectedIds={selectedLocations}
+                        onSelect={(ids) => setSelectedLocations(ids)}
+                      />
+                      <SortButton
+                        label="Location"
+                        sortKey="locationName"
+                        sortConfig={sortConfig}
+                        onSort={requestSort}
+                      />
+                    </div>
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredRows.map((row) => (
+                {visibleRows.map((row) => (
                   <TableRow key={row.rowKey}>
-                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="!ui-banshee-text-left ui-banshee-px-3">
+                      <Text variant="medium" color="foreground">
                         {row.siteName}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="!ui-banshee-text-left ui-banshee-px-3">
+                      <Text variant="medium" color="foreground">
                         {row.levelName}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="!ui-banshee-text-left ui-banshee-px-3">
+                      <Text variant="medium" color="foreground">
                         {row.driveName}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="!ui-banshee-text-left ui-banshee-px-3">
+                      <Text variant="medium" color="foreground">
                         {row.locationName}
                       </Text>
                     </TableCell>
@@ -334,7 +426,7 @@ export default function SiteInformationPage({
                   className="ui-banshee-px-3 ui-banshee-py-2"
                 >
                   <Text
-                    variant="small"
+                    variant="medium"
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
@@ -347,7 +439,7 @@ export default function SiteInformationPage({
               {bansheeUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="[&:first-child]:ui-banshee-bg-transparent !ui-banshee-text-left ui-banshee-px-3">
-                    <Text variant="small" color="foreground">
+                    <Text variant="medium" color="foreground">
                       {user.fullName ?? user.email}
                       {' - '}
                       {user.userPermissions
@@ -368,7 +460,7 @@ export default function SiteInformationPage({
               <TableRow>
                 <TableHead className="[&:first-child]:ui-banshee-bg-transparent !ui-banshee-text-left ui-banshee-px-3">
                   <Text
-                    variant="small"
+                    variant="medium"
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
@@ -377,7 +469,7 @@ export default function SiteInformationPage({
                 </TableHead>
                 <TableHead className="[&:last-child]:ui-banshee-text-left ui-banshee-flex-none ui-banshee-px-3 ui-banshee-py-2">
                   <Text
-                    variant="small"
+                    variant="medium"
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
@@ -390,12 +482,12 @@ export default function SiteInformationPage({
               {bansheePlans.map((plan) => (
                 <TableRow key={plan.id}>
                   <TableCell className="[&:first-child]:ui-banshee-bg-neutral-1 !ui-banshee-text-left ui-banshee-px-3">
-                    <Text variant="small" color="foreground">
+                    <Text variant="medium" color="foreground">
                       {plan.planLevel}
                     </Text>
                   </TableCell>
                   <TableCell className="[&:first-child]:ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
-                    <Text variant="small" color="foreground">
+                    <Text variant="medium" color="foreground">
                       {plan.expiringDate
                         ? new Date(plan.expiringDate).toLocaleDateString(
                             'en-GB',

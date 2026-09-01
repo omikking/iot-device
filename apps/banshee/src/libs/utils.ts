@@ -1,24 +1,76 @@
 import { responses } from '@/app/uitexts/responses';
 import { showAlertToast } from '@gsp/ui-banshee';
 import { CombinedError } from 'urql';
+import { BoltType } from '@/gql/graphql';
+import {
+  sortProceqDataAscending,
+  sortReadingsAscending,
+} from '@/libs/latest-measurement';
+
+// Accepts "h:mm AM/PM" as well as bare 24-hour "HH:mm". Whitespace before the
+// period is optional and may be a non-breaking space, which is what some
+// browsers/ICU versions emit for locale-formatted times.
+const TIME_OF_DAY_PATTERN = /^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i;
+
+/**
+ * Parses a time-of-day string into hours (0-23) and minutes.
+ * Returns null when the string is not a recognisable time.
+ */
+export function parseTimeOfDay(
+  time: string,
+): { hours: number; minutes: number } | null {
+  const match = time.trim().match(TIME_OF_DAY_PATTERN);
+  if (!match) return null;
+
+  const rawHours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const period = match[3]?.toUpperCase();
+
+  if (minutes > 59) return null;
+
+  let hours = rawHours;
+  if (period) {
+    if (rawHours < 1 || rawHours > 12) return null;
+    hours =
+      period === 'PM'
+        ? rawHours === 12
+          ? 12
+          : rawHours + 12
+        : rawHours === 12
+          ? 0
+          : rawHours;
+  } else if (rawHours > 23) {
+    return null;
+  }
+
+  return { hours, minutes };
+}
+
+/**
+ * Formats hours (0-23) and minutes as the canonical "hh:mm AM/PM" string.
+ * Built by hand rather than via toLocaleTimeString so the result never depends
+ * on the browser locale (24-hour locales) or on ICU's AM/PM separator.
+ */
+export function formatTimeOfDay(hours: number, minutes: number): string {
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${String(hour12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
+/** Formats a date's local time as the canonical "hh:mm AM/PM" string. */
+export function formatDateTimeOfDay(date: Date): string {
+  return formatTimeOfDay(date.getHours(), date.getMinutes());
+}
 
 export function buildInstallationDateTime(
   installationDate: Date,
   installationTime: string,
 ): Date {
-  const [timeStr, period] = installationTime.split(' ');
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const isPM = period === 'PM';
-  const adjustedHours = isPM
-    ? hours === 12
-      ? 12
-      : hours + 12
-    : hours === 12
-      ? 0
-      : hours;
-
+  const parsed = parseTimeOfDay(installationTime);
   const result = new Date(installationDate);
-  result.setHours(adjustedHours, minutes, 0, 0);
+  if (parsed) {
+    result.setHours(parsed.hours, parsed.minutes, 0, 0);
+  }
   return result;
 }
 
@@ -141,12 +193,14 @@ export function dataUrlToFile(dataUrl: string, filename: string): File {
 
 /** Minimal shape needed to build the banshee CSV. Shared across plot pages. */
 export interface BansheeCsvReading {
+  readingIndex?: number | null;
   elongation?: number | null;
   status?: string | null;
 }
 export interface BansheeCsvProceqData {
   status?: string | null;
   createdTimestamp?: number | null;
+  updatedTimestamp?: number | null;
   readings?: readonly BansheeCsvReading[] | null;
 }
 export interface BansheeCsvRow {
@@ -166,8 +220,8 @@ const BANSHEE_CSV_HEADERS = [
   'Level Name',
   'Location Name',
   'Comment',
-  'Proceq Status',
-  'Proceq Created Timestamp',
+  'Status',
+  'Created Timestamp',
   'Reading Elongation',
   'Reading Status',
 ];
@@ -184,13 +238,15 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
     const locationName = request.location?.locationName ?? '';
     const comment = request.comment ?? '';
 
-    request.proceqData?.forEach((proceq) => {
+    // Oldest measurement first, readings in acquisition order, so the export
+    // never depends on the order the API happened to return.
+    sortProceqDataAscending(request.proceqData).forEach((proceq) => {
       const proceqStatus = proceq.status ?? '';
       const createdTimestamp = proceq.createdTimestamp
         ? new Date(proceq.createdTimestamp).toISOString()
         : '';
 
-      proceq.readings?.forEach((reading) => {
+      sortReadingsAscending(proceq.readings).forEach((reading) => {
         const elongation = reading.elongation ?? '';
         const readingStatus = reading.status ?? '';
 
@@ -257,6 +313,66 @@ export function downloadDataUrl(dataUrl: string, filename: string) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/**
+ * The established display notation for each bolt type, matching what the
+ * pull-test app renders (`convertBoltType` in apps/pull-test/src/libs/utils.ts).
+ *
+ * An explicit table rather than something derived from the token structure: the
+ * underscores do not encode where a decimal point belongs (`1_8` -> `1.8`), that
+ * the trailing `M` is a lowercase unit, that a diameter takes `Ø`, or where the
+ * family separators go. `Record<BoltType, string>` keeps this exhaustive — adding
+ * an enum value fails the build until it is given a label here.
+ */
+const BOLT_TYPE_LABELS: Record<BoltType, string> = {
+  [BoltType.D47Md_1_8M]: 'D47 MD - 1.8 m',
+  [BoltType.D47Md_2_1M]: 'D47 MD - 2.1 m',
+  [BoltType.D47Md_2_4M]: 'D47 MD - 2.4 m',
+  [BoltType.D47Md_3_0M]: 'D47 MD - 3.0 m',
+  [BoltType.D47Md_3_8M]: 'D47 MD - 3.8 m',
+  [BoltType.D47Mdx_1_8M]: 'D47 MDX - 1.8 m',
+  [BoltType.D47Mdx_2_1M]: 'D47 MDX - 2.1 m',
+  [BoltType.D47Mdx_2_4M]: 'D47 MDX - 2.4 m',
+  [BoltType.D47Mdx_3_0M]: 'D47 MDX - 3.0 m',
+  [BoltType.D47Mdx_3_8M]: 'D47 MDX - 3.8 m',
+  [BoltType.D47Mdx_4_0M]: 'D47 MDX - 4.0 m',
+  [BoltType.D39Mdx_1_8M]: 'D39 MDX - 1.8 m',
+  [BoltType.D39Mdx_2_1M]: 'D39 MDX - 2.1 m',
+  [BoltType.D39Mdx_2_4M]: 'D39 MDX - 2.4 m',
+  [BoltType.D39Mdx_3_0M]: 'D39 MDX - 3.0 m',
+  [BoltType.D47MdxPegBolt_1_8M]: 'D47 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D47MdxPegBolt_2_1M]: 'D47 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D47MdxPegBolt_2_4M]: 'D47 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D47MdxPegBolt_3_0M]: 'D47 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D39MdxPegBolt_1_8M]: 'D39 MDX - Peg Bolt - 1.8 m',
+  [BoltType.D39MdxPegBolt_2_1M]: 'D39 MDX - Peg Bolt - 2.1 m',
+  [BoltType.D39MdxPegBolt_2_4M]: 'D39 MDX - Peg Bolt - 2.4 m',
+  [BoltType.D39MdxPegBolt_3_0M]: 'D39 MDX - Peg Bolt - 3.0 m',
+  [BoltType.D47MdPegBolt_1_8M]: 'D47 MD - Peg Bolt - 1.8 m',
+  [BoltType.D47MdPegBolt_2_1M]: 'D47 MD - Peg Bolt - 2.1 m',
+  [BoltType.D47MdPegBolt_2_4M]: 'D47 MD - Peg Bolt - 2.4 m',
+  [BoltType.D47MdPegBolt_3_0M]: 'D47 MD - Peg Bolt - 3.0 m',
+  [BoltType.FrictionBolt_47Mm]: 'Friction Bolt Ø47 mm',
+  [BoltType.FrictionBolt_47Mm_1_8M]: 'Friction Bolt Ø47 mm - 1.8 m',
+  [BoltType.FrictionBolt_47Mm_2_1M]: 'Friction Bolt Ø47 mm - 2.1 m',
+  [BoltType.FrictionBolt_47Mm_2_4M]: 'Friction Bolt Ø47 mm - 2.4 m',
+  [BoltType.FrictionBolt_47Mm_3_0M]: 'Friction Bolt Ø47 mm - 3.0 m',
+  [BoltType.FrictionBolt_39Mm]: 'Friction Bolt Ø39 mm',
+  [BoltType.FrictionBolt_33Mm]: 'Friction Bolt Ø33 mm',
+  [BoltType.SpiralFrictionBolt]: 'Spiral Friction Bolt',
+  [BoltType.KinlocBolt]: 'Kinloc Bolt',
+  [BoltType.KinlocBoltIndie]: 'Kinloc Bolt Indie',
+};
+
+/**
+ * Renders a bolt type as its display label (`D47_MD_1_8_M` -> `D47 MD - 1.8 m`).
+ * An unrecognised value is passed through as-is rather than mangled.
+ */
+export function formatBoltType(boltType: string | null | undefined): string {
+  if (!boltType) return 'N/A';
+
+  return BOLT_TYPE_LABELS[boltType as BoltType] ?? boltType;
 }
 
 export function formatDateTime(dt: string | null | undefined): string {

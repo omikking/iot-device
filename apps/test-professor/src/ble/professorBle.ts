@@ -11,9 +11,10 @@ export class ProfessorBLE {
   chars: BleCharMap = {};
 
   async connect(): Promise<void> {
-    console.log('connecting to cyclops');
+    console.log('connecting to professor');
     this.device = await navigator.bluetooth.requestDevice({
       acceptAllDevices: true,
+      optionalServices: Object.values(SERVICES),
     });
     this.server = await this.device.gatt!.connect();
     await this._cacheChars();

@@ -245,8 +245,8 @@ export default function ConfigTab({ connected, onWriteConfig, onReadConfig }: Co
         </div>
 
         <div className="mt-3 text-[11px] leading-[1.7] text-text-faint">
-          Click any row to select it. Write-only items (IDs 4, 8, 18, 19, 210) cannot be read back.
-          Long config (209–211) uses block transfer. IDs 7, 8, 129 preserved across factory reset.
+          Click any row to select it. Write-only items (IDs 4, 8, 18, 19, 209, 210) cannot be read back.
+          Long config (28–30, 209–211) uses block transfer on read and write. IDs 7, 8, 129 preserved across factory reset.
           {connected && !readingAll && Object.keys(currentValues).length > 0 && (
             <span className="text-[#15803d] font-semibold"> · ✓ Current values loaded</span>
           )}

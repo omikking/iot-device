@@ -6,14 +6,14 @@ import {
   Text,
   Headline,
   InstagramIcon,
-  TwitterIcon,
+  YoutubeIcon,
   LinkedinIcon,
   FacebookIcon,
   useIsMobile,
   useIsTablet,
 } from '@gsp/ui-banshee';
 import { SandvikLogo } from 'public/SandvikLogo';
-import { LucideGlobe } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const navLinks = [
   { label: 'Home', href: '/overview' },
@@ -25,18 +25,34 @@ const navLinks = [
 ];
 
 const secondaryLinks = [
-  { label: 'Contact', href: '/contactUs' },
-  { label: 'Change language', href: '#' },
-  { label: 'Trademarks', href: '#' },
-  { label: 'Data privacy portal', href: '#' },
-  { label: 'Cookie privacy policy', href: '#' },
-  { label: 'Report a concern(Speak up)', href: '#' },
+  { label: 'Contact', href: 'https://www.home.sandvik/en/contact/' },
+  {
+    label: 'Data privacy portal',
+    href: 'https://www.home.sandvik/en/about-this-site/data-privacy/',
+  },
 ];
 
-const legalLinks = [
-  { label: 'Terms of Use', href: '#' },
-  { label: 'Sandvik Privacy Policy', href: '#' },
-  { label: 'Sweden Supply Chains Act', href: '#' },
+const socialLinks = [
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/sandvik',
+    Icon: LinkedinIcon,
+  },
+  {
+    label: 'Instagram',
+    href: 'https://instagram.com/sandvikgroup',
+    Icon: InstagramIcon,
+  },
+  {
+    label: 'YouTube',
+    href: 'https://www.youtube.com/@SandvikGroup',
+    Icon: YoutubeIcon,
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/sandvik',
+    Icon: FacebookIcon,
+  },
 ];
 
 export const FooterBanshee = () => {
@@ -67,8 +83,8 @@ export const FooterBanshee = () => {
             </Headline>
           </div>
 
-          <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-56">
-            <div>
+          <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-48">
+            <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-1">
               {navLinks.map(({ label, href }) => (
                 <Link key={label} href={withCompany(href)}>
                   <Text color="background" variant="medium">
@@ -77,9 +93,9 @@ export const FooterBanshee = () => {
                 </Link>
               ))}
             </div>
-            <div>
+            <div className="ui-banshee-flex ui-banshee-gap-2 ui-banshee-flex-col">
               {secondaryLinks.map(({ label, href }) => (
-                <Link key={label} href={withCompany(href)}>
+                <Link key={label} href={href}>
                   <Text color="background" variant="small">
                     {label}
                   </Text>
@@ -89,40 +105,61 @@ export const FooterBanshee = () => {
           </div>
         </div>
 
-        <div className="ui-banshee-flex ui-banshee-flex-col">
-          <div className="ui-banshee-flex ui-banshee-gap-4 ui-banshee-justify-start ui-banshee-items-center">
-            <LucideGlobe size={16} />
-            <Text color="background" variant="small">
-              Global
-            </Text>
-            <Headline as="h4" color="background" variant="medium">
-              |
-            </Headline>
-            <Text color="background" variant="small">
-              English (US)
-            </Text>
+        <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-6">
+          <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-4">
+            {socialLinks.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="ui-banshee-group"
+              >
+                <Icon
+                  width={42}
+                  height={42}
+                  className="
+            ui-banshee-transition-all
+            ui-banshee-duration-200
+            group-hover:ui-banshee-invert
+          "
+                />
+              </a>
+            ))}
           </div>
+          <hr className="ui-banshee-border-0 ui-banshee-border-t-2 ui-banshee-border-white/20" />
 
-          <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center ui-banshee-pt-6">
-            <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-10">
-              {legalLinks.map(({ label, href }) => (
-                <Link key={label} href={withCompany(href)}>
-                  <Text color="muted" variant="small">
-                    {label}
-                  </Text>
-                </Link>
-              ))}
-              <Text color="muted" variant="small">
-                © 2024 Sandvik AB. All rights reserved.
+          <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-justify-between ui-banshee-items-center">
+            <Text color="muted" variant="small">
+              © 2026 Copyright © Sandvik AB; (publ) Box 510, SE-101 30
+              Stockholm, Sweden Phone: +46 8 456 11 00
+            </Text>
+            <Link
+              href="https://www.home.sandvik/en/websites/"
+              className="ui-banshee-group ui-banshee-flex ui-banshee-gap-1"
+            >
+              <Text
+                color="background"
+                variant="small"
+                className="ui-banshee-underline ui-banshee-underline-offset-2"
+              >
+                Other Sandvik websites
               </Text>
-            </div>
 
-            <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-gap-4">
-              <FacebookIcon />
-              <InstagramIcon />
-              <TwitterIcon />
-              <LinkedinIcon />
-            </div>
+              <ArrowRight
+                size={20}
+                className="
+                  ui-banshee-translate-x-0
+                  ui-banshee-transition-transform
+                  ui-banshee-duration-200
+                  ui-banshee-ease-in-out
+                  group-hover:ui-banshee-translate-x-1
+                  group-focus:ui-banshee-translate-x-1
+                  group-active:ui-banshee-translate-x-1
+                "
+              />
+            </Link>
           </div>
         </div>
       </div>

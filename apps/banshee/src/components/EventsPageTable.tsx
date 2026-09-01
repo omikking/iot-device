@@ -10,6 +10,11 @@ import {
   TableCell,
   TableHeadWithSorting,
   LoadingSpinner,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipArrow,
 } from '@gsp/ui-banshee';
 import { gql, useQuery } from 'urql';
 import { ComponentProps, useEffect, useMemo, useState } from 'react';
@@ -18,6 +23,7 @@ import { Plus } from 'lucide-react';
 import { EventDetailModal } from './EventDetailModal';
 import { BansheeEventLog } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { compareValues } from '@/libs/sort-compare';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
@@ -33,9 +39,19 @@ const eventsPageTableQuery = gql`
         newStatus
         bansheeRequest {
           serialNumber
+          name
           id
           location {
             locationName
+          }
+          site {
+            siteName
+          }
+          level {
+            levelName
+          }
+          drive {
+            driveName
           }
         }
       }
@@ -90,29 +106,32 @@ export const EventsPageTable = ({
   const sortedEvents = useMemo(() => {
     const sortable = [...flattenedEvents];
     if (sortConfig !== null) {
-      sortable.sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-
-        if (sortConfig.key === 'banshee') {
-          aValue = a.bansheeRequest?.serialNumber;
-          bValue = b.bansheeRequest?.serialNumber;
-        } else if (sortConfig.key === 'location') {
-          aValue = a.bansheeRequest?.location?.locationName;
-          bValue = b.bansheeRequest?.location?.locationName;
+      // The hierarchy columns live under `bansheeRequest`, so they have to be
+      // reached explicitly — reading them off the event row yields undefined
+      // and the column silently stops sorting.
+      const sortValue = (event: (typeof sortable)[number]) => {
+        switch (sortConfig.key) {
+          case 'banshee':
+            return event.bansheeRequest?.name;
+          case 'site':
+            return event.bansheeRequest?.site?.siteName;
+          case 'level':
+            return event.bansheeRequest?.level?.levelName;
+          case 'drive':
+            return event.bansheeRequest?.drive?.driveName;
+          case 'location':
+            return event.bansheeRequest?.location?.locationName;
+          // Sort on the instant, not the rendered locale date string.
+          case 'createdAt':
+            return event.createdAt ? new Date(event.createdAt).getTime() : null;
+          default:
+            return event[sortConfig.key];
         }
+      };
 
-        if (aValue == null) return 1;
-        if (bValue == null) return -1;
-
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
+      sortable.sort((a, b) =>
+        compareValues(sortValue(a), sortValue(b), sortConfig.direction),
+      );
     }
     return sortable;
   }, [flattenedEvents, sortConfig]);
@@ -120,13 +139,13 @@ export const EventsPageTable = ({
   return (
     <>
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-h-[50vh]">
-        <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-flex-1 ui-banshee-min-h-0">
+        <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-auto ui-banshee-flex-1 ui-banshee-min-h-0">
           <Table variant="noBorder">
             <TableHeader>
               <TableRow>
                 <TableHead>
                   <Text
-                    variant="small"
+                    variant="medium"
                     color="foreground"
                     className="ui-banshee-font-bold ui-banshee-px-4"
                   >
@@ -136,35 +155,56 @@ export const EventsPageTable = ({
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Status"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-center ui-banshee-text-md"
                     column={createMockColumn('newStatus')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0 ui-banshee-w-[15%]">
                   <TableHeadWithSorting
                     header="Banshee"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
                     column={createMockColumn('banshee')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
                   <TableHeadWithSorting
-                    header="Location"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
-                    column={createMockColumn('location')}
+                    header="Site"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
+                    column={createMockColumn('site')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
                   <TableHeadWithSorting
+                    header="Level"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
+                    column={createMockColumn('level')}
+                  />
+                </TableHead>
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
+                  <TableHeadWithSorting
+                    header="Drive"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
+                    column={createMockColumn('drive')}
+                  />
+                </TableHead>
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[20%]">
+                  <TableHeadWithSorting
+                    header="Location"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
+                    column={createMockColumn('location')}
+                  />
+                </TableHead>
+                <TableHead className="ui-banshee-p-0 ui-banshee-w-[30%]">
+                  <TableHeadWithSorting
                     header="Created on"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-whitespace-nowrap ui-banshee-text-md"
                     column={createMockColumn('createdAt')}
                   />
                 </TableHead>
                 <TableHead className="ui-banshee-p-0">
                   <TableHeadWithSorting
                     header="Description"
-                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start"
+                    className="ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-md"
                     column={createMockColumn('eventType')}
                   />
                 </TableHead>
@@ -174,12 +214,12 @@ export const EventsPageTable = ({
               {fetching ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={9}
                     className="ui-banshee-text-center ui-banshee-py-8"
                   >
                     <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2">
                       <LoadingSpinner size={16} />
-                      <Text variant="small" color="foreground">
+                      <Text variant="medium" color="foreground">
                         Loading events...
                       </Text>
                     </div>
@@ -188,10 +228,10 @@ export const EventsPageTable = ({
               ) : flattenedEvents.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={9}
                     className="!ui-banshee-text-center ui-banshee-py-8"
                   >
-                    <Text variant="small" color="foreground">
+                    <Text variant="medium" color="foreground">
                       No recent events tracked.
                     </Text>
                   </TableCell>
@@ -199,7 +239,7 @@ export const EventsPageTable = ({
               ) : (
                 sortedEvents.map((event) => (
                   <TableRow key={event.id}>
-                    <TableCell>
+                    <TableCell className="ui-banshee-bg-neutral-2">
                       <button
                         onClick={() => setSelectedEvent(event)}
                         className="ui-banshee-p-1 hover:ui-banshee-bg-neutral-100 ui-banshee-rounded ui-banshee-w-full ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center"
@@ -209,34 +249,64 @@ export const EventsPageTable = ({
                     </TableCell>
                     <TableCell>
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                        <div
-                          style={{
-                            backgroundColor: getStatusColorHex(event.newStatus),
-                          }}
-                          className={`ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full`}
-                          title={getStatusLabel(event.newStatus)}
-                        />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                tabIndex={0}
+                                role="img"
+                                aria-label={getStatusLabel(event.newStatus)}
+                                style={{
+                                  backgroundColor: getStatusColorHex(
+                                    event.newStatus,
+                                  ),
+                                }}
+                                className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                              />
+                            </TooltipTrigger>
+
+                            <TooltipContent>
+                              {getStatusLabel(event.newStatus)}
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
-                      <Text variant="small" color="foreground">
-                        {event.bansheeRequest?.serialNumber || 'N/A'}
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
+                        {event.bansheeRequest?.name || 'N/A'}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
+                        {event.bansheeRequest?.site?.siteName || 'N/A'}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
+                        {event.bansheeRequest?.level?.levelName || 'N/A'}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
+                        {event.bansheeRequest?.drive?.driveName || 'N/A'}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
                         {event.bansheeRequest?.location?.locationName || 'N/A'}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-left ui-banshee-px-4">
-                      <Text variant="small" color="foreground">
+                    <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
+                      <Text variant="medium" color="foreground">
                         {new Date(event.createdAt).toLocaleDateString()}
                       </Text>
                     </TableCell>
-                    <TableCell className="ui-banshee-text-left">
+                    <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">
                       <Text
                         className="ui-banshee-px-4 ui-banshee-text-left"
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                       >
                         {event.eventType === 'STATUS_CHANGE'

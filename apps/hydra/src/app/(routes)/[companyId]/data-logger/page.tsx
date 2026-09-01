@@ -3,8 +3,13 @@
 import { Button, SidebarInset } from '@gsp/ui-core';
 import { CloudConfigurationPanel } from '@/hydra-component/CloudConfigurationPanel';
 import { LocalConfigurationPanel } from '@/hydra-component/LocalConfigurationPanel';
+import { InterrogatorConfigurationPanel } from '@/hydra-component/InterrogatorConfigurationPanel';
+import { useHydraLocalConfig } from '@/hydra-component/hooks/useHydraLocalConfig';
 
 export default function HydraDataLoggerPage() {
+  const localConfig = useHydraLocalConfig();
+  const { connected, saving, isDirty, save, reset } = localConfig;
+
   return (
     <SidebarInset>
       <main className="pr-2 bg-main-white min-h-full">
@@ -13,29 +18,34 @@ export default function HydraDataLoggerPage() {
             <CloudConfigurationPanel />
           </div>
           <div className='lg:col-span-2 md:py-4'>
-            <LocalConfigurationPanel />
+            <LocalConfigurationPanel config={localConfig} />
           </div>
 
+        </div>
+
+        <div className="pb-8">
+          <InterrogatorConfigurationPanel config={localConfig} />
         </div>
 
         <div className="flex justify-end gap-3 pb-8">
           <Button
             variant="outline"
             type="button"
-            onClick={() => console.log('Cancel')}
+            disabled={!isDirty || saving}
+            onClick={reset}
           >
             Cancel
           </Button>
           <Button
             variant="primary"
             type="button"
-            onClick={() => console.log('Save')}
+            disabled={!connected || saving}
+            onClick={save}
           >
-            Save
+            {saving ? 'Saving…' : 'Save'}
           </Button>
         </div>
       </main>
     </SidebarInset>
   );
 }
- 

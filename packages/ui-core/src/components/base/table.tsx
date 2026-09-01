@@ -127,7 +127,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'ds-border-b ds-border-neutral-3 [&:nth-child(2)]:ds-text-center [&:first-child]:ds-bg-neutral-2 [&:first-child]:ds-text-center [&:last-child]:ds-text-right ds-text-main-black ',
+      'ds-border-b ds-border-neutral-3  ds-text-main-black ',
       className,
     )}
     {...props}

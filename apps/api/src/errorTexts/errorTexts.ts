@@ -232,6 +232,19 @@ export const errorTexts = {
   hydraBoltSerialNumberValidateError_title:
     'Failed to validate hydra bolt serial number.',
 
+  // Hydra bolt template
+  hydraBoltTemplateNotFound_title: (id: string) =>
+    `Hydra bolt template #${id} not found`,
+
+  hydraBoltTemplateDuplicateName_title: (name: string) =>
+    `A hydra bolt template with name ${name} already exists`,
+
+  hydraBoltTemplateCreateError_title: 'Failed to create hydra bolt template.',
+
+  hydraBoltTemplateUpdateError_title: 'Failed to update hydra bolt template.',
+
+  hydraBoltTemplateDeleteError_title: 'Failed to delete hydra bolt template.',
+
   // Banshee template
   bansheeTemplateCreateError_title: 'Failed to create banshee template.',
   bansheeTemplateUpdateError_title: 'Failed to update banshee template.',

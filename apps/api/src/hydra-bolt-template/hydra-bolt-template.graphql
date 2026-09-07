@@ -1,0 +1,110 @@
+scalar DateTime
+
+type HydraBoltTemplate {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  name: String!
+  levelId: String
+  driveId: String
+  locationId: String
+  companyId: String!
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: String
+  comment: String
+
+  createdBy: String!
+  updatedBy: String
+
+  level: Level
+  drive: Drive
+  location: Location
+  company: Company
+  site: Site
+  siteId: String
+  activateNotifications: Boolean!
+}
+
+"""
+CreateHydraBoltTemplateInput
+Define the input fields to create a new hydra bolt
+"""
+input CreateHydraBoltTemplateInput {
+  name: String!
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition
+  comment: String
+  activateNotifications: Boolean!
+  companyId: String!
+}
+
+"""
+UpdateHydraBoltTemplateInput
+Define the input fields to update an existing hydra bolt
+"""
+input UpdateHydraBoltTemplateInput {
+  name: String!
+  siteId: String
+  levelId: String
+  driveId: String
+  locationId: String
+  coordinates: JSON
+  locationDetails: String
+  boltInstallationDateTime: DateTime
+  ringPosition: RingPosition
+  comment: String
+  activateNotifications: Boolean!
+  companyId: String!
+}
+
+type HydraBoltTemplatesResponse {
+  totalRecords: Int!
+  results: [HydraBoltTemplate!]!
+}
+
+
+type Query {
+  hydraBoltTemplate(id: String! companyId: String!): HydraBoltTemplate!
+
+  hydraBoltTemplates(
+    offset: Int
+    limit: Int
+    serialNumber: String
+    driveId: String
+    levelId: String
+    locationId: String
+    createdBy: String
+    companyId: String
+    siteId: String
+    activateNotifications: Boolean
+  ): HydraBoltTemplatesResponse!
+}
+
+"""
+Mutation
+Define the mutations that can be made to the HydraBolt model
+"""
+type Mutation {
+  createHydraBoltTemplate(
+    createHydraBoltTemplateInput: CreateHydraBoltTemplateInput!
+  ): HydraBoltTemplate!
+
+  updateHydraBoltTemplate(
+    id: String!
+    updateHydraBoltTemplateInput: UpdateHydraBoltTemplateInput!
+  ): HydraBoltTemplate!
+
+  deleteHydraBoltTemplate(
+    id: String!
+    companyId: String!
+  ): HydraBoltTemplate!
+}

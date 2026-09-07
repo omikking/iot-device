@@ -92,6 +92,12 @@ const parentChain: Record<string, ParentChainEntry> = {
     parentField: 'companyId',
     parentModel: 'company',
   },
+  hydraBoltTemplate: {
+    model: 'hydraBoltTemplate',
+    idField: 'id',
+    parentField: 'companyId',
+    parentModel: 'company',
+  },
 };
 
 // Outcome of walking the parent chain.

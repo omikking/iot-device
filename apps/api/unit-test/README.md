@@ -78,6 +78,13 @@ Each suite also covers, per service:
 - **stats:** non-admin access matrix, measurement classification
   (broken / not-measurable / temperature-error / no-logs), create vs delete.
 
+## Hydra
+
+`hydra/hydra-bolt-template.service.spec.ts` — 17 tests covering the Hydra Bolt
+Template `update` / `remove` / `findOne` paths: company-scoped reads, name
+collision rules, when mine-hierarchy validation is (and is not) run, the single
+scoped `delete` and its `P2025` -> not-found mapping, and the access checks.
+
 ## Notes / behaviour observations (worth a follow-up)
 
 - **BE-TMP-03 / BE-TMP-05:** the smoke doc says fetch-by-id returns `null` for a

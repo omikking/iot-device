@@ -69,6 +69,7 @@ export function createPrismaMock(): PrismaMock {
     user: modelMock(),
     site: modelMock(),
     hydraBolts: modelMock(),
+    hydraBoltTemplate: modelMock(),
   } as unknown as PrismaMock;
 
   prisma.$transaction = jest.fn((arg: unknown) => {
@@ -113,6 +114,18 @@ export function activeBansheePlan(companyId: string) {
     id: 'plan-id',
     companyId,
     applicationName: Application.BANSHEE,
+    expiringDate: null,
+  };
+}
+
+/**
+ * The same, for any other application (e.g. HYDRA).
+ */
+export function activePlanFor(companyId: string, app: Application) {
+  return {
+    id: 'plan-id',
+    companyId,
+    applicationName: app,
     expiringDate: null,
   };
 }

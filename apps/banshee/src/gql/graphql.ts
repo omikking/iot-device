@@ -604,6 +604,26 @@ export type CreateHydraBoltInput = {
   ringPosition: RingPosition;
   serialNumber: Scalars['String']['input'];
   siteId: Scalars['String']['input'];
+  templateId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * CreateHydraBoltTemplateInput
+ * Define the input fields to create a new hydra bolt
+ */
+export type CreateHydraBoltTemplateInput = {
+  activateNotifications: Scalars['Boolean']['input'];
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  ringPosition?: InputMaybe<RingPosition>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateHydraboltInput = {
@@ -782,8 +802,41 @@ export type HydraBolt = {
   serialNumber: Scalars['String']['output'];
   site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
+  templateId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type HydraBoltTemplate = {
+  __typename?: 'HydraBoltTemplate';
+  activateNotifications: Scalars['Boolean']['output'];
+  boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Company>;
+  companyId: Scalars['String']['output'];
+  coordinates?: Maybe<Scalars['JSON']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Scalars['String']['output'];
+  drive?: Maybe<Drive>;
+  driveId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  level?: Maybe<Level>;
+  levelId?: Maybe<Scalars['String']['output']>;
+  location?: Maybe<Location>;
+  locationDetails?: Maybe<Scalars['String']['output']>;
+  locationId?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  ringPosition?: Maybe<Scalars['String']['output']>;
+  site?: Maybe<Site>;
+  siteId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type HydraBoltTemplatesResponse = {
+  __typename?: 'HydraBoltTemplatesResponse';
+  results: Array<HydraBoltTemplate>;
+  totalRecords: Scalars['Int']['output'];
 };
 
 export type HydraBoltsResponse = {
@@ -905,6 +958,7 @@ export type Mutation = {
   createDrive: Drive;
   createGlobalInvitation: InvitationResponse;
   createHydraBolt: HydraBolt;
+  createHydraBoltTemplate: HydraBoltTemplate;
   createHydrabolt: Hydrabolt;
   createInvitation: InvitationResponse;
   createLevel: Level;
@@ -916,6 +970,7 @@ export type Mutation = {
   deleteBansheeTemplate: BansheeTemplate;
   deleteCartItem: BansheeCartItem;
   deleteHydraBolt: HydraBolt;
+  deleteHydraBoltTemplate: HydraBoltTemplate;
   fulfillOrderItem: BansheeOrderItem;
   removeBoltResult: BoltResult;
   removeBoltResults: Array<BoltResult>;
@@ -939,6 +994,7 @@ export type Mutation = {
   updateCompany: Company;
   updateDrive: Drive;
   updateHydraBolt: HydraBolt;
+  updateHydraBoltTemplate: HydraBoltTemplate;
   updateHydrabolt: Hydrabolt;
   updateLevel: Level;
   updateLocation: Location;
@@ -1122,6 +1178,15 @@ export type MutationCreateHydraBoltArgs = {
  * Mutation
  * Define the mutations that can be made to the User model
  */
+export type MutationCreateHydraBoltTemplateArgs = {
+  createHydraBoltTemplateInput: CreateHydraBoltTemplateInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
 export type MutationCreateHydraboltArgs = {
   input: CreateHydraboltInput;
 };
@@ -1213,6 +1278,16 @@ export type MutationDeleteCartItemArgs = {
  * Define the mutations that can be made to the User model
  */
 export type MutationDeleteHydraBoltArgs = {
+  companyId: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationDeleteHydraBoltTemplateArgs = {
   companyId: Scalars['String']['input'];
   id: Scalars['String']['input'];
 };
@@ -1430,6 +1505,16 @@ export type MutationUpdateDriveArgs = {
 export type MutationUpdateHydraBoltArgs = {
   id: Scalars['String']['input'];
   updateHydraBoltInput: UpdateHydraBoltInput;
+};
+
+
+/**
+ * Mutation
+ * Define the mutations that can be made to the User model
+ */
+export type MutationUpdateHydraBoltTemplateArgs = {
+  id: Scalars['String']['input'];
+  updateHydraBoltTemplateInput: UpdateHydraBoltTemplateInput;
 };
 
 
@@ -1741,6 +1826,8 @@ export type Query = {
   getRoles: Array<Role>;
   hazards?: Maybe<Array<BoltResult>>;
   hydraBolt: HydraBolt;
+  hydraBoltTemplate: HydraBoltTemplate;
+  hydraBoltTemplates: HydraBoltTemplatesResponse;
   hydraBolts: HydraBoltsResponse;
   hydraboltByPartNumber?: Maybe<Hydrabolt>;
   hydrabolts: Array<Hydrabolt>;
@@ -1975,6 +2062,34 @@ export type QueryHazardsArgs = {
 export type QueryHydraBoltArgs = {
   companyId: Scalars['String']['input'];
   id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryHydraBoltTemplateArgs = {
+  companyId: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
+
+/**
+ * Query
+ * Define the queries that can be made to the User model
+ */
+export type QueryHydraBoltTemplatesArgs = {
+  activateNotifications?: InputMaybe<Scalars['Boolean']['input']>;
+  companyId?: InputMaybe<Scalars['String']['input']>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -2318,6 +2433,26 @@ export type UpdateHydraBoltInput = {
   name: Scalars['String']['input'];
   ringPosition: RingPosition;
   siteId: Scalars['String']['input'];
+  templateId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * UpdateHydraBoltTemplateInput
+ * Define the input fields to update an existing hydra bolt
+ */
+export type UpdateHydraBoltTemplateInput = {
+  activateNotifications: Scalars['Boolean']['input'];
+  boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyId: Scalars['String']['input'];
+  coordinates?: InputMaybe<Scalars['JSON']['input']>;
+  driveId?: InputMaybe<Scalars['String']['input']>;
+  levelId?: InputMaybe<Scalars['String']['input']>;
+  locationDetails?: InputMaybe<Scalars['String']['input']>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  ringPosition?: InputMaybe<RingPosition>;
+  siteId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateHydraboltInput = {

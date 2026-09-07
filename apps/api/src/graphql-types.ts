@@ -341,6 +341,36 @@ export class UpdateDriveInput {
     driveName?: Nullable<string>;
 }
 
+export class CreateHydraBoltTemplateInput {
+    name: string;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<RingPosition>;
+    comment?: Nullable<string>;
+    activateNotifications: boolean;
+    companyId: string;
+}
+
+export class UpdateHydraBoltTemplateInput {
+    name: string;
+    siteId?: Nullable<string>;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<RingPosition>;
+    comment?: Nullable<string>;
+    activateNotifications: boolean;
+    companyId: string;
+}
+
 export class CreateHydraboltInput {
     partNumber: string;
     drawingNumber?: Nullable<string>;
@@ -385,6 +415,7 @@ export class CreateHydraBoltInput {
     comment?: Nullable<string>;
     activateNotifications: boolean;
     companyId: string;
+    templateId?: Nullable<string>;
 }
 
 export class UpdateHydraBoltInput {
@@ -400,6 +431,7 @@ export class UpdateHydraBoltInput {
     comment?: Nullable<string>;
     activateNotifications: boolean;
     companyId: string;
+    templateId?: Nullable<string>;
 }
 
 export class CreateInvitationInput {
@@ -644,6 +676,8 @@ export abstract class IQuery {
     getPlanLevel?: Nullable<PlanLevel[]>;
     getProceqStatus?: Nullable<ProceqStatus[]>;
     hazards?: Nullable<BoltResult[]>;
+    hydraBoltTemplate?: HydraBoltTemplate;
+    hydraBoltTemplates?: HydraBoltTemplatesResponse;
     hydrabolts?: Hydrabolt[];
     hydraboltByPartNumber?: Nullable<Hydrabolt>;
     hydraBolt?: HydraBolt;
@@ -701,6 +735,9 @@ export abstract class IMutation {
     createDrive?: Drive;
     updateDrive?: Drive;
     removeDrive?: Drive;
+    createHydraBoltTemplate?: HydraBoltTemplate;
+    updateHydraBoltTemplate?: HydraBoltTemplate;
+    deleteHydraBoltTemplate?: HydraBoltTemplate;
     createHydrabolt?: Hydrabolt;
     updateHydrabolt?: Hydrabolt;
     createHydraBolt?: HydraBolt;
@@ -1037,6 +1074,36 @@ export class EnumOption {
     label: string;
 }
 
+export class HydraBoltTemplate {
+    id: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    name: string;
+    levelId?: Nullable<string>;
+    driveId?: Nullable<string>;
+    locationId?: Nullable<string>;
+    companyId: string;
+    coordinates?: Nullable<JSON>;
+    locationDetails?: Nullable<string>;
+    boltInstallationDateTime?: Nullable<DateTime>;
+    ringPosition?: Nullable<string>;
+    comment?: Nullable<string>;
+    createdBy: string;
+    updatedBy?: Nullable<string>;
+    level?: Nullable<Level>;
+    drive?: Nullable<Drive>;
+    location?: Nullable<Location>;
+    company?: Nullable<Company>;
+    site?: Nullable<Site>;
+    siteId?: Nullable<string>;
+    activateNotifications: boolean;
+}
+
+export class HydraBoltTemplatesResponse {
+    totalRecords: number;
+    results: HydraBoltTemplate[];
+}
+
 export class Hydrabolt {
     id: string;
     partNumber: string;
@@ -1079,6 +1146,7 @@ export class HydraBolt {
     company?: Nullable<Company>;
     site?: Nullable<Site>;
     siteId: string;
+    templateId?: Nullable<string>;
     activateNotifications?: Nullable<boolean>;
     boltType?: Nullable<string>;
     numberOfSensors?: Nullable<number>;

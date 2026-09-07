@@ -52,4 +52,9 @@ export class UpdateHydraBoltInput extends GraphQLTypes.UpdateHydraBoltInput {
   @IsString()
   @IsUUID()
   companyId!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  templateId?: string;
 }

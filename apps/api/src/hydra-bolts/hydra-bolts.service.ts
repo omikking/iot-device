@@ -125,6 +125,25 @@ export class HydraBoltsService {
     };
   }
 
+  private async assertTemplateBelongsToCompany(
+    templateId: string,
+    companyId: string,
+  ) {
+    const template = await this.prisma.hydraBoltTemplate.findUnique({
+      where: { id: templateId },
+      select: { companyId: true },
+    });
+
+    if (!template || template.companyId !== companyId) {
+      throw new UserInputError('', {
+        extensions: {
+          code: 'HYDRA_BOLT_TEMPLATE_NOTFOUND_ERROR',
+          title: `Hydra Bolt template #${templateId} not found`,
+        },
+      });
+    }
+  }
+
   async create(
     createHydraBoltInput: GraphQLTypes.CreateHydraBoltInput,
     user: ActiveUserData,
@@ -166,6 +185,13 @@ export class HydraBoltsService {
         locationId: createHydraBoltInput.locationId,
       });
 
+      if (createHydraBoltInput.templateId) {
+        await this.assertTemplateBelongsToCompany(
+          createHydraBoltInput.templateId,
+          createHydraBoltInput.companyId,
+        );
+      }
+
       return await this.prisma.hydraBolts.create({
         data: {
           serialNumber: createHydraBoltInput.serialNumber,
@@ -182,6 +208,7 @@ export class HydraBoltsService {
           comment: createHydraBoltInput.comment || undefined,
           activateNotifications: createHydraBoltInput.activateNotifications,
           companyId: createHydraBoltInput.companyId,
+          templateId: createHydraBoltInput.templateId,
           createdBy: user.id,
           updatedBy: user.id,
         },
@@ -383,6 +410,13 @@ export class HydraBoltsService {
           updateHydraBoltInput.locationId || existingRequest.locationId,
       });
 
+      if (updateHydraBoltInput.templateId) {
+        await this.assertTemplateBelongsToCompany(
+          updateHydraBoltInput.templateId,
+          companyId,
+        );
+      }
+
       return await this.prisma.hydraBolts.update({
         where: { id },
         data: {
@@ -399,6 +433,7 @@ export class HydraBoltsService {
           comment: updateHydraBoltInput.comment || undefined,
           updatedBy: user.id,
           activateNotifications: updateHydraBoltInput.activateNotifications,
+          templateId: updateHydraBoltInput.templateId,
         },
       });
     } catch (error) {

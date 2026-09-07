@@ -147,6 +147,7 @@ model Company {
   orders              BansheeOrder[]
   bansheeEmails       BansheeEmail[]
   hydraBolts          HydraBolts[]
+  hydraBoltTemplates  HydraBoltTemplate[]
 
   @@map("companies")
 }
@@ -259,6 +260,7 @@ model Site {
   cartItems           BansheeCartItem[]
   orderItems          BansheeOrderItem[]
   hydraBolts          HydraBolts[]
+  hydraBoltTemplates  HydraBoltTemplate[]
 
   @@map("sites")
 }
@@ -273,13 +275,14 @@ model Level {
   site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId String
 
-  drive           Drive[]
-  boltResult      BoltResult[]
-  bansheeRequests BansheeRequest[]
-  templates       BansheeTemplate[]
-  cartItems       BansheeCartItem[]
-  orderItems      BansheeOrderItem[]
-  hydraBolts      HydraBolts[]
+  drive              Drive[]
+  boltResult         BoltResult[]
+  bansheeRequests    BansheeRequest[]
+  templates          BansheeTemplate[]
+  cartItems          BansheeCartItem[]
+  orderItems         BansheeOrderItem[]
+  hydraBolts         HydraBolts[]
+  hydraBoltTemplates HydraBoltTemplate[]
 
   @@map("levels")
 }
@@ -294,13 +297,14 @@ model Drive {
   level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
   levelId String
 
-  location        Location[]
-  boltResult      BoltResult[]
-  bansheeRequests BansheeRequest[]
-  templates       BansheeTemplate[]
-  cartItems       BansheeCartItem[]
-  orderItems      BansheeOrderItem[]
-  hydraBolts      HydraBolts[]
+  location           Location[]
+  boltResult         BoltResult[]
+  bansheeRequests    BansheeRequest[]
+  templates          BansheeTemplate[]
+  cartItems          BansheeCartItem[]
+  orderItems         BansheeOrderItem[]
+  hydraBolts         HydraBolts[]
+  hydraBoltTemplates HydraBoltTemplate[]
 
   @@map("drives")
 }
@@ -315,12 +319,13 @@ model Location {
   drive   Drive  @relation(fields: [driveId], references: [id], onDelete: Cascade)
   driveId String
 
-  boltResult      BoltResult[]
-  bansheeRequests BansheeRequest[]
-  templates       BansheeTemplate[]
-  cartItems       BansheeCartItem[]
-  orderItems      BansheeOrderItem[]
-  hydraBolts      HydraBolts[]
+  boltResult         BoltResult[]
+  bansheeRequests    BansheeRequest[]
+  templates          BansheeTemplate[]
+  cartItems          BansheeCartItem[]
+  orderItems         BansheeOrderItem[]
+  hydraBolts         HydraBolts[]
+  hydraBoltTemplates HydraBoltTemplate[]
 
   @@map("locations")
 }
@@ -875,6 +880,7 @@ model HydraBolts {
 
   serialNumber             String       @unique @db.VarChar(100)
   name                     String       @db.VarChar(255)
+  templateId               String?
   levelId                  String
   driveId                  String
   locationId               String
@@ -888,16 +894,53 @@ model HydraBolts {
   createdBy String  @db.Uuid
   updatedBy String? @db.Uuid
 
-  level     Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
-  drive     Drive    @relation(fields: [driveId], references: [id], onDelete: Cascade)
-  location  Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  level     Level              @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive     Drive              @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location  Location           @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  company   Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
   siteId    String
-  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  site      Site               @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  template  HydraBoltTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@index([createdBy])
   @@index([companyId])
   @@index([siteId])
   @@map("hydra_bolts")
+}
+
+model HydraBoltTemplate {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  name String @db.VarChar(255)
+
+  coordinates              Json?
+  locationDetails          String?       @db.Text
+  boltInstallationDateTime DateTime?     @db.Timestamptz
+  ringPosition             RingPosition?
+  comment                  String?       @db.Text
+  activateNotifications    Boolean       @default(false)
+
+  createdBy String  @db.Uuid
+  updatedBy String? @db.Uuid
+
+  companyId  String
+  siteId     String?
+  levelId    String?
+  driveId    String?
+  locationId String?
+
+  site       Site?        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  level      Level?       @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  drive      Drive?       @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  location   Location?    @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  company    Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  hydraBolts HydraBolts[]
+
+  @@index([createdBy])
+  @@index([companyId])
+  @@index([siteId])
+  @@map("hydra_bolt_template")
 }

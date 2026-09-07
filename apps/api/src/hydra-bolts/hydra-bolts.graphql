@@ -30,6 +30,7 @@ type HydraBolt {
   company: Company
   site: Site
   siteId: String!
+  templateId: String
   activateNotifications: Boolean
   boltType: String
 
@@ -55,6 +56,7 @@ input CreateHydraBoltInput {
   comment: String
   activateNotifications: Boolean!
   companyId: String!
+  templateId: String
 }
 
 """
@@ -74,6 +76,7 @@ input UpdateHydraBoltInput {
   comment: String
   activateNotifications: Boolean!
   companyId: String!
+  templateId: String
 }
 
 type HydraBoltsResponse {

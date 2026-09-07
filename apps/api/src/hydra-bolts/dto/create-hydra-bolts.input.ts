@@ -55,4 +55,9 @@ export class CreateHydraBoltInput extends GraphQLTypes.CreateHydraBoltInput {
   @IsString()
   @IsUUID()
   companyId!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUUID()
+  templateId?: string;
 }

@@ -44,25 +44,26 @@ export function getValidation(id: number, value: string): ValidationResult {
     case 6:
     case 13:
     case 14:
-    case 31:
       return uint(value, 0, 65535);
+    case 31:
+      return uint(value, 5, 300);
     case 9:
-    case 10:
+      return uint(value, 0, 2147483647);
     case 24:
+      return uint(value, 0, 24000);
     case 25:
+      return uint(value, 1, 24000);
     case 26:
-    case 27:
-      return uint(value, 0, 4294967295);
     case 129:
       return uint(value, 0, 4294967295);
+    case 27:
+      return uint(value, 10, 604800);
     case 3:
-      return strLen(value, 0, 31);
     case 4:
     case 18:
     case 19:
       return strLen(value, 0, 31);
     case 7:
-      return strLen(value, 0, 47);
     case 8:
       return strLen(value, 0, 47);
     case 20:
@@ -70,10 +71,11 @@ export function getValidation(id: number, value: string): ValidationResult {
     case 28:
     case 29:
     case 30:
-      return strLen(value, 0, 152);
+      return strLen(value, 0, 1200);
     case 130:
       return strLen(value, 0, 13);
     default:
       return { valid: true, error: null };
   }
 }
+ 

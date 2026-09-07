@@ -111,16 +111,10 @@ export default function ContactUsPage({
 
   const documents = [
     {
-      name: 'xCell Cyclops Instruction Manual E V2.en',
+      name: 'xcell-banshee-brochure-en-07_2026',
       type: 'PDF document',
-      size: '1276 kB',
-      link: 'https://sandvik-my.sharepoint.com/:b:/p/amartya_srivastav_c/IQCVZI7RRl_1SYs104GspzalAX4mSe-oxYVYvZ28oKKnIrY?e=JJ7Jq2',
-    },
-    {
-      name: 'xCell Cyclops System Overview E V2.en',
-      type: 'PDF document',
-      size: '1276 kB',
-      link: 'https://sandvik-my.sharepoint.com/:b:/p/amartya_srivastav_c/IQCVZI7RRl_1SYs104GspzalAX4mSe-oxYVYvZ28oKKnIrY?e=JJ7Jq2',
+      size: '1.8 MB',
+      link: 'https://sandvik-my.sharepoint.com/shared?listurl=https%3A%2F%2Fsandvik%2Dmy%2Esharepoint%2Ecom%2Fpersonal%2Fosvaldo%5Fvallati%5Fsandvik%5Fcom%2FDocuments&id=%2Fpersonal%2Fosvaldo%5Fvallati%5Fsandvik%5Fcom%2FDocuments%2FMicrosoft%20Teams%20Chat%20Files%2Fxcell%2Dbanshee%2Dbrochure%2Den%2D07%5F2026%2Epdf&parent=%2Fpersonal%2Fosvaldo%5Fvallati%5Fsandvik%5Fcom%2FDocuments%2FMicrosoft%20Teams%20Chat%20Files&ct=1786521972846&or=Teams%2DHL&shareLink=1&ga=1&LOF=1',
     },
   ];
 
@@ -367,14 +361,15 @@ export default function ContactUsPage({
                     >
                       xCell@sandvik.com
                     </Text>
-                    <Text
-                      variant="small"
-                      color="foreground"
-                      className="ui-banshee-text-blue-primary hover:ui-banshee-underline ui-banshee-cursor-pointer"
-                    >
-                      {sandvikAdminUserInfo?.email ||
-                        'localsupportexample@sandvik.com'}
-                    </Text>
+                    {sandvikAdminUserInfo?.email && (
+                      <Text
+                        variant="small"
+                        color="foreground"
+                        className="ui-banshee-text-blue-primary hover:ui-banshee-underline ui-banshee-cursor-pointer"
+                      >
+                        {sandvikAdminUserInfo?.email}
+                      </Text>
+                    )}
                   </div>
                   <input
                     ref={inputRef}
@@ -390,7 +385,6 @@ export default function ContactUsPage({
                     onClick={handleAttachFile}
                     type="button"
                     disabled={isSubmitting}
-                    className="ui-banshee-flex-1 ui-banshee-max-w-[20%]"
                   >
                     Attach file
                   </Button>
@@ -402,7 +396,6 @@ export default function ContactUsPage({
                     size="small"
                     type="submit"
                     disabled={isSubmitting}
-                    className="ui-banshee-flex-1 ui-banshee-max-w-[20%]"
                   >
                     {isSubmitting ? 'Sending...' : 'Send message'}
                   </Button>

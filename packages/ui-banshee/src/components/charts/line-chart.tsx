@@ -131,6 +131,20 @@ const defaultBands: StatusBand[] = [
   { from: 1, to: 0, label: 'Not Measurable', color: '#cccccc' },
 ];
 
+/**
+ * Whether a raw cell would yield a plotted point. Mirrors the series mapping
+ * below: the object form plots its `value`, the plain form plots only numbers,
+ * and anything else becomes `null` (nothing drawn).
+ */
+const hasPlottableValue = (raw: unknown): boolean => {
+  const value =
+    typeof raw === 'object' && raw !== null
+      ? (raw as ChartLinePoint).value
+      : raw;
+
+  return typeof value === 'number' && !Number.isNaN(value);
+};
+
 export const ChartLineLinear = forwardRef<
   ChartLineLinearHandle,
   ChartLineLinearProps
@@ -163,6 +177,16 @@ export const ChartLineLinear = forwardRef<
         backgroundColor: '#ffffff',
       }),
   }));
+
+  // Only lines with at least one plottable point get a legend entry / series;
+  // a bolt with no readings would otherwise show an unusable legend swatch.
+  const visibleLines = useMemo(
+    () =>
+      lines.filter((line) =>
+        data.some((d) => hasPlottableValue(d[line.dataKey as keyof typeof d])),
+      ),
+    [lines, data],
+  );
 
   // Recompute the ECharts option only when the inputs that shape it change.
   // This keeps the memoized object reference stable across unrelated parent
@@ -222,7 +246,7 @@ export const ChartLineLinear = forwardRef<
         type: 'category',
         data: xAxisData,
         show: !hideXAxisLabel,
-        axisLabel: { fontSize: 12, color: '#000000' },
+        axisLabel: { fontSize: 14, color: '#101010' },
         axisTick: { alignWithLabel: true },
         axisLine: { show: false },
       },
@@ -252,7 +276,7 @@ export const ChartLineLinear = forwardRef<
             return label;
           },
           fontSize: 14,
-          color: '#000000',
+          color: '#101010',
         },
         axisTick: { show: false },
         axisLine: { show: false },
@@ -309,8 +333,8 @@ export const ChartLineLinear = forwardRef<
             itemHeight: 8,
             itemGap: 20,
             width: '90%',
-            textStyle: { fontSize: 11, color: '#666' },
-            data: lines.map((l) => ({
+            textStyle: { fontSize: 14, color: '#101010' },
+            data: visibleLines.map((l) => ({
               name: l.label,
               itemStyle: { color: l.color },
             })),
@@ -344,7 +368,7 @@ export const ChartLineLinear = forwardRef<
           },
         },
         // Data lines
-        ...lines.map((line) => ({
+        ...visibleLines.map((line) => ({
           type: 'line' as const,
           name: line.label,
           data: data.map((d) => {
@@ -366,7 +390,7 @@ export const ChartLineLinear = forwardRef<
         })),
       ],
     };
-  }, [data, lines, bands, showAxis, hideXAxisLabel, showLegend]);
+  }, [data, visibleLines, bands, showAxis, hideXAxisLabel, showLegend]);
 
   // Rubber-band cursor + double-click reset, kept active across option rebuilds.
   useChartZoomInteractions(chartRef, { optionKey: option });
@@ -409,7 +433,7 @@ export const ChartLineLinear = forwardRef<
   return (
     <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-items-center ui-banshee-h-full">
       <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-w-full ui-banshee-h-full">
-        <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full">
+        <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-w-full ui-banshee-justify-center">
           <ChartContainer
             config={chartConfig}
             className="ui-banshee-w-full ui-banshee-relative ui-banshee-z-10 ui-banshee-h-[42vh]"

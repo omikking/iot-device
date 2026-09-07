@@ -4,7 +4,7 @@
 generator client {
   provider      = "prisma-client-js"
   seed          = "ts-node prisma/seed.ts"
-  binaryTargets = ["debian-openssl-3.0.x"]
+  binaryTargets = ["debian-openssl-3.0.x", "native"]
 }
 
 datasource db {
@@ -396,6 +396,74 @@ model CoffeeFlavor {
   @@map("coffee_flavors")
 }
 
+model OpticboltTestResult {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  serialNumber  String   @unique @map("serial_number") @db.VarChar(50)
+  drawingNumber String?  @map("drawing_number") @db.VarChar(100)
+  boltType      String?  @map("bolt_type") @db.VarChar(50)
+  description   String?  @db.Text
+  testedAt      DateTime @map("tested_at") @db.Timestamptz
+  testedBy      String   @map("tested_by") @db.VarChar(100)
+  result        String   @db.VarChar(10)
+  fibreCheck1   Boolean  @default(false) @map("fibre_check_1")
+  fibreCheck2   Boolean  @default(false) @map("fibre_check_2")
+  fibreCheck3   Boolean  @default(false) @map("fibre_check_3")
+  psi20         Int?     @map("psi_20")
+  psi100        Int?     @map("psi_100")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  spectrums OpticboltSpectrum[]
+
+  @@map("opticbolt_test_results")
+}
+
+model OpticboltSpectrum {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  testResultId      String   @map("test_result_id") @db.Uuid
+  fbgIndex          Int      @map("fbg_index")
+  amplitude20       Decimal? @map("amplitude_20") @db.Decimal(12, 6)
+  wavelength20      Decimal? @map("wavelength_20") @db.Decimal(12, 6)
+  amplitude100      Decimal? @map("amplitude_100") @db.Decimal(12, 6)
+  wavelength100     Decimal? @map("wavelength_100") @db.Decimal(12, 6)
+  peakInitialNm     Decimal? @map("peak_initial_nm") @db.Decimal(12, 6)
+  peak20Nm          Decimal? @map("peak_20_nm") @db.Decimal(12, 6)
+  peak100Nm         Decimal? @map("peak_100_nm") @db.Decimal(12, 6)
+  strain20          Decimal? @map("strain_20") @db.Decimal(12, 6)
+  strain100         Decimal? @map("strain_100") @db.Decimal(12, 6)
+  load20            Decimal? @map("load_20") @db.Decimal(12, 6)
+  load100           Decimal? @map("load_100") @db.Decimal(12, 6)
+  time20Ms          Int?     @map("time_20_ms")
+  time100Ms         Int?     @map("time_100_ms")
+  calibrationFactor Decimal? @map("calibration_factor") @db.Decimal(12, 6)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  testResult OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+
+  @@unique([testResultId, fbgIndex])
+  @@map("opticbolt_spectrums")
+}
+
+model Hydrabolt {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partNumber           String   @unique @map("part_number") @db.VarChar(100)
+  drawingNumber        String?  @map("drawing_number") @db.VarChar(100)
+  boltLength           Float    @map("bolt_length")
+  description          String?  @db.Text
+  numberOfFBG          Int      @map("number_of_fbg")
+  positionOfFBGs       Float[]  @map("position_of_fbgs")
+  initialWavelength    Float[]  @map("initial_wavelength")
+  elasticLimit         Float    @map("elastic_limit")
+  lowPlasticLimit      Float    @map("low_plastic_limit")
+  highPlasticLimit     Float    @map("high_plastic_limit")
+  maxCalibrationFactor Float    @map("max_calibration_factor")
+  minCalibrationFactor Float    @map("min_calibration_factor")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("hydrabolt")
+}
+
 model BansheeBoltTypeConstant {
   id                   String   @id @default(uuid())
   boltType             BoltType
@@ -454,6 +522,11 @@ model BansheeRequest {
   siteId    String
   site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
+  // Template the configuration was populated from. Kept as a plain reference —
+  // deleting the template must not delete the banshee request.
+  templateId String?
+  template   BansheeTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
   cartItems  BansheeCartItem[]
   orderItems BansheeOrderItem[]
 
@@ -461,6 +534,7 @@ model BansheeRequest {
   @@index([serialNumber])
   @@index([companyId])
   @@index([siteId])
+  @@index([templateId])
   @@map("banshee_requests")
 }
 
@@ -633,6 +707,8 @@ model BansheeTemplate {
 
   ringPosition RingPosition? //need to check
 
+  bansheeRequests BansheeRequest[]
+
   @@index([companyId])
   @@map("templates")
 }
@@ -781,86 +857,16 @@ model BansheeEmailAttachment {
   mimeType         String
   fileSize         BigInt
 
-  createdAt DateTime  @default(now())
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-
   bansheeEmailId String
+  createdAt      DateTime  @default(now())
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
 
   email BansheeEmail @relation(fields: [bansheeEmailId], references: [id], onDelete: Cascade)
 
   @@index([bansheeEmailId])
   @@index([createdAt])
 }
-
-model OpticboltTestResult {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  serialNumber  String   @unique @map("serial_number") @db.VarChar(50)
-  drawingNumber String?  @map("drawing_number") @db.VarChar(100)
-  boltType      String?  @map("bolt_type") @db.VarChar(50)
-  description   String?  @db.Text
-  testedAt      DateTime @map("tested_at") @db.Timestamptz
-  testedBy      String   @map("tested_by") @db.VarChar(100)
-  result        String   @db.VarChar(10)
-  fibreCheck1   Boolean  @default(false) @map("fibre_check_1")
-  fibreCheck2   Boolean  @default(false) @map("fibre_check_2")
-  fibreCheck3   Boolean  @default(false) @map("fibre_check_3")
-  psi20         Int?     @map("psi_20")
-  psi100        Int?     @map("psi_100")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-
-  spectrums OpticboltSpectrum[]
-
-  @@map("opticbolt_test_results")
-}
-
-model OpticboltSpectrum {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  testResultId      String   @map("test_result_id") @db.Uuid
-  fbgIndex          Int      @map("fbg_index")
-  amplitude20       Decimal? @map("amplitude_20") @db.Decimal(12, 6)
-  wavelength20      Decimal? @map("wavelength_20") @db.Decimal(12, 6)
-  amplitude100      Decimal? @map("amplitude_100") @db.Decimal(12, 6)
-  wavelength100     Decimal? @map("wavelength_100") @db.Decimal(12, 6)
-  peakInitialNm     Decimal? @map("peak_initial_nm") @db.Decimal(12, 6)
-  peak20Nm          Decimal? @map("peak_20_nm") @db.Decimal(12, 6)
-  peak100Nm         Decimal? @map("peak_100_nm") @db.Decimal(12, 6)
-  strain20          Decimal? @map("strain_20") @db.Decimal(12, 6)
-  strain100         Decimal? @map("strain_100") @db.Decimal(12, 6)
-  load20            Decimal? @map("load_20") @db.Decimal(12, 6)
-  load100           Decimal? @map("load_100") @db.Decimal(12, 6)
-  time20Ms          Int?     @map("time_20_ms")
-  time100Ms         Int?     @map("time_100_ms")
-  calibrationFactor Decimal? @map("calibration_factor") @db.Decimal(12, 6)
-  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  testResult OpticboltTestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
-
-  @@unique([testResultId, fbgIndex])
-  @@map("opticbolt_spectrums")
-}
-
-model Hydrabolt {
-  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  partNumber           String   @unique @map("part_number") @db.VarChar(100)
-  drawingNumber        String?  @map("drawing_number") @db.VarChar(100)
-  boltLength           Float    @map("bolt_length")
-  description          String?  @db.Text
-  numberOfFBG          Int      @map("number_of_fbg")
-  positionOfFBGs       Float[]  @map("position_of_fbgs")
-  initialWavelength    Float[]  @map("initial_wavelength")
-  elasticLimit         Float    @map("elastic_limit")
-  lowPlasticLimit      Float    @map("low_plastic_limit")
-  highPlasticLimit     Float    @map("high_plastic_limit")
-  maxCalibrationFactor Float    @map("max_calibration_factor")
-  minCalibrationFactor Float    @map("min_calibration_factor")
-  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-
-  @@map("hydrabolt")
-}
-
 model HydraBolts {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @db.Timestamptz

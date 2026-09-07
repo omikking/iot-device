@@ -10,11 +10,19 @@ import {
   ModalTitle,
   LoadingSpinner,
 } from '@gsp/ui-banshee';
+import { DetailRow } from '@/components/DetailRow';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';
-import { handleGraphQLErrors } from '@/libs/utils';
-import { formatDateTime } from '@/libs/utils';
+import {
+  formatBoltType,
+  formatDateTime,
+  handleGraphQLErrors,
+} from '@/libs/utils';
+import {
+  formatElongation,
+  getLatestMeasurement,
+} from '@/libs/latest-measurement';
 
 const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
@@ -41,8 +49,10 @@ const bansheeDetailQuery = graphql(`
       proceqData {
         status
         createdTimestamp
+        updatedTimestamp
         dueDate
         readings {
+          readingIndex
           elongation
           status
         }
@@ -73,23 +83,6 @@ function formatPeriod(period: number | null | undefined): string {
   if (period > 1) return `${period} months`;
   return 'N/A';
 }
-
-interface DetailRowProps {
-  label: string;
-  value: React.ReactNode;
-}
-
-const DetailRow = memo(({ label, value }: DetailRowProps) => (
-  <div className="ui-banshee-flex ui-banshee-items-start ui-banshee-py-2 ui-banshee-border-b ui-banshee-border-neutral-2 ui-banshee-text-base">
-    <div className="ui-banshee-font-medium ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-pr-4">
-      {label}
-    </div>
-    <div className="ui-banshee-text-main-black ui-banshee-w-1/2 ui-banshee-break-words">
-      {value ?? 'N/A'}
-    </div>
-  </div>
-));
-DetailRow.displayName = 'DetailRow';
 
 interface ActionBarProps {
   onSettingsClick: () => void;
@@ -148,32 +141,12 @@ export const BansheeDetailModal = memo(
       handleGraphQLErrors(error);
     }, [error]);
 
-    function formatBoltType(boltType: string | null | undefined): string {
-      if (!boltType) return 'N/A';
-
-      return boltType
-        .split('_')
-        .map((part) => {
-          // Keep numbers as-is
-          if (/^\d+$/.test(part)) return part;
-
-          // Uppercase short abbreviations like MD, HD, SS
-          if (part.length <= 3) return part.toUpperCase();
-
-          // Capitalize normal words
-          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-        })
-        .join(' ');
-    }
-
     const details = useMemo(() => {
       const request = data?.bansheeRequest;
       if (!request) return null;
 
-      const measurements = request.proceqData ?? [];
-      const latestMeasurement = measurements.at(-1) ?? null;
-      const readings = latestMeasurement?.readings ?? [];
-      const lastReading = readings.at(-1) ?? null;
+      const { measurement: latestMeasurement, reading: lastReading } =
+        getLatestMeasurement(request.proceqData);
 
       return {
         bansheeName: request.name,
@@ -189,10 +162,7 @@ export const BansheeDetailModal = memo(
         coordsDisplay: parseCoordinates(request.coordinates),
         boltInstallationDateTime:
           formatDateTime(request.boltInstallationDateTime) ?? 'N/A',
-        elongation:
-          lastReading?.elongation != null
-            ? lastReading.elongation.toFixed(1)
-            : '-',
+        elongation: formatElongation(lastReading) ?? '-',
         boltType: formatBoltType(request.boltType),
         period: formatPeriod(request.period),
         lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit || 'N/A',

@@ -49,6 +49,9 @@ type BansheeRequest {
   boltType: String
   activateNotifications: Boolean
 
+  # Template this configuration was populated from, if any
+  templateId: String
+
   # Field resolver - fetches BansheeBoltTypeConstant based on boltType
   boltTypeConstant: BansheeBoltTypeConstant
 }
@@ -103,6 +106,7 @@ input UpdateBansheeRequestInput {
   companyId: String
   siteId: String
   activateNotifications: Boolean
+  templateId: String
 }
 
 """

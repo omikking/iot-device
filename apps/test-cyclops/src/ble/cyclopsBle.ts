@@ -17,16 +17,8 @@ export class CyclopsBLE {
 
     async connect(): Promise<void> {
     this.device = await navigator.bluetooth.requestDevice({
-      filters: [
-
-        {
-          manufacturerData: [{
-            companyIdentifier: 0xffff,
-          }]
-        }
-
-      ],
-      optionalServices: Object.values(SERVICES),
+        acceptAllDevices:true,
+        optionalServices: Object.values(SERVICES),
     });
     this.server = await this.device.gatt!.connect();
     await this._cacheCharacteristics();
@@ -98,7 +90,8 @@ export class CyclopsBLE {
           new DataView(b.buffer).setUint32(0, value, true);
           return b;
         })();
-
+        // console.log('enc',enc);
+        
     const buf = new Uint8Array(2 + 1 + 4 + enc.length);
     const dv = new DataView(buf.buffer);
     dv.setUint16(0, id, true);
@@ -108,7 +101,36 @@ export class CyclopsBLE {
 
     await this.characteristics[CHARS.SET_CONFIG].writeValue(asBufferSource(buf));
   }
+  async writeLongConfig(id: number, data: Uint8Array, timestamp = 0, oneBased = false): Promise<void> {
+    const MAX_BLOCK = 148;
+    const totalBlocks = Math.max(1, Math.ceil(data.length / MAX_BLOCK));
+    console.log(`writeLongConfig id=${id} totalBlocks=${totalBlocks} oneBased=${oneBased} dataLen=${data.length}`);
 
+    for (let i = 0; i < totalBlocks; i++) {
+      const start = i * MAX_BLOCK;
+      const chunk = data.slice(start, start + MAX_BLOCK);
+      const payload = new Uint8Array(2 + 1 + 4 + 2 + chunk.length);
+      const dv = new DataView(payload.buffer);
+      dv.setUint16(0, id, true);
+      dv.setUint8(2, 2 + chunk.length);
+      dv.setUint32(3, timestamp, true);
+      // Config 28/29/30 (string type) → 1-based: block 1 of N
+      // Config 209/210/211 (uint8[] certificates) → 0-based: block 0 of N
+      payload[7] = oneBased ? i + 1 : i;
+      payload[8] = totalBlocks;
+      payload.set(chunk, 9);
+
+      console.log(`writing block ${payload[7]}/${totalBlocks}`, payload, dv);
+      await this.characteristics[CHARS.SET_CONFIG].writeValue(asBufferSource(payload));
+
+      // Give the firmware time to process each block (especially important
+      // for certificate writes which require flash erase/write cycles).
+      if (totalBlocks > 1) {
+        await new Promise(r => setTimeout(r, 50));
+      }
+    }
+  }
+  
   async readConfig(id: number): Promise<DataView> {
     const buf = new Uint8Array(2);
     new DataView(buf.buffer).setUint16(0, id, true);
@@ -122,7 +144,7 @@ export class CyclopsBLE {
         res((e.target as BluetoothRemoteGATTCharacteristic).value!);
       };
       c.addEventListener("characteristicvaluechanged", h);
-      this.characteristics[CHARS.GET_CONFIG].writeValue(asBufferSource(buf));
+      this.characteristics[CHARS.GET_CONFIG].writeValue(asBufferSource(buf)).catch((e)=>console.error("error reading config",e));
     });
   }
 
@@ -179,3 +201,4 @@ export class CyclopsBLE {
     }
   }
 }
+ 

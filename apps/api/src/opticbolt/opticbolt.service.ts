@@ -57,7 +57,6 @@ export class OpticboltService {
     });
     return results.map((r) => this.mapTestResultDecimals(r));
   }
-
   async findBoltTypesBySerialNumbers(serialNumbers: string[]) {
     if (!serialNumbers.length) return [];
 

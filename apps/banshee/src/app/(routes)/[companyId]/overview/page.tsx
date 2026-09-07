@@ -8,6 +8,7 @@ import { BansheeInfoCard } from '@/components/BansheeInfoCard';
 import { StatusDistributionChart } from '@/components/StatusDistributionChart';
 import { StatusOverviewChart } from '@/components/StatusOverviewChart';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { getLatestProceqData } from '@/libs/latest-measurement';
 
 export default function Page({ params }: { params: { companyId: string } }) {
   const { companyId } = params;
@@ -27,6 +28,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
       bansheeRequests(limit: 100, companyId: $companyId) {
         results {
           id
+          name
           serialNumber
           site {
             siteName
@@ -45,7 +47,9 @@ export default function Page({ params }: { params: { companyId: string } }) {
             status
             dueDate
             createdTimestamp
+            updatedTimestamp
             readings {
+              readingIndex
               elongation
               status
             }
@@ -89,12 +93,12 @@ export default function Page({ params }: { params: { companyId: string } }) {
 
   const sanitizedBansheeEntries =
     bansheeData?.bansheeRequests?.results.map((entry) => {
-      const latestMeasurement = entry?.proceqData?.at(-1);
+      const latestMeasurement = getLatestProceqData(entry?.proceqData);
 
       return {
-        status: latestMeasurement?.status ?? 'UNKNOWN',
+        status: latestMeasurement?.status ?? 'Not measurable',
         statusColor: '#FF0000',
-        banshee: entry?.serialNumber ?? '',
+        banshee: entry?.name ?? '',
         location: entry?.location?.locationName ?? '',
         dueDate: latestMeasurement?.dueDate
           ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')

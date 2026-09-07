@@ -38,6 +38,7 @@ const config: Omit<Config, 'content'> = {
 
         // neutral-primary
         'neutral-1': '#F8F8F8',
+        'neutral-1-5': '#F2F2F2',
         'neutral-2': '#E6E6E6',
         // also used for disabled color
         'neutral-3': '#DADADA',

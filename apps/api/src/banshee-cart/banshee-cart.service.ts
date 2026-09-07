@@ -83,6 +83,9 @@ export class BansheeCartService {
           'bansheeRequestId is required for SERVICE_EXISTING items',
         );
       }
+      if (item.itemType === BansheeCartItemType.NEW_BANSHEE && !item.siteId) {
+        throw new UserInputError('Site is required for NEW_BANSHEE items');
+      }
     }
 
     const bansheeRequestIds = input

@@ -28,6 +28,7 @@ describe('BansheeCartService', () => {
           companyId,
           name: 'New banshee',
           quantity: 2,
+          siteId: 'site-1',
         },
         {
           itemType: BansheeCartItemType.SERVICE_EXISTING,
@@ -86,6 +87,17 @@ describe('BansheeCartService', () => {
       await expect(service.addCartItems(input as any)).rejects.toThrow(
         'bansheeRequestId is required for SERVICE_EXISTING items',
       );
+    });
+
+    it('rejects a NEW_BANSHEE item without a siteId', async () => {
+      const input = [
+        { itemType: BansheeCartItemType.NEW_BANSHEE, companyId, name: 'x' },
+      ];
+
+      await expect(service.addCartItems(input as any)).rejects.toThrow(
+        'Site is required for NEW_BANSHEE items',
+      );
+      expect(prisma.bansheeCartItem.create).not.toHaveBeenCalled();
     });
 
     it('rejects when a referenced bansheeRequest does not exist', async () => {

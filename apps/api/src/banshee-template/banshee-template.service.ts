@@ -7,6 +7,23 @@ import { UserInputError } from '@nestjs/apollo/dist/errors/user-input.error';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { hasAppAccessForCompany } from 'src/utils';
 
+/**
+ * Distinguishes "field not sent" from "field cleared" for an optional relation
+ * id: undefined leaves the column alone, anything empty unsets it.
+ */
+const clearableId = (id?: string | null): string | null | undefined =>
+  id === undefined ? undefined : id || null;
+
+/**
+ * The id an update will leave in place: an omitted field keeps the stored value,
+ * an explicitly cleared one stays cleared. Validating on `next || current`
+ * instead would resolve a descendant the same update is about to unset.
+ */
+const effectiveId = (
+  next: string | null | undefined,
+  current: string | null,
+): string | undefined => (next === undefined ? current : next) || undefined;
+
 @Injectable()
 export class BansheeTemplateService {
   private readonly logger = new Logger(BansheeTemplateService.name);
@@ -140,21 +157,26 @@ export class BansheeTemplateService {
         });
       }
 
+      // Any hierarchy field being sent — including one sent as cleared — means the
+      // resulting hierarchy needs checking.
       if (
-        updateBansheeTemplateInput.levelId ||
-        updateBansheeTemplateInput.driveId ||
-        updateBansheeTemplateInput.locationId
+        updateBansheeTemplateInput.levelId !== undefined ||
+        updateBansheeTemplateInput.driveId !== undefined ||
+        updateBansheeTemplateInput.locationId !== undefined
       ) {
         await this.validateRelations(
-          updateBansheeTemplateInput.levelId ||
-            existingTemplate.levelId ||
-            undefined,
-          updateBansheeTemplateInput.driveId ||
-            existingTemplate.driveId ||
-            undefined,
-          updateBansheeTemplateInput.locationId ||
-            existingTemplate.locationId ||
-            undefined,
+          effectiveId(
+            updateBansheeTemplateInput.levelId,
+            existingTemplate.levelId,
+          ),
+          effectiveId(
+            updateBansheeTemplateInput.driveId,
+            existingTemplate.driveId,
+          ),
+          effectiveId(
+            updateBansheeTemplateInput.locationId,
+            existingTemplate.locationId,
+          ),
         );
       }
 
@@ -165,10 +187,12 @@ export class BansheeTemplateService {
           period: updateBansheeTemplateInput.period,
           boltInstallationDateTime:
             updateBansheeTemplateInput.boltInstallationDateTime,
-          siteId: updateBansheeTemplateInput.siteId || undefined,
-          levelId: updateBansheeTemplateInput.levelId || undefined,
-          driveId: updateBansheeTemplateInput.driveId || undefined,
-          locationId: updateBansheeTemplateInput.locationId || undefined,
+          // Omitted -> untouched; cleared (null/'') -> unset, since these
+          // columns are nullable and the form can clear the dropdowns.
+          siteId: clearableId(updateBansheeTemplateInput.siteId),
+          levelId: clearableId(updateBansheeTemplateInput.levelId),
+          driveId: clearableId(updateBansheeTemplateInput.driveId),
+          locationId: clearableId(updateBansheeTemplateInput.locationId),
           locationDetails:
             updateBansheeTemplateInput.locationDetails || undefined,
           coordinates: updateBansheeTemplateInput.coordinates || undefined,

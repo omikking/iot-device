@@ -17,17 +17,10 @@ export class HydraBLE {
 
 
   async connect(): Promise<void> {
-    console.log('connecting to cyclops');
+    console.log('connecting to hydra');
     this.device = await navigator.bluetooth.requestDevice({
-      filters: [
-
-        {
-          manufacturerData: [{
-            companyIdentifier: 0xffff,
-          }]
-        }
-
-      ],
+      acceptAllDevices: true,
+      // filters:[{namePrefix:"SVK"}],
       optionalServices: Object.values(SERVICES),
     });
     this.server = await this.device.gatt!.connect();
@@ -109,9 +102,11 @@ export class HydraBLE {
     await this.characteristics[normUuid(CHARS.SET_CONFIG)].writeValue(asBuffer(buf));
   }
 
-  async writeLongConfig(id: number, data: Uint8Array, timestamp = 0): Promise<void> {
-    const MAX_BLOCK = 188;
+  async writeLongConfig(id: number, data: Uint8Array, timestamp = 0, oneBased = true): Promise<void> {
+    const MAX_BLOCK = 148;
     const totalBlocks = Math.max(1, Math.ceil(data.length / MAX_BLOCK));
+    console.log(`writeLongConfig id=${id} totalBlocks=${totalBlocks} oneBased=${oneBased} dataLen=${data.length}`);
+
     for (let i = 0; i < totalBlocks; i++) {
       const start = i * MAX_BLOCK;
       const chunk = data.slice(start, start + MAX_BLOCK);
@@ -120,10 +115,18 @@ export class HydraBLE {
       dv.setUint16(0, id, true);
       dv.setUint8(2, 2 + chunk.length);
       dv.setUint32(3, timestamp, true);
-      payload[7] = i;
+      // String long configs (28/29/30) → 1-based block index
+      // Certificate configs (209/210/211) → 0-based block index
+      payload[7] = oneBased ? i + 1 : i;
       payload[8] = totalBlocks;
       payload.set(chunk, 9);
+
+      console.log(`writing block ${payload[7]}/${totalBlocks}`, payload, dv);
       await this.characteristics[normUuid(CHARS.SET_CONFIG)].writeValue(asBuffer(payload));
+
+      if (totalBlocks > 1) {
+        await new Promise(r => setTimeout(r, 50));
+      }
     }
   }
 
@@ -138,6 +141,61 @@ export class HydraBLE {
         res((e.target as BluetoothRemoteGATTCharacteristic).value!);
       };
       c.addEventListener("characteristicvaluechanged", h);
+      this.characteristics[normUuid(CHARS.GET_CONFIG)].writeValue(asBuffer(buf));
+    });
+  }
+
+  async readLongConfig(
+    id: number,
+    timeoutMs = 5000,
+  ): Promise<{ data: Uint8Array; timestamp: number }> {
+    const buf = new Uint8Array(2);
+    new DataView(buf.buffer).setUint16(0, id, true);
+    const c = this.characteristics[normUuid(CHARS.CONFIG_VALUE)];
+    await c.startNotifications();
+
+    return new Promise<{ data: Uint8Array; timestamp: number }>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        c.removeEventListener("characteristicvaluechanged", handler);
+        reject(new Error(`Read long config timeout (${timeoutMs}ms) for ID ${id}`));
+      }, timeoutMs);
+
+      const handler = (e: Event) => {
+        const dv = (e.target as BluetoothRemoteGATTCharacteristic).value;
+        if (!dv || dv.byteLength < 7) return;
+
+        const notifId = dv.getUint16(0, true);
+        if (notifId !== id) return;
+
+        console.log("readLongConfig notification received:", dv);
+
+        const valLen = dv.getUint8(2);
+        const lastTimestamp = dv.getUint32(3, true);
+
+        clearTimeout(timer);
+        c.removeEventListener("characteristicvaluechanged", handler);
+
+        if (valLen === 0 || dv.byteLength <= 7) {
+          resolve({ data: new Uint8Array(0), timestamp: lastTimestamp });
+          return;
+        }
+
+        if (dv.byteLength >= 9) {
+          // Block header present: byte 7 = blockIndex, byte 8 = totalBlocks, byte 9+ = chunk data
+          const blockIndex = dv.getUint8(7);
+          const totalBlocks = dv.getUint8(8);
+          const chunkLen = Math.max(0, Math.min(dv.byteLength - 9, valLen - 2));
+          const chunk = new Uint8Array(dv.buffer.slice(dv.byteOffset + 9, dv.byteOffset + 9 + chunkLen));
+          console.log(`Received chunk for block ${blockIndex + 1}/${totalBlocks}, length: ${chunkLen}`);
+          resolve({ data: chunk, timestamp: lastTimestamp });
+        } else {
+          // Raw payload without block header
+          const rawPayload = new Uint8Array(dv.buffer.slice(dv.byteOffset + 7, dv.byteOffset + 7 + valLen));
+          resolve({ data: rawPayload, timestamp: lastTimestamp });
+        }
+      };
+
+      c.addEventListener("characteristicvaluechanged", handler);
       this.characteristics[normUuid(CHARS.GET_CONFIG)].writeValue(asBuffer(buf));
     });
   }
@@ -242,3 +300,4 @@ export class HydraBLE {
     }
   }
 }
+ 

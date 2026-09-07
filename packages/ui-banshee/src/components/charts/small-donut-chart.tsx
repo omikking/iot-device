@@ -39,19 +39,30 @@ export function SmallChartPieDonut({
         const materialLabel =
           (chartConfig[statusKey]?.label as string) || statusKey;
         return `
-          <div style="padding:6px 8px;">
-            <div style="font-weight:600;margin-bottom:8px;">
+          <div style="min-width:180px; line-height:1.6;">
+            <div style="
+              font-size:15px;
+              font-weight:600;
+              color:#FFFFFF;
+              margin-bottom:10px;
+              border-bottom:1px solid #4B5563;
+              padding-bottom:6px;
+            ">
               ${escapeHtml(displayLocation)}
             </div>
 
-            <div>
-              <span style="color:#999;">Material:</span>
-              <strong>${escapeHtml(materialLabel)}</strong>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center">
+              <span style="color:white;">Material</span>
+              <span style="font-weight:600; color:#FFFFFF; font-size: 14px">
+                ${escapeHtml(materialLabel)}
+              </span>
             </div>
 
-            <div>
-              <span style="color:#999;">Quantity:</span>
-              <strong>${escapeHtml(String(p.value ?? ''))}</strong>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <span style="color:white;">Quantity</span>
+              <span style="font-weight:600; color:#FFFFFF; font-size: 14px">
+                ${escapeHtml(String(p.value ?? ''))}
+              </span>
             </div>
           </div>
         `;

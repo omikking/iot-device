@@ -258,6 +258,7 @@ export type BansheeRequest = {
   serialNumber: Scalars['String']['output'];
   site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
+  templateId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -1629,7 +1630,7 @@ export type ProceqData = {
   __typename?: 'ProceqData';
   attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   bansheeRequest?: Maybe<BansheeRequest>;
-  comments: Scalars['String']['output'];
+  comments?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
   dueDate?: Maybe<Scalars['DateTime']['output']>;
@@ -2238,6 +2239,7 @@ export type UpdateBansheeRequestInput = {
   ringPosition?: InputMaybe<RingPosition>;
   serialNumber?: InputMaybe<Scalars['String']['input']>;
   siteId?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**

@@ -6,6 +6,7 @@ import { cn } from '../../lib/utils';
 const textVariants = cva('ui-banshee-font-sandvik-text', {
   variants: {
     variant: {
+      '2xl': 'ui-banshee-text-2xl',
       large: 'ui-banshee-text-lg',
       medium: 'ui-banshee-text-md',
       small: 'ui-banshee-text-sm ui-banshee-tracking-wide',

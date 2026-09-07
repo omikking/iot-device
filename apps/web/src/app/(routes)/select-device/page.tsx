@@ -1,11 +1,6 @@
 'use client';
 import { Role } from '@/gql/graphql';
-import {
-  Headline,
-  Button,
-  NavigationCard,
-  LoadingSpinner,
-} from '@gsp/ui';
+import { Headline, Button, NavigationCard, LoadingSpinner } from '@gsp/ui';
 import {
   LucideEye,
   LucideShield,
@@ -47,13 +42,17 @@ export default function Page(): JSX.Element {
     status === 'authenticated' &&
     session?.user?.globalRole === Role.SandvikAdmin
   ) {
-    const cyclopsUrl = resolveDeviceAppUrl(process.env.NEXT_PUBLIC_CYCLOPS_URL);
-    const hydraUrl = resolveDeviceAppUrl(process.env.NEXT_PUBLIC_HYDRA_URL);
+    const cyclopsUrl = resolveDeviceAppUrl(
+      process.env.NEXT_PUBLIC_TEST_CYCLOPS_URL,
+    );
+    const hydraUrl = resolveDeviceAppUrl(
+      process.env.NEXT_PUBLIC_TEST_HYDRA_URL,
+    );
     const professorUrl = resolveDeviceAppUrl(
-      process.env.NEXT_PUBLIC_PROFESSOR_URL,
+      process.env.NEXT_PUBLIC_TEST_PROFESSOR_URL,
     );
     const opticBoltUrl = resolveDeviceAppUrl(
-      process.env.NEXT_PUBLIC_OPTIC_BOLT_URL,
+      process.env.NEXT_PUBLIC_TEST_OPTIC_BOLT_URL,
     );
 
     return (
@@ -171,5 +170,3 @@ export default function Page(): JSX.Element {
     </main>
   );
 }
-
- 

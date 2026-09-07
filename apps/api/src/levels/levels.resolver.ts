@@ -34,7 +34,11 @@ export class LevelsResolver {
     return this.levelsService.findOne(id);
   }
 
-  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'level')
+  @Roles(
+    [Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN, Role.COMPANY_USER],
+    [],
+    'level',
+  )
   @Mutation('createLevel')
   async create(
     @Args('createLevelInput')
@@ -43,7 +47,11 @@ export class LevelsResolver {
     return this.levelsService.create(createLevelInput);
   }
 
-  @Roles([Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN], [], 'level')
+  @Roles(
+    [Role.COMPANY_ADMIN, Role.SANDVIK_TECHNICIAN, Role.COMPANY_USER],
+    [],
+    'level',
+  )
   @Mutation('updateLevel')
   async update(
     @Args('id', ParseUUIDPipe) id: string,

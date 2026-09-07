@@ -258,6 +258,7 @@ export type BansheeRequest = {
   serialNumber: Scalars['String']['output'];
   site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
+  templateId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -592,7 +593,6 @@ export type CreateGlobalInvitationInput = {
 export type CreateHydraBoltInput = {
   activateNotifications: Scalars['Boolean']['input'];
   boltInstallationDateTime?: InputMaybe<Scalars['DateTime']['input']>;
-  boltType: Scalars['String']['input'];
   comment?: InputMaybe<Scalars['String']['input']>;
   companyId: Scalars['String']['input'];
   coordinates?: InputMaybe<Scalars['JSON']['input']>;
@@ -735,6 +735,13 @@ export type EnumOption = {
   value: Scalars['String']['output'];
 };
 
+export type FindHydraBoltTypeAndDepthBySerialNumberResponse = {
+  __typename?: 'FindHydraBoltTypeAndDepthBySerialNumberResponse';
+  boltType: Scalars['String']['output'];
+  numberOfSensors: Scalars['Int']['output'];
+  sensorDepths: Array<Scalars['Float']['output']>;
+};
+
 export type Flavor = {
   __typename?: 'Flavor';
   id: Scalars['ID']['output'];
@@ -752,8 +759,7 @@ export type HydraBolt = {
   __typename?: 'HydraBolt';
   activateNotifications?: Maybe<Scalars['Boolean']['output']>;
   boltInstallationDateTime?: Maybe<Scalars['DateTime']['output']>;
-  boltType: Scalars['String']['output'];
-  boltTypeConstant?: Maybe<BansheeBoltTypeConstant>;
+  boltType?: Maybe<Scalars['String']['output']>;
   comment?: Maybe<Scalars['String']['output']>;
   company?: Maybe<Company>;
   companyId: Scalars['String']['output'];
@@ -770,7 +776,9 @@ export type HydraBolt = {
   locationDetails?: Maybe<Scalars['String']['output']>;
   locationId: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  numberOfSensors?: Maybe<Scalars['Int']['output']>;
   ringPosition: Scalars['String']['output'];
+  sensorDepths?: Maybe<Array<Scalars['Float']['output']>>;
   serialNumber: Scalars['String']['output'];
   site?: Maybe<Site>;
   siteId: Scalars['String']['output'];
@@ -1622,7 +1630,7 @@ export type ProceqData = {
   __typename?: 'ProceqData';
   attachmentIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   bansheeRequest?: Maybe<BansheeRequest>;
-  comments: Scalars['String']['output'];
+  comments?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
   dueDate?: Maybe<Scalars['DateTime']['output']>;
@@ -2231,6 +2239,7 @@ export type UpdateBansheeRequestInput = {
   ringPosition?: InputMaybe<RingPosition>;
   serialNumber?: InputMaybe<Scalars['String']['input']>;
   siteId?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -2477,6 +2486,7 @@ export type UserPermission = {
 
 export type ValidateHydraBoltSerialNumberResponse = {
   __typename?: 'ValidateHydraBoltSerialNumberResponse';
+  boltConfig?: Maybe<FindHydraBoltTypeAndDepthBySerialNumberResponse>;
   errorCode?: Maybe<Scalars['String']['output']>;
   isValid: Scalars['Boolean']['output'];
   message?: Maybe<Scalars['String']['output']>;

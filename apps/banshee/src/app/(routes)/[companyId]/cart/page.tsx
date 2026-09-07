@@ -271,34 +271,34 @@ export default function CartPage() {
               <Table variant="border">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-1.5">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-font-semibold"
                       >
                         Item
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-1.5">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-font-semibold"
                       >
                         Location
                       </Text>
                     </TableHead>
-                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="!ui-banshee-text-left ui-banshee-px-3 ui-banshee-py-1.5">
                       <Text
-                        variant="small"
+                        variant="medium"
                         color="foreground"
                         className="ui-banshee-font-semibold ui-banshee-text-center"
                       >
                         Quantity
                       </Text>
                     </TableHead>
-                    <TableHead className="ui-banshee-px-3 ui-banshee-py-2">
+                    <TableHead className="ui-banshee-px-3 ui-banshee-py-1.5 ui-banshee-items-center">
                       <div className="ui-banshee-min-w-80 ui-banshee-w-full ui-banshee-flex ui-banshee-justify-end">
                         <Menu size={20} />
                       </div>
@@ -314,7 +314,7 @@ export default function CartPage() {
                       >
                         <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
                           <LoadingSpinner size={16} />
-                          <Text variant="small" color="muted">
+                          <Text variant="medium" color="muted">
                             Loading cart...
                           </Text>
                         </div>
@@ -328,7 +328,7 @@ export default function CartPage() {
                         className="ui-banshee-text-center ui-banshee-py-4"
                       >
                         <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
-                          <Text variant="small" color="muted">
+                          <Text variant="medium" color="muted">
                             Your cart is empty.
                           </Text>
                         </div>
@@ -340,22 +340,22 @@ export default function CartPage() {
                       key={item.id}
                       className="ui-banshee-cursor-pointer"
                     >
-                      <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
-                        <Text variant="small" color="foreground">
+                      <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3 ui-banshee-whitespace-nowrap">
+                        <Text variant="medium" color="foreground">
                           {item.itemType === BansheeCartItemType.NewBanshee
                             ? item.name ?? '-'
                             : item.bansheeRequest?.serialNumber ?? '-'}
                         </Text>
                       </TableCell>
-                      <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3">
-                        <Text variant="small" color="foreground">
+                      <TableCell className="!ui-banshee-text-left !ui-banshee-bg-neutral-1 ui-banshee-px-3 ui-banshee-whitespace-nowrap">
+                        <Text variant="medium" color="foreground">
                           {item.itemType === BansheeCartItemType.NewBanshee
                             ? item?.location?.locationName ?? '-'
                             : item?.bansheeRequest?.location?.locationName ??
                               '-'}
                         </Text>
                       </TableCell>
-                      <TableCell className="!ui-banshee-text-center !ui-banshee-bg-neutral-1 ui-banshee-px-3">
+                      <TableCell className="!ui-banshee-text-center !ui-banshee-bg-neutral-1 ui-banshee-px-3 ui-banshee-whitespace-nowrap">
                         {item.itemType === BansheeCartItemType.NewBanshee ? (
                           <input
                             type="number"
@@ -371,10 +371,10 @@ export default function CartPage() {
                               WebkitAppearance: 'none',
                               appearance: 'textfield',
                             }}
-                            className="ui-banshee-m-auto ui-banshee-w-10 ui-banshee-h-6 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-0 ui-banshee-text-sm focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring ui-banshee-text-center [&::-webkit-inner-spin-button]:ui-banshee-appearance-none [&::-webkit-outer-spin-button]:ui-banshee-appearance-none [&::-webkit-inner-spin-button]:ui-banshee-m-0 [&::-webkit-outer-spin-button]:ui-banshee-m-0"
+                            className="ui-banshee-m-auto ui-banshee-w-10 ui-banshee-h-6 ui-banshee-rounded-md ui-banshee-border ui-banshee-border-input ui-banshee-bg-background ui-banshee-px-0 ui-banshee-text-md focus-visible:ui-banshee-outline-none focus-visible:ui-banshee-ring-2 focus-visible:ui-banshee-ring-ring ui-banshee-text-center [&::-webkit-inner-spin-button]:ui-banshee-appearance-none [&::-webkit-outer-spin-button]:ui-banshee-appearance-none [&::-webkit-inner-spin-button]:ui-banshee-m-0 [&::-webkit-outer-spin-button]:ui-banshee-m-0"
                           />
                         ) : (
-                          <Text variant="small" color="foreground">
+                          <Text variant="medium" color="foreground">
                             {item.quantity}
                           </Text>
                         )}
@@ -410,28 +410,52 @@ export default function CartPage() {
                 Order Summary
               </Headline>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
-                <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   New Banshee Request
-                </p>
-                <p className="ui-banshee-w-fit  ui-banshee-text-[.825rem]">
+                </Text>
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   {newBansheeCount}
-                </p>
+                </Text>
               </div>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
-                <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   Recurring Banshee Request
-                </p>
-                <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                </Text>
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   {recurringCount}
-                </p>
+                </Text>
               </div>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full">
-                <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   Total Measurement Request
-                </p>
-                <p className="ui-banshee-w-fit ui-banshee-text-[.825rem]">
+                </Text>
+                <Text
+                  variant="medium"
+                  color="foreground"
+                  className="ui-banshee-w-fit"
+                >
                   {totalCount}
-                </p>
+                </Text>
               </div>
             </div>
             <Form {...form}>

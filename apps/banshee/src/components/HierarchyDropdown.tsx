@@ -12,9 +12,11 @@ interface HierarchyDropdownProps {
   id: string;
   label: string;
   options: Option[];
-  selectedId: string;
+  selectedId: string | null;
   placeholder: string;
-  onSelect: (id: string) => void;
+  /** Reports null — never '' — when the selection is cleared, since the API
+   * validates these ids as UUIDs and only skips null. */
+  onSelect: (id: string | null) => void;
 }
 
 export function HierarchyDropdown({
@@ -30,10 +32,10 @@ export function HierarchyDropdown({
       <DropdownSearch
         id={id}
         options={options}
-        selectedId={selectedId}
+        selectedId={selectedId ?? ''}
         placeholder={placeholder}
         searchPlaceholder="..."
-        onSelect={(selectedId) => onSelect(selectedId ?? '')}
+        onSelect={(selectedId) => onSelect(selectedId || null)}
         className="ui-banshee-flex ui-banshee-w-full ui-banshee-h-12 ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-border ui-banshee-bg-main-white ui-banshee-text-md ui-banshee-font-sandvik-text ui-banshee-text-main-black placeholder:ui-banshee-text-neutral-5 ui-banshee-outline-none hover:ui-banshee-border-blue-primary focus-visible:ui-banshee-border-blue-primary ui-banshee-transition ui-banshee-ease-in-out ui-banshee-duration-200 disabled:ui-banshee-bg-neutral-2 disabled:ui-banshee-text-neutral-5 disabled:ui-banshee-border-transparent disabled:ui-banshee-pointer-events-none"
       />
     </FormField>

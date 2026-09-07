@@ -11,9 +11,15 @@ import {
   TableCell,
   TableHeadWithSorting,
   LoadingSpinner,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  TooltipArrow,
 } from '@gsp/ui-banshee';
 import { useState, useMemo, ComponentProps } from 'react';
 import { getStatusColorHex, getStatusLabel } from '@/libs/status-color-utils';
+import { compareValues } from '@/libs/sort-compare';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 type SchedulerEntry = {
@@ -68,12 +74,11 @@ export const SchedulerOverviewTable = ({
           return sortConfig.direction === 'asc' ? aTime - bTime : bTime - aTime;
         }
 
-        const aValue = String(a[sortConfig.key] ?? '');
-        const bValue = String(b[sortConfig.key] ?? '');
-
-        const comparison = aValue.localeCompare(bValue);
-
-        return sortConfig.direction === 'asc' ? comparison : -comparison;
+        return compareValues(
+          a[sortConfig.key],
+          b[sortConfig.key],
+          sortConfig.direction,
+        );
       });
     }
     return sortable;
@@ -135,82 +140,99 @@ export const SchedulerOverviewTable = ({
       </Headline>
       <div className="ui-banshee-flex ui-banshee-h-[45vh]">
         <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-overflow-x-auto ui-banshee-min-h-0 ui-banshee-w-full">
-          <Table variant="noBorder" className="ui-banshee-min-w-[400px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="ui-banshee-w-8 ui-banshee-text-left">
-                  <Text
-                    variant="small"
-                    color="foreground"
-                    className="ui-banshee-font-bold"
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0 ui-banshee-w-[40%]">
-                  <TableHeadWithSorting
-                    header="Banshee"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
-                    column={createMockColumn('banshee')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Location"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
-                    column={createMockColumn('location')}
-                  />
-                </TableHead>
-                <TableHead className="ui-banshee-p-0">
-                  <TableHeadWithSorting
-                    header="Due date"
-                    className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
-                    column={createMockColumn('dueDate')}
-                  />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedEntries.map((entry, index) => (
-                <TableRow key={`${entry.banshee}-${index}`}>
-                  <TableCell>
-                    <div
-                      className="ui-banshee-w-3 ui-banshee-mx-auto ui-banshee-h-3 ui-banshee-rounded-full"
-                      style={{
-                        backgroundColor: getStatusColorHex(entry?.status),
-                      }}
-                      title={getStatusLabel(entry?.status)}
+          <TooltipProvider delayDuration={200}>
+            <Table variant="noBorder" className="ui-banshee-min-w-[400px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="ui-banshee-w-8 ui-banshee-text-left">
+                    <Text
+                      variant="small"
+                      color="foreground"
+                      className="ui-banshee-font-bold"
                     />
-                  </TableCell>
-                  <TableCell className="ui-banshee-px-4">
-                    <Text
-                      variant="medium"
-                      color="foreground"
-                      className="ui-banshee-text-left"
-                    >
-                      {entry?.banshee}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-px-4">
-                    <Text
-                      variant="medium"
-                      color="foreground"
-                      className="ui-banshee-text-left"
-                    >
-                      {entry?.location}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="ui-banshee-px-4">
-                    <Text
-                      variant="medium"
-                      color="foreground"
-                      className="ui-banshee-text-left"
-                    >
-                      {entry?.dueDate}
-                    </Text>
-                  </TableCell>
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0 ui-banshee-w-[40%]">
+                    <TableHeadWithSorting
+                      header="Banshee"
+                      className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
+                      column={createMockColumn('banshee')}
+                    />
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <TableHeadWithSorting
+                      header="Location"
+                      className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
+                      column={createMockColumn('location')}
+                    />
+                  </TableHead>
+                  <TableHead className="ui-banshee-p-0">
+                    <TableHeadWithSorting
+                      header="Due date"
+                      className="ui-banshee-h-full ui-banshee-px-4 ui-banshee-justify-start ui-banshee-text-base"
+                      column={createMockColumn('dueDate')}
+                    />
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sortedEntries.map((entry, index) => (
+                  <TableRow key={`${entry.banshee}-${index}`}>
+                    <TableCell>
+                      <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              tabIndex={0}
+                              role="img"
+                              aria-label={getStatusLabel(entry?.status)}
+                              className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                              style={{
+                                backgroundColor: getStatusColorHex(
+                                  entry?.status,
+                                ),
+                              }}
+                            />
+                          </TooltipTrigger>
+
+                          <TooltipContent>
+                            {getStatusLabel(entry?.status)}
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    <TableCell className="ui-banshee-px-4">
+                      <Text
+                        variant="medium"
+                        color="foreground"
+                        className="ui-banshee-text-left"
+                      >
+                        {entry?.banshee}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-px-4">
+                      <Text
+                        variant="medium"
+                        color="foreground"
+                        className="ui-banshee-text-left"
+                      >
+                        {entry?.location}
+                      </Text>
+                    </TableCell>
+                    <TableCell className="ui-banshee-px-4">
+                      <Text
+                        variant="medium"
+                        color="foreground"
+                        className="ui-banshee-text-left"
+                      >
+                        {entry?.dueDate}
+                      </Text>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TooltipProvider>
         </div>
       </div>
     </div>

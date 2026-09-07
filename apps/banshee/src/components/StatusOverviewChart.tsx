@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
 import type { StatusBand, ChartLineDatum } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
+import { sortReadingsAscending } from '@/libs/latest-measurement';
 
 type BansheeRequestResult =
   BansheeRequestsListQuery['bansheeRequests']['results'][number];
@@ -98,7 +99,7 @@ export const StatusOverviewChart = ({
 
       (br.proceqData || []).forEach((pd) => {
         if (!pd.createdTimestamp) return;
-        const readings = pd.readings || [];
+        const readings = sortReadingsAscending(pd.readings);
         const dateStr = new Date(pd.createdTimestamp)
           .toISOString()
           .split('T')[0];

@@ -1,17 +1,129 @@
 import { UserInputError } from '@nestjs/apollo';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { Application, BoltType, GlobalRole, HydraBolts } from '@prisma/client';
+import { GlobalRole, HydraBolts, Prisma, Application } from '@prisma/client';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hasAppAccessForCompany, validateMineHierarchy } from 'src/utils';
 import * as GraphQLTypes from 'src/graphql-types';
+import { HydraBoltService } from 'src/hydra-bolt/hydra-bolt.service';
+import { OpticboltService } from 'src/opticbolt/opticbolt.service';
+
+type ResolvedSensorConfig = {
+  boltType: string;
+  numberOfSensors: number;
+  sensorDepths: number[];
+};
+
+type HydraBoltWithSensorConfig = Omit<HydraBolts, 'boltType'> & {
+  boltType: string | null;
+  numberOfSensors: number | null;
+  sensorDepths: number[] | null;
+};
 
 @Injectable()
 export class HydraBoltsService {
   private allowedApps = [Application.HYDRA];
   private readonly logger = new Logger(HydraBoltsService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly hydraBoltService: HydraBoltService,
+    private readonly opticBoltService: OpticboltService,
+  ) {}
+
+  private toGraphQLError(
+    error: unknown,
+    context: string,
+    extensions: { code: string; title: string; message?: string },
+  ): Error {
+    if (
+      error instanceof UserInputError ||
+      error instanceof ForbiddenException
+    ) {
+      return error;
+    }
+
+    this.logger.error(context, error instanceof Error ? error.stack : error);
+
+    return new UserInputError('', {
+      extensions: {
+        message: errorTexts.contactSupportError,
+        ...extensions,
+      },
+    });
+  }
+
+  private async resolveSensorConfigs(
+    serialNumbers: string[],
+  ): Promise<Map<string, ResolvedSensorConfig>> {
+    try {
+      return await this.loadSensorConfigs(serialNumbers);
+    } catch (error) {
+      this.logger.error(
+        'Error resolving Hydra Bolt sensor configuration',
+        error instanceof Error ? error.stack : error,
+      );
+
+      return new Map<string, ResolvedSensorConfig>();
+    }
+  }
+
+  private async loadSensorConfigs(
+    serialNumbers: string[],
+  ): Promise<Map<string, ResolvedSensorConfig>> {
+    const configsBySerialNumber = new Map<string, ResolvedSensorConfig>();
+
+    const uniqueSerialNumbers = [...new Set(serialNumbers)];
+    if (!uniqueSerialNumbers.length) return configsBySerialNumber;
+
+    const testResults =
+      await this.opticBoltService.findBoltTypesBySerialNumbers(
+        uniqueSerialNumbers,
+      );
+
+    const partNumbers = [
+      ...new Set(
+        testResults
+          .map((testResult) => testResult.boltType)
+          .filter((boltType): boltType is string => !!boltType),
+      ),
+    ];
+    if (!partNumbers.length) return configsBySerialNumber;
+
+    const catalogueEntries =
+      await this.hydraBoltService.findSensorConfigsByPartNumbers(partNumbers);
+
+    const catalogueByPartNumber = new Map(
+      catalogueEntries.map((entry) => [entry.partNumber, entry]),
+    );
+
+    for (const { serialNumber, boltType } of testResults) {
+      const entry = boltType ? catalogueByPartNumber.get(boltType) : undefined;
+      if (!entry) continue;
+
+      configsBySerialNumber.set(serialNumber, {
+        boltType: entry.partNumber,
+        numberOfSensors: entry.numberOfFBG,
+        sensorDepths: entry.positionOfFBGs,
+      });
+    }
+
+    return configsBySerialNumber;
+  }
+
+  private withSensorConfig(
+    hydraBolt: HydraBolts,
+    configsBySerialNumber: Map<string, ResolvedSensorConfig>,
+  ): HydraBoltWithSensorConfig {
+    const config = configsBySerialNumber.get(hydraBolt.serialNumber);
+
+    return {
+      ...hydraBolt,
+      boltType: config?.boltType ?? null,
+      numberOfSensors: config?.numberOfSensors ?? null,
+      sensorDepths: config?.sensorDepths ?? null,
+    };
+  }
 
   async create(
     createHydraBoltInput: GraphQLTypes.CreateHydraBoltInput,
@@ -19,7 +131,6 @@ export class HydraBoltsService {
   ): Promise<HydraBolts> {
     try {
       const { companyId } = createHydraBoltInput;
-      // Extract companyId and check if the user has access to the any of the applications
       if (companyId) {
         const hasAccess = await hasAppAccessForCompany(
           this.prisma,
@@ -34,10 +145,10 @@ export class HydraBoltsService {
           );
         }
       }
-      const existingRequest = await this.prisma.hydraBolts.findFirst({
-        where: {
-          serialNumber: createHydraBoltInput.serialNumber,
-        },
+
+      const existingRequest = await this.prisma.hydraBolts.findUnique({
+        where: { serialNumber: createHydraBoltInput.serialNumber },
+        select: { id: true },
       });
 
       if (existingRequest) {
@@ -55,7 +166,7 @@ export class HydraBoltsService {
         locationId: createHydraBoltInput.locationId,
       });
 
-      const createdHydraBolt = await this.prisma.hydraBolts.create({
+      return await this.prisma.hydraBolts.create({
         data: {
           serialNumber: createHydraBoltInput.serialNumber,
           name: createHydraBoltInput.name,
@@ -70,34 +181,15 @@ export class HydraBoltsService {
           ringPosition: createHydraBoltInput.ringPosition,
           comment: createHydraBoltInput.comment || undefined,
           activateNotifications: createHydraBoltInput.activateNotifications,
-          boltType: createHydraBoltInput.boltType as BoltType,
           companyId: createHydraBoltInput.companyId,
           createdBy: user.id,
           updatedBy: user.id,
         },
       });
-
-      return {
-        ...createdHydraBolt,
-      };
     } catch (error) {
-      if (
-        error instanceof UserInputError ||
-        error instanceof ForbiddenException
-      ) {
-        throw error;
-      }
-      if (error instanceof Error) {
-        this.logger.error('Error creating Hydra Bolt', error.stack);
-      } else {
-        this.logger.error('Error creating Hydra Bolt', error);
-      }
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLT_CREATION_ERROR_GENERIC',
-          title: errorTexts.bansheeRequestCreateError_title,
-          message: errorTexts.contactSupportError,
-        },
+      throw this.toGraphQLError(error, 'Error creating Hydra Bolt', {
+        code: 'HYDRA_BOLT_CREATION_ERROR_GENERIC',
+        title: errorTexts.hydraBoltCreateError_title,
       });
     }
   }
@@ -106,26 +198,20 @@ export class HydraBoltsService {
     id: string,
     user: ActiveUserData,
     companyId: string,
-  ): Promise<HydraBolts> {
+  ): Promise<HydraBoltWithSensorConfig> {
     try {
-      // Extract companyId and check if the user has access to the any of the applications
-      const hasAccess = await hasAppAccessForCompany(
-        this.prisma,
-        user,
-        this.allowedApps,
-        companyId,
-      );
+      const [hasAccess, hydraBolt] = await Promise.all([
+        hasAppAccessForCompany(this.prisma, user, this.allowedApps, companyId),
+        this.prisma.hydraBolts.findUnique({ where: { id } }),
+      ]);
 
       if (!hasAccess) {
         throw new ForbiddenException(
           'User missing access to this application for this company.',
         );
       }
-      const hydraBolts = await this.prisma.hydraBolts.findUnique({
-        where: { id },
-      });
 
-      if (!hydraBolts) {
+      if (!hydraBolt) {
         throw new UserInputError('', {
           extensions: {
             code: 'HYDRA_BOLT_NOTFOUND_ERROR',
@@ -134,24 +220,15 @@ export class HydraBoltsService {
         });
       }
 
-      return {
-        ...hydraBolts,
-      };
+      const configsBySerialNumber = await this.resolveSensorConfigs([
+        hydraBolt.serialNumber,
+      ]);
+
+      return this.withSensorConfig(hydraBolt, configsBySerialNumber);
     } catch (error) {
-      if (error instanceof UserInputError) {
-        throw error;
-      }
-      if (error instanceof Error) {
-        this.logger.error(`Error fetching Hydra Bolt #${id}`, error.stack);
-      } else {
-        this.logger.error(`Error fetching Hydra Bolt #${id}`, error);
-      }
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLT_FETCH_ERROR',
-          title: 'Failed to fetch Hydra Bolt',
-          message: errorTexts.contactSupportError,
-        },
+      throw this.toGraphQLError(error, `Error fetching Hydra Bolt #${id}`, {
+        code: 'HYDRA_BOLT_FETCH_ERROR',
+        title: 'Failed to fetch Hydra Bolt',
       });
     }
   }
@@ -168,8 +245,6 @@ export class HydraBoltsService {
       companyId?: string;
       siteId?: string;
       activateNotifications?: boolean;
-      startDate?: Date;
-      endDate?: Date;
     },
     allowedCompanyIds: string[],
     user: ActiveUserData,
@@ -177,7 +252,7 @@ export class HydraBoltsService {
     try {
       const { offset = 0, limit = 10, ...restFilters } = filters;
 
-      const { companyId } = filters || {};
+      const { companyId } = restFilters;
 
       // Extract companyId and check if the user has access to the any of the applications
       if (companyId) {
@@ -195,13 +270,17 @@ export class HydraBoltsService {
         }
       }
 
-      const where: any = {};
+      const where: Prisma.HydraBoltsWhereInput = {};
 
       if (restFilters.serialNumber) {
         where.serialNumber = {
           contains: restFilters.serialNumber,
           mode: 'insensitive',
         };
+      }
+
+      if (restFilters.levelId) {
+        where.levelId = restFilters.levelId;
       }
 
       if (restFilters.driveId) {
@@ -216,76 +295,55 @@ export class HydraBoltsService {
         where.createdBy = restFilters.createdBy;
       }
 
-      if (restFilters.companyId) {
-        where.companyId = restFilters.companyId;
-      }
-
       if (restFilters.siteId) {
         where.siteId = restFilters.siteId;
       }
 
-      if (user.globalRole !== GlobalRole.SANDVIK_ADMIN) {
-        if (restFilters.companyId) {
-          if (!allowedCompanyIds.includes(restFilters.companyId)) {
-            throw new ForbiddenException(
-              'User does not have access to this company.',
-            );
-          }
-          where.companyId = restFilters.companyId;
-        } else {
-          where.companyId = { in: allowedCompanyIds };
+      if (restFilters.activateNotifications !== undefined) {
+        where.activateNotifications = restFilters.activateNotifications;
+      }
+
+      // Scope the query to the companies this user is allowed to read.
+      if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
+        if (companyId) {
+          where.companyId = companyId;
         }
+      } else if (companyId) {
+        if (!allowedCompanyIds.includes(companyId)) {
+          throw new ForbiddenException(
+            'User does not have access to this company.',
+          );
+        }
+        where.companyId = companyId;
       } else {
-        if (restFilters.companyId) {
-          where.companyId = restFilters.companyId;
-        }
+        where.companyId = { in: allowedCompanyIds };
       }
 
-      if (
-        restFilters.startDate &&
-        restFilters.endDate &&
-        restFilters.companyId
-      ) {
-        if (restFilters.startDate && restFilters.endDate) {
-          where.proceqData = {
-            some: {
-              updatedTimestamp: {
-                gte: restFilters.startDate,
-                lte: restFilters.endDate,
-              },
-            },
-          };
-        }
-      }
-      const totalRecords = await this.prisma.hydraBolts.count({
-        where,
-      });
+      const [totalRecords, results] = await this.prisma.$transaction([
+        this.prisma.hydraBolts.count({ where }),
+        this.prisma.hydraBolts.findMany({
+          where,
+          skip: offset,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
 
-      const results = await this.prisma.hydraBolts.findMany({
-        where,
-        skip: offset,
-        take: limit,
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      // One batched resolve for the whole page instead of two queries per row.
+      const configsBySerialNumber = await this.resolveSensorConfigs(
+        results.map((hydraBolt) => hydraBolt.serialNumber),
+      );
 
       return {
         totalRecords,
-        results: results,
+        results: results.map((hydraBolt) =>
+          this.withSensorConfig(hydraBolt, configsBySerialNumber),
+        ),
       };
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error('Error fetching Hydra Bolts', error.stack);
-      } else {
-        this.logger.error('Error fetching Hydra Bolts', error);
-      }
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLTS_FETCH_ERROR',
-          title: 'Failed to fetch Hydra Bolts',
-          message: errorTexts.contactSupportError,
-        },
+      throw this.toGraphQLError(error, 'Error fetching Hydra Bolts', {
+        code: 'HYDRA_BOLTS_FETCH_ERROR',
+        title: 'Failed to fetch Hydra Bolts',
       });
     }
   }
@@ -298,22 +356,16 @@ export class HydraBoltsService {
     try {
       const { companyId } = updateHydraBoltInput;
       // Extract companyId and check if the user has access to the any of the applications
-      const hasAccess = await hasAppAccessForCompany(
-        this.prisma,
-        user,
-        this.allowedApps,
-        companyId,
-      );
+      const [hasAccess, existingRequest] = await Promise.all([
+        hasAppAccessForCompany(this.prisma, user, this.allowedApps, companyId),
+        this.prisma.hydraBolts.findUnique({ where: { id } }),
+      ]);
 
       if (!hasAccess) {
         throw new ForbiddenException(
           'User missing access to this application for this company.',
         );
       }
-
-      const existingRequest = await this.prisma.hydraBolts.findUnique({
-        where: { id },
-      });
 
       if (!existingRequest) {
         throw new UserInputError('', {
@@ -331,7 +383,7 @@ export class HydraBoltsService {
           updateHydraBoltInput.locationId || existingRequest.locationId,
       });
 
-      const updatedHydraBolt = await this.prisma.hydraBolts.update({
+      return await this.prisma.hydraBolts.update({
         where: { id },
         data: {
           name: updateHydraBoltInput.name,
@@ -349,25 +401,10 @@ export class HydraBoltsService {
           activateNotifications: updateHydraBoltInput.activateNotifications,
         },
       });
-
-      return {
-        ...updatedHydraBolt,
-      };
     } catch (error) {
-      if (error instanceof UserInputError) {
-        throw error;
-      }
-      if (error instanceof Error) {
-        this.logger.error(`Error updating Hydra Bolt #${id}`, error.stack);
-      } else {
-        this.logger.error(`Error updating Hydra Bolt #${id}`, error);
-      }
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLT_UPDATE_ERROR_GENERIC',
-          title: errorTexts.boltResultUpdateError_title,
-          message: errorTexts.contactSupportError,
-        },
+      throw this.toGraphQLError(error, `Error updating Hydra Bolt #${id}`, {
+        code: 'HYDRA_BOLT_UPDATE_ERROR_GENERIC',
+        title: errorTexts.hydraBoltUpdateError_title,
       });
     }
   }
@@ -377,52 +414,35 @@ export class HydraBoltsService {
     user: ActiveUserData,
     companyId: string,
   ): Promise<HydraBolts> {
-    const hasAccess = await hasAppAccessForCompany(
-      this.prisma,
-      user,
-      this.allowedApps,
-      companyId,
-    );
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'User missing access to this application for this company.',
-      );
-    }
-
-    const hydraBolt = await this.prisma.hydraBolts.findUnique({
-      where: { id },
-    });
-
-    if (!hydraBolt) {
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLT_NOTFOUND_ERROR',
-          title: errorTexts.hydraBoltNotFound_title(id),
-        },
-      });
-    }
-
     try {
-      const deletedRequest = await this.prisma.hydraBolts.delete({
-        where: { id },
-      });
+      const [hasAccess, hydraBolt] = await Promise.all([
+        hasAppAccessForCompany(this.prisma, user, this.allowedApps, companyId),
+        this.prisma.hydraBolts.findUnique({
+          where: { id },
+          select: { id: true },
+        }),
+      ]);
 
-      return {
-        ...deletedRequest,
-      };
-    } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Error deleting Hydra Bolt #${id}`, error.stack);
-      } else {
-        this.logger.error(`Error deleting Hydra Bolt #${id}`, error);
+      if (!hasAccess) {
+        throw new ForbiddenException(
+          'User missing access to this application for this company.',
+        );
       }
-      throw new UserInputError('', {
-        extensions: {
-          code: 'HYDRA_BOLT_DELETE_ERROR_GENERIC',
-          title: errorTexts.hydraBoltDeleteError_title,
-          message: errorTexts.contactSupportError,
-        },
+
+      if (!hydraBolt) {
+        throw new UserInputError('', {
+          extensions: {
+            code: 'HYDRA_BOLT_NOTFOUND_ERROR',
+            title: errorTexts.hydraBoltNotFound_title(id),
+          },
+        });
+      }
+
+      return await this.prisma.hydraBolts.delete({ where: { id } });
+    } catch (error) {
+      throw this.toGraphQLError(error, `Error deleting Hydra Bolt #${id}`, {
+        code: 'HYDRA_BOLT_DELETE_ERROR_GENERIC',
+        title: errorTexts.hydraBoltDeleteError_title,
       });
     }
   }
@@ -432,59 +452,59 @@ export class HydraBoltsService {
     user: ActiveUserData,
     companyId: string,
   ): Promise<GraphQLTypes.ValidateHydraBoltSerialNumberResponse> {
-    const hasAccess = await hasAppAccessForCompany(
-      this.prisma,
-      user,
-      this.allowedApps,
-      companyId,
-    );
-
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'User missing access to this application for this company.',
-      );
-    }
-
     try {
-      const hydraBolt = await this.prisma.hydraBolts.findFirst({
-        where: {
-          serialNumber,
-        },
-      });
+      const [hasAccess, hydraBolt] = await Promise.all([
+        hasAppAccessForCompany(this.prisma, user, this.allowedApps, companyId),
+        this.prisma.hydraBolts.findUnique({
+          where: { serialNumber },
+          select: { id: true },
+        }),
+      ]);
 
-      if (!hydraBolt) {
+      if (!hasAccess) {
+        throw new ForbiddenException(
+          'User missing access to this application for this company.',
+        );
+      }
+
+      if (hydraBolt) {
         return {
-          isValid: true,
-          errorCode: null,
-          message: null,
+          isValid: false,
+          errorCode: 'HYDRA_BOLT_DUPLICATE_SERIAL_NUMBER',
+          message:
+            'Serial number has already been allocated to another Hydra Bolt.',
+          boltConfig: null,
+        };
+      }
+
+      const boltConfig =
+        (await this.loadSensorConfigs([serialNumber])).get(serialNumber) ??
+        null;
+
+      if (!boltConfig) {
+        return {
+          isValid: false,
+          errorCode: 'HYDRA_BOLT_TYPE_AND_DEPTH_NOTFOUND_ERROR',
+          message: `No bolt type and sensor depth on record for serial number ${serialNumber}.`,
+          boltConfig: null,
         };
       }
 
       return {
-        isValid: false,
-        errorCode: 'HYDRA_BOLT_DUPLICATE_SERIAL_NUMBER',
-        message:
-          'Serial number has already been allocated to another Hydra Bolt.',
+        isValid: true,
+        errorCode: null,
+        message: null,
+        boltConfig,
       };
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(
-          `Error validating Hydra Bolt serial number #${serialNumber}`,
-          error.stack,
-        );
-      } else {
-        this.logger.error(
-          `Error validating Hydra Bolt serial number #${serialNumber}`,
-          error,
-        );
-      }
-      throw new UserInputError('', {
-        extensions: {
+      throw this.toGraphQLError(
+        error,
+        `Error validating Hydra Bolt serial number #${serialNumber}`,
+        {
           code: 'HYDRA_BOLT_SERIAL_NUMBER_VALIDATE_ERROR_GENERIC',
-          title: errorTexts.bansheeRequestDeleteError_title,
-          message: errorTexts.contactSupportError,
+          title: errorTexts.hydraBoltSerialNumberValidateError_title,
         },
-      });
+      );
     }
   }
 }

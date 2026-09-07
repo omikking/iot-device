@@ -58,6 +58,15 @@ export class OpticboltService {
     return results.map((r) => this.mapTestResultDecimals(r));
   }
 
+  async findBoltTypesBySerialNumbers(serialNumbers: string[]) {
+    if (!serialNumbers.length) return [];
+
+    return this.prisma.opticboltTestResult.findMany({
+      where: { serialNumber: { in: serialNumbers } },
+      select: { serialNumber: true, boltType: true },
+    });
+  }
+
   async findSpectrumsBySerialNumber(serialNumber: string) {
     const spectrums = await this.prisma.opticboltSpectrum.findMany({
       where: {

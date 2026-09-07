@@ -872,7 +872,6 @@ model HydraBolts {
   driveId                  String
   locationId               String
   coordinates              Json?
-  boltType                 String       @db.VarChar(100)
   locationDetails          String?      @db.Text
   boltInstallationDateTime DateTime?    @db.Timestamptz
   ringPosition             RingPosition

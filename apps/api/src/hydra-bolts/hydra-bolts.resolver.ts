@@ -10,7 +10,7 @@ import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { getAllowedCompanyIds } from 'src/utils';
 import * as GraphQLTypes from 'src/graphql-types';
 
-@Resolver('HydraBolts')
+@Resolver('HydraBolt')
 @UseGuards(JwtGuard, RolesGuard)
 export class HydraBoltsResolver {
   constructor(private readonly hydraBoltsService: HydraBoltsService) {}
@@ -50,8 +50,6 @@ export class HydraBoltsResolver {
     @Args('siteId', { nullable: true }) siteId?: string,
     @Args('activateNotifications', { nullable: true })
     activateNotifications?: boolean,
-    @Args('startDate', { type: () => Date, nullable: true }) startDate?: Date,
-    @Args('endDate', { type: () => Date, nullable: true }) endDate?: Date,
   ) {
     const allowedCompanyIds = getAllowedCompanyIds(user);
 
@@ -67,8 +65,6 @@ export class HydraBoltsResolver {
         companyId,
         siteId,
         activateNotifications,
-        startDate,
-        endDate,
       },
       allowedCompanyIds,
       user,

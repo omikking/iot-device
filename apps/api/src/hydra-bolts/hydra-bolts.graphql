@@ -30,11 +30,11 @@ type HydraBolt {
   company: Company
   site: Site
   siteId: String!
-  boltType: String!
   activateNotifications: Boolean
+  boltType: String
 
-  # Field resolver - fetches BansheeBoltTypeConstant based on boltType
-  boltTypeConstant: BansheeBoltTypeConstant
+  numberOfSensors: Int
+  sensorDepths: [Float!]
 }
 
 """
@@ -54,7 +54,6 @@ input CreateHydraBoltInput {
   ringPosition: RingPosition!
   comment: String
   activateNotifications: Boolean!
-  boltType: String!
   companyId: String!
 }
 
@@ -86,6 +85,16 @@ type ValidateHydraBoltSerialNumberResponse {
   isValid: Boolean!
   errorCode: String
   message: String
+
+  # Resolved only when the serial number is free to use - the bolt type and
+  # sensor depths the caller needs to configure the new Hydra Bolt.
+  boltConfig: FindHydraBoltTypeAndDepthBySerialNumberResponse
+}
+
+type FindHydraBoltTypeAndDepthBySerialNumberResponse {
+  boltType: String!
+  numberOfSensors: Int!
+  sensorDepths: [Float!]!
 }
 
 type Query {

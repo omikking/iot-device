@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequestInput {
+export class CreateHydraBoltInput extends GraphQLTypes.CreateHydraBoltInput {
   @IsString()
   serialNumber!: string;
 
@@ -51,9 +51,6 @@ export class CreateBansheeRequestInput extends GraphQLTypes.CreateBansheeRequest
 
   @IsBoolean()
   activateNotifications!: boolean;
-
-  @IsString()
-  boltType!: string;
 
   @IsString()
   @IsUUID()

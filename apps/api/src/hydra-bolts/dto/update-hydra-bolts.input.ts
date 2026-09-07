@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import * as GraphQLTypes from '../../graphql-types';
 
-export class UpdateBansheeRequestInput extends GraphQLTypes.UpdateBansheeRequestInput {
+export class UpdateHydraBoltInput extends GraphQLTypes.UpdateHydraBoltInput {
   @IsString()
   name!: string;
 

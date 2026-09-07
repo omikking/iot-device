@@ -384,7 +384,6 @@ export class CreateHydraBoltInput {
     ringPosition: RingPosition;
     comment?: Nullable<string>;
     activateNotifications: boolean;
-    boltType: string;
     companyId: string;
 }
 
@@ -1079,9 +1078,10 @@ export class HydraBolt {
     company?: Nullable<Company>;
     site?: Nullable<Site>;
     siteId: string;
-    boltType: string;
     activateNotifications?: Nullable<boolean>;
-    boltTypeConstant?: Nullable<BansheeBoltTypeConstant>;
+    boltType?: Nullable<string>;
+    numberOfSensors?: Nullable<number>;
+    sensorDepths?: Nullable<number[]>;
 }
 
 export class HydraBoltsResponse {
@@ -1093,6 +1093,13 @@ export class ValidateHydraBoltSerialNumberResponse {
     isValid: boolean;
     errorCode?: Nullable<string>;
     message?: Nullable<string>;
+    boltConfig?: Nullable<FindHydraBoltTypeAndDepthBySerialNumberResponse>;
+}
+
+export class FindHydraBoltTypeAndDepthBySerialNumberResponse {
+    boltType: string;
+    numberOfSensors: number;
+    sensorDepths: number[];
 }
 
 export class Invitation {

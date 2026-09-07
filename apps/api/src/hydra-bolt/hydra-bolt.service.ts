@@ -24,9 +24,17 @@ export class HydraBoltService {
   }
 
   async findByPartNumber(partNumber: string) {
-    return this.prisma.hydrabolt.findFirst({
+    return this.prisma.hydrabolt.findUnique({
       where: { partNumber },
-      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findSensorConfigsByPartNumbers(partNumbers: string[]) {
+    if (!partNumbers.length) return [];
+
+    return this.prisma.hydrabolt.findMany({
+      where: { partNumber: { in: partNumbers } },
+      select: { partNumber: true, numberOfFBG: true, positionOfFBGs: true },
     });
   }
 

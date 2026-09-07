@@ -67,6 +67,8 @@ export function createPrismaMock(): PrismaMock {
     company: modelMock(),
     plan: modelMock(),
     user: modelMock(),
+    site: modelMock(),
+    hydraBolts: modelMock(),
   } as unknown as PrismaMock;
 
   prisma.$transaction = jest.fn((arg: unknown) => {

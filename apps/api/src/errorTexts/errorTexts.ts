@@ -223,7 +223,14 @@ export const errorTexts = {
   // Hydra bolts
   hydraBoltNotFound_title: (id: string) => `Hydra bolt #${id} not found`,
 
+  hydraBoltCreateError_title: 'Failed to create hydra bolt.',
+
+  hydraBoltUpdateError_title: 'Failed to update hydra bolt.',
+
   hydraBoltDeleteError_title: 'Failed to delete hydra bolt.',
+
+  hydraBoltSerialNumberValidateError_title:
+    'Failed to validate hydra bolt serial number.',
 
   // Banshee template
   bansheeTemplateCreateError_title: 'Failed to create banshee template.',

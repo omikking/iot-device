@@ -261,7 +261,7 @@ export default function TemplatePage({
   const selectedTemplateName = useMemo(
     () =>
       templates.find((t) => t.id === selectedTemplateId)?.templateName ??
-      'New Template',
+      'New template',
     [templates, selectedTemplateId],
   );
 
@@ -270,9 +270,6 @@ export default function TemplatePage({
     defaultValues: DEFAULT_VALUES,
   });
 
-  // Every hierarchy field on a template is optional, so each dropdown lists
-  // everything under the nearest selected ancestor rather than staying empty
-  // until its parent is picked. Selecting a parent still narrows the ones below.
   const { levels, drives, locations } = useHierarchySelections(
     sites,
     form.watch,
@@ -396,7 +393,7 @@ export default function TemplatePage({
             {selectedTemplateName}
           </Headline>
           <Text variant="medium" color="muted">
-            Create Templates for Quick Configuration
+            Create templates for quick configuration
           </Text>
         </div>
 
@@ -411,7 +408,7 @@ export default function TemplatePage({
                       color="foreground"
                       className="ui-banshee-font-semibold"
                     >
-                      Banshee Template Library
+                      Banshee template library
                     </Text>
                   </TableHead>
                   <TableHead className="ui-banshee-justify-end !ui-banshee-align-center ui-banshee-w-auto ui-banshee-px-3 ui-banshee-py-2"></TableHead>
@@ -497,9 +494,9 @@ export default function TemplatePage({
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="ui-banshee-grid ui-banshee-grid-cols-1 xl:ui-banshee-grid-cols-12 ui-banshee-gap-10">
                   <div className="xl:ui-banshee-col-span-5 ui-banshee-space-y-6">
-                    <FormField label="Template Name">
+                    <FormField label="Template name">
                       <Input
-                        placeholder="Template Name"
+                        placeholder="Template name"
                         {...form.register('templateName')}
                       />
                     </FormField>
@@ -602,7 +599,7 @@ export default function TemplatePage({
                       onSelect={(id) => form.setValue('locationId', id)}
                     />
 
-                    <FormField label="Location Details">
+                    <FormField label="Location details">
                       <Textarea
                         rows={4}
                         {...form.register('locationDetails')}
@@ -614,8 +611,8 @@ export default function TemplatePage({
                         {COORDINATE_AXES.map((axis) => (
                           <div key={axis} className="ui-banshee-flex-1">
                             <Text
-                              variant="small"
-                              color="muted"
+                              variant="medium"
+                              color="foreground"
                               className="ui-banshee-text-center ui-banshee-mb-1"
                             >
                               {axis.toUpperCase()}
@@ -626,26 +623,24 @@ export default function TemplatePage({
                       </div>
                     </FormField>
 
-                    <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-between ui-banshee-bg-neutral-1 ui-banshee-p-6 ui-banshee-rounded-lg">
-                      <div className="ui-banshee-flex ui-banshee-flex-col">
-                        <Text
-                          variant="small"
-                          color="muted"
-                          className="ui-banshee-font-bold ui-banshee-mb-2"
-                        >
-                          Alarm Trigger
+                    <div className="ui-banshee-flex ui-banshee-flex-col">
+                      <Text
+                        variant="medium"
+                        color="foreground"
+                        className="ui-banshee-mb-2"
+                      >
+                        Alarm trigger
+                      </Text>
+                      <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3">
+                        <Switch
+                          checked={form.watch('activateNotifications')}
+                          onCheckedChange={(val) =>
+                            form.setValue('activateNotifications', val)
+                          }
+                        />
+                        <Text variant="medium" color="foreground">
+                          Activate notifications
                         </Text>
-                        <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3">
-                          <Switch
-                            checked={form.watch('activateNotifications')}
-                            onCheckedChange={(val) =>
-                              form.setValue('activateNotifications', val)
-                            }
-                          />
-                          <Text variant="small" color="foreground">
-                            Activate Notifications
-                          </Text>
-                        </div>
                       </div>
                     </div>
 

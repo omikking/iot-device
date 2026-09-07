@@ -58,6 +58,7 @@ const bansheeRequestsListQuery = graphql(`
           updatedTimestamp
           readings {
             readingIndex
+            createdTimestamp
             elongation
             status
           }
@@ -244,7 +245,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
                 value="statusPlot"
                 className="data-[state=active]:ui-banshee-bg-neutral-1  ui-banshee-px-12 ui-banshee-py-3 data-[state=active]:ui-banshee-text-black"
               >
-                Status Plot
+                Status plot
               </TabsTrigger>
               <TabsTrigger
                 value="list"
@@ -256,7 +257,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
                 value="dataPlot"
                 className="data-[state=active]:ui-banshee-bg-neutral-1  ui-banshee-px-12 ui-banshee-py-3 data-[state=active]:ui-banshee-text-black"
               >
-                Data Plot
+                Data plot
               </TabsTrigger>
             </TabsList>
 

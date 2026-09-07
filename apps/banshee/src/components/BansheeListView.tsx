@@ -26,6 +26,8 @@ import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
+import { formatMeasurementDay } from '@/libs/measurement-date';
+import { toSentenceCase } from '@/libs/utils';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
@@ -38,6 +40,7 @@ type EventLog = {
 
 type ProceqReading = {
   readingIndex?: number | null;
+  createdTimestamp?: string | null;
   elongation?: number | null;
   status?: string | null;
 };
@@ -87,9 +90,9 @@ type FilterState = {
 const COLUMN_TOOLTIPS = {
   details: 'Expand the row to open the full details of this banshee request.',
   status:
-    'Latest measurement status of the bolt (e.g. Elastic, Plastic, Unmeasured).',
+    'Latest measurement status of the bolt (e.g. Elastic, Plastic, Not Measurable).',
   banshee:
-    'Unique Banshee Name identifying each banshee bolt sensor. Use the filter to narrow the list.',
+    'Unique Banshee name identifying each banshee bolt sensor. Use the filter to narrow the list.',
   site: 'Mine site where the banshee bolt is installed.',
   level: 'Level within the site where the bolt is located.',
   drive: 'Drive (tunnel) within the level where the bolt is located.',
@@ -238,8 +241,11 @@ export const BansheeListView = ({
     );
 
     const generatedRows: BansheeRow[] = filtered.map((entry) => {
-      const { measurement: latestMeasurement, reading: lastReading } =
-        getLatestMeasurement(entry.proceqData);
+      const {
+        measurement: latestMeasurement,
+        reading: lastReading,
+        measuredAt,
+      } = getLatestMeasurement(entry.proceqData);
 
       return {
         id: entry.id,
@@ -250,9 +256,8 @@ export const BansheeListView = ({
         location: entry.location?.locationName || 'N/A',
         status: latestMeasurement?.status || 'Not Measurable',
         elongation: formatElongation(lastReading) ?? '-',
-        lastMeasured: latestMeasurement?.updatedTimestamp
-          ? new Date(latestMeasurement.updatedTimestamp).toLocaleDateString()
-          : 'N/A',
+        lastMeasured:
+          measuredAt != null ? formatMeasurementDay(measuredAt) : 'N/A',
         statusChange: (entry.eventLogs || []).some(
           (log) => log.eventType === 'STATUS_CHANGE',
         )
@@ -401,7 +406,7 @@ export const BansheeListView = ({
                   <TableHead className="ui-banshee-p-0">
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.elongation}>
                       <TableHeadWithSorting
-                        header="Total Elongation (mm)"
+                        header="Total elongation (mm)"
                         className="ui-banshee-text-md ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-whitespace-nowrap"
                         column={createMockColumn('elongation')}
                       />
@@ -410,7 +415,7 @@ export const BansheeListView = ({
                   <TableHead className="ui-banshee-p-0">
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.lastMeasured}>
                       <TableHeadWithSorting
-                        header="Last Measured"
+                        header="Last measured"
                         className="ui-banshee-text-md ui-banshee-w-full ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
                         column={createMockColumn('lastMeasured')}
                       />
@@ -419,7 +424,7 @@ export const BansheeListView = ({
                   <TableHead className="ui-banshee-p-0">
                     <HeaderTooltip tip={COLUMN_TOOLTIPS.statusChange}>
                       <TableHeadWithSorting
-                        header="Status Change"
+                        header="Status change"
                         className="ui-banshee-text-md ui-banshee-w-full ui-banshee-p-0 ui-banshee-h-full ui-banshee-px-4 !ui-banshee-justify-start ui-banshee-text-start ui-banshee-whitespace-nowrap"
                         column={createMockColumn('statusChange')}
                       />
@@ -448,36 +453,24 @@ export const BansheeListView = ({
                     </TableCell>
                     <TableCell>
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                tabIndex={0}
-                                role="img"
-                                aria-label={row.status}
-                                className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
-                                style={{
-                                  backgroundColor: getStatusColorHex(
-                                    row.status,
-                                  ),
-                                }}
-                              />
-                            </TooltipTrigger>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              tabIndex={0}
+                              role="img"
+                              aria-label={row.status}
+                              className="ui-banshee-inline-block ui-banshee-w-3 ui-banshee-h-3 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                              style={{
+                                backgroundColor: getStatusColorHex(row.status),
+                              }}
+                            />
+                          </TooltipTrigger>
 
-                            <TooltipContent>
-                              {row.status
-                                .toLowerCase()
-                                .split('_')
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1),
-                                )
-                                .join(' ')}
-                              <TooltipArrow />
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                          <TooltipContent>
+                            {toSentenceCase(row.status)}
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">

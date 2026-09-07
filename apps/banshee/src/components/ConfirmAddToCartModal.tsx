@@ -53,7 +53,7 @@ export const ConfirmAddToCartModal = ({
       >
         <ModalHeader>
           <ModalTitle className="ui-banshee-pb-9 ui-banshee-text-3xl!">
-            Add to Schedule
+            Add to schedule
           </ModalTitle>
         </ModalHeader>
 

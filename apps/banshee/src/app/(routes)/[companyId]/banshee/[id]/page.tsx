@@ -329,7 +329,7 @@ export default function BansheeConfigPage() {
                 />
 
                 <StaticField
-                  label="Bolt Type"
+                  label="Bolt type"
                   value={formatBoltType(request.boltType)}
                 />
 
@@ -369,7 +369,7 @@ export default function BansheeConfigPage() {
               {/* ── Right Column ── */}
               <div className="xl:ui-banshee-col-span-7 ui-banshee-space-y-6">
                 <StaticField
-                  label="Serial Number"
+                  label="Serial number"
                   value={request.serialNumber}
                 />
 
@@ -424,7 +424,7 @@ export default function BansheeConfigPage() {
                   onSelect={(id) => form.setValue('locationId', id)}
                 />
 
-                <FormField label="Location Details">
+                <FormField label="Location details">
                   <Textarea rows={4} {...form.register('locationDetails')} />
                 </FormField>
 
@@ -433,8 +433,8 @@ export default function BansheeConfigPage() {
                     {COORDINATE_AXES.map((axis) => (
                       <div key={axis} className="ui-banshee-flex-1">
                         <Text
-                          variant="small"
-                          color="muted"
+                          variant="medium"
+                          color="foreground"
                           className="ui-banshee-text-center ui-banshee-mb-1"
                         >
                           {axis.toUpperCase()}
@@ -446,14 +446,13 @@ export default function BansheeConfigPage() {
                 </FormField>
 
                 {/* Alarm Trigger */}
-                <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-between ui-banshee-bg-neutral-1 ui-banshee-p-6 ui-banshee-rounded-lg">
                   <div className="ui-banshee-flex ui-banshee-flex-col">
                     <Text
-                      variant="small"
-                      color="muted"
-                      className="ui-banshee-font-bold ui-banshee-mb-2"
+                      variant="medium"
+                      color="foreground"
+                      className="ui-banshee-mb-2"
                     >
-                      Alarm Trigger
+                      Alarm trigger
                     </Text>
                     <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-gap-3">
                       <Switch
@@ -462,11 +461,10 @@ export default function BansheeConfigPage() {
                           form.setValue('activateNotifications', val)
                         }
                       />
-                      <Text variant="small" color="foreground">
-                        Activate Notifications
+                      <Text variant="medium" color="foreground">
+                        Activate notifications
                       </Text>
                     </div>
-                  </div>
                 </div>
 
                 {form.watch('activateNotifications') && (

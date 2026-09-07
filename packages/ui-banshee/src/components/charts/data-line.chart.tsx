@@ -21,6 +21,7 @@ export type DataLineChartProps = {
   onResetZoom?: () => void;
   legendSelected?: Record<string, boolean>;
   onLegendChange?: (selected: Record<string, boolean>) => void;
+  connectNulls?: boolean;
 };
 
 export type DataLineChartHandle = {
@@ -68,6 +69,7 @@ export const DataLineChart = forwardRef<
     showToolbox = true,
     legendSelected,
     onLegendChange,
+    connectNulls = false,
   },
   ref,
 ) {
@@ -118,7 +120,7 @@ export const DataLineChart = forwardRef<
       xAxis: {
         type: 'category',
         data: xAxisDates,
-        axisLabel: { fontSize: 14, color: '#101010'},
+        axisLabel: { fontSize: 14, color: '#101010' },
         axisTick: { alignWithLabel: true },
         axisLine: { show: false },
       },
@@ -132,7 +134,7 @@ export const DataLineChart = forwardRef<
         name: yAxisLabel,
         nameLocation: 'middle',
         nameGap: 45,
-        nameTextStyle: { fontSize: 13, color: '#101010' },
+        nameTextStyle: { fontSize: 14, color: '#101010' },
       },
       tooltip: {
         trigger: 'axis',
@@ -186,18 +188,6 @@ export const DataLineChart = forwardRef<
               },
             ]
           : []),
-        {
-          type: 'line' as const,
-          data: [],
-          silent: true,
-          markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: { color: '#E4E4E4', width: 1 },
-            label: { show: false },
-            data: [{ yAxis: 3 }, { yAxis: 6 }, { yAxis: 9 }, { yAxis: 12 }],
-          },
-        },
         ...(visibleLines?.map((line) => ({
           type: 'line' as const,
           name: line.label,
@@ -209,7 +199,7 @@ export const DataLineChart = forwardRef<
           itemStyle: { color: line.color },
           symbol: 'circle',
           symbolSize: 6,
-          connectNulls: false,
+          connectNulls,
           sampling: 'lttb' as const,
           large: true,
         })) ?? []),
@@ -223,6 +213,7 @@ export const DataLineChart = forwardRef<
     enableZoom,
     showToolbox,
     legendSelected,
+    connectNulls,
   ]);
 
   // Rubber-band cursor + double-click reset (only when zoom is enabled).

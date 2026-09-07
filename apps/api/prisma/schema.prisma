@@ -555,7 +555,6 @@ enum ProceqStatus {
   HIGH_PLASTIC
   BROKEN
   NOT_MEASURABLE
-  UNMEASURED
 }
 
 model ProceqData {
@@ -609,6 +608,8 @@ model ProceqReading {
   gate1SoundPathDistanceInTimeUnit Float?
   status                           ProceqStatus?
   elongation                       Float?
+  createdTimestamp                 DateTime?
+  updatedTimestamp                 DateTime?
   proceqData                       ProceqData    @relation(fields: [proceqDataId], references: [id], onDelete: Cascade)
   proceqDataId                     String
 

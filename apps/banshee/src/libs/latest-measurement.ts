@@ -11,6 +11,7 @@
 export interface RankableReading {
   readingIndex?: number | null;
   elongation?: number | null;
+  createdTimestamp?: unknown;
 }
 
 /** The measurement fields used for ranking; queries may select more. */
@@ -84,7 +85,7 @@ export function sortReadingsAscending<T extends RankableReading>(
   return sortByRank(readings, (reading) => [reading.readingIndex ?? null]);
 }
 
-/** The most recent measurement session, or null when the bolt is unmeasured. */
+/** The most recent measurement session, or null when the bolt has none. */
 export function getLatestProceqData<T extends RankableProceqData>(
   proceqData: readonly T[] | null | undefined,
 ): T | null {
@@ -99,8 +100,27 @@ export function getLatestReading<T extends RankableReading>(
 }
 
 /**
+ * When the bolt was last measured, in millis. It is the latest reading's own
+ * `createdTimestamp` — the very instant the reading-level plots put on their
+ * x-axis — so a table cell and a chart point never disagree about a date.
+ *
+ * A session with nothing measured has no reading timestamp to offer (often no
+ * readings at all), and those rows would otherwise lose their date entirely, so
+ * they fall back to the session's `updatedTimestamp`.
+ */
+function getMeasuredAt(
+  measurement: RankableProceqData | null,
+  reading: RankableReading | null,
+): number | null {
+  return (
+    toTime(reading?.createdTimestamp) ?? toTime(measurement?.updatedTimestamp)
+  );
+}
+
+/**
  * The latest measurement session together with its latest reading — the pair
- * every detail view, list row and table cell should read its values from.
+ * every detail view, list row and table cell should read its values from — plus
+ * the {@link getMeasuredAt} instant those views should date the bolt by.
  */
 export function getLatestMeasurement<
   TReading extends RankableReading,
@@ -109,9 +129,18 @@ export function getLatestMeasurement<
   },
 >(
   proceqData: readonly TProceqData[] | null | undefined,
-): { measurement: TProceqData | null; reading: TReading | null } {
+): {
+  measurement: TProceqData | null;
+  reading: TReading | null;
+  measuredAt: number | null;
+} {
   const measurement = getLatestProceqData(proceqData);
-  return { measurement, reading: getLatestReading(measurement?.readings) };
+  const reading = getLatestReading(measurement?.readings);
+  return {
+    measurement,
+    reading,
+    measuredAt: getMeasuredAt(measurement, reading),
+  };
 }
 
 /** Elongation to one decimal, or null when there is nothing to show. */

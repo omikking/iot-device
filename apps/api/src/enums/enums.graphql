@@ -104,7 +104,6 @@ enum ProceqStatus {
   HIGH_PLASTIC
   BROKEN
   NOT_MEASURABLE
-  UNMEASURED
 }
 
 type EnumOption {

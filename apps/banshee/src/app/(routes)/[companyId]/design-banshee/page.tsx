@@ -129,11 +129,11 @@ export default function Page() {
   return (
     <main className="ui-banshee-w-full ui-banshee-min-h-screen ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-py-28 ui-banshee-px-10 ui-banshee-gap-10 ui-banshee-bg-main-white">
       <Headline variant="xl" as="h1" color="foreground">
-        Banshee Design System Page 🚀
+        Banshee design system page 🚀
       </Headline>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
-        Bolt Locator 🚀
+        Bolt locator 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
         <BoltLocator
@@ -143,14 +143,14 @@ export default function Page() {
       </div>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
-        Line Data Chart 🚀
+        Line data chart 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
         <DataLineChart data={lineDataChartMock} lines={lineDataConfigMock} />
       </div>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       <Headline variant="large" as="h1" color="foreground">
-        Line Chart 🚀
+        Line chart 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
         <ChartLineLinear
@@ -163,7 +163,7 @@ export default function Page() {
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Donut Chart */}
       <Headline variant="large" as="h1" color="foreground">
-        Donut Chart 🚀
+        Donut chart 🚀
       </Headline>
       <div className="ui-banshee-w-full ui-banshee-flex ui-banshee-justify-center">
         <ChartPieDonut
@@ -191,7 +191,7 @@ export default function Page() {
         Modal 🚀
       </Headline>
       <Button onClick={() => setIsConfirmModalOpen(true)}>
-        Open THE Incredible Modal
+        Open the incredible modal
       </Button>
       {/* Confirm Modal */}
       <ConfirmModal
@@ -211,14 +211,14 @@ export default function Page() {
 
         <Image
           src={bansheeImage}
-          alt="Example Image"
+          alt="Example image"
           width={384}
           height={384}
         />
       </ConfirmModal>
       {/* Table row & Table header */}
       <Headline variant="large" as="h1" color="foreground">
-        Table Row & Table Header 🚀
+        Table row & table header 🚀
       </Headline>
       <div className="ui-banshee-w-[700px] ui-banshee-h-40 ui-banshee-overflow-y-auto ui-banshee-border-b">
         {/* TODO Fix border bottom on the headers */}
@@ -279,11 +279,11 @@ export default function Page() {
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
       {/* Content Holder */}
       <Headline variant="large" as="h1" color="foreground">
-        Content Holder 🚀
+        Content holder 🚀
       </Headline>
       <ContentHolderTable
         variant="table"
-        headlineText="Content Holder Table"
+        headlineText="Content holder table"
         form={form}
         onSubmit={(data) => console.log('Form submitted:', data)}
       >
@@ -327,14 +327,14 @@ export default function Page() {
           )}
         />
         <Button variant="primary" size="large">
-          Add New Banshee
+          Add new Banshee
         </Button>
       </ContentHolderTable>
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
-        <ContentHolder variant="image" headlineText="Content Holder Image">
+        <ContentHolder variant="image" headlineText="Content holder image">
           <Image
             src={bansheeImage}
-            alt="Example Image"
+            alt="Example image"
             width={384}
             height={384}
           />
@@ -357,7 +357,7 @@ export default function Page() {
                 return (
                   // TODO Find a better solution for the width calc
                   <FormItem className="ui-banshee-w-[calc(50%-12px)]">
-                    <FormLabel>Textarea Field</FormLabel>
+                    <FormLabel>Textarea field</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Textarea..."
@@ -377,7 +377,7 @@ export default function Page() {
               render={() => {
                 return (
                   <FormItem className="w-[calc(50%-12px)]">
-                    <FormLabel>Combo Field</FormLabel>
+                    <FormLabel>Combo field</FormLabel>
                     <FormControl>
                       <Combobox
                         id="technician"
@@ -398,7 +398,7 @@ export default function Page() {
               render={({ field }) => {
                 return (
                   <FormItem className="ui-banshee-w-[calc(50%-12px)]">
-                    <FormLabel>Input Field </FormLabel>
+                    <FormLabel>Input field </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="I field..."
@@ -418,7 +418,7 @@ export default function Page() {
               render={({ field }) => {
                 return (
                   <FormItem className="w-[calc(50%-12px)]">
-                    <FormLabel>Disabled Input Field </FormLabel>
+                    <FormLabel>Disabled input field </FormLabel>
                     <FormControl>
                       <Input
                         disabled
@@ -439,7 +439,7 @@ export default function Page() {
       {/* Filter Dropdown */}
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
-          Filter Dropdown 🚀
+          Filter dropdown 🚀
         </Headline>
         {/* <FilterDropdown
           id="filter-users"
@@ -457,15 +457,15 @@ export default function Page() {
         </Headline>
         <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
-          Select All
+          Select all
         </div>
         <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
-          Select This
+          Select this
         </div>
         <div className="ui-banshee-flex ui-banshee-flex-row ui-banshee-items-center ui-banshee-gap-3">
           <Checkbox />
-          Select That
+          Select that
         </div>
       </div>
       <hr className="ui-banshee-w-full ui-banshee-border-neutral-2" />
@@ -519,7 +519,7 @@ export default function Page() {
       {/* Input Field, Dropdown, Calendar & Time Select */}
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
-          Input Field, Dropdown, Calendar & Time Select 🚀
+          Input field, dropdown, calendar & time select 🚀
         </Headline>
 
         <Form {...form}>
@@ -534,7 +534,7 @@ export default function Page() {
                 return (
                   <FormItem>
                     {/* TODO disabled should change color of text */}
-                    <FormLabel>Time Select</FormLabel>
+                    <FormLabel>Time select</FormLabel>
                     <FormControl>
                       <TimeCalendar id="time" className="ui-banshee-w-96" />
                     </FormControl>
@@ -549,7 +549,7 @@ export default function Page() {
               render={() => {
                 return (
                   <FormItem>
-                    <FormLabel>Calendar Select</FormLabel>
+                    <FormLabel>Calendar select</FormLabel>
                     <FormControl>
                       <SingleDateCalendar
                         className="ui-banshee-w-96"
@@ -567,7 +567,7 @@ export default function Page() {
               render={() => {
                 return (
                   <FormItem className="w-96">
-                    <FormLabel>Dropdown Field</FormLabel>
+                    <FormLabel>Dropdown field</FormLabel>
                     <FormControl>
                       <Dropdown
                         id="technician"
@@ -588,7 +588,7 @@ export default function Page() {
               render={() => {
                 return (
                   <FormItem className="w-96">
-                    <FormLabel>Dropdown Field</FormLabel>
+                    <FormLabel>Dropdown field</FormLabel>
                     <FormControl>
                       <Dropdown
                         id="technician"
@@ -611,7 +611,7 @@ export default function Page() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Input Field</FormLabel>
+                    <FormLabel>Input field</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Default input field..."
@@ -631,7 +631,7 @@ export default function Page() {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Disabled input Field </FormLabel>
+                    <FormLabel>Disabled input field </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Disabled input field..."
@@ -647,7 +647,7 @@ export default function Page() {
           </form>
         </Form>
         <div>
-          <Label className="">Combobox WONKY</Label>
+          <Label className="">Combobox wonky</Label>
           <Combobox
             id="combobox"
             className="ui-banshee-w-96"
@@ -718,7 +718,7 @@ export default function Page() {
       {/* Graph Time Range */}
       <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-items-center ui-banshee-gap-12">
         <Headline variant="large" as="h1" color="foreground">
-          Graph Time Range 🚀
+          Graph time range 🚀
         </Headline>
         <Headline variant="medium" as="h2" color="foreground">
           (Component coming soon...)
@@ -731,10 +731,10 @@ export default function Page() {
           Buttons 🚀
         </Headline>
         <Button variant="primary" size="small">
-          Button Primary Regular Small
+          Button primary regular small
         </Button>
         <Button variant="primary" size="large">
-          Button Primary Regular Large
+          Button primary regular large
         </Button>
       </div>
       {/* Texts */}

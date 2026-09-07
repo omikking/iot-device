@@ -175,7 +175,7 @@ export default function SiteInformationPage({
   useEffect(() => {
     handleGraphQLErrors(usersError);
   }, [usersError]);
-  const companyName = hierarchyData?.company?.name ?? 'Company Name';
+  const companyName = hierarchyData?.company?.name ?? 'Company name';
 
   const sites = hierarchyData?.company?.sites ?? [];
 
@@ -430,7 +430,7 @@ export default function SiteInformationPage({
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
-                    Banshee Users
+                    Banshee users
                   </Text>
                 </TableHead>
               </TableRow>
@@ -464,7 +464,7 @@ export default function SiteInformationPage({
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
-                    Banshee Subscription
+                    Banshee subscription
                   </Text>
                 </TableHead>
                 <TableHead className="[&:last-child]:ui-banshee-text-left ui-banshee-flex-none ui-banshee-px-3 ui-banshee-py-2">

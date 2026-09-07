@@ -41,7 +41,7 @@ describe('CompanyMapper (§5.2 cycle-scoped accumulator)', () => {
     // Technician 1 touches company A.
     mapper.addMeasured('companyA', item('m1'));
     // Technician 4 also touches company A later in the cycle.
-    mapper.addNotMeasured('companyA', item('m2', ProceqStatus.UNMEASURED));
+    mapper.addNotMeasured('companyA', item('m2', ProceqStatus.NOT_MEASURABLE));
     // A different company is kept separate.
     mapper.addMeasured('companyB', item('m3'));
 

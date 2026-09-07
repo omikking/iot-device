@@ -14,6 +14,7 @@ import {
   getLatestMeasurement,
   sortProceqDataAscending,
 } from '@/libs/latest-measurement';
+import { formatMeasurementDateTime } from '@/libs/measurement-date';
 import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import {
   SidebarInset,
@@ -64,6 +65,7 @@ const bansheeDetailQuery = graphql(`
         comments
         readings {
           readingIndex
+          createdTimestamp
           elongation
           status
         }
@@ -139,16 +141,18 @@ export default function BansheeDashboardPage() {
     const request = data?.bansheeRequest;
     if (!request) return null;
 
-    const { measurement: latestMeasurement, reading: lastReading } =
-      getLatestMeasurement(request.proceqData);
+    const {
+      measurement: latestMeasurement,
+      reading: latestReading,
+      measuredAt,
+    } = getLatestMeasurement(request.proceqData);
 
     return {
       bansheeName: request?.name,
       serialNumber: request.serialNumber,
       status: latestMeasurement?.status,
-      lastReading: latestMeasurement?.createdTimestamp
-        ? formatDateTime(latestMeasurement?.createdTimestamp)
-        : 'N/A',
+      lastReading:
+        measuredAt != null ? formatMeasurementDateTime(measuredAt) : 'N/A',
       siteName: request.site?.siteName ?? 'N/A',
       levelName: request.level?.levelName ?? 'N/A',
       driveName: request.drive?.driveName ?? 'N/A',
@@ -156,7 +160,7 @@ export default function BansheeDashboardPage() {
       coordsDisplay: parseCoordinatesDisplay(request.coordinates),
       installationDate: formatDateTime(request.boltInstallationDateTime),
       comment: request?.comment || 'No comment available.',
-      elongation: formatElongation(lastReading) ?? '-',
+      elongation: formatElongation(latestReading) ?? '-',
       boltType: formatBoltType(request?.boltType) ?? 'N/A',
       period: formatPeriod(request.period),
       lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit,
@@ -229,19 +233,19 @@ export default function BansheeDashboardPage() {
             }}
           />
           <h1 className="ui-banshee-text-2xl ui-banshee-font-semibold ui-banshee-text-neutral-900">
-            {details.bansheeName ?? 'Banshee Name'}
+            {details.bansheeName ?? 'Banshee name'}
           </h1>
         </div>
 
         <div className="ui-banshee-grid ui-banshee-grid-cols-1 lg:ui-banshee-grid-cols-12 ui-banshee-gap-8">
           <div className="lg:ui-banshee-col-span-5 ui-banshee-bg-neutral-100 ui-banshee-border ui-banshee-border-gray-100 ui-banshee-p-6">
             <div className="ui-banshee-flex ui-banshee-flex-col">
-              <DetailRow label="Serial Number" value={details?.serialNumber} />
+              <DetailRow label="Serial number" value={details?.serialNumber} />
               <DetailRow
                 label="Status"
                 value={getStatusLabel(details?.status)}
               />
-              <DetailRow label="Last Reading" value={details.lastReading} />
+              <DetailRow label="Last reading" value={details.lastReading} />
               <DetailRow
                 label="Site"
                 value={
@@ -275,29 +279,29 @@ export default function BansheeDashboardPage() {
                 }
               />
               <DetailRow
-                label="Location Coordinates xyz"
+                label="Location coordinates xyz"
                 value={details.coordsDisplay}
               />
               <DetailRow
-                label="Installation Date"
+                label="Installation date"
                 value={details.installationDate}
               />
               <DetailRow
-                label="Total Elongation (mm)"
+                label="Total elongation (mm)"
                 value={details.elongation}
               />
-              <DetailRow label="Bolt Type" value={details.boltType} />
+              <DetailRow label="Bolt type" value={details.boltType} />
               <DetailRow
                 label="Period for automatic service reminder"
                 value={details.period}
               />
-              <DetailRow label="Due Date" value={details.dueDate} />
+              <DetailRow label="Due date" value={details.dueDate} />
               <DetailRow
-                label="Low Plastic Limit (mm)"
+                label="Low plastic limit (mm)"
                 value={details.lowPlasticLimit}
               />
               <DetailRow
-                label="High Plastic (mm)"
+                label="High plastic (mm)"
                 value={details.elasticLimit}
               />
               <DetailRow label="Comment" value={details.comment} />
@@ -314,13 +318,13 @@ export default function BansheeDashboardPage() {
                   value="statusPlot"
                   className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
                 >
-                  Status Plot
+                  Status plot
                 </TabsTrigger>
                 <TabsTrigger
                   value="dataPlot"
                   className="data-[state=active]:ui-banshee-bg-neutral-1 ui-banshee-px-8"
                 >
-                  Data Plot
+                  Data plot
                 </TabsTrigger>
                 <TabsTrigger
                   value="comment"

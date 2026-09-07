@@ -151,7 +151,7 @@ export const handleGraphQLErrors = (error: CombinedError | undefined) => {
       : validationErrors;
 
     showAlertToast({
-      title: 'Validation Error',
+      title: 'Validation error',
       description: errorMessage,
       variant: 'error',
     });
@@ -204,6 +204,7 @@ export interface BansheeCsvProceqData {
   readings?: readonly BansheeCsvReading[] | null;
 }
 export interface BansheeCsvRow {
+  name?: string | null;
   serialNumber?: string | null;
   site?: { siteName?: string | null } | null;
   drive?: { driveName?: string | null } | null;
@@ -214,16 +215,17 @@ export interface BansheeCsvRow {
 }
 
 const BANSHEE_CSV_HEADERS = [
+  'Banshee Name',
   'Serial Number',
-  'Site Name',
-  'Drive Name',
-  'Level Name',
-  'Location Name',
+  'Site',
+  'Drive',
+  'Level',
+  'Location',
   'Comment',
   'Status',
   'Created Timestamp',
-  'Reading Elongation',
-  'Reading Status',
+  'Total Elongation (mm)',
+  'Status',
 ];
 
 /** Builds the flattened banshee CSV string (same format used by Export CSV). */
@@ -231,6 +233,7 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
   const csvRows: string[] = [BANSHEE_CSV_HEADERS.join(',')];
 
   data.forEach((request) => {
+    const name = request.name ?? '';
     const serialNumber = request.serialNumber ?? '';
     const siteName = request.site?.siteName ?? '';
     const driveName = request.drive?.driveName ?? '';
@@ -251,6 +254,7 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
         const readingStatus = reading.status ?? '';
 
         const row = [
+          name,
           serialNumber,
           siteName,
           driveName,
@@ -373,6 +377,13 @@ export function formatBoltType(boltType: string | null | undefined): string {
   if (!boltType) return 'N/A';
 
   return BOLT_TYPE_LABELS[boltType as BoltType] ?? boltType;
+}
+
+export function toSentenceCase(value: string | null | undefined): string {
+  if (!value) return '';
+
+  const words = value.toLowerCase().split('_').join(' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 export function formatDateTime(dt: string | null | undefined): string {

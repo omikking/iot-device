@@ -249,7 +249,7 @@ export const EventsPageTable = ({
                     </TableCell>
                     <TableCell>
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={200}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span

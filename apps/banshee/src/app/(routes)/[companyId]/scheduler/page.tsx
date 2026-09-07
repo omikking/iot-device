@@ -37,11 +37,12 @@ import {
   BansheeCartItemType,
   BansheeOrderItemStatus,
 } from '@/gql/graphql';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { handleGraphQLErrors, toSentenceCase } from '@/libs/utils';
 import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
+import { formatMeasurementDay } from '@/libs/measurement-date';
 import { getStatusColorHex } from '@/libs/status-color-utils';
 import { compareValues, SortableValue } from '@/libs/sort-compare';
 
@@ -150,6 +151,7 @@ const bansheeSchedulerList = graphql(`
           dueDate
           readings {
             readingIndex
+            createdTimestamp
             elongation
             status
           }
@@ -173,7 +175,10 @@ type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
  * ticked, and the bulk-select filters skip it.
  */
 type SchedulerStatus =
-  'IN_CART' | 'ORDERED' | 'SERVICE_DUE' | 'SERVICE_OVERDUE';
+  | 'IN_CART'
+  | 'ORDERED'
+  | 'SERVICE_DUE'
+  | 'SERVICE_OVERDUE';
 
 const mapSchedulerStatusToMessage = (
   schedulerStatus: SchedulerStatus,
@@ -240,18 +245,18 @@ const transformBansheeRequests = (
     }))
     .filter(({ measurement }) => measurement?.status != 'BROKEN')
     .map(
-      ({ request, measurement: latestProceqData, reading: latestReading }) => {
+      ({
+        request,
+        measurement: latestProceqData,
+        reading: latestReading,
+        measuredAt: lastMeasuredTs,
+      }) => {
         const totalElongation = formatElongation(latestReading);
 
         const status = latestProceqData?.status || 'Not Measurable';
 
-        const lastMeasuredTs = latestProceqData?.updatedTimestamp
-          ? new Date(latestProceqData.updatedTimestamp).getTime()
-          : null;
         const lastMeasured =
-          lastMeasuredTs != null
-            ? new Date(lastMeasuredTs).toLocaleDateString('en-GB')
-            : '-';
+          lastMeasuredTs != null ? formatMeasurementDay(lastMeasuredTs) : '-';
         const dueDateTs = latestProceqData?.dueDate
           ? new Date(latestProceqData.dueDate).getTime()
           : null;
@@ -295,7 +300,7 @@ type SelectOption = 'all' | 'due' | 'overdue' | 'others';
 
 const SELECT_OPTIONS: { id: SelectOption; name: string }[] = [
   { id: 'all', name: 'Select all' },
-  { id: 'due', name: 'Select due (4 Weeks)' },
+  { id: 'due', name: 'Select due (4 weeks)' },
   { id: 'overdue', name: 'Select overdue' },
   { id: 'others', name: 'Select others' },
 ];
@@ -328,10 +333,10 @@ const matchesSelectFilters = (
 };
 
 const PERIOD_OPTIONS = [
-  { id: '1', name: '1 Month' },
-  { id: '3', name: '3 Months' },
-  { id: '6', name: '6 Months' },
-  { id: '12', name: '12 Months' },
+  { id: '1', name: '1 month' },
+  { id: '3', name: '3 months' },
+  { id: '6', name: '6 months' },
+  { id: '12', name: '12 months' },
 ];
 
 type SortConfig = {
@@ -789,7 +794,7 @@ export default function SchedulerPage({
 
               <div className="ui-banshee-flex-shrink-0 ui-banshee-w-40">
                 <p className="ui-banshee-mb-2 ui-banshee-font-sandvik-text ui-banshee-text-md ui-banshee-tracking-wide ui-banshee-text-main-black ui-banshee-font-medium">
-                  Duration
+                  Period
                 </p>
                 <Dropdown
                   id="scheduler-period-dropdown"
@@ -797,7 +802,7 @@ export default function SchedulerPage({
                   options={PERIOD_OPTIONS}
                   selectedId={period}
                   onSelect={(id) => setPeriod(id ?? '')}
-                  className="ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-h-12"
+                  className="ui-banshee-border ui-banshee-border-neutral-3 ui-banshee-rounded ui-banshee-box-border ui-banshee-overflow-hidden"
                 />
               </div>
 
@@ -806,7 +811,7 @@ export default function SchedulerPage({
                 onClick={handleAddNewBanshees}
                 className="ui-banshee-flex-shrink-0 ui-banshee-h-12"
               >
-                Add New Banshees
+                Add new Banshee
               </Button>
             </div>
           </div>
@@ -825,7 +830,7 @@ export default function SchedulerPage({
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
                           header="Status"
-                          className="ui-banshee-w-32 ui-banshee-text-md ui-banshee-m-auto"
+                          className="ui-banshee-px-4 ui-banshee-text-md"
                           column={createMockColumn('status')}
                         />
                       </TableHead>
@@ -864,42 +869,39 @@ export default function SchedulerPage({
                           column={createMockColumn('location')}
                         />
                       </TableHead>
-                      <TableHead className="ui-banshee-whitespace-nowrap">
+                      <TableHead>
                         <TableHeadWithSorting
-                          header="Total Elongation (mm)"
-                          className="ui-banshee-w-56 !ui-banshee-justify-start ui-banshee-text-md"
+                          header="Total elongation (mm)"
+                          className="ui-banshee-w-36 !ui-banshee-justify-start ui-banshee-text-md ui-banshee-text-start ui-banshee-mr-6"
                           column={createMockColumn('totalElongation')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
-                          header="Last Measured"
-                          className="ui-banshee-w-48 !ui-banshee-justify-start ui-banshee-text-md"
+                          header="Last measured"
+                          className="ui-banshee-w-40 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('lastMeasured')}
                         />
                       </TableHead>
-                      <TableHead className="ui-banshee-whitespace-nowrap">
+                      <TableHead>
                         <TableHeadWithSorting
-                          header="Period (Months)"
-                          className="ui-banshee-w-48 !ui-banshee-justify-start ui-banshee-text-md"
+                          header="Period (months)"
+                          className="ui-banshee-w-24 ui-banshee-text-start !ui-banshee-justify-start ui-banshee-text-md ui-banshee-mr-6"
                           column={createMockColumn('period')}
                         />
                       </TableHead>
                       <TableHead className="ui-banshee-whitespace-nowrap">
                         <TableHeadWithSorting
-                          header="Due Date"
+                          header="Due date"
                           className="ui-banshee-w-24 !ui-banshee-justify-start ui-banshee-text-md"
                           column={createMockColumn('dueDate')}
                         />
                       </TableHead>
-                      {/* `flex` used to come from TableHead's last-child rule;
-                          the Status column now holds that slot. */}
                       <TableHead className="ui-banshee-whitespace-nowrap ui-banshee-flex ui-banshee-justify-center">
                         <DropdownMultiSelectSearch
                           id="site-filter"
                           placeholder="Select"
                           searchPlaceholder="Search filter..."
-                          variant="compact"
                           options={SELECT_OPTIONS}
                           selectedIds={selectedFilters}
                           onSelect={(ids) => setSelectedFilters(ids)}
@@ -927,38 +929,32 @@ export default function SchedulerPage({
                               : ''
                           }
                         >
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span
-                                  tabIndex={0}
-                                  role="img"
-                                  aria-label={
-                                    banshee.status ?? 'Not Measurable'
-                                  }
-                                  className="ui-banshee-inline-block ui-banshee-w-4 ui-banshee-h-4 ui-banshee-rounded-full ui-banshee-cursor-pointer"
-                                  style={{
-                                    backgroundColor: getStatusColorHex(
-                                      banshee.status,
-                                    ),
-                                  }}
-                                />
-                              </TooltipTrigger>
+                          <div className="ui-banshee-h-full ui-banshee-w-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
+                            <TooltipProvider delayDuration={200}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    tabIndex={0}
+                                    role="img"
+                                    aria-label={
+                                      banshee.status ?? 'Not Measurable'
+                                    }
+                                    className="ui-banshee-inline-block ui-banshee-w-4 ui-banshee-h-4 ui-banshee-rounded-full ui-banshee-cursor-pointer"
+                                    style={{
+                                      backgroundColor: getStatusColorHex(
+                                        banshee.status,
+                                      ),
+                                    }}
+                                  />
+                                </TooltipTrigger>
 
-                              <TooltipContent>
-                                {banshee?.status
-                                  ?.toLowerCase()
-                                  .split('_')
-                                  .map(
-                                    (word) =>
-                                      word.charAt(0).toUpperCase() +
-                                      word.slice(1),
-                                  )
-                                  .join(' ')}
-                                <TooltipArrow />
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                                <TooltipContent>
+                                  {toSentenceCase(banshee?.status)}
+                                  <TooltipArrow />
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                         </TableCell>
 
                         <TableCell

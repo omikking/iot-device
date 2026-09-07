@@ -87,9 +87,9 @@ export const NavbarBanshee = () => {
     dashboard: 'Dashboard',
     scheduler: 'Scheduler',
     events: 'Events',
-    siteInformation: 'Site Information',
+    siteInformation: 'Site information',
     template: 'Template',
-    contactUs: 'Contact Us',
+    contactUs: 'Contact us',
     cart: 'Cart',
   };
 
@@ -203,7 +203,7 @@ export const NavbarBanshee = () => {
                 >
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
-                      New Banshee Request
+                      New Banshee request
                     </p>
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {newBansheeCount}
@@ -211,7 +211,7 @@ export const NavbarBanshee = () => {
                   </div>
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
-                      Recurring Banshee Request
+                      Recurring Banshee request
                     </p>
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {recurringCount}
@@ -219,7 +219,7 @@ export const NavbarBanshee = () => {
                   </div>
                   <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-gap-6 ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full">
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
-                      Total Measurement Request
+                      Total measurement request
                     </p>
                     <p className="ui-banshee-w-fit ui-banshee-text-[.9rem]">
                       {totalCount}
@@ -233,7 +233,7 @@ export const NavbarBanshee = () => {
                         router.push('/cart');
                       }}
                     >
-                      View Cart
+                      View cart
                     </Button>
                   </div>
                 </PopoverContent>

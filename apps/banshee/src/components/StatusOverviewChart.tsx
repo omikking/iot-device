@@ -2,9 +2,10 @@
 
 import { useMemo } from 'react';
 import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
-import type { StatusBand, ChartLineDatum } from '@gsp/ui-banshee';
+import type { ChartLineDatum } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 import { sortReadingsAscending } from '@/libs/latest-measurement';
+import { getStatusPlotPoint, statusPlotBands } from '@/libs/status-plot';
 
 type BansheeRequestResult =
   BansheeRequestsListQuery['bansheeRequests']['results'][number];
@@ -19,49 +20,6 @@ const stringToColor = (str: string) => {
   ).toString(16);
   return '#' + '000000'.substring(0, 6 - color.length) + color;
 };
-
-const ELASTIC_LOWER = 0;
-const ELASTIC_UPPER = 10;
-const LOW_PLASTIC_UPPER = 100;
-const HIGH_PLASTIC_MAP_UPPER = 150;
-const convertToStatusPlotValue = (
-  elongation: number,
-  status: string,
-): number => {
-  if (status === 'NOT_MEASURABLE') return -0.5;
-  if (status === 'BROKEN') return 3.5;
-  if (elongation <= ELASTIC_LOWER) return 0;
-  if (elongation < ELASTIC_UPPER) return elongation / ELASTIC_UPPER;
-  if (elongation < LOW_PLASTIC_UPPER)
-    return (
-      1 + (elongation - ELASTIC_UPPER) / (LOW_PLASTIC_UPPER - ELASTIC_UPPER)
-    );
-  if (elongation <= HIGH_PLASTIC_MAP_UPPER)
-    return (
-      2 +
-      (elongation - LOW_PLASTIC_UPPER) /
-        (HIGH_PLASTIC_MAP_UPPER - LOW_PLASTIC_UPPER)
-    );
-  return 3;
-};
-
-// Maps the raw proceq status to the band label shown in the tooltip. Using the
-// actual status avoids mis-labelling points that land on a band boundary value.
-const STATUS_TO_BAND_LABEL: Record<string, string> = {
-  NOT_MEASURABLE: 'Not Measurable',
-  BROKEN: 'Broken',
-  HIGH_PLASTIC: 'High Plastic',
-  LOW_PLASTIC: 'Low Plastic',
-  ELASTIC: 'Elastic',
-};
-
-const statusBands: StatusBand[] = [
-  { from: 4, to: 3, label: 'Broken', color: '#fb9596' },
-  { from: 3, to: 2, label: 'High Plastic', color: '#fbc5ab' },
-  { from: 2, to: 1, label: 'Low Plastic', color: '#fbea9a' },
-  { from: 1, to: 0, label: 'Elastic', color: '#bce7b1' },
-  { from: 0, to: -1, label: 'Not Measurable', color: '#9C9C9C' },
-];
 
 export const StatusOverviewChart = ({
   bansheeRequests = [],
@@ -105,9 +63,11 @@ export const StatusOverviewChart = ({
           .split('T')[0];
 
         readings.forEach((r, idx) => {
-          if (r.elongation == null) return;
-          const status = r.status ?? '';
-          const value = convertToStatusPlotValue(r.elongation, status);
+          // Position comes straight from the status the API assigned; readings
+          // the API has not classified are not plotted.
+          const point = getStatusPlotPoint(r, pd);
+          if (!point) return;
+
           const timeLabel =
             readings.length > 1 ? `${dateStr} R${idx + 1}` : dateStr;
 
@@ -117,8 +77,8 @@ export const StatusOverviewChart = ({
             readingIdx: idx,
             bansheeId: br.id,
             dataKey,
-            value,
-            statusLabel: STATUS_TO_BAND_LABEL[status],
+            value: point.value,
+            statusLabel: point.statusLabel,
           });
         });
       });
@@ -157,7 +117,7 @@ export const StatusOverviewChart = ({
         isBold
         className="ui-banshee-mb-2"
       >
-        Status Overview
+        Status overview
       </Headline>
 
       <div className="ui-banshee-bg-neutral-1 ui-banshee-p-4 ui-banshee-h-full">
@@ -173,7 +133,7 @@ export const StatusOverviewChart = ({
             showLegend={false}
             lines={lineConfig}
             data={chartData}
-            bands={statusBands}
+            bands={statusPlotBands}
           />
         )}
       </div>

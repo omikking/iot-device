@@ -23,6 +23,7 @@ import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
+import { formatMeasurementDateTime } from '@/libs/measurement-date';
 
 const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
@@ -53,6 +54,7 @@ const bansheeDetailQuery = graphql(`
         dueDate
         readings {
           readingIndex
+          createdTimestamp
           elongation
           status
         }
@@ -145,16 +147,18 @@ export const BansheeDetailModal = memo(
       const request = data?.bansheeRequest;
       if (!request) return null;
 
-      const { measurement: latestMeasurement, reading: lastReading } =
-        getLatestMeasurement(request.proceqData);
+      const {
+        measurement: latestMeasurement,
+        reading: lastReading,
+        measuredAt,
+      } = getLatestMeasurement(request.proceqData);
 
       return {
         bansheeName: request.name,
         serialNumber: request.serialNumber,
         status: getStatusLabel(latestMeasurement?.status),
-        createdTimeStr: latestMeasurement?.createdTimestamp
-          ? new Date(latestMeasurement.createdTimestamp).toLocaleString()
-          : 'N/A',
+        updatedTimeStr:
+          measuredAt != null ? formatMeasurementDateTime(measuredAt) : 'N/A',
         siteName: request.site?.siteName ?? 'N/A',
         levelName: request.level?.levelName ?? 'N/A',
         driveName: request.drive?.driveName ?? 'N/A',
@@ -192,40 +196,40 @@ export const BansheeDetailModal = memo(
           {!fetching && details && (
             <>
               <div className="ui-banshee-mt-6 ui-banshee-flex ui-banshee-flex-col ui-banshee-text-black">
-                <DetailRow label="Serial Number" value={details.serialNumber} />
+                <DetailRow label="Serial number" value={details.serialNumber} />
                 <DetailRow label="Status" value={details.status} />
                 <DetailRow
-                  label="Last Reading"
-                  value={details.createdTimeStr}
+                  label="Last reading"
+                  value={details.updatedTimeStr}
                 />
                 <DetailRow label="Site" value={details.siteName} />
                 <DetailRow label="Level" value={details.levelName} />
                 <DetailRow label="Drive" value={details.driveName} />
                 <DetailRow label="Location" value={details.locationName} />
                 <DetailRow
-                  label="Location Coordinates xyz"
+                  label="Location coordinates xyz"
                   value={details.coordsDisplay}
                 />
                 <DetailRow
-                  label="Installation Date"
+                  label="Installation date"
                   value={details.boltInstallationDateTime}
                 />
                 <DetailRow
-                  label="Total Elongation (mm)"
+                  label="Total elongation (mm)"
                   value={details.elongation}
                 />
-                <DetailRow label="Bolt Type" value={details.boltType} />
+                <DetailRow label="Bolt type" value={details.boltType} />
                 <DetailRow
                   label="Period for automatic service reminder"
                   value={details.period}
                 />
-                <DetailRow label="Due Date" value={details.dueDate} />
+                <DetailRow label="Due date" value={details.dueDate} />
                 <DetailRow
-                  label="Low Plastic Limit (mm)"
+                  label="Low plastic limit (mm)"
                   value={details.lowPlasticLimit}
                 />
                 <DetailRow
-                  label="High Plastic Limit (mm)"
+                  label="High plastic limit (mm)"
                   value={details.elasticLimit}
                 />
               </div>

@@ -40,7 +40,7 @@ export const StatusDistributionChart = ({
     () =>
       (statusCounts || []).filter(
         (item: StatusCount) =>
-          item.status && item.status.toLowerCase() !== 'unmeasured',
+          item.status && item.status.toLowerCase() !== 'not_measurable',
       ),
     [statusCounts],
   );
@@ -91,7 +91,7 @@ export const StatusDistributionChart = ({
       {fetching ? (
         <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
           <LoadingSpinner />
-          Loading Distribution...
+          Loading distribution...
         </div>
       ) : (
         <ChartPieDonut

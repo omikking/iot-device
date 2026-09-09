@@ -32,7 +32,7 @@ services:
     # In prod we migrate schema (no dev seeding), then start Nest in prod mode.
     command: >
       sh -c "pnpm prisma:migrate:deploy && pnpm start:prod"
-    environment:
+    #environment:
       #NODE_ENV: production
         #DATABASE_URL: postgresql://postgres:123@prod-db:5432/nest?schema=public
     env_file:
@@ -71,7 +71,7 @@ services:
     image: ground-support-platform-pull-test:1.0.0
     depends_on:
       - api
-    environment:
+    #environment:
       #NODE_ENV: production
       # Also used by the browser → reach api via localhost
       #NEXT_PUBLIC_API_URL: https://pulltest.groundsupport.mining.sandvik/api/graphql
@@ -91,7 +91,7 @@ services:
     image: ground-support-platform-banshee:1.0.0
     depends_on:
       - api
-    environment:
+    #environment:
       #NODE_ENV: production
       # Also used by the browser → reach api via localhost
       #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
@@ -111,10 +111,10 @@ services:
     image: ground-support-platform-test-cyclops:1.0.0
     depends_on:
       - api
-    environment:
+    #environment:
       #NODE_ENV: production
       # Also used by the browser → reach api via localhost
-      NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
+      #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
         #env_file:
         # - ./apps/test-cyclops/.env.production
     command: pnpm start
@@ -131,7 +131,7 @@ services:
     image: ground-support-platform-test-professor:1.0.0
     depends_on:
       - api
-    environment:
+    #environment:
       #NODE_ENV: production
       # Also used by the browser → reach api via localhost
       #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
@@ -151,7 +151,7 @@ services:
     image: ground-support-platform-test-hydra:1.0.0
     depends_on:
       - api
-    environment:
+    #environment:
       #NODE_ENV: production
       #NEXT_PUBLIC_API_URL: https://staging.groundsupport.mining.sandvik/api/graphql
     command: pnpm start

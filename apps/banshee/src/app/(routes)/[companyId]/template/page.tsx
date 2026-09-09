@@ -270,6 +270,9 @@ export default function TemplatePage({
     defaultValues: DEFAULT_VALUES,
   });
 
+  // Every hierarchy field on a template is optional, so each dropdown lists
+  // everything under the nearest selected ancestor rather than staying empty
+  // until its parent is picked. Selecting a parent still narrows the ones below.
   const { levels, drives, locations } = useHierarchySelections(
     sites,
     form.watch,

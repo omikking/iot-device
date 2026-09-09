@@ -279,6 +279,10 @@ export default function BansheeDashboardPage() {
                 }
               />
               <DetailRow
+                label="Location Coordinates xyz"
+                value={details.coordsDisplay}
+              />
+              <DetailRow
                 label="Location coordinates xyz"
                 value={details.coordsDisplay}
               />

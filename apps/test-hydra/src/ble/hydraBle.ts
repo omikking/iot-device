@@ -1,4 +1,9 @@
 import { SERVICES, CHARS } from "./hydraUuids";
+import {
+  configValueBytesFromNotification,
+  parseLongConfigBlockNotification,
+  reassembleLongConfigBlocks,
+} from "./hydraParser";
 import type { DeviceInfo } from "../types";
 
 type BleCharacteristicMap = Record<string, BluetoothRemoteGATTCharacteristic>;
@@ -7,6 +12,10 @@ type MeasurementHandler = (v: DataView) => void;
 const asBuffer = (buf: Uint8Array): BufferSource => buf as unknown as BufferSource;
 
 const normUuid = (u: string): string => u.toLowerCase();
+
+/** §4 config table — items 28-30 (interrogator init strings) and 209-211 (AtPKI blobs)
+ * must be read/written using the §2.4 "Long Configuration" block-transfer protocol. */
+const isLongConfigId = (id: number): boolean => (id >= 28 && id <= 30) || (id >= 209 && id <= 211);
 
 export class HydraBLE {
   device: BluetoothDevice | null = null;
@@ -79,6 +88,11 @@ export class HydraBLE {
     });
   }
 
+  /**
+   * Write a configuration item (§3.1.1 / §4.1.1). IDs 28-30 and 209-211 are
+   * automatically sent using the §2.4 Long Configuration block-transfer
+   * protocol; every other ID is sent as a single packet.
+   */
   async writeConfig(id: number, value: string | Uint8Array | number, timestamp = 0): Promise<void> {
     const enc: Uint8Array =
       typeof value === "string"
@@ -93,109 +107,116 @@ export class HydraBLE {
               return b;
             })();
 
-    const buf = new Uint8Array(2 + 1 + 4 + enc.length);
-    const dv = new DataView(buf.buffer);
-    dv.setUint16(0, id, true);
-    dv.setUint8(2, enc.length);
-    dv.setUint32(3, timestamp, true);
-    buf.set(enc, 7);
-    await this.characteristics[normUuid(CHARS.SET_CONFIG)].writeValue(asBuffer(buf));
-  }
+    if (!isLongConfigId(id)) {
+      const buf = new Uint8Array(2 + 1 + 4 + enc.length);
+      const dv = new DataView(buf.buffer);
+      dv.setUint16(0, id, true);
+      dv.setUint8(2, enc.length);
+      dv.setUint32(3, timestamp, true);
+      buf.set(enc, 7);
+      await this.characteristics[normUuid(CHARS.SET_CONFIG)].writeValue(asBuffer(buf));
+      return;
+    }
 
-  async writeLongConfig(id: number, data: Uint8Array, timestamp = 0, oneBased = true): Promise<void> {
-    const MAX_BLOCK = 148;
-    const totalBlocks = Math.max(1, Math.ceil(data.length / MAX_BLOCK));
-    console.log(`writeLongConfig id=${id} totalBlocks=${totalBlocks} oneBased=${oneBased} dataLen=${data.length}`);
+    // §2.4 Long Configuration block-transfer: blocks are 0-indexed, every
+    // block but the last is a fixed 188 bytes (multiple of 4), and the
+    // final block carries whatever remains (0-191 bytes, empty for "").
+    const MAX_INTERMEDIATE_BLOCK_SIZE = 188;
+    const chunks: Uint8Array[] = [];
+    if (enc.length === 0) {
+      chunks.push(new Uint8Array(0));
+    } else {
+      let offset = 0;
+      while (offset < enc.length) {
+        const remaining = enc.length - offset;
+        if (remaining <= 191) {
+          chunks.push(enc.slice(offset));
+          break;
+        }
+        chunks.push(enc.slice(offset, offset + MAX_INTERMEDIATE_BLOCK_SIZE));
+        offset += MAX_INTERMEDIATE_BLOCK_SIZE;
+      }
+    }
 
-    for (let i = 0; i < totalBlocks; i++) {
-      const start = i * MAX_BLOCK;
-      const chunk = data.slice(start, start + MAX_BLOCK);
+    const totalBlocks = chunks.length;
+    for (let blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+      const chunk = chunks[blockIndex];
       const payload = new Uint8Array(2 + 1 + 4 + 2 + chunk.length);
       const dv = new DataView(payload.buffer);
       dv.setUint16(0, id, true);
       dv.setUint8(2, 2 + chunk.length);
       dv.setUint32(3, timestamp, true);
-      // String long configs (28/29/30) → 1-based block index
-      // Certificate configs (209/210/211) → 0-based block index
-      payload[7] = oneBased ? i + 1 : i;
-      payload[8] = totalBlocks;
+      payload[7] = blockIndex & 0xff;
+      payload[8] = totalBlocks & 0xff;
       payload.set(chunk, 9);
 
-      console.log(`writing block ${payload[7]}/${totalBlocks}`, payload, dv);
       await this.characteristics[normUuid(CHARS.SET_CONFIG)].writeValue(asBuffer(payload));
-
-      if (totalBlocks > 1) {
-        await new Promise(r => setTimeout(r, 50));
-      }
+      await new Promise((r) => setTimeout(r, 50));
     }
   }
 
-  async readConfig(id: number): Promise<DataView> {
+  /**
+   * Read a configuration item (§3.1.2 / §4.1.2). IDs 28-30 and 209-211 are
+   * automatically reassembled from the §2.4 Long Configuration block-transfer
+   * protocol (accumulating notifications until all blocks arrive); every
+   * other ID resolves on the first matching notification.
+   */
+  async readConfig(id: number, timeoutMs = 5000): Promise<{ data: Uint8Array; timestamp: number }> {
     const buf = new Uint8Array(2);
     new DataView(buf.buffer).setUint16(0, id, true);
     const c = this.characteristics[normUuid(CHARS.CONFIG_VALUE)];
     await c.startNotifications();
-    return new Promise<DataView>((res) => {
-      const h = (e: Event) => {
-        c.removeEventListener("characteristicvaluechanged", h);
-        res((e.target as BluetoothRemoteGATTCharacteristic).value!);
-      };
-      c.addEventListener("characteristicvaluechanged", h);
-      this.characteristics[normUuid(CHARS.GET_CONFIG)].writeValue(asBuffer(buf));
-    });
-  }
 
-  async readLongConfig(
-    id: number,
-    timeoutMs = 5000,
-  ): Promise<{ data: Uint8Array; timestamp: number }> {
-    const buf = new Uint8Array(2);
-    new DataView(buf.buffer).setUint16(0, id, true);
-    const c = this.characteristics[normUuid(CHARS.CONFIG_VALUE)];
-    await c.startNotifications();
+    const isLong = isLongConfigId(id);
 
     return new Promise<{ data: Uint8Array; timestamp: number }>((resolve, reject) => {
-      const timer = setTimeout(() => {
+      const blocks = new Map<number, Uint8Array>();
+      let timer: ReturnType<typeof setTimeout>;
+
+      const cleanup = () => {
+        clearTimeout(timer);
         c.removeEventListener("characteristicvaluechanged", handler);
-        reject(new Error(`Read long config timeout (${timeoutMs}ms) for ID ${id}`));
-      }, timeoutMs);
+      };
+
+      const resetTimer = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          cleanup();
+          reject(new Error(`Read config timeout (${timeoutMs}ms) for ID ${id}`));
+        }, timeoutMs);
+      };
 
       const handler = (e: Event) => {
         const dv = (e.target as BluetoothRemoteGATTCharacteristic).value;
         if (!dv || dv.byteLength < 7) return;
+        if (dv.getUint16(0, true) !== id) return;
 
-        const notifId = dv.getUint16(0, true);
-        if (notifId !== id) return;
+        const timestamp = dv.getUint32(3, true);
 
-        console.log("readLongConfig notification received:", dv);
-
-        const valLen = dv.getUint8(2);
-        const lastTimestamp = dv.getUint32(3, true);
-
-        clearTimeout(timer);
-        c.removeEventListener("characteristicvaluechanged", handler);
-
-        if (valLen === 0 || dv.byteLength <= 7) {
-          resolve({ data: new Uint8Array(0), timestamp: lastTimestamp });
+        if (!isLong) {
+          cleanup();
+          resolve({ data: configValueBytesFromNotification(dv), timestamp });
           return;
         }
 
-        if (dv.byteLength >= 9) {
-          // Block header present: byte 7 = blockIndex, byte 8 = totalBlocks, byte 9+ = chunk data
-          const blockIndex = dv.getUint8(7);
-          const totalBlocks = dv.getUint8(8);
-          const chunkLen = Math.max(0, Math.min(dv.byteLength - 9, valLen - 2));
-          const chunk = new Uint8Array(dv.buffer.slice(dv.byteOffset + 9, dv.byteOffset + 9 + chunkLen));
-          console.log(`Received chunk for block ${blockIndex + 1}/${totalBlocks}, length: ${chunkLen}`);
-          resolve({ data: chunk, timestamp: lastTimestamp });
-        } else {
-          // Raw payload without block header
-          const rawPayload = new Uint8Array(dv.buffer.slice(dv.byteOffset + 7, dv.byteOffset + 7 + valLen));
-          resolve({ data: rawPayload, timestamp: lastTimestamp });
+        const block = parseLongConfigBlockNotification(dv);
+        if (!block) {
+          cleanup();
+          resolve({ data: new Uint8Array(0), timestamp });
+          return;
+        }
+
+        blocks.set(block.blockIndex, block.payload);
+        resetTimer();
+
+        if (blocks.size >= block.totalBlocks) {
+          cleanup();
+          resolve({ data: reassembleLongConfigBlocks(blocks, block.totalBlocks), timestamp });
         }
       };
 
       c.addEventListener("characteristicvaluechanged", handler);
+      resetTimer();
       this.characteristics[normUuid(CHARS.GET_CONFIG)].writeValue(asBuffer(buf));
     });
   }

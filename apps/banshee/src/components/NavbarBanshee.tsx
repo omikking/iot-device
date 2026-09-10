@@ -23,7 +23,8 @@ import { graphql } from '@/gql/gql';
 import { useQuery } from 'urql';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { useEffect, useState } from 'react';
-import { handleGraphQLErrors } from '@/libs/utils';
+import { formatDateTimeOfDay, handleGraphQLErrors } from '@/libs/utils';
+import { formatDate } from '@/libs/measurement-date';
 const getCompanyName = graphql(`
   query getCompanyName($id: String!) {
     company(id: $id) {
@@ -100,14 +101,9 @@ export const NavbarBanshee = () => {
     '',
   );
 
-  //TODO Format date and time according to where the user is.
-  const today = new Date()
-    .toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-    .replace(/\//g, '.');
+  // The header writes the same day the rest of the UI does, dotted rather than
+  // slashed because it sits beside the clock.
+  const today = formatDate(new Date())?.replace(/\//g, '.') ?? '';
 
   const userNameInitials = (session?.user?.fullName ?? '')
     .trim()
@@ -119,13 +115,7 @@ export const NavbarBanshee = () => {
   const [time, setTime] = useState('');
 
   useEffect(() => {
-    setTime(
-      new Date().toLocaleTimeString('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      }),
-    );
+    setTime(formatDateTimeOfDay(new Date()));
   }, []);
 
   return (

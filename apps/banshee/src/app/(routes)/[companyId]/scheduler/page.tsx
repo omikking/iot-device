@@ -42,7 +42,11 @@ import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
-import { formatMeasurementDay } from '@/libs/measurement-date';
+import {
+  formatDate,
+  formatMeasurementDay,
+  toMillis,
+} from '@/libs/measurement-date';
 import { getStatusColorHex } from '@/libs/status-color-utils';
 import { compareValues, SortableValue } from '@/libs/sort-compare';
 
@@ -257,13 +261,8 @@ const transformBansheeRequests = (
 
         const lastMeasured =
           lastMeasuredTs != null ? formatMeasurementDay(lastMeasuredTs) : '-';
-        const dueDateTs = latestProceqData?.dueDate
-          ? new Date(latestProceqData.dueDate).getTime()
-          : null;
-        const dueDate =
-          dueDateTs != null
-            ? new Date(dueDateTs).toLocaleDateString('en-GB')
-            : '-';
+        const dueDateTs = toMillis(latestProceqData?.dueDate);
+        const dueDate = dueDateTs != null ? formatDate(dueDateTs)! : '-';
         const isOverdue = dueDateTs != null && dueDateTs < todayStart;
         return {
           id: request.id,

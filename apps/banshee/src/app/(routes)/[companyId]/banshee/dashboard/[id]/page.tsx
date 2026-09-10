@@ -5,7 +5,6 @@ import { useQuery } from 'urql';
 import { graphql } from '@/gql';
 import {
   handleGraphQLErrors,
-  formatDateTime,
   downloadBansheeCsv,
   formatBoltType,
 } from '@/libs/utils';
@@ -14,7 +13,13 @@ import {
   getLatestMeasurement,
   sortProceqDataAscending,
 } from '@/libs/latest-measurement';
-import { formatMeasurementDateTime } from '@/libs/measurement-date';
+import {
+  formatDate,
+  formatDateTime,
+  formatMeasurementDateTime,
+  formatMeasurementDay,
+  toMillis,
+} from '@/libs/measurement-date';
 import { useSharePlotList } from '@/libs/hooks/useSharePlotList';
 import {
   SidebarInset,
@@ -158,16 +163,15 @@ export default function BansheeDashboardPage() {
       driveName: request.drive?.driveName ?? 'N/A',
       locationName: request.location?.locationName ?? 'N/A',
       coordsDisplay: parseCoordinatesDisplay(request.coordinates),
-      installationDate: formatDateTime(request.boltInstallationDateTime),
+      installationDate:
+        formatDateTime(request.boltInstallationDateTime) ?? 'N/A',
       comment: request?.comment || 'No comment available.',
       elongation: formatElongation(latestReading) ?? '-',
       boltType: formatBoltType(request?.boltType) ?? 'N/A',
       period: formatPeriod(request.period),
       lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit,
       elasticLimit: request.boltTypeConstant?.elasticLimit,
-      dueDate: latestMeasurement?.dueDate
-        ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
-        : '-',
+      dueDate: formatDate(latestMeasurement?.dueDate) ?? '-',
     };
   }, [data]);
 
@@ -180,20 +184,19 @@ export default function BansheeDashboardPage() {
     const request = data?.bansheeRequest;
     if (!request) return [];
 
-    // Newest comment first, ranked the same way as the latest measurement.
+    // Newest comment first, ranked the same way as the latest measurement. The
+    // date is the session's own, written the way every other measured date is.
     return sortProceqDataAscending(request.proceqData)
       .reverse()
       .filter((pd) => pd.comments?.trim())
-      .map((pd, idx) => ({
-        key: `${pd.createdTimestamp}-${idx}`,
-        date: pd.createdTimestamp
-          ? new Date(pd.createdTimestamp)
-              .toISOString()
-              .replace(/[-T:]/g, '-')
-              .slice(0, 10)
-          : 'N/A',
-        comment: pd.comments!,
-      }));
+      .map((pd, idx) => {
+        const createdAt = toMillis(pd.createdTimestamp);
+        return {
+          key: `${pd.createdTimestamp}-${idx}`,
+          date: createdAt != null ? formatMeasurementDay(createdAt) : 'N/A',
+          comment: pd.comments!,
+        };
+      });
   }, [data]);
   if (fetching) {
     return (
@@ -280,10 +283,6 @@ export default function BansheeDashboardPage() {
               />
               <DetailRow
                 label="Location Coordinates xyz"
-                value={details.coordsDisplay}
-              />
-              <DetailRow
-                label="Location coordinates xyz"
                 value={details.coordsDisplay}
               />
               <DetailRow

@@ -74,6 +74,8 @@ type BansheeRow = {
   status: string;
   elongation: string;
   lastMeasured: string;
+  /** Sorts the "Last measured" column; its cell shows `lastMeasured`. */
+  lastMeasuredTs: number | null;
   statusChange: 'Yes' | 'No';
   comment: 'icon' | 'N/A';
   fullComment: string | null;
@@ -258,6 +260,7 @@ export const BansheeListView = ({
         elongation: formatElongation(lastReading) ?? '-',
         lastMeasured:
           measuredAt != null ? formatMeasurementDay(measuredAt) : 'N/A',
+        lastMeasuredTs: measuredAt,
         statusChange: (entry.eventLogs || []).some(
           (log) => log.eventType === 'STATUS_CHANGE',
         )
@@ -270,8 +273,12 @@ export const BansheeListView = ({
 
     if (sortConfig) {
       generatedRows.sort((a, b) => {
-        const aValue = a[sortConfig.key as keyof BansheeRow];
-        const bValue = b[sortConfig.key as keyof BansheeRow];
+        // A date sorts by its instant; its cell is a `dd/mm/yyyy` string, which
+        // compares alphabetically and so would order by day of the month.
+        const key =
+          sortConfig.key === 'lastMeasured' ? 'lastMeasuredTs' : sortConfig.key;
+        const aValue = a[key as keyof BansheeRow];
+        const bValue = b[key as keyof BansheeRow];
         if (aValue == null) return 1;
         if (bValue == null) return -1;
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;

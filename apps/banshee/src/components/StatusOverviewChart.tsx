@@ -5,6 +5,7 @@ import { ChartLineLinear, Headline, LoadingSpinner } from '@gsp/ui-banshee';
 import type { ChartLineDatum } from '@gsp/ui-banshee';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
 import { sortReadingsAscending } from '@/libs/latest-measurement';
+import { formatMeasurementDay, toMillis } from '@/libs/measurement-date';
 import { getStatusPlotPoint, statusPlotBands } from '@/libs/status-plot';
 
 type BansheeRequestResult =
@@ -56,11 +57,11 @@ export const StatusOverviewChart = ({
       const dataKey = `banshee_${br.serialNumber.replace(/\s/g, '_')}`;
 
       (br.proceqData || []).forEach((pd) => {
-        if (!pd.createdTimestamp) return;
+        // Parsed once: the same instant labels the point and orders it below.
+        const ts = toMillis(pd.createdTimestamp);
+        if (ts == null) return;
         const readings = sortReadingsAscending(pd.readings);
-        const dateStr = new Date(pd.createdTimestamp)
-          .toISOString()
-          .split('T')[0];
+        const dateStr = formatMeasurementDay(ts);
 
         readings.forEach((r, idx) => {
           // Position comes straight from the status the API assigned; readings
@@ -73,7 +74,7 @@ export const StatusOverviewChart = ({
 
           xEntries.push({
             time: timeLabel,
-            ts: pd.createdTimestamp,
+            ts,
             readingIdx: idx,
             bansheeId: br.id,
             dataKey,

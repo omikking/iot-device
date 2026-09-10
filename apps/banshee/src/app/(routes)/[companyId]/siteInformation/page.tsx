@@ -6,6 +6,7 @@ import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
 import { graphql } from '@/gql';
 import { Application } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { formatDate } from '@/libs/measurement-date';
 import {
   DropdownMultiSelectSearch,
   SidebarInset,
@@ -488,11 +489,7 @@ export default function SiteInformationPage({
                   </TableCell>
                   <TableCell className="[&:first-child]:ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
                     <Text variant="medium" color="foreground">
-                      {plan.expiringDate
-                        ? new Date(plan.expiringDate).toLocaleDateString(
-                            'en-GB',
-                          )
-                        : '-'}
+                      {formatDate(plan.expiringDate) ?? '-'}
                     </Text>
                   </TableCell>
                 </TableRow>

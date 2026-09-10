@@ -14,16 +14,16 @@ import { DetailRow } from '@/components/DetailRow';
 import { useCompanyRouter } from '@/libs/hooks/useCompanyRouter';
 import { Settings, BarChart2 } from 'lucide-react';
 import { getStatusLabel } from '@/libs/status-color-utils';
-import {
-  formatBoltType,
-  formatDateTime,
-  handleGraphQLErrors,
-} from '@/libs/utils';
+import { formatBoltType, handleGraphQLErrors } from '@/libs/utils';
 import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
-import { formatMeasurementDateTime } from '@/libs/measurement-date';
+import {
+  formatDate,
+  formatDateTime,
+  formatMeasurementDateTime,
+} from '@/libs/measurement-date';
 
 const bansheeDetailQuery = graphql(`
   query BansheeRequestDetail($id: String!) {
@@ -166,14 +166,12 @@ export const BansheeDetailModal = memo(
         coordsDisplay: parseCoordinates(request.coordinates),
         boltInstallationDateTime:
           formatDateTime(request.boltInstallationDateTime) ?? 'N/A',
+        dueDate: formatDate(latestMeasurement?.dueDate) ?? '-',
         elongation: formatElongation(lastReading) ?? '-',
         boltType: formatBoltType(request.boltType),
         period: formatPeriod(request.period),
         lowPlasticLimit: request.boltTypeConstant?.lowPlasticLimit || 'N/A',
         elasticLimit: request.boltTypeConstant?.elasticLimit || 'N/A',
-        dueDate: latestMeasurement?.dueDate
-          ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
-          : '-',
       };
     }, [data]);
 

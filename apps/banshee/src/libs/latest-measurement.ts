@@ -99,21 +99,14 @@ export function getLatestReading<T extends RankableReading>(
   return sortReadingsAscending(readings).at(-1) ?? null;
 }
 
-/**
- * When the bolt was last measured, in millis. It is the latest reading's own
- * `createdTimestamp` — the very instant the reading-level plots put on their
- * x-axis — so a table cell and a chart point never disagree about a date.
- *
- * A session with nothing measured has no reading timestamp to offer (often no
- * readings at all), and those rows would otherwise lose their date entirely, so
- * they fall back to the session's `updatedTimestamp`.
- */
 function getMeasuredAt(
   measurement: RankableProceqData | null,
   reading: RankableReading | null,
 ): number | null {
   return (
-    toTime(reading?.createdTimestamp) ?? toTime(measurement?.updatedTimestamp)
+    toTime(reading?.createdTimestamp) ??
+    toTime(measurement?.createdTimestamp) ??
+    toTime(measurement?.updatedTimestamp)
   );
 }
 

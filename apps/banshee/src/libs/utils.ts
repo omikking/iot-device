@@ -7,9 +7,11 @@ import {
   sortReadingsAscending,
 } from '@/libs/latest-measurement';
 
-// Accepts "h:mm AM/PM" as well as bare 24-hour "HH:mm". Whitespace before the
-// period is optional and may be a non-breaking space, which is what some
-// browsers/ICU versions emit for locale-formatted times.
+// Accepts the 24-hour "HH:mm" the UI now writes, and still the "h:mm AM/PM" it
+// used to, so a form seeded from a value stored before the switch keeps
+// parsing. Whitespace before the period is optional and may be a non-breaking
+// space, which is what some browsers/ICU versions emit for locale-formatted
+// times.
 const TIME_OF_DAY_PATTERN = /^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i;
 
 /**
@@ -47,17 +49,16 @@ export function parseTimeOfDay(
 }
 
 /**
- * Formats hours (0-23) and minutes as the canonical "hh:mm AM/PM" string.
+ * Formats hours (0-23) and minutes as the canonical 24-hour "HH:mm" string —
+ * the clock the rest of the UI writes times on, see `measurement-date.ts`.
  * Built by hand rather than via toLocaleTimeString so the result never depends
- * on the browser locale (24-hour locales) or on ICU's AM/PM separator.
+ * on the browser locale.
  */
 export function formatTimeOfDay(hours: number, minutes: number): string {
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-  return `${String(hour12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
-/** Formats a date's local time as the canonical "hh:mm AM/PM" string. */
+/** Formats a date's local time as the canonical "HH:mm" string. */
 export function formatDateTimeOfDay(date: Date): string {
   return formatTimeOfDay(date.getHours(), date.getMinutes());
 }
@@ -222,7 +223,6 @@ const BANSHEE_CSV_HEADERS = [
   'Level',
   'Location',
   'Comment',
-  'Status',
   'Created Timestamp',
   'Total Elongation (mm)',
   'Status',
@@ -244,7 +244,6 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
     // Oldest measurement first, readings in acquisition order, so the export
     // never depends on the order the API happened to return.
     sortProceqDataAscending(request.proceqData).forEach((proceq) => {
-      const proceqStatus = proceq.status ?? '';
       const createdTimestamp = proceq.createdTimestamp
         ? new Date(proceq.createdTimestamp).toISOString()
         : '';
@@ -261,7 +260,6 @@ export function buildBansheeCsv(data: readonly BansheeCsvRow[]): string {
           levelName,
           locationName,
           comment,
-          proceqStatus,
           createdTimestamp,
           elongation,
           readingStatus,
@@ -384,20 +382,4 @@ export function toSentenceCase(value: string | null | undefined): string {
 
   const words = value.toLowerCase().split('_').join(' ');
   return words.charAt(0).toUpperCase() + words.slice(1);
-}
-
-export function formatDateTime(dt: string | null | undefined): string {
-  if (!dt) return 'N/A';
-  try {
-    return new Date(dt).toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  } catch {
-    return dt;
-  }
 }

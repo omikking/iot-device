@@ -38,9 +38,9 @@ export const getStatusLabel = (status?: string | null) => {
     case ProceqStatus.Elastic:
       return 'Elastic';
     case ProceqStatus.LowPlastic:
-      return 'Plastic low';
+      return 'Low plastic';
     case ProceqStatus.HighPlastic:
-      return 'Plastic high';
+      return 'High plastic';
     case ProceqStatus.Broken:
       return 'Broken';
     case ProceqStatus.NotMeasurable:

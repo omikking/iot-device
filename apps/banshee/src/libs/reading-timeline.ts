@@ -22,6 +22,7 @@ import { sortReadingsAscending } from './latest-measurement';
 import {
   formatMeasurementDay,
   formatMeasurementInstant,
+  toMillis,
 } from './measurement-date';
 
 /** Only the fields the timeline reads; queries may select more. */
@@ -62,24 +63,6 @@ export interface TimelinePoint<TReading, TMeasurement> {
   reading: TReading;
   measurement: TMeasurement;
 }
-
-/**
- * Parses a DateTime scalar (epoch millis, ISO string or Date) to millis, or
- * null when there is nothing usable. Mirrors the parser in
- * `latest-measurement.ts`, kept separate so the ranking rules there stay
- * untouched.
- */
-const toMillis = (value: unknown): number | null => {
-  if (value == null || (typeof value === 'string' && !value.trim()))
-    return null;
-
-  const time =
-    value instanceof Date
-      ? value.getTime()
-      : new Date(value as string | number).getTime();
-
-  return Number.isNaN(time) ? null : time;
-};
 
 /**
  * Flattens every series' readings into deduped, chronologically sorted points

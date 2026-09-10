@@ -124,7 +124,7 @@ const DEFAULT_VALUES: BansheeConfigFormValues = {
   name: '',
   period: 1,
   installationDate: new Date(),
-  installationTime: '12:00 PM',
+  installationTime: '12:00',
   locationDetails: '',
   comment: '',
   siteId: null,

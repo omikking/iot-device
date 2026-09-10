@@ -18,7 +18,10 @@ import {
   formatElongation,
   getLatestMeasurement,
 } from '@/libs/latest-measurement';
-import { formatMeasurementDateTime } from '@/libs/measurement-date';
+import {
+  formatDateTime,
+  formatMeasurementDateTime,
+} from '@/libs/measurement-date';
 import { DetailRow } from './DetailRow';
 
 const bansheeDetailEventQuery = graphql(`
@@ -161,17 +164,14 @@ export const EventDetailModal = memo(
         status: getStatusLabel(latestMeasurement?.status),
         updatedTimeStr:
           measuredAt != null ? formatMeasurementDateTime(measuredAt) : 'N/A',
-        dueDate: latestMeasurement?.dueDate
-          ? new Date(latestMeasurement.dueDate).toLocaleString()
-          : 'N/A',
+        dueDate: formatDateTime(latestMeasurement?.dueDate) ?? 'N/A',
         siteName: request?.site?.siteName ?? 'N/A',
         levelName: request?.level?.levelName ?? 'N/A',
         driveName: request?.drive?.driveName ?? 'N/A',
         locationName: request?.location?.locationName ?? 'N/A',
         coordsDisplay: parseCoordinates(request?.coordinates),
-        boltInstallationDateTime: request?.boltInstallationDateTime
-          ? new Date(request?.boltInstallationDateTime)?.toLocaleString()
-          : 'N/A',
+        boltInstallationDateTime:
+          formatDateTime(request?.boltInstallationDateTime) ?? 'N/A',
         lowPlasticLimit: request?.boltTypeConstant?.elasticLimit
           ? request.boltTypeConstant.elasticLimit.toFixed(1)
           : 'N/A',
@@ -241,9 +241,7 @@ export const EventDetailModal = memo(
                 />
                 <DetailRow
                   label="Date of event"
-                  value={
-                    dateOfEvent ? new Date(dateOfEvent).toLocaleString() : 'N/A'
-                  }
+                  value={formatDateTime(dateOfEvent) ?? 'N/A'}
                 />
                 <DetailRow label="Event description" value={eventDescription} />
               </div>

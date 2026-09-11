@@ -16,9 +16,11 @@ type SingleDateCalendarProps = {
   onDateChange: (date?: Date) => void;
 };
 
+/** `18/03/2025` — the same day form the rest of the banshee UI writes. */
 export const formattedDate = (timestamp: Date) => {
   const date = new Date(timestamp);
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
 };
 
 export const SingleDateCalendar = ({

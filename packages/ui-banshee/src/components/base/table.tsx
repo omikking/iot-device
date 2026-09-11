@@ -179,19 +179,19 @@ const TableHeadWithSorting = <TData,>({
       {!isSorted && (
         <LucideArrowUpDown
           size="16"
-          className="ui-banshee-ml-1 ui-banshee-text-neutral-4"
+          className="ui-banshee-ml-1 ui-banshee-text-neutral-4 ui-banshee-shrink-0"
         />
       )}
       {isSorted === 'asc' && (
         <LucideArrowUpDown
           size="16"
-          className="ui-banshee-ml-1"
+          className="ui-banshee-ml-1 ui-banshee-shrink-0"
         />
       )}
       {isSorted === 'desc' && (
         <LucideArrowDownUp
           size="16"
-          className="ui-banshee-ml-1"
+          className="ui-banshee-ml-1 ui-banshee-shrink-0"
         />
       )}
     </button>

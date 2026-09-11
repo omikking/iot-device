@@ -26,6 +26,8 @@ type ProceqReading {
   gate1SoundPathDistanceInTimeUnit: Float
   status: String
   elongation: Float
+  createdTimestamp: DateTime
+  updatedTimestamp: DateTime
 }
 
 type ProceqData {

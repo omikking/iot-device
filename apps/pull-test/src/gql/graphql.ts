@@ -1590,8 +1590,7 @@ export enum ProceqStatus {
   Elastic = 'ELASTIC',
   HighPlastic = 'HIGH_PLASTIC',
   LowPlastic = 'LOW_PLASTIC',
-  NotMeasurable = 'NOT_MEASURABLE',
-  Unmeasured = 'UNMEASURED'
+  NotMeasurable = 'NOT_MEASURABLE'
 }
 
 export enum PullTestAbortReason {

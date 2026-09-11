@@ -74,6 +74,7 @@ export type ChartLineLinearProps = {
   data?: ChartLineDatum[];
   lines?: { dataKey: string; label: string; color: string }[];
   bands?: StatusBand[];
+  connectNulls?: boolean;
 };
 
 export type { ZoomRange };
@@ -125,10 +126,10 @@ const chartConfig = {
 
 const defaultBands: StatusBand[] = [
   { from: 5, to: 4, label: 'Broken', color: '#ff9999' },
-  { from: 4, to: 3, label: 'High Plastic', color: '#ffcc99' },
-  { from: 3, to: 2, label: 'Low Plastic', color: '#ffff99' },
+  { from: 4, to: 3, label: 'High plastic', color: '#ffcc99' },
+  { from: 3, to: 2, label: 'Low plastic', color: '#ffff99' },
   { from: 2, to: 1, label: 'Elastic', color: '#99ff99' },
-  { from: 1, to: 0, label: 'Not Measurable', color: '#cccccc' },
+  { from: 1, to: 0, label: 'Not measurable', color: '#cccccc' },
 ];
 
 /**
@@ -157,6 +158,7 @@ export const ChartLineLinear = forwardRef<
     data = defaultChartData,
     lines = defaultLineConfig,
     bands = defaultBands,
+    connectNulls = false,
   },
   ref,
 ) {
@@ -384,13 +386,24 @@ export const ChartLineLinear = forwardRef<
           itemStyle: { color: line.color },
           symbol: 'circle',
           symbolSize: 6,
+          // Bridge categories this series has no value for; nulls still draw no
+          // symbol, so no extra points appear.
+          connectNulls,
           // Downsample dense series so tens of thousands of points stay smooth.
           sampling: 'lttb' as const,
           large: true,
         })),
       ],
     };
-  }, [data, visibleLines, bands, showAxis, hideXAxisLabel, showLegend]);
+  }, [
+    data,
+    visibleLines,
+    bands,
+    showAxis,
+    hideXAxisLabel,
+    showLegend,
+    connectNulls,
+  ]);
 
   // Rubber-band cursor + double-click reset, kept active across option rebuilds.
   useChartZoomInteractions(chartRef, { optionKey: option });

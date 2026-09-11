@@ -1562,6 +1562,7 @@ export type ProceqReading = {
   __typename?: 'ProceqReading';
   analogueFilter?: Maybe<Scalars['Int']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  createdTimestamp?: Maybe<Scalars['DateTime']['output']>;
   damping?: Maybe<Scalars['Int']['output']>;
   elongation?: Maybe<Scalars['Float']['output']>;
   frequency?: Maybe<Scalars['Float']['output']>;
@@ -1580,6 +1581,7 @@ export type ProceqReading = {
   start?: Maybe<Scalars['Float']['output']>;
   status?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   voltage?: Maybe<Scalars['Int']['output']>;
   width?: Maybe<Scalars['Float']['output']>;
   zeroOffset?: Maybe<Scalars['Float']['output']>;
@@ -1590,8 +1592,7 @@ export enum ProceqStatus {
   Elastic = 'ELASTIC',
   HighPlastic = 'HIGH_PLASTIC',
   LowPlastic = 'LOW_PLASTIC',
-  NotMeasurable = 'NOT_MEASURABLE',
-  Unmeasured = 'UNMEASURED'
+  NotMeasurable = 'NOT_MEASURABLE'
 }
 
 export enum PullTestAbortReason {

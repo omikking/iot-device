@@ -323,7 +323,7 @@ const SidebarTrigger = React.forwardRef<
       {...props}
     >
       <PanelLeft />
-      <span className="ui-banshee-sr-only">Toggle Sidebar</span>
+      <span className="ui-banshee-sr-only">Toggle sidebar</span>
     </button>
   );
 });
@@ -340,10 +340,10 @@ const SidebarRail = React.forwardRef<
       ref={ref}
       type="button"
       data-sidebar="rail"
-      aria-label="Toggle Sidebar"
+      aria-label="Toggle sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      title="Toggle sidebar"
       className={cn(
         'ui-banshee-absolute ui-banshee-inset-y-0 ui-banshee-z-20 ui-banshee-hidden ui-banshee-w-4 ui-banshee--translate-x-1/2 ui-banshee-transition-all ui-banshee-ease-linear after:ui-banshee-absolute after:ui-banshee-inset-y-0 after:ui-banshee-left-1/2 after:ui-banshee-w-[2px] hover:after:ui-banshee-bg-sidebar-border group-data-[side=left]:ui-banshee--right-4 group-data-[side=right]:ui-banshee-left-0 sm:ui-banshee-flex',
         '[[data-side=left]_&]:ui-banshee-cursor-w-resize [[data-side=right]_&]:ui-banshee-cursor-e-resize',

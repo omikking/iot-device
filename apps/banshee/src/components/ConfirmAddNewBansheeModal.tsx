@@ -45,7 +45,7 @@ export const ConfirmAddNewBansheeModal = ({
       >
         <ModalHeader>
           <ModalTitle className="ui-banshee-pb-9 ui-banshee-text-3xl!">
-            Add New Banshee
+            Add new Banshee
           </ModalTitle>
         </ModalHeader>
 

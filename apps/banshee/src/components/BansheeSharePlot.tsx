@@ -10,7 +10,7 @@ export const BansheeSharePlot = () => {
         color="foreground"
         className="ui-banshee-font-semibold"
       >
-        Share Plot List
+        Share plot list
       </Text>
       <div className="ui-banshee-flex ui-banshee-flex-wrap ui-banshee-gap-4 ui-banshee-max-w-md">
         <Input

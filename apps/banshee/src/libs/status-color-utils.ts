@@ -12,7 +12,6 @@ export const getStatusColorHex = (status?: string | null) => {
       return '#EB0D0D';
     case ProceqStatus.NotMeasurable:
       return '#9D9D9D';
-    case ProceqStatus.Unmeasured:
     default:
       return '#9C9C9C';
   }
@@ -30,7 +29,6 @@ export const getStatusColor = (status?: string | null) => {
       return '#ef4444';
     case ProceqStatus.NotMeasurable:
       return '#9ca3af';
-    case ProceqStatus.Unmeasured:
     default:
       return '#9ca3af';
   }
@@ -40,15 +38,13 @@ export const getStatusLabel = (status?: string | null) => {
     case ProceqStatus.Elastic:
       return 'Elastic';
     case ProceqStatus.LowPlastic:
-      return 'Plastic Low';
+      return 'Low plastic';
     case ProceqStatus.HighPlastic:
-      return 'Plastic High';
+      return 'High plastic';
     case ProceqStatus.Broken:
       return 'Broken';
     case ProceqStatus.NotMeasurable:
-      return 'Not Measurable';
-    case ProceqStatus.Unmeasured:
-      return 'Unmeasured';
+      return 'Not measurable';
     default:
       return status || 'N/A';
   }

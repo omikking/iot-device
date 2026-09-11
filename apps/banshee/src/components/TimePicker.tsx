@@ -6,31 +6,21 @@ import { Popover, PopoverContent, PopoverTrigger, Text } from '@gsp/ui-banshee';
 import { formatTimeOfDay, parseTimeOfDay } from '@/libs/utils';
 
 type TimePickerProps = {
-  selectedTime?: string; // "hh:mm AM/PM" (24-hour "HH:mm" is also accepted)
+  selectedTime?: string; // 24-hour "HH:mm" ("h:mm AM/PM" is also accepted)
   onTimeChange?: (time: string) => void;
   disabled?: boolean;
 };
 
+/** Hours 0-23 and minutes, defaulting to noon when there is nothing to parse. */
 function parseTime(time: string | undefined | null): {
   hour: number;
   minute: number;
-  period: 'AM' | 'PM';
 } {
   const parsed = time ? parseTimeOfDay(time) : null;
   if (!parsed) {
-    return { hour: 12, minute: 0, period: 'PM' };
+    return { hour: 12, minute: 0 };
   }
-  return {
-    hour: parsed.hours % 12 === 0 ? 12 : parsed.hours % 12,
-    minute: parsed.minutes,
-    period: parsed.hours >= 12 ? 'PM' : 'AM',
-  };
-}
-
-function formatTime(hour: number, minute: number, period: 'AM' | 'PM'): string {
-  const hours24 =
-    period === 'PM' ? (hour === 12 ? 12 : hour + 12) : hour === 12 ? 0 : hour;
-  return formatTimeOfDay(hours24, minute);
+  return { hour: parsed.hours, minute: parsed.minutes };
 }
 
 const triggerStyling =
@@ -40,7 +30,7 @@ const spinnerBtnStyling =
   'ui-banshee-p-1 ui-banshee-rounded hover:ui-banshee-bg-neutral-1 ui-banshee-transition ui-banshee-duration-150 ui-banshee-text-neutral-5 hover:ui-banshee-text-main-black';
 
 export const TimePicker = ({
-  selectedTime = '12:00 PM',
+  selectedTime = '12:00',
   onTimeChange,
   disabled,
 }: TimePickerProps) => {
@@ -48,41 +38,35 @@ export const TimePicker = ({
   const parsed = parseTime(selectedTime);
   const [hour, setHour] = React.useState(parsed.hour);
   const [minute, setMinute] = React.useState(parsed.minute);
-  const [period, setPeriod] = React.useState<'AM' | 'PM'>(parsed.period);
 
   React.useEffect(() => {
     const p = parseTime(selectedTime);
     setHour(p.hour);
     setMinute(p.minute);
-    setPeriod(p.period);
   }, [selectedTime]);
 
-  const emit = (h: number, m: number, p: 'AM' | 'PM') =>
-    onTimeChange?.(formatTime(h, m, p));
+  const emit = (h: number, m: number) => onTimeChange?.(formatTimeOfDay(h, m));
 
+  // Both spinners wrap, so the hour runs 23 -> 00 rather than stopping.
   const incHour = () => {
-    const next = hour >= 12 ? 1 : hour + 1;
+    const next = (hour + 1) % 24;
     setHour(next);
-    emit(next, minute, period);
+    emit(next, minute);
   };
   const decHour = () => {
-    const next = hour <= 1 ? 12 : hour - 1;
+    const next = (hour + 23) % 24;
     setHour(next);
-    emit(next, minute, period);
+    emit(next, minute);
   };
   const incMinute = () => {
     const next = (minute + 5) % 60;
     setMinute(next);
-    emit(hour, next, period);
+    emit(hour, next);
   };
   const decMinute = () => {
     const next = minute - 5 < 0 ? 55 : minute - 5;
     setMinute(next);
-    emit(hour, next, period);
-  };
-  const togglePeriod = (p: 'AM' | 'PM') => {
-    setPeriod(p);
-    emit(hour, minute, p);
+    emit(hour, next);
   };
 
   return (
@@ -98,7 +82,7 @@ export const TimePicker = ({
           aria-label="Time picker"
         >
           <Text variant="medium" color={disabled ? 'muted' : 'foreground'}>
-            {formatTime(hour, minute, period)}
+            {formatTimeOfDay(hour, minute)}
           </Text>
           <Clock
             size={18}
@@ -153,25 +137,6 @@ export const TimePicker = ({
             >
               <ChevronDown size={18} />
             </button>
-          </div>
-
-          {/* AM / PM toggle */}
-          <div className="ui-banshee-flex ui-banshee-flex-col ui-banshee-gap-1 ui-banshee-ml-2">
-            {(['AM', 'PM'] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => togglePeriod(p)}
-                className={[
-                  'ui-banshee-px-3 ui-banshee-py-1 ui-banshee-rounded ui-banshee-text-sm ui-banshee-font-medium ui-banshee-transition ui-banshee-duration-150',
-                  period === p
-                    ? 'ui-banshee-bg-blue-primary ui-banshee-text-main-white'
-                    : 'ui-banshee-bg-neutral-2 ui-banshee-text-neutral-5 hover:ui-banshee-bg-neutral-1 hover:ui-banshee-text-main-black',
-                ].join(' ')}
-              >
-                {p}
-              </button>
-            ))}
           </div>
         </div>
       </PopoverContent>

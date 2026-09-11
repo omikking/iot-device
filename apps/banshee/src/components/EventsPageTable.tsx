@@ -24,6 +24,7 @@ import { EventDetailModal } from './EventDetailModal';
 import { BansheeEventLog } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { compareValues } from '@/libs/sort-compare';
+import { formatDate } from '@/libs/measurement-date';
 
 type ColumnProp = ComponentProps<typeof TableHeadWithSorting>['column'];
 
@@ -249,7 +250,7 @@ export const EventsPageTable = ({
                     </TableCell>
                     <TableCell>
                       <div className="ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center">
-                        <TooltipProvider>
+                        <TooltipProvider delayDuration={200}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
@@ -300,7 +301,7 @@ export const EventsPageTable = ({
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-px-4 ui-banshee-whitespace-nowrap">
                       <Text variant="medium" color="foreground">
-                        {new Date(event.createdAt).toLocaleDateString()}
+                        {formatDate(event.createdAt) ?? 'N/A'}
                       </Text>
                     </TableCell>
                     <TableCell className="ui-banshee-text-left ui-banshee-whitespace-nowrap">

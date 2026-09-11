@@ -191,7 +191,7 @@ export default function Page() {
         Modal 🚀
       </Headline>
       <Button onClick={() => setIsConfirmModalOpen(true)}>
-        Open the incredible modal
+        Open THE incredible modal
       </Button>
       {/* Confirm Modal */}
       <ConfirmModal

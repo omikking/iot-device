@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { saveToDB, loadFromDB } from "./useIndexedDB";
 import { HydraBLE } from "../ble/hydraBle";
 import { parseDeviceStatus, parseMeta, parseMeasurementChunk, hexDump, decodeConfigValue } from "../ble/hydraParser";
+import { HydraMeasurementStream } from "../ble/hydraMeasurementParser";
 import { formatCommandResponse } from "../constants/commands";
 import {
   isInterrogatorConfigId,
@@ -12,7 +13,7 @@ import type {
   DeviceInfo,
   DeviceStatus,
   MeasurementMeta,
-  HydraMeasurement,
+  HydraMeasurementSample,
   LogEntry,
   LogType,
   CommandDef,
@@ -32,14 +33,15 @@ export function useHydra() {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
-  const [history, setHistory] = useState<HydraMeasurement[]>([]);
+  const [history, setHistory] = useState<HydraMeasurementSample[]>([]);
   const [histLoading, setHistLoading] = useState(false);
   const [histDownloadMs, setHistDownloadMs] = useState<number | null>(null);
   const seenIds = useRef<Set<number>>(new Set());
   const histSubbed = useRef(false);
     const histDone = useRef(false);
   const pendingAckIds = useRef<number[]>([]);
-
+  const measurementStream = useRef(new HydraMeasurementStream());
+ 
   const log = useCallback((msg: string, type: LogType = "info") => {
     setLogs((p) => [{ ts: Date.now(), msg, type }, ...p].slice(0, 200));
   }, []);
@@ -48,7 +50,7 @@ export function useHydra() {
     async function loadData() {
       const cachedLogs = await loadFromDB<LogEntry[]>("logs");
       if (cachedLogs) setLogs(cachedLogs);
-      const cachedHistory = await loadFromDB<HydraMeasurement[]>("history");
+      const cachedHistory = await loadFromDB<HydraMeasurementSample[]>("history");
       if (cachedHistory) {
         setHistory(cachedHistory);
         cachedHistory.forEach((s) => {
@@ -79,6 +81,7 @@ export function useHydra() {
       histSubbed.current = false;
       histDone.current = false;
       pendingAckIds.current = [];
+      measurementStream.current.reset();
       setHistory([]);
 
       setConnected(true);
@@ -294,18 +297,16 @@ export function useHydra() {
               log("History complete (zero-length notification)", "success");
               return;
             }
-
-            const chunk = parseMeasurementChunk(v);
-            if (chunk.sampleId != null) {
-              pendingAckIds.current.push(chunk.sampleId);
-              if (!seenIds.current.has(chunk.sampleId)) {
-                seenIds.current.add(chunk.sampleId);
-                setHistory((prev) => [...prev, chunk]);
-                log(`+chunk ${chunk.byteLength}B id=${chunk.sampleId}`, "info");
+ 
+            const bytes = new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+            const newSamples = measurementStream.current.push(bytes);
+            for (const sample of newSamples) {
+              pendingAckIds.current.push(sample.sampleId);
+              if (!seenIds.current.has(sample.sampleId)) {
+                seenIds.current.add(sample.sampleId);
+                setHistory((prev) => [...prev, sample]);
+                log(`+sample id=${sample.sampleId} channels=${sample.channels.length}`, "info");
               }
-            } else {
-              setHistory((prev) => [...prev, chunk]);
-              log(`+chunk ${chunk.byteLength}B`, "info");
             }
           });
         }
@@ -335,16 +336,17 @@ export function useHydra() {
         setHistLoading(false);
       }
     }
-
+ 
     function clearHistory(): void {
       setHistory([]);
       seenIds.current.clear();
       histSubbed.current = false;
       histDone.current = false;
       pendingAckIds.current = [];
+      measurementStream.current.reset();
       setHistDownloadMs(null);
     }
-
+ 
     return {
       connected,
       connecting,

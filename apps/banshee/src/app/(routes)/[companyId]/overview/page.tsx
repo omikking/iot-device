@@ -9,6 +9,7 @@ import { StatusDistributionChart } from '@/components/StatusDistributionChart';
 import { StatusOverviewChart } from '@/components/StatusOverviewChart';
 import { handleGraphQLErrors } from '@/libs/utils';
 import { getLatestProceqData } from '@/libs/latest-measurement';
+import { formatDate } from '@/libs/measurement-date';
 
 export default function Page({ params }: { params: { companyId: string } }) {
   const { companyId } = params;
@@ -100,9 +101,7 @@ export default function Page({ params }: { params: { companyId: string } }) {
         statusColor: '#FF0000',
         banshee: entry?.name ?? '',
         location: entry?.location?.locationName ?? '',
-        dueDate: latestMeasurement?.dueDate
-          ? new Date(latestMeasurement.dueDate).toLocaleDateString('en-GB')
-          : '-',
+        dueDate: formatDate(latestMeasurement?.dueDate) ?? '-',
       };
     }) ?? [];
 

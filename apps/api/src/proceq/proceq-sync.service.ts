@@ -59,6 +59,19 @@ export class ProceqSyncService {
     private readonly dispatcher: ProceqNotificationDispatcher,
   ) {}
 
+  private toSourceTimestamp(value: unknown): Date | null {
+    if (value == null || (typeof value === 'string' && !value.trim())) {
+      return null;
+    }
+
+    const millis = typeof value === 'number' ? value : Number(value);
+    const date = Number.isFinite(millis)
+      ? new Date(millis)
+      : new Date(String(value));
+
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
   private extractProceqFields(
     payload: Record<string, any>,
     measurementId: string,
@@ -142,6 +155,8 @@ export class ProceqSyncService {
         gate1SoundPathDistanceInTimeUnit: null,
         elongation: null,
         status: null,
+        createdTimestamp: null,
+        updatedTimestamp: null,
       });
     } else {
       for (let idx = 0; idx < readingsArray.length; idx++) {
@@ -196,6 +211,8 @@ export class ProceqSyncService {
             readingToolBarOptions?.gate1SoundPathDistanceInTimeUnit || null,
           elongation: null,
           status: null,
+          createdTimestamp: this.toSourceTimestamp(reading?.created),
+          updatedTimestamp: this.toSourceTimestamp(reading?.updated),
         });
       }
     }
@@ -1083,7 +1100,7 @@ export class ProceqSyncService {
             rawDataZipPath: record.rawDataZipPath,
             bansheeRequestId: record.bansheeRequestId,
             dueDate: record.dueDate,
-            status: record.status || ProceqStatus.UNMEASURED,
+            status: record.status || ProceqStatus.NOT_MEASURABLE,
           },
           create: {
             measurementId: record.measurementId,
@@ -1098,7 +1115,7 @@ export class ProceqSyncService {
             rawDataZipPath: record.rawDataZipPath,
             bansheeRequestId: record.bansheeRequestId,
             dueDate: record.dueDate,
-            status: record.status || ProceqStatus.UNMEASURED,
+            status: record.status || ProceqStatus.NOT_MEASURABLE,
           },
         }),
       );
@@ -1140,7 +1157,9 @@ export class ProceqSyncService {
                 gate1SoundPathDistanceInTimeUnit:
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
-                status: reading.status || ProceqStatus.UNMEASURED,
+                status: reading.status || ProceqStatus.NOT_MEASURABLE,
+                createdTimestamp: reading.createdTimestamp,
+                updatedTimestamp: reading.updatedTimestamp,
               },
               create: {
                 proceqData: {
@@ -1170,6 +1189,8 @@ export class ProceqSyncService {
                   reading.gate1SoundPathDistanceInTimeUnit,
                 elongation: reading.elongation,
                 status: reading.status as ProceqStatus,
+                createdTimestamp: reading.createdTimestamp,
+                updatedTimestamp: reading.updatedTimestamp,
               },
             }),
           );
@@ -1507,7 +1528,7 @@ export class ProceqSyncService {
         serialNumber: request.serialNumber,
         bansheeName: request.name,
         measurementId: record.measurementId,
-        status: record.status ?? ProceqStatus.UNMEASURED,
+        status: record.status ?? ProceqStatus.NOT_MEASURABLE,
       };
 
       if (this.isMeasurementCompleted(record)) {

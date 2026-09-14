@@ -132,8 +132,7 @@ export enum ProceqStatus {
     LOW_PLASTIC = "LOW_PLASTIC",
     HIGH_PLASTIC = "HIGH_PLASTIC",
     BROKEN = "BROKEN",
-    NOT_MEASURABLE = "NOT_MEASURABLE",
-    UNMEASURED = "UNMEASURED"
+    NOT_MEASURABLE = "NOT_MEASURABLE"
 }
 
 export class AddCartItemInput {
@@ -1213,6 +1212,8 @@ export class ProceqReading {
     gate1SoundPathDistanceInTimeUnit?: Nullable<number>;
     status?: Nullable<string>;
     elongation?: Nullable<number>;
+    createdTimestamp?: Nullable<DateTime>;
+    updatedTimestamp?: Nullable<DateTime>;
 }
 
 export class ProceqData {

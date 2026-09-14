@@ -36,7 +36,7 @@ export function SmallChartPieDonut({
         const p = Array.isArray(params) ? params[0] : params;
         const displayLocation = locationInfo ?? footerText ?? '';
         const statusKey = String(p.name ?? '');
-        const materialLabel =
+        const statusLabel =
           (chartConfig[statusKey]?.label as string) || statusKey;
         return `
           <div style="min-width:180px; line-height:1.6;">
@@ -52,9 +52,9 @@ export function SmallChartPieDonut({
             </div>
 
             <div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center">
-              <span style="color:white;">Material</span>
+              <span style="color:white;">Status</span>
               <span style="font-weight:600; color:#FFFFFF; font-size: 14px">
-                ${escapeHtml(materialLabel)}
+                ${escapeHtml(statusLabel)}
               </span>
             </div>
 

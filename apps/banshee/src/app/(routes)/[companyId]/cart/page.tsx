@@ -263,7 +263,7 @@ export default function CartPage() {
     <SidebarInset>
       <main className="ui-banshee-flex ui-banshee-flex-col ui-banshee-min-h-screen">
         <h1 className="ui-banshee-text-2xl ui-banshee-font-[500] ui-banshee-border-neutral-3 ui-banshee-border-b ui-banshee-w-full ui-banshee-p-6">
-          Order Summary
+          Order summary
         </h1>
         <div className="ui-banshee-flex ui-banshee-flex-wrap ui-banshee-h-full">
           <div className="ui-banshee-flex ui-banshee-h-[40vh] ui-banshee-flex-col ui-banshee-w-3/5 ui-banshee-p-7">
@@ -407,7 +407,7 @@ export default function CartPage() {
                 color="foreground"
                 className="ui-banshee-font-bold ui-banshee-pb-2 ui-banshee-border-b-2 ui-banshee-border-neutral-3"
               >
-                Order Summary
+                Order summary
               </Headline>
               <div className="ui-banshee-flex ui-banshee-justify-between ui-banshee-py-4 ui-banshee-border-neutral-3 ui-banshee-border-b  ui-banshee-w-full">
                 <Text
@@ -415,7 +415,7 @@ export default function CartPage() {
                   color="foreground"
                   className="ui-banshee-w-fit"
                 >
-                  New Banshee Request
+                  New Banshee request
                 </Text>
                 <Text
                   variant="medium"
@@ -431,7 +431,7 @@ export default function CartPage() {
                   color="foreground"
                   className="ui-banshee-w-fit"
                 >
-                  Recurring Banshee Request
+                  Recurring Banshee request
                 </Text>
                 <Text
                   variant="medium"
@@ -447,7 +447,7 @@ export default function CartPage() {
                   color="foreground"
                   className="ui-banshee-w-fit"
                 >
-                  Total Measurement Request
+                  Total measurement request
                 </Text>
                 <Text
                   variant="medium"
@@ -467,7 +467,7 @@ export default function CartPage() {
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
-                    Order Comments
+                    Order comments
                   </Headline>
                   <Textarea
                     style={{ height: '200px' }}
@@ -543,7 +543,7 @@ export default function CartPage() {
                       disabled={submittingOrder}
                     >
                       {submittingOrder && <LoadingSpinner size={16} />}
-                      {submittingOrder ? 'Submitting...' : 'Submit Order'}
+                      {submittingOrder ? 'Submitting...' : 'Submit order'}
                     </Button>
                   </div>
                 </div>

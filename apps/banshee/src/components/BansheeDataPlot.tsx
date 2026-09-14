@@ -10,11 +10,19 @@ import {
   useState,
 } from 'react';
 import type { BansheeRequestsListQuery } from '@/gql/graphql';
-import { sortReadingsAscending } from '@/libs/latest-measurement';
+import {
+  buildReadingChartRows,
+  buildReadingTimeline,
+} from '@/libs/reading-timeline';
+import type { TimelineSeries } from '@/libs/reading-timeline';
 import { downloadDataUrl, dataUrlToFile } from '@/libs/utils';
 
 type BansheeRequestResult =
   BansheeRequestsListQuery['bansheeRequests']['results'][number];
+
+type BansheeProceqData = NonNullable<
+  BansheeRequestResult['proceqData']
+>[number];
 
 // Export the handle type so page.tsx can use it
 export type BansheeDataPlotHandle = {
@@ -75,6 +83,7 @@ const BansheeDataPlot = forwardRef<
   const { lineConfig, chartData, seriesMax } = useMemo(() => {
     const config: { dataKey: string; label: string; color: string }[] = [];
     const maxByKey: Record<string, number> = {};
+    const series: TimelineSeries<BansheeProceqData>[] = [];
 
     bansheeRequests.forEach((br) => {
       if (!br.serialNumber) return;
@@ -84,75 +93,30 @@ const BansheeDataPlot = forwardRef<
         label: br.serialNumber,
         color: stringToColor(br.serialNumber),
       });
+      series.push({ dataKey, measurements: br.proceqData });
     });
 
-    const xEntries: {
-      time: string;
-      ts: number;
-      readingIdx: number;
-      bansheeId: string;
-      dataKey: string;
-      value: number;
-    }[] = [];
+    // Reading-level timestamps, deduped and labelled once for the whole chart.
+    const points = buildReadingTimeline(series);
 
-    bansheeRequests.forEach((br) => {
-      if (!br.serialNumber) return;
-      const dataKey = `banshee_${br.serialNumber.replace(/\s/g, '_')}`;
+    const data = buildReadingChartRows(
+      points,
+      (date): { date: string; [key: string]: string | number } => ({ date }),
+      ({ dataKey, reading }) => {
+        if (reading.elongation == null) return undefined;
 
-      (br.proceqData || []).forEach((pd) => {
-        if (!pd.createdTimestamp) return;
-        const readings = sortReadingsAscending(pd.readings);
-        const dateStr = new Date(pd.createdTimestamp)
-          .toISOString()
-          .split('T')[0];
+        const elongation = Math.max(
+          ELONGATION_MIN,
+          Math.min(reading.elongation, ELONGATION_MAX),
+        );
+        // Same single pass feeds the y-axis domain below.
+        if (elongation > (maxByKey[dataKey] ?? 0)) {
+          maxByKey[dataKey] = elongation;
+        }
 
-        readings.forEach((r, idx) => {
-          if (r.elongation == null) return;
-          const elongation = Math.max(
-            ELONGATION_MIN,
-            Math.min(r.elongation, ELONGATION_MAX),
-          );
-          if (elongation > (maxByKey[dataKey] ?? 0)) {
-            maxByKey[dataKey] = elongation;
-          }
-          const timeLabel =
-            readings.length > 1 ? `${dateStr} R${idx + 1}` : dateStr;
-
-          xEntries.push({
-            time: timeLabel,
-            ts: pd.createdTimestamp,
-            readingIdx: idx,
-            bansheeId: br.id,
-            dataKey,
-            value: elongation,
-          });
-        });
-      });
-    });
-
-    xEntries.sort((a, b) => a.ts - b.ts || a.readingIdx - b.readingIdx);
-
-    const uniqueTimes: string[] = [];
-    const seen = new Set<string>();
-    xEntries.forEach((e) => {
-      if (!seen.has(e.time)) {
-        seen.add(e.time);
-        uniqueTimes.push(e.time);
-      }
-    });
-
-    const rowsByTime = new Map<
-      string,
-      { date: string; [key: string]: string | number }
-    >();
-    uniqueTimes.forEach((time) => {
-      rowsByTime.set(time, { date: time });
-    });
-    xEntries.forEach((e) => {
-      const row = rowsByTime.get(e.time);
-      if (row) row[e.dataKey] = e.value;
-    });
-    const data = uniqueTimes.map((t) => rowsByTime.get(t)!);
+        return elongation;
+      },
+    );
 
     return { lineConfig: config, chartData: data, seriesMax: maxByKey };
   }, [bansheeRequests]);
@@ -183,12 +147,13 @@ const BansheeDataPlot = forwardRef<
       ref={chartRef}
       data={chartData}
       lines={lineConfig}
-      yAxisLabel="Elongation (µm)"
+      yAxisLabel="Total elongation (mm)"
       yAxisDomain={[0, yMax]}
       enableZoom
       showToolbox={false}
       legendSelected={legendSelected}
       onLegendChange={setLegendSelected}
+      connectNulls
     />
   );
 });

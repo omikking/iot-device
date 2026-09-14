@@ -167,7 +167,7 @@ export function TemplateSelectField({
     <div>
       <HierarchyDropdown
         id="template-dropdown"
-        label="Configuration from Template"
+        label="Configuration from template"
         placeholder="Select template"
         options={templates.map((t) => ({ id: t.id, name: t.templateName }))}
         selectedId={pendingTemplateId ?? selectedTemplateId ?? ''}

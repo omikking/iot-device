@@ -18,10 +18,11 @@ import { ArrowRight } from 'lucide-react';
 const navLinks = [
   { label: 'Home', href: '/overview' },
   { label: 'Banshee', href: '/banshee' },
-  { label: 'Schedule', href: '/scheduler' },
+  { label: 'Scheduler', href: '/scheduler' },
   { label: 'Events', href: '/events' },
-  { label: 'Settings', href: '/siteInformation' },
-  { label: 'Contact Us', href: '/contactUs' },
+  { label: 'Site information', href: '/siteInformation' },
+  { label: 'Template', href: '/template' },
+  { label: 'Contact us', href: '/contactUs' },
 ];
 
 const secondaryLinks = [

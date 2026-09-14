@@ -1,19 +1,48 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Card, SectionTitle, Btn } from "../ui";
-import type { HydraMeasurement, MeasurementMeta } from "../../types";
-
+import { Card, SectionTitle, Btn, Badge } from "../ui";
+import type { HydraMeasurementSample, MeasurementMeta } from "../../types";
+ 
 interface HistoryTabProps {
   connected: boolean;
   meta: MeasurementMeta | null;
-  history: HydraMeasurement[];
+  history: HydraMeasurementSample[];
   histLoading: boolean;
   histDownloadMs: number | null;
   onLoadHistory: () => void;
 }
-
+ 
+/** Comma-joined numbers, rounded for display — these are physical measurements, not raw ints. */
+function formatNumbers(values: number[], decimals: number): string {
+  return values.map((v) => v.toFixed(decimals)).join(", ");
+}
+ 
+function ChannelDetails({ channels }: { channels: HydraMeasurementSample["channels"] }) {
+  return (
+    <div className="px-4 py-3 bg-surface-alt/60 border-b border-border last:border-0 space-y-2">
+      {channels.map((ch, i) => (
+        <div key={i} className="text-xs font-mono">
+          <div className="text-text">
+            Ch {i}: temp={ch.temperature.toFixed(2)}°C refSlope={ch.refSlope} refOffset={ch.refOffset}
+          </div>
+          {ch.wavelengths.length > 0 && (
+            <div className="text-text-muted pl-4 break-all">
+              wavelength (nm): {formatNumbers(ch.wavelengths, 2)}
+            </div>
+          )}
+          {ch.amplitudes.length > 0 && (
+            <div className="text-text-muted pl-4 break-all">
+              amplitude: {formatNumbers(ch.amplitudes, 1)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+ 
 const PAGE_SIZE = 30;
-
+ 
 function DownloadModal({ count }: { count: number }) {
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
@@ -29,7 +58,7 @@ function DownloadModal({ count }: { count: number }) {
     document.body,
   );
 }
-
+ 
 export default function HistoryTab({
   connected,
   meta,
@@ -39,6 +68,7 @@ export default function HistoryTab({
   onLoadHistory,
 }: HistoryTabProps) {
   const [page, setPage] = useState(0);
+  const [expanded, setExpanded] = useState<number | null>(null);
   useEffect(() => setPage(0), [history.length]);
 
   const pageData = useMemo(
@@ -46,7 +76,7 @@ export default function HistoryTab({
     [history, page],
   );
  
-  
+
   const totalPages = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
 
   if (!connected) {
@@ -66,13 +96,12 @@ export default function HistoryTab({
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <SectionTitle>Measurement History (
-            <span className="text-xs text-text-muted">hex parsing to be discussed</span>)</SectionTitle>
+          <SectionTitle>Measurement History</SectionTitle>
           <Btn onClick={onLoadHistory} disabled={histLoading}>
             {histLoading ? "Downloading…" : "Download History"}
           </Btn>
         </div>
-        
+       
         {meta && (
           <p className="text-xs text-text-muted mb-4">
             Storage: {meta.notUploaded} not uploaded / {meta.total} total · sectors{" "}
@@ -88,26 +117,44 @@ export default function HistoryTab({
 
         {history.length === 0 ? (
           <p className="text-sm text-text-faint text-center py-8">
-            No measurements loaded. Full wavelength/amplitude decode requires protobuf (Appendix A).
+            No measurements loaded. Click "Download History" to retrieve and decode samples.
           </p>
         ) : (
           <>
             <div className="rounded-lg border border-border overflow-hidden">
-              <div className="grid grid-cols-[1fr] px-4 py-2 text-[10px] font-bold bg-surface-alt text-text-faint border-b border-border">
-                {/* <span>SAMPLE ID</span> */}
-                <span>HEX PREVIEW</span>
-                {/* <span>SIZE</span> */}
+              <div className="grid grid-cols-[80px_1fr_140px_90px_90px] px-4 py-2 text-[10px] font-bold bg-surface-alt text-text-faint border-b border-border">
+                <span>SAMPLE ID</span>
+                <span>TIMESTAMP</span>
+                <span>SENSOR ID</span>
+                <span>MODE</span>
+                <span>CHANNELS</span>
               </div>
-              {pageData.map((row, i) => (
-                <div
-                  key={`${row.receivedAt}-${i}`}
-                  className="grid grid-cols-[1fr] px-4 py-2 text-xs border-b border-border last:border-0 font-mono"
-                >
-                  {/* <span className="text-accent">{row.sampleId ?? "—"}</span> */}
-                  <span className="text-text-muted break-all">{row.hexPreview}</span>
-                  {/* <span>{row.byteLength} B</span> */}
-                </div>
-              ))}
+              {pageData.map((row, i) => {
+                const globalIndex = page * PAGE_SIZE + i;
+                const activeChannels = row.channels.filter((c) => c.wavelengths.length > 0).length;
+                const isOpen = expanded === globalIndex;
+                return (
+                  <div key={`${row.sampleId}-${i}`}>
+                    <div
+                      onClick={() => setExpanded(isOpen ? null : globalIndex)}
+                      className="grid grid-cols-[80px_1fr_140px_90px_90px] px-4 py-2 text-xs border-b border-border last:border-0 font-mono cursor-pointer hover:bg-surface-alt"
+                    >
+                      <span className="text-accent">{row.sampleId}</span>
+                      <span className="text-text-muted">{row.timestamp}</span>
+                      <span className="text-text-muted truncate">{row.sensorId}</span>
+                      <span>
+                        <Badge variant={row.isHighPriority ? "warn" : "default"}>
+                          {row.compression}
+                        </Badge>
+                      </span>
+                      <span className="text-text-muted">
+                        {activeChannels}/{row.channels.length}
+                      </span>
+                    </div>
+                    {isOpen && <ChannelDetails channels={row.channels} />}
+                  </div>
+                );
+              })}
             </div>
 
             {totalPages > 1 && (

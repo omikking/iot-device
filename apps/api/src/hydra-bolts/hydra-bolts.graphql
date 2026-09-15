@@ -20,10 +20,6 @@ type HydraBolt {
   createdBy: String!
   updatedBy: String
 
-  # Field resolver - fetches the full User object from createdBy ID
-  # Only returns users within the same company (SANDVIK_ADMIN can see all)
-  createdByUser: User
-
   level: Level
   drive: Drive
   location: Location

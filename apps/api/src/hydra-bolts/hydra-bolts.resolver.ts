@@ -8,7 +8,9 @@ import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/guard';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { getAllowedCompanyIds } from 'src/utils';
-import * as GraphQLTypes from 'src/graphql-types';
+import { CreateHydraBoltInput } from './dto/create-hydra-bolts.input';
+import { UpdateHydraBoltInput } from './dto/update-hydra-bolts.input';
+const OptionalUUID = new ParseUUIDPipe({ optional: true });
 
 @Resolver('HydraBolt')
 @UseGuards(JwtGuard, RolesGuard)
@@ -19,7 +21,7 @@ export class HydraBoltsResolver {
   @Mutation('createHydraBolt')
   async create(
     @Args('createHydraBoltInput')
-    createHydraBoltInput: GraphQLTypes.CreateHydraBoltInput,
+    createHydraBoltInput: CreateHydraBoltInput,
     @ActiveUser() user: ActiveUserData,
   ) {
     return this.hydraBoltsService.create(createHydraBoltInput, user);
@@ -35,19 +37,19 @@ export class HydraBoltsResolver {
     return this.hydraBoltsService.findOne(id, user, companyId);
   }
 
-  @Roles([], [Application.HYDRA], 'hydraBolts')
+  // No @Roles here on purpose: RolesGuard authorizes against a single company
   @Query('hydraBolts')
   async findAll(
     @ActiveUser() user: ActiveUserData,
     @Args('offset', { type: () => Int, nullable: true }) offset?: number,
     @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('serialNumber', { nullable: true }) serialNumber?: string,
-    @Args('levelId', { nullable: true }) levelId?: string,
-    @Args('driveId', { nullable: true }) driveId?: string,
-    @Args('locationId', { nullable: true }) locationId?: string,
-    @Args('createdBy', { nullable: true }) createdBy?: string,
-    @Args('companyId', { nullable: true }) companyId?: string,
-    @Args('siteId', { nullable: true }) siteId?: string,
+    @Args('levelId', { nullable: true }, OptionalUUID) levelId?: string,
+    @Args('driveId', { nullable: true }, OptionalUUID) driveId?: string,
+    @Args('locationId', { nullable: true }, OptionalUUID) locationId?: string,
+    @Args('createdBy', { nullable: true }, OptionalUUID) createdBy?: string,
+    @Args('companyId', { nullable: true }, OptionalUUID) companyId?: string,
+    @Args('siteId', { nullable: true }, OptionalUUID) siteId?: string,
     @Args('activateNotifications', { nullable: true })
     activateNotifications?: boolean,
   ) {
@@ -76,7 +78,7 @@ export class HydraBoltsResolver {
   async update(
     @Args('id', ParseUUIDPipe) id: string,
     @Args('updateHydraBoltInput')
-    updateHydraBoltInput: GraphQLTypes.UpdateHydraBoltInput,
+    updateHydraBoltInput: UpdateHydraBoltInput,
     @ActiveUser() user: ActiveUserData,
   ) {
     return this.hydraBoltsService.update(id, updateHydraBoltInput, user);

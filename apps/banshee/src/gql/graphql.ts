@@ -41,6 +41,7 @@ export type AddCartItemsResult = {
 
 export enum Application {
   Banshee = 'BANSHEE',
+  Hydra = 'HYDRA',
   PullTest = 'PULL_TEST',
   PullTestTechnician = 'PULL_TEST_TECHNICIAN'
 }
@@ -766,7 +767,6 @@ export type HydraBolt = {
   coordinates?: Maybe<Scalars['JSON']['output']>;
   createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['String']['output'];
-  createdByUser?: Maybe<User>;
   drive?: Maybe<Drive>;
   driveId: Scalars['String']['output'];
   id: Scalars['String']['output'];

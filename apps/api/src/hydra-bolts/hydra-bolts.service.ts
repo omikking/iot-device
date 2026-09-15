@@ -161,6 +161,8 @@ export class HydraBoltsService {
       }
 
       await validateMineHierarchy(this.prisma, {
+        companyId: createHydraBoltInput.companyId,
+        siteId: createHydraBoltInput.siteId,
         levelId: createHydraBoltInput.levelId,
         driveId: createHydraBoltInput.driveId,
         locationId: createHydraBoltInput.locationId,
@@ -231,6 +233,45 @@ export class HydraBoltsService {
         title: 'Failed to fetch Hydra Bolt',
       });
     }
+  }
+
+  private async resolveHydraCompanyIds(
+    user: ActiveUserData,
+    allowedCompanyIds: string[],
+  ): Promise<string[]> {
+    if (!allowedCompanyIds.length) return [];
+
+    const activePlans = await this.prisma.plan.findMany({
+      where: {
+        companyId: { in: allowedCompanyIds },
+        applicationName: { in: this.allowedApps },
+        OR: [{ expiringDate: null }, { expiringDate: { gt: new Date() } }],
+      },
+      select: { companyId: true, applicationName: true },
+    });
+
+    const appsByCompany = new Map<string, Application[]>();
+    for (const plan of activePlans) {
+      const apps = appsByCompany.get(plan.companyId) ?? [];
+      apps.push(plan.applicationName);
+      appsByCompany.set(plan.companyId, apps);
+    }
+
+    const permissions = Array.isArray(user.userPermissions)
+      ? user.userPermissions
+      : [];
+
+    return allowedCompanyIds.filter((companyId) => {
+      const plannedApps = appsByCompany.get(companyId);
+      if (!plannedApps?.length) return false;
+
+      return permissions.some(
+        (permission) =>
+          permission.companyId === companyId &&
+          Array.isArray(permission.appsAccess) &&
+          plannedApps.some((app) => permission.appsAccess.includes(app)),
+      );
+    });
   }
 
   async findAll(
@@ -304,19 +345,19 @@ export class HydraBoltsService {
       }
 
       // Scope the query to the companies this user is allowed to read.
-      if (user.globalRole === GlobalRole.SANDVIK_ADMIN) {
-        if (companyId) {
-          where.companyId = companyId;
-        }
-      } else if (companyId) {
-        if (!allowedCompanyIds.includes(companyId)) {
+      const isSandvikAdmin = user.globalRole === GlobalRole.SANDVIK_ADMIN;
+
+      if (companyId) {
+        if (!isSandvikAdmin && !allowedCompanyIds.includes(companyId)) {
           throw new ForbiddenException(
             'User does not have access to this company.',
           );
         }
         where.companyId = companyId;
-      } else {
-        where.companyId = { in: allowedCompanyIds };
+      } else if (!isSandvikAdmin) {
+        where.companyId = {
+          in: await this.resolveHydraCompanyIds(user, allowedCompanyIds),
+        };
       }
 
       const [totalRecords, results] = await this.prisma.$transaction([
@@ -367,6 +408,12 @@ export class HydraBoltsService {
         );
       }
 
+      if (existingRequest?.companyId !== companyId) {
+        throw new ForbiddenException(
+          'Hydra Bolt does not belong to the specified company.',
+        );
+      }
+
       if (!existingRequest) {
         throw new UserInputError('', {
           extensions: {
@@ -377,6 +424,8 @@ export class HydraBoltsService {
       }
 
       await validateMineHierarchy(this.prisma, {
+        companyId: existingRequest.companyId,
+        siteId: updateHydraBoltInput.siteId || existingRequest.siteId,
         levelId: updateHydraBoltInput.levelId || existingRequest.levelId,
         driveId: updateHydraBoltInput.driveId || existingRequest.driveId,
         locationId:
@@ -391,12 +440,15 @@ export class HydraBoltsService {
           levelId: updateHydraBoltInput.levelId,
           driveId: updateHydraBoltInput.driveId,
           locationId: updateHydraBoltInput.locationId,
-          coordinates: updateHydraBoltInput.coordinates || undefined,
-          locationDetails: updateHydraBoltInput.locationDetails || undefined,
+          coordinates:
+            updateHydraBoltInput.coordinates === null
+              ? Prisma.DbNull
+              : updateHydraBoltInput.coordinates,
+          locationDetails: updateHydraBoltInput.locationDetails,
           boltInstallationDateTime:
-            updateHydraBoltInput.boltInstallationDateTime || undefined,
+            updateHydraBoltInput.boltInstallationDateTime,
           ringPosition: updateHydraBoltInput.ringPosition,
-          comment: updateHydraBoltInput.comment || undefined,
+          comment: updateHydraBoltInput.comment,
           updatedBy: user.id,
           activateNotifications: updateHydraBoltInput.activateNotifications,
         },

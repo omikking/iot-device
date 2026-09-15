@@ -8,9 +8,14 @@
 -- so the column here was a second, independently-writable copy of the same fact.
 --
 -- DESTRUCTIVE: `hydra_bolts.boltType` is dropped. It is safe to lose only where
--- every bolt has a matching `opticbolt_test_results` row. The guard below aborts
--- the migration if any serial number would lose its type with nothing to derive
--- it from, so this fails loudly instead of silently discarding data.
+-- the whole read-time chain above resolves: the bolt needs an
+-- `opticbolt_test_results` row whose `bolt_type` also matches a
+-- `hydrabolt.part_number`. A test record alone is not enough -- an unknown or
+-- stale `bolt_type` resolves to no catalogue entry, and reads then return a null
+-- sensor configuration. The guard below therefore checks both hops, and matches
+-- exactly (no trimming) because read-time resolution does. It aborts the
+-- migration if any serial number would lose its type with nothing to derive it
+-- from, so this fails loudly instead of silently discarding data.
 --
 -- Deliberately EXCLUDED: `prisma migrate diff` also
 -- wants to drop `banshee_requests.templateId`. That column is pre-existing drift
@@ -32,14 +37,15 @@ BEGIN
   FROM "hydra_bolts" hb
   WHERE NULLIF(btrim(hb."boltType"), '') IS NOT NULL
     AND NOT EXISTS (
-      SELECT 1 FROM "opticbolt_test_results" otr
+      SELECT 1
+      FROM "opticbolt_test_results" otr
+      JOIN "hydrabolt" h ON h."part_number" = otr."bolt_type"
       WHERE otr."serial_number" = hb."serialNumber"
-        AND NULLIF(btrim(otr."bolt_type"), '') IS NOT NULL
     );
 
   IF orphaned > 0 THEN
     RAISE EXCEPTION
-      'Cannot drop hydra_bolts.boltType: % row(s) have a bolt type with no matching opticbolt_test_results.bolt_type to derive it from. Backfill opticbolt_test_results for those serial numbers first.',
+      'Cannot drop hydra_bolts.boltType: % row(s) have a bolt type that cannot be re-derived. Each needs an opticbolt_test_results row whose bolt_type matches a hydrabolt.part_number. Either the test record is missing, or its bolt_type is absent from the hydrabolt catalogue (an exact, untrimmed match is required, as at read time). Backfill opticbolt_test_results and/or seed the hydrabolt catalogue for those serial numbers first.',
       orphaned;
   END IF;
 

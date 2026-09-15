@@ -35,6 +35,9 @@ module.exports = {
     'src/banshee-template/**/*.service.ts',
     'src/banshee-stats/**/*.service.ts',
     'src/banshee-communication/banshee-communication.service.ts',
+    'src/hydra-bolts/**/*.service.ts',
+    'src/utils/validateMineHierarchy.ts',
+    'src/auth/guard/jwt.guard.ts',
   ],
   coverageDirectory: '<rootDir>/coverage-unit',
 };

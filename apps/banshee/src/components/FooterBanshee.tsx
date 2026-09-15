@@ -96,7 +96,7 @@ export const FooterBanshee = () => {
             </div>
             <div className="ui-banshee-flex ui-banshee-gap-2 ui-banshee-flex-col">
               {secondaryLinks.map(({ label, href }) => (
-                <Link key={label} href={withCompany(href)}>
+                <Link key={label} href={href}>
                   <Text color="background" variant="small">
                     {label}
                   </Text>

@@ -104,6 +104,8 @@ export interface ExtractedProceqReading {
   gate1SoundPathDistanceInTimeUnit: number | null;
   elongation: number | null;
   status: ProceqStatus | null;
+  createdTimestamp: Date | null;
+  updatedTimestamp: Date | null;
 }
 
 export interface ExtractedProceqFields {

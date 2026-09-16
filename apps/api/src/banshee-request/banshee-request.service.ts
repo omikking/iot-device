@@ -748,7 +748,7 @@ export class BansheeRequestsService {
     > = {};
 
     for (const br of bansheeRequests) {
-      const status = br.proceqData[0]?.status ?? ProceqStatus.UNMEASURED;
+      const status = br.proceqData[0]?.status ?? ProceqStatus.NOT_MEASURABLE;
 
       counts[status] = (counts[status] || 0) + 1;
 

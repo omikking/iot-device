@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { saveToDB, loadFromDB } from "./useIndexedDB";
 import { HydraBLE } from "../ble/hydraBle";
-import { parseDeviceStatus, parseMeta, parseMeasurementChunk, hexDump } from "../ble/hydraParser";
-import { formatCommandResponse, CONFIG_ITEMS } from "../constants/commands";
+import { parseDeviceStatus, parseMeta, parseMeasurementChunk, hexDump, decodeConfigValue } from "../ble/hydraParser";
+import { HydraMeasurementStream } from "../ble/hydraMeasurementParser";
+import { formatCommandResponse } from "../constants/commands";
 import {
   isInterrogatorConfigId,
   encodeInterrogatorInitString,
@@ -12,7 +13,7 @@ import type {
   DeviceInfo,
   DeviceStatus,
   MeasurementMeta,
-  HydraMeasurement,
+  HydraMeasurementSample,
   LogEntry,
   LogType,
   CommandDef,
@@ -32,14 +33,15 @@ export function useHydra() {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
-  const [history, setHistory] = useState<HydraMeasurement[]>([]);
+  const [history, setHistory] = useState<HydraMeasurementSample[]>([]);
   const [histLoading, setHistLoading] = useState(false);
   const [histDownloadMs, setHistDownloadMs] = useState<number | null>(null);
   const seenIds = useRef<Set<number>>(new Set());
   const histSubbed = useRef(false);
     const histDone = useRef(false);
   const pendingAckIds = useRef<number[]>([]);
-
+  const measurementStream = useRef(new HydraMeasurementStream());
+ 
   const log = useCallback((msg: string, type: LogType = "info") => {
     setLogs((p) => [{ ts: Date.now(), msg, type }, ...p].slice(0, 200));
   }, []);
@@ -48,7 +50,7 @@ export function useHydra() {
     async function loadData() {
       const cachedLogs = await loadFromDB<LogEntry[]>("logs");
       if (cachedLogs) setLogs(cachedLogs);
-      const cachedHistory = await loadFromDB<HydraMeasurement[]>("history");
+      const cachedHistory = await loadFromDB<HydraMeasurementSample[]>("history");
       if (cachedHistory) {
         setHistory(cachedHistory);
         cachedHistory.forEach((s) => {
@@ -79,6 +81,7 @@ export function useHydra() {
       histSubbed.current = false;
       histDone.current = false;
       pendingAckIds.current = [];
+      measurementStream.current.reset();
       setHistory([]);
 
       setConnected(true);
@@ -215,20 +218,14 @@ export function useHydra() {
   async function writeConfig(configId: ConfigItem, configVal: string): Promise<ConfigResult> {
     log(`Writing config ID ${configId.id} (${configId.label})`);
     try {
-      if (configId.longConfig) {
-        let val: string | Uint8Array = configVal;
-        // if (configId.type === "uint8[]") {
-        //   const hex = configVal.replace(/[^0-9a-fA-F]/g, "");
-        //   const bytes = new Uint8Array(hex.length / 2);
-        //   for (let i = 0; i < bytes.length; i++)
-        //     bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-        //   val = bytes;
-        // }
-        return await writeLongConfig(configId, val);
-      }
-
       let val: string | Uint8Array;
-      if (configId.type === "string") {
+      if (configId.longConfig) {
+        // Configs 28-30 send every space as CR (0x0d); everything else
+        // (e.g. the 209-211 AtPKI blobs) is encoded verbatim.
+        // HydraBLE.writeConfig() detects long-config IDs itself and runs
+        // the §2.4 block-transfer protocol automatically.
+        val = isInterrogatorConfigId(configId.id) ? encodeInterrogatorInitString(configVal) : configVal;
+      } else if (configId.type === "string") {
         val = configVal;
       } else {
         const n = parseInt(configVal, 10);
@@ -257,25 +254,16 @@ export function useHydra() {
   async function readConfig(configId: ConfigItem): Promise<ConfigResult> {
     log(`Reading config ID ${configId.id} (${configId.label})…`);
     try {
-      if (configId.longConfig) {
-        return await readLongConfig(configId);
-      }
-      const v = await bleRef.current!.readConfig(configId.id);
-      const bytes = hexDump(v);
+      // HydraBLE.readConfig() detects long-config IDs itself and reassembles
+      // the §2.4 block-transfer protocol automatically.
+      const { data } = await bleRef.current!.readConfig(configId.id);
+      const bytes = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join(" ");
       let decoded = "";
-
       try {
-        if (configId.type === "string") {
-          decoded = new TextDecoder().decode(v.buffer.slice(v.byteOffset + 7)).replace(/\0/g, "");
-        } else if (configId.type === "uint8") {
-          decoded = String(v.getUint8(7));
-        } else if (configId.type === "uint16") {
-          decoded = String(v.getUint16(7, true));
-        } else if (configId.type === "uint32") {
-          decoded = String(v.getUint32(7, true));
-        } else {
-          decoded = bytes.slice(0, 80) + (bytes.length > 80 ? "…" : "");
-        }
+        decoded =
+          configId.longConfig && isInterrogatorConfigId(configId.id)
+            ? decodeInterrogatorInitString(data)
+            : decodeConfigValue(configId, data);
       } catch (err) {
         decoded = "(decode error)";
       }
@@ -284,64 +272,6 @@ export function useHydra() {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       log(`Config read error: ${msg}`, "error");
-      return { success: false, message: msg, raw: null };
-    }
-  }
-
-  async function readLongConfig(configId: ConfigItem | number): Promise<ConfigResult> {
-    const id = typeof configId === "number" ? configId : configId.id;
-    const item = typeof configId === "number" ? CONFIG_ITEMS.find((c) => c.id === id) : configId;
-    const label = item?.label ?? `ID ${id}`;
-    log(`Reading long config ID ${id} (${label})…`);
-    try {
-      const { data } = await bleRef.current!.readLongConfig(id);
-      const bytes = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join(" ");
-      let decoded = "";
-      try {
-        if (isInterrogatorConfigId(id)) {
-          decoded = decodeInterrogatorInitString(data);
-        } else if (item?.type === "string") {
-          decoded = new TextDecoder().decode(data).replace(/\0/g, "");
-        } else {
-          decoded = bytes.slice(0, 80) + (bytes.length > 80 ? "…" : "");
-        }
-      } catch (err) {
-        decoded = "(decode error)";
-      }
-      log(`Config ${id}: ${decoded}`, "success");
-      return { success: true, message: decoded, raw: bytes };
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      log(`Config read error: ${msg}`, "error");
-      return { success: false, message: msg, raw: null };
-    }
-  }
-
-  async function writeLongConfig(
-    configId: ConfigItem | number,
-    value: string | Uint8Array,
-  ): Promise<ConfigResult> {
-    const id = typeof configId === "number" ? configId : configId.id;
-    const item = typeof configId === "number" ? CONFIG_ITEMS.find((c) => c.id === id) : configId;
-    const label = item?.label ?? `ID ${id}`;
-    log(`Writing long config ID ${id} (${label})…`);
-    try {
-      // Configs 28-30 send every space as CR (0x0d); everything else is
-      // encoded verbatim.
-      const data =
-        typeof value !== "string"
-          ? value
-          : isInterrogatorConfigId(id)
-            ? encodeInterrogatorInitString(value)
-            : new TextEncoder().encode(value);
-
-      const oneBased = item?.type !== "uint8[]";
-      await bleRef.current!.writeLongConfig(id, data, 0, oneBased);
-      log(`Long config ${id} written`, "success");
-      return { success: true, message: "Value written successfully", raw: null };
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      log(`Long config write error: ${msg}`, "error");
       return { success: false, message: msg, raw: null };
     }
   }
@@ -367,18 +297,16 @@ export function useHydra() {
               log("History complete (zero-length notification)", "success");
               return;
             }
-
-            const chunk = parseMeasurementChunk(v);
-            if (chunk.sampleId != null) {
-              pendingAckIds.current.push(chunk.sampleId);
-              if (!seenIds.current.has(chunk.sampleId)) {
-                seenIds.current.add(chunk.sampleId);
-                setHistory((prev) => [...prev, chunk]);
-                log(`+chunk ${chunk.byteLength}B id=${chunk.sampleId}`, "info");
+ 
+            const bytes = new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+            const newSamples = measurementStream.current.push(bytes);
+            for (const sample of newSamples) {
+              pendingAckIds.current.push(sample.sampleId);
+              if (!seenIds.current.has(sample.sampleId)) {
+                seenIds.current.add(sample.sampleId);
+                setHistory((prev) => [...prev, sample]);
+                log(`+sample id=${sample.sampleId} channels=${sample.channels.length}`, "info");
               }
-            } else {
-              setHistory((prev) => [...prev, chunk]);
-              log(`+chunk ${chunk.byteLength}B`, "info");
             }
           });
         }
@@ -408,16 +336,17 @@ export function useHydra() {
         setHistLoading(false);
       }
     }
-
+ 
     function clearHistory(): void {
       setHistory([]);
       seenIds.current.clear();
       histSubbed.current = false;
       histDone.current = false;
       pendingAckIds.current = [];
+      measurementStream.current.reset();
       setHistDownloadMs(null);
     }
-
+ 
     return {
       connected,
       connecting,
@@ -434,8 +363,6 @@ export function useHydra() {
       sendCommand,
       writeConfig,
       readConfig,
-      readLongConfig,
-      writeLongConfig,
       history,
       histLoading,
       histDownloadMs,

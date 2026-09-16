@@ -6,6 +6,7 @@ import { LucideArrowDownUp, LucideArrowUpDown } from 'lucide-react';
 import { graphql } from '@/gql';
 import { Application } from '@/gql/graphql';
 import { handleGraphQLErrors } from '@/libs/utils';
+import { formatDate } from '@/libs/measurement-date';
 import {
   DropdownMultiSelectSearch,
   SidebarInset,
@@ -175,7 +176,7 @@ export default function SiteInformationPage({
   useEffect(() => {
     handleGraphQLErrors(usersError);
   }, [usersError]);
-  const companyName = hierarchyData?.company?.name ?? 'Company Name';
+  const companyName = hierarchyData?.company?.name ?? 'Company name';
 
   const sites = hierarchyData?.company?.sites ?? [];
 
@@ -430,7 +431,7 @@ export default function SiteInformationPage({
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
-                    Banshee Users
+                    Banshee users
                   </Text>
                 </TableHead>
               </TableRow>
@@ -464,7 +465,7 @@ export default function SiteInformationPage({
                     color="foreground"
                     className="ui-banshee-font-bold"
                   >
-                    Banshee Subscription
+                    Banshee subscription
                   </Text>
                 </TableHead>
                 <TableHead className="[&:last-child]:ui-banshee-text-left ui-banshee-flex-none ui-banshee-px-3 ui-banshee-py-2">
@@ -488,11 +489,7 @@ export default function SiteInformationPage({
                   </TableCell>
                   <TableCell className="[&:first-child]:ui-banshee-bg-neutral-2 !ui-banshee-text-left ui-banshee-px-3">
                     <Text variant="medium" color="foreground">
-                      {plan.expiringDate
-                        ? new Date(plan.expiringDate).toLocaleDateString(
-                            'en-GB',
-                          )
-                        : '-'}
+                      {formatDate(plan.expiringDate) ?? '-'}
                     </Text>
                   </TableCell>
                 </TableRow>

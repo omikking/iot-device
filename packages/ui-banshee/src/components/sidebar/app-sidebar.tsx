@@ -44,7 +44,7 @@ const items = [
     icon: Star,
   },
   {
-    title: 'Site Information',
+    title: 'Site information',
     url: 'siteInformation',
     icon: MapPin,
   },
@@ -54,7 +54,7 @@ const items = [
     icon: NotepadText,
   },
   {
-    title: 'Contact Us',
+    title: 'Contact us',
     url: 'contactUs',
     icon: User,
   },

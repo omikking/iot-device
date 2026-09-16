@@ -792,7 +792,7 @@ describe('BansheeRequestsService', () => {
   });
 
   describe('getStatusDistribution', () => {
-    it('aggregates counts overall and per location, defaulting to UNMEASURED', async () => {
+    it('aggregates counts overall and per location, defaulting to NOT_MEASURABLE', async () => {
       prisma.bansheeRequest.findMany.mockResolvedValue([
         {
           id: 'req-1',
@@ -810,7 +810,7 @@ describe('BansheeRequestsService', () => {
           level: { levelName: 'Level 1' },
           drive: { driveName: 'Drive 1' },
           location: { locationName: 'Loc 1' },
-          proceqData: [], // no measurement -> UNMEASURED
+          proceqData: [], // no measurement -> NOT_MEASURABLE
         },
       ]);
 
@@ -826,7 +826,7 @@ describe('BansheeRequestsService', () => {
         result.statusCounts.map((s: any) => [s.status, s.count]),
       );
       expect(statusMap.ELASTIC).toBe(1);
-      expect(statusMap.UNMEASURED).toBe(1);
+      expect(statusMap.NOT_MEASURABLE).toBe(1);
       expect(result.byLocation).toHaveLength(1);
       expect(result.byLocation?.[0]).toMatchObject({
         locationId: 'loc-1',

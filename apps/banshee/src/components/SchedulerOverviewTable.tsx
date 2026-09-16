@@ -113,13 +113,13 @@ export const SchedulerOverviewTable = ({
           isBold
           className="ui-banshee-mb-2"
         >
-          Scheduler Overview
+          Scheduler overview
         </Headline>
         <div className="ui-banshee-flex ui-banshee-h-[45vh]">
           <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-overflow-x-auto ui-banshee-min-h-0 ui-banshee-w-full">
             <div className="ui-banshee-h-full ui-banshee-flex ui-banshee-items-center ui-banshee-justify-center ui-banshee-gap-2 ui-banshee-text-neutral-500">
               <LoadingSpinner />
-              Loading Scheduler Overview...
+              Loading scheduler overview...
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ export const SchedulerOverviewTable = ({
         isBold
         className="ui-banshee-mb-2"
       >
-        Scheduler Overview
+        Scheduler overview
       </Headline>
       <div className="ui-banshee-flex ui-banshee-h-[45vh]">
         <div className="ui-banshee-bg-neutral-1 ui-banshee-overflow-y-auto ui-banshee-overflow-x-auto ui-banshee-min-h-0 ui-banshee-w-full">

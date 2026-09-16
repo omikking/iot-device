@@ -46,7 +46,7 @@ export const BansheePageDonuts = ({
 }) => {
   const filteredCounts = useMemo(() => {
     return (distributionData?.statusCounts || []).filter(
-      (sc) => sc.status && sc.status.toLowerCase() !== 'unmeasured',
+      (sc) => sc.status && sc.status.toLowerCase() !== 'not_measurable',
     );
   }, [distributionData]);
 
@@ -91,7 +91,9 @@ export const BansheePageDonuts = ({
           .filter(Boolean)
           .join(' - '),
         chartData: (loc.statusCounts || [])
-          .filter((sc) => sc.status && sc.status.toLowerCase() !== 'unmeasured')
+          .filter(
+            (sc) => sc.status && sc.status.toLowerCase() !== 'not_measurable',
+          )
           .map((sc) => ({
             label: sc.status,
             value: sc.count,

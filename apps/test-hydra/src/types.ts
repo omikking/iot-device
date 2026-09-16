@@ -33,6 +33,30 @@ export interface HydraMeasurement {
   receivedAt: number;
 }
 
+/** Decoded per-port wavelength/amplitude data — spec Appendix A.4 `WaveAmpChan`. */
+export interface HydraChannelData {
+  temperature: number;
+  refSlope: number;
+  refOffset: number;
+  wavelengths: number[];
+  amplitudes: number[];
+}
+ 
+/** Fully decoded Hydra measurement — spec Appendix A.4 `WaveAmpSample`. */
+export interface HydraMeasurementSample {
+  sampleId: number;
+  sensorId: number;
+  timestampSeconds: number;
+  timestampNanos: number;
+  timestamp: string;
+  isHighPriority: boolean;
+  compression: "RAW" | "MODE_1";
+  sampleType: "DYNAMIC" | "STATIC";
+  captureGroup: number;
+  channels: HydraChannelData[];
+  receivedAt: number;
+}
+
 export type LogType = "info" | "success" | "error" | "warn" | "raw";
 
 export interface LogEntry {

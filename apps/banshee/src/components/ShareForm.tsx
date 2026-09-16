@@ -34,7 +34,7 @@ export const ShareForm = ({
       <form onSubmit={handleSubmit}>
         <div className="ui-banshee-flex ui-banshee-mt-2 ui-banshee-flex-col ui-banshee-gap-2">
           <Text color="foreground" variant="small">
-            Share Plot List
+            Share plot list
           </Text>
 
           <span className="ui-banshee-flex ui-banshee-max-w-[30%] ui-banshee-items-center ui-banshee-gap-2 ui-banshee-w-full">
@@ -44,7 +44,7 @@ export const ShareForm = ({
               type="email"
               disabled={isSharing}
             />
-            <Button type="submit" disabled={isSharing}>
+            <Button className='ui-banshee-h-12' type="submit" disabled={isSharing}>
               {isSharing ? 'Sharing...' : 'Share'}
             </Button>
           </span>

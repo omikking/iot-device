@@ -1,6 +1,7 @@
 import { UserInputError } from '@nestjs/apollo';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { GlobalRole, HydraBolts, Prisma, Application } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ActiveUserData } from 'src/auth/interfaces/active-user-data';
 import { errorTexts } from 'src/errorTexts/errorTexts';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -51,6 +52,32 @@ export class HydraBoltsService {
         ...extensions,
       },
     });
+  }
+
+  private duplicateSerialNumberError(serialNumber: string): UserInputError {
+    return new UserInputError('', {
+      extensions: {
+        code: 'HYDRA_BOLT_DUPLICATE_SERIAL_NUMBER',
+        title: `A Hydra Bolt with serial number ${serialNumber} already exists`,
+      },
+    });
+  }
+
+  private isDuplicateSerialNumber(error: unknown): boolean {
+    if (
+      !(error instanceof PrismaClientKnownRequestError) ||
+      error.code !== 'P2002'
+    ) {
+      return false;
+    }
+
+    const target = error.meta?.target;
+    // Without detail, `serialNumber` is the only unique column a caller can hit.
+    if (target === undefined) return true;
+
+    return (Array.isArray(target) ? target : [target]).some(
+      (field) => typeof field === 'string' && field.includes('serialNumber'),
+    );
   }
 
   private async resolveSensorConfigs(
@@ -152,12 +179,9 @@ export class HydraBoltsService {
       });
 
       if (existingRequest) {
-        throw new UserInputError('', {
-          extensions: {
-            code: 'HYDRA_BOLT_DUPLICATE_SERIAL_NUMBER',
-            title: `A Hydra Bolt with serial number ${createHydraBoltInput.serialNumber} already exists`,
-          },
-        });
+        throw this.duplicateSerialNumberError(
+          createHydraBoltInput.serialNumber,
+        );
       }
 
       await validateMineHierarchy(this.prisma, {
@@ -189,6 +213,12 @@ export class HydraBoltsService {
         },
       });
     } catch (error) {
+      if (this.isDuplicateSerialNumber(error)) {
+        throw this.duplicateSerialNumberError(
+          createHydraBoltInput.serialNumber,
+        );
+      }
+
       throw this.toGraphQLError(error, 'Error creating Hydra Bolt', {
         code: 'HYDRA_BOLT_CREATION_ERROR_GENERIC',
         title: errorTexts.hydraBoltCreateError_title,
@@ -408,12 +438,6 @@ export class HydraBoltsService {
         );
       }
 
-      if (existingRequest?.companyId !== companyId) {
-        throw new ForbiddenException(
-          'Hydra Bolt does not belong to the specified company.',
-        );
-      }
-
       if (!existingRequest) {
         throw new UserInputError('', {
           extensions: {
@@ -423,13 +447,18 @@ export class HydraBoltsService {
         });
       }
 
+      if (existingRequest.companyId !== companyId) {
+        throw new ForbiddenException(
+          'Hydra Bolt does not belong to the specified company.',
+        );
+      }
+
       await validateMineHierarchy(this.prisma, {
-        companyId: existingRequest.companyId,
-        siteId: updateHydraBoltInput.siteId || existingRequest.siteId,
-        levelId: updateHydraBoltInput.levelId || existingRequest.levelId,
-        driveId: updateHydraBoltInput.driveId || existingRequest.driveId,
-        locationId:
-          updateHydraBoltInput.locationId || existingRequest.locationId,
+        companyId: companyId,
+        siteId: updateHydraBoltInput.siteId,
+        levelId: updateHydraBoltInput.levelId,
+        driveId: updateHydraBoltInput.driveId,
+        locationId: updateHydraBoltInput.locationId,
       });
 
       return await this.prisma.hydraBolts.update({

@@ -1,2 +1,2 @@
 -- AlterEnum
-ALTER TYPE "Application" ADD VALUE 'HYDRA';
+ALTER TYPE "Application" ADD VALUE IF NOT EXISTS 'HYDRA';

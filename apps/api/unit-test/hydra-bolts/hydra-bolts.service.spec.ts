@@ -349,6 +349,43 @@ describe('HydraBoltsService.create', () => {
     expect(prisma.hydraBolts.create).not.toHaveBeenCalled();
   });
 
+  /**
+   * The pre-check cannot see a row a concurrent request is still writing, so
+   * the unique index is what actually rejects the second create. That arrives
+   * as P2002 and must read as a duplicate serial number, not as the generic
+   * creation failure.
+   */
+  it('reports a serial number lost to a concurrent create as a duplicate', async () => {
+    prisma.hydraBolts.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: '5.13.0',
+        meta: { target: ['serialNumber'] },
+      }),
+    );
+
+    await expect(
+      service.create(createInput(), adminUser),
+    ).rejects.toMatchObject({
+      extensions: { code: 'HYDRA_BOLT_DUPLICATE_SERIAL_NUMBER' },
+    });
+  });
+
+  it('still reports an unrelated Prisma failure as a creation error', async () => {
+    prisma.hydraBolts.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Foreign key failed', {
+        code: 'P2003',
+        clientVersion: '5.13.0',
+      }),
+    );
+
+    await expect(
+      service.create(createInput(), adminUser),
+    ).rejects.toMatchObject({
+      extensions: { code: 'HYDRA_BOLT_CREATION_ERROR_GENERIC' },
+    });
+  });
+
   it('denies a user with no HYDRA entitlement for the company', async () => {
     prisma.plan.findMany.mockResolvedValue([]); // no active HYDRA plan
 
@@ -530,20 +567,15 @@ describe('HydraBoltsService.update', () => {
     expect(prisma.hydraBolts.update).not.toHaveBeenCalled();
   });
 
-  it('validates the hierarchy against the stored values for omitted ids', async () => {
-    mockConsistentHierarchy(prisma, { siteId: 'stored-site' });
+  it('validates the hierarchy against the supplied ids, not the stored ones', async () => {
     prisma.hydraBolts.findUnique.mockResolvedValue(
       storedBolt({ siteId: 'stored-site' }),
     );
 
-    await service.update(
-      BOLT_ID,
-      updateInput({ siteId: undefined }),
-      adminUser,
-    );
+    await service.update(BOLT_ID, updateInput({ siteId: SITE }), adminUser);
 
     expect(prisma.site.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'stored-site' } }),
+      expect.objectContaining({ where: { id: SITE } }),
     );
   });
 
@@ -556,15 +588,15 @@ describe('HydraBoltsService.update', () => {
     expect(prisma.hydraBolts.update).not.toHaveBeenCalled();
   });
 
-  it('reports a missing bolt as a company mismatch', async () => {
+  it('reports a missing bolt as not found, not as a company mismatch', async () => {
     prisma.hydraBolts.findUnique.mockResolvedValue(null);
 
-    // NOTE: asserting actual behaviour. The company-ownership check runs first
-    // and `undefined !== companyId` holds for a missing row, so the
-    // HYDRA_BOLT_NOTFOUND_ERROR branch below it is unreachable.
     await expect(
       service.update(BOLT_ID, updateInput(), adminUser),
-    ).rejects.toThrow('Hydra Bolt does not belong to the specified company');
+    ).rejects.toMatchObject({
+      extensions: { code: 'HYDRA_BOLT_NOTFOUND_ERROR' },
+    });
+    expect(prisma.hydraBolts.update).not.toHaveBeenCalled();
   });
 });
 

@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls apps/api/src/banshee-communication/; echo \"=== service head ===\"; sed -n '1,70p' apps/api/src/banshee-communication/*.service.ts | head -90)",
+      "Bash(lsof -iTCP -sTCP:LISTEN -P -n)",
+      "Bash(podman machine *)",
+      "Bash(podman ps *)",
+      "Bash(ps -p 51874 -o pid,ppid,command)",
+      "Bash(kill -TERM 51874)",
+      "Bash(lsof -iTCP:3012 -sTCP:LISTEN -P -n)",
+      "Bash(podman start *)",
+      "Bash(lsof -iTCP:5434 -sTCP:LISTEN -P -n)",
+      "Bash(pnpm run *)",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-yuvraj-tak-Desktop-Sandvik-Project-ground-support-platform-1/2cff5f1e-0b83-4eee-8397-a0177e746eab/scratchpad)",
+      "Bash(disown)",
+      "Bash(echo \"api started with PID $!\")",
+      "Bash(nohup pnpm run dev)",
+      "Bash(echo \"turbo dev started with PID $!\")",
+      "Bash(pnpm install *)",
+      "Bash(lsof -iTCP:3333 -sTCP:LISTEN -P -n)",
+      "Bash(echo \"turbo dev restarted with PID $!\")",
+      "Bash(pnpm -r list --depth -1)",
+      "Bash(npx turbo *)",
+      "Bash(git ls-tree *)",
+      "Bash(git archive *)",
+      "Bash(tar -x -C .)",
+      "Bash(lsof -iTCP:3003 -sTCP:LISTEN -P -n)",
+      "Bash(curl -s -o /dev/null -w \"port 3003 -> HTTP %{http_code}\\\\n\" --max-time 10 http://localhost:3003)",
+      "Bash(grep -iE 'error|fail' __TRACKED_VAR__/hydra-dev.log)",
+      "Bash(python3 -c ' *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"tsc exit: $?\")",
+      "Bash(npx vitest *)",
+      "Bash(npm run *)",
+      "Bash(node -e ' *)",
+      "Bash(git -C /Users/yuvraj.tak/Desktop/Sandvik-Project/ground-support-platform-1 status --short apps/test-hydra)"
+    ],
+    "additionalDirectories": [
+      "/Users/yuvraj.tak/Desktop/Sandvik-Project/ground-support-platform-1/apps/api/src/banshee-communication"
+    ]
+  }
+}
